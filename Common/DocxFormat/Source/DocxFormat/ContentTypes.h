@@ -332,7 +332,7 @@ namespace OOX
 	private:
                 bool ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
 		{
-			CWCharWrapper sName;
+			std::wstring sName;
 			if ( !oReader.ReadNextNode() || _T("Types") != ( sName = oReader.GetName() ) || oReader.IsEmptyNode() )
                                 return false;
 

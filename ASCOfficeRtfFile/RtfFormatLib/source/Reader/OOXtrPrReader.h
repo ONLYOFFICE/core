@@ -94,13 +94,13 @@ public:
 		}
 		if( m_ooxTableRowProps->m_oWBefore.IsInit() && m_ooxTableRowProps->m_oWBefore->m_oW.IsInit())
 		{
-			oOutputProperty.m_nWidthStartInvCell = m_ooxTableRowProps->m_oWBefore->m_oW->GetValue();
-			oOutputProperty.m_eMUStartInvCell = MetricUnits::mu_Twips;
+			oOutputProperty.m_nWidthStartInvCell	= m_ooxTableRowProps->m_oWBefore->m_oW->GetValue();
+			oOutputProperty.m_eMUStartInvCell		= _MetricUnits::mu_Twips;
 		}
 		if( m_ooxTableRowProps->m_oWAfter.IsInit() && m_ooxTableRowProps->m_oWAfter->m_oW.IsInit())
 		{
-			oOutputProperty.m_nWidthEndInvCell  = m_ooxTableRowProps->m_oWAfter->m_oW->GetValue();
-			oOutputProperty.m_eMUEndInvCell = MetricUnits::mu_Twips;
+			oOutputProperty.m_nWidthEndInvCell		= m_ooxTableRowProps->m_oWAfter->m_oW->GetValue();
+			oOutputProperty.m_eMUEndInvCell			= _MetricUnits::mu_Twips;
 		}
 
 		if( m_ooxTableRowProps->m_oGridBefore.IsInit() && m_ooxTableRowProps->m_oGridBefore->m_oVal.IsInit())

@@ -111,7 +111,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("worksheet") == sName || _T("chartsheet") == sName)
 				{
 					if ( !oReader.IsEmptyNode() )

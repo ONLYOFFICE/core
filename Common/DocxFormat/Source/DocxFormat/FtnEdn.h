@@ -101,7 +101,7 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItem ) )
 					{
-						CString sName = oItem.GetName();
+						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						/*if ( _T("w:altChunk") == sName )
@@ -173,7 +173,7 @@ namespace OOX
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:footnote") == sName )
 				m_eType = et_w_footnote;
 			else if ( _T("w:endnote") == sName )
@@ -371,7 +371,7 @@ namespace OOX
 		}
 		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:footnote") == sName )
 				m_eType = et_w_footnote;
 			else if ( _T("w:endnote") == sName )
@@ -416,8 +416,8 @@ namespace OOX
 			if ( !oReader.MoveToFirstAttribute() )
 				return;
 
-			CWCharWrapper wsName = oReader.GetName();
-			while( !wsName.IsNull() )
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
 			{
 				if ( _T("w:id") == wsName )
 					m_oId = oReader.GetText();

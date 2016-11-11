@@ -36,15 +36,16 @@
 class RtfOle : public IDocumentElement
 {
 public: 
-	typedef enum{ ot_none, ot_emb, ot_link } OleType;
+	enum _OleType{ ot_none, ot_emb, ot_link };
 	
-	OleType		m_eOleType;
-	int			m_nShapeId;
-	int			m_nWidth;
-	int			m_nHeight;
-	CString		m_sOleClass;
-	RtfShapePtr m_oResultPic;
+	_OleType		m_eOleType;
+	int				m_nShapeId;
+	int				m_nWidth;
+	int				m_nHeight;
+	CString			m_sOleClass;
+	RtfShapePtr		m_oResultPic;
 
+	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 	RtfOle()
 	{
 		m_piStorage = NULL;
@@ -63,40 +64,7 @@ public:
         return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && _T("") != m_sOleFilename;
                 /*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
-	{
-		if( !IsValid() ) return _T("");
-
-		CString sResult = _T("{\\object");
-		
-		if( PROP_DEF != m_eOleType )
-		{
-			switch( m_eOleType )
-			{
-				case ot_emb:	sResult += _T("\\objemb");	break;
-				case ot_link:	sResult += _T("\\objlink");	break;
-			}
-		}
-		RENDER_RTF_INT( m_nWidth, sResult, _T("objw") );
-		RENDER_RTF_INT( m_nHeight, sResult, _T("objh") );
-
-		if( !m_sOleClass.IsEmpty() )
-            sResult += _T("{\\*\\objclass ") + m_sOleClass + _T("}");
-		
-		if( !m_sOleFilename.IsEmpty() )
-        {
-            CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
-            sResult += _T("{\\*\\objdata ") + str + _T("}");
-        }
-		if( NULL != m_oResultPic )
-		{
-            CString str = m_oResultPic->RenderToRtf( oRenderParameter );
-            sResult += _T("{\\result \\pard\\plain") + str + _T("}");
-		}
-		sResult += _T("}");
-		return sResult;
-	}
-
+	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 
 	void SetFilename( CString sFilename )
@@ -119,6 +87,8 @@ public:
 		RELEASEOBJECT( m_piStorage ); 
 		Utils::RemoveDirOrFile( m_sOleFilename );
 		m_sOleFilename = _T("");
+
+		m_oCharProperty.SetDefault();
 	}
 private: 
 	POLE::Storage*	m_piStorage;

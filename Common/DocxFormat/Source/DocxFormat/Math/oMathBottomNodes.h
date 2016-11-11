@@ -171,7 +171,7 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
-				CString sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("m:brkBin") == sName )
 					eType = et_m_brkBin;
 				else if ( _T("m:brkBinSub") == sName )

@@ -37,17 +37,57 @@
 
 CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if( false == IsValid() )
-		return _T("");
-
+	if( false == IsValid() )	return L"";
+	
 	CString sResult;
+
+	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
+	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
+	
 	if( RENDER_TO_OOX_PARAM_OLE_ONLY == oRenderParameter.nType )
 	{
 		sResult += RenderToOOXOnlyOle(oRenderParameter);
 	}
 	else
 	{
+		RtfCharProperty * pCharProps = m_oResultPic ? &m_oResultPic->m_oCharProperty : &m_oCharProperty;
+//------------------------------------------
+// todooo общая часть с RtfChar
+		bool bInsert = false;
+		bool bDelete = false;
+
+		if (pCharProps->m_nRevised != PROP_DEF)
+		{
+			bInsert = true;
+			
+			CString sAuthor = pCharProps->m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ pCharProps->m_nRevauth] : L"";
+			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
+			
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			pCharProps->m_nRevised = PROP_DEF;
+		}
+		if (pCharProps->m_nDeleted != PROP_DEF)
+		{
+			bDelete = true;
+			
+			CString sAuthor = pCharProps->m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ pCharProps->m_nRevauthDel ] : L"";
+			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttmDel).c_str());
+			
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			pCharProps->m_nDeleted = PROP_DEF;
+		}
+//----------
 		sResult += _T("<w:r>");
+		
+		CString sCharProp = pCharProps->RenderToOOX(oRenderParameter);
+
+		if (!sCharProp .IsEmpty())
+		{
+			sResult += _T("<w:rPr>");
+				sResult += sCharProp;
+			sResult += _T("</w:rPr>");
+		}
+		
 		sResult.AppendFormat( _T("<w:object w:dxaOrig=\"%d\" w:dyaOrig=\"%d\">"), m_nWidth, m_nHeight );
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
@@ -60,6 +100,9 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 
 		sResult += _T("</w:object>");
 		sResult += _T("</w:r>");
+		
+		if (bDelete)sResult += L"</w:del>";
+		if (bInsert)sResult += L"</w:ins>";
 	}
 	return sResult;
 }
@@ -67,9 +110,9 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 {
 	CString sResult;
 
-	OOXWriter* poOOXWriter			= static_cast<OOXWriter*>(oRenderParameter.poWriter);
-	OOXRelsWriter* poRelsWriter		= static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
-	RtfDocument* poDocument			= static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	OOXWriter		* poOOXWriter	= static_cast<OOXWriter*>		(oRenderParameter.poWriter);
+	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
+	RtfDocument		* poDocument	= static_cast<RtfDocument*>		(oRenderParameter.poDocument);
 
 	sResult += _T("<o:OLEObject");
 	switch ( m_eOleType )
@@ -102,6 +145,40 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
     CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"), sFilenameRels);
     sResult += _T(" r:id=\"") + srId + _T("\"");
 	sResult += _T("/>");
+	return sResult;
+}
+
+CString RtfOle::RenderToRtf(RenderParameter oRenderParameter)
+{
+	if( !IsValid() ) return _T("");
+
+	CString sResult = _T("{\\object");
+	
+	if( PROP_DEF != m_eOleType )
+	{
+		switch( m_eOleType )
+		{
+			case ot_emb:	sResult += _T("\\objemb");	break;
+			case ot_link:	sResult += _T("\\objlink");	break;
+		}
+	}
+	RENDER_RTF_INT( m_nWidth, sResult, _T("objw") );
+	RENDER_RTF_INT( m_nHeight, sResult, _T("objh") );
+
+	if( !m_sOleClass.IsEmpty() )
+        sResult += _T("{\\*\\objclass ") + m_sOleClass + _T("}");
+	
+	if( !m_sOleFilename.IsEmpty() )
+    {
+        CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
+        sResult += _T("{\\*\\objdata ") + str + _T("}");
+    }
+	if( NULL != m_oResultPic )
+	{
+        CString str = m_oResultPic->RenderToRtf( oRenderParameter );
+        sResult += _T("{\\result \\pard\\plain") + str + _T("}");
+	}
+	sResult += _T("}");
 	return sResult;
 }
 

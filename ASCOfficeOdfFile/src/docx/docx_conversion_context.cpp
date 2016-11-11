@@ -1285,9 +1285,9 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		if (state.type	== 1) output_stream() << L"<w:ins";
 		if (state.type	== 2) output_stream() << L"<w:del";
 
-		output_stream() << L" w:date=\""	<< state.date	<< "\"";
-		output_stream() << L" w:author=\""	<< state.author << "\"";
-		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << "\"";
+		output_stream() << L" w:date=\""	<< state.date	<< L"\"";
+		output_stream() << L" w:author=\""	<< state.author << L"\"";
+		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << L"\"";
 		output_stream() << L">";
 		
 		if (state.type	== 2) 

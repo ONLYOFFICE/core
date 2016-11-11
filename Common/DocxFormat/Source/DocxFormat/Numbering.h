@@ -309,7 +309,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if      ( _T("w:isLgl")          == sName ) m_oIsLgl = oReader;
 					else if ( _T("w:legacy")         == sName ) m_oLegacy = oReader;
 					else if ( _T("w:lvlJc")          == sName ) m_oLvlJc = oReader;
@@ -454,7 +454,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:lvl") == sName )
 					{
 						OOX::Numbering::CLvl *oLvl = new OOX::Numbering::CLvl(oReader);
@@ -561,7 +561,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:lvl") == sName )
 						m_oLvl = oReader;
 					else if ( _T("w:startOverride") == sName )
@@ -665,7 +665,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:lvlOverride") == sName )
 					{
 						OOX::Numbering::CNumLvl *oNumLvl = new OOX::Numbering::CNumLvl (oReader);
@@ -753,7 +753,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:drawing") == sName )
 					{
 						m_oDrawing = oReader;
@@ -859,7 +859,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:numbering") == sName && !oReader.IsEmptyNode() )
 			{
 				int nNumberingDepth = oReader.GetDepth();

@@ -78,7 +78,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					//if ( _T("a:cNvGrpSpPr") == sName )
 					//	m_oCNvGroupSpPr = oReader;
@@ -139,7 +139,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					sName = oReader.GetName();
 					if ( _T("a:spLocks") == sName )
@@ -203,7 +203,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					if ( _T("a:cNvSpPr") == sName )
 						m_oCNvSpPr = oReader;
@@ -271,7 +271,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					if ( _T("a:spPr") == sName )
 						m_oSpPr = oReader;
@@ -346,7 +346,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					if ( _T("a:grpSpPr") == sName )
 						m_oGroupSpPr = oReader;
@@ -426,7 +426,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 				}
 			}

@@ -301,16 +301,16 @@ namespace SimpleTypes
 		}
 #endif
 
-		bool    FromString(const CWCharWrapper& wsStr)
+		bool    FromString(const std::wstring& wsStr)
 		{
 			// TO DO: переделать
-			CString sTemp( wsStr.m_cwsString );
+			CString sTemp( wsStr.c_str() );
 			return FromString( (CString &)sTemp );
 		}
         bool    FromString(const wchar_t* cwsStr)
         {
-            CWCharWrapper wsStr = cwsStr;
-            return FromString( (const CWCharWrapper&)wsStr );
+            std::wstring wsStr = cwsStr;
+            return FromString( (const std::wstring&)wsStr );
         }
 		CString ToString  () const 
 		{

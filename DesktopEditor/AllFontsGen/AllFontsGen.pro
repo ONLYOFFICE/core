@@ -39,7 +39,7 @@ core_windows {
 }
 
 core_linux {
-    LIBS += -lz
+    LIBS += -lz -pthread
 }
 
 SOURCES += main.cpp

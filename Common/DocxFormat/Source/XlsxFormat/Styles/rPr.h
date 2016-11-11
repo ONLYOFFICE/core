@@ -112,7 +112,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("rgbColor") == sName )
 						m_arrItems.push_back( new CRgbColor( oReader ));
@@ -460,7 +460,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("color") == sName )
 						m_arrItems.push_back( new CColor( oReader ));
@@ -737,9 +737,9 @@ namespace OOX
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					CString sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
-					writer.WriteString(L" vertAlign=\"");
+					writer.WriteString(L"<vertAlign val=\"");
 					writer.WriteString(sVerticalAlign.GetBuffer());
-					writer.WriteString(L"\"");
+					writer.WriteString(L"\"/>");
 					sVerticalAlign.ReleaseBuffer();
 				}
 				writer.WriteString(_T("</rPr>"));
@@ -754,7 +754,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("b") == sName )
 						m_oBold = oReader;

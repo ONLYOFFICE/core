@@ -72,7 +72,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("picLocks") == sName )
 						m_oPicLocks = oReader;
@@ -146,7 +146,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
@@ -251,7 +251,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("chart") == sName )
 					{
@@ -317,7 +317,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("graphicData") == sName )
 						m_oGraphicData = oReader;
@@ -400,7 +400,7 @@ namespace OOX
 				int nCurDepth = oSubReader.GetDepth();
 				while( oSubReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
 
 					if ( _T("graphic") == sName )
 						m_oChartGraphic = oSubReader;

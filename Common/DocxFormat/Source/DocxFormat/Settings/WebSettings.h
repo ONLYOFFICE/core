@@ -169,7 +169,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:webSettings") == sName && !oReader.IsEmptyNode() )
 			{
 				int nStylesDepth = oReader.GetDepth();

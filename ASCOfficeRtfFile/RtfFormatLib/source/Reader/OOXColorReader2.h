@@ -47,47 +47,47 @@ public:
 		//if( TRUE == oXmlReader.OpenFromXmlNode( oParam.oNode ) )
 		//{
 
-		//	CString sThemeColor = oXmlReader.ReadNodeAttribute(sTheme, _T("") );
-		//	CString themeShade = oXmlReader.ReadNodeAttribute(sThemeShade, _T("0") );
-		//	CString themeTint = oXmlReader.ReadNodeAttribute(sThemeTint, _T("255") );
-		//	CString val = oXmlReader.ReadNodeAttribute(sColor, _T("") );
-		//	if( _T("") != sThemeColor )
+		//	CString sThemeColor = oXmlReader.ReadNodeAttribute(sTheme, L"" );
+		//	CString themeShade = oXmlReader.ReadNodeAttribute(sThemeShade, L"0" );
+		//	CString themeTint = oXmlReader.ReadNodeAttribute(sThemeTint, L"255" );
+		//	CString val = oXmlReader.ReadNodeAttribute(sColor, L"" );
+		//	if( !sThemeColor.IsEmpty() )
 		//	{
 		//		//Todo  tx1 - моджет приходить text1
 		//		RtfColor::ThemeColor oTheme = RtfColor::TC_NONE;
-		//		if( sThemeColor == _T("accent1") )
+		//		if( sThemeColor == L"accent1" )
 		//			oTheme = RtfColor::caccentone;
-		//		else if( sThemeColor ==  _T("accent2") )
+		//		else if( sThemeColor ==  L"accent2" )
 		//			oTheme = RtfColor::caccenttwo;
-		//		else if( sThemeColor == _T("accent3") )
+		//		else if( sThemeColor == L"accent3" )
 		//			oTheme = RtfColor::caccentthree;
-		//		else if( sThemeColor == _T("accent4") )
+		//		else if( sThemeColor == L"accent4" )
 		//			oTheme = RtfColor::caccentfour;
-		//		else if( sThemeColor == _T("accent5") )
+		//		else if( sThemeColor == L"accent5" )
 		//			oTheme = RtfColor::caccentfive;
-		//		else if( sThemeColor == _T("accent6") )
+		//		else if( sThemeColor == L"accent6" )
 		//			oTheme = RtfColor::caccentsix;
-		//		else if( sThemeColor == _T("bg1") )
+		//		else if( sThemeColor == L"bg1" )
 		//			oTheme = RtfColor::cbackgroundone;
-		//		else if( sThemeColor == _T("bg2") )
+		//		else if( sThemeColor == L"bg2" )
 		//			oTheme = RtfColor::cbackgroundtwo;
-		//		else if( sThemeColor == _T("dk1") )
+		//		else if( sThemeColor == L"dk1" )
 		//			oTheme = RtfColor::cmaindarkone;
-		//		else if( sThemeColor == _T("dk2") )
+		//		else if( sThemeColor == L"dk2" )
 		//			oTheme = RtfColor::cmaindarktwo;
-		//		else if( sThemeColor == _T("folHlink") )
+		//		else if( sThemeColor == L"folHlink" )
 		//			oTheme = RtfColor::cfollowedhyperlink;
-		//		else if( sThemeColor == _T("hlink") )
+		//		else if( sThemeColor == L"hlink" )
 		//			oTheme = RtfColor::chyperlink;
-		//		else if( sThemeColor == _T("lt1") )
+		//		else if( sThemeColor == L"lt1" )
 		//			oTheme = RtfColor::cmainlightone;
-		//		else if( sThemeColor == _T("lt2") )
+		//		else if( sThemeColor == L"lt2" )
 		//			oTheme = RtfColor::cmainlighttwo;
-		//		else if( sThemeColor == _T("phClr") )
+		//		else if( sThemeColor == L"phClr" )
 		//			oTheme = RtfColor::cmainlighttwo;
-		//		else if( sThemeColor == _T("tx1") )
+		//		else if( sThemeColor == L"tx1" )
 		//			oTheme = RtfColor::ctextone;
-		//		else if( sThemeColor =  _T("tx2") )
+		//		else if( sThemeColor =  L"tx2" )
 		//			oTheme = RtfColor::ctexttwo;
 
 		//		if( true == oParam.oRtf->m_oColorTable.GetColor( oTheme , oOutputColor ) )
@@ -118,7 +118,7 @@ public:
 		//			return false;
 
 		//	}
-		//	else if( _T("auto") != val )
+		//	else if( L"auto" != val )
 		//	{
 		//		oOutputColor.SetHEXString( val );
 		//		return true;

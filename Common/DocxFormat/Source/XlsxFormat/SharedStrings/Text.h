@@ -132,8 +132,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CString wsName = XmlUtils::GetNameNoNS(oReader.GetName());
-				while( !wsName.IsEmpty() )
+				std::wstring wsName = XmlUtils::GetNameNoNS(oReader.GetName());
+				while( !wsName.empty() )
 				{
 					if ( _T("space") == wsName )
 					{

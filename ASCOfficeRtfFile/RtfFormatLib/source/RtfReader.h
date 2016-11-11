@@ -228,7 +228,7 @@ public:
 	virtual void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
 	{
 	}
-	virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReade )
+	virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
 	}
 	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
@@ -269,8 +269,8 @@ public:
 			if(sResult.GetLength() > 0)
 			{
                 std::string str;
-                ExecuteTextInternalSkipChars(sResult, oReader, str, nSkipChars);
-				ExecuteText( oDocument, oReader, sResult);
+                ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars);
+				ExecuteText					 ( oDocument, oReader, sResult);
 			}
 		}
 	}

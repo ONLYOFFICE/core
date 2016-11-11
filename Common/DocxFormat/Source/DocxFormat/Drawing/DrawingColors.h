@@ -1530,8 +1530,8 @@ namespace OOX
 					int nCurDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 					{
-						CString sNameFull = oReader.GetName();
-						CString sName = XmlUtils::GetNameNoNS(sNameFull);
+						std::wstring sNameFull = oReader.GetName();
+						std::wstring sName = XmlUtils::GetNameNoNS(sNameFull);
 						
 						WritingElement *pTransform = NULL;
 						if ( _T("alpha") == sName )
@@ -2516,8 +2516,8 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sNameFull = oReader.GetName();
-					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+					std::wstring sNameFull = oReader.GetName();
+					std::wstring sName = XmlUtils::GetNameNoNS(sNameFull);
 
 					if ( _T("hslClr") == sName )
 					{

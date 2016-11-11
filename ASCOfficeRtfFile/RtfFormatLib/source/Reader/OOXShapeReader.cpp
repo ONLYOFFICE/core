@@ -290,10 +290,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
-				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : _T("") ;
+				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
 
 				if (srId.IsEmpty())
-                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : _T("") ;
+                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : L"" ;
 				
 				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
 				{        
@@ -361,10 +361,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
-				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
+				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
 
 				if (srId.IsEmpty())
-                    srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
+                    srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
 
 				if (oParam.oReader->m_currentContainer)
 				{        
@@ -584,7 +584,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 			}
 			if (oOutput->m_nShapeType == PROP_DEF)
 			{
-				int pos = shape->m_sType->Find(_T("#_x0000_t"));
+				int pos = shape->m_sType->Find( L"#_x0000_t" );
 				if (pos >= 0)
 				{				
 					oOutput->m_nShapeType = _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
@@ -676,7 +676,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 			oOutput->m_nWrapType = 2;
 		
 		int nPosition = 0;
-		CString sPoint =  _T("start");
+		CString sPoint =  L"start";
 		for (long i =0 ;i < m_vmlElement->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlElement->m_oWrapCoords->GetX(i),
@@ -743,7 +743,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	{
 		if (oOutput->m_nWrapType == 3 && oOutput->m_nZOrderRelative == PROP_DEF) oOutput->m_nWrapType =2;
 		int nPosition = 0;
-		CString sPoint =  _T("start");
+		CString sPoint =  L"start";
 		for (long i =0 ;i < m_vmlGroup->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlGroup->m_oWrapCoords->GetX(i),

@@ -177,11 +177,11 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 							sTarget = pH->Uri().GetPath();
 						}
 					}
-					if( _T("") != sTarget )
+					if( !sTarget.IsEmpty() )
 					{
 						//заменяем пробелы на %20
-						sTarget.Replace( _T(" "), _T("%20") );
-						CString sFileUrl = _T("file:///");
+						sTarget.Replace( L" ", L"%20" );
+						CString sFileUrl = L"file:///";
 						if( 0 == sTarget.Find( sFileUrl ) )
 						{
 							int nFirstDDot = sTarget.Find( ':', sFileUrl.GetLength() );
@@ -199,7 +199,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						RtfCharPtr oNewChar( new RtfChar() );
 						oNewChar->m_bRtfEncode = true;// false;
 						CString sFieldText;
-                        sFieldText += _T("HYPERLINK \"") + sTarget + _T("\"");
+                        sFieldText += L"HYPERLINK \"" + sTarget + L"\"";
 						oNewChar->setText( sFieldText );
 						RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 						oNewInsertParagraph->AddItem( oNewChar );
@@ -207,10 +207,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						//добавляем свойства
 
 						//pHyperlink->m_arrItems todoooo 
-						//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:fldLock"),_T("false")));
+						//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i, L"w:fldLock", L"false)));
 						//if( TRUE == bLock )
 						//	oCurField->m_eMode = RtfField::fm_fldlock;
-						//BOOL bDirty = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:dirty"),_T("false")));
+						//BOOL bDirty = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i, L"w:dirty", L"false"));
 						//if( TRUE == bDirty )
 						//	oCurField->m_eMode = RtfField::fm_flddirty;
 
@@ -238,17 +238,17 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					//добавляем insert
 					RtfCharPtr oNewCharHYPER( new RtfChar() );
 					oNewCharHYPER->m_bRtfEncode = false;
-					oNewCharHYPER->setText( _T("HYPERLINK \\l \"") + pHyperlink->m_sAnchor.get() +_T("\"") );
+					oNewCharHYPER->setText( L"HYPERLINK \\l \"" + pHyperlink->m_sAnchor.get() +L"\"");
 
 					RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 					oNewInsertParagraph->AddItem( oNewCharHYPER );
 
 					oCurField->m_oInsert->AddItem( oNewInsertParagraph );
 					////добаляем свойства
-					//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:fldLock"),_T("false")));
+					//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i, L"w:fldLock" ,L"false"));
 					//if( TRUE == bLock )
 					//	oCurField->m_eMode = RtfField::fm_fldlock;
-					//BOOL bDirty = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:dirty"),_T("false")));
+					//BOOL bDirty = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i, L"w:dirty", L"false"));
 					//if( TRUE == bDirty )
 					//	oCurField->m_eMode = RtfField::fm_flddirty;
 
@@ -273,7 +273,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				OOX::Logic::CBookmarkStart * pBookmarkStart = dynamic_cast<OOX::Logic::CBookmarkStart*>(m_ooxElement->m_arrItems[i]);
 				RtfBookmarkStartPtr oNewBookmark( new RtfBookmarkStart() );
 				
-				oNewBookmark->m_sName = pBookmarkStart->m_sName.IsInit() ? pBookmarkStart->m_sName.get2() : _T("");
+				oNewBookmark->m_sName = pBookmarkStart->m_sName.IsInit() ? pBookmarkStart->m_sName.get2() : L"";
 
 				if (pBookmarkStart->m_oColFirst.IsInit())
 					oNewBookmark->nFirstColumn = pBookmarkStart->m_oColFirst->GetValue();
@@ -397,7 +397,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
 						if (ooxFldChar->m_oDirty.IsInit())
 							oNewField->m_bDirty = ooxFldChar->m_oDirty->ToBool();
-						oNewField->m_oCharProp = oNewProperty;
+						oNewField->m_oCharProperty = oNewProperty;
 						oOutputParagraph.AddItem( oNewField );
 					}break;
 				case SimpleTypes::fldchartypeEnd: 
@@ -771,9 +771,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				if( PROP_DEF != oNewProperty.m_nFontSize )
 					nFontSize = oNewProperty.m_nFontSize / 2;
 
-                sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \""), nChar);
-				sFieldText += sFont;
-				sFieldText.AppendFormat(_T("\" \\\\s %d"), nFontSize );
+				sFieldText = L"SYMBOL";
+                sFieldText.AppendFormat(L"%d", nChar);
+				sFieldText += L" \\\\f \"" + sFont + L"\" \\\\s ";
+				sFieldText.AppendFormat(L"%d", nFontSize );
 				
 				oNewChar->setText( sFieldText );
 				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );

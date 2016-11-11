@@ -90,7 +90,7 @@ public:
 		m_sRtfName = sName;
 		
 		m_sOOXName = sName;
-		m_sOOXName.Insert(1, _T(":"));
+		m_sOOXName.Insert(1, L":");
 	}
 
 	void	SetOOXType		(int type);

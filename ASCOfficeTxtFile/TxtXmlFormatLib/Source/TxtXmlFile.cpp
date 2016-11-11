@@ -82,14 +82,14 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 		int nCurDepth = xmlReader.GetDepth();
 		while ( xmlReader.ReadNextSiblingNode( nCurDepth ) )
 		{
-			CString sName = xmlReader.GetName();
+            std::wstring sName = xmlReader.GetName();
 
 			if (sName == _T("TXTOptions"))
 			{
 				int nCurDepth1 = xmlReader.GetDepth();
 				while ( xmlReader.ReadNextSiblingNode( nCurDepth1 ) )
 				{
-					CString sName1 = xmlReader.GetName();
+                    std::wstring sName1 = xmlReader.GetName();
 					if (sName1 == _T("Encoding"))
 					{
 						CString strValue = xmlReader.GetText2();

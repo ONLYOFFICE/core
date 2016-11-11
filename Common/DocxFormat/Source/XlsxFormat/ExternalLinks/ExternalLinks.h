@@ -66,7 +66,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 				}
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
@@ -135,7 +135,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 				
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("externalLink") == sName )
 				{
 					ReadAttributes( oReader );

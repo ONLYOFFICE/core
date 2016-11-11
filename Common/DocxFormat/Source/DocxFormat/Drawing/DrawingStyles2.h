@@ -131,7 +131,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:backdrop") == sName )
 						m_oBackdrop = oReader;
 					else if ( _T("a:camera") == sName )
@@ -199,7 +199,7 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				if ( _T("a:effectRef") == sName )
 					m_eType = et_a_effectRef;
 				else if ( _T("a:fillRef") == sName )

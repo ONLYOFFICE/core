@@ -81,7 +81,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 					else if ( _T("a:graphicFrameLocks") == sName )
@@ -211,7 +211,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
 						m_oAlign = oReader.GetText2().GetString();
@@ -318,7 +318,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
 						m_oAlign = oReader.GetText2().GetString();
@@ -422,7 +422,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("wp14:pctWidth") == sName )
 					{
 						m_oPctWidth = oReader.GetText2().GetString();
@@ -494,7 +494,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("wp14:pctHeight") == sName )
 					{
 						m_oPctHeight = oReader.GetText2().GetString();
@@ -600,7 +600,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:effectExtents") == sName )
 						m_oEffectExtent = oReader;
 				}
@@ -692,7 +692,7 @@ namespace OOX
 				bool bStart = false;
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:start") == sName )
 					{
 						m_oStart = oReader;
@@ -776,7 +776,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:wrapPolygon") == sName )
 						m_oWrapPolygon = oReader;
 				}
@@ -853,7 +853,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:wrapPolygon") == sName )
 						m_oWrapPolygon = oReader;
 				}
@@ -930,7 +930,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:effectExtent") == sName )
 						m_oEffectExtent = oReader;
 				}
@@ -1018,7 +1018,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
 					else if ( _T("wp:docPr") == sName )
@@ -1047,7 +1047,7 @@ namespace OOX
 						nCurDepth++;
 						while( oReader.ReadNextSiblingNode( nCurDepth ) )
 						{
-							CString sName = oReader.GetName();
+							std::wstring sName = oReader.GetName();
 							if ( _T("mc:Fallback") == sName || _T("mc:Choice") == sName )
 							{
 								CString strXml = _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
@@ -1302,7 +1302,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("wp:cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
 					else if ( _T("wp:docPr") == sName )
@@ -1591,7 +1591,7 @@ namespace OOX
 				int nCurDepth = pReader->GetDepth();
 				while( pReader->ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = pReader->GetName();
+                    std::wstring sName = pReader->GetName();
 					if ( _T("wp:inline") == sName )
 					{
 						m_oInline = *pReader;

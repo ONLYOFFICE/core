@@ -59,7 +59,8 @@ namespace PPTX
 			oReader.ReadNextNode();//root
 			oReader.ReadNextNode();//a14:m
 			oReader.ReadNextNode();//oMath oMathPara
-			CString strNameP = XmlUtils::GetNameNoNS(oReader.GetName());
+			
+			std::wstring strNameP = XmlUtils::GetNameNoNS(oReader.GetName());
 			if(L"oMathPara" == strNameP)
 			{
 				m_oMathPara = oReader;

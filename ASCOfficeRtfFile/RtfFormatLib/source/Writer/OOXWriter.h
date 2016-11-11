@@ -40,11 +40,12 @@ class OOXWriter
 {
 public: 
 
-	CString nCurFitId;
-	int nCurFitWidth;
+	CString			m_nCurFitId;
+	int				m_nCurFitWidth;
+	int				m_nCurTrackChangesId;
 
-	OOXRelsWriter m_oDocRels;
-	OOXRelsWriter m_oRels;
+	OOXRelsWriter	m_oDocRels;
+	OOXRelsWriter	m_oRels;
 	
 	std::vector<OOXRelsWriterPtr>	m_oCustomRelsWriter;
 	OOXContentTypesWriter			m_oContentTypes;
@@ -66,8 +67,8 @@ public:
 
 	std::map<CString, int> m_aBookmarksId;
 	
-	OOXWriter( RtfDocument& oDocument, std::wstring sPath );
-	~OOXWriter();
+	OOXWriter	( RtfDocument& oDocument, std::wstring sPath );
+	~OOXWriter	();
 	
 	bool Save();
 	bool SaveByItemStart();

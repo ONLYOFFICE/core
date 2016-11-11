@@ -74,7 +74,7 @@ public:
 			oOutput.m_nWidthGoal = image.get_Width(); 
 			oOutput.m_nHeightGoal = image.get_Height();
 		
-			CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), _T("img"));
+			CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 			
 			if (image.SaveFile(string2std_string(sTargetFile), 4 /*_CXIMAGE_FORMAT_PNG*/) )
 			{
@@ -92,7 +92,7 @@ public:
 				CFile file_inp; //mpa
 				CFile file_out;//wmf
 
-				CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), _T("img"));
+				CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 
 				int res = file_inp.OpenFile(sPath);
 				if (res != S_OK) return false;

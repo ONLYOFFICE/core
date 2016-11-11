@@ -73,7 +73,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 
 				if ( _T("o:bottom") == sName )
 					m_eType = et_o_bottom;
@@ -697,7 +697,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:rel") == sName )
 					{
 						OOX::VmlOffice::CRelation *oRel = new OOX::VmlOffice::CRelation(oReader);
@@ -778,7 +778,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:relationtable") == sName )
 						m_oRelationTable = oReader;
 				}
@@ -940,7 +940,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					// TO DO: Сделать чтение формул OOMML и Wc3MathML
 				}
@@ -1675,7 +1675,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:FieldCodes") == sName )
 						m_oFieldCodes = oReader;
 					else if ( _T("o:LinkType") == sName )
@@ -1848,7 +1848,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:proxy") == sName )
 					{
 						OOX::VmlOffice::CProxy *oProxy = new OOX::VmlOffice::CProxy(oReader);
@@ -1941,7 +1941,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:entry") == sName )
 					{
 						OOX::VmlOffice::CEntry *oEntry = new OOX::VmlOffice::CEntry (oReader);
@@ -2026,7 +2026,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:r") == sName )
 					{
 						OOX::VmlOffice::CR  *oR = new OOX::VmlOffice::CR (oReader);
@@ -2105,7 +2105,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:idmap") == sName )
 						m_oIdMap = oReader;
 					else if ( _T("o:regrouptable") == sName )

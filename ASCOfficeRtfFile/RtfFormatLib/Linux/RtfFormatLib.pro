@@ -45,8 +45,9 @@ SOURCES += \
     ../source/RtfDocument.cpp \
     ../source/RtfGlobalTables.cpp \
     ../source/RtfOldList.cpp \
-    ../source/RtfOle.cpp \
     ../source/RtfPicture.cpp \
+    ../source/RtfOle.cpp \
+    ../source/RtfField.cpp \
     ../source/RtfProperty.cpp \
     ../source/RtfReader.cpp \
     ../source/RtfSection.cpp \

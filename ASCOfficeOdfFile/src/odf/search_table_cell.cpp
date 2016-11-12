@@ -133,7 +133,7 @@ public:
     virtual void visit(const table_table_column& val)
     {
         const unsigned int columnsRepeated = val.table_table_column_attlist_.table_number_columns_repeated_;
-        const std::wstring defaultCellStyleName = val.table_table_column_attlist_.table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
+        const std::wstring defaultCellStyleName = val.table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
         visit_column(columnsRepeated, defaultCellStyleName);
     }
     virtual void visit(const table_calculation_settings & val)
@@ -202,9 +202,7 @@ public:
     virtual void visit(const table_table_row& val)
     {       
         unsigned int repeated = val.table_table_row_attlist_.table_number_rows_repeated_;
-        std::wstring defaultCellStyle = val.
-            table_table_row_attlist_.
-            table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
+        std::wstring defaultCellStyle = val.table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
 
         if (visit_rows(repeated, defaultCellStyle))
         {

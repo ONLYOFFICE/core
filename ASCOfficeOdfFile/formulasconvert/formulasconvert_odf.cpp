@@ -242,6 +242,10 @@ namespace formulasconvert {
 		if (boost::regex_search(expr, res, boost::wregex(L"(?:[\\w]+:)?=(.+)"), boost::match_default))
 		{
 			expr = res[1].str();
+			while (expr.find(L"=") == 0)
+			{
+				expr.erase(expr.begin(), expr.begin() + 1);
+			}
 			return true;
 		}
 		else   
@@ -302,6 +306,37 @@ namespace formulasconvert {
 		}    
 		else if (what[2].matched)
 			return what[2].str();
+		else if (what[3].matched)
+			return what[3].str();
+	}
+	std::wstring convert_scobci(boost::wsmatch const & what)
+	{
+		if (what[1].matched)
+		{
+			std::wstring inner = what[1].str();
+			boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
+			boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
+
+			boost::algorithm::replace_all(inner, L"[", L"KVADRATIN");
+			boost::algorithm::replace_all(inner, L"]", L"KVADRATOUT");
+			
+			boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+			boost::algorithm::replace_all(inner, L"'", L"APOSTROF");
+			return inner;
+		}
+		else if (what[2].matched)
+		{
+			std::wstring inner = what[2].str();
+			boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
+			boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
+
+ 			boost::algorithm::replace_all(inner, L"[", L"KVADRATIN");
+			boost::algorithm::replace_all(inner, L"]", L"KVADRATOUT");
+			
+			boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+			boost::algorithm::replace_all(inner, L"\"", L"KAVYCHKA");
+			return inner;
+		}
 		else if (what[3].matched)
 			return what[3].str();
 	}
@@ -380,12 +415,19 @@ namespace formulasconvert {
 			&replace_point_space,
 			boost::match_default | boost::format_all);	
 
-		boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
-	   
 		check_formula(workstr);
-		replace_cells_range(workstr, true);
-		replace_semicolons(workstr);
-		replace_vertical(workstr);
+		
+		workstr = boost::regex_replace(
+			workstr,
+			boost::wregex(L"('.*?')|(\".*?\")"),
+			&convert_scobci, boost::match_default | boost::format_all);
+
+		//boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+	   
+		
+		replace_cells_range	(workstr, true);
+		replace_semicolons	(workstr);
+		replace_vertical	(workstr);
 
 		int res_find=0;
 		if ((res_find = workstr.find(L"CONCATINATE")) > 0)
@@ -397,6 +439,15 @@ namespace formulasconvert {
  		boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
 		boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
 		boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
+
+		boost::algorithm::replace_all(workstr, L"SCOBCAIN", L"(");
+		boost::algorithm::replace_all(workstr, L"SCOBCAOUT", L")");
+
+		boost::algorithm::replace_all(workstr, L"KVADRATIN", L"[");
+		boost::algorithm::replace_all(workstr, L"KVADRATOUT", L"]");
+
+		boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
+		boost::algorithm::replace_all(workstr, L"KAVYCHKA", L"\"");
 		return workstr;
 	}
 
@@ -495,6 +546,7 @@ namespace formulasconvert {
 			boost::match_default | boost::format_all);	
 		
 		boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
+		//boost::algorithm::replace_all(workstr, L"", L"APOSTROF");
 
 		impl_->replace_named_ref(workstr, withTableName);
 

@@ -630,13 +630,13 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
-	RENDER_RTF_INT( m_nAnimated, sResult, L"animtext" )
-	RENDER_RTF_BOOL( m_bBold, sResult, L"b" )
-	RENDER_RTF_BOOL( m_bCaps, sResult, L"caps" )
-	RENDER_RTF_INT( m_nScalex, sResult, L"charscalex" )
+	RENDER_RTF_INT( m_nAnimated,	sResult, L"animtext" )
+	RENDER_RTF_BOOL( m_bBold,		sResult, L"b" )
+	RENDER_RTF_BOOL( m_bCaps,		sResult, L"caps" )
+	RENDER_RTF_INT( m_nScalex,		sResult, L"charscalex" )
 	//RENDER_RTF_INT( m_nCharStyle, sResult, L"cs" )
-	RENDER_RTF_INT( m_nDown, sResult, L"dn" )
-	RENDER_RTF_BOOL( m_bEmbo, sResult, L"embo" )
+	RENDER_RTF_INT( m_nDown,		sResult, L"dn" )
+	RENDER_RTF_BOOL( m_bEmbo,		sResult, L"embo" )
 	RENDER_RTF_INT( m_nCharacterSpacing, sResult, L"expndtw" )
 	if( PROP_DEF != m_nCharacterSpacing )
 		sResult.AppendFormat( L"\\expnd%d", m_nCharacterSpacing / 5  );
@@ -645,10 +645,10 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nFont, sResult, L"f" )
 	//RENDER_RTF_INT( m_nFont2, sResult, L"fittext" )
 	//RENDER_RTF_INT( m_nFont3, sResult, L"fittext" )
-	RENDER_RTF_INT( m_nFontSize, sResult, L"fs" )
-	RENDER_RTF_BOOL( m_bItalic, sResult, L"i" )
-	RENDER_RTF_BOOL( m_bImprint, sResult, L"impr" )
-	RENDER_RTF_INT( m_nKerning, sResult, L"kerning" )
+	RENDER_RTF_INT( m_nFontSize,	sResult, L"fs" )
+	RENDER_RTF_BOOL( m_bItalic,		sResult, L"i" )
+	RENDER_RTF_BOOL( m_bImprint,	sResult, L"impr" )
+	RENDER_RTF_INT( m_nKerning,		sResult, L"kerning" )
 	
 	if (m_bRightToLeft != PROP_DEF )
 	{
@@ -702,6 +702,24 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( m_poShading.IsValid() == true )
 		sResult +=  m_poShading.RenderToRtf( oRenderParameter );
 
+	RENDER_RTF_INT( m_nCrAuth,		sResult, L"crauth" )
+	RENDER_RTF_INT( m_nCrDate,		sResult, L"crdate" )
+
+	if ( m_nRevised != PROP_DEF) sResult += L"\\revised";
+
+	RENDER_RTF_INT( m_nRevauth,		sResult, L"revauth" )
+	RENDER_RTF_INT( m_nRevdttm,		sResult, L"revdttm" )
+
+	if ( m_nDeleted != PROP_DEF) sResult += L"\\deleted";
+	RENDER_RTF_INT( m_nRevauthDel,	sResult, L"revauthdel" )
+	RENDER_RTF_INT( m_nRevdttmDel,	sResult, L"revdttmdel" )
+
+	if (m_pOldCharProp)
+	{
+		sResult += "{\\*\\oldcprops";
+		sResult += m_pOldCharProp->RenderToRtf(oRenderParameter);
+		sResult += L"}";
+	}
 	return sResult;
 }
 
@@ -1891,10 +1909,10 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		RtfDocument* poRtfDocument = static_cast<RtfDocument*>(  oRenderParameter.poDocument );
 		RtfListOverrideProperty oListOverrideProperty;
 		//ищем по override table
-		if( true == poRtfDocument->m_oListOverrideTabel.GetList( m_nListId, oListOverrideProperty ) )
+		if( true == poRtfDocument->m_oListOverrideTable.GetList( m_nListId, oListOverrideProperty ) )
 		{
 			//Ищем по List Table
-			if( true == poRtfDocument->m_oListTabel.GetList( oListOverrideProperty.m_nListID, oListProperty) )
+			if( true == poRtfDocument->m_oListTable.GetList( oListOverrideProperty.m_nListID, oListProperty) )
 			{
 				//дописываем свойства параграфа firstIndent Indent
 				RtfListLevelProperty poLevelProp ;
@@ -1911,8 +1929,8 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 					{
 						int nIndex = poLevelProp.m_nPictureIndex;
 
-						if( 0 < nIndex && nIndex < poRtfDocument->m_oListTabel.m_aPictureList.GetCount() )
-							sResult +=  poRtfDocument->m_oListTabel.m_aPictureList[nIndex]->RenderToRtf( oRenderParameter );
+						if( 0 < nIndex && nIndex < poRtfDocument->m_oListTable.m_aPictureList.GetCount() )
+							sResult +=  poRtfDocument->m_oListTable.m_aPictureList[nIndex]->RenderToRtf( oRenderParameter );
 					}
 					//ставим tab
 					if( PROP_DEF != poLevelProp.m_nFollow )
@@ -1930,6 +1948,16 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 			}
 		}
 	}
+	RENDER_RTF_INT( m_nPrAuth,		sResult, L"prauth" )
+	RENDER_RTF_INT( m_nPrDate,		sResult, L"prdate" )
+
+	if (m_pOldParagraphProp)
+	{
+		sResult += "{\\*\\oldpprops\\pard";
+		sResult += m_pOldParagraphProp->RenderToRtf(oRenderParameter);
+		sResult += L"}";
+	}
+
 	return sResult;
 }
 CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)

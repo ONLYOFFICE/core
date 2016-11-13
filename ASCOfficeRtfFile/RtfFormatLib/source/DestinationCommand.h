@@ -2146,7 +2146,7 @@ public:
 				RtfShppictReader oShppictReader( *oNewPicture );
 				StartSubReader( oShppictReader, oDocument, oReader );
 				
-				oDocument.m_oListTabel.m_aPictureList.AddItem( oNewPicture );
+				oDocument.m_oListTable.m_aPictureList.AddItem( oNewPicture );
 			}
 			else
 				return false;
@@ -2168,7 +2168,7 @@ public:
 			bool bResult = StartSubReader( oListReader, oDocument, oReader );
 			if( true == bResult )
 			{
-				oDocument.m_oListTabel.AddItem( oListProp );
+				oDocument.m_oListTable.AddItem( oListProp );
 				return true;
 			}
 			else
@@ -2263,7 +2263,7 @@ public:
 			bool bResult = StartSubReader( oListOverrideReader, oDocument, oReader );
 			if( true == bResult )
 			{
-				oDocument.m_oListOverrideTabel.AddItem(oProperty);
+				oDocument.m_oListOverrideTable.AddItem(oProperty);
 				return true;
 			}
 			else

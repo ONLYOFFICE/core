@@ -120,6 +120,8 @@ public:
 	}
 	int Find( T piRend )
 	{
+		//todooo - add map for seach
+
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 			if( m_aArray[i] == piRend )
 				return i;

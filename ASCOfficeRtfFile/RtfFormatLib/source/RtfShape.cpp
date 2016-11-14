@@ -192,12 +192,14 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 	int nRelRotate	= m_nRelRotation;
 
 	if( PROP_DEF != m_nRotation && PROP_DEF != m_nLeft && PROP_DEF != m_nTop &&
-		PROP_DEF != m_nRight && PROP_DEF != m_nBottom )
+		PROP_DEF != m_nRight	&& PROP_DEF != m_nBottom )
 		ToRtfRotation( m_nRotation, m_nLeft, m_nTop, m_nRight, m_nBottom );
 
-	if( PROP_DEF != m_nRelRotation && PROP_DEF != m_nRelLeft && PROP_DEF != m_nRelTop &&
-		PROP_DEF != m_nRelRight && PROP_DEF != m_nRelBottom )
+	if( PROP_DEF != m_nRelRotation	&& PROP_DEF != m_nRelLeft && PROP_DEF != m_nRelTop &&
+		PROP_DEF != m_nRelRight		&& PROP_DEF != m_nRelBottom )
 		ToRtfRotation( m_nRelRotation, m_nRelLeft, m_nRelTop, m_nRelRight, m_nRelBottom );
+
+	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
 	if( st_inline == m_eAnchorTypeShape )
 	{
@@ -299,16 +301,16 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 
 			switch(m_eXAnchor)
 			{
-				case ax_page:	sResult += L"\\shpbxpage";	break;
+				case ax_page:	sResult += L"\\shpbxpage";		break;
 				case ax_margin: sResult += L"\\shpbxmargin";	break;
 				case ax_column: sResult += L"\\shpbxcolumn";	break;
 			}
 			sResult += L"\\shpbxignore";
 			switch(m_eYAnchor)
 			{
-				case ay_page:	sResult += L"\\shpbypage";	break;
+				case ay_page:	sResult += L"\\shpbypage";		break;
 				case ay_margin: sResult += L"\\shpbymargin";	break;
-				case ay_Para:	sResult += L"\\shpbypara";	break;
+				case ay_Para:	sResult += L"\\shpbypara";		break;
 			}
 			sResult += L"\\shpbyignore";
 			RENDER_RTF_INT( m_nZOrderRelative, sResult, L"shpfblwtxt");
@@ -736,9 +738,9 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L"<w:r>";
 		if (!sCharProp .IsEmpty())
 		{
-			sResult += _T("<w:rPr>");
+			sResult += L"<w:rPr>";
 				sResult += sCharProp;
-			sResult += _T("</w:rPr>");
+			sResult += L"</w:rPr>";
 		}
 		sResult += L"<w:pict>";
 	}
@@ -1361,6 +1363,8 @@ CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nRelRotation && PROP_DEF != m_nRelLeft && PROP_DEF != m_nRelTop &&
 		PROP_DEF != m_nRelRight && PROP_DEF != m_nRelBottom )
 		ToRtfRotation( m_nRelRotation, m_nRelLeft, m_nRelTop, m_nRelRight, m_nRelBottom );
+
+	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 
 	if( st_inline == m_eAnchorTypeShape )
 	{

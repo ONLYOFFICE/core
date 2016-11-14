@@ -43,9 +43,12 @@ private:
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElem;
 
 public: 
+	RtfCharProperty										m_oCharProperty;
+
 	OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
 	{
 		m_ooxElem = ooxElem;
+		m_oCharProperty.SetDefault();
 	}
 
 	bool ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath);

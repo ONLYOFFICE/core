@@ -724,6 +724,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\source\RtfParagraph .cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\source\RtfParagraph.h"
 				>
 			</File>

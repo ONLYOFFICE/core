@@ -638,13 +638,15 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nDown,		sResult, L"dn" )
 	RENDER_RTF_BOOL( m_bEmbo,		sResult, L"embo" )
 	RENDER_RTF_INT( m_nCharacterSpacing, sResult, L"expndtw" )
+	
 	if( PROP_DEF != m_nCharacterSpacing )
 		sResult.AppendFormat( L"\\expnd%d", m_nCharacterSpacing / 5  );
 	if( PROP_DEF != m_nFitText )
 		sResult.AppendFormat( L"\\fittext%d", m_nFitText / 5  );
-	RENDER_RTF_INT( m_nFont, sResult, L"f" )
-	//RENDER_RTF_INT( m_nFont2, sResult, L"fittext" )
-	//RENDER_RTF_INT( m_nFont3, sResult, L"fittext" )
+	
+	RENDER_RTF_INT( m_nFont,		sResult, L"f" )
+	//RENDER_RTF_INT( m_nFont2,		sResult, L"fittext" )
+	//RENDER_RTF_INT( m_nFont3,		sResult, L"fittext" )
 	RENDER_RTF_INT( m_nFontSize,	sResult, L"fs" )
 	RENDER_RTF_BOOL( m_bItalic,		sResult, L"i" )
 	RENDER_RTF_BOOL( m_bImprint,	sResult, L"impr" )
@@ -659,16 +661,16 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nComplexScript )
 		sResult.AppendFormat(L"\\fcs%d", m_nComplexScript);
 
-	RENDER_RTF_BOOL( m_bOutline	, sResult, L"outl" )
-	RENDER_RTF_BOOL( m_bScaps	, sResult, L"scaps" )
-	RENDER_RTF_BOOL( m_bShadow	, sResult, L"shad" )
-	RENDER_RTF_BOOL( m_bStrike	, sResult, L"strike" )
-	RENDER_RTF_INT( m_nStriked	, sResult, L"striked" )
-	RENDER_RTF_BOOL( m_bSub		, sResult, L"sub" )
-	RENDER_RTF_BOOL( m_bSuper	, sResult, L"super" )
-	RENDER_RTF_INT( m_bHidden	, sResult, L"v" )
-	RENDER_RTF_INT( m_nHightlited, sResult, L"highlight" )
-	RENDER_RTF_INT( m_nForeColor, sResult, L"cf" )
+	RENDER_RTF_BOOL	( m_bOutline, sResult, L"outl" )
+	RENDER_RTF_BOOL	( m_bScaps	, sResult, L"scaps" )
+	RENDER_RTF_BOOL	( m_bShadow	, sResult, L"shad" )
+	RENDER_RTF_BOOL	( m_bStrike	, sResult, L"strike" )
+	RENDER_RTF_INT	( m_nStriked, sResult, L"striked" )
+	RENDER_RTF_BOOL	( m_bSub	, sResult, L"sub" )
+	RENDER_RTF_BOOL	( m_bSuper	, sResult, L"super" )
+	RENDER_RTF_INT	( m_bHidden	, sResult, L"v" )
+	RENDER_RTF_INT	( m_nHightlited, sResult, L"highlight" )
+	RENDER_RTF_INT	( m_nForeColor, sResult, L"cf" )
 	
 	switch( m_eUnderStyle )
 	{
@@ -702,20 +704,26 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( m_poShading.IsValid() == true )
 		sResult +=  m_poShading.RenderToRtf( oRenderParameter );
 
-	RENDER_RTF_INT( m_nCrAuth,		sResult, L"crauth" )
-	RENDER_RTF_INT( m_nCrDate,		sResult, L"crdate" )
 
-	if ( m_nRevised != PROP_DEF) sResult += L"\\revised";
-
-	RENDER_RTF_INT( m_nRevauth,		sResult, L"revauth" )
-	RENDER_RTF_INT( m_nRevdttm,		sResult, L"revdttm" )
-
-	if ( m_nDeleted != PROP_DEF) sResult += L"\\deleted";
-	RENDER_RTF_INT( m_nRevauthDel,	sResult, L"revauthdel" )
-	RENDER_RTF_INT( m_nRevdttmDel,	sResult, L"revdttmdel" )
+	if ( m_nDeleted != PROP_DEF)
+	{
+		sResult += L"\\deleted";
+		RENDER_RTF_INT( m_nRevauthDel,	sResult, L"revauthdel" )
+		RENDER_RTF_INT( m_nRevdttmDel,	sResult, L"revdttmdel" )
+	}	
+	
+	if ( m_nRevised != PROP_DEF)
+	{
+		sResult += L"\\revised";
+		RENDER_RTF_INT( m_nRevauth,		sResult, L"revauth" )
+		RENDER_RTF_INT( m_nRevdttm,		sResult, L"revdttm" )
+	}
 
 	if (m_pOldCharProp)
 	{
+		RENDER_RTF_INT( m_nCrAuth,		sResult, L"crauth" )
+		RENDER_RTF_INT( m_nCrDate,		sResult, L"crdate" )
+
 		sResult += "{\\*\\oldcprops";
 		sResult += m_pOldCharProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
@@ -1948,11 +1956,14 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 			}
 		}
 	}
-	RENDER_RTF_INT( m_nPrAuth,		sResult, L"prauth" )
-	RENDER_RTF_INT( m_nPrDate,		sResult, L"prdate" )
+
+	m_oCharProperty.RenderToRtf(oRenderParameter);
 
 	if (m_pOldParagraphProp)
 	{
+		RENDER_RTF_INT( m_nPrAuth,		sResult, L"prauth" )
+		RENDER_RTF_INT( m_nPrDate,		sResult, L"prdate" )
+
 		sResult += "{\\*\\oldpprops\\pard";
 		sResult += m_pOldParagraphProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
@@ -2725,15 +2736,16 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 CString RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
+	
 	if( RENDER_TO_RTF_PARAM_NO_WROWD != oRenderParameter.nType )
 		sResult += L"\\trowd";
 
-	RENDER_RTF_INT( m_nIndex, sResult, L"irow" );
-	RENDER_RTF_INT( m_nBandIndex, sResult, L"irowband" );
-	RENDER_RTF_BOOL( m_bLastRow, sResult, L"lastrow" );
-	RENDER_RTF_INT( m_nAutoFit, sResult, L"trautofit" );
-	RENDER_RTF_BOOL( m_bIsHeader, sResult, L"trhdr" );
-	RENDER_RTF_BOOL( m_bKeep, sResult, L"trkeep" );
+	RENDER_RTF_INT	( m_nIndex,		sResult, L"irow" );
+	RENDER_RTF_INT	( m_nBandIndex, sResult, L"irowband" );
+	RENDER_RTF_BOOL	( m_bLastRow,	sResult, L"lastrow" );
+	RENDER_RTF_INT	( m_nAutoFit,	sResult, L"trautofit" );
+	RENDER_RTF_BOOL	( m_bIsHeader,	sResult, L"trhdr" );
+	RENDER_RTF_BOOL	( m_bKeep,		sResult, L"trkeep" );
 
 	switch( m_eJust )
 	{
@@ -2768,6 +2780,13 @@ CString RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	for( int i = 0; i < (int)m_aArray.size(); i++ )
 		sResult +=  m_aArray[i].RenderToRtf(  oRenderParameter  );
+
+	if (m_pOldRowProperty)
+	{
+		sResult += "{\\*\\oldtprops";
+		sResult += m_pOldRowProperty->RenderToRtf(oRenderParameter);
+		sResult += L"}";
+	}
 
 	return sResult;
 }

@@ -77,18 +77,18 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 			pCharProps->m_nDeleted = PROP_DEF;
 		}
 //----------
-		sResult += _T("<w:r>");
+		sResult += L"<w:r>";
 		
 		CString sCharProp = pCharProps->RenderToOOX(oRenderParameter);
 
 		if (!sCharProp .IsEmpty())
 		{
-			sResult += _T("<w:rPr>");
+			sResult += L"<w:rPr>";
 				sResult += sCharProp;
-			sResult += _T("</w:rPr>");
+			sResult += L"</w:rPr>";
 		}
 		
-		sResult.AppendFormat( _T("<w:object w:dxaOrig=\"%d\" w:dyaOrig=\"%d\">"), m_nWidth, m_nHeight );
+		sResult.AppendFormat( L"<w:object w:dxaOrig=\"%d\" w:dyaOrig=\"%d\">", m_nWidth, m_nHeight );
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
@@ -98,8 +98,8 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		oNewRenderParameter.nValue = m_oResultPic->m_nID;
 		sResult += RenderToOOXOnlyOle(oNewRenderParameter);
 
-		sResult += _T("</w:object>");
-		sResult += _T("</w:r>");
+		sResult += L"</w:object>";
+		sResult += L"</w:r>";
 		
 		if (bDelete)sResult += L"</w:del>";
 		if (bInsert)sResult += L"</w:ins>";
@@ -114,71 +114,75 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
 	RtfDocument		* poDocument	= static_cast<RtfDocument*>		(oRenderParameter.poDocument);
 
-	sResult += _T("<o:OLEObject");
+	sResult += L"<o:OLEObject";
 	switch ( m_eOleType )
 	{
-		case ot_link:	sResult += _T(" Type=\"Link\"");	break;
-		default: 		sResult += _T(" Type=\"Embed\"");	break;
+		case ot_link:	sResult += L" Type=\"Link\"";	break;
+		default: 		sResult += L" Type=\"Embed\"";	break;
 	}
-    sResult += _T(" ProgID=\"") + m_sOleClass + _T("\"");
-    sResult.AppendFormat( _T(" ShapeID=\"_x0000_s%d\""), poDocument->GetShapeId( oRenderParameter.nValue ) );
-	sResult += _T(" DrawAspect=\"Content\"");
-    sResult += _T(" ObjectID=\"") + poDocument->m_oIdGenerator.Generate_OleId() + _T("\"");
+    sResult += L" ProgID=\"" + m_sOleClass + L"\"";
+    sResult.AppendFormat( L" ShapeID=\"_x0000_s%d\"", poDocument->GetShapeId( oRenderParameter.nValue ) );
+	sResult += L" DrawAspect=\"Content\"";
+    sResult += L" ObjectID=\"" + poDocument->m_oIdGenerator.Generate_OleId() + L"\"";
 
-	CString sExtension	= _T("bin");
-	CString sMime		= _T("application/vnd.openxmlformats-officedocument.oleObject");
+	CString sExtension	= L"bin";
+	CString sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
 	
 	CString sFilenameRels;
-    sFilenameRels.AppendFormat( _T("oleObject%d."), poDocument->m_oIdGenerator.Generate_OleIndex());
+    sFilenameRels.AppendFormat( L"oleObject%d.", poDocument->m_oIdGenerator.Generate_OleIndex());
 	sFilenameRels += sExtension;
 	
-	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("embeddings");
+	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );
 	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
-	sFilenameRels = _T("embeddings/") + sFilenameRels;
+	sFilenameRels = L"embeddings/" + sFilenameRels;
 
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
-    CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"), sFilenameRels);
-    sResult += _T(" r:id=\"") + srId + _T("\"");
-	sResult += _T("/>");
+    CString srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", sFilenameRels);
+    
+	sResult += L" r:id=\"" + srId + L"\"";
+	sResult += L"/>";
 	return sResult;
 }
 
 CString RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 {
-	if( !IsValid() ) return _T("");
+	if( !IsValid() ) return L"";
 
-	CString sResult = _T("{\\object");
+	CString sResult;
+	
+	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
+	sResult += L"{\\object";
 	
 	if( PROP_DEF != m_eOleType )
 	{
 		switch( m_eOleType )
 		{
-			case ot_emb:	sResult += _T("\\objemb");	break;
-			case ot_link:	sResult += _T("\\objlink");	break;
+			case ot_emb:	sResult += L"\\objemb";		break;
+			case ot_link:	sResult += L"\\objlink";	break;
 		}
 	}
-	RENDER_RTF_INT( m_nWidth, sResult, _T("objw") );
-	RENDER_RTF_INT( m_nHeight, sResult, _T("objh") );
+	RENDER_RTF_INT( m_nWidth, sResult, L"objw" );
+	RENDER_RTF_INT( m_nHeight, sResult, L"objh" );
 
 	if( !m_sOleClass.IsEmpty() )
-        sResult += _T("{\\*\\objclass ") + m_sOleClass + _T("}");
+        sResult += L"{\\*\\objclass " + m_sOleClass + L"}";
 	
 	if( !m_sOleFilename.IsEmpty() )
     {
         CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
-        sResult += _T("{\\*\\objdata ") + str + _T("}");
+        sResult += L"{\\*\\objdata " + str + L"}";
     }
 	if( NULL != m_oResultPic )
 	{
         CString str = m_oResultPic->RenderToRtf( oRenderParameter );
-        sResult += _T("{\\result \\pard\\plain") + str + _T("}");
+        sResult += L"{\\result \\pard\\plain" + str + L"}";
 	}
-	sResult += _T("}");
+	sResult += L"}";
 	return sResult;
 }
 

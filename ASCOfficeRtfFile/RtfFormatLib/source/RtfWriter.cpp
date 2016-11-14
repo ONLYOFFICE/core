@@ -152,7 +152,7 @@ bool RtfWriter::SaveByItem()
 								&&	!( m_oDocument[0].props->GetCount() == 0 
 									&& m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
 		{
-			sRtf += _T("\\par");
+			sRtf += L"\\par";
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
 		}
         RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
@@ -279,56 +279,56 @@ CString RtfWriter::CreateRtfStart()
 	oRenderParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
 
 	CString sResult;
-	sResult += _T("{\\rtf1\\ulc1");
+	sResult += L"{\\rtf1\\ulc1";
 	sResult += m_oDocument.m_oProperty.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter );
 //---------- test 	
 	CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
 	if( false == sDefCharProp.IsEmpty() )
-		sResult += _T("{\\*\\defchp ") + sDefCharProp + _T("}");
+		sResult += L"{\\*\\defchp " + sDefCharProp + L"}";
 	CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
 	if( false == sDefParProp.IsEmpty() )
-		sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
+		sResult += L"{\\*\\defpap " + sDefParProp+ L"}";
 	sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter );
 //---------- test 	
 	sResult += m_oDocument.m_oListTable.RenderToRtf			( oRenderParameter );
 	sResult += m_oDocument.m_oListOverrideTable.RenderToRtf	( oRenderParameter );
 	sResult += m_oDocument.m_oRevisionTable.RenderToRtf		( oRenderParameter );
 	sResult += m_oDocument.m_oInformation.RenderToRtf		( oRenderParameter );
-	sResult += _T("\\fet2");//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
+	sResult += L"\\fet2";//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
 	
 	CString sFootnote;
 	if( NULL != m_oDocument.m_oFootnoteSep )
 	{
 		sFootnote = m_oDocument.m_oFootnoteSep->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\ftnsep ") + sFootnote + _T("}");
+            sResult += L"{\\*\\ftnsep " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oFootnoteCon )
 	{
 		sFootnote = m_oDocument.m_oFootnoteCon->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\ftnsepc ") + sFootnote + _T("}");
+            sResult += L"{\\*\\ftnsepc " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oEndnoteSep )
 	{
 		sFootnote = m_oDocument.m_oEndnoteSep->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\aftnsep ") + sFootnote + _T("}");
+            sResult += L"{\\*\\aftnsep " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oEndnoteCon )
 	{
 		sFootnote = m_oDocument.m_oEndnoteCon->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\aftnsepc ") + sFootnote + _T("}");
+            sResult += L"{\\*\\aftnsepc " + sFootnote + L"}";
 	}
 
-	sResult += _T("\n\n");
+	sResult += L"\n\n";
 	return sResult;
 }
 
 CString RtfWriter::CreateRtfEnd( )
 {
-	return _T("\n}\n");
+	return L"\n}\n";
 }

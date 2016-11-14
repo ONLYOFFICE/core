@@ -40,15 +40,17 @@
 class OOXParagraphReader
 {
 private:
-	//OOXRunReader					 m_oRunReader; //???? 
 	OOX::Logic::CParagraph								*m_ooxParagraph;
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElement;
 public: 
-	
+	RtfCharProperty										m_oCharProperty;
+
 	OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph)
 	{
 		m_ooxElement	= NULL; 
 		m_ooxParagraph	= ooxParagraph;
+		
+		m_oCharProperty.SetDefault();
 	}
 	OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement)
 	{

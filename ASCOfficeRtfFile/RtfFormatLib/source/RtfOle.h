@@ -61,7 +61,7 @@ public:
 	}
 	bool IsValid()
 	{
-        return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && _T("") != m_sOleFilename;
+        return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && L"" != m_sOleFilename;
                 /*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
@@ -86,7 +86,7 @@ public:
 		
 		RELEASEOBJECT( m_piStorage ); 
 		Utils::RemoveDirOrFile( m_sOleFilename );
-		m_sOleFilename = _T("");
+		m_sOleFilename = L"";
 
 		m_oCharProperty.SetDefault();
 	}

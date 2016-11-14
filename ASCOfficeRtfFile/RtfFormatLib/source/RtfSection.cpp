@@ -511,6 +511,16 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 		sResult += L"\\par";
 		sResult += L"}";
 	}
+
+	RENDER_RTF_INT( m_nSrAuth,		sResult, L"srauth" )
+	RENDER_RTF_INT( m_nSrDate,		sResult, L"srdate" )
+
+	if (m_pOldSectionProp)
+	{
+		sResult += "{\\*\\oldpprops\\pard";
+		sResult += m_pOldSectionProp->RenderToRtf(oRenderParameter);
+		sResult += L"}";
+	}
 	return sResult;
 }
 CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)

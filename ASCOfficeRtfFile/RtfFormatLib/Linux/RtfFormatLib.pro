@@ -48,6 +48,7 @@ SOURCES += \
     ../source/RtfPicture.cpp \
     ../source/RtfOle.cpp \
     ../source/RtfField.cpp \
+    ../source/RtfParagraph.cpp \
     ../source/RtfProperty.cpp \
     ../source/RtfReader.cpp \
     ../source/RtfSection.cpp \

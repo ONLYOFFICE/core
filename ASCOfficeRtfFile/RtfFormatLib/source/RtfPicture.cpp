@@ -31,6 +31,7 @@
  */
 #include "RtfPicture.h"
 #include "Writer/OOXWriter.h"
+#include "RtfWriter.h"
 #include "Utils.h"
 
 CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)

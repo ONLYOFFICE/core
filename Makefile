@@ -110,7 +110,7 @@ DJVUFILE_PRO := $(abspath DjVuFile/DjVuFile.pro)
 XPSFILE_PRO := $(abspath XpsFile/XpsFile.pro)
 HTMLFILE_PRO := $(abspath HtmlFile/HtmlFile.pro)
 UNICODECONVERTER_PRO := $(abspath UnicodeConverter/UnicodeConverter.pro)
-ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDocumentsCore_linux.pro)
+ASCDOCUMENTSCORE_PRO := $(abspath ../desktop-sdk/ChromiumBasedEditors/lib/AscDocumentsCore_$(PLATFORM).pro)
 LIBXML_PRO := $(abspath DesktopEditor/xml/build/qt/libxml2.pro)
 LICENSEMANAGER_PRO := $(abspath LicenceManager/linux/LicenseManager.pro)
 

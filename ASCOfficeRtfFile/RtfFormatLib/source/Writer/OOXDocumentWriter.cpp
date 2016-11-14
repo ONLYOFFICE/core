@@ -128,8 +128,8 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.poRels	= poNumberingWriter->m_oRelsWriter.get();
 	oNewParam.nType		= RENDER_TO_OOX_PARAM_NUMBERING;
 	
-	poNumberingWriter->AddNumbering( m_oDocument.m_oListTabel.RenderToOOX(oNewParam) );
-	poNumberingWriter->AddNumbering( m_oDocument.m_oListOverrideTabel.RenderToOOX(oNewParam) );
+	poNumberingWriter->AddNumbering( m_oDocument.m_oListTable.RenderToOOX(oNewParam) );
+	poNumberingWriter->AddNumbering( m_oDocument.m_oListOverrideTable.RenderToOOX(oNewParam) );
 
 	//style.xml
 	OOXStylesWriter* poStylesWriter = static_cast<OOXStylesWriter*>( m_oWriter.m_poStylesWriter );

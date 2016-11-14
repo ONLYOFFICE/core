@@ -44,8 +44,8 @@
 
 #include "datatypes/tablemode.h"
 #include "datatypes/common_attlists.h"
-#include "datatypes/style_ref.h"
 #include "datatypes/tablevisibility.h"
+
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -56,20 +56,20 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-	_CP_OPT(bool)					table_is_sub_table_;
-    _CP_OPT(std::wstring)			table_name_;
-    _CP_OPT(odf_types::style_ref)	table_style_name_;
-	_CP_OPT(std::wstring)			table_template_name_;
+	_CP_OPT(bool)			table_is_sub_table_;
+    _CP_OPT(std::wstring)	table_name_;
+    _CP_OPT(std::wstring)	table_style_name_;
+	_CP_OPT(std::wstring)	table_template_name_;
 
-    bool							table_protected_;		// default false
-    _CP_OPT(std::wstring)			table_protection_key_; 
-    bool							table_print_;			// default true
-    _CP_OPT(std::wstring)			table_print_ranges_;
+	bool					table_protected_;		// default false
+    _CP_OPT(std::wstring)	table_protection_key_; 
+    bool					table_print_;			// default true
+    _CP_OPT(std::wstring)	table_print_ranges_;
 
-	bool							table_use_first_row_styles_;		// default false;
-	bool							table_use_banding_rows_styles_;		//defualt false;
-	bool							table_use_first_column_styles_;		//defualt false;
-	bool							table_use_banding_columns_styles_;	//defualt false;
+	bool					table_use_first_row_styles_;		// default false;
+	bool					table_use_banding_rows_styles_;		//defualt false;
+	bool					table_use_first_column_styles_;		//defualt false;
+	bool					table_use_banding_columns_styles_;	//defualt false;
 
     friend class table_table;    
 };
@@ -82,9 +82,9 @@ public:
 
 public:
     unsigned int					table_number_rows_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)	table_style_name_;
-    _CP_OPT(odf_types::style_ref)	table_default_cell_style_name_;
-    odf_types::table_visibility		table_visibility_; // default Visible
+	_CP_OPT(std::wstring)			table_style_name_;
+    _CP_OPT(std::wstring)			table_default_cell_style_name_;
+    odf_types::table_visibility		table_visibility_;			// default Visible
 
 };
 
@@ -95,10 +95,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    unsigned int								table_number_columns_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)				table_style_name_;
-    _CP_OPT(std::wstring)						table_content_validation_name_;
-    _CP_OPT(std::wstring)						table_formula_;
+    unsigned int				table_number_columns_repeated_; // default 1
+    _CP_OPT(std::wstring)		table_style_name_;
+    _CP_OPT(std::wstring)		table_content_validation_name_;
+    _CP_OPT(std::wstring)		table_formula_;
 
     odf_types::common_value_and_type_attlist	common_value_and_type_attlist_;
 
@@ -247,10 +247,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    unsigned int					table_number_columns_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)	table_style_name_;
-    odf_types::table_visibility		table_visibility_;				// default Visible
-    _CP_OPT(odf_types::style_ref)	table_default_cell_style_name_;
+    unsigned int				table_number_columns_repeated_; // default 1
+    _CP_OPT(std::wstring)		table_style_name_;
+    odf_types::table_visibility	table_visibility_;				// default Visible
+    _CP_OPT(std::wstring)		table_default_cell_style_name_;
     
 };
 

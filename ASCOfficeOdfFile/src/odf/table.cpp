@@ -583,9 +583,24 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wst
     } 
     else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
     {
-        _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
-        elm->add_child_element(Reader, Ns, Name, Context);
-        content_.push_back(elm);
+		bool add_new_no_group = false;
+		if (content_.empty())	add_new_no_group = true;
+		else
+		{
+			if (content_.back()->get_type() != typeTableTableRowNoGroup)
+				add_new_no_group = true;
+		}
+		if (add_new_no_group)
+		{
+			_CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
+			elm->add_child_element(Reader, Ns, Name, Context);
+			content_.push_back(elm);
+		}
+		else
+		{
+			table_rows_no_group* rows_no_group = static_cast<table_rows_no_group*>(content_.back().get());
+			rows_no_group->add_child_element(Reader, Ns, Name, Context);
+		}
    }
     else
         not_applicable_element(L"table-rows-and-groups", Reader, Ns, Name);

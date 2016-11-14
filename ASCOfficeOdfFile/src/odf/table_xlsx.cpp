@@ -80,8 +80,8 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 ///обработка чтилей для роу -
 	size_t Default_Cell_style_in_row_ = 0; 
 
-    const std::wstring rowStyleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
-    const std::wstring defaultCellStyleName = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( style_ref(L"") ).style_name();
+    const std::wstring rowStyleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyleName = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( L"");
 
 	style_instance * instStyle_CellDefault = 
 				Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell,false/*false*/);
@@ -109,8 +109,8 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool skip_next_row = false;
 
-    std::wstring ht = L"";
-    double row_height = 0.0;
+    std::wstring ht		= L"";
+    double row_height	= 0.0;
 
     odf_read_context & odfContext = Context.root()->odf_context();
 
@@ -211,10 +211,10 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (Context.is_empty_row())
 		{
             skip_next_row = true;  
-			if (table_table_row_attlist_.table_number_rows_repeated_ > 0xff00)
+			if (table_table_row_attlist_.table_number_rows_repeated_ > 0xf000)
 				break;//Уведомление_о_вручении.ods (1 лист)
 		}
-		if (content_.size() > 0 && table_table_row_attlist_.table_number_rows_repeated_ > 0xff00)
+		if (content_.size() > 0 && table_table_row_attlist_.table_number_rows_repeated_ > 1000)
 		{
 			table_table_cell * table_cell = dynamic_cast<table_table_cell *>(content_[0].get());
 			if ((table_cell) && (table_cell->table_table_cell_attlist_.table_number_columns_repeated_ > 1000))
@@ -250,6 +250,27 @@ void table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
         table_table_rows_->xlsx_convert(Context);
     else
     {
+		if (table_table_row_.size() > 1)
+		{
+			//check 2 last rows for repeate > 65000 & 1024 
+			table_table_row* row_last	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 1].get());
+			table_table_row* row_last_1	= dynamic_cast<table_table_row*>(table_table_row_[table_table_row_.size() - 2].get());
+
+			if (row_last->table_table_row_attlist_.table_number_rows_repeated_		> 1000 && 
+				row_last_1->table_table_row_attlist_.table_number_rows_repeated_	> 1000 || 
+				row_last_1->table_table_row_attlist_.table_number_rows_repeated_	> 0xf000)
+			{
+				std::wstring style		= row_last->table_table_row_attlist_.table_style_name_.get_value_or(L"");
+				std::wstring style_1	= row_last->table_table_row_attlist_.table_style_name_.get_value_or(L"");
+				
+				if (style == style_1)//check for empty also ????
+				{
+					row_last_1->table_table_row_attlist_.table_number_rows_repeated_ = 1024;
+					table_table_row_.pop_back();
+				}
+			}
+
+		}
    		for (int i = 0; i < table_table_row_.size(); i++)
         {
             table_table_row_[i]->xlsx_convert(Context);
@@ -287,7 +308,7 @@ void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    const std::wstring tableStyleName	= table_table_attlist_.table_style_name_ ? table_table_attlist_.table_style_name_->style_name() : L"";
+    const std::wstring tableStyleName	= table_table_attlist_.table_style_name_.get_value_or(L"");
     const std::wstring tableName		= table_table_attlist_.table_name_.get_value_or(L"");
 
     _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
@@ -389,8 +410,8 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
     std::wostream & strm = Context.current_sheet().cols();
 
     const unsigned int columnsRepeated		= table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring styleName			= table_table_column_attlist_.table_style_name_.get_value_or(style_ref(L"")).style_name();
-    const std::wstring defaultCellStyleName = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring styleName			= table_table_column_attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyleName = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
 
 
     int cMin = 0, cMax = 0;
@@ -447,7 +468,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 					}
 				}
 				_CP_OPT(double) width;
-                const std::wstring colStyleName = table_table_column_attlist_.table_style_name_->style_name();
+                const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get_value_or(L"");
                 if (style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn,false))
                 {
                     if (inst->content())
@@ -471,7 +492,9 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));
                               
 								// see ECMA-376 page 1768
-                                CP_XML_ATTR(L"width", *width);
+                                if (in_width > 0)
+									CP_XML_ATTR(L"width", *width);
+
                                 CP_XML_ATTR(L"customWidth", true);
                                 Context.table_column_last_width(*width);
                             }
@@ -582,7 +605,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     std::wostream & strm = Context.current_sheet().sheetData();
     
 	const std::wstring formula					= table_table_cell_attlist_.table_formula_.get_value_or(L"");
-    const std::wstring styleName				= table_table_cell_attlist_.table_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring styleName				= table_table_cell_attlist_.table_style_name_.get_value_or(L"");
 	const common_value_and_type_attlist & attr	= table_table_cell_attlist_.common_value_and_type_attlist_;
 
  	office_value_type::type	odf_value_type	= office_value_type::Custom;

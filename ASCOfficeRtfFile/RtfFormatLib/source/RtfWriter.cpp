@@ -292,9 +292,10 @@ CString RtfWriter::CreateRtfStart()
 		sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
 	sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter );
 //---------- test 	
-	sResult += m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter );
-	sResult += m_oDocument.m_oListOverrideTabel.RenderToRtf( oRenderParameter );
-	sResult += m_oDocument.m_oInformation.RenderToRtf( oRenderParameter );
+	sResult += m_oDocument.m_oListTable.RenderToRtf			( oRenderParameter );
+	sResult += m_oDocument.m_oListOverrideTable.RenderToRtf	( oRenderParameter );
+	sResult += m_oDocument.m_oRevisionTable.RenderToRtf		( oRenderParameter );
+	sResult += m_oDocument.m_oInformation.RenderToRtf		( oRenderParameter );
 	sResult += _T("\\fet2");//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
 	
 	CString sFootnote;

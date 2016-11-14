@@ -688,6 +688,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\source\RtfField.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\source\RtfField.h"
 				>
 			</File>

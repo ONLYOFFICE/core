@@ -76,7 +76,7 @@ public:
 			if( true == oLevelReader.Parse( oParam, oNewLevel) )
 					oNewList.AddItem( oNewLevel );
 		}
-		oParam.oRtf->m_oListTabel.AddItem( oNewList );
+		oParam.oRtf->m_oListTable.AddItem( oNewList );
 
 		return true;
 	}

@@ -8,6 +8,11 @@ Common/3dParty/icu/win_32
 Common/3dParty/icu/linux_64
 Common/3dParty/icu/linux_32
 Common/3dParty/icu/mac_64
+Common/3dParty/cef/win_64
+Common/3dParty/cef/win_32
+Common/3dParty/cef/linux_64
+Common/3dParty/cef/linux_32
+Common/3dParty/cef/mac_64
 Common/3dParty/v8/v8
 Common/3dParty/v8/depot_tools
 Common/3dParty/v8/win_64

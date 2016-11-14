@@ -27,6 +27,6 @@ if exist "cef_binary" (
 ) else (
     call %UNSIP_PROGRAMM% x "cef_binary.7z"
     mkdir build 
-    copy cef_binary\Release\*  build\ 
-    copy cef_binary\Resources\* build\
+    xcopy /Y /S cef_binary\Release\*  build\ 
+    xcopy /Y /S cef_binary\Resources\* build\
 )

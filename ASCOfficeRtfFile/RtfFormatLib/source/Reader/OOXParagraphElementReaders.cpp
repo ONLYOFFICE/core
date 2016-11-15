@@ -1453,26 +1453,26 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		//oShadingReader.Parse( oParam, oOutputProperty.m_poShading );
 	}
 //-------------------------------------------------------------- 
-	//if (m_ooxRunProps->m_oIns.IsInit())
-	//{
-	//	oOutputProperty.m_nRevised = 1;
-	//
-	//	if (m_ooxRunProps->m_oIns->m_sAuthor.IsInit())
-	//		oOutputProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oIns->m_sAuthor.get2() ) + 1;
-	//	
-	//	if (m_ooxRunProps->m_oIns->m_oDate.IsInit())
-	//		oOutputProperty.m_nRevdttm = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oIns->m_oDate->GetValue()) );
-	//}
-	//if (m_ooxRunProps->m_oDel.IsInit())
-	//{
-	//	oOutputProperty.m_nDeleted = 1;
-	//	
-	//	if (m_ooxRunProps->m_oDel->m_sAuthor.IsInit())
-	//		oOutputProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oDel->m_sAuthor.get2() ) + 1;
+	if (m_ooxRunProps->m_oIns.IsInit())
+	{
+		oOutputProperty.m_nRevised = 1;
+	
+		if (m_ooxRunProps->m_oIns->m_sAuthor.IsInit())
+			oOutputProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oIns->m_sAuthor.get2() ) + 1;
+		
+		if (m_ooxRunProps->m_oIns->m_oDate.IsInit())
+			oOutputProperty.m_nRevdttm = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oIns->m_oDate->GetValue()) );
+	}
+	if (m_ooxRunProps->m_oDel.IsInit())
+	{
+		oOutputProperty.m_nDeleted = 1;
+		
+		if (m_ooxRunProps->m_oDel->m_sAuthor.IsInit())
+			oOutputProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oDel->m_sAuthor.get2() ) + 1;
 
-	//	if (m_ooxRunProps->m_oDel->m_oDate.IsInit())
-	//		oOutputProperty.m_nRevdttmDel = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oDel->m_oDate->GetValue()) );
-	//}
+		if (m_ooxRunProps->m_oDel->m_oDate.IsInit())
+			oOutputProperty.m_nRevdttmDel = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oDel->m_oDate->GetValue()) );
+	}
 
 	if (m_ooxRunProps->m_oRPrChange.IsInit())
 	{

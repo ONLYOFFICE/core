@@ -1470,7 +1470,10 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 			oOutputProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oIns->m_sAuthor.get2() ) + 1;
 		
 		if (m_ooxRunProps->m_oIns->m_oDate.IsInit())
-			oOutputProperty.m_nRevdttm = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oIns->m_oDate->GetValue()) );
+        {
+            std::wstring sVal = string2std_string(m_ooxRunProps->m_oIns->m_oDate->GetValue());
+            oOutputProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
+        }
 	}
 	if (m_ooxRunProps->m_oDel.IsInit())
 	{
@@ -1480,7 +1483,10 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 			oOutputProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oDel->m_sAuthor.get2() ) + 1;
 
 		if (m_ooxRunProps->m_oDel->m_oDate.IsInit())
-			oOutputProperty.m_nRevdttmDel = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oDel->m_oDate->GetValue()) );
+        {
+            std::wstring sVal = string2std_string(m_ooxRunProps->m_oDel->m_oDate->GetValue());
+            oOutputProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
+        }
 	}
 
 	if (m_ooxRunProps->m_oRPrChange.IsInit())

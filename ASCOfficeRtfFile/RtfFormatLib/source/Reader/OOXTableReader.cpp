@@ -102,7 +102,10 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 			oOutputProperty.m_nTrAuth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxTableRowProps->m_oTrPrChange->m_sAuthor.get2() ) + 1;
 		
 		if (m_ooxTableRowProps->m_oTrPrChange->m_oDate.IsInit())
-			oOutputProperty.m_nTrDate = RtfUtility::convertDateTime( string2std_string(m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue()));
+        {
+            std::wstring sVal = string2std_string(m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue());
+            oOutputProperty.m_nTrDate = RtfUtility::convertDateTime( sVal);
+        }
 		
 		RtfRowPropertyPtr props ( new RtfRowProperty() );
 		OOXtrPrReader oTrReader(m_ooxTableRowProps->m_oTrPrChange->m_pTrPr.GetPointer());

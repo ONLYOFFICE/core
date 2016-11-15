@@ -54,6 +54,9 @@ SOURCES += \
     ../source/RtfSection.cpp \
     ../source/RtfShape.cpp \
     ../source/RtfWriter.cpp \
+    ../source/RtfMath.cpp \
+    ../source/Reader/OOXMathReader.cpp \
+    ../source/Reader/OOXDrawingGraphicReader.cpp \
     ../source/Reader/OOXHeaderReader.cpp \
     ../source/Reader/OOXParagraphElementReaders.cpp \
     ../source/Reader/OOXReader.cpp \
@@ -155,10 +158,3 @@ HEADERS += \
     ../source/Writer/OOXThemeWriter.h \
     ../source/Writer/OOXWriter.h \
     ../source/Ole1FormatReader.h
-
-SOURCES += \
-    ../source/RtfMath.cpp \
-    ../source/Reader/OOXMathReader.cpp \
-    ../source/Reader/OOXDrawingGraphicReader.cpp \
-    ../source/RtfParagraph .cpp \
-    ../source/RtfParagraph.cpp

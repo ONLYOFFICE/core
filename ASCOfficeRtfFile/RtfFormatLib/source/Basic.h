@@ -37,7 +37,7 @@
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include <boost/shared_ptr.hpp>
+#include "boost/shared_ptr.hpp"
  
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 

@@ -65,7 +65,10 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 					m_oCharProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( pIns->m_sAuthor.get2() ) + 1;
 				
 				if (pIns->m_oDate.IsInit())
-					m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( string2std_string(pIns->m_oDate->GetValue()));
+                {
+                    std::wstring sVal = string2std_string(pIns->m_oDate->GetValue());
+                    m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
+                }
 
 				ParseElement( oParam, pIns->m_oRun.GetPointer(), rtfMath);
 			}
@@ -77,7 +80,11 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 					m_oCharProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( pDel->m_sAuthor.get2() ) + 1;
 				
 				if (pDel->m_oDate.IsInit())
-					m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( string2std_string(pDel->m_oDate->GetValue()));
+                {
+                    std::wstring sVal = string2std_string(pDel->m_oDate->GetValue());
+
+                    m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
+                }
 				
 				ParseElement( oParam, pDel->m_oRun.GetPointer(), rtfMath);
 			}

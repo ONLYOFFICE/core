@@ -566,7 +566,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     }
     if (fo_font_variant_)
     {
-        _rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"true\" />" );
+        _rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"false\" />" );
     }
     if (style_font_relief_)
     {
@@ -1057,7 +1057,7 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 		}
 		if (fo_font_variant_)
 		{
-			_rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"true\" />" );
+			_rPr << (fo_font_variant_->get_type() == font_variant::SmallCaps ? L"<w:smallCaps w:val=\"true\" />" : L"<w:smallCaps w:val=\"false\" />" );
 		}
 		if (style_font_relief_)
 		{

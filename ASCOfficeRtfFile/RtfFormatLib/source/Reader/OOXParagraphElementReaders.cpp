@@ -1253,7 +1253,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		
 		if (m_ooxParaProps->m_oPPrChange->m_oDate.IsInit())
         {
-            std::wstringn sVal = string2std_string(m_ooxParaProps->m_oPPrChange->m_oDate->GetValue());
+            std::wstring sVal = string2std_string(m_ooxParaProps->m_oPPrChange->m_oDate->GetValue());
             oOutputProperty.m_nPrDate = RtfUtility::convertDateTime( sVal );
         }
 		

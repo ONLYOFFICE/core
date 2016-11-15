@@ -128,7 +128,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					oSubParReader.m_oCharProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( pIns->m_sAuthor.get2() ) + 1;
 				
 				if (pIns->m_oDate.IsInit())
-					oSubParReader.m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( string2std_string(pIns->m_oDate->GetValue()));
+                {
+                    std::wstring sVal = string2std_string(pIns->m_oDate->GetValue());
+                    oSubParReader.m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
+                }
 
 				oSubParReader.Parse2( oParam, oOutputParagraph, oConditionalTableStyle, poStyle);
 			}break;
@@ -144,7 +147,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					oSubParReader.m_oCharProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( pDel->m_sAuthor.get2() ) + 1;
 				
 				if (pDel->m_oDate.IsInit())
-					oSubParReader.m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( string2std_string(pDel->m_oDate->GetValue()));
+                {
+                    std::wstring sVal = string2std_string(pDel->m_oDate->GetValue());
+                    oSubParReader.m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
+                }
 				
 				oSubParReader.Parse2( oParam, oOutputParagraph, oConditionalTableStyle, poStyle);
 			}break;
@@ -1246,7 +1252,10 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			oOutputProperty.m_nPrAuth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxParaProps->m_oPPrChange->m_sAuthor.get2() ) + 1;
 		
 		if (m_ooxParaProps->m_oPPrChange->m_oDate.IsInit())
-			oOutputProperty.m_nPrDate = RtfUtility::convertDateTime( string2std_string(m_ooxParaProps->m_oPPrChange->m_oDate->GetValue()));
+        {
+            std::wstringn sVal = string2std_string(m_ooxParaProps->m_oPPrChange->m_oDate->GetValue());
+            oOutputProperty.m_nPrDate = RtfUtility::convertDateTime( sVal );
+        }
 		
 		RtfParagraphPropertyPtr props( new RtfParagraphProperty() );
 		OOXpPrReader opPrReader(m_ooxParaProps->m_oPPrChange->m_pParPr.GetPointer());
@@ -1480,7 +1489,10 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 			oOutputProperty.m_nCrAuth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxRunProps->m_oRPrChange->m_sAuthor.get2() ) + 1;
 		
 		if (m_ooxRunProps->m_oRPrChange->m_oDate.IsInit())
-			oOutputProperty.m_nCrDate = RtfUtility::convertDateTime( string2std_string(m_ooxRunProps->m_oRPrChange->m_oDate->GetValue()) );
+        {
+            std::wstring sVal = string2std_string(m_ooxRunProps->m_oRPrChange->m_oDate->GetValue());
+            oOutputProperty.m_nCrDate = RtfUtility::convertDateTime( sVal );
+        }
 		
 		OOXrPrReader orPrReader(m_ooxRunProps->m_oRPrChange->m_pRunPr.GetPointer());
 		RtfCharPropertyPtr props( new RtfCharProperty() );
@@ -1928,7 +1940,10 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oOutput.m_nSrAuth = oParam.oRtf->m_oRevisionTable.AddAuthor( m_ooxSectionProperty->m_oSectPrChange->m_sAuthor.get2() ) + 1;
 		
 		if (m_ooxSectionProperty->m_oSectPrChange->m_oDate.IsInit())
-			oOutput.m_nSrDate = RtfUtility::convertDateTime( string2std_string(m_ooxSectionProperty->m_oSectPrChange->m_oDate->GetValue()));
+        {
+            std::wstring sVal = string2std_string(m_ooxSectionProperty->m_oSectPrChange->m_oDate->GetValue());
+            oOutput.m_nSrDate = RtfUtility::convertDateTime( sVal );
+        }
 		
 		RtfSectionPropertyPtr props = RtfSectionPropertyPtr( new RtfSectionProperty() );
 		OOXSectionPropertyReader opPrReader(m_ooxSectionProperty->m_oSectPrChange->m_pSecPr.GetPointer());

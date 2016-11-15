@@ -64,9 +64,9 @@ public:
 					oNewShape->m_nPositionHRelative = 3;
 					oNewShape->m_nPositionVRelative = 3;
 					
-					int nIndex = oParam.oRtf->m_oListTabel.m_aPictureList.GetCount();
+					int nIndex = oParam.oRtf->m_oListTable.m_aPictureList.GetCount();
 					oParam.oReader->m_mapPictureBullet[nID] = nIndex;
-					oParam.oRtf->m_oListTabel.m_aPictureList.AddItem( oNewShape );
+					oParam.oRtf->m_oListTable.m_aPictureList.AddItem( oNewShape );
 				}
 			}
 			if (m_ooxNumbering->m_arrNumPicBullet[i]->m_oDrawing.IsInit())

@@ -64,6 +64,8 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 {
 	if (bySort.empty()) return;
 
+	if (byRow) return;
+
 	CP_XML_WRITER(_Wostream)
 	{			
 		CP_XML_NODE(L"sortState")

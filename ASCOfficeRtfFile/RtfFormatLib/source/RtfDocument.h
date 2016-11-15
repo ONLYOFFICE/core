@@ -57,8 +57,8 @@ public:
 	RtfRevisionTable		m_oRevisionTable;
 	RtfInformation			m_oInformation;
 
-	RtfListTable			m_oListTabel;
-	RtfListOverrideTable	m_oListOverrideTabel;
+	RtfListTable			m_oListTable;
+	RtfListOverrideTable	m_oListOverrideTable;
 
 	RtfParagraphProperty	m_oDefaultParagraphProp;
 	RtfCharProperty			m_oDefaultCharProp;

@@ -468,7 +468,10 @@ std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what
         boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
         boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
 
-        boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+		boost::algorithm::replace_all(inner, L"[", L"KVADRATIN");
+		boost::algorithm::replace_all(inner, L"]", L"KVADRATOUT");
+		
+		boost::algorithm::replace_all(inner, L" ", L"PROBEL");
         boost::algorithm::replace_all(inner, L"'", L"APOSTROF");
 		return inner;
 	}
@@ -478,7 +481,10 @@ std::wstring oox2odf_converter::Impl::convert_scobci(boost::wsmatch const & what
         boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
         boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
 
-        boost::algorithm::replace_all(inner, L" ", L"PROBEL");
+ 		boost::algorithm::replace_all(inner, L"[", L"KVADRATIN");
+		boost::algorithm::replace_all(inner, L"]", L"KVADRATOUT");
+		
+		boost::algorithm::replace_all(inner, L" ", L"PROBEL");
         boost::algorithm::replace_all(inner, L"\"", L"KAVYCHKA");
 		return inner;
 	}
@@ -567,7 +573,10 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
     boost::algorithm::replace_all(res, L"SCOBCAIN", L"(");
     boost::algorithm::replace_all(res, L"SCOBCAOUT", L")");
 
-    boost::algorithm::replace_all(res, L"PROBEL", L" ");
+	boost::algorithm::replace_all(res, L"KVADRATIN", L"[");
+	boost::algorithm::replace_all(res, L"KVADRATOUT", L"]");
+    
+	boost::algorithm::replace_all(res, L"PROBEL", L" ");
 
     boost::algorithm::replace_all(res, L"APOSTROF", L"'");
 

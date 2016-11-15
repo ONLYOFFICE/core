@@ -31,8 +31,6 @@
  */
 #pragma once 
 #include "RtfParagraph.h"
-#include "Writer/OOXWriter.h"
-#include "Writer/OOXRelsWriter.h"
 
 class OOXFieldBegin : public IDocumentElement
 {
@@ -56,39 +54,8 @@ public:
 		
 		m_oCharProperty.SetDefault();
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		sResult += L"{\\field ";
-		RENDER_RTF_BOOL( m_bDirty, sResult, L"flddirty" )
-		RENDER_RTF_BOOL( m_bLock, sResult, L"fldlock" )
-		sResult += L"{\\*\\fldinst";
-		
-		sResult +=  m_oCharProperty.RenderToRtf(oRenderParameter);
-		return sResult;
-	}
-	
-	CString RenderToOOX(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		
-		sResult +=  L"<w:r>";
-			CString props = m_oCharProperty.RenderToOOX(oRenderParameter);
-			if (props.IsEmpty())
-			{
-				sResult +=  L"<w:rPr>";
-					sResult += props;
-				sResult +=  L"</w:rPr>";
-			}
-			
-			sResult +=  L"<w:fldChar w:fldCharType=\"separate\"";
-				RENDER_OOX_INT_ATTRIBUTE( m_bDirty, sResult, L"dirty" )
-				RENDER_OOX_INT_ATTRIBUTE( m_bLock, sResult, L"fldLock" )
-			sResult +=  L"/>";
-		sResult +=  L"</w:r>";
-		
-		return sResult;
-	}
+	CString RenderToRtf(RenderParameter oRenderParameter);	
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 class OOXFieldInsertText : public IDocumentElement
 {
@@ -106,26 +73,7 @@ public:
 		else
 			return L"";
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
-	{
-		if( NULL != m_oText )
-		{
-			CString sResult;
-			sResult += L"<w:r>";
-			sResult += L"<w:instrText>";
-			
-			oRenderParameter.nType	= RENDER_TO_RTF_PARAM_CHAR;
-			oRenderParameter.nValue	= RENDER_TO_RTF_PARAM_NO_PAR;
-			
-			sResult += m_oText->RenderToOOX( oRenderParameter );
-			
-			sResult +=  L"</w:instrText>";
-			sResult += L"</w:r>";
-			return sResult;
-		}
-		else
-			return L"";
-	}
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class OOXFieldSeparate : public IDocumentElement
@@ -165,6 +113,32 @@ public:
 };
 
 
+
+class RtfFieldInst : public IDocumentElement
+{
+public:
+
+	void SetDefaultRtf()
+	{
+		SetDefault();
+	}
+	void SetDefaultOOX()
+	{
+		SetDefault();
+	}
+	void SetDefault()
+	{
+		m_pTextItems = TextItemContainerPtr( new TextItemContainer() );
+	}
+
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
+
+	RtfCharProperty			m_oCharProperty;
+	TextItemContainerPtr	m_pTextItems;
+};
+typedef boost::shared_ptr<RtfFieldInst>	RtfFieldInstPtr;
+
 class RtfField : public IDocumentElement
 {
 public: 
@@ -178,10 +152,12 @@ public:
 	};
 
 	_FieldMode				m_eMode;
-	TextItemContainerPtr	m_oInsert;
 	bool					m_bReferenceToEndnote;
 	CString					m_sData;
-	TextItemContainerPtr	m_oResult;
+	
+	RtfFieldInstPtr			m_pInsert;
+	RtfFieldInstPtr			m_pResult;
+	
 	bool					m_bTextOnly;
 	RtfCharProperty			m_oCharProperty;
 
@@ -215,190 +191,16 @@ public:
 		m_bTextOnly				= false;
 		m_sData					= L"";
 
-		m_oInsert				= TextItemContainerPtr( new TextItemContainer() );
-		m_oResult				= TextItemContainerPtr( new TextItemContainer() );
-
+		m_pResult				= RtfFieldInstPtr(new RtfFieldInst());
+		m_pInsert				= RtfFieldInstPtr(new RtfFieldInst());
+		
 		m_oCharProperty.SetDefault();
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter)
-	{
-		CString sResult;
-		sResult += L"{\\field ";
-		
-		if( fm_none != m_eMode )
-		{
-			switch( m_eMode )
-			{
-				case fm_flddirty:	sResult += L"{\\flddirty ";	break;
-				case fm_fldedit:	sResult += L"{\\fldedit ";	break;
-				case fm_fldlock:	sResult += L"{\\fldlock ";	break;
-				case fm_fldpriv:	sResult += L"{\\fldpriv ";	break;
-			}	
-		}
-		sResult += L"{\\*\\fldinst ";
-		RenderParameter oNewParam = oRenderParameter;
-		oNewParam.nType		= RENDER_TO_RTF_PARAM_PLAIN;//RENDER_TO_RTF_PARAM_CHAR;
-		oNewParam.nValue	= RENDER_TO_RTF_PARAM_NO_PAR;
-		
-		sResult += m_oInsert->RenderToRtf( oNewParam );
-		
-		if( true == m_bReferenceToEndnote )
-			sResult +=  L"\\fldalt";
-
-		if( !m_sData.IsEmpty() )
-            sResult += L"{\\*\\datafield " + m_sData + L"}";
-		
-		sResult += L"}";
-
-        CString str = m_oResult->RenderToRtf( oRenderParameter ) ;
-        sResult += L"{\\fldrslt " + str + L"}";
-		sResult += L"}";
-		return sResult;
-	}
-
-	CString RenderToOOX(RenderParameter oRenderParameter)
-	{
-		RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
-		OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
-		
-		CString sResult;
-		
-		if( true == m_bTextOnly )
-		{
-			RenderParameter oNewParam	= oRenderParameter;
-			oNewParam.nType				= RENDER_TO_OOX_PARAM_RUN;
-
-			sResult += m_oResult->RenderToOOX(oNewParam);
-		}
-		else
-		{
-			bool bInsert = false;
-			bool bDelete = false;
-
-			if (m_oCharProperty.m_nRevised != PROP_DEF)
-			{
-				bInsert = true;
-				
-				CString sAuthor = m_oCharProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauth] : L"";
-				CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttm).c_str());
-				
-				sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
-				m_oCharProperty.m_nRevised = PROP_DEF;
-			}
-			if (m_oCharProperty.m_nDeleted != PROP_DEF)
-			{
-				bDelete = true;
-				
-				CString sAuthor = m_oCharProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_oCharProperty.m_nRevauthDel ] : L"";
-				CString sDate(RtfUtility::convertDateTime(m_oCharProperty.m_nRevdttmDel).c_str());
-				
-				sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
-				m_oCharProperty.m_nDeleted = PROP_DEF;
-			}
-			//поверяем на наличие гиперссылки
-			RenderParameter oNewParam	= oRenderParameter;
-			oNewParam.nType				= RENDER_TO_OOX_PARAM_PLAIN;
-			
-			CString sInsertText = m_oInsert->RenderToOOX( oNewParam );
-			
-			int nIndex = sInsertText.Find( L"HYPERLINK" );			
-			if( -1 != nIndex )
-			{
-				CString sHyperlink = sInsertText;
-                sHyperlink.Delete( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );
-
-				int nSplash = sHyperlink.Find( L"\\" );
-				if (nSplash > 0)
-				{
-					sHyperlink = sHyperlink.Left(nSplash);
-				}
-		
-			//оставляем только одну ссылку
-				sHyperlink.Remove( '\"' );
-				sHyperlink.Trim();
-			//заменяем пробелы на %20
-				sHyperlink.Replace( L" ", L"%20" );
-
-			//добавляем в rels
-				OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );
-				CString sId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", Utils::PrepareToXML( sHyperlink ), false );
-			//добавляем гиперссылку в документ
-
-
-                sResult += L"<w:hyperlink r:id=\"" + sId + L"\" >";
-				oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-				
-				sResult += m_oResult->RenderToOOX(oNewParam);
-				sResult += L"</w:hyperlink>";
-			}
-			else
-			{
-				nIndex = sInsertText.Find( L"PRIVATE" );
-				if( m_oResult->GetCount() <= 1 && nIndex < 0)
-				{
-					RenderParameter oNewParametr	= oRenderParameter;
-					oNewParametr.nType				= RENDER_TO_OOX_PARAM_PLAIN;
-					//sResult += L"<w:r>");
-
-                    CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ).Trim();
-                    
-					sResult += L"<w:fldSimple w:instr=\"";
-					sResult += str;
-					sResult += L"\">";
-					
-					RenderParameter oNewParam	= oRenderParameter;
-					oNewParam.nType				= RENDER_TO_OOX_PARAM_RUN;
-					
-					sResult += m_oResult->RenderToOOX(oNewParam);
-					sResult.AppendFormat(L"</w:fldSimple>");
-					//sResult += L"</w:r>");
-				}
-				else
-				{
-				//так добавляются лишние параграфы
-					RenderParameter oNewParametr	= oRenderParameter;
-					oNewParametr.nType				= RENDER_TO_OOX_PARAM_PLAIN;
-
-					CString props = m_oCharProperty.RenderToOOX(oRenderParameter);
-					if (!props.IsEmpty()) props = L"<w:rPr>" + props + L"</w:rPr>";
-
-                    sResult += L"<w:r>";
-					if (!props.IsEmpty())	
-						sResult += props;
-						sResult += L"<w:fldChar w:fldCharType=\"begin\"/>";
-					sResult += L"</w:r>";
-
-                    CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) );
-
-                    sResult += L"<w:r>";
-					if (!props.IsEmpty())	
-						sResult += props;
-						sResult += L"<w:instrText xml:space=\"preserve\">";
-					sResult += str;
-					sResult += L"</w:instrText></w:r>";
-					
-					sResult += L"<w:r>";
-					if (!props.IsEmpty())	
-						sResult += props;
-						sResult += L"<w:fldChar w:fldCharType=\"separate\"/></w:r>";
-					//заканчиваем этот параграф
-					sResult += L"</w:p>";
-					
-					//пишем параграфы содержания					
-					oNewParametr.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-					sResult += m_oResult->RenderToOOX(oNewParametr);
-					//заканчиваем Field
-					sResult += L"<w:p>";
-					sResult += L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
-				}
-			}
-			if (bDelete)sResult += L"</w:del>";
-			if (bInsert)sResult += L"</w:ins>";
-		}
-		return sResult;
-	}
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
 };
+
 typedef boost::shared_ptr<RtfField>				RtfFieldPtr;
 typedef boost::shared_ptr<OOXFieldBegin>		OOXFieldBeginPtr;
 typedef boost::shared_ptr<OOXFieldInsertText>	OOXFieldInsertTextPtr;

@@ -91,39 +91,51 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 	if (uri.empty()) return L"";
 
 	std::wstring sExt;
-	int n = uri.rfind(L".");
-	if (n>0) sExt = uri.substr(n);
-	else if (n==0)
+	std::wstring f_name = odf_packet_ + FILE_SEPARATOR_STR + uri;
+
+	sExt = detectImageFileExtension(f_name);	//4EA0AA6E-479D-4002-A6AA-6D6C88EC6D65.odt - image - "opentbs_added_1.phpxvkeg" = png
+	
+	if (sExt.empty())
 	{
-		//тута скорее всего OleReplacement
-		n = uri.find(L"ObjectReplacements");
-		if (n>=0)
+		int n = uri.find(L"ObjectReplacements");
+		if (n >= 0)
 		{
-			CFile file;
-
-			CString f_name = std_string2string(odf_packet_) + std_string2string(uri.substr(1,uri.length()-1));
-			if (file.OpenFile(f_name) == S_OK)
-			{
-				BYTE buffer[128];
-				int buffer_size = 128;
-				
-				file.ReadFile(buffer, buffer_size);
-				file.CloseFile();
-				
-				CImageFileFormatChecker image_checker;
-				sExt = image_checker.DetectFormatByData(buffer, buffer_size);
-
-				if (sExt.length() > 0) sExt = std::wstring(L".") + sExt;
-			}
-
+			f_name = odf_packet_ + uri.substr(1, uri.length() - 1);
+			sExt = detectImageFileExtension(f_name);
+		}
+		
+		if (sExt.empty())
+		{
+			//то что есть .. 
+			int n = uri.rfind(L".");
+			if (n > 0) 
+				sExt = uri.substr(n);
 		}
 	}
-	//todooo проверить
    
 	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }
 
+std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
+{
+	CFile file;
 
+	std::wstring sExt;
+	if (file.OpenFile(std_string2string(fileName)) == S_OK)
+	{
+		BYTE buffer[128];
+		int buffer_size = 128;
+		
+		file.ReadFile(buffer, buffer_size);
+		file.CloseFile();
+		
+		CImageFileFormatChecker image_checker;
+		sExt = image_checker.DetectFormatByData(buffer, buffer_size);
+
+		if (!sExt.empty()) sExt = std::wstring(L".") + sExt;
+	}
+	return sExt;
+}
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
@@ -149,6 +161,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	
     std::wstring inputPath = isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath = isMediaInternal ? ( sub_path + inputFileName) : href;
+	
 	if ( type == typeChart)outputPath= outputPath + L".xml";
 
 	std::wstring id;
@@ -176,7 +189,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 			{
 				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}
-
+//------------------------------------------------
 			id = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image+1);
 			count_image++;
 		}

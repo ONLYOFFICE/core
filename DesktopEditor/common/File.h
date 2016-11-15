@@ -504,8 +504,8 @@ namespace NSFile
 					code -= 0x10000;
 					code &= 0xFFFFF;
 					
-					USHORT us1 = 0xD800 | ((code >> 5) & 0x1F);
-					USHORT us2 = 0xDC00 | (code & 0x1F);
+					USHORT us1 = 0xD800 | ((code >> 10) & 0x03FF);
+					USHORT us2 = 0xDC00 | (code & 0x03FF);
 
 					memcpy(pCodesCur, &us1, 2);
 					pCodesCur += 2;

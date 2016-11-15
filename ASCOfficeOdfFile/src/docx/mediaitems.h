@@ -85,10 +85,11 @@ public:
     items_array & items() { return items_; }
 
 private:
-	std::wstring create_file_name(const std::wstring & uri, RelsType type, size_t Num);
-
-    items_array items_;
-    std::wstring odf_packet_;
+	std::wstring create_file_name			(const std::wstring & uri, RelsType type, size_t Num);
+	std::wstring detectImageFileExtension	(std::wstring &fileName);
+    
+	items_array		items_;
+    std::wstring	odf_packet_;
 
 };
 

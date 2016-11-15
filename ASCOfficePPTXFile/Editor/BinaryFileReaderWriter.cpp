@@ -634,59 +634,7 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteStringW(const WCHAR* sBuffer)
 	{
-		_INT32 lSize = __wstrlen(sBuffer);
-
-        _INT32 lSizeMem =0;
-
-        if (sizeof(wchar_t) == 4)
-        {
-            lSizeMem = lSize * sizeof(UTF16);
-
-            CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-#ifdef _IOS
-            memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
-#else
-            *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
-#endif
-            m_lPosition += UINT32_SIZEOF;
-            m_pStreamCur += UINT32_SIZEOF;
-
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-            }
-        }
-        else
-        {
-            lSizeMem = lSize * sizeof(wchar_t);
-
-            CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-#ifdef _IOS
-            memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
-#else
-            *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
-#endif
-            m_lPosition += UINT32_SIZEOF;
-            m_pStreamCur += UINT32_SIZEOF;
-
-            memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        }
-
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
+		_WriteStringWithLength(sBuffer, __wstrlen(sBuffer), true);
     }
 	void CBinaryFileWriter::WriteStringWStd(const std::wstring& sBuffer)
 	{
@@ -729,122 +677,16 @@ namespace NSBinPptxRW
 	}
     void CBinaryFileWriter::WriteStringW2(const WCHAR* sBuffer)
     {
-        if (sizeof(wchar_t) == 4)
-        {
-            WriteStringW2_4(sBuffer);
-        }else
-        {
-            WriteStringW2_2(sBuffer);
-        }
+		_WriteStringWithLength(sBuffer, __wstrlen(sBuffer), false);
     }
-    void CBinaryFileWriter::WriteStringW2_2(const WCHAR* sBuffer)
-    {
-        _INT32 lSize = __wstrlen(sBuffer);
-        _INT32 lSizeMem = lSize * sizeof(UTF16);
-
-        CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-#ifdef _IOS
-        memcpy(m_pStreamCur, &lSize, sizeof(_UINT32));
-#else
-        *((_UINT32*)m_pStreamCur) = lSize; // EXC_ARM_DA_ALIGN on ios
-#endif
-        m_lPosition += UINT32_SIZEOF;
-        m_pStreamCur += UINT32_SIZEOF;
-
-        memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
-
-    void CBinaryFileWriter::WriteStringW2_4(const WCHAR* sBuffer)
-	{
-		_INT32 lSize = __wstrlen(sBuffer);
-		_INT32 lSizeMem = lSize * sizeof(wchar_t);
-
-		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-#ifdef _IOS
-        memcpy(m_pStreamCur, &lSize, sizeof(_UINT32));
-#else
-        *((_UINT32*)m_pStreamCur) = lSize; // EXC_ARM_DA_ALIGN on ios
-#endif
-		m_lPosition += UINT32_SIZEOF;
-		m_pStreamCur += UINT32_SIZEOF;
-
-        UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-        UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-        // this values will be modificated
-        UTF16 *pStrUtf16_Conv = pStrUtf16;
-        const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-        ConversionResult eUnicodeConversionResult =
-        ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                            , &pStrUtf32[lSize]
-                            , &pStrUtf16_Conv
-                            , &pStrUtf16 [lSize]
-                            , strictConversion);
-
-        if (conversionOK != eUnicodeConversionResult)
-        {
-        }
-        m_lPosition += lSizeMem;
-		m_pStreamCur += lSizeMem;
-	}
 	void CBinaryFileWriter::WriteStringW2(CString& sBuffer)
 	{
 		WriteStringW2(sBuffer.GetBuffer());
 	}
 	void CBinaryFileWriter::WriteStringW3(const WCHAR* sBuffer)
 	{   
-        if (sizeof(wchar_t) == 4)
-        {
-            WriteStringW3_4(sBuffer);
-        }else
-        {
-            WriteStringW3_2(sBuffer);
-        }
+		_WriteString(sBuffer, __wstrlen(sBuffer));
 	}
-    void CBinaryFileWriter::WriteStringW3_2(const WCHAR* sBuffer)
-    {
-        _INT32 lSize = __wstrlen(sBuffer);
-
-        _INT32 lSizeMem = lSize * sizeof(wchar_t);
-
-        CheckBufferSize(lSizeMem);
-
-        memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
-    void CBinaryFileWriter::WriteStringW3_4(const WCHAR* sBuffer)
-    {
-        _INT32 lSize = __wstrlen(sBuffer);
-
-        _INT32 lSizeMem = lSize * sizeof(UTF16);
-
-        CheckBufferSize(lSizeMem);
-
-        UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-        UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-        // this values will be modificated
-        UTF16 *pStrUtf16_Conv = pStrUtf16;
-        const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-        ConversionResult eUnicodeConversionResult =
-        ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                            , &pStrUtf32[lSize]
-                            , &pStrUtf16_Conv
-                            , &pStrUtf16 [lSize]
-                            , strictConversion);
-
-        if (conversionOK != eUnicodeConversionResult)
-        {
-        }
-
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
     void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
 	{
 		WriteStringW3(sBuffer.GetBuffer());
@@ -928,42 +770,8 @@ namespace NSBinPptxRW
 		BYTE bType = (BYTE)type;
 		WriteBYTE(bType);
 
-        _UINT32 lSize = (_UINT32)val.GetLength() , len = lSize;
-        WriteULONG(lSize);
-
-        len <<= 1;
-
 		CString* s = const_cast<CString*>(&val);
-		CheckBufferSize(len);
-
-        WCHAR *buffer = s->GetBuffer();
-
-        if (sizeof(buffer[0]) == 4)
-        {
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) buffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-            }
-        }else
-        {
-
-            memcpy(m_pStreamCur, s->GetBuffer(), len);
-        }
-		m_pStreamCur += len;
-		m_lPosition += len;
+		_WriteStringWithLength(s->GetBuffer(), s->GetLength(), false);
 	}
 	void CBinaryFileWriter::WriteString2(int type, const NSCommon::nullable_string& val)
 	{
@@ -972,42 +780,8 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteString(const CString& val)
 	{
-        _UINT32 lSize = (_UINT32)val.GetLength() , len = lSize;
-        WriteULONG(len);
-
-        len <<= 1;
-
 		CString* s = const_cast<CString*>(&val);
-		CheckBufferSize(len);
-
-        WCHAR *buffer = s->GetBuffer();
-
-        if (sizeof(buffer[0]) == 4)
-        {
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) buffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-            }
-        }else
-        {
-
-            memcpy(m_pStreamCur, s->GetBuffer(), len);
-        }
-		m_pStreamCur += len;
-		m_lPosition += len;
+		_WriteStringWithLength(s->GetBuffer(), s->GetLength(), false);
 	}
 
 	void CBinaryFileWriter::WriteString1Data(int type, const WCHAR* pData, _UINT32 len)
@@ -1015,38 +789,7 @@ namespace NSBinPptxRW
 		BYTE bType = (BYTE)type;
 		WriteBYTE(bType);
 
-		WriteULONG(len);
-
-        _UINT32 lSize = len;
-        len <<= 1;
-
-        CheckBufferSize(len);
-
-        if (sizeof(wchar_t) == 4)
-        {
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) pData;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-            }
-        }else
-        {
-            memcpy(m_pStreamCur, (BYTE*)pData, len);
-        }
-		m_pStreamCur += len;
-		m_lPosition += len;
+		_WriteStringWithLength(pData, len, false);
 	}
 
 	void CBinaryFileWriter::WriteBool1(int type, const bool& val)
@@ -1194,6 +937,54 @@ namespace NSBinPptxRW
         memcpy(*ppArray, this->GetBuffer(), lBinarySize);
         return true;
     }
+	_INT32 CBinaryFileWriter::_WriteString(const WCHAR* sBuffer, _UINT32 lCount)
+	{
+		_INT32 lSizeMem = 0;
+		if (sizeof(wchar_t) == 4)
+		{
+			_INT32 lSizeMemMax = 4 * lCount + 2;//2 - for null terminator
+			CheckBufferSize(lSizeMemMax);
+			NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sBuffer, lCount, m_pStreamCur, lSizeMem);
+		}
+		else
+		{
+			lSizeMem = 2 * lCount;
+			CheckBufferSize(lSizeMem);
+			memcpy(m_pStreamCur, sBuffer, lSizeMem);
+		}
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+		return lSizeMem;
+	}
+	void CBinaryFileWriter::_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte)
+	{
+		CheckBufferSize(UINT32_SIZEOF);
+		//skip size
+		m_lPosition += UINT32_SIZEOF;
+		m_pStreamCur += UINT32_SIZEOF;
+		//write string
+		_INT32 lSizeMem = _WriteString(sBuffer, lCount);
+		//back to size
+		m_lPosition -= lSizeMem;
+		m_pStreamCur -= lSizeMem;
+		m_lPosition -= UINT32_SIZEOF;
+		m_pStreamCur -= UINT32_SIZEOF;
+		//write size
+		if (bByte)
+		{
+			//byte
+			WriteLONG(lSizeMem);
+		}
+		else
+		{
+			//length
+			WriteLONG(lSizeMem / 2);
+		}
+		//skip string
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+	}
+
     /*
 	LPSAFEARRAY CBinaryFileWriter::GetSafearray()
 	{			

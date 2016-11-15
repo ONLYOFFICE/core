@@ -45,6 +45,8 @@
     #include "iconv.h"
 #endif
 
+#include <boost/date_time.hpp>
+
 #define BUF_SIZE 2048
 #define ONE_INCH 2.54
 
@@ -60,7 +62,8 @@
     #define CP_SYMBOL 42
 #endif
 
-#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+#define GETBITS(from, numL, numH)		((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+#define SETBITS(to	, numL, numH, val)	{to &= ~(((1 << (numH - numL + 1)) - 1) << numL); to |= ((val & ((1 << (numH - numL + 1)) - 1)) << numL);}
 
 namespace Strings
 {	
@@ -387,7 +390,7 @@ public:
 		short	Month	= GETBITS(dt, 16, 19);
 		int		Year	= GETBITS(dt, 20, 28) + 1900;
 
-		//to 1899-12-31T05:37:46.66569
+		//to 1899-12-31T05:37:46.66569 - iso_extended_string
 		std::wstring date_str = std::to_wstring(Year) 
 								+ L"-" 
 								+ (Month < 10 ? L"0": L"") + std::to_wstring(Month) 
@@ -400,6 +403,35 @@ public:
 								+ L":00Z";
 
 		return date_str;
+	}
+	static int convertDateTime (std::wstring & dt_)
+	{
+		if ( dt_.empty() ) return PROP_DEF;
+
+		std::string dt(dt_.begin(), dt_.end());
+
+		boost::posix_time::ptime date_time_;
+
+		boost::posix_time::time_input_facet *tif = new boost::posix_time::time_input_facet;
+		tif->set_iso_extended_format();
+		std::istringstream strm(dt);
+		strm.imbue(std::locale(std::locale::classic(), tif));
+		strm >> date_time_;
+
+		short	Min		= date_time_.time_of_day().minutes();	
+		short	Hour	= date_time_.time_of_day().hours();		
+		short	Day		= date_time_.date().day();	
+		short	Month	= date_time_.date().month().as_number();
+		int		Year	= date_time_.date().year() - 1900;	
+
+		int result = 0;
+		SETBITS(result, 0 , 5,  Min);
+		SETBITS(result, 6 , 10, Hour);
+		SETBITS(result, 11, 15, Day);
+		SETBITS(result, 16, 19, Month);
+		SETBITS(result, 20, 28, Year);
+
+		return result;
 	}
 //------------------------------------------------------------------------------------------------------
     class RtfInternalEncoder

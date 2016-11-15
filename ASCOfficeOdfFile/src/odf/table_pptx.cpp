@@ -70,8 +70,8 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.get_table_context().tableData();
 
-    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
-    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( style_ref(L"") ).style_name();
+    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
 
     for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
     {
@@ -160,9 +160,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_table();
 //////////////////////////////////////////////////////////////////
 
-	std::wstring tableStyleName = L"";
-    if (table_table_attlist_.table_style_name_)
-        tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
+	std::wstring tableStyleName = table_table_attlist_.table_style_name_.get_value_or(L"");
     
 	Context.get_table_context().start_table(tableStyleName);	
 	
@@ -295,7 +293,7 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
     std::wostream & _Wostream = Context.get_table_context().tableData();
 
     const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
    
 	Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
@@ -303,7 +301,7 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
     {
         if (table_table_column_attlist_.table_style_name_)
         {
-            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_->style_name();
+            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
           
 			style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,false );
 			if ((inst) && (inst->content()))
@@ -353,7 +351,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
-				style_name = table_table_cell_attlist_.table_style_name_ ? table_table_cell_attlist_.table_style_name_->style_name() : L"";
+				style_name = table_table_cell_attlist_.table_style_name_.get_value_or(L"");
 				if (!style_name.empty())
 				{
 					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell,false);

@@ -50,40 +50,83 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 
 	switch(ooxTypeElement)
 	{
+		case OOX::et_w_ins:
+		case OOX::et_w_del:
+		{
+			RtfCharProperty oCurrentProp = m_oCharProperty; //save to cash
+			OOX::Logic::CMIns * pIns = dynamic_cast<OOX::Logic::CMIns*>(ooxMath);
+			OOX::Logic::CMDel * pDel = dynamic_cast<OOX::Logic::CMDel*>(ooxMath);
+
+			if (pIns)
+			{
+				m_oCharProperty.m_nRevised = 1;
+				
+				if (pIns->m_sAuthor.IsInit())
+					m_oCharProperty.m_nRevauth = oParam.oRtf->m_oRevisionTable.AddAuthor( pIns->m_sAuthor.get2() ) + 1;
+				
+				if (pIns->m_oDate.IsInit())
+                {
+                    std::wstring sVal = string2std_string(pIns->m_oDate->GetValue());
+                    m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
+                }
+
+				ParseElement( oParam, pIns->m_oRun.GetPointer(), rtfMath);
+			}
+			if (pDel)
+			{
+				m_oCharProperty.m_nDeleted = 1;
+
+				if (pDel->m_sAuthor.IsInit())
+					m_oCharProperty.m_nRevauthDel = oParam.oRtf->m_oRevisionTable.AddAuthor( pDel->m_sAuthor.get2() ) + 1;
+				
+				if (pDel->m_oDate.IsInit())
+                {
+                    std::wstring sVal = string2std_string(pDel->m_oDate->GetValue());
+
+                    m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
+                }
+				
+				ParseElement( oParam, pDel->m_oRun.GetPointer(), rtfMath);
+			}
+			m_oCharProperty = oCurrentProp;
+		}break;
 		case OOX::et_m_r:
 		{
-			RtfCharProperty oCurrentProp;
-			oCurrentProp.SetDefaultOOX();
+			RtfCharProperty oCurrentProp = m_oCharProperty; //save to cash
 			
 			OOX::Logic::CMRun *ooxRunMath = dynamic_cast<OOX::Logic::CMRun *>(ooxMath);
 
 			OOX::Logic::CRunProperty *ooxRPr = dynamic_cast<OOX::Logic::CRunProperty *>(ooxRunMath->m_oRPr.GetPointer());
 			OOXrPrReader orPrReader(ooxRPr);
-			orPrReader.Parse( oParam, oCurrentProp );
+			orPrReader.Parse( oParam, m_oCharProperty);
 
-			oCurrentProp = RtfCharProperty();
-			oCurrentProp.SetDefaultOOX();
-			orPrReader.Parse( oParam, oCurrentProp );
 		//-----------------------------------------------------------------------------------
-
 			OOX::Logic::CMText *ooxTextMath = dynamic_cast<OOX::Logic::CMText *>(ooxRunMath->m_oMText.GetPointer());
-			
 			if (ooxTextMath)
 			{
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				RtfCharPtr oChar(new RtfChar);
 				
-				oChar->m_oProperty = oCurrentProp;
+				oChar->m_oProperty = m_oCharProperty;
 				oChar->setText( ooxTextMath->m_sText );
 				rtfMath->m_oVal.AddItem( oChar );
 			}
+			else
+			{
+				bool res = false;
+				if (!res) res = ParseElement(oParam, ooxRunMath->m_oIns.GetPointer(), rtfMath);
+				if (!res) res = ParseElement(oParam, ooxRunMath->m_oDel.GetPointer(), rtfMath);
+
+			}
+			m_oCharProperty = oCurrentProp;
 		}break;
 		case OOX::et_m_t:
-		{//??? не нужно ващето ...
+		{
 			OOX::Logic::CMText *ooxTextMath = dynamic_cast<OOX::Logic::CMText *>(ooxMath);
 			if (ooxTextMath)
 			{
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				RtfCharPtr oChar(new RtfChar);
 				
+				oChar->m_oProperty = m_oCharProperty;
 				oChar->setText( ooxTextMath->m_sText );
 				rtfMath->m_oVal.AddItem( oChar );
 			}

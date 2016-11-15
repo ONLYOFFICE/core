@@ -80,8 +80,8 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 	}
 	if (m_poDocPropsCore)
 	{
-		((OOX::CCore*)m_poDocPropsCore)->SetCreator(_T(""));
-		((OOX::CCore*)m_poDocPropsCore)->SetLastModifiedBy(_T(""));
+		((OOX::CCore*)m_poDocPropsCore)->SetCreator(L"");
+		((OOX::CCore*)m_poDocPropsCore)->SetLastModifiedBy(L"");
 	}
 }
 OOXWriter::~OOXWriter()
@@ -155,7 +155,7 @@ bool OOXWriter::SaveByItemEnd()
 	}				
 	if (m_poDocPropsCore)
 	{
-		((OOX::CCore*)m_poDocPropsCore)->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), pathDocProps.GetDirectory(), oContentTypes);
+		((OOX::CCore*)m_poDocPropsCore)->write(pathDocProps + FILE_SEPARATOR_STR + L"core.xml", pathDocProps.GetDirectory(), oContentTypes);
 		
 		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties", L"docProps/core.xml" );
 		m_oContentTypes.AddContent( L"application/vnd.openxmlformats-package.core-properties+xml", L"/docProps/core.xml" );

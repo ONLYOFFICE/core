@@ -78,7 +78,7 @@ public:
 
 			oNewOverride.m_oOverrideLevels.m_aOverrideLevels.push_back( oOverrideLevel );
 		}
-		oParam.oRtf->m_oListOverrideTabel.AddItem( oNewOverride );
+		oParam.oRtf->m_oListOverrideTable.AddItem( oNewOverride );
 
 		return true;
 	}

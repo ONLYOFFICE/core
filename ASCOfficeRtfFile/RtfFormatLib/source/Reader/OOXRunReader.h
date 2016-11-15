@@ -44,11 +44,14 @@
 class OOXRunReader
 {
 private:
-	OOX::Logic::CRun *m_ooxRun;
+	OOX::Logic::CRun*	m_ooxRun;
 public:
+	RtfCharProperty		m_oCharProperty;
+	
 	OOXRunReader(OOX::Logic::CRun *ooxRun)
 	{
 		m_ooxRun = ooxRun;
+		m_oCharProperty.SetDefault();
 	}
 
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle );

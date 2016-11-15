@@ -45,13 +45,18 @@ SOURCES += \
     ../source/RtfDocument.cpp \
     ../source/RtfGlobalTables.cpp \
     ../source/RtfOldList.cpp \
-    ../source/RtfOle.cpp \
     ../source/RtfPicture.cpp \
+    ../source/RtfOle.cpp \
+    ../source/RtfField.cpp \
+    ../source/RtfParagraph.cpp \
     ../source/RtfProperty.cpp \
     ../source/RtfReader.cpp \
     ../source/RtfSection.cpp \
     ../source/RtfShape.cpp \
     ../source/RtfWriter.cpp \
+    ../source/RtfMath.cpp \
+    ../source/Reader/OOXMathReader.cpp \
+    ../source/Reader/OOXDrawingGraphicReader.cpp \
     ../source/Reader/OOXHeaderReader.cpp \
     ../source/Reader/OOXParagraphElementReaders.cpp \
     ../source/Reader/OOXReader.cpp \
@@ -153,8 +158,3 @@ HEADERS += \
     ../source/Writer/OOXThemeWriter.h \
     ../source/Writer/OOXWriter.h \
     ../source/Ole1FormatReader.h
-
-SOURCES += \
-    ../source/RtfMath.cpp \
-    ../source/Reader/OOXMathReader.cpp \
-    ../source/Reader/OOXDrawingGraphicReader.cpp

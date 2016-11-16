@@ -239,11 +239,11 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:sldMaster")
         {
-			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");        
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");        
-
-            CP_XML_NODE(L"p:cSld")
+			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");
+           
+			CP_XML_NODE(L"p:cSld")
             {
 				CP_XML_STREAM() << slideMasterBackground_.str();
 

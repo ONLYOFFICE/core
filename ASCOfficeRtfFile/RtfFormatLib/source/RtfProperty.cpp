@@ -1931,8 +1931,10 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 					sResult +=  poLevelProp.m_oCharProp.RenderToRtf( oRenderParameter );
 					//пишем текст 
                     CString strLevelProp = poLevelProp.GenerateListText();
-                    CString strChar = RtfChar::renderRtfText( strLevelProp, oRenderParameter.poDocument, NULL );
-                    sResult +=  strChar;
+
+                    RtfCharProperty* pCharProperty = NULL;
+                    sResult +=   RtfChar::renderRtfText( strLevelProp, oRenderParameter.poDocument, pCharProperty );
+
 					//или картинку
 					if( PROP_DEF != poLevelProp.m_nPictureIndex )
 					{

@@ -48,7 +48,8 @@ CString RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 		sResult.AppendFormat(L"\\bkmkcoll%d", nLastColumn);
 	
 	sResult += L" ";
-	sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL );
+    RtfCharProperty* pCharProperty = NULL;
+    sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, pCharProperty );
 	sResult += L"}";
 	return sResult;
 }
@@ -86,8 +87,11 @@ CString RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += L"{\\*\\bkmkend";
 	sResult += L" ";
-	sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL );
-	sResult += L"}";
+
+    RtfCharProperty* pCharProperty = NULL;
+    sResult += RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, pCharProperty );
+
+    sResult += L"}";
 	
 	return sResult;
 }

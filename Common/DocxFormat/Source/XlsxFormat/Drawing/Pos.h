@@ -60,8 +60,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:pos"));
-				WritingStringNullableAttrInt64(L"x", m_oX, m_oX->GetValue());
-				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->GetValue());
+				WritingStringNullableAttrInt64(L"x", m_oX, m_oX->ToEmu());
+				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->ToEmu());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

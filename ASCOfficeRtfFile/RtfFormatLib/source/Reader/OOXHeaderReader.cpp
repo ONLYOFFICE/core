@@ -44,7 +44,7 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, CString sRID, TextItemConta
 	oParam.oReader->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pHdrFtr);
 	
 	OOXTextItemReader oOOXTextItemReader;
-	oOutput = TextItemContainerPtr( new TextItemContainer() );
+	oOutput = TextItemContainerPtr ( new TextItemContainer() );
 	oOOXTextItemReader.m_oTextItems = oOutput;
 
 	for (long i=0; i < pHdrFtr->m_arrItems.size(); i++)

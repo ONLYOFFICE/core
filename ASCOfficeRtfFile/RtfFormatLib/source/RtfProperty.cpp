@@ -725,6 +725,7 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nCrDate,		sResult, L"crdate" )
 
 		sResult += "{\\*\\oldcprops";
+		sResult += L"\\plain";
 		sResult += m_pOldCharProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
 	}

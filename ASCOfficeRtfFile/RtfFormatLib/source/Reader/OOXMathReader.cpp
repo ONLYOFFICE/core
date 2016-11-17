@@ -41,7 +41,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 {
 	if (!ooxMath) return false;
 
-	rtfMath = RtfMathPtr( new RtfMath() );
+	if (!rtfMath) rtfMath = RtfMathPtr( new RtfMath() );
 	if (!rtfMath) return false;
 
 	OOX::EElementType ooxTypeElement = ooxMath->getType();
@@ -814,20 +814,18 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::Logic::CCtrlPr *ooxSubMath = dynamic_cast<OOX::Logic::CCtrlPr *>(ooxMath);
 			if (ooxSubMath)
 			{
+				RtfCharProperty oCurrentProp;
+				oCurrentProp = m_oCharProperty;
+		
+				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+				oChar->m_oProperty = oCurrentProp;
 				OOX::Logic::CRunProperty *ooxRPr = dynamic_cast<OOX::Logic::CRunProperty *>(ooxSubMath->m_oRPr.GetPointer());
 				if (ooxRPr)
 				{
-					RtfCharProperty oCurrentProp;
-					oCurrentProp.SetDefaultOOX();
-					
 					OOXrPrReader orPrReader(ooxRPr);
 					orPrReader.Parse( oParam, oCurrentProp );
-
-					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-					
-					oChar->m_oProperty = oCurrentProp;
-					rtfMath->AddItem( oChar );
 				}
+				rtfMath->AddItem( oChar );
 			}
 		}break;
 		case OOX::et_m_jc:
@@ -908,28 +906,30 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 	//----------------------------------
 			nullable<CString>	sVal;
 			
-			if ((ooxElemBool) && (ooxElemBool->m_val.IsInit()))						sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
-			else if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))				sVal = ooxElemChar->m_val->GetValue();
-			else if ((ooxElemMeasure) && (ooxElemMeasure->m_val.IsInit()))			sVal = ooxElemMeasure->m_val->ToString();
-			else if ((ooxElemInt255) && (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
-			else if ((ooxElemLim) && (ooxElemLim->m_val.IsInit()))					sVal = ooxElemLim->m_val->ToString();
-			else if ((ooxElemUnSignInt) && (ooxElemUnSignInt->m_val.IsInit()))		sVal = ooxElemUnSignInt->m_val->ToString();
-			else if ((ooxElemTopBot) && (ooxElemTopBot->m_val.IsInit()))			sVal = ooxElemTopBot->m_val->ToString();
-			else if ((ooxElemFType) && (ooxElemFType->m_val.IsInit())) 				sVal = ooxElemFType->m_val->ToString();
-			else if ((ooxElemStyle) && (ooxElemStyle->m_val.IsInit()))				sVal = ooxElemStyle->m_val->ToString();
-			else if ((ooxElemShp) && (ooxElemShp->m_val.IsInit()))					sVal = ooxElemShp->m_val->ToString();
-			else if ((ooxElemScript) && (ooxElemScript->m_val.IsInit()))			sVal = ooxElemScript->m_val->ToString();
+			if		((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
+			else if ((ooxElemChar)		&& (ooxElemChar->m_val.IsInit()))			sVal = ooxElemChar->m_val->GetValue();
+			else if ((ooxElemMeasure)	&& (ooxElemMeasure->m_val.IsInit()))		sVal = ooxElemMeasure->m_val->ToString();
+			else if ((ooxElemInt255)	&& (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
+			else if ((ooxElemLim)		&& (ooxElemLim->m_val.IsInit()))			sVal = ooxElemLim->m_val->ToString();
+			else if ((ooxElemUnSignInt)	&& (ooxElemUnSignInt->m_val.IsInit()))		sVal = ooxElemUnSignInt->m_val->ToString();
+			else if ((ooxElemTopBot)	&& (ooxElemTopBot->m_val.IsInit()))			sVal = ooxElemTopBot->m_val->ToString();
+			else if ((ooxElemFType)		&& (ooxElemFType->m_val.IsInit())) 			sVal = ooxElemFType->m_val->ToString();
+			else if ((ooxElemStyle)		&& (ooxElemStyle->m_val.IsInit()))			sVal = ooxElemStyle->m_val->ToString();
+			else if ((ooxElemShp)		&& (ooxElemShp->m_val.IsInit()))			sVal = ooxElemShp->m_val->ToString();
+			else if ((ooxElemScript)	&& (ooxElemScript->m_val.IsInit()))			sVal = ooxElemScript->m_val->ToString();
 			else if ((ooxElemSpacingRule) && (ooxElemSpacingRule->m_val.IsInit()))	sVal = ooxElemSpacingRule->m_val->ToString();
-			else if ((ooxElemXAlign) && (ooxElemXAlign->m_val.IsInit()))			sVal = ooxElemXAlign->m_val->ToString();
-			else if ((ooxElemInteger2) && (ooxElemInteger2->m_val.IsInit()))		sVal = ooxElemInteger2->m_val->ToString();
-			else if ((ooxElemYAlign) && (ooxElemYAlign->m_val.IsInit()))			sVal = ooxElemYAlign->m_val->ToString();
-			else if ((ooxElemBreakBin) && (ooxElemBreakBin->m_val.IsInit()))		sVal = ooxElemBreakBin->m_val->ToString();
+			else if ((ooxElemXAlign)	&& (ooxElemXAlign->m_val.IsInit()))			sVal = ooxElemXAlign->m_val->ToString();
+			else if ((ooxElemInteger2)	&& (ooxElemInteger2->m_val.IsInit()))		sVal = ooxElemInteger2->m_val->ToString();
+			else if ((ooxElemYAlign)	&& (ooxElemYAlign->m_val.IsInit()))			sVal = ooxElemYAlign->m_val->ToString();
+			else if ((ooxElemBreakBin)	&& (ooxElemBreakBin->m_val.IsInit()))		sVal = ooxElemBreakBin->m_val->ToString();
 			else if ((ooxElemBreakBinSub) && (ooxElemBreakBinSub->m_val.IsInit()))	sVal = ooxElemBreakBinSub->m_val->ToString();
 	//----------------------------------------------		
 			
 			if (ooxElemArray)
 			{
 				OOXMathReader oMathReader(ooxElemArray);
+				oMathReader.m_oCharProperty = m_oCharProperty;
+
 				bool res = oMathReader.Parse( oParam, (*rtfMath) );
 			}
 			else if (sVal.IsInit())

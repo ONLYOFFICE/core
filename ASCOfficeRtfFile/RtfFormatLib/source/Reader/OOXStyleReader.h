@@ -265,7 +265,7 @@ public:
 
         if (oOutputStyle == NULL)
 		{
-            oOutputStyle		= RtfStylePtr( new RtfTableStyle() );
+            oOutputStyle		= RtfStylePtr ( new RtfTableStyle() );
 			oOutputStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
 		}
 		RtfStyle::_StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить

@@ -94,6 +94,7 @@ public:
 	}
 
 	void	SetOOXType		(int type);
+	
 	CString RenderToRtf		(RenderParameter oRenderParameter);
 	CString RenderToOOX		(RenderParameter oRenderParameter);
 };

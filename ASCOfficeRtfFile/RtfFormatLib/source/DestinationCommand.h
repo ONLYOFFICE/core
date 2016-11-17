@@ -63,10 +63,10 @@
 #define COMMAND_RTF_SPECIAL_CHAR( pattern, target, command, hasParameter, parameter )\
 		else if( pattern == command  )\
 		{\
-			RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );\
-			oNewChar->m_eType = parameter;\
-			oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;\
-			target->AddItem( oNewChar );\
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );\
+			pNewChar->m_eType = parameter;\
+			pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;\
+			target->AddItem( pNewChar );\
 		}
 //Command не имеет состояний
 #include "math.h"
@@ -830,7 +830,7 @@ public:
 					return true;
 				else if( L"pict" == sCommand && ( L"pib" == m_sPropName  || L"fillBlip" == m_sPropName))
 				{
-					m_oShape.m_oPicture = RtfPicturePtr( new RtfPicture() );
+					m_oShape.m_oPicture = RtfPicturePtr ( new RtfPicture() );
 					RtfPictureReader oPictureReader( oReader, m_oShape );
 					StartSubReader( oPictureReader, oDocument, oReader );
 				}
@@ -965,18 +965,20 @@ public:
 				m_bHeader = false;
 			else
 			{
-				RtfShapeGroupPtr oNewShape = RtfShapeGroupPtr( new RtfShapeGroup() );
-				RtfShapeGroupReader oShapeGroupReader( *oNewShape );
+				RtfShapeGroupPtr	pNewShape			( new RtfShapeGroup() );
+				RtfShapeGroupReader oShapeGroupReader	( *pNewShape );
+
 				StartSubReader( oShapeGroupReader, oDocument, oReader );
-				m_oShapeGroup.AddItem( oNewShape );
+				m_oShapeGroup.AddItem( pNewShape );
 			}
 		}
 		else if( L"shp" == sCommand )
 		{
-			RtfShapePtr oNewShape = RtfShapePtr( new RtfShape() );
-			RtfShapeReader oShapeReader( *oNewShape );
+			RtfShapePtr		pNewShape	( new RtfShape() );
+			RtfShapeReader	oShapeReader( *pNewShape );
+
 			StartSubReader( oShapeReader, oDocument, oReader );
-			m_oShapeGroup.AddItem( oNewShape );
+			m_oShapeGroup.AddItem( pNewShape );
 		}
 		else
 			return RtfShapeReader::ExecuteCommand( oDocument,  oReader, sCommand, hasParameter, parameter);
@@ -1183,7 +1185,7 @@ public:
 				}
 				else
 				{
-					RtfMathPtr oNewMath( new RtfMath() );
+					RtfMathPtr oNewMath ( new RtfMath() );
 					oNewMath->SetRtfName( sCommand );
 					
 					oNewMath->m_bIsVal	= isValMath;
@@ -1194,7 +1196,7 @@ public:
 
 					if (resParseSub && L"mctrlPr" == sCommand)
 					{
-						RtfCharPropertyPtr oNewCharProp( new RtfCharProperty() );
+						RtfCharPropertyPtr oNewCharProp ( new RtfCharProperty() );
 						oNewCharProp->Merge(oSubMathReader.m_oCharProp);
 						oNewMath->AddItem( oNewCharProp );
 					}
@@ -1226,11 +1228,11 @@ public:
 	}
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
-		RtfCharPtr oNewChar( new RtfChar() );
-		oNewChar->m_oProperty.Merge(m_oCharProp);
+		RtfCharPtr pNewChar ( new RtfChar() );
+		pNewChar->m_oProperty.Merge(m_oCharProp);
 
-		oNewChar->setText( sText ); 
-		m_oMath.AddItem( oNewChar );
+		pNewChar->setText( sText ); 
+		m_oMath.AddItem( pNewChar );
 	}
 	CString ExecuteMathProp(RtfDocument& oDocument, CString sCommand, int parameter)
 	{//rtf math properties (int) to oox math properties (string)
@@ -1416,16 +1418,16 @@ private:
 		
 		CString sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
 		
-		m_oField.m_pResult			= RtfFieldInstPtr	( new RtfFieldInst() );
+		m_oField.m_pResult		= RtfFieldInstPtr	( new RtfFieldInst() );
 		
-		RtfParagraphPtr oNewPar		= RtfParagraphPtr	( new RtfParagraph() );
-		RtfCharPtr		oNewChar	= RtfCharPtr		( new RtfChar() );
+		RtfParagraphPtr pNewPar	( new RtfParagraph() );
+		RtfCharPtr		pNewChar( new RtfChar() );
 		
-		oNewChar->setText( sResultSymbol );
-		oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		pNewChar->setText( sResultSymbol );
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
 
-		oNewPar->AddItem( oNewChar );
-		m_oField.m_pResult->m_pTextItems->AddItem( oNewPar );
+		pNewPar->AddItem( pNewChar );
+		m_oField.m_pResult->m_pTextItems->AddItem( pNewPar );
 		m_oField.m_bTextOnly = true;
 	 }
 };
@@ -1511,19 +1513,19 @@ public:
 	{
 		nTargetItap			= PROP_DEF;
 		m_bPar				= false;
-		m_oTextItems		= TextItemContainerPtr( new TextItemContainer() );
 		nCurItap			= 0;				//main document
 		m_eInternalState	= is_normal;
-		m_oCurParagraph		= RtfParagraphPtr(new RtfParagraph());
+		m_oCurParagraph		= RtfParagraphPtr		(new RtfParagraph());
+		m_oTextItems		= TextItemContainerPtr	( new TextItemContainer() );
 	}
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,RtfAbstractReader& oAbstrReader,CString sCommand, bool hasParameter, int parameter);
 	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
 	{
 		m_bPar = false;
-		RtfCharPtr oNewChar( new RtfChar() );
-		oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
-		oNewChar->setText( sText );
-		m_oCurParagraph->AddItem( oNewChar );
+		RtfCharPtr pNewChar ( new RtfChar() );
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		pNewChar->setText( sText );
+		m_oCurParagraph->AddItem( pNewChar );
 	}
 	void AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow );
 	
@@ -1740,7 +1742,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 	public: 
 		RtfStyleReader()
 		{
-			m_oCurStyle = RtfParagraphStylePtr( new RtfParagraphStyle() );
+			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
 			m_eInternalState = is_normal;
 		}
 			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
@@ -1749,7 +1751,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 				{
 					if( true == hasParameter )
 					{
-						m_oCurStyle = RtfParagraphStylePtr( new RtfParagraphStyle() );
+						m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
@@ -1757,7 +1759,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 				{
 					if( true == hasParameter )
 					{
-						m_oCurStyle = RtfCharStylePtr( new RtfCharStyle() );
+						m_oCurStyle = RtfCharStylePtr ( new RtfCharStyle() );
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
@@ -1765,7 +1767,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 				{
 					if( true == hasParameter )
 					{
-						m_oCurStyle = RtfTableStylePtr( new RtfTableStyle() );
+						m_oCurStyle = RtfTableStylePtr ( new RtfTableStyle() );
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
@@ -2141,7 +2143,7 @@ public:
 			}
 			else if( L"shppict" == sCommand )
 			{
-				RtfShapePtr oNewPicture = RtfShapePtr( new RtfShape() );
+				RtfShapePtr oNewPicture = RtfShapePtr ( new RtfShape() );
 				
 				RtfShppictReader oShppictReader( *oNewPicture );
 				StartSubReader( oShppictReader, oDocument, oReader );
@@ -2362,46 +2364,46 @@ public:
 
 		if( NULL == oDocument.m_oFootnoteCon )
 		{
-			oDocument.m_oFootnoteCon		= TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
+			oDocument.m_oFootnoteCon		= TextItemContainerPtr	( new TextItemContainer() );
+			RtfParagraphPtr		pNewPar	( new RtfParagraph() );
+			RtfCharSpecialPtr	pNewChar( new RtfCharSpecial() );
+			pNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
 			
-			oNewPar->AddItem( oNewChar );
-			oDocument.m_oFootnoteCon->AddItem( oNewPar );
+			pNewPar->AddItem( pNewChar );
+			oDocument.m_oFootnoteCon->AddItem( pNewPar );
 			oDocument.m_oProperty.m_aSpecialFootnotes.push_back( 1 );
 		}
 		if( NULL == oDocument.m_oFootnoteSep )
 		{
 			oDocument.m_oFootnoteSep		= TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
+			RtfParagraphPtr		pNewPar	( new RtfParagraph() );
+			RtfCharSpecialPtr	pNewChar( new RtfCharSpecial() );
+			pNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
 			
-			oNewPar->AddItem( oNewChar );
-			oDocument.m_oFootnoteSep->AddItem( oNewPar );
+			pNewPar->AddItem( pNewChar );
+			oDocument.m_oFootnoteSep->AddItem( pNewPar );
 			oDocument.m_oProperty.m_aSpecialFootnotes.push_back( 0 );
 		}
 		if( NULL == oDocument.m_oEndnoteCon )
 		{
 			oDocument.m_oEndnoteCon			= TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
+			RtfParagraphPtr		pNewPar	( new RtfParagraph() );
+			RtfCharSpecialPtr	pNewChar( new RtfCharSpecial() );
+			pNewChar->m_eType				= RtfCharSpecial::rsc_chftnsepc;
 			
-			oNewPar->AddItem( oNewChar );
-			oDocument.m_oEndnoteCon->AddItem( oNewPar );
+			pNewPar->AddItem( pNewChar );
+			oDocument.m_oEndnoteCon->AddItem( pNewPar );
 			oDocument.m_oProperty.m_aSpecialEndnotes.push_back( 1 );
 		}
 		if( NULL == oDocument.m_oEndnoteSep )
 		{
 			oDocument.m_oEndnoteSep			= TextItemContainerPtr( new TextItemContainer() );
-			RtfParagraphPtr		oNewPar		= RtfParagraphPtr( new RtfParagraph() );
-			RtfCharSpecialPtr	oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
+			RtfParagraphPtr		pNewPar	( new RtfParagraph() );
+			RtfCharSpecialPtr	pNewChar( new RtfCharSpecial() );
+			pNewChar->m_eType				= RtfCharSpecial::rsc_chftnsep;
 			
-			oNewPar->AddItem( oNewChar );
-			oDocument.m_oEndnoteSep->AddItem( oNewPar );
+			pNewPar->AddItem( pNewChar );
+			oDocument.m_oEndnoteSep->AddItem( pNewPar );
 			oDocument.m_oProperty.m_aSpecialEndnotes.push_back( 0 );
 		}
 	}

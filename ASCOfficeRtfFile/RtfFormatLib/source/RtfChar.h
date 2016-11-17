@@ -209,7 +209,9 @@ public:
 		return m_sChars;
 	}
     CString RenderToOOX(RenderParameter oRenderParameter);
-    static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
+    
+	static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
+	static CString renderRtfText( CString& sText, void* poDocument, int nCodePage  );
 
     CString RenderToRtf(RenderParameter oRenderParameter);
 private: 

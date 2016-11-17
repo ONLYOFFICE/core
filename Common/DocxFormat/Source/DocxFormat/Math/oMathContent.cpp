@@ -302,7 +302,7 @@ namespace OOX
 				if ( m_oSup.IsInit() )
 					sResult += m_oSup->toXML();
 				
-				sResult += _T("</m:oMathPara>");
+				sResult += _T("</m:nary>");
 
 				return sResult;
 			}

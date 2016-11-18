@@ -57,7 +57,7 @@ public:
 			{
 				OOXShapeReader oShapeReader(m_ooxNumbering->m_arrNumPicBullet[i]->m_oVmlDrawing.GetPointer());
 
-				RtfShapePtr oNewShape( new RtfShape() );	
+				RtfShapePtr oNewShape ( new RtfShape() );	
 				if( true == oShapeReader.Parse( oParam, oNewShape ) )
 				{
 					oNewShape->m_eAnchorTypeShape	= RtfShape::st_inline;

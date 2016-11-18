@@ -153,7 +153,9 @@ public:
 	{
 		if( NULL == oInputStyle )
 			return oInputStyle;
-		RtfTableStylePtr oOutputStyle = RtfTableStylePtr( new RtfTableStyle() );
+		
+		RtfTableStylePtr oOutputStyle ( new RtfTableStyle() );
+		
 		oOutputStyle->Merge( oInputStyle );
 		if( true == bOddVBand && NULL != oInputStyle->m_oBandVerOdd )
 			oOutputStyle->Merge( oInputStyle->m_oBandVerOdd );

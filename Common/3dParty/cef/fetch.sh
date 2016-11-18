@@ -52,4 +52,5 @@ else
 7z x -y cef_binary.7z
 fi
 cp -r -t build/ ./cef_binary/Release/*  ./cef_binary/Resources/*
+chmod a+xr build/locales
 fi

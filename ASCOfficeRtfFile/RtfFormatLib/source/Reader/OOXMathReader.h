@@ -59,10 +59,10 @@ public:
 
 		for(int i = 0; i < m_ooxElem->m_arrItems.size(); i++)
 		{
-			RtfMathPtr oNewMath;
-			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], oNewMath))
+			RtfMathPtr pNewMath;
+			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], pNewMath))
 			{
-				oOutput.AddItem( oNewMath );
+				oOutput.AddItem( pNewMath );
 			}
 		}
 		return true;

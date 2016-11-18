@@ -146,14 +146,16 @@ CString RtfChar::renderTextToXML( CString sParam, bool bDelete )
 
 CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty  )
 {
-    RtfDocument* oDocument = static_cast<RtfDocument*>(poDocument);
-    CString sResult;
+    RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
+	
+	int iFont = 0;
+	if (oCharProperty) iFont = oCharProperty->m_nFont;
 
     int nCodePage = -1;
     //применяем параметры codepage от текущего шрифта todo associated fonts.
     //todooo разобраться со шрифтами и их подбором
     RtfFont oFont;
-    if( NULL != oCharProperty && true == oDocument->m_oFontTable.GetFont( oCharProperty->m_nFont, oFont ) )
+    if( NULL != oCharProperty && true == pDocument->m_oFontTable.GetFont( oCharProperty->m_nFont, oFont ) )
     {
         if( PROP_DEF != oFont.m_nCharset )
             nCodePage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
@@ -161,15 +163,24 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
             nCodePage = oFont.m_nCodePage;
     }
 
+	return renderRtfText(sText, pDocument, nCodePage);
+
+}
+
+CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage  )
+{
+	RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
+	CString sResult;
+
     //от настроек документа
-    if( -1 == nCodePage && RtfDocumentProperty::cp_none != oDocument->m_oProperty.m_eCodePage )
+    if( -1 == nCodePage && RtfDocumentProperty::cp_none != pDocument->m_oProperty.m_eCodePage )
     {
-        switch ( oDocument->m_oProperty.m_eCodePage )
+        switch ( pDocument->m_oProperty.m_eCodePage )
         {
         case RtfDocumentProperty::cp_ansi:
         {
-            if( PROP_DEF != oDocument->m_oProperty.m_nAnsiCodePage )
-                nCodePage = oDocument->m_oProperty.m_nAnsiCodePage;
+            if( PROP_DEF != pDocument->m_oProperty.m_nAnsiCodePage )
+                nCodePage = pDocument->m_oProperty.m_nAnsiCodePage;
             else
                 nCodePage = CP_ACP;
             break;

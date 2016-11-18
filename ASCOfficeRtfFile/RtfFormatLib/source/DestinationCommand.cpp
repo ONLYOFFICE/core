@@ -371,7 +371,7 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 			section.props->m_oProperty = oReader.m_oCurSectionProp;
 		}
 					
-		RtfSectionPtr oNewSection = RtfSectionPtr( new RtfSection() );
+		RtfSectionPtr oNewSection ( new RtfSection() );
 		
 		_section new_section(oNewSection);
 		oDocument.AddItem( new_section );
@@ -1710,7 +1710,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CSt
 	}
 	else if ( L"result" == sCommand )
 	{
-		RtfShapePtr oNewShape = RtfShapePtr( new RtfShape() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		
 		RtfAllPictReader oAllPictReader( *oNewShape );
 		StartSubReader( oAllPictReader, oDocument, oReader );
@@ -2092,9 +2092,10 @@ bool RtfOldListReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReade
 		CString sNumberingText;
 		TextReader oTextReader( sNumberingText, false );
 		StartSubReader( oTextReader, oDocument, oReader );
-		RtfCharPtr oNewChar = RtfCharPtr( new RtfChar() );
-		oNewChar->setText( sNumberingText );
-		m_oTarget.m_oLevelText->AddItem( oNewChar );
+		
+		RtfCharPtr pNewChar ( new RtfChar() );
+		pNewChar->setText( sNumberingText );
+		m_oTarget.m_oLevelText->AddItem( pNewChar );
 	}
 	else
 		return false;
@@ -2110,7 +2111,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
-			RtfTablePtr oNewTable( new RtfTable() );
+			RtfTablePtr oNewTable ( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;
 
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
@@ -2157,7 +2158,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 		//если вложенность текущего параграфа меньше - завершаем внутреннюю таблицу
 		if ( nCurItap > oItem->m_oProperty.m_nItap )
 		{
-			RtfTablePtr oNewTable( new RtfTable() );
+			RtfTablePtr oNewTable ( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;
 			
 			for( int k = (int)aRows.size() - 1; k >= 0 ; k-- )
@@ -2182,7 +2183,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 		//закончилась строка
 		if ( bEndRow )
 		{
-			RtfTableRowPtr oNewTableRow( new RtfTableRow() );
+			RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
 			oNewTableRow->m_oProperty = oReader.m_oState->m_oRowProperty;
 
 			for( int k = (int)aCells.size() - 1; k >= 0 ; k-- )
@@ -2212,7 +2213,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 
 			if ( bEndCell )
 			{
-				RtfTableCellPtr oNewTableCell( new RtfTableCell() );
+				RtfTableCellPtr oNewTableCell ( new RtfTableCell() );
 				for( int k = (int)aCellRenderables.size() - 1; k >= 0 ; k-- )
 				{
 					if ( aItaps[k] == nCurItap )
@@ -2237,11 +2238,11 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 {
 	if ( false == m_bPar )// потому что это не reader и нужно как-то загонять последний параграф
 	{
-		m_oCurParagraph->m_oProperty			= oReader.m_oState->m_oParagraphProp;
+		m_oCurParagraph->m_oProperty	= oReader.m_oState->m_oParagraphProp;
 		//m_oCurParagraph->m_oProperty.m_pSection = pSection;
 		
-		m_oCurParagraph->m_oOldList				= RtfOldListPtr( new RtfOldList() );
-		*m_oCurParagraph->m_oOldList			= oReader.m_oState->m_oCurOldList;
+		m_oCurParagraph->m_oOldList		= RtfOldListPtr ( new RtfOldList() );
+		*m_oCurParagraph->m_oOldList	= oReader.m_oState->m_oCurOldList;
 		
 		m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
 
@@ -2355,7 +2356,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 			if ( false == bExist )
 			{
 				oReader.m_oState->m_oCurOldList.m_nLs = oDocument.m_oIdGenerator.Generate_PnId();
-				RtfOldListPtr oNewOldList = RtfOldListPtr( new RtfOldList() );
+				
+				RtfOldListPtr oNewOldList ( new RtfOldList() );
 				*oNewOldList = oReader.m_oState->m_oCurOldList;
 				oDocument.m_aOldLists.push_back( oNewOldList );
 			}
@@ -2452,15 +2454,16 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 //Math
 	else if ( L"mmath" == sCommand )
 	{
-		RtfMathPtr oNewMath = RtfMathPtr( new RtfMath() );
-		RtfMathReader oMathReader( *oNewMath );
+		RtfMathPtr		oNewMath	( new RtfMath() );
+		RtfMathReader	oMathReader	( *oNewMath );
+		
 		oAbstrReader.StartSubReader( oMathReader, oDocument, oReader );
 		m_oCurParagraph->AddItem( oNewMath );
 	}
 //Drawing
 	else if ( L"shp" == sCommand )
 	{
-		RtfShapePtr oNewShape( new RtfShape() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfShapeReader oShapeReader( *oNewShape );
@@ -2471,7 +2474,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"do" == sCommand )
 	{
-		RtfShapePtr oNewShape( new RtfShape() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfOldShapeReader oShapeReader( *oNewShape );
@@ -2482,7 +2485,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"shppict" == sCommand )
 	{
-		RtfShapePtr oNewShape( new RtfShape() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfShppictReader oShppictReader( *oNewShape );		
@@ -2493,7 +2496,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"pict" == sCommand )
 	{
-		RtfShapePtr oNewShape( new RtfShape() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty		= oReader.m_oState->m_oCharProp;
 		oNewShape->m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
 		oNewShape->m_nWrapType			= 3; // none
@@ -2511,7 +2514,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"shpgrp" == sCommand )
 	{
-		RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
+		RtfShapeGroupPtr oNewShape ( new RtfShapeGroup() );
 		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfShapeGroupReader oShapeGroupReader( *oNewShape );
@@ -2526,8 +2529,9 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"field" == sCommand )
 	{
-		RtfFieldPtr oNewField = RtfFieldPtr(new RtfField());
-		RtfFieldReader oFieldReader( *oNewField );
+		RtfFieldPtr		oNewField		(new RtfField());
+		RtfFieldReader	oFieldReader	( *oNewField );
+		
 		oAbstrReader.StartSubReader( oFieldReader, oDocument, oReader );
 		
 		if ( oNewField->IsValid() )
@@ -2546,70 +2550,75 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"bkmkstart" == sCommand )
 	{
-		RtfBookmarkStartPtr oNewBookmarkStart = RtfBookmarkStartPtr( new RtfBookmarkStart() );
-		RtfBookmarkStartReader oBookmarkStartReader( *oNewBookmarkStart );
+		RtfBookmarkStartPtr		pNewBookmarkStart	( new RtfBookmarkStart() );
+		RtfBookmarkStartReader	oBookmarkStartReader( *pNewBookmarkStart );
+		
 		oAbstrReader.StartSubReader( oBookmarkStartReader, oDocument, oReader );
-		if ( oNewBookmarkStart->IsValid() )
-			m_oCurParagraph->AddItem( oNewBookmarkStart );
+		if ( pNewBookmarkStart->IsValid() )
+			m_oCurParagraph->AddItem( pNewBookmarkStart );
 	}
 	else if ( L"bkmkend" == sCommand )
 	{
-		RtfBookmarkEndPtr oNewBookmarkEnd = RtfBookmarkEndPtr( new RtfBookmarkEnd() );
-		
-		RtfBookmarkEndReader oBookmarkEndReader( *oNewBookmarkEnd );
+		RtfBookmarkEndPtr		pNewBookmarkEnd		( new RtfBookmarkEnd() );		
+		RtfBookmarkEndReader	oBookmarkEndReader	( *pNewBookmarkEnd );
+
 		oAbstrReader.StartSubReader( oBookmarkEndReader, oDocument, oReader );
 		
-		if ( oNewBookmarkEnd->IsValid() )
-			m_oCurParagraph->AddItem( oNewBookmarkEnd );
+		if ( pNewBookmarkEnd->IsValid() )
+			m_oCurParagraph->AddItem( pNewBookmarkEnd );
 	}
 	else if ( L"footnote" == sCommand )
 	{
-		RtfFootnotePtr oNewFootnote = RtfFootnotePtr( new RtfFootnote() );
-		oNewFootnote->m_oCharProp = oReader.m_oState->m_oCharProp;
+		RtfFootnotePtr pNewFootnote ( new RtfFootnote() );
+		pNewFootnote->m_oCharProp = oReader.m_oState->m_oCharProp;
 		
-		RtfFootnoteReader oFootnoteReader( *oNewFootnote );
+		RtfFootnoteReader oFootnoteReader( *pNewFootnote );
 		oAbstrReader.StartSubReader( oFootnoteReader, oDocument, oReader );
 		
-		if ( oNewFootnote->IsValid() )
-			m_oCurParagraph->AddItem( oNewFootnote );
+		if ( pNewFootnote->IsValid() )
+			m_oCurParagraph->AddItem( pNewFootnote );
 	}
 	else if ( L"chftn" == sCommand )
 	{
 		if ( 1 == oReader.m_nFootnote )
 		{
-			RtfCharSpecialPtr oNewChar( new RtfCharSpecial() );
-			oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftn;
-			m_oCurParagraph->AddItem( oNewChar );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+			
+			pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+			pNewChar->m_eType = RtfCharSpecial::rsc_chftn;
+			m_oCurParagraph->AddItem( pNewChar );
 		}
 		else if ( 2 == oReader.m_nFootnote )
 		{
-			RtfCharSpecialPtr oNewChar( new RtfCharSpecial() );
-			oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
-			oNewChar->m_eType = RtfCharSpecial::rsc_chftnEnd;
-			m_oCurParagraph->AddItem( oNewChar );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+			
+			pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+			pNewChar->m_eType = RtfCharSpecial::rsc_chftnEnd;
+			m_oCurParagraph->AddItem( pNewChar );
 		}
 	}
 	else if ( L"chftnsep" == sCommand || L"chftnsepc" == sCommand )
 	{
-		RtfCharSpecialPtr oNewChar( new RtfCharSpecial() );
-		oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
-		m_oCurParagraph->AddItem( oNewChar );
+		RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 		
-		if		( L"chftnsep"	== sCommand )	oNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
-		else if ( L"chftnsepc"	== sCommand )	oNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		m_oCurParagraph->AddItem( pNewChar );
+		
+		if		( L"chftnsep"	== sCommand )	pNewChar->m_eType = RtfCharSpecial::rsc_chftnsep;
+		else if ( L"chftnsepc"	== sCommand )	pNewChar->m_eType = RtfCharSpecial::rsc_chftnsepc;
 	}//specialChars
 	else if ( L"page" == sCommand  )
 	{
-		RtfCharSpecialPtr oNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
-		oNewChar->m_eType = RtfCharSpecial::rsc_page;
-		oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
-		m_oCurParagraph->AddItem( oNewChar );
+		RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+		
+		pNewChar->m_eType = RtfCharSpecial::rsc_page;
+		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		m_oCurParagraph->AddItem( pNewChar );
 //Microsoft (Demo-Hayden-Management-v2).docx 
 //после разрыва могут быть и графические элементы .. их надо оставить в ЭТОМ же параграфе
 //разрыв страницы со следующего параграфа .. 
 		//m_oCurParagraph->m_oProperty = oReader.m_oState->m_oParagraphProp;
-		//m_oCurParagraph->m_oOldList = RtfOldListPtr( new RtfOldList() );
+		//m_oCurParagraph->m_oOldList ( new RtfOldList() );
 		//*m_oCurParagraph->m_oOldList = oReader.m_oState->m_oCurOldList;
 		//m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
 		//AddItem( m_oCurParagraph, oReader, false, false );
@@ -2622,10 +2631,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	{
 		if ( hasParameter )
 		{
-			RtfCharSpecialPtr oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_nTextWrapBreak	= parameter;
-			oNewChar->m_oProperty		= oReader.m_oState->m_oCharProp;
-			m_oCurParagraph->AddItem( oNewChar );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
+			
+			pNewChar->m_nTextWrapBreak	= parameter;
+			pNewChar->m_oProperty		= oReader.m_oState->m_oCharProp;
+			m_oCurParagraph->AddItem( pNewChar );
 		}
 	}
 	COMMAND_RTF_SPECIAL_CHAR( L"softpage",	m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_softpage )
@@ -2636,10 +2646,10 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	{
 		if ( hasParameter )
 		{
-			RtfCharSpecialPtr oNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
-			oNewChar->m_nSoftHeight		= parameter;
-			oNewChar->m_oProperty		= oReader.m_oState->m_oCharProp;
-			m_oCurParagraph->AddItem( oNewChar );
+			RtfCharSpecialPtr pNewChar	= RtfCharSpecialPtr( new RtfCharSpecial() );
+			pNewChar->m_nSoftHeight		= parameter;
+			pNewChar->m_oProperty		= oReader.m_oState->m_oCharProp;
+			m_oCurParagraph->AddItem( pNewChar );
 		}
 	}
 	COMMAND_RTF_SPECIAL_CHAR( L"tab", m_oCurParagraph, sCommand, hasParameter, RtfCharSpecial::rsc_tab )
@@ -2676,7 +2686,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	
 	else if ( L"oldcprops"  == sCommand )
 	{
-		RtfCharPropertyPtr props = RtfCharPropertyPtr( new RtfCharProperty() );
+		RtfCharPropertyPtr props ( new RtfCharProperty() );
 		RtfTrackerChangesReader oOldPropReader(props);
 		
 		if (oAbstrReader.StartSubReader( oOldPropReader, oDocument, oReader ))
@@ -2686,7 +2696,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"oldpprops"  == sCommand )
 	{
-		RtfParagraphPropertyPtr props =  RtfParagraphPropertyPtr( new RtfParagraphProperty() );
+		RtfParagraphPropertyPtr props ( new RtfParagraphProperty() );
 		RtfTrackerChangesReader oOldPropReader(props);
 		
 		if (oAbstrReader.StartSubReader( oOldPropReader, oDocument, oReader ))
@@ -2696,7 +2706,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"oldsprops"  == sCommand )
 	{
-		RtfSectionPropertyPtr props = RtfSectionPropertyPtr( new RtfSectionProperty() );
+		RtfSectionPropertyPtr props ( new RtfSectionProperty() );
 		RtfTrackerChangesReader oOldPropReader(props);
 		
 		if (oAbstrReader.StartSubReader( oOldPropReader, oDocument, oReader ))
@@ -2706,7 +2716,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
 	else if ( L"oldtprops"  == sCommand )
 	{
-		RtfRowPropertyPtr props = RtfRowPropertyPtr( new RtfRowProperty() );
+		RtfRowPropertyPtr props ( new RtfRowProperty() );
 		RtfTrackerChangesReader oOldPropReader(props);
 		
 		if (oAbstrReader.StartSubReader( oOldPropReader, oDocument, oReader ))

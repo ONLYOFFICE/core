@@ -45,7 +45,8 @@ public:
 	{
 		if (m_ooxInline == NULL) return false;
 
-		oOutput.m_oPicture			= RtfPicturePtr( new RtfPicture() );
+		oOutput.m_oPicture = RtfPicturePtr( new RtfPicture() );
+
 		oOutput.m_eAnchorTypeShape	= RtfShape::st_inline;
 		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
 		oOutput.m_nLeft				= 0;

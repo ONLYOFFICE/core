@@ -769,13 +769,13 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 
 		if (m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_group)
 		{
-			RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
+			RtfShapeGroupPtr pNewShape( new RtfShapeGroup() );
 			
 			OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrItems[i]));
 			
-			oNewShape->m_bInGroup = true;
-			if( true == oShapeReader.Parse( oParam, oNewShape ) )
-				 oOutput->AddItem( oNewShape );
+			pNewShape->m_bInGroup = true;
+			if( true == oShapeReader.Parse( oParam, pNewShape ) )
+				 oOutput->AddItem( pNewShape );
 		}
 		else if (	m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_arc		||
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_line		||
@@ -786,13 +786,13 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_polyline	||
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shapetype)
 		{
-			RtfShapePtr oNewShape( new RtfShape() );//set type .. .todooo
+			RtfShapePtr pNewShape ( new RtfShape() );//set type .. .todooo
 			
 			OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrItems[i]));
 			
-			oNewShape->m_bInGroup = true;
-			if( true == oShapeReader.Parse( oParam, oNewShape ) )
-				 oOutput->AddItem( oNewShape );
+			pNewShape->m_bInGroup = true;
+			if( true == oShapeReader.Parse( oParam, pNewShape ) )
+				 oOutput->AddItem( pNewShape );
 		}
 		else
 		{

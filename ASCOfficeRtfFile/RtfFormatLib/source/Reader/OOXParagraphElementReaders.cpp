@@ -49,9 +49,12 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 	RtfTableStylePtr oResultTableStyle;
 	//сначала применяем default стиль (если это нужно)
 
+	oOutputParagraph.m_oProperty.m_oCharProperty = m_oCharProperty;
+
 	if (m_ooxParagraph->m_oParagraphProperty)
 	{
 		OOXpPrReader opPrReader(m_ooxParagraph->m_oParagraphProperty);
+		
 		opPrReader.Parse( oParam, oOutputParagraph.m_oProperty, oConditionalTableStyle);
 		oResultTableStyle = oConditionalTableStyle.ApplyTableStyle( oParam.poTableStyle );
 	}
@@ -69,8 +72,10 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 	if( NULL != oResultTableStyle || PROP_DEF != oOutputParagraph.m_oProperty.m_nStyle )
 	{
 		poExternalStyle = RtfCharStylePtr( new RtfCharStyle() );
+		
 		if( NULL != oResultTableStyle )
 			poExternalStyle->Merge( oResultTableStyle );
+		
 		if( PROP_DEF != oOutputParagraph.m_oProperty.m_nStyle )
 		{
 			RtfStylePtr oTempStyle;
@@ -81,6 +86,8 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 			}
 		}
 	}
+
+	//m_oCharProperty = oOutputParagraph.m_oProperty.m_oCharProperty;
 
 	m_ooxElement = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(m_ooxParagraph);
 
@@ -106,11 +113,12 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			case OOX::et_w_tbl:
 			{
 				oParam.oReader->m_nCurItap ++ ;
-				RtfTablePtr oNewTable( new RtfTable() );					
+				RtfTablePtr oNewTable ( new RtfTable() );					
 				OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(m_ooxElement->m_arrItems[i]);
 
 				OOXTableReader oTableReader(pTbl);
-				//oNewTable->m_oCharProperty = m_oCharProperty;
+				//oNewTable->m_oCharProperty = oOutputParagraph.m_oProperty.m_oCharProperty;
+				//Merge(oOutputParagraph.m_oProperty.m_oCharProperty)
 
 				oTableReader.Parse( oParam, *oNewTable);
 				oOutputParagraph.AddItem( oNewTable );
@@ -120,7 +128,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				OOX::Logic::CIns * pIns = dynamic_cast<OOX::Logic::CIns*>(m_ooxElement->m_arrItems[i]);
 
-				OOXParagraphReader oSubParReader(pIns);					
+				OOXParagraphReader oSubParReader(pIns);	
 				oSubParReader.m_oCharProperty = m_oCharProperty;
 				oSubParReader.m_oCharProperty.m_nRevised = 1;
 				
@@ -167,18 +175,18 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				OOX::Logic::CFldSimple * pFldSimple = dynamic_cast<OOX::Logic::CFldSimple*>(m_ooxElement->m_arrItems[i]);
 			
-				RtfFieldPtr oCurField( new RtfField() );
+				RtfFieldPtr oCurField ( new RtfField() );
 				
 				oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
 				oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
 			//добавляем insert
-				RtfCharPtr pNewChar( new RtfChar() );
+				RtfCharPtr pNewChar ( new RtfChar() );
 				pNewChar->m_bRtfEncode = false;
 				if (pFldSimple->m_sInstr.IsInit())
 				{
 					pNewChar->setText( pFldSimple->m_sInstr.get2() );
 				}
-				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
+				RtfParagraphPtr oNewInsertParagraph ( new RtfParagraph() );
 				oNewInsertParagraph->AddItem( pNewChar );
 				oCurField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 				
@@ -240,8 +248,8 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						}
 						RtfFieldPtr oCurField( new RtfField() );
 						
-						oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
-						oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
+						oCurField->m_pInsert = RtfFieldInstPtr ( new RtfFieldInst() );
+						oCurField->m_pResult = RtfFieldInstPtr ( new RtfFieldInst() );
 					//добавляем insert
 						RtfCharPtr pNewChar( new RtfChar() );
 						pNewChar->m_bRtfEncode = true;// false;
@@ -284,14 +292,14 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				{
 					RtfFieldPtr oCurField( new RtfField() );
 					
-					oCurField->m_pInsert = RtfFieldInstPtr		( new RtfFieldInst() );
-					oCurField->m_pResult = RtfFieldInstPtr		( new RtfFieldInst() );
+					oCurField->m_pInsert = RtfFieldInstPtr ( new RtfFieldInst() );
+					oCurField->m_pResult = RtfFieldInstPtr ( new RtfFieldInst() );
 					//добавляем insert
-					RtfCharPtr pNewCharHYPER( new RtfChar() );
+					RtfCharPtr pNewCharHYPER ( new RtfChar() );
 					pNewCharHYPER->m_bRtfEncode = false;
 					pNewCharHYPER->setText( L"HYPERLINK \\l \"" + pHyperlink->m_sAnchor.get() +L"\"");
 
-					RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
+					RtfParagraphPtr oNewInsertParagraph ( new RtfParagraph() );
 					oNewInsertParagraph->AddItem( pNewCharHYPER );
 
 					oCurField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
@@ -303,7 +311,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					//if( TRUE == bDirty )
 					//	oCurField->m_eMode = RtfField::fm_flddirty;
 
-					RtfParagraphPtr oNewResultParagraph( new RtfParagraph() );
+					RtfParagraphPtr oNewResultParagraph ( new RtfParagraph() );
 					//применяем к новому параграфу default property
 					oNewResultParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 					oNewResultParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
@@ -314,6 +322,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					{
 						OOXParagraphReader oSubParReader(pHyperlink);					
 						oSubParReader.m_oCharProperty = m_oCharProperty;
+						oSubParReader.m_oCharProperty.Merge(oOutputParagraph.m_oProperty.m_oCharProperty);
 						
 						oSubParReader.Parse2( oParam, *oNewResultParagraph, CcnfStyle(), poExternalStyle);
 						oCurField->m_pResult->m_pTextItems->AddItem( oNewResultParagraph );
@@ -324,7 +333,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			case OOX::et_w_bookmarkStart:
 			{
 				OOX::Logic::CBookmarkStart * pBookmarkStart = dynamic_cast<OOX::Logic::CBookmarkStart*>(m_ooxElement->m_arrItems[i]);
-				RtfBookmarkStartPtr oNewBookmark( new RtfBookmarkStart() );
+				RtfBookmarkStartPtr oNewBookmark ( new RtfBookmarkStart() );
 				
 				oNewBookmark->m_sName = pBookmarkStart->m_sName.IsInit() ? pBookmarkStart->m_sName.get2() : L"";
 
@@ -344,7 +353,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				OOX::Logic::CBookmarkEnd * pBookmarkEnd = dynamic_cast<OOX::Logic::CBookmarkEnd*>(m_ooxElement->m_arrItems[i]);
 
-				RtfBookmarkEndPtr oNewBookmark( new RtfBookmarkEnd() );
+				RtfBookmarkEndPtr oNewBookmark ( new RtfBookmarkEnd() );
 				//oNewBookmark->m_sName = pBookmarkEnd->;
 
 				int nId = pBookmarkEnd->m_oId->GetValue();
@@ -374,21 +383,27 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				OOX::Logic::COMath * pMath = dynamic_cast<OOX::Logic::COMath*>(m_ooxElement->m_arrItems[i]);
 				
-				RtfMathPtr oNewMath( new RtfMath() );
+				RtfMathPtr oNewMath ( new RtfMath() );
 				oNewMath->SetOOXType( OOX::et_m_oMath );
-				
-				OOXMathReader oMathRreader(pMath);
-				if(true == oMathRreader.Parse( oParam, (*oNewMath) ) )
+			
+				OOXMathReader oMathReader(pMath);
+				oMathReader.m_oCharProperty = m_oCharProperty;
+				oMathReader.m_oCharProperty.Merge(oOutputParagraph.m_oProperty.m_oCharProperty);
+
+				if(true == oMathReader.Parse( oParam, (*oNewMath) ) )
 					oOutputParagraph.AddItem( oNewMath );
 			}break;
 			case OOX::et_m_oMathPara:
 			{
 				OOX::Logic::COMathPara * pMathPara = dynamic_cast<OOX::Logic::COMathPara*>(m_ooxElement->m_arrItems[i]);
 				
-				RtfMathPtr oNewMath( new RtfMath() );
+				RtfMathPtr oNewMath ( new RtfMath() );				
 				oNewMath->SetOOXType( OOX::et_m_oMathPara );
 				
 				OOXMathReader oMathReader(pMathPara);
+				oMathReader.m_oCharProperty = m_oCharProperty;
+				oMathReader.m_oCharProperty.Merge(oOutputParagraph.m_oProperty.m_oCharProperty);
+
 				if(true == oMathReader.Parse( oParam, (*oNewMath) ) )
 					oOutputParagraph.AddItem( oNewMath );
 			}break;
@@ -434,7 +449,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				//else
 					sValue = ooxText->m_sText;
 			
-				RtfCharPtr pNewChar( new RtfChar() );
+				RtfCharPtr pNewChar ( new RtfChar() );
 				
 				pNewChar->m_oProperty = oNewProperty;
 				pNewChar->setText( sValue );
@@ -455,7 +470,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				//else
 					sValue = ooxText->m_sText;
 			
-				RtfCharPtr pNewChar( new RtfChar() );
+				RtfCharPtr pNewChar ( new RtfChar() );
 				
 				pNewChar->m_oProperty = oNewProperty;
 				pNewChar->setText( sValue );
@@ -472,7 +487,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				{
 				case SimpleTypes::fldchartypeBegin:
 					{
-						OOXFieldBeginPtr oNewField( new OOXFieldBegin() );
+						OOXFieldBeginPtr oNewField ( new OOXFieldBegin() );
 						if (ooxFldChar->m_oFldLock.IsInit())
 							oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
 						if (ooxFldChar->m_oDirty.IsInit())
@@ -483,12 +498,12 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					}break;
 				case SimpleTypes::fldchartypeEnd: 
 					{
-						OOXFieldEndPtr oNewField( new OOXFieldEnd() );
+						OOXFieldEndPtr oNewField ( new OOXFieldEnd() );
 						oOutputParagraph.AddItem( oNewField );
 					}break;
 				case SimpleTypes::fldchartypeSeparate:
 					{
-						OOXFieldSeparatePtr oNewField( new OOXFieldSeparate() );
+						OOXFieldSeparatePtr oNewField ( new OOXFieldSeparate() );
 						oOutputParagraph.AddItem( oNewField );
 					}break;
 				}
@@ -497,9 +512,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		case OOX::et_w_instrText:
 		{
 			OOX::Logic::CInstrText * ooxInstrText = dynamic_cast<OOX::Logic::CInstrText*>(ooxItem);
-			OOXFieldInsertTextPtr oNewField( new OOXFieldInsertText() );
+			OOXFieldInsertTextPtr oNewField ( new OOXFieldInsertText() );
 			
-			RtfCharPtr pNewChar( new RtfChar() );
+			RtfCharPtr pNewChar ( new RtfChar() );
 			pNewChar->m_oProperty	= oNewProperty;
 			
 			if (ooxInstrText)
@@ -518,7 +533,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				
 				if( oParam.oReader->m_mapFootnotes.end() != oPair )
 				{
-					RtfFootnotePtr oNewFootnote( new RtfFootnote() );
+					RtfFootnotePtr oNewFootnote ( new RtfFootnote() );
 					oNewFootnote->m_oCharProp	= oNewProperty;
 					oNewFootnote->m_oContent	= oPair->second;
 					
@@ -536,7 +551,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				
 				if( oParam.oReader->m_mapEndnotes.end() != oPair )
 				{
-					RtfFootnotePtr oNewEndnote( new RtfFootnote() );
+					RtfFootnotePtr oNewEndnote ( new RtfFootnote() );
 					oNewEndnote->m_oCharProp	= oNewProperty;
 					oNewEndnote->m_oContent		= oPair->second;
 					oNewEndnote->m_bEndNote		= true;
@@ -558,7 +573,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 				if (ooxObject->m_oShape.IsInit())
 				{
-					RtfShapePtr oNewShape( new RtfShape() );
+					RtfShapePtr oNewShape ( new RtfShape() );
 					
 					oNewShape->m_eAnchorTypeShape	= RtfShape::st_inline;
 					oNewShape->m_oCharProperty		= oNewProperty;
@@ -570,14 +585,15 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 				if (ooxObject->m_oOleObject.IsInit())
 				{
-					RtfOlePtr oNewOle( new RtfOle() );
+					RtfOlePtr oNewOle ( new RtfOle() );
 					
-					oNewOle->m_nWidth = nOleWidth; //?? todooo
-					oNewOle->m_nHeight = nOleHeight;
+					oNewOle->m_nWidth	= nOleWidth; //?? todooo
+					oNewOle->m_nHeight	= nOleHeight;
 
 					int nShapeId = PROP_DEF;
 					if (ooxObject->m_oOleObject->m_sShapeId.IsInit())
 						nShapeId = oParam.oReader->m_oOOXIdGenerator.GetId(ooxObject->m_oOleObject->m_sShapeId.get2());
+					
 					if( PROP_DEF != nShapeId )
 					{
 						oNewOle->m_nShapeId = nShapeId;
@@ -665,11 +681,11 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						}
 					}
 
-					TextItemContainerPtr oNewTextItemContainer( new TextItemContainer() );
-					RtfParagraphPtr oNewPar( new RtfParagraph() );
+					TextItemContainerPtr oNewTextItemContainer ( new TextItemContainer() );
+					RtfParagraphPtr pNewPar ( new RtfParagraph() );
 
-					oNewPar->AddItem( oCurOle );
-					oNewTextItemContainer->AddItem( oNewPar );
+					pNewPar->AddItem( oCurOle );
+					oNewTextItemContainer->AddItem( pNewPar );
 					aPictShape->m_aTextItems = oNewTextItemContainer;
 
 					oCurOle->m_oResultPic = aPictShape;
@@ -680,7 +696,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		case OOX::et_w_drawing:
 		{
 			OOX::Logic::CDrawing* ooxDrawing = dynamic_cast<OOX::Logic::CDrawing*>(ooxItem);
-			RtfShapePtr pNewPicture( new RtfShape() );
+			RtfShapePtr pNewPicture ( new RtfShape() );
 			pNewPicture->m_oCharProperty = oNewProperty;
 		
 			OOXPictureReader oPictureReader(ooxDrawing);
@@ -696,7 +712,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			{
 				if (ooxPicture->m_oShapeGroup.IsInit())
 				{
-					RtfShapeGroupPtr pNewShape( new RtfShapeGroup() );
+					RtfShapeGroupPtr pNewShape ( new RtfShapeGroup() );
 					pNewShape->m_oCharProperty = oNewProperty;
 					
 					OOXShapeGroupReader oShapeGroupReader(ooxPicture->m_oShapeGroup.GetPointer());
@@ -705,7 +721,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				}		
 				else 
 				{
-					RtfShapePtr pNewShape( new RtfShape() );
+					RtfShapePtr pNewShape ( new RtfShape() );
 					pNewShape->m_oCharProperty = oNewProperty;
 					
 					OOXShapeReader *pShapeReader = NULL;
@@ -731,7 +747,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_nonBreakHyphen:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_NonBrHyphen;
 			
@@ -739,7 +755,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_softHyphen:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_OptHyphen;
 			
@@ -747,7 +763,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_pgNum:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_chpgn;
 
@@ -755,7 +771,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_footnoteRef:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_chftn;
 
@@ -763,7 +779,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_endnoteRef:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_chftnEnd;
 
@@ -771,7 +787,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_separator:
 		{
-			RtfCharSpecialPtr pNewChar = RtfCharSpecialPtr( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_chftnsep;
 
@@ -779,7 +795,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_continuationSeparator:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_chftnsepc;
 
@@ -787,7 +803,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_tab:
 		{
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty	= oNewProperty;
 			pNewChar->m_eType		= RtfCharSpecial::rsc_tab;
 
@@ -797,7 +813,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		{
 			OOX::Logic::CBr *ooxBr = dynamic_cast<OOX::Logic::CBr*>(ooxItem);
 			
-			RtfCharSpecialPtr pNewChar( new RtfCharSpecial() );
+			RtfCharSpecialPtr pNewChar ( new RtfCharSpecial() );
 			pNewChar->m_oProperty = oNewProperty;
 			
 			if (ooxBr)
@@ -824,7 +840,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		case OOX::et_mc_alternateContent:
 		{//выбираем всегда более старую версию 
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
-			if (ooxAlt->m_arrChoiceItems.size() > 0)
+			if (!ooxAlt->m_arrChoiceItems.empty())
 			{
 				for (int i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
 				{
@@ -865,12 +881,12 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					oCurFont.m_sName = sFont;
 					oParam.oRtf->m_oFontTable.DirectAddItem( oCurFont );
 				}
-				RtfFieldPtr oNewField	= RtfFieldPtr	 ( new RtfField() );
+				RtfFieldPtr oNewField ( new RtfField() );
 				
-				oNewField->m_pInsert	= RtfFieldInstPtr( new RtfFieldInst() );
-				oNewField->m_pResult	= RtfFieldInstPtr( new RtfFieldInst() );
+				oNewField->m_pInsert = RtfFieldInstPtr( new RtfFieldInst() );
+				oNewField->m_pResult = RtfFieldInstPtr( new RtfFieldInst() );
 				
-				RtfCharPtr pNewChar( new RtfChar() );
+				RtfCharPtr pNewChar ( new RtfChar() );
 				pNewChar->m_bRtfEncode = false;
 				CString sFieldText;
 				int nFontSize = 10;
@@ -884,7 +900,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				
 				pNewChar->setText( sFieldText );
 				
-				RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
+				RtfParagraphPtr oNewInsertParagraph ( new RtfParagraph() );
 				oNewInsertParagraph->AddItem( pNewChar );
 				oNewField->m_pInsert->m_pTextItems->AddItem( oNewInsertParagraph );
 
@@ -904,7 +920,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 	oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
 	
 	//применяем внешний стиль
-	oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
+	//oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
 	oNewProperty.Merge( m_oCharProperty );
 
 	if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
@@ -1257,7 +1273,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
             oOutputProperty.m_nPrDate = RtfUtility::convertDateTime( sVal );
         }
 		
-		RtfParagraphPropertyPtr props( new RtfParagraphProperty() );
+		RtfParagraphPropertyPtr props ( new RtfParagraphProperty() );
 		OOXpPrReader opPrReader(m_ooxParaProps->m_oPPrChange->m_pParPr.GetPointer());
 		
 		CcnfStyle style;
@@ -1457,9 +1473,20 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 	if(m_ooxRunProps->m_oShadow.IsInit())
 	{
-		oOutputProperty.m_poShading.m_nValue = m_ooxRunProps->m_oShadow->m_oVal.ToBool() ? 1 : 0;
-		//OOXShadingReader oShadingReader(m_ooxRunProps->m_oShadow.GetPointer());
-		//oShadingReader.Parse( oParam, oOutputProperty.m_poShading );
+	}
+
+	if (m_ooxRunProps->m_oShd.IsInit())
+	{
+		if ((m_ooxRunProps->m_oShd->m_oFill.IsInit()) && (m_ooxRunProps->m_oShd->m_oFill->GetValue() == SimpleTypes::hexcolorRGB))
+		{
+			RtfColor oColor(m_ooxRunProps->m_oShd->m_oFill->Get_R(), m_ooxRunProps->m_oShd->m_oFill->Get_G(), m_ooxRunProps->m_oShd->m_oFill->Get_B());	
+			oOutputProperty.m_poShading.m_nBackColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
+		}
+		
+		if (m_ooxRunProps->m_oShd->m_oColor.IsInit())
+		{
+		}
+		{}//.... 
 	}
 //-------------------------------------------------------------- 
 	if (m_ooxRunProps->m_oIns.IsInit())
@@ -1501,7 +1528,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
         }
 		
 		OOXrPrReader orPrReader(m_ooxRunProps->m_oRPrChange->m_pRunPr.GetPointer());
-		RtfCharPropertyPtr props( new RtfCharProperty() );
+		RtfCharPropertyPtr props ( new RtfCharProperty() );
 		
 		if (orPrReader.Parse( oParam, *props.get() ))
 		{
@@ -1951,7 +1978,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
             oOutput.m_nSrDate = RtfUtility::convertDateTime( sVal );
         }
 		
-		RtfSectionPropertyPtr props = RtfSectionPropertyPtr( new RtfSectionProperty() );
+		RtfSectionPropertyPtr props ( new RtfSectionProperty() );
 		OOXSectionPropertyReader opPrReader(m_ooxSectionProperty->m_oSectPrChange->m_pSecPr.GetPointer());
 		
 		if (opPrReader.Parse( oParam, *props.get() ))

@@ -139,7 +139,7 @@ public:
 		{			
 			if( nSeparatorId == nId )
 			{
-				TextItemContainerPtr oNewTextItem( new TextItemContainer() );
+				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
 				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
@@ -152,7 +152,7 @@ public:
 			}
 			else if( nContinueId == nId )
 			{
-				TextItemContainerPtr oNewTextItem( new TextItemContainer() );
+				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
 				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
@@ -165,7 +165,7 @@ public:
 			}
 			else
 			{
-				TextItemContainerPtr oNewTextItem( new TextItemContainer() );
+				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
 				oTextItemReader.m_oTextItems = oNewTextItem;
 				
 				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )

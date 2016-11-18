@@ -155,7 +155,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 	}
 	else if( true == bExistTablPr )
 	{
-		RtfTableStylePtr poTableStyle = RtfTableStylePtr( new RtfTableStyle() );
+		RtfTableStylePtr poTableStyle ( new RtfTableStyle() );
 		poTableStyle->m_oTableProp.Merge( oOutputTable.m_oProperty ); // будут использованы ниже
 	}
 
@@ -178,7 +178,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		ReaderParameter newParam	= oParam;
 		newParam.poTableStyle		= poTableStyle;
 
-		RtfTableRowPtr oNewRow( new RtfTableRow() );
+		RtfTableRowPtr oNewRow ( new RtfTableRow() );
 		//применяем свойства таблицы к каждому row
 		//т.к. в RTF нет свойств таблиц и все свойства записываются в свойства row
 		(*((RtfTableProperty*)&oNewRow->m_oProperty)).Merge( oOutputTable.m_oProperty );

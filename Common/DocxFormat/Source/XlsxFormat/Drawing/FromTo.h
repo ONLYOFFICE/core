@@ -140,8 +140,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:ext"));
-				WritingStringNullableAttrInt64(L"cx", m_oCx, m_oCx->GetValue());
-				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->GetValue());
+				WritingStringNullableAttrInt64(L"cx", m_oCx, m_oCx->ToEmu());
+				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->ToEmu());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

@@ -44,17 +44,18 @@ namespace oox {
 
 	class oox_solid_fill;
 	typedef _CP_PTR(oox_solid_fill) oox_solid_fill_ptr;		
+	
 	class oox_solid_fill
 	{
 	public:
 		std::wstring	color;
 		static oox_solid_fill_ptr create();
-
 	};
 	
 ///////////////////////////////////	
 	class oox_bitmap_fill;
 	typedef _CP_PTR(oox_bitmap_fill) oox_bitmap_fill_ptr;		
+	
 	class oox_bitmap_fill
 	{
 	public:
@@ -78,6 +79,7 @@ namespace oox {
 /////////////////////////////////////////////////////////
 	class oox_hatch_fill;
 	typedef _CP_PTR(oox_hatch_fill) oox_hatch_fill_ptr;	
+	
 	class oox_hatch_fill
 	{
 	public:
@@ -92,25 +94,26 @@ namespace oox {
 ////////////////////////////////////////////////////////////
 	class oox_gradient_fill;
 	typedef _CP_PTR(oox_gradient_fill) oox_gradient_fill_ptr;		
+	
 	class oox_gradient_fill
 	{
 	public:
 		struct _color_position
 		{
-			double pos;
-			std::wstring color_ref;
+			double			pos;
+			std::wstring	color_ref;
 			_CP_OPT(double) opacity;
 		};
 		static oox_gradient_fill_ptr create();
 
-		oox_gradient_fill() : style(0), angle(0)
+		oox_gradient_fill() : style(0), angle(90)//from top to bottom
 		{
-			memset(rect,0,sizeof(double)*4);
+			memset(rect, 0, sizeof(double) * 4);
 		}
 
-		int style;
-		double rect[4];
-		double angle;
+		int		style;
+		double	rect[4];
+		double	angle;
 
 
 		std::vector<_color_position> colors;
@@ -119,14 +122,14 @@ namespace oox {
 	struct _oox_fill
 	{
 		_oox_fill() : type(-1){}
+
 		oox_gradient_fill_ptr	gradient;
 		oox_hatch_fill_ptr		hatch;
 		oox_bitmap_fill_ptr		bitmap;
 		oox_solid_fill_ptr		solid;
 
 		_CP_OPT(double) opacity;
-		int type;
-
+		int				type;
 
 		void clear()
 		{

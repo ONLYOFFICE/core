@@ -85,7 +85,7 @@ public:
     items_array & items() { return items_; }
 
 private:
-	std::wstring create_file_name			(const std::wstring & uri, RelsType type, size_t Num);
+	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);
 	std::wstring detectImageFileExtension	(std::wstring &fileName);
     
 	items_array		items_;

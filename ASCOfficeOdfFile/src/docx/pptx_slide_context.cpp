@@ -454,7 +454,7 @@ void pptx_slide_context::process_images()
 				std::wstring rId = impl_->get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
 				impl_->add_drawing(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
-			}else
+			}else if (!drawing.fill.bitmap->rId.empty())
 			{
 				impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//объект
 			}

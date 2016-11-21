@@ -93,8 +93,14 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 	std::wstring sExt;
 	std::wstring f_name = odf_packet_ + FILE_SEPARATOR_STR + uri;
 
-	sExt = detectImageFileExtension(f_name);	//4EA0AA6E-479D-4002-A6AA-6D6C88EC6D65.odt - image - "opentbs_added_1.phpxvkeg" = png
-	
+	if (type == typeImage)
+	{
+		sExt = detectImageFileExtension(f_name);	//4EA0AA6E-479D-4002-A6AA-6D6C88EC6D65.odt - image - "opentbs_added_1.phpxvkeg" = png
+	}
+	else
+	{
+	}
+
 	if (sExt.empty())
 	{
 		int n = uri.find(L"ObjectReplacements");

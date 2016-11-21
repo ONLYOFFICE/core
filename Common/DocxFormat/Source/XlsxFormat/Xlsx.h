@@ -373,7 +373,13 @@ namespace OOX
 					if(false == pFont->m_oRFont.IsInit())
 					{
 						pFont->m_oRFont.Init();
-						pFont->m_oRFont->m_sVal = _T("Arial");
+						pFont->m_oRFont->m_sVal = _T("Calibri");
+					}
+					if(false == pFont->m_oScheme.IsInit())
+					{
+						pFont->m_oScheme.Init();
+						pFont->m_oScheme->m_oFontScheme.Init();
+						pFont->m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMinor);
 					}
 					if(false == pFont->m_oSz.IsInit() || false == pFont->m_oSz->m_oVal.IsInit())
 					{

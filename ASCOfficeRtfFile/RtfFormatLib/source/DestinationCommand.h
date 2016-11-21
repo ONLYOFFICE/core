@@ -1417,8 +1417,9 @@ private:
 		RtfAbstractReader reader;
 		
 		CString sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
-		
-		m_oField.m_pResult		= RtfFieldInstPtr	( new RtfFieldInst() );
+	//свойства копировать ? ващето есть дубль - проверить	
+		m_oField.m_pResult = RtfFieldInstPtr ( new RtfFieldInst() );
+		m_oField.m_pResult->SetDefault();
 		
 		RtfParagraphPtr pNewPar	( new RtfParagraph() );
 		RtfCharPtr		pNewChar( new RtfChar() );

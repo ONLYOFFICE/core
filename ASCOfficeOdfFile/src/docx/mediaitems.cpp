@@ -86,20 +86,28 @@ std::wstring static get_default_file_name(RelsType type)
         return L"";
     }
 }
-std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType type, size_t Num)
+std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num)
 {
 	if (uri.empty()) return L"";
 
 	std::wstring sExt;
 	std::wstring f_name = odf_packet_ + FILE_SEPARATOR_STR + uri;
 
-	sExt = detectImageFileExtension(f_name);	//4EA0AA6E-479D-4002-A6AA-6D6C88EC6D65.odt - image - "opentbs_added_1.phpxvkeg" = png
-	
+	if (type == typeImage)
+	{
+		sExt = detectImageFileExtension(f_name);	//4EA0AA6E-479D-4002-A6AA-6D6C88EC6D65.odt - image - "opentbs_added_1.phpxvkeg" = png
+	}
+	else
+	{
+	}
+
 	if (sExt.empty())
 	{
 		int n = uri.find(L"ObjectReplacements");
 		if (n >= 0)
 		{
+			if (!isInternal) return L"";
+
 			f_name = odf_packet_ + uri.substr(1, uri.length() - 1);
 			sExt = detectImageFileExtension(f_name);
 		}
@@ -113,7 +121,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 		}
 	}
    
-	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
+	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }
 
 std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
@@ -139,7 +147,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
-    const bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
+    bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
   
 	std::wstring sub_path = L"media/";
 	
@@ -150,36 +158,41 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	}
 	int number=0;
 	
-		 if ( type == typeChart)	number= count_charts+1;
-	else if ( type == typeImage)	number= count_image+1;
-	else if ( type == typeShape)	number= count_shape+1;
-	else if ( type == typeMedia)	number= count_media+1;
+		 if ( type == typeChart)	number = count_charts	+ 1;
+	else if ( type == typeImage)	number = count_image	+ 1;
+	else if ( type == typeShape)	number = count_shape	+ 1;
+	else if ( type == typeMedia)	number = count_media	+ 1;
 	else
-		number= items_.size()+1;
+		number = items_.size()+1;
 	
-	inputFileName = create_file_name(href, type, number);
+	inputFileName = create_file_name(href, type, isMediaInternal, number);
 	
-    std::wstring inputPath = isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
-	std::wstring outputPath = isMediaInternal ? ( sub_path + inputFileName) : href;
+    std::wstring inputPath	= isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
+	std::wstring outputPath	= isMediaInternal ? ( sub_path + inputFileName)		 : href;
 	
-	if ( type == typeChart)outputPath= outputPath + L".xml";
+	if ( type == typeChart) outputPath= outputPath + L".xml";
 
 	std::wstring id;
-    BOOST_FOREACH(item & elm, items_)
+    for (int i = 0 ; i < items_.size(); i++)
     {
-		if (elm.href == inputPath)
+		if (items_[i].href == inputPath)
 		{
-			id = elm.Id;
-			outputPath  = elm.outputName;
-			elm.count_add++;
+			id			= items_[i].Id;
+			outputPath  = items_[i].outputName;
+
+			items_[i].count_add++;
 			break;
 		}
 	}
-	if (id.length() < 1)
+
+  	ref = outputPath;
+    isInternal = isMediaInternal;
+
+	if (id.empty())
 	{
 		if ( type == typeChart)
 		{
-			id = std::wstring(L"chId") + boost::lexical_cast<std::wstring>(count_charts+1);
+			id = std::wstring(L"chId") + std::to_wstring(count_charts+1);
 			count_charts++;
 		}
 		else if ( type == typeImage)
@@ -190,12 +203,14 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}
 //------------------------------------------------
-			id = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image+1);
+			if (inputFileName.empty()) return L"";
+
+			id = std::wstring(L"picId") + std::to_wstring(count_image+1);
 			count_image++;
 		}
 		else
 		{
-			id = std::wstring(L"rId") + boost::lexical_cast<std::wstring>(count_shape+1);
+			id = std::wstring(L"rId") + std::to_wstring(count_shape+1);
 			count_shape++;
 		}
 		
@@ -204,7 +219,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 
   	ref = outputPath;
     isInternal = isMediaInternal;
-    return id;
+	return id;
 }
 
 void mediaitems::dump_rels(rels & Rels)

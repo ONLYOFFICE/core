@@ -1597,7 +1597,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,C
 		
 		if ( oNewFieldInst->IsValid() )
 		{
-			m_oField.m_pInsert					= oNewFieldInst;
+			m_oField.m_pInsert = oNewFieldInst;
 		}
 	}
 	else if ( L"datafield" == sCommand )
@@ -1611,7 +1611,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,C
 		
 		if ( oNewFieldInst->IsValid() )
 		{
-			m_oField.m_pResult					= oNewFieldInst;
+			m_oField.m_pResult = oNewFieldInst;
 		}
 		
 		oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt

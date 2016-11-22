@@ -542,7 +542,7 @@ namespace NSFile
 			int nCurrent = 0;
 			while (nCurrent < nCount)
 			{
-				if (*pShort < 0xD800 || *pShort > 0xDFFF)
+				if (*pShort < 0xD800 || *pShort > 0xDBFF)
 				{
 					*pWCurrent = (wchar_t)(*pShort);
 					++pShort;
@@ -550,7 +550,7 @@ namespace NSFile
 				}
 				else
 				{
-					*pWCurrent = (wchar_t)((((pShort[0]) & 0x03FF) << 10) | ((pShort[1]) & 0x03FF));
+					*pWCurrent = (wchar_t)(((((pShort[0] - 0xD800) & 0x03FF) << 10) | ((pShort[1] - 0xDC00) & 0x03FF)) + 0x10000);
 					pShort += 2;
 					nCurrent += 2;
 				}

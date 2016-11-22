@@ -3966,6 +3966,12 @@ namespace BinDocxRW
 				brPrs.Write_rPr(pCtrlPr.m_oRPr.get());
 				m_oBcw.WriteItemEnd(nCurPos2);
 			}
+			if ( pCtrlPr.m_oARPr.IsInit() )
+			{
+				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::arPr);
+				m_oBcw.m_oStream.WriteRecord2(0, pCtrlPr.m_oARPr);
+				m_oBcw.WriteItemEnd(nCurPos2);
+			}
 			if ( pCtrlPr.m_oDel.IsInit() )
 			{
 				int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::del);

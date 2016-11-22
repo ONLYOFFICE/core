@@ -4404,6 +4404,17 @@ public:
 			if(m_oMath_rPr.IsNoEmpty())
 			m_oMath_rPr.Write(&GetRunStringWriter());
 		}
+		else if ( c_oSerRunType::arPr == type )
+		{
+			PPTX::Logic::RunProperties rPr;
+			m_oBufferedStream.Skip(1);//skip type
+			rPr.fromPPTY(&m_oBufferedStream);
+			rPr.m_name = L"a:rPr";
+			//todo use one writer
+			NSBinPptxRW::CXmlWriter oWriter;
+			rPr.toXmlWriter(&oWriter);
+			GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		}
 		else if ( c_oSerRunType::del == type )
 		{
 			TrackRevision oRPrChange;

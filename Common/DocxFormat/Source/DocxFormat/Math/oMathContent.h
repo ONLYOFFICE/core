@@ -600,6 +600,14 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					if ( _T("w:rPr") == sName )
 						m_oRPr = oReader;
+					else if ( _T("a:rPr") == sName )
+					{
+						CString sXml = oReader.GetOuterXml();
+						XmlUtils::CXmlNode node;
+						node.FromXmlString(sXml.GetBuffer());
+						sXml.ReleaseBuffer();
+						m_oARPr = node;
+					}
 					else if ( _T("w:ins") == sName )
 						m_oIns = oReader;
 					else if ( _T("w:del") == sName )
@@ -612,6 +620,8 @@ namespace OOX
 
 				if ( m_oRPr.IsInit() )
 					sResult += m_oRPr->toXML();
+				if ( m_oARPr.IsInit() )
+					sResult += m_oARPr->toXML();
 				if ( m_oIns.IsInit() )
 					sResult += m_oIns->toXML();
 				if ( m_oDel.IsInit() )
@@ -629,6 +639,7 @@ namespace OOX
 		public:			
 			//Childs
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
+			nullable<PPTX::Logic::RunProperties> m_oARPr;
 			nullable<OOX::Logic::CRPrChange> m_oIns;
 			nullable<OOX::Logic::CRPrChange> m_oDel;
 		};		

@@ -80,8 +80,8 @@ void calcext_date_is_attr::add_attributes( const xml::attributes_wc_ptr & Attrib
 }
 // calcext_conditional_formats
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_conditional_formats::ns = L"calcext";
-const wchar_t * calcext_conditional_formats::name = L"conditional-formats";
+const wchar_t * calcext_conditional_formats::ns		= L"calcext";
+const wchar_t * calcext_conditional_formats::name	= L"conditional-formats";
 
 void calcext_conditional_formats::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -100,8 +100,8 @@ void calcext_conditional_formats::xlsx_convert(oox::xlsx_conversion_context & Co
 	
 // calcext_conditional_format
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_conditional_format::ns = L"calcext";
-const wchar_t * calcext_conditional_format::name = L"conditional-format";
+const wchar_t * calcext_conditional_format::ns		= L"calcext";
+const wchar_t * calcext_conditional_format::name	= L"conditional-format";
 
 void calcext_conditional_format::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -126,8 +126,8 @@ void calcext_conditional_format::xlsx_convert(oox::xlsx_conversion_context & Con
 	
 // calcext_data_bar
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_data_bar::ns = L"calcext";
-const wchar_t * calcext_data_bar::name = L"data-bar";
+const wchar_t * calcext_data_bar::ns	= L"calcext";
+const wchar_t * calcext_data_bar::name	= L"data-bar";
 
 void calcext_data_bar::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -158,8 +158,8 @@ void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 // calcext_color_scale
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_color_scale::ns = L"calcext";
-const wchar_t * calcext_color_scale::name = L"color-scale";
+const wchar_t * calcext_color_scale::ns		= L"calcext";
+const wchar_t * calcext_color_scale::name	= L"color-scale";
 
 void calcext_color_scale::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -179,8 +179,8 @@ void calcext_color_scale::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 // calcext_icon_set
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_icon_set::ns = L"calcext";
-const wchar_t * calcext_icon_set::name = L"icon-set";
+const wchar_t * calcext_icon_set::ns	= L"calcext";
+const wchar_t * calcext_icon_set::name	= L"icon-set";
 
 void calcext_icon_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -206,8 +206,8 @@ void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 // calcext_formatting_entry
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_formatting_entry::ns = L"calcext";
-const wchar_t * calcext_formatting_entry::name = L"formatting-entry";
+const wchar_t * calcext_formatting_entry::ns	= L"calcext";
+const wchar_t * calcext_formatting_entry::name	= L"formatting-entry";
 
 void calcext_formatting_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -226,11 +226,14 @@ void calcext_formatting_entry::xlsx_convert(oox::xlsx_conversion_context & Conte
 
 // calcext_color_scale_entry
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_color_scale_entry::ns = L"calcext";
-const wchar_t * calcext_color_scale_entry::name = L"color_scale_entry";
+const wchar_t * calcext_color_scale_entry::ns	= L"calcext";
+const wchar_t * calcext_color_scale_entry::name = L"color-scale-entry";
 
 void calcext_color_scale_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	CP_APPLY_ATTR(L"calcext:value",	calcext_value_);
+	CP_APPLY_ATTR(L"calcext:type",	calcext_type_);
+	CP_APPLY_ATTR(L"calcext:color",	calcext_color_);
 }
 void calcext_color_scale_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -248,7 +251,7 @@ void calcext_color_scale_entry::xlsx_convert(oox::xlsx_conversion_context & Cont
 }
 // calcext_condition
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_condition::ns = L"calcext";
+const wchar_t * calcext_condition::ns	= L"calcext";
 const wchar_t * calcext_condition::name = L"condition";
 
 void calcext_condition::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -286,8 +289,8 @@ void calcext_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 // calcext_condition
 //////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * calcext_date_is::ns = L"calcext";
-const wchar_t * calcext_date_is::name = L"date-is";
+const wchar_t * calcext_date_is::ns		= L"calcext";
+const wchar_t * calcext_date_is::name	= L"date-is";
 
 void calcext_date_is::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

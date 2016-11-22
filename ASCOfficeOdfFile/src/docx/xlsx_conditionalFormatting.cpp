@@ -82,6 +82,8 @@ namespace oox {
 //expr		
 		_CP_OPT(std::wstring)		formula;
 		_CP_OPT(std::wstring)		formula_type;
+		_CP_OPT(std::wstring)		text;
+		_CP_OPT(std::wstring)		formula2;
 //color scale icon set data_bar
 		std::vector<_cfvo>			cfvo;
 //color scale data_bar(1 element)
@@ -131,12 +133,11 @@ public:
 							{	
 								CP_XML_ATTR(L"priority", priority++);
 							
-								if (c.rules[j].dxfId)		CP_XML_ATTR(L"dxfId", *c.rules[j].dxfId);
-								if (c.rules[j].percent)		CP_XML_ATTR(L"percent", *c.rules[j].percent);
-								if (c.rules[j].operator_)	CP_XML_ATTR(L"operator", *c.rules[j].operator_);
-								if (c.rules[j].stopIfTrue)	CP_XML_ATTR(L"stopIfTrue", *c.rules[j].stopIfTrue);
-								
-								//CP_XML_ATTR(L"text"			, L"");
+								if (c.rules[j].dxfId)		CP_XML_ATTR(L"dxfId",		*c.rules[j].dxfId);
+								if (c.rules[j].percent)		CP_XML_ATTR(L"percent",		*c.rules[j].percent);
+								if (c.rules[j].operator_)	CP_XML_ATTR(L"operator",	*c.rules[j].operator_);
+								if (c.rules[j].stopIfTrue)	CP_XML_ATTR(L"stopIfTrue",	*c.rules[j].stopIfTrue);
+								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								//CP_XML_ATTR(L"rank"			, 0);
 								//CP_XML_ATTR(L"bottom"			, 0);
 								//CP_XML_ATTR(L"equalAverage"	, 0);
@@ -144,11 +145,18 @@ public:
 								if (c.rules[j].type == 1)
 								{
 									CP_XML_ATTR(L"type", *c.rules[j].formula_type);									
-									if (c.rules[j].formula)
+									if ((c.rules[j].formula) && (!c.rules[j].formula->empty()))
 									{
 										CP_XML_NODE(L"formula")
 										{
 											CP_XML_CONTENT(*c.rules[j].formula);
+										}
+									}
+									if ((c.rules[j].formula2) && (!c.rules[j].formula2->empty()))
+									{
+										CP_XML_NODE(L"formula")
+										{
+											CP_XML_CONTENT(*c.rules[j].formula2);
 										}
 									}
 								}
@@ -233,7 +241,7 @@ void xlsx_conditionalFormatting_context::add(std::wstring ref)
 	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.push_back(conditionalFormatting());
 	
-	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false);
+	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L";");
 }
 
 void xlsx_conditionalFormatting_context::add_rule(int type)
@@ -244,8 +252,10 @@ void xlsx_conditionalFormatting_context::add_rule(int type)
 }
 void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 {
+	formulasconvert::odf2oox_converter converter;
 	int pos = -1;
 	std::wstring val;
+	
 	if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
@@ -272,6 +282,7 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		}
 		else if (0 <= (pos = f.find(L"top")))
 		{
+			impl_->conditionalFormattings_.back().rules.back().formula_type = L"top10";
 		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{
@@ -303,13 +314,29 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
 			val = f.substr(1);
 		}
+		else if (0 <= (pos = f.find(L"contains-text")))
+		{
+			impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
+			impl_->conditionalFormattings_.back().rules.back().text = f.substr(15, f.length() - 17);
+			val.clear();
+		}
+		else if (0 <= (pos = f.find(L"between")))
+		{
+			impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
+			val = f.substr(8, f.length() - 9);
+			
+			if (0 <= (pos = val.find(L",")))
+			{
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
+				val = val.substr(0, pos);
+			}
+		}
 		else
 		{
 			val = f;
 		}
 	}
 		
-	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 }
 void xlsx_conditionalFormatting_context::set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max)

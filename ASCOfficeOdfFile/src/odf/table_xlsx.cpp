@@ -753,7 +753,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
     
 	is_style_visible = (styleName.length() > 0  || defaultColumnCellStyle) ? true : false;
     
-	xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false, is_style_visible);
+	xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
    
 	if ( table_table_cell_content_.elements_.size() > 0	|| 
 		!formula.empty()	||

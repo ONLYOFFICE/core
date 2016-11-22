@@ -113,7 +113,7 @@ void xlsx_conversion_context::start_document()
     std::vector<const odf_reader::style_instance *> instances;
     
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::TableCell,false));
+	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
 
     odf_reader::text_format_properties_content		textFormatProperties	= calc_text_properties_content(instances);
     odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
@@ -124,7 +124,7 @@ void xlsx_conversion_context::start_document()
 	cellFormat.set_cell_type(XlsxCellType::s);
     cellFormat.set_num_format(oox::odf_string_to_build_in(0));
 
-    default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"",true);
+    default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"", true);
 
 }
 

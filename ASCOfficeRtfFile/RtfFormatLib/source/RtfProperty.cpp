@@ -747,7 +747,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
+			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
 			CString sDate(RtfUtility::convertDateTime( m_nRevdttm ).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
@@ -757,7 +757,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			CString sAuthor = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel ] : L"";
+			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
 			CString sDate(RtfUtility::convertDateTime( m_nRevdttmDel ).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
@@ -768,14 +768,14 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if ( PROP_DEF != m_nDeleted )//для rPr в pPr
 	{
-		CString sAuthor = m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauthDel] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
 		CString sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
 
 		sResult += L"<w:del w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	if ( PROP_DEF != m_nRevised )
 	{
-		CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nRevauth] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
 		CString sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
 		
 		sResult += L"<w:ins w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
@@ -962,7 +962,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if (m_pOldCharProp)
 	{
-		CString sAuthor = m_nCrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nCrAuth] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nCrAuth);
 		CString sDate(RtfUtility::convertDateTime(m_nCrDate).c_str());
 		
 		RenderParameter oRenderParameterNew = oRenderParameter;
@@ -2168,7 +2168,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if (m_pOldParagraphProp)
 	{
-		CString sAuthor = m_nPrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nPrAuth] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nPrAuth);
 		CString sDate(RtfUtility::convertDateTime(m_nPrDate).c_str());
 
 		RenderParameter oRenderParameterNew = oRenderParameter;
@@ -2859,19 +2859,19 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 		m_pOldRowProperty;
 		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nDeleted )
 		//{
-		//	CString sAuthor = oReader.m_oState->m_oCharProp.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ oReader.m_oState->m_oCharProp.m_nRevauthDel] : L"";
+		//	CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauthDel);
 		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttmDel).c_str());
 
 		//	sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
 		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nRevised )
 		//{
-		//	CString sAuthor = m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ oReader.m_oState->m_oCharProp.m_nRevauth] : L"";
+		//	CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauth);
 		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttm).c_str());
 		//	
 		//	sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
-		CString sAuthor = m_nTrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nTrAuth] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nTrAuth);
 		CString sDate(RtfUtility::convertDateTime(m_nTrDate).c_str());
 		
 		RenderParameter oRenderParameterNew = oRenderParameter;

@@ -1507,32 +1507,9 @@ namespace NSBinPptxRW
 
         if (sizeof(wchar_t) == 4)
         {
-            wchar_t * sBuffer = new wchar_t[lSize + 1];
-            memset(sBuffer, 0, lSize + 1);
+            std::wstring val = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)m_pDataCur, lSize);
+            CString res(val.c_str(), val.length());
 
-            UTF16* pStrUtf16 = (UTF16 *) m_pDataCur;
-            UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-            // this values will be modificated
-            const UTF16 *pStrUtf16_Conv = pStrUtf16;
-            UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF16toUTF32 (&pStrUtf16_Conv
-                                , &pStrUtf16[lSize]
-                                , &pStrUtf32_Conv
-                                , &pStrUtf32 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-                delete []sBuffer;
-                return _T("");
-            }
-
-            CString res((WCHAR*)sBuffer, lSize);
-
-            delete []sBuffer;
             m_lPos += len;
             m_pDataCur += len;
 
@@ -1557,48 +1534,11 @@ namespace NSBinPptxRW
 
 		_UINT32 lSize = len >> 1; //string in char
 
-		if (sizeof(wchar_t) == 4)
-		{
-			wchar_t * sBuffer = new wchar_t[lSize + 1];
-			memset(sBuffer, 0, lSize + 1);
+        std::wstring res = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)m_pDataCur, lSize);
+        m_lPos += len;
+        m_pDataCur += len;
 
-			UTF16* pStrUtf16 = (UTF16 *)m_pDataCur;
-			UTF32 *pStrUtf32 = (UTF32 *)sBuffer;
-
-			// this values will be modificated
-			const UTF16 *pStrUtf16_Conv = pStrUtf16;
-			UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-			ConversionResult eUnicodeConversionResult =
-				ConvertUTF16toUTF32(&pStrUtf16_Conv
-				, &pStrUtf16[lSize]
-				, &pStrUtf32_Conv
-				, &pStrUtf32[lSize]
-				, strictConversion);
-
-			if (conversionOK != eUnicodeConversionResult)
-			{
-				delete[]sBuffer;
-				return _T("");
-			}
-
-			std::wstring res((WCHAR*)sBuffer, lSize);
-
-			delete[]sBuffer;
-			m_lPos += len;
-			m_pDataCur += len;
-
-			return res;
-		}
-		else
-		{
-			std::wstring res((WCHAR*)m_pDataCur, lSize);
-
-			m_lPos += len;
-			m_pDataCur += len;
-
-			return res;
-		}
+        return res;
 	}
 
     bool CBinaryFileReader::GetArray(BYTE **pBuffer, _INT32 len)

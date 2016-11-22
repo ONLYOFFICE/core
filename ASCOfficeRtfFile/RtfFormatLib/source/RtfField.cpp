@@ -164,7 +164,7 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			sAuthor = m_pInsert->m_oCharProperty.m_nRevauth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_pInsert->m_oCharProperty.m_nRevauth] : L"";
+			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauth);
 			sDate	= CString(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttm).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
@@ -174,7 +174,7 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			sAuthor = m_pInsert->m_oCharProperty.m_nRevauthDel != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_pInsert->m_oCharProperty.m_nRevauthDel ] : L"";
+			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauthDel);
 			sDate	= CString(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttmDel).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
@@ -229,13 +229,15 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 				sResult += props;			
 			sResult += L"<w:fldChar w:fldCharType=\"begin\"/>";
 			sResult += L"</w:r>";
-
-            CString str = Utils::PrepareToXML( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr) );
-
+	//-----------
             sResult += L"<w:r>";
 			
 			sResult += L"<w:instrText xml:space=\"preserve\">";
-			sResult += str;
+
+			if (m_pInsert->m_pTextItems)
+			{
+				sResult += Utils::PrepareToXML( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr) );
+			}
 			sResult += L"</w:instrText></w:r>";
 			
 	// разделитель
@@ -243,11 +245,33 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"<w:fldChar w:fldCharType=\"separate\"/></w:r>";
 			
 	//пишем содержание-кэш		
-			sResult += L"<w:r>";
-			if (!props.IsEmpty())	
-				sResult += props;
-			sResult += m_pResult->m_pTextItems->RenderToOOX(oNewParametr);
-			sResult += L"</w:r>";
+			if ((m_pResult->m_pTextItems) && (m_pResult->m_pTextItems->GetCount() > 0))
+			{
+				oNewParametr.nType = RENDER_TO_OOX_PARAM_RUN;
+				sResult +=  m_pResult->m_pTextItems->m_aArray[0]->RenderToOOX(oNewParametr);
+
+				for (int i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)
+				{
+					RtfParagraph *paragraph = dynamic_cast<RtfParagraph *>(m_pResult->m_pTextItems->m_aArray[i].get());
+					if (paragraph)
+					{
+						sResult += L"</w:p>";
+						sResult += L"<w:p>";
+							sResult += L"<w:pPr>";						
+								sResult += paragraph->m_oProperty.RenderToOOX(oRenderParameter);
+							sResult += L"</w:pPr>";
+					}
+
+					sResult +=  m_pResult->m_pTextItems->m_aArray[i]->RenderToOOX(oNewParametr);
+				}
+			}
+			else
+			{
+				sResult += L"<w:r>";
+				if (!props.IsEmpty())	
+					sResult += props;
+				sResult += L"</w:r>";
+			}
 	
 	//заканчиваем Field
 			sResult += L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";

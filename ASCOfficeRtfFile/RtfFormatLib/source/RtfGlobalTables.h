@@ -466,6 +466,14 @@ public:
 			i = AddItem(author);
 		return i;
 	}
+	CString GetAuthor(int ind)
+	{
+		if (ind == PROP_DEF || ind > m_aArray.size())
+			return L"";
+		
+		return m_aArray[ind];
+	}
+	
 };
 
 //class RtfRSIDTable : public IDocumentElement, public ItemContainer<rsidString>

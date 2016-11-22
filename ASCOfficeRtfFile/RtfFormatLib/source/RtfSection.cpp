@@ -823,7 +823,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if (m_pOldSectionProp)
 	{
-		CString sAuthor = m_nSrAuth != PROP_DEF ? poRtfDocument->m_oRevisionTable[ m_nSrAuth] : L"";
+		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nSrAuth);
 		CString sDate(RtfUtility::convertDateTime(m_nSrDate).c_str());
 
 		RenderParameter oRenderParameterNew = oRenderParameter;

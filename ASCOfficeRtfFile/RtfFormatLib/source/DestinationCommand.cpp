@@ -2380,6 +2380,14 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		{
 			m_oCurTab.m_eKind	= RtfTab::tk_tqbar;
 			m_oCurTab.m_nTab	= parameter;
+			
+			if (!oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.empty())
+			{
+				if (oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.back().m_nTab > m_oCurTab.m_nTab)
+				{
+					oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.clear();
+				}
+			}
 			oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.push_back( m_oCurTab );
 			m_oCurTab.SetDefault();
 		}
@@ -2389,6 +2397,14 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		if ( hasParameter )
 		{
 			m_oCurTab.m_nTab = parameter;
+
+			if (!oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.empty())
+			{
+				if (oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.back().m_nTab > m_oCurTab.m_nTab)
+				{
+					oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.clear();
+				}
+			}
 			oReader.m_oState->m_oParagraphProp.m_oTabs.m_aTabs.push_back( m_oCurTab );
 			m_oCurTab.SetDefault();
 		}

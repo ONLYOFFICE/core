@@ -30,6 +30,7 @@
  *
  */
 #include <vector>
+#include <cpdoccore/xml/utils.h>
 
 #include "xlsx_numFmts.h"
 
@@ -77,7 +78,7 @@ void xlsx_num_fmts::serialize(std::wostream & _Wostream) const
     _Wostream << L"<numFmts count=\"" << impl_->formats_.size() << L"\">";
     for (size_t i = 0; i < impl_->formats_.size(); ++i)
     {
-        _Wostream << L"<numFmt formatCode=\"" << impl_->formats_[i] <<
+        _Wostream << L"<numFmt formatCode=\"" << xml::utils::replace_text_to_xml(impl_->formats_[i]) <<
             L"\" numFmtId=\"" << impl_->transform_id(i) << "\" />";
     }
         

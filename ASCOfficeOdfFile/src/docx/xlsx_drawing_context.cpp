@@ -471,6 +471,9 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 		x = obj.anchor_x_ - cx;
 		y = obj.anchor_y_ - cy;
 
+		if (x < 0) x = 0;
+		if (y < 0) y = 0; // calcul dun MS.ods
+
 		to		= pos_anchor;
 		from	= table_metrics.calc(x, y);
 

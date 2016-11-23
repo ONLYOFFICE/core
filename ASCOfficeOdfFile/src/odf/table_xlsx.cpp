@@ -80,7 +80,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 ///обработка чтилей для роу -
 	size_t Default_Cell_style_in_row_ = 0; 
 
-    const std::wstring rowStyleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring rowStyleName			= table_table_row_attlist_.table_style_name_.get_value_or(L"");
     const std::wstring defaultCellStyleName = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( L"");
 
 	style_instance * instStyle_CellDefault = 
@@ -604,45 +604,49 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     std::wostream & strm = Context.current_sheet().sheetData();
     
-	const std::wstring formula					= table_table_cell_attlist_.table_formula_.get_value_or(L"");
-    const std::wstring styleName				= table_table_cell_attlist_.table_style_name_.get_value_or(L"");
 	const common_value_and_type_attlist & attr	= table_table_cell_attlist_.common_value_and_type_attlist_;
 
  	office_value_type::type	odf_value_type	= office_value_type::Custom;
 	oox::XlsxCellType::type	t_val			= oox::XlsxCellType::s;
-    std::wstring			number_val = L"";
+	std::wstring formula					= table_table_cell_attlist_.table_formula_.get_value_or(L"");
+    
+	std::wstring			number_val;
     _CP_OPT(bool)			bool_val;
 	_CP_OPT(std::wstring)	str_val;
    
-	std::wstring			num_format = L"";
+	std::wstring			num_format;
 
 	size_t	xfId_last_set		= 0;
 	int		empty_cell_count	= 0;
 	bool	skip_next_cell		= false;
 	bool	is_style_visible	= true;
 	bool	is_data_visible		= false;
+// вычислить стиль для ячейки
 
-     // вычислить стиль для ячейки
-    odf_read_context & odfContext = Context.root()->odf_context();   
+    std::wstring cellStyleName		= table_table_cell_attlist_.table_style_name_.get_value_or(L"");
+	std::wstring columnStyleName	= Context.get_table_context().default_column_cell_style();
+	std::wstring rowStyleName		= Context.get_table_context().default_row_cell_style();
+
+	if (table_table_cell_attlist_.table_number_columns_repeated_ > 1)
+		columnStyleName.clear(); // могут быть разные стили колонок Book 24.ods
+
+	odf_read_context & odfContext = Context.root()->odf_context();   
 
 	style_instance *defaultCellStyle=NULL, *defaultColumnCellStyle = NULL,  *defaultRowCellStyle =NULL, *cellStyle = NULL;
 	try
 	{
 		defaultCellStyle		= odfContext.styleContainer().style_default_by_type(style_family::TableCell);
-		defaultColumnCellStyle	= odfContext.styleContainer().style_by_name(Context.get_table_context().default_column_cell_style(), style_family::TableCell,false);
-		defaultRowCellStyle		= odfContext.styleContainer().style_by_name(Context.get_table_context().default_row_cell_style(), style_family::TableCell,false);
-        
-		cellStyle = odfContext.styleContainer().style_by_name(styleName, style_family::TableCell, false);
+
+		defaultColumnCellStyle	= odfContext.styleContainer().style_by_name(columnStyleName,	style_family::TableCell, false);
+		defaultRowCellStyle		= odfContext.styleContainer().style_by_name(rowStyleName,		style_family::TableCell, false);        
+		cellStyle				= odfContext.styleContainer().style_by_name(cellStyleName,		style_family::TableCell, false);
 	}
 	catch(...)
 	{
         _CP_LOG << L"[error]: style wrong\n";
 	}
 
-    std::wstring data_style = CalcCellDataStyle(Context,
-        Context.get_table_context().default_column_cell_style(),
-        Context.get_table_context().default_row_cell_style(),
-        styleName);
+    std::wstring data_style = CalcCellDataStyle(Context, columnStyleName, rowStyleName, cellStyleName);
 
     // стили не наследуются
     std::vector<const style_instance *> instances;
@@ -733,8 +737,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     if (!data_style.empty())
     {
-        office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
-		number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+        office_element_ptr elm			= odfContext.numberStyles().find_by_style_name(data_style);
+		number_style_base *num_style	= dynamic_cast<number_style_base*>(elm.get());
       
 		if (num_style)
 		{
@@ -751,10 +755,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	cellFormat.set_cell_type(t_val);
     cellFormat.set_num_format(oox::odf_string_to_build_in(odf_value_type));
     
-	is_style_visible = (styleName.length() > 0  || defaultColumnCellStyle) ? true : false;
-    
-	xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false, is_style_visible);
-   
+	is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle) ? true : false;
+
 	if ( table_table_cell_content_.elements_.size() > 0	|| 
 		!formula.empty()	||
 		(	t_val == oox::XlsxCellType::n										&& !number_val.empty()) || 
@@ -762,12 +764,26 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		((	t_val == oox::XlsxCellType::str || oox::XlsxCellType::inlineStr)	&& str_val))	is_data_visible = true;
 
 	if (table_table_cell_attlist_.table_number_columns_repeated_ < 199 && last_cell_)	last_cell_ = false;
+	
+	int cell_repeated_max = Context.current_table_column() + table_table_cell_attlist_.table_number_columns_repeated_ + 1;
+
+	if (cell_repeated_max >= 1024 && cellStyleName.empty() && last_cell_ && !is_data_visible)
+	{//Book 24.ods
+		return;
+	}
+    
+	if (is_style_visible)
+	{
+		xfId_last_set = Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format, false, is_style_visible);
+	}
 
 	for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
     {
         Context.start_table_cell (	formula,	table_table_cell_attlist_extra_.table_number_columns_spanned_	- 1 ,
 												table_table_cell_attlist_extra_.table_number_rows_spanned_		- 1	);
-		Context.set_current_cell_style_id(xfId_last_set);
+		
+		if (is_style_visible)
+			Context.set_current_cell_style_id(xfId_last_set);
 		
 		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
 

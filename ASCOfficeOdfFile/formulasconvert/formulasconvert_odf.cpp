@@ -69,16 +69,16 @@ namespace formulasconvert {
 	    
 		if (splitted.size()==3)
 		{
-			table	= splitted[0];	
-			ref_first = splitted[1];
-			ref_last = splitted[2];
+			table		= splitted[0];	
+			ref_first	= splitted[1];
+			ref_last	= splitted[2];
 			return true;
 		}
 		if (splitted.size()==4)
 		{
-			table	= splitted[0];	
-			ref_first = splitted[1];
-			ref_last = splitted[3];
+			table		= splitted[0];	
+			ref_first	= splitted[1];
+			ref_last	= splitted[3];
 			return true;
 		}
 		return false;
@@ -300,7 +300,6 @@ namespace formulasconvert {
 		if (what[1].matched)
 		{
 			std::wstring inner = what[1].str();
-			boost::algorithm::replace_all(inner, L".", L"ТОСHKA");
 			boost::algorithm::replace_all(inner, L" ", L"PROBEL");
 			return inner;
 		}    
@@ -314,6 +313,7 @@ namespace formulasconvert {
 		if (what[1].matched)
 		{
 			std::wstring inner = what[1].str();
+			boost::algorithm::replace_all(inner, L".", L"ТОСHKA");
 			boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
 			boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
 
@@ -327,6 +327,8 @@ namespace formulasconvert {
 		else if (what[2].matched)
 		{
 			std::wstring inner = what[2].str();
+			boost::algorithm::replace_all(inner, L".", L"ТОСHKA");
+
 			boost::algorithm::replace_all(inner, L"(", L"SCOBCAIN");
 			boost::algorithm::replace_all(inner, L")", L"SCOBCAOUT");
 
@@ -407,47 +409,53 @@ namespace formulasconvert {
 		if (is_forbidden(expr))
 			return L"NULLFORMULA()";
 		
-		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");
+		std::wstring workstr = expr;
+		//boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// Better_Donut.ods- cell(c27)
+		//std::wstring workstr = boost::regex_replace(
+		//	expr,
+		//	complexRef,
+		//	&replace_point_space,
+		//	boost::match_default | boost::format_all);	
 
-		std::wstring workstr = boost::regex_replace(
-			expr,
-			complexRef,
-			&replace_point_space,
-			boost::match_default | boost::format_all);	
-
-		check_formula(workstr);
+		bool isFormula = check_formula(workstr);
 		
-		workstr = boost::regex_replace(
+		boost::regex_replace(
 			workstr,
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 
-		//boost::algorithm::replace_all(workstr, L"'", L"APOSTROF");
-	   
-		
 		replace_cells_range	(workstr, true);
 		replace_semicolons	(workstr);
 		replace_vertical	(workstr);
-
-		int res_find=0;
-		if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+		
+		if (isFormula)
 		{
-			//могут быть частично заданы диапазоны
-			//todooo
-
+			boost::algorithm::replace_all(workstr, L"FDIST(", L"_xlfn.F.DIST(");
+			
+			int res_find=0;
+			if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+			{
+				//могут быть частично заданы диапазоны
+				//todooo
+			}	
+			//todooo INDEX((A1:C6~A8:C11),2,2,2) - ???? - INDEX_emb.ods
 		}
+
+
+	//-----------------------------------------------------------
  		boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
 		boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");
-		boost::algorithm::replace_all(workstr, L"TOCHKA"	, L".");
+		boost::algorithm::replace_all(workstr, L"ТОСHKA"	, L".");
 
-		boost::algorithm::replace_all(workstr, L"SCOBCAIN", L"(");
-		boost::algorithm::replace_all(workstr, L"SCOBCAOUT", L")");
+		boost::algorithm::replace_all(workstr, L"SCOBCAIN"	, L"(");
+		boost::algorithm::replace_all(workstr, L"SCOBCAOUT"	, L")");
 
-		boost::algorithm::replace_all(workstr, L"KVADRATIN", L"[");
+		boost::algorithm::replace_all(workstr, L"KVADRATIN"	, L"[");
 		boost::algorithm::replace_all(workstr, L"KVADRATOUT", L"]");
 
-		boost::algorithm::replace_all(workstr, L"PROBEL", L" ");
-		boost::algorithm::replace_all(workstr, L"KAVYCHKA", L"\"");
+		boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
+		boost::algorithm::replace_all(workstr, L"KAVYCHKA"	, L"\"");
+
 		return workstr;
 	}
 
@@ -535,7 +543,7 @@ namespace formulasconvert {
 	{
 		return impl_->convert_chart_distance(expr);
 	}
-	std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr, bool withTableName)
+	std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator)
 	{
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
@@ -549,6 +557,11 @@ namespace formulasconvert {
 		//boost::algorithm::replace_all(workstr, L"", L"APOSTROF");
 
 		impl_->replace_named_ref(workstr, withTableName);
+
+		if (separator != L" ")
+		{
+			boost::algorithm::replace_all(workstr, L" "	, separator);
+		}
 
 		boost::algorithm::replace_all(workstr, L"PROBEL"	, L" ");
 		boost::algorithm::replace_all(workstr, L"APOSTROF"	, L"'");

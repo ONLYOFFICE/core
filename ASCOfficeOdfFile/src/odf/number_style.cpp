@@ -414,12 +414,23 @@ void number_number::oox_convert(oox::num_format_context & Context)
 
 void number_text::oox_convert(oox::num_format_context & Context)
 {
-    std::wostream & strm = Context.output();
-    
+	std::wstringstream strm;
+
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->text_to_stream(strm);
     }
+
+	std::wstring text_ = strm.str();
+
+	if (text_ == L"%")
+	{
+	}
+	else
+	{
+		text_ = L"\"" + text_ + L"\""; //Book 70.ods Design of Pile Cap.ods
+	}
+	Context.output() << text_;
 }
 
 

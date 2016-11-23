@@ -503,7 +503,8 @@ extern int g_nCurFormatVersion;
 		footnoteRef = 24,
 		endnoteRef = 25,
 		footnoteReference = 26,
-		endnoteReference = 27
+		endnoteReference = 27,
+		arPr = 28
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{

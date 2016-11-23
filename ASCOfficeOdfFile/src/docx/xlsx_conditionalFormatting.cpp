@@ -260,12 +260,22 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		val = f.substr(11, f.size() - 12);
+
+		if (0 == (pos = val.find(L"\"")))	//Raport_7A.ods или выкинуть ограждающие кавычки с формулы?
+		{
+			impl_->conditionalFormattings_.back().rules.back().text = val;
+			val.clear();
+		}
+		
+		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(val);
 	}
 	else if (0 <= (pos = f.find(L"is-between(")))
 	{
+		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
+		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else
 	{
@@ -273,46 +283,50 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 		
 		if (0 <= (pos = f.find(L"!empty")))
 		{
+			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"empty")))
 		{
+			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"bottom")))
 		{
+			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"top")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().formula_type = L"top10";
+			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"notEqual";
-			val = f.substr(2);
+			val = converter.convert_named_expr( f.substr(2) );
 		}
 		else if (0 <= (pos = f.find(L"<=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThanOrEqual";
-			val = f.substr(2);
+			val = converter.convert_named_expr( f.substr(2) );
 		}	
 		else if (0 <= (pos = f.find(L">=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThanOrEqual";
-			val = f.substr(2);
+			val = converter.convert_named_expr( f.substr(2) );
 		}
 		else if (0 <= (pos = f.find(L"=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"equal";
-			val = f.substr(1);
+			val = converter.convert_named_expr( f.substr(1) );
 		}
 		else if (0 <= (pos = f.find(L"<")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThan";
-			val = f.substr(1);
+			val = converter.convert_named_expr( f.substr(1) );
 		}
 		else if (0 <= (pos = f.find(L">")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
-			val = f.substr(1);
+			val = converter.convert_named_expr( f.substr(1) );
 		}
 		else if (0 <= (pos = f.find(L"contains-text")))
 		{
@@ -327,17 +341,20 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			
 			if (0 <= (pos = val.find(L",")))
 			{
-				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr( val.substr(pos + 1) );
 				val = val.substr(0, pos);
 			}
+			val = converter.convert_named_expr( val );
 		}
 		else
 		{
-			val = f;
+			val = converter.convert( f );
 		}
+		
+		if (!val.empty())
+			impl_->conditionalFormattings_.back().rules.back().formula = val;
 	}
 		
-	impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 }
 void xlsx_conditionalFormatting_context::set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max)
 {

@@ -853,7 +853,10 @@ namespace NSHtmlRenderer
 			{
 				// stroke
                 m_oDocument.WriteString(L"<path style=\"fill:none;stroke:", 30);
-                m_oDocument.WriteHexColor3(m_pPen->Color);
+                if (bStroke)
+                    m_oDocument.WriteHexColor3(m_pPen->Color);
+                else
+                    m_oDocument.WriteString(L"none");
                 m_oDocument.WriteString(L";stroke-width:", 14);
                 m_oDocument.AddInt(nPenW);
                 m_oDocument.WriteString(L";stroke-opacity:", 16);

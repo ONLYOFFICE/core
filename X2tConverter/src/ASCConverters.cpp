@@ -2596,7 +2596,7 @@ namespace NExtractTools
 			case TCD_PPT2PPTX:
 			{
 				result =  ppt2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
-			}
+            }break;
 			case TCD_PPT2PPTT:
 			{
 				result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, oInputParams);
@@ -2668,7 +2668,7 @@ namespace NExtractTools
 			case TCD_ODF2OOT_BIN:
 			{
 				result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
-			}
+            }break;
 			case TCD_DOCX2ODT:
 			{
 				result =  docx2odt (sFileFrom, sFileTo, sTempDir, oInputParams);

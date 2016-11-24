@@ -220,8 +220,11 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"concave-star6"			,L""	,0	,0	,0	},
 {L"signet"					,L""	,0	,0	,0	},
 {L"doorplate"				,L""	,0	,0	,0	},
-{L""						,L"round1Rect"	,0	,0	,0	},
+
+{L""						,L"round1Rect"		,0	,0	,0	},
 {L""						,L"round2DiagRect"	,0	,0	,0	},
+{L""						,L"snip2DiagRect"	,0	,0	,0	},
+{L""						,L"round2SameRect"	,0	,0	,0	},
 {L""						,L"mathPlus"		,0	,0	,0	},
 {L""						,L"mathMinus"		,0	,0	,0	},
 {L""						,L"mathMultiply"	,0	,0	,0	},

@@ -62,6 +62,8 @@ static formulasconvert::odf2oox_converter formulas_converter;
 
 int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) 
 {
+	if (elements_.empty()) return -1;
+
     Context.get_table_context().start_cell_content();
 	Context.get_text_context().set_cell_text_properties(text_properties);
     
@@ -136,6 +138,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 			ht = ht_s.str();    
 		}
 	}
+	int row_current = Context.current_table_row() + 1;
 
     bool hidden = table_table_row_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 

@@ -133,6 +133,9 @@ std::wostream & s::text_to_stream(std::wostream & _Wostream) const
     else
         _Wostream << std::wstring(1, L' ');
 
+	if (content_)
+		_Wostream << *content_;
+
     return _Wostream;
 }
 
@@ -140,7 +143,10 @@ void s::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:c", text_c_);
 }
-
+void s::add_text(const std::wstring & Text)
+{
+    content_ = Text;
+}
 void s::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.add_element_to_run();

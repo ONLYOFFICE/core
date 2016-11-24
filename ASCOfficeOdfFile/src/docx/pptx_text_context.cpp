@@ -399,9 +399,10 @@ void pptx_text_context::Impl::write_t(std::wostream & strm)
 
 void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 {
-	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 && !(hyperlink_hId.length()>0)  && base_style_name_.length()<1)return;
+	if (paragraph_style_name_.empty() && span_style_name_.empty() && !(!hyperlink_hId.empty())  && base_style_name_.empty())
+		return;
 
-	odf_reader::text_format_properties_content			text_properties_paragraph_;
+	odf_reader::text_format_properties_content		text_properties_paragraph_;
 	ApplyTextProperties	(paragraph_style_name_,	text_properties_paragraph_,odf_types::style_family::Paragraph);
 	
 	odf_reader::text_format_properties_content		text_properties_span_;
@@ -415,6 +416,7 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 	get_styles_context().start();
 
 	get_styles_context().hlinkClick() = hyperlink_hId;
+	
 	text_properties_.pptx_convert(pptx_context_);
 
 	strm << get_styles_context().text_style().str();

@@ -239,7 +239,7 @@ namespace formulasconvert {
 	bool odf2oox_converter::Impl::check_formula(std::wstring& expr)
 	{
 		boost::match_results<std::wstring::const_iterator> res;
-		if (boost::regex_search(expr, res, boost::wregex(L"(?:[\\w]+:)?=(.+)"), boost::match_default))
+		if (boost::regex_search(expr, res, boost::wregex(L"^(?:[\\w]+:)?=(.+)"), boost::match_default))
 		{
 			expr = res[1].str();
 			while (expr.find(L"=") == 0)
@@ -431,6 +431,7 @@ namespace formulasconvert {
 		if (isFormula)
 		{
 			boost::algorithm::replace_all(workstr, L"FDIST(", L"_xlfn.F.DIST(");
+			// ROUNDUP( - тут в oox 2 параметра - разрядность нужно - ,0) - EV Requirements v2.2.3.ods
 			
 			int res_find=0;
 			if ((res_find = workstr.find(L"CONCATINATE")) > 0)

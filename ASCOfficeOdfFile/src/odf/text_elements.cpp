@@ -1031,14 +1031,19 @@ void text_changed_region::add_attributes( const xml::attributes_wc_ptr & Attribu
 
 void text_changed_region::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(element_);
+    CP_CREATE_ELEMENT(content_);
 }
 void text_changed_region::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!element_ || !text_id_) return;
+	if (content_.empty() || !text_id_) return;
 
 	Context.get_text_tracked_context().start_change (*text_id_);
-		element_->docx_convert(Context);
+	
+	for (int i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+	
 	Context.get_text_tracked_context().end_change ();
 }
 

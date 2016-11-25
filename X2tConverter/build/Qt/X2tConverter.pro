@@ -32,5 +32,5 @@ core_linux_32 {
     DESTDIR = $$DESTDIR/linux_32
 }
 core_mac {
-    DESTDIR = $$DESTDIR/mac
+    DESTDIR = $$DESTDIR/mac_64
 }

@@ -223,7 +223,7 @@ public:
         const std::pair<int, double> c = cols_.search (x_pt);
         const std::pair<int, double> r = rows_.search (y_pt);
       
-		xlsx_table_position res = {c.first, c.second, r.first, r.second};
+        xlsx_table_position res = {(size_t)c.first, c.second, (size_t)r.first, r.second};
         return res;
     }
 
@@ -236,7 +236,7 @@ public:
 
 		r = rows_.search(offset_row, y_pt);
         
-		xlsx_table_position res = {c.first, c.second, r.first, r.second};
+        xlsx_table_position res = {(size_t)c.first, c.second, (size_t)r.first, r.second};
       
 		return res;
     }
@@ -246,7 +246,7 @@ public:
 		std::pair<int, double> r = rows_.search (last_row, 0); 
 		
      
-		xlsx_table_position res = {c.first, c.second, r.first, r.second};
+        xlsx_table_position res = {(size_t)c.first, c.second, (size_t)r.first, r.second};
       
 		return res;
     }

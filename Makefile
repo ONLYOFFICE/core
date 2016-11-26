@@ -226,7 +226,7 @@ endef
 
 .PHONY : all bin lib clean
 
-all: bin lib
+all: lib bin 
 
 bin: $(X2T) $(ALLFONTSGEN)
 

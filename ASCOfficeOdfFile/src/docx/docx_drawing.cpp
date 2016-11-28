@@ -435,7 +435,6 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 						CP_XML_ATTR(L"y",0);
 					}
 
-
 					CP_XML_NODE(L"wp:positionH")
 					{
 						std::wstring relativeFrom = L"margin";
@@ -453,15 +452,14 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 						else
 						{
 							CP_XML_NODE(L"wp:posOffset") {CP_XML_STREAM() << val.posOffsetH;}
-						}
-			     
+						}			     
 					}
 
 					CP_XML_NODE(L"wp:positionV")
 					{
-
 						std::wstring relativeFrom = L"paragraph";
 						if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();					
+						
 						CP_XML_ATTR(L"relativeFrom",relativeFrom);
 
 						if (val.styleVerticalPos && 
@@ -481,7 +479,6 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 							}
 						}
 					}
-
 					CP_XML_NODE(L"wp:extent")
 					{
 						CP_XML_ATTR(L"cx",val.cx); 
@@ -492,6 +489,35 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 				}
 					
 				docx_serialize_common(CP_XML_STREAM(), val);
+
+				if (val.pctWidth)
+				{
+					std::wstring relativeFrom = L"margin";
+					if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
+					
+					CP_XML_NODE(L"wp14:sizeRelH")
+					{
+						CP_XML_ATTR(L"relativeFrom", relativeFrom);
+						CP_XML_NODE(L"wp14:pctWidth")
+						{
+							CP_XML_STREAM() << (val.pctWidth.get() * 1000);
+						}
+					}				
+				}
+				if (val.pctHeight)
+				{
+					std::wstring relativeFrom = L"paragraph";
+					if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();					
+					
+					CP_XML_NODE(L"wp14:sizeRelV")
+					{
+						CP_XML_ATTR(L"relativeFrom", relativeFrom);
+						CP_XML_NODE(L"wp14:pctHeight")
+						{
+							CP_XML_STREAM() << (val.pctHeight.get() * 1000);
+						}
+					}
+				}
 			}
 		}
 	}

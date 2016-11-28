@@ -443,10 +443,10 @@ public:
     void apply_from(const common_draw_rel_size_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
-    common_draw_size_attlist common_draw_size_attlist_;
-    _CP_OPT(percent_or_scale) style_rel_width_;
-    _CP_OPT(percent_or_scale) style_rel_height_;
+
+    common_draw_size_attlist	common_draw_size_attlist_;
+    _CP_OPT(percent_or_scale)	style_rel_width_;
+    _CP_OPT(percent_or_scale)	style_rel_height_;
 };
 
 ///         common-vertical-rel-attlist

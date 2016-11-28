@@ -188,21 +188,26 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.output_stream() << L"<w:pPr>";
 //todooo причесать			
-					if (Context.is_paragraph_header() && !Context.get_section_context().dump_.empty())
+					if (!Context.get_section_context().dump_.empty()	&&  
+						!Context.get_table_context().in_table()			&& 
+						(Context.get_process_note() == oox::docx_conversion_context::noNote))
 					{
-						Context.output_stream() << Context.get_section_context().dump_;
-						Context.get_section_context().dump_.clear();
+						if (Context.is_paragraph_header() )
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
 
-						Context.output_stream() << L"</w:pPr>";
-						Context.finish_paragraph();
-						Context.start_paragraph();					
-						Context.output_stream() << L"<w:pPr>";
+							Context.output_stream() << L"</w:pPr>";
+							Context.finish_paragraph();
+							Context.start_paragraph();					
+							Context.output_stream() << L"<w:pPr>";
+						}
+						else
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+						}
 					}
-					else if ( !Context.get_table_context().in_table())
-					{
-						Context.output_stream() << Context.get_section_context().dump_;
-						Context.get_section_context().dump_.clear();
-					}	
 
 					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
@@ -231,7 +236,9 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 			}
 		}
 	}
-	if (!Context.get_section_context().dump_.empty() &&  !Context.get_table_context().in_table())
+	if (!Context.get_section_context().dump_.empty()	&&  
+		!Context.get_table_context().in_table()			&& 
+		(Context.get_process_note() == oox::docx_conversion_context::noNote))
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;
@@ -352,6 +359,8 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
+    const std::wstring & styleName = attrs_.text_style_name_.style_name();
+	
 	bool drawing	= false;
 
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
@@ -361,31 +370,22 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		
 	bool bIsNewParagraph = true;
 	
-	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing && !Context.get_delete_text_state())
-    {//вложеннные элементы
-		if (content_.empty())//??
-		{
-			Context.output_stream() << L"<w:p>";
-				Context.output_stream() << emptyParagraphContent;
-			Context.output_stream() << L"</w:p>";
+	bool is_empty = content_.empty();
 
+	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing)
+    {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
+		bIsNewParagraph = false;
+		
+		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements
+		{
+			for (int i = 0; i < content_.size(); i++)
+			{
+				content_[i]->docx_convert(Context); 
+			}
+			Context.set_paragraph_state(false);
 			return;
 		}
-		else
-		{
-			bIsNewParagraph = false;
-
-			if (!Context.get_paragraph_keep())
-			{
-				for (int i = 0; i < content_.size(); i++)
-				{
-					content_[i]->docx_convert(Context); 
-				}
-				return;
-			}
-		}
     }
-	bool is_empty = content_.empty();
 
     if (bIsNewParagraph)
 		Context.start_paragraph(is_header_);
@@ -413,7 +413,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		is_empty = false;
 	}
 
-    const std::wstring & styleName = attrs_.text_style_name_.style_name();
     const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
 	if (masterPageName)
@@ -1078,21 +1077,22 @@ void text_unknown_base_change::docx_convert(oox::docx_conversion_context & Conte
 	{
 		Context.get_text_tracked_context().start_changes_content();
 		{
-			h *h_ = dynamic_cast<h*>(content_[i].get());
-			p *p_ = dynamic_cast<p*>(content_[i].get());
+			content_[i]->docx_convert(Context);
+			//h *h_ = dynamic_cast<h*>(content_[i].get());
+			//p *p_ = dynamic_cast<p*>(content_[i].get());
 
-			paragraph *para = NULL;
+			//paragraph *para = NULL;
 
-			if (h_) para = &h_->paragraph_;
-			if (p_) para = &p_->paragraph_;
+			//if (h_) para = &h_->paragraph_;
+			//if (p_) para = &p_->paragraph_;
 
-			if (para)
-			{
-				for (int j = 0; j < para->content_.size(); j++)
-				{
-					para->content_[j]->docx_convert(Context);
-				}
-			}
+			//if (para)
+			//{
+			//	for (int j = 0; j < para->content_.size(); j++)
+			//	{
+			//		para->content_[j]->docx_convert(Context);
+			//	}
+			//}
 		}
 		Context.get_text_tracked_context().end_changes_content();
 	}

@@ -1102,7 +1102,7 @@ void docx_conversion_context::docx_serialize_list_properties(std::wostream & str
 
 void docx_conversion_context::add_delayed_element(odf_reader::office_element * Elm)
 {
-    delayed_elements_.push_back(Elm);    
+   delayed_elements_.push_back(Elm);    
 }
 
 void docx_conversion_context::docx_convert_delayed()
@@ -1110,14 +1110,15 @@ void docx_conversion_context::docx_convert_delayed()
 	if (delayed_elements_.empty()) return;
 
 	if(delayed_converting_)return; //зацикливание иначе
-	if(get_drawing_context().get_current_level() > 0 )return; //вложенный frame
+	if(get_drawing_context().get_current_level() > 0 )
+		return; //вложенный frame
 
 	delayed_converting_ = true;
     while(!delayed_elements_.empty())
     {
         odf_reader::office_element * elm = delayed_elements_.front();
         elm->docx_convert(*this);
-			delayed_elements_.pop_front();
+		delayed_elements_.pop_front();
     }
 	delayed_converting_=false;
 }

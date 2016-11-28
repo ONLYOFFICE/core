@@ -747,11 +747,11 @@ const wchar_t * style_column::name = L"column";
 
 void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"fo:start-indent", fo_start_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:end-indent", fo_end_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-before", fo_space_before_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-after", fo_space_after_, length(0.0, length::cm));
+    CP_APPLY_ATTR(L"style:rel-width",	style_rel_width_);
+    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_,		length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_,	length(0.0, length::cm));
     
 }
 
@@ -1219,13 +1219,13 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 // style-footnote-sep-attlist
 void style_footnote_sep_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:width", style_width_);
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"style:color", style_color_);
-    CP_APPLY_ATTR(L"style:line-style", style_line_style_);
-    CP_APPLY_ATTR(L"style:type", style_adjustment_, style_type(style_type::Left)); // default Left
-    CP_APPLY_ATTR(L"style:distance-before-sep", style_distance_before_sep_);
-    CP_APPLY_ATTR(L"style:distance-after-sep", style_distance_after_sep_);
+    CP_APPLY_ATTR(L"style:width",					style_width_);
+    CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
+    CP_APPLY_ATTR(L"style:color",					style_color_);
+    CP_APPLY_ATTR(L"style:line-style",				style_line_style_);
+    CP_APPLY_ATTR(L"style:type",					style_adjustment_, style_type(style_type::Left)); // default Left
+    CP_APPLY_ATTR(L"style:distance-before-sep",		style_distance_before_sep_);
+    CP_APPLY_ATTR(L"style:distance-after-sep",		style_distance_after_sep_);
 }
 
 /// style:footnote-sep

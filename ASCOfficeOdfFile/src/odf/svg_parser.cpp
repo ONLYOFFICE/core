@@ -754,7 +754,7 @@ namespace svg_path
             }
         }
 
-        if ((aCurrPoly.points.size() > 0 || !bIsClosed) && !aCurrPoly.command.empty())
+        if ((aCurrPoly.points.size() > 0 || !bIsClosed) && !aCurrPoly.command.empty() && aCurrPoly.command != L"a:cubicBezTo")
         {
             // end-process last poly
 

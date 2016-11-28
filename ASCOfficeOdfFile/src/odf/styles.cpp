@@ -1275,13 +1275,6 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 }
 void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	if (Context.get_table_context().in_table())
-    {
-        // мы находимся внутри таблицы, устанавливаем специальное значение
-        Context.section_properties_in_table(this);
-        return;
-    }
-
 	style_columns * columns = dynamic_cast<style_columns *>( style_page_layout_properties_elements_.style_columns_.get());
 
 	CP_XML_WRITER(strm)

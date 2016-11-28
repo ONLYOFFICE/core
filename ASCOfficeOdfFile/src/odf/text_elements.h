@@ -56,12 +56,12 @@ public:
 
     std::wostream & text_to_stream(std::wostream & _Wostream) const;
    
-	void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
-    void add_text(const std::wstring & Text);
+	void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
+    void add_text			(const std::wstring & Text);
 
-    paragraph * get_next() { return next_par_; }
-    void set_next(paragraph * next) {next_par_ = next;}
+    paragraph * get_next()					{ return next_par_; }
+    void		set_next(paragraph * next)	{next_par_ = next;}
     
 	void set_next_section(bool Val) 
     {
@@ -75,17 +75,17 @@ public:
 
     void afterCreate(document_context * ctx);
    
-	void docx_convert(oox::docx_conversion_context & Context) ;
-    void xlsx_convert(oox::xlsx_conversion_context & Context) ;
-    void pptx_convert(oox::pptx_conversion_context & Context) ;
+	void docx_convert (oox::docx_conversion_context & Context) ;
+    void xlsx_convert (oox::xlsx_conversion_context & Context) ;
+    void pptx_convert (oox::pptx_conversion_context & Context) ;
 
 	void drop_cap_docx_convert(oox::docx_conversion_context & Context);
 
+    office_element_ptr_array	content_;
 private:
 	void drop_cap_text_docx_convert(office_element_ptr first_text_paragraph,oox::docx_conversion_context & Context);
    
-	paragraph_attrs				paragraph_attrs_;
-    office_element_ptr_array	paragraph_content_;
+	paragraph_attrs			attrs_;
    
 	paragraph				*next_par_;
     
@@ -117,6 +117,7 @@ public:
     virtual void afterCreate();
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+    paragraph paragraph_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -130,8 +131,6 @@ private:
     _CP_OPT(bool)			text_is_list_header_;
     _CP_OPT(std::wstring)	text_number_;
     
-    paragraph paragraph_;
-
     friend class par_docx_convert_class;
 
 };

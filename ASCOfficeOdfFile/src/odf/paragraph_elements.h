@@ -378,7 +378,7 @@ public:
 
 	span() {}
    
-	office_element_ptr_array paragraph_content_;
+	office_element_ptr_array content_;
     
 	odf_types::style_ref			text_style_name_;
     odf_types::style_ref_array		text_class_names_;
@@ -424,7 +424,7 @@ private:
     odf_types::style_ref					text_style_name_;
     odf_types::style_ref					text_visited_style_name_;
 
-    office_element_ptr_array				paragraph_content_;
+    office_element_ptr_array				content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(a);

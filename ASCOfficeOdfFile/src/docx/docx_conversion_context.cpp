@@ -82,12 +82,13 @@ void text_tracked_context::start_changes_content()
 
 void text_tracked_context::end_changes_content()
 {
+	current_state_.content.push_back(changes_stream_.str());
+	
+	docx_context_.set_delete_text_state	(false);		
 	docx_context_.set_paragraph_state	(bParaStateDocx_);	
 	docx_context_.set_run_state			(bRunStateDocx_);	
-	docx_context_.set_delete_text_state	(false);		
 
-	current_state_.content = changes_stream_.str();
-	docx_context_.set_stream_man(docx_stream_);
+	docx_context_.set_stream_man		(docx_stream_);
 }
 void text_tracked_context::start_change (std::wstring id)
 {
@@ -130,28 +131,27 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	mediaitems_			(OdfDocument->get_folder() ),
-	next_dump_page_properties_(false),
-	page_break_after_		(false),
-	page_break_before_		(false),
-	in_run_					(false),
-	in_automatic_style_		(false),
-	in_paragraph_			(false),
-	in_header_				(false),
-	in_drawing_content_		(false),
-	text_tracked_context_	(*this),
-	table_context_			(*this),
-	output_document_		(NULL),
-	section_properties_in_table_(NULL),
-	process_note_			(noNote),
-	new_list_style_number_	(0),
-	is_rtl_					(false),
-	is_paragraph_keep_		(false),
-	is_delete_text_			(false),
-	delayed_converting_		(false),
-	process_headers_footers_(false),
-	process_comment_		(false),
-	math_context_			(false),
-	odf_document_			(OdfDocument)
+	next_dump_page_properties_	(false),
+	page_break_after_			(false),
+	page_break_before_			(false),
+	in_run_						(false),
+	in_automatic_style_			(false),
+	in_paragraph_				(false),
+	in_header_					(false),
+	in_drawing_content_			(false),
+	text_tracked_context_		(*this),
+	table_context_				(*this),
+	output_document_			(NULL),
+	process_note_				(noNote),
+	new_list_style_number_		(0),
+	is_rtl_						(false),
+	is_paragraph_keep_			(false),
+	is_delete_text_				(false),
+	delayed_converting_			(false),
+	process_headers_footers_	(false),
+	process_comment_			(false),
+	math_context_				(false),
+	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
 	applicationFonts_	= new CApplicationFonts();
@@ -1128,19 +1128,6 @@ void section_context::add_section(const std::wstring & SectionName, const std::w
     sections_.push_back(newSec);
 }
 
-
-void docx_conversion_context::section_properties_in_table(odf_reader::office_element * Elm)
-{
-    section_properties_in_table_ = Elm;
-}
-
-odf_reader::office_element * docx_conversion_context::get_section_properties_in_table()
-{
-    odf_reader::office_element * elm = section_properties_in_table_;
-    section_properties_in_table_ = NULL;
-    return elm;
-}
-
 namespace 
 {
     // обработка Header/Footer
@@ -1273,31 +1260,47 @@ typedef std::map<std::wstring, text_tracked_context::_state>::iterator map_chang
 
 void docx_conversion_context::start_text_changes (std::wstring id)
 {
-	text_tracked_context::_state  &state = text_tracked_context_.get_tracked_change(id);
-	if (state.id != id) return;
+	text_tracked_context::_state  &state_add = text_tracked_context_.get_tracked_change(id);
+	if (state_add.id != id) return;
 	
-	map_current_changes_.insert(std::pair<std::wstring, text_tracked_context::_state> (id, state));
+	map_current_changes_.insert(std::pair<std::wstring, text_tracked_context::_state> (id, state_add));
 
-	if (in_paragraph_ && (state.type == 1 || state.type == 2))
+	if (in_paragraph_ && ( state_add.type == 1 || state_add.type == 2 ))
 	{
-		finish_run();
-
-		if (state.type	== 1) output_stream() << L"<w:ins";
-		if (state.type	== 2) output_stream() << L"<w:del";
-
-		output_stream() << L" w:date=\""	<< state.date	<< L"\"";
-		output_stream() << L" w:author=\""	<< state.author << L"\"";
-		output_stream() << L" w:id=\""		<< std::to_wstring(current_id_changes++) << L"\"";
-		output_stream() << L">";
+		map_changes_iterator it = map_current_changes_.find(id);
+		text_tracked_context::_state  &state = it->second;
 		
-		if (state.type	== 2) 
-			output_stream() << state.content;
+		std::wstring format_change =	L" w:date=\""	+ state.date	+ L"\"" +
+										L" w:author=\""	+ state.author	+ L"\"" ;
+
+		finish_run();
+		state.active = true;
+		
+		if (state.type	== 1)
+		{
+
+			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+		}
+		
+		if (state.type	== 2)
+		{
+			for (int i = 0 ; i < state.content.size(); i++)
+			{
+				output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+
+				output_stream() << state.content[i];
+
+				output_stream() << L"</w:del>";
+			}
+			map_current_changes_.erase(it);
+		}
 	}
 }
 
 void docx_conversion_context::start_changes()
 {
 	if (map_current_changes_.empty()) return;
+	if (process_comment_) return;
 
 	text_tracked_context_.dumpPPr_.clear();
 	text_tracked_context_.dumpRPr_.clear();
@@ -1309,8 +1312,8 @@ void docx_conversion_context::start_changes()
 	{
 		text_tracked_context::_state  &state = it->second;
 
-		if (state.type	== 0) continue; //unknown change ... todooo
-
+		if (state.type == 0)	continue; //unknown change ... todooo
+		if (state.active)		continue;
 
 		std::wstring change_attr;
 		change_attr += L" w:date=\""	+ state.date	+ L"\"";
@@ -1396,16 +1399,21 @@ void docx_conversion_context::start_changes()
 
 void docx_conversion_context::end_changes()
 {
-	//for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
-	//{
-	//	text_tracked_context::_state  &state = it->second;
+	if (process_comment_) return;
 
-	//	if (state.type	== 0) continue; //unknown change ... libra format change skip
-	//	if (state.type	== 3) continue;
+	for (map_changes_iterator it = map_current_changes_.begin(); it != map_current_changes_.end(); it++)
+	{
+		text_tracked_context::_state  &state = it->second;
 
-	//	if (state.type	== 1) output_stream() << L"</w:ins>";
-	//	if (state.type	== 2) output_stream() << L"</w:del>";
-	//}
+		if (state.type	== 0)	continue; //unknown change ... libra format change skip
+		if (state.type	== 3)	continue;
+		if (!state.active)		continue;
+
+		if (state.type	== 1)	output_stream() << L"</w:ins>";
+		if (state.type	== 2)	output_stream() << L"</w:del>";
+
+		state.active = false;
+	}
 
 	text_tracked_context_.dumpTcPr_.clear();
 	text_tracked_context_.dumpTblPr_.clear();
@@ -1421,14 +1429,15 @@ void docx_conversion_context::end_text_changes (std::wstring id)
 
 	if (it == map_current_changes_.end()) return;
 	
-	if (in_paragraph_)
+	text_tracked_context::_state  &state = it->second;
+	
+	if (state.active)
 	{
-		finish_run();
-
-		text_tracked_context::_state  &state = it->second;
+		if (in_paragraph_)
+			finish_run();
 		
-		if (state.type	== 1) output_stream() << L"</w:ins>";
-		if (state.type	== 2) output_stream() << L"</w:del>";
+		if (state.type	== 1)	output_stream() << L"</w:ins>";
+		if (state.type	== 2)	output_stream() << L"</w:del>";
 	}
 
 	map_current_changes_.erase(it);

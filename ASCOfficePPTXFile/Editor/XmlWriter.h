@@ -324,14 +324,14 @@ namespace NSBinPptxRW
             m_lFlag                     = 0;
             m_lGroupIndex               = 0;
             m_lObjectId                 = 0;
-            m_lObjectIdVML		= 0;
+            m_lObjectIdVML              = 0;
             m_lObjectIdOle              = 0;
 
             m_bIsUseOffice2007          = false;
-            m_strStyleMain		= _T("");
+            m_strStyleMain              = _T("");
             m_strAttributesMain         = _T("");
-            m_strNodes			= _T("");
-            m_strOleXlsx		= _T("");
+            m_strNodes                  = _T("");
+            m_strOleXlsx                = _T("");
 
             m_pOOXToVMLRenderer         = NULL;
             m_bIsTop                    = false;

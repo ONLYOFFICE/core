@@ -137,6 +137,7 @@ namespace DocFileFormat
 		ParagraphPropertyExceptions*	_lastValidPapx;
 		SectionPropertyExceptions*		_lastValidSepx;
 
+		bool							_embeddedObject;
 		int								_skipRuns;
 		int								_sectionNr;
 		int								_footnoteNr;

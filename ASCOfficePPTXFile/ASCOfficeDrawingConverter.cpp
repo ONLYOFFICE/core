@@ -4206,7 +4206,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 	if (-1 == nIndexF)
 		return S_FALSE;
 
-	int nIndexTail = (std::min)(strMainProps.Find(_T("<wp14:sizeRelH")), strMainProps.Find(_T("<wp14:sizeRelV")));
+	int nIndexTail = strMainProps.Find(_T("<wp14:sizeRel"));
 	if(-1 != nIndexTail)
 	{
 		strMainPropsTail = strMainProps.Right(strMainProps.GetLength() - nIndexTail);

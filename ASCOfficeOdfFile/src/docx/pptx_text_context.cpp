@@ -363,19 +363,20 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	odf_reader::paragraph_format_properties		paragraph_properties_;
 	
 	ApplyParagraphProperties	(paragraph_style_name_,	paragraph_properties_,odf_types::style_family::Paragraph);
-	ApplyListProperties			(paragraph_properties_,level);//выравнивания листа накатим на свойства параграфа
+	ApplyListProperties			(paragraph_properties_, level);//выравнивания листа накатим на свойства параграфа
 
 	paragraph_properties_.pptx_convert(pptx_context_);	
 	
 	const std::wstring & paragraphAttr  = get_styles_context().paragraph_attr().str();	
 	const std::wstring & paragraphNodes = get_styles_context().paragraph_nodes().str();
 
-	if (level < 0 && paragraphAttr.length() <1 && paragraphNodes.length()<1) return;
+	if (level < 0 && paragraphAttr.length() < 1 && !paragraphNodes.empty()) return;
 	
 	strm << L"<a:pPr ";
 
-		if (level>=0)
+		if (level >= 0)
 		{
+			if (level > 8) level = 0;
 			strm << L"lvl=\"" << level << L"\" ";
 		}
 
@@ -384,7 +385,7 @@ void pptx_text_context::Impl::write_pPr(std::wostream & strm)
 	strm << ">";
 		strm << paragraphNodes;
 
-		if (level >=0 )
+		if (level >= 0 )
 		 {
 			
 

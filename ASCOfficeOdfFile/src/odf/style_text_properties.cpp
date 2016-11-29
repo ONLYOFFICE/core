@@ -345,11 +345,11 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			}			
 			if (fo_text_transform_)
 			{
-				if (fo_font_variant_->get_type() == text_transform::Uppercase)
+				if (fo_text_transform_->get_type() == text_transform::Uppercase)
 				{
 					CP_XML_ATTR(L"cap", "all");
 				}
-				else if (fo_font_variant_->get_type() == text_transform::Lowercase)
+				else if (fo_text_transform_->get_type() == text_transform::Lowercase)
 				{
 					CP_XML_ATTR(L"cap", "small");
 				}

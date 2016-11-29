@@ -1177,20 +1177,23 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 
     if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
     {
-        std::wstring w_w = L"",w_h = L"";
+        std::wstring w_w, w_h;
 
-		int h=0,w=0;
+		_INT64 h = 0, w = 0;
 		
 		if (fo_page_width_)
 		{
 			w =  fo_page_width_->get_value_unit(length::emu);
+			if (w < 914400) w = 914400;
 
-			w_w = boost::lexical_cast<std::wstring>(w);
+			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
 			h = fo_page_height_->get_value_unit(length::emu);
-			w_h = boost::lexical_cast<std::wstring>(h);
+			if (h < 914400) h = 914400;
+
+			w_h = std::to_wstring(h);
 		}
                 
         std::wstring w_orient = L"custom";

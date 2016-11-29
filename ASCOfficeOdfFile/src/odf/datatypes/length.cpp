@@ -31,11 +31,10 @@
  */
 
 #include "length.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <iostream>
 #include <sstream>
-
-#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { namespace odf_types { 
 
@@ -223,9 +222,9 @@ double to_pt(const length & Val)
     return 0.0;
 }
 
-int pt_to_emu(double Val)
+_INT64 pt_to_emu(double Val)
 {
-    return static_cast<int>(Val * 360000 * 2.54) / 72;
+    return static_cast<_INT64>(Val * 360000 * 2.54) / 72;
 }
 
 }

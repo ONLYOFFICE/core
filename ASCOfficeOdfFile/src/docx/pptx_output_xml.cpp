@@ -89,11 +89,14 @@ void pptx_xml_slide::write_to(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:sld")
         {
-			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");        
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");        
-
-            CP_XML_NODE(L"p:cSld")
+			CP_XML_ATTR(L"xmlns:a",		L"http://schemas.openxmlformats.org/drawingml/2006/main"); 
+			CP_XML_ATTR(L"xmlns:p",		L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
+			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
+			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
+			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+           
+			CP_XML_NODE(L"p:cSld")
             {
    				CP_XML_ATTR(L"name", name());   
 				
@@ -147,15 +150,19 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:sldLayout")
         {
+			CP_XML_ATTR(L"xmlns:a",		L"http://schemas.openxmlformats.org/drawingml/2006/main"); 
+			CP_XML_ATTR(L"xmlns:p",		L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
+			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
+			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
+			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+      
 			//if (slideLayoutData_.str().length()<0)
 			//	CP_XML_ATTR(L"type",L"cust");//---------------------------!!!!!!!!!!!!
 			//else
-			//	CP_XML_ATTR(L"type",L"cust");
-			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");        
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");        
-
-            CP_XML_NODE(L"p:cSld")
+			//	CP_XML_ATTR(L"type",L"cust");     
+			
+			CP_XML_NODE(L"p:cSld")
             {
 				CP_XML_NODE(L"p:spTree")
 				{
@@ -239,9 +246,12 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:sldMaster")
         {
-			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-			CP_XML_ATTR(L"xmlns:p", L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:a",		L"http://schemas.openxmlformats.org/drawingml/2006/main"); 
+			CP_XML_ATTR(L"xmlns:p",		L"http://schemas.openxmlformats.org/presentationml/2006/main");
+			CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
+			CP_XML_ATTR(L"xmlns:p14",	L"http://schemas.microsoft.com/office/powerpoint/2010/main"); 
+			CP_XML_ATTR(L"xmlns:p15",	L"http://schemas.microsoft.com/office/powerpoint/2012/main"); 
+			CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
            
 			CP_XML_NODE(L"p:cSld")
             {

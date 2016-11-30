@@ -64,7 +64,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    office_element_ptr_array paragraph_content_;
+    office_element_ptr_array content_;
   
 };
 
@@ -94,8 +94,8 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-	odf_types::style_ref text_style_name_;    
-    office_element_ptr_array content_;
+	odf_types::style_ref		text_style_name_;    
+    office_element_ptr_array	content_;
   
 };
 

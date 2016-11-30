@@ -276,25 +276,6 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 {
 	std::wstringstream & _pPr = Context.get_text_context().get_styles_context().paragraph_attr();
  //сначала аттрибуты к самому pPr или defPPr
-
-	if (fo_text_align_)
-	{
-		std::wstring jc;
-		switch(fo_text_align_->get_type())
-		{
-		case text_align::Start:
-		case text_align::Left:
-			jc = L"l";		break;
-		case text_align::End:
-		case text_align::Right:
-			jc = L"r";		break;
-		case text_align::Center:	
-			jc = L"ctr";	break;
-		case text_align::Justify:
-			jc = L"just";	break;
-		}
-		if (jc.length()>0) _pPr << L"algn=\"" << jc << "\" ";
-	}
 	if (fo_margin_left_ || fo_margin_right_ || fo_text_indent_ )
 	{
 		// TODO auto indent
@@ -315,6 +296,26 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		if (!w_firstLine.empty())
 			_pPr << L"indent=\"" << w_firstLine << "\" ";
 	}
+
+	if (fo_text_align_)
+	{
+		std::wstring jc;
+		switch(fo_text_align_->get_type())
+		{
+		case text_align::Start:
+		case text_align::Left:
+			jc = L"l";		break;
+		case text_align::End:
+		case text_align::Right:
+			jc = L"r";		break;
+		case text_align::Center:	
+			jc = L"ctr";	break;
+		case text_align::Justify:
+			jc = L"just";	break;
+		}
+		if (jc.length()>0) _pPr << L"algn=\"" << jc << "\" ";
+	}
+
 	if (style_vertical_align_)
 	{
 		std::wstring w_val;
@@ -329,7 +330,6 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 
 		if (!w_val.empty())
 			_pPr << L"fontAlgn=\""  << w_val << "\" ";
-
 	}
 	//if (style_writing_mode_)
 	//{

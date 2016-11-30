@@ -65,6 +65,8 @@ public:
 	static const ElementType type = typeDrawShape;
 	static const xml::NodeType xml_type = xml::typeElement;
 
+	draw_shape() : bad_shape_(false), word_art_(false) {}
+
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
@@ -87,6 +89,7 @@ public:
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
 //----------------------------------------------------------------------------------------------
+	bool								bad_shape_;
 	bool								word_art_;
 	int									sub_type_;
 	std::vector<odf_reader::_property>	additional_;

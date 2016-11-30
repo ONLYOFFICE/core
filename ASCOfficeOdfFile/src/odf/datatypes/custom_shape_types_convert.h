@@ -185,6 +185,7 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"mso-spt179"				,L""	,0	,0	,0	},
 {L"mso-spt180"				,L""	,0	,0	,0	},
 {L"mso-spt182"				,L"leftRightUpArrow"	,0	,0	,0	},
+{L"mso-spt188"				,L"flowChartPunchedTape",0	,0	,0	},
 {L"mso-spt189"				,L"actionButtonBlank"	,0	,0	,0	},
 {L"mso-spt190"				,L"actionButtonHome"	,0	,0	,0	},
 {L"mso-spt191"				,L"actionButtonHelp"	,0	,0	,0	},
@@ -284,7 +285,7 @@ static const _shape_converter _OO_OOX_wordart[]=
 {L"fontwork-triangle-up"		,L"textTriangle"		,0	,0	,0	},
 {L"fontwork-triangle-down"		,L"textTriangleInverted"	,0	,0	,0	},
 
-{L"fontwork-circle-pour"		,L"textCirclePour"		,0	,0	,0	},
+{L"fontwork-circle-pour"		,L"textCirclePour"	,0	,0	,0	},
 {L"fontwork-circle-curve"		,L"textCircle"		,0	,0	,0	},
 {L"fontwork-open-circle-curve"	,L"textPlain"		,1	,30000	,	70000 },
 {L"fontwork-open-circle-pour"	,L"textPlain"		,1	,30000	,	70000 },
@@ -296,18 +297,18 @@ static const _shape_converter _OO_OOX_wordart[]=
 
 {L"mso-spt142"					,L"textRingInside"	,0	,0	,0	},
 {L"mso-spt143"					,L"textRingOutside"	,0	,0	,0	},
-{L"mso-spt157"					,L"textWave2"	,0	,0	,0	},
+{L"mso-spt157"					,L"textWave2"		,0	,0	,0	},
 {L"mso-spt158"					,L"textDoubleWave1"	,0	,0	,0	},
-{L"mso-spt159"					,L"textWave4"	,0	,0	,0	},
-{L"mso-spt160"					,L"textInflate"	,0	,0	,0	},//???
-{L"mso-spt161"					,L"textDeflate"	,0	,0	,0	},
+{L"mso-spt159"					,L"textWave4"		,0	,0	,0	},
+{L"mso-spt160"					,L"textInflate"		,0	,0	,0	},//???
+{L"mso-spt161"					,L"textDeflate"		,0	,0	,0	},
 {L"mso-spt162"					,L"textInflateBottom"	,0	,0	,0	},
 {L"mso-spt163"					,L"textDeflateBottom"	,0	,0	,0	},
 {L"mso-spt164"					,L"textInflateTop"	,0	,0	,0	},
 {L"mso-spt165"					,L"textDeflateTop"	,0	,0	,0	},
 {L"mso-spt166"					,L"textDeflateInflateDeflate"	,0	,0	,0	},
-{L"mso-spt174"					,L"textCanUp"	,0	,0	,0	},
-{L"mso-spt175"					,L"textCanDown"	,0	,0	,0	}, 
+{L"mso-spt174"					,L"textCanUp"		,0	,0	,0	},
+{L"mso-spt175"					,L"textCanDown"		,0	,0	,0	}, 
 {L"mso-spt188"					,L"textDoubleWave1"	,0	,0	,0	},
 
 };

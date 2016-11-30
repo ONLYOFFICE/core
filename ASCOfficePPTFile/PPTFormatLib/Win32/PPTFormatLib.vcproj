@@ -370,6 +370,14 @@
 				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool

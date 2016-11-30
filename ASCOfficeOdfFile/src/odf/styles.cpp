@@ -747,11 +747,11 @@ const wchar_t * style_column::name = L"column";
 
 void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"fo:start-indent", fo_start_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:end-indent", fo_end_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-before", fo_space_before_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-after", fo_space_after_, length(0.0, length::cm));
+    CP_APPLY_ATTR(L"style:rel-width",	style_rel_width_);
+    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_,		length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_,	length(0.0, length::cm));
     
 }
 
@@ -1177,20 +1177,23 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 
     if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
     {
-        std::wstring w_w = L"",w_h = L"";
+        std::wstring w_w, w_h;
 
-		int h=0,w=0;
+		_INT64 h = 0, w = 0;
 		
 		if (fo_page_width_)
 		{
 			w =  fo_page_width_->get_value_unit(length::emu);
+			if (w < 914400) w = 914400;
 
-			w_w = boost::lexical_cast<std::wstring>(w);
+			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
 			h = fo_page_height_->get_value_unit(length::emu);
-			w_h = boost::lexical_cast<std::wstring>(h);
+			if (h < 914400) h = 914400;
+
+			w_h = std::to_wstring(h);
 		}
                 
         std::wstring w_orient = L"custom";
@@ -1219,13 +1222,13 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 // style-footnote-sep-attlist
 void style_footnote_sep_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:width", style_width_);
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"style:color", style_color_);
-    CP_APPLY_ATTR(L"style:line-style", style_line_style_);
-    CP_APPLY_ATTR(L"style:type", style_adjustment_, style_type(style_type::Left)); // default Left
-    CP_APPLY_ATTR(L"style:distance-before-sep", style_distance_before_sep_);
-    CP_APPLY_ATTR(L"style:distance-after-sep", style_distance_after_sep_);
+    CP_APPLY_ATTR(L"style:width",					style_width_);
+    CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
+    CP_APPLY_ATTR(L"style:color",					style_color_);
+    CP_APPLY_ATTR(L"style:line-style",				style_line_style_);
+    CP_APPLY_ATTR(L"style:type",					style_adjustment_, style_type(style_type::Left)); // default Left
+    CP_APPLY_ATTR(L"style:distance-before-sep",		style_distance_before_sep_);
+    CP_APPLY_ATTR(L"style:distance-after-sep",		style_distance_after_sep_);
 }
 
 /// style:footnote-sep
@@ -1275,13 +1278,6 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 }
 void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	if (Context.get_table_context().in_table())
-    {
-        // мы находимся внутри таблицы, устанавливаем специальное значение
-        Context.section_properties_in_table(this);
-        return;
-    }
-
 	style_columns * columns = dynamic_cast<style_columns *>( style_page_layout_properties_elements_.style_columns_.get());
 
 	CP_XML_WRITER(strm)
@@ -1462,39 +1458,42 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////
 
 const wchar_t * hdrHeader = L"<w:hdr \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 mc:Ignorable=\"w14 wp14\">";
 
+
 const wchar_t * ftrHeader = L"<w:ftr \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 mc:Ignorable=\"w14 wp14\">";
 
 void style_header::docx_convert(oox::docx_conversion_context & Context)

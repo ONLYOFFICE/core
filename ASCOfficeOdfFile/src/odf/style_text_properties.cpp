@@ -343,7 +343,18 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 					CP_XML_ATTR(L"cap", "small");
 				}
 			}			
-	// underline
+			if (fo_text_transform_)
+			{
+				if (fo_text_transform_->get_type() == text_transform::Uppercase)
+				{
+					CP_XML_ATTR(L"cap", "all");
+				}
+				else if (fo_text_transform_->get_type() == text_transform::Lowercase)
+				{
+					CP_XML_ATTR(L"cap", "small");
+				}
+			}
+			// underline
 			line_width under	=	style_text_underline_width_.get_value_or(line_width::Auto);
 			bool underlineBold	=	under.get_type() == line_width::Bold	|| 
 									under.get_type() == line_width::Thick;
@@ -363,7 +374,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				switch (style_text_underline_type_->get_type())
 				{
 				case line_type::Single:	underline = L"sng";			break;
-				case line_type::Double:	underline = L"double";		break;
+				case line_type::Double:	underline = L"dbl";		break;
 				}
 			}
 			else if (style_text_underline_style_)
@@ -397,8 +408,8 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				case line_style::Wave:
 					if (underlineBold)	underline = L"wavyHeavy"; 
 					else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-										underline = L"wavyDouble"; 
-					else				underline = L"wave"; 
+										underline = L"wavyDbl"; 
+					else				underline = L"wavy"; 
 					break;
 				}
 			}
@@ -425,10 +436,10 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			if (fo_language_ || style_language_asian_ || style_language_complex_)
 			{
 				std::wstring w_val;
-				if (fo_language_)		w_val = *fo_language_;
-				else if (fo_country_)	w_val = *fo_country_;
-				else if (style_country_asian_)w_val = *style_country_asian_;
-				else if (style_language_asian_)w_val = *style_language_asian_;
+				if		(fo_language_)			w_val = *fo_language_;
+				else if (fo_country_)			w_val = *fo_country_;
+				else if (style_country_asian_)	w_val = *style_country_asian_;
+				else if (style_language_asian_)	w_val = *style_language_asian_;
 				else if (style_language_complex_)w_val = *style_language_complex_;
 				else if (style_country_complex_)w_val = *style_country_complex_;
 
@@ -619,7 +630,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 underline = L"single";
                 break;
             case line_type::Double:
-                underline = L"double";
+                underline = L"dbl";
                 break;
             }
         }
@@ -666,9 +677,9 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 if (underlineBold)
                     underline = L"wavyHeavy"; 
                 else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-                    underline = L"wavyDouble"; 
+                    underline = L"wavyDbl"; 
                 else
-                    underline = L"wave"; 
+                    underline = L"wavy"; 
                 break;
             }
         }
@@ -1109,7 +1120,7 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 					underline = L"single";
 					break;
 				case line_type::Double:
-					underline = L"double";
+					underline = L"dbl";
 					break;
 				}
 			}
@@ -1156,9 +1167,9 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 					if (underlineBold)
 						underline = L"wavyHeavy"; 
 					else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-						underline = L"wavyDouble"; 
+						underline = L"wavyDbl"; 
 					else
-						underline = L"wave"; 
+						underline = L"wavy"; 
 					break;
 				}
 			}

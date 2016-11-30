@@ -147,6 +147,14 @@ void office_text::pptx_convert(oox::pptx_conversion_context & Context)
 const wchar_t * office_change_info::ns		= L"office";
 const wchar_t * office_change_info::name	= L"change-info";
 
+void office_change_info::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	int count = Attributes->size();
+	
+	CP_APPLY_ATTR(L"office:chg-author", office_chg_author_);
+	CP_APPLY_ATTR(L"office:chg-date-time", office_chg_date_time_);
+}
+
 void office_change_info::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"dc", L"date")
@@ -165,13 +173,22 @@ void office_change_info::docx_convert(oox::docx_conversion_context & Context)
 {
 	std::wstring date;
  	std::wstring author;
+	
 	if (dc_date_)
 	{
 		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
 	}
+	else if (office_chg_date_time_)
+	{
+		date = *office_chg_date_time_;
+	}
 	if (dc_creator_)
 	{
 		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+	}
+	else if (office_chg_author_)
+	{
+		author = *office_chg_author_;
 	}
 	
 	Context.get_text_tracked_context().set_user_info(author, date);

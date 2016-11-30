@@ -88,11 +88,14 @@ public:
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
 
 private:
-	virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes ){}
+	virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
     office_element_ptr		dc_date_;
     office_element_ptr		dc_creator_;
+
+	_CP_OPT(std::wstring)	office_chg_author_;
+	_CP_OPT(std::wstring)	office_chg_date_time_;
 	
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_change_info)

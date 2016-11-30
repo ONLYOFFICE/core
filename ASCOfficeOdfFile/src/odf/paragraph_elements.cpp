@@ -332,7 +332,7 @@ const wchar_t * span::name = L"span";
 
 std::wostream & span::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & parElement, content_)
     {
         parElement->text_to_stream(_Wostream);
     }
@@ -359,13 +359,13 @@ void span::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void span::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(paragraph_content_);
+    CP_CREATE_ELEMENT(content_);
 }
 
 void span::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text);
-    paragraph_content_.push_back( elm );
+    content_.push_back( elm );
 }
 
 void span::docx_convert(oox::docx_conversion_context & Context)
@@ -406,7 +406,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 
     if (!addNewRun)Context.add_new_run();
 
-    BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & parElement, content_)
     {
         parElement->docx_convert(Context);
     }
@@ -420,7 +420,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 void span::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_span(text_style_name_.style_name());
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
     }
@@ -432,7 +432,7 @@ void span::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_text_context().get_styles_context().start_process_style(styleInst);
    
 	Context.get_text_context().start_span(text_style_name_.style_name());
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->pptx_convert(Context);
     }
@@ -446,7 +446,7 @@ const wchar_t * a::name = L"a";
 
 std::wostream & a::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & element, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & element, content_)
     {
         element->text_to_stream(_Wostream);
     }
@@ -465,13 +465,13 @@ void a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void a::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(paragraph_content_);
+    CP_CREATE_ELEMENT(content_);
 }
 
 void a::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
-    paragraph_content_.push_back( elm );
+    content_.push_back( elm );
 }
 
 void a::docx_convert(oox::docx_conversion_context & Context)
@@ -527,7 +527,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
     if (!addNewRun)
         Context.add_new_run();
 
-    BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & parElement, content_)
     {
         parElement->docx_convert(Context);
     }
@@ -542,7 +542,7 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 void a::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_hyperlink(text_style_name_.style_name());
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);
     }
@@ -551,7 +551,7 @@ void a::xlsx_convert(oox::xlsx_conversion_context & Context)
 void a::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_text_context().start_hyperlink();
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->pptx_convert(Context);
     }

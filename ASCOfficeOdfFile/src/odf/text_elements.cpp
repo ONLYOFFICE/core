@@ -376,13 +376,14 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
 		bIsNewParagraph = false;
 		
-		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements
+		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements (
 		{
 			for (int i = 0; i < content_.size(); i++)
 			{
 				content_[i]->docx_convert(Context); 
 			}
-			Context.set_paragraph_state(false);
+			if (!Context.get_delete_text_state())
+				Context.set_paragraph_state(false);// например Appendix I_IPP.odt - tracked elements (вложенные списки из 2 элементов)
 			return;
 		}
     }

@@ -439,6 +439,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 					{
 						std::wstring relativeFrom = L"margin";
 						if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
+						
+						if (relativeFrom == L"column") relativeFrom = L"margin";
 
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
@@ -494,6 +496,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 				{
 					std::wstring relativeFrom = L"margin";
 					if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
+
+					if (relativeFrom == L"column") relativeFrom = L"margin";
 					
 					CP_XML_NODE(L"wp14:sizeRelH")
 					{

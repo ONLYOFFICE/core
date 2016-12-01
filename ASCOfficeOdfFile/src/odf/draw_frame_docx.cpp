@@ -1286,7 +1286,10 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		if (drawing.cx > max_x) drawing.cy = max_x;
 	}
 	if (auto_fit_shape)
+	{
+		drawing.additional.push_back(_property(L"text-wrap"	, 0));
 		drawing.additional.push_back(_property(L"auto-grow-height", auto_fit_shape));
+	}
 	else if (auto_fit_text)
 		drawing.additional.push_back(_property(L"fit-to-size",	auto_fit_text));
 

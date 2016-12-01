@@ -20,6 +20,13 @@ else
 		LIB_EXT := .a
 		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
 	endif
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM := mac
+		SHARED_EXT := .dylib*
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		MAKE := make -j $(shell sysctl -n hw.ncpu)
+	endif
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P),x86_64)
 		ARCHITECTURE := 64

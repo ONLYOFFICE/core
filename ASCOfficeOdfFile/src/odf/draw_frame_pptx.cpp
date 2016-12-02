@@ -109,8 +109,8 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
 		double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		if (x_pt <0) x_pt =0;
-		if (y_pt <0) y_pt =0;
+		if (x_pt < 0) x_pt =0;
+		if (y_pt < 0) y_pt =0;
 
 		Context.get_slide_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	}

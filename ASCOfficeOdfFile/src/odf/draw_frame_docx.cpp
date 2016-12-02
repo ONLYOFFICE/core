@@ -855,7 +855,6 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
            drawing. behindDoc = L"1";            
         }
 
-
         drawing.margin_rect[0] = GetMargin(graphicProperties, sideLeft);
         drawing.margin_rect[1] = GetMargin(graphicProperties, sideTop);
         drawing.margin_rect[2] = GetMargin(graphicProperties, sideRight);
@@ -863,6 +862,17 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
         drawing.posOffsetH = ComputeMarginX(pagePropertiesNode, pageProperties, attlists_, graphicProperties, drawing.additional);
         drawing.posOffsetV = ComputeMarginY(					pageProperties, attlists_, graphicProperties, drawing.additional);
+
+		if (attlists_.rel_size_.style_rel_width_)
+		{
+			int type			= attlists_.rel_size_.style_rel_width_->get_type();
+			drawing.pctWidth	= attlists_.rel_size_.style_rel_width_->get_percent().get_value();
+		}
+		if (attlists_.rel_size_.style_rel_height_ )
+		{
+			int type			= attlists_.rel_size_.style_rel_height_->get_type();
+			drawing.pctHeight	= attlists_.rel_size_.style_rel_height_->get_percent().get_value();
+		}
 
     }
 	drawing.number_wrapped_paragraphs=graphicProperties.style_number_wrapped_paragraphs_.
@@ -998,7 +1008,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 }
 void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 {
-	/////...../////
+//--------------------------------------------------------------------------------------------------
 
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1016,15 +1026,28 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	}
 
 	Context.get_drawing_context().clear_stream_shape();
+
 /////////
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 /////////
+
+	if (bad_shape_ && drawing.fill.bitmap) // CV_Kucheruk_Maria(rus).odt - картинка по дебильному 
+	{
+		drawing.sub_type = 1;
+		bad_shape_ = false;
+	}
 
 	if (drawing.fill.type < 1 && !IsExistProperty(drawing.additional,L"stroke"))//бывает что и не определено ничего 
 	{
 		drawing.fill.solid = oox::oox_solid_fill::create();
 		drawing.fill.solid->color = L"729FCF";
 		drawing.fill.type = 1;
+	}
+
+	if (bad_shape_)
+	{
+		Context.get_drawing_context().stop_shape();
+		return;
 	}
 
     std::wostream & strm = Context.output_stream();
@@ -1170,13 +1193,6 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 {
- //	if (Context.get_drawing_context().get_current_level() > 1 )
-	//{ 
-	//	if(Context.delayed_converting_ == false)
-	//		Context.add_delayed_element(Context.get_drawing_context().get_current_frame());
-	//	return;
-	//}
-
 	//тут может быть не только текст , но и таблицы, другие объекты ...
  	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1185,10 +1201,10 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	
 	bool pState		= Context.get_paragraph_state	();
 	bool runState	= Context.get_run_state			();
+	bool keepState	= Context.get_paragraph_keep	();
 	
 	Context.set_run_state		(false);
 	Context.set_paragraph_state	(false);		
-
 
 	bool drState = Context.get_drawing_state_content();
 	
@@ -1205,6 +1221,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_run_state				(runState);
 	Context.set_paragraph_state			(pState);		
 	Context.set_drawing_state_content	(drState);
+	Context.set_paragraph_keep			(keepState);
 
 	/////...../////
 
@@ -1229,6 +1246,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 //+ локальные 
 
 	bool auto_fit_text = false;
+	bool auto_fit_shape = false;
 
 	if (!draw_text_box_attlist_.fo_min_height_)		draw_text_box_attlist_.fo_min_height_	= frame->draw_frame_attlist_.fo_min_height_;
 	if (!draw_text_box_attlist_.fo_min_width_)		draw_text_box_attlist_.fo_min_width_	= frame->draw_frame_attlist_.fo_min_width_;
@@ -1238,19 +1256,25 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		size_t min_y = get_value_emu(draw_text_box_attlist_.fo_min_height_->get_length());
 		if (drawing.cy < min_y) 
 		{
-			drawing.cy = min_y;
 			auto_fit_text = true;
+			drawing.cy = min_y;
 		}
+		if (drawing.cy < 36000) auto_fit_shape = true;
 	}
+
+	
 	if ((draw_text_box_attlist_.fo_min_width_) && (draw_text_box_attlist_.fo_min_width_->get_type()==length_or_percent::Length))
 	{
 		size_t min_x = get_value_emu(draw_text_box_attlist_.fo_min_width_->get_length());
 		if (drawing.cx < min_x)
 		{
-			drawing.cx = min_x;
 			auto_fit_text = true;
+			drawing.cx = min_x;
 		}
+		if (drawing.cx < 36000) auto_fit_shape = true;
 	}
+
+
 	if ((draw_text_box_attlist_.fo_max_height_) && (draw_text_box_attlist_.fo_max_height_->get_type()==length_or_percent::Length))
 	{
 		size_t max_y = get_value_emu(draw_text_box_attlist_.fo_max_height_->get_length());
@@ -1261,8 +1285,14 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		size_t max_x = get_value_emu(draw_text_box_attlist_.fo_max_width_->get_length());
 		if (drawing.cx > max_x) drawing.cy = max_x;
 	}
-	if (auto_fit_text)
+	if (auto_fit_shape)
+	{
+		drawing.additional.push_back(_property(L"text-wrap"	, 0));
+		drawing.additional.push_back(_property(L"auto-grow-height", auto_fit_shape));
+	}
+	else if (auto_fit_text)
 		drawing.additional.push_back(_property(L"fit-to-size",	auto_fit_text));
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -1277,6 +1307,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		Context.set_paragraph_keep(true);
 		pState	= Context.get_paragraph_state();
 	}
+	keepState	= Context.get_paragraph_keep();
 
 	Context.set_paragraph_state(false);
    
@@ -1288,7 +1319,8 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
 
-	Context.set_paragraph_state(pState);		
+	Context.set_paragraph_state	(pState);		
+	Context.set_paragraph_keep	(keepState);
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
@@ -1406,7 +1438,6 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	//if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
 	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
     {
         Context.add_delayed_element(this);

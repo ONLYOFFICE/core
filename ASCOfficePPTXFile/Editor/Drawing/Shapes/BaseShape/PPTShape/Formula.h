@@ -116,42 +116,44 @@ namespace NSGuidesVML
 		ptValue				= 2
 	};
 	
-	static LONG GetValue(CString strParam, ParamType& ptType, bool& bRes, 
+	static long GetValue(CString strParam, ParamType& ptType, bool& bRes, 
 				long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
 	{
-		ptType = ptValue;
-		bRes = true;
+		ptType		= ptValue;
+		bRes		= true;
+		long val	= 0;
+
 		if ('#' == strParam[0])
 		{
 			ptType = ptAdjust;
-			return (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+			val = XmlUtils::GetInteger(strParam.Mid(1));
 		}
 		else if ('@' == strParam[0])
 		{
 			ptType = ptFormula;
-			return (LONG)XmlUtils::GetInteger(strParam.Mid(1));
+			val = XmlUtils::GetInteger(strParam.Mid(1));
 		}
 		else if (!NSStringUtils::IsNumber(strParam))
 		{
 			if (_T("width") == strParam)
 			{
-				return lShapeWidth;
+				val = lShapeWidth;
 			}
 			else if (_T("height") == strParam)
 			{
-				return lShapeHeight;
+				val = lShapeHeight;
 			}
 			else if (_T("pixelWidth") == strParam)
 			{
-				return lShapeWidth;
+				val = lShapeWidth;
 			}
 			else if (_T("pixelHeight") == strParam)
 			{
-				return lShapeHeight;
+				val = lShapeHeight;
 			}
 			else if (_T("pixelLineWidth") == strParam || _T("lineDrawn") == strParam)
 			{
-				return 1;
+				val = 1;
 			}
 			else
 			{
@@ -162,8 +164,9 @@ namespace NSGuidesVML
 		else
 		{
 			ptType = ptValue;
-			return (LONG)XmlUtils::GetInteger(strParam);
+			val = XmlUtils::GetInteger(strParam);
 		}
+		return val;
 	}
 	
 	static FormulaType GetFormula(CString strName, bool& bRes)

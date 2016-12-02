@@ -41,7 +41,7 @@
 
 namespace DocFileFormat
 {
-	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller):_skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
+	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
 		_fldCharCounter(0), AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
@@ -53,6 +53,10 @@ namespace DocFileFormat
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
+
+//--------------------------------------------
+		_embeddedObject			=	false;
+		_writeInstrText			=	false;
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
@@ -67,6 +71,7 @@ namespace DocFileFormat
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
+		_embeddedObject			=	false;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -643,13 +648,13 @@ namespace DocFileFormat
 							}
 							cpFieldSep1 = cpFieldSep2;
 						}
-						_skipRuns = 5;
+						_skipRuns = 5; //with separator
 					}
 				}
 				else if (	bEMBED  ||	bLINK ||	bQUOTE)						
 				{
-					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
-					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);
+					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
+					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
 
 					if (cpPic < cpFieldEnd)
 					{
@@ -731,14 +736,8 @@ namespace DocFileFormat
 						}	
 					}
 
-					if (bEMBED)
-					{
-						//Приложения_011015.doc(9 стр) ellipt_eq.doc конфликтные
-						cp = cpFieldEnd;
-						_skipRuns = 3; 
-					}
-					else
-						_skipRuns = 5;
+					_skipRuns		= 3;
+					_embeddedObject	= true;
 				}					
 				else
 				{
@@ -759,6 +758,7 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
 				}
+				if (_embeddedObject)	_skipRuns += 2;
 			}
 			else if (TextMark::FieldEndMark == code)
 			{
@@ -781,6 +781,7 @@ namespace DocFileFormat
 				{	
 					_writeInstrText	= false;
 				}
+				_embeddedObject = false;
 			}
 			else if ((TextMark::Symbol == code) && fSpec)
 			{

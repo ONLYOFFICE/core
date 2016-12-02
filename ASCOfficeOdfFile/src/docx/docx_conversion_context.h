@@ -490,13 +490,14 @@ class text_tracked_context
 public:
 	struct _state
 	{
-		std::wstring	id;
-		std::wstring	author;
-		std::wstring	date;
-		int				type;
-		std::wstring	content;	//delete elements
-		std::wstring	style_name;
-		
+		std::wstring				id;
+		std::wstring				author;
+		std::wstring				date;
+		int							type;
+		std::wstring				style_name;
+		std::vector<std::wstring>	content;	//delete elements		
+		bool						active;
+	
 		void clear()
 		{
 			type = 0;
@@ -504,6 +505,7 @@ public:
 			author.clear();
 			date.clear();
 			content.clear();
+			active = false;
 		}
 	};
 	std::wstring dumpPPr_;
@@ -683,9 +685,6 @@ public:
 
     docx_table_context & get_table_context() { return table_context_; }
 
-    odf_reader::office_element	* get_section_properties_in_table();
-	void section_properties_in_table (odf_reader::office_element * Elm);
-
     StreamsManPtr	get_stream_man() const				{ return streams_man_; }
     void			set_stream_man(StreamsManPtr Sm)	{ streams_man_ = Sm; }
 
@@ -752,23 +751,23 @@ private:
     odf_reader::odf_document	* odf_document_;
     CApplicationFonts			* applicationFonts_;
 
-	std::vector<odf_reader::_property> settings_properties_;
+	std::vector<odf_reader::_property>		settings_properties_;
 
-	hyperlinks		hyperlinks_;
-    mediaitems		mediaitems_;     
+	hyperlinks								hyperlinks_;
+    mediaitems								mediaitems_;     
+	std::vector<oox_chart_context_ptr>		charts_;
+    headers_footers							headers_footers_;
 
-    std::wstring	automatic_parent_style_; 
-
-    std::list< const odf_reader::style_text_properties * > text_properties_stack_;
+    std::wstring			automatic_parent_style_; 
+    std::wstring			current_master_page_name_;
+	std::wstring			text_list_style_name_;
+    std::list<std::wstring> list_style_stack_;
+    bool					first_element_list_item_;
     
 	bool page_break_after_;
     bool page_break_before_;
 	bool page_break_;
-      
-	std::wstring			text_list_style_name_;
-    std::list<std::wstring> list_style_stack_;
-    bool					first_element_list_item_;
-	
+
 	bool in_automatic_style_; 
 	bool in_drawing_content_;
     bool in_paragraph_;
@@ -777,25 +776,14 @@ private:
 	bool is_delete_text_;
     bool is_rtl_; // right-to-left
     bool is_paragraph_keep_; 
-
-	NoteType process_note_;
-
+ 
+    int										new_list_style_number_;	// счетчик для нумерации имен созданных в процессе конвертации стилей
+	NoteType								process_note_;
     std::list<odf_reader::office_element *> delayed_elements_;
 
-	std::vector<oox_chart_context_ptr> charts_;
-
-    odf_reader::office_element * section_properties_in_table_;
-
-    headers_footers		headers_footers_;
-    std::wstring		current_master_page_name_;
-
-    // счетчик для нумерации имен созданных в процессе конвертации стилей
-    int new_list_style_number_;
-
-	std::map<std::wstring, text_tracked_context::_state> map_current_changes_;
-
-    // цепочки переименований нумераций
-    boost::unordered_map<std::wstring, std::wstring> list_style_renames_;
+    std::list< const odf_reader::style_text_properties * >	text_properties_stack_;
+	std::map<std::wstring, text_tracked_context::_state>	map_current_changes_;    
+    boost::unordered_map<std::wstring, std::wstring>		list_style_renames_;// цепочки переименований нумераций
 };
 
 }

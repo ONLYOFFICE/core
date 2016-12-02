@@ -260,8 +260,8 @@ void oox_serialize_bodyPr(std::wostream & strm, _oox_drawing & val, const std::w
 			if (val.inGroup == false)
 			{
 				_CP_OPT(int)	iWrap;
-				odf_reader::GetProperty(prop,L"text-wrap"	, iWrap);
-				if ((iWrap) && (*iWrap == 0))CP_XML_ATTR(L"wrap", L"none");
+				odf_reader::GetProperty(prop, L"text-wrap"	, iWrap);
+				if ((iWrap) && (*iWrap == 0)) CP_XML_ATTR(L"wrap", L"none");
 			}
 
 			_CP_OPT(int) iAlign;
@@ -419,13 +419,13 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wst
 		std::wstring xfrm = name_space + L":xfrm";
 
 		_CP_OPT(double) dRotate;
-		odf_reader::GetProperty(val.additional,L"svg:rotate",dRotate);
+		odf_reader::GetProperty(val.additional, L"svg:rotate", dRotate);
 	
 		_CP_OPT(double) dSkewX;
-		odf_reader::GetProperty(val.additional,L"svg:skewX",dSkewX);		
+		odf_reader::GetProperty(val.additional, L"svg:skewX", dSkewX);		
 
 		_CP_OPT(double) dSkewY;
-		odf_reader::GetProperty(val.additional,L"svg:skewY",dSkewY);	
+		odf_reader::GetProperty(val.additional, L"svg:skewY", dSkewY);	
 
 		_CP_OPT(double) dRotateAngle;
 		
@@ -443,7 +443,7 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wst
 		{      
 			if (dRotateAngle)
 			{
-				double d =360-dRotateAngle.get()*180./3.14159265358979323846;
+				double d =360 - dRotateAngle.get() * 180. / 3.14159265358979323846;
 				d *= 60000; //60 000 per 1 gr - 19.5.5 oox 
 				CP_XML_ATTR(L"rot", (int)d);
 			}
@@ -456,11 +456,19 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, const std::wst
 
 			CP_XML_NODE(L"a:off") 
 			{
-				CP_XML_ATTR(L"x", val.x);
-				CP_XML_ATTR(L"y", val.y);
+				if (val.inGroup)
+				{	
+					CP_XML_ATTR(L"x", val.x);
+					CP_XML_ATTR(L"y", val.y);
+				}
+				else
+				{
+					CP_XML_ATTR(L"x", 0);
+					CP_XML_ATTR(L"y", 0);
+				}
 			}
 
-			if (val.cx >0 || val.cy >0)
+			if (val.cx > 0 || val.cy > 0)
 			{
 				CP_XML_NODE(L"a:ext")
 				{

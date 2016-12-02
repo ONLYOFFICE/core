@@ -175,18 +175,6 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_table_context().end_table();
 	_Wostream << L"</w:tbl>";
-
-    if (office_element * elm = Context.get_section_properties_in_table())
-    {
-        if (Context.get_table_context().in_table())
-            Context.section_properties_in_table(elm);
-        else
-        {
-            _Wostream << L"<w:p><w:pPr>";
-            elm->docx_convert(Context);
-            _Wostream << L"</w:pPr></w:p>";            
-        }
-    }
 }
 
 void table_columns::docx_convert(oox::docx_conversion_context & Context)

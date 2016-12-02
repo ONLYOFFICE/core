@@ -533,8 +533,9 @@ void common_draw_rel_size_attlist::apply_from(const common_draw_rel_size_attlist
 void common_draw_rel_size_attlist::serialize(CP_ATTR_NODE)
 {
     common_draw_size_attlist_.serialize(CP_GET_XML_NODE());
-    CP_XML_ATTR_OPT(L"style:rel-width", style_rel_width_);
-    CP_XML_ATTR_OPT(L"style:rel-height", style_rel_height_);
+    
+	CP_XML_ATTR_OPT(L"style:rel-width",		style_rel_width_);
+    CP_XML_ATTR_OPT(L"style:rel-height",	style_rel_height_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

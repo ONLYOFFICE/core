@@ -137,7 +137,14 @@ typedef std::map<std::wstring, oox::text_tracked_context::_state>::iterator map_
 
 int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
 {
-    if (!Attr.text_style_name_.empty())
+	bool in_drawing	= false;
+
+ 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+	}
+	
+	if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph, Context.process_headers_footers_)
@@ -188,21 +195,27 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.output_stream() << L"<w:pPr>";
 //todooo причесать			
-					if (Context.is_paragraph_header() && !Context.get_section_context().dump_.empty())
+					if (!Context.get_section_context().dump_.empty()
+						&& !Context.get_table_context().in_table()
+						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
 					{
-						Context.output_stream() << Context.get_section_context().dump_;
-						Context.get_section_context().dump_.clear();
+						if (Context.is_paragraph_header() )
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
 
-						Context.output_stream() << L"</w:pPr>";
-						Context.finish_paragraph();
-						Context.start_paragraph();					
-						Context.output_stream() << L"<w:pPr>";
+							Context.output_stream() << L"</w:pPr>";
+							Context.finish_paragraph();
+							Context.start_paragraph();					
+							Context.output_stream() << L"<w:pPr>";
+						}
+						else
+						{
+							Context.output_stream() << Context.get_section_context().dump_;
+							Context.get_section_context().dump_.clear();
+						}
 					}
-					else if ( !Context.get_table_context().in_table())
-					{
-						Context.output_stream() << Context.get_section_context().dump_;
-						Context.get_section_context().dump_.clear();
-					}	
 
 					Context.output_stream() << L"<w:pStyle w:val=\"" << id << L"\" />";
 
@@ -231,7 +244,10 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 			}
 		}
 	}
-	if (!Context.get_section_context().dump_.empty() &&  !Context.get_table_context().in_table())
+	if (!Context.get_section_context().dump_.empty() 
+		&& !Context.get_table_context().in_table()
+		&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+		&& !in_drawing)
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;
@@ -249,25 +265,25 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 std::wostream & paragraph::text_to_stream(std::wostream & _Wostream) const
 {
     // TODO!!!!
-    CP_SERIALIZE_TEXT(paragraph_content_);
+    CP_SERIALIZE_TEXT(content_);
     _Wostream << L"\n";
     return _Wostream;
 }
 
 void paragraph::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    paragraph_attrs_.add_attributes(Attributes);
+    attrs_.add_attributes(Attributes);
 }
 
 void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
-    CP_CREATE_ELEMENT_SIMPLE(paragraph_content_);
+    CP_CREATE_ELEMENT_SIMPLE(content_);
 }
 
 void paragraph::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
-    paragraph_content_.push_back( elm );
+	content_.push_back( elm );
 }
 
 void paragraph::afterCreate(document_context * Context)
@@ -301,7 +317,7 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 
 	str = store_str.substr(0,Context.get_drop_cap_context().Length);
 	
-	int textStyle = process_paragraph_attr(paragraph_attrs_, Context);
+	int textStyle = process_paragraph_attr(attrs_, Context);
 	first_text_paragraph->docx_convert(Context); 
 
 	int str_start	= Context.get_drop_cap_context().Length;
@@ -314,16 +330,16 @@ void paragraph::drop_cap_text_docx_convert(office_element_ptr first_text_element
 }
 void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 {
-	if ( paragraph_content_.empty()) return;
+	if ( content_.empty()) return;
 
 	//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!- todooo сделать возможным множественным span
-	if ( paragraph_content_[0]->get_type() == typeTextText)
+	if ( content_[0]->get_type() == typeTextText)
 	{
-		drop_cap_text_docx_convert(paragraph_content_[0],Context);
+		drop_cap_text_docx_convert(content_[0],Context);
 	}
-	else if (paragraph_content_[0]->get_type() == typeTextSpan)
+	else if (content_[0]->get_type() == typeTextSpan)
 	{
-		span* first_span_in_paragraph = dynamic_cast<span*>(paragraph_content_[0].get());
+		span* first_span_in_paragraph = dynamic_cast<span*>(content_[0].get());
 		if (Context.get_drop_cap_context().FontSize < 1)
 		{
 			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(first_span_in_paragraph->text_style_name_.style_name(), style_family::Text,Context.process_headers_footers_);
@@ -343,49 +359,43 @@ void paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 			}
 		}
 		//в рассчет берутся только первые элементы !!! разные там break-и отменяют реэжим drop_cap!!
-		if ((first_span_in_paragraph->paragraph_content_.size()>0) &&
-			 (first_span_in_paragraph->paragraph_content_[0]->get_type() == typeTextText))
+		if ((first_span_in_paragraph->content_.size()>0) &&
+			 (first_span_in_paragraph->content_[0]->get_type() == typeTextText))
 		{
-			drop_cap_text_docx_convert(first_span_in_paragraph->paragraph_content_[0],Context);
+			drop_cap_text_docx_convert(first_span_in_paragraph->content_[0],Context);
 		}
 	}
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
-	bool drawing	= false;
+    const std::wstring & styleName = attrs_.text_style_name_.style_name();
+	
+	bool in_drawing	= false;
 
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
-		drawing = true;
+		in_drawing = true;
 	}
 		
 	bool bIsNewParagraph = true;
 	
-	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing )
-    {//вложеннные элементы
-		if (paragraph_content_.empty())//??
-		{
-			Context.output_stream() << L"<w:p>";
-				Context.output_stream() << emptyParagraphContent;
-			Context.output_stream() << L"</w:p>";
+	bool is_empty = content_.empty();
 
+	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !in_drawing)
+    {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
+		bIsNewParagraph = false;
+		
+		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements (
+		{
+			for (int i = 0; i < content_.size(); i++)
+			{
+				content_[i]->docx_convert(Context); 
+			}
+			if (!Context.get_delete_text_state())
+				Context.set_paragraph_state(false);// например Appendix I_IPP.odt - tracked elements (вложенные списки из 2 элементов)
 			return;
 		}
-		else
-		{
-			bIsNewParagraph = false;
-
-			if (!Context.get_paragraph_keep())
-			{
-				for (int i = 0; i < paragraph_content_.size(); i++)
-				{
-					paragraph_content_[i]->docx_convert(Context); 
-				}
-				return;
-			}
-		}
     }
-	bool is_empty = paragraph_content_.empty();
 
     if (bIsNewParagraph)
 		Context.start_paragraph(is_header_);
@@ -398,7 +408,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
         // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
         // распечатать свойства секции
 		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
-        const std::wstring & next_styleName				= next_par_->paragraph_attrs_.text_style_name_.style_name();
+        const std::wstring & next_styleName				= next_par_->attrs_.text_style_name_.style_name();
         const _CP_OPT(std::wstring) next_masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(next_styleName);
 
         if ((next_masterPageName)  && (Context.get_master_page_name() != *next_masterPageName))
@@ -413,7 +423,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		is_empty = false;
 	}
 
-    const std::wstring & styleName = paragraph_attrs_.text_style_name_.style_name();
     const _CP_OPT(std::wstring) masterPageName	= Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
    
 	if (masterPageName)
@@ -425,12 +434,10 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		Context.remove_page_properties();
 		Context.add_page_properties(masterPageNameLayout);
 
-		Context.set_page_break(true);
-
 		is_empty = false;
     }    
 
-	process_paragraph_drop_cap_attr(paragraph_attrs_, Context);
+	process_paragraph_drop_cap_attr(attrs_, Context);
 
 	if (Context.get_drop_cap_context().state() == 2)//active
 	{
@@ -444,16 +451,17 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 	}
 
-    int textStyle = process_paragraph_attr(paragraph_attrs_, Context);
+    int textStyle = process_paragraph_attr(attrs_, Context);
 
     Context.add_note_reference();
 
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 
-				_Wostream << L"<w:lastRenderedPageBreak/>";
+				//_Wostream << L"<w:lastRenderedPageBreak/>";
+				_Wostream << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
         elm->docx_convert(Context); 
@@ -482,7 +490,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
         Context.add_new_run(_T(""));
-        _Wostream << L"<w:br w:type=\"page\" />";        
+        _Wostream << L"<w:br w:type=\"page\"/>";        
         Context.finish_run();
     }
 
@@ -501,8 +509,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-    Context.start_paragraph(paragraph_attrs_.text_style_name_.style_name());
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    Context.start_paragraph(attrs_.text_style_name_.style_name());
+    BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context); 
     }
@@ -510,12 +518,14 @@ void paragraph::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void paragraph::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    Context.get_text_context().start_paragraph(paragraph_attrs_.text_style_name_.style_name());
-    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    Context.get_text_context().start_paragraph(attrs_.text_style_name_.style_name());
+    
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->pptx_convert(Context); 
     }
-    Context.get_text_context().end_paragraph();    
+    
+	Context.get_text_context().end_paragraph();    
 }
 ///////////////////////////////////////////
 void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
@@ -546,7 +556,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
     paragraph_.add_attributes(Attributes);
 
 	paragraph_.is_header_						= true;
-	paragraph_.paragraph_attrs_.outline_level_	= text_outline_level_;
+	paragraph_.attrs_.outline_level_	= text_outline_level_;
 }
 
 void h::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -1031,14 +1041,19 @@ void text_changed_region::add_attributes( const xml::attributes_wc_ptr & Attribu
 
 void text_changed_region::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(element_);
+    CP_CREATE_ELEMENT(content_);
 }
 void text_changed_region::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (!element_ || !text_id_) return;
+	if (content_.empty() || !text_id_) return;
 
 	Context.get_text_tracked_context().start_change (*text_id_);
-		element_->docx_convert(Context);
+	
+	for (int i = 0; i < content_.size(); i++)
+	{
+		content_[i]->docx_convert(Context);
+	}
+	
 	Context.get_text_tracked_context().end_change ();
 }
 
@@ -1066,12 +1081,30 @@ void text_unknown_base_change::docx_convert(oox::docx_conversion_context & Conte
 	if (content_.empty()) return;
 
 //тут удаленный текст. не по стандарту сделать бы и форматы - стилями чтоли ....
-	Context.get_text_tracked_context().start_changes_content();
-		for (int i = 0; i < content_.size(); i++)
+
+	for (int i = 0; i < content_.size(); i++)
+	{
+		Context.get_text_tracked_context().start_changes_content();
 		{
 			content_[i]->docx_convert(Context);
+			//h *h_ = dynamic_cast<h*>(content_[i].get());
+			//p *p_ = dynamic_cast<p*>(content_[i].get());
+
+			//paragraph *para = NULL;
+
+			//if (h_) para = &h_->paragraph_;
+			//if (p_) para = &p_->paragraph_;
+
+			//if (para)
+			//{
+			//	for (int j = 0; j < para->content_.size(); j++)
+			//	{
+			//		para->content_[j]->docx_convert(Context);
+			//	}
+			//}
 		}
-	Context.get_text_tracked_context().end_changes_content();
+		Context.get_text_tracked_context().end_changes_content();
+	}
 }
 //---------------------------------------------------------------------------------------------------
 const wchar_t * text_insertion::ns			= L"text";

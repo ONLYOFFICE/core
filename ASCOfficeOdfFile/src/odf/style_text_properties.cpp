@@ -276,18 +276,20 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 		{
 			std::wstring w_font	= (fo_font_family_ ? *fo_font_family_: L""); 
 
-			if (w_font.length() < 1)
+			if (w_font.empty())
 			{
-				std::wstring w_ascii	= (style_font_name_ ? *style_font_name_: L"");
-				std::wstring w_eastAsia = (style_font_name_asian_ ? *style_font_name_asian_: L"");
-				std::wstring w_cs		= (style_font_name_complex_ ? *style_font_name_complex_: L"");
+				std::wstring w_ascii	= (style_font_name_			? *style_font_name_			: L"");
+				std::wstring w_eastAsia = (style_font_name_asian_	? *style_font_name_asian_	: L"");
+				std::wstring w_cs		= (style_font_name_complex_ ? *style_font_name_complex_	: L"");
 				
 				fonts_container & fonts = Context.root()->odf_context().fontContainer();	        
 		
-				font_instance * font = fonts.font_by_style_name(w_ascii);
-				if (font == NULL)font = fonts.font_by_style_name(w_eastAsia);
-				if (font == NULL)font = fonts.font_by_style_name(w_cs);
-				if (font)w_font = font->name();
+				font_instance *		font = fonts.font_by_style_name(w_ascii);
+				if (font == NULL)	font = fonts.font_by_style_name(w_eastAsia);
+				if (font == NULL)	font = fonts.font_by_style_name(w_cs);
+				
+				if (font)		
+					w_font = font->name();
 
 				//'Arial' глючит
 				removeCharsFromString(w_font, _T("'"));
@@ -343,7 +345,18 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 					CP_XML_ATTR(L"cap", "small");
 				}
 			}			
-	// underline
+			if (fo_text_transform_)
+			{
+				if (fo_text_transform_->get_type() == text_transform::Uppercase)
+				{
+					CP_XML_ATTR(L"cap", "all");
+				}
+				else if (fo_text_transform_->get_type() == text_transform::Lowercase)
+				{
+					CP_XML_ATTR(L"cap", "small");
+				}
+			}
+			// underline
 			line_width under	=	style_text_underline_width_.get_value_or(line_width::Auto);
 			bool underlineBold	=	under.get_type() == line_width::Bold	|| 
 									under.get_type() == line_width::Thick;
@@ -363,7 +376,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				switch (style_text_underline_type_->get_type())
 				{
 				case line_type::Single:	underline = L"sng";			break;
-				case line_type::Double:	underline = L"double";		break;
+				case line_type::Double:	underline = L"dbl";		break;
 				}
 			}
 			else if (style_text_underline_style_)
@@ -397,8 +410,8 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				case line_style::Wave:
 					if (underlineBold)	underline = L"wavyHeavy"; 
 					else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-										underline = L"wavyDouble"; 
-					else				underline = L"wave"; 
+										underline = L"wavyDbl"; 
+					else				underline = L"wavy"; 
 					break;
 				}
 			}
@@ -425,10 +438,10 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 			if (fo_language_ || style_language_asian_ || style_language_complex_)
 			{
 				std::wstring w_val;
-				if (fo_language_)		w_val = *fo_language_;
-				else if (fo_country_)	w_val = *fo_country_;
-				else if (style_country_asian_)w_val = *style_country_asian_;
-				else if (style_language_asian_)w_val = *style_language_asian_;
+				if		(fo_language_)			w_val = *fo_language_;
+				else if (fo_country_)			w_val = *fo_country_;
+				else if (style_country_asian_)	w_val = *style_country_asian_;
+				else if (style_language_asian_)	w_val = *style_language_asian_;
 				else if (style_language_complex_)w_val = *style_language_complex_;
 				else if (style_country_complex_)w_val = *style_country_complex_;
 
@@ -619,7 +632,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 underline = L"single";
                 break;
             case line_type::Double:
-                underline = L"double";
+                underline = L"dbl";
                 break;
             }
         }
@@ -666,9 +679,9 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 if (underlineBold)
                     underline = L"wavyHeavy"; 
                 else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-                    underline = L"wavyDouble"; 
+                    underline = L"wavyDbl"; 
                 else
-                    underline = L"wave"; 
+                    underline = L"wavy"; 
                 break;
             }
         }
@@ -841,22 +854,38 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 
     if (style_font_name_ || style_font_name_asian_ || style_font_name_complex_ || fo_font_family_)
     {
+		fonts_container & fonts = Context.root()->odf_context().fontContainer();	        
+
         std::wstring w_eastAsia;
         std::wstring w_hAnsi;
         std::wstring w_cs;
-        std::wstring w_ascii = w_hAnsi = w_cs = (style_font_name_ ? *style_font_name_: L"");
+        std::wstring w_ascii = w_hAnsi = w_cs = (fo_font_family_ ? *fo_font_family_ : L"");
 
-        _rPr << L"<w:rFonts ";
-        if (!w_ascii.empty())
-            _rPr << L"w:ascii=\"" << w_ascii <<"\" ";
-        if (!w_hAnsi.empty())
-            _rPr << L"w:hAnsi=\"" << w_hAnsi <<"\" ";
-        if (!w_eastAsia.empty())
-            _rPr << L"w:eastAsia=\"" << w_eastAsia <<"\" ";
-        if (!w_cs.empty())
-            _rPr << L"w:cs=\"" << w_cs <<"\" ";
+		if (style_font_name_complex_)
+		{
+			font_instance * font = fonts.font_by_style_name(*style_font_name_complex_);
+			if (font)
+				w_cs = font->name();
+		}
+		if (style_font_name_asian_)
+		{
+			font_instance * font = fonts.font_by_style_name(*style_font_name_asian_);
+			if (font)
+				w_eastAsia	= font->name();
+		}
+		if (style_font_name_)
+		{
+			font_instance * font = fonts.font_by_style_name(*style_font_name_);
+			if (font) 
+				w_ascii = w_hAnsi = font->name();
+		}
 
-        _rPr << L" />";
+		_rPr << L"<w:rFonts";
+			if (!w_ascii.empty())		_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";
+			if (!w_hAnsi.empty())		_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";
+			if (!w_eastAsia.empty())	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";
+			if (!w_cs.empty())			_rPr << L" w:cs=\""			<< w_cs			<<"\"";
+        _rPr << L"/>";
     }
 
 	_CP_OPT(color) color_text = fo_color_;
@@ -963,12 +992,12 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 }
 
 
-void text_format_properties_content::oox_convert (std::wostream & _rPr, bool graphic)
+void text_format_properties_content::oox_convert (std::wostream & _rPr, bool graphic, fonts_container & fonts)
 {
 	const int W			= process_font_weight	(fo_font_weight_);
 	const int fontStyle = process_font_style	(fo_font_style_);
 	const int WCs		= process_font_weight	(style_font_weight_complex_);
-	
+
 	if (graphic)
 	{	
 		_rPr << L"<a:rPr";
@@ -1109,7 +1138,7 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 					underline = L"single";
 					break;
 				case line_type::Double:
-					underline = L"double";
+					underline = L"dbl";
 					break;
 				}
 			}
@@ -1156,9 +1185,9 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 					if (underlineBold)
 						underline = L"wavyHeavy"; 
 					else if (style_text_underline_type_.get_value_or( line_type(line_type::Single) ).get_type() == line_type::Double)
-						underline = L"wavyDouble"; 
+						underline = L"wavyDbl"; 
 					else
-						underline = L"wave"; 
+						underline = L"wavy"; 
 					break;
 				}
 			}
@@ -1313,19 +1342,33 @@ void text_format_properties_content::oox_convert (std::wostream & _rPr, bool gra
 			std::wstring w_eastAsia;
 			std::wstring w_hAnsi;
 			std::wstring w_cs;
-			std::wstring w_ascii = w_hAnsi = w_cs = (style_font_name_ ? *style_font_name_: L"");
+			std::wstring w_ascii = w_hAnsi = w_cs = (fo_font_family_ ? *fo_font_family_ : L"");
+					
+			if (style_font_name_complex_)
+			{
+				font_instance * font = fonts.font_by_style_name(*style_font_name_complex_);
+				if (font)
+					w_cs = font->name();
+			}
+			if (style_font_name_asian_)
+			{
+				font_instance * font = fonts.font_by_style_name(*style_font_name_asian_);
+				if (font)
+					w_eastAsia	= font->name();
+			}
+			if (style_font_name_)
+			{
+				font_instance * font = fonts.font_by_style_name(*style_font_name_);
+				if (font)
+					w_ascii = w_hAnsi	= font->name();
+			}
 
-			_rPr << L"<w:rFonts ";
-			if (!w_ascii.empty())
-				_rPr << L"w:ascii=\"" << w_ascii <<"\" ";
-			if (!w_hAnsi.empty())
-				_rPr << L"w:hAnsi=\"" << w_hAnsi <<"\" ";
-			if (!w_eastAsia.empty())
-				_rPr << L"w:eastAsia=\"" << w_eastAsia <<"\" ";
-			if (!w_cs.empty())
-				_rPr << L"w:cs=\"" << w_cs <<"\" ";
-
-			_rPr << L" />";
+			_rPr << L"<w:rFonts";
+				if (!w_ascii.empty())		_rPr << L" w:ascii=\""		<< w_ascii		<<"\"";
+				if (!w_hAnsi.empty())		_rPr << L" w:hAnsi=\""		<< w_hAnsi		<<"\"";
+				if (!w_eastAsia.empty())	_rPr << L" w:eastAsia=\""	<< w_eastAsia	<<"\"";
+				if (!w_cs.empty())			_rPr << L" w:cs=\""			<< w_cs			<<"\"";
+			_rPr << L"/>";
 		}
 
 		_CP_OPT(color) color_text = fo_color_;

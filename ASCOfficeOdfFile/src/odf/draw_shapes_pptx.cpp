@@ -166,8 +166,6 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 	}
-
-    //Context.get_slide_context().end_drawing();    
 }
 void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -304,6 +302,8 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 {
 	find_draw_type_oox();
 
+	bool set_shape = false;
+
 	if (draw_type_oox_index_)
 	{
 		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
@@ -311,10 +311,12 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		if (word_art_ == true)
 			Context.get_slide_context().set_property(_property(L"wordArt", true));	
 
+		set_shape = true;
 	}
 	if (sub_type_)
 	{
 		Context.get_slide_context().start_shape(sub_type_.get());
+		set_shape = true;
 	}
 
 	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
@@ -339,6 +341,8 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
             svg_path::oox_serialize(output_, o_Polyline);
 			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
+			set_shape = true;
+			
 			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    
@@ -362,10 +366,6 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 				}
 			}
 		}
-		else if (!draw_type_oox_index_)
-		{
-			draw_type_oox_index_ = 0;
-		}
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
@@ -379,6 +379,10 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 				Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
 			}
 		}
+	}
+	if (!set_shape)
+	{
+		Context.get_slide_context().start_shape(1); //restart type shape
 	}
 }
 }

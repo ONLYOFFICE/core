@@ -44,6 +44,7 @@ namespace odf_reader
 {
 	class	style_instance;
 	class	style_text_properties;
+	class	fonts_container;
 	typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
 };
 
@@ -90,7 +91,7 @@ namespace oox {
 	class math_context : boost::noncopyable
 	{
 	public:
-		math_context(bool graphic = false);
+		math_context(odf_reader::fonts_container & fonts, bool graphic = false);
 		
 		void				start();
 		std::wstring		end();
@@ -99,6 +100,7 @@ namespace oox {
 		
 		std::wstringstream	& math_style_stream()	{ return math_style_stream_; }
 		
+		odf_reader::fonts_container &			fonts_container_;
 		int										base_font_size_;
 		odf_reader::style_text_properties_ptr	text_properties_;
 

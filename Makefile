@@ -13,19 +13,28 @@ ifeq ($(OS),Windows_NT)
 	endif
 else
 	UNAME_S := $(shell uname -s)
+	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_S),Linux)
 		PLATFORM := linux
 		SHARED_EXT := .so*
 		SHELL_EXT := .sh
 		LIB_EXT := .a
 		MAKE := make -j $(shell grep -c ^processor /proc/cpuinfo)
+		
+		ifeq ($(UNAME_P),x86_64)
+			ARCHITECTURE := 64
+		endif
+		ifneq ($(filter %86,$(UNAME_P)),)
+			ARCHITECTURE := 32
+		endif
 	endif
-	UNAME_P := $(shell uname -p)
-	ifeq ($(UNAME_P),x86_64)
+	ifeq ($(UNAME_S),Darwin)
+		PLATFORM := mac
 		ARCHITECTURE := 64
-	endif
-	ifneq ($(filter %86,$(UNAME_P)),)
-		ARCHITECTURE := 32
+		SHARED_EXT := .dylib*
+		SHELL_EXT := .sh
+		LIB_EXT := .a
+		MAKE := make -j $(shell sysctl -n hw.ncpu)
 	endif
 endif
 

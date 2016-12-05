@@ -116,7 +116,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_oName.IsInit() && m_arrItems.size() > 0)
+				if(m_oName.IsInit())
 				{
 					writer.WriteString(_T("<tableStyle"));
 					WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());

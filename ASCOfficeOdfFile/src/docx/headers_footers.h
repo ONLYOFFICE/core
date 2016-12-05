@@ -49,7 +49,8 @@ namespace oox {
 class headers_footers
 {
 public:
-    headers_footers() : size_(0),enable_write_(false){}
+    headers_footers() : size_(0) {}
+
     enum Type { header, footer, headerLeft, footerLeft, headerFirst, footerFirst, none };
     std::wstring add(const std::wstring & StyleName, const std::wstring & Content, Type type,rels &_rels);
    
@@ -66,18 +67,17 @@ public:
     };
 
     void dump_rels(rels & Rels) const;
-    bool write_sectPr(const std::wstring & StyleName, std::wostream & _Wostream) const;
+    bool write_sectPr(const std::wstring & StyleName, bool next_page, std::wostream & _Wostream);
 
     typedef boost::shared_ptr<instance> instance_ptr;
     typedef std::vector<instance_ptr> instances_array;
     typedef boost::unordered_map<std::wstring, instances_array> instances_map; 
-    const instances_map & instances() const { return instances_; }
-
-	bool get_enable_write(){return enable_write_;}
-	void set_enable_write(bool val){enable_write_ = val;}
+    
+	const instances_map & instances() const { return instances_; }
 
 private:
-	bool enable_write_;
+	std::wstring last_write_style_;
+
 	static std::wstring create_id(size_t i);
 	static std::wstring create_name(size_t i, Type _Type);
 	instances_map instances_;

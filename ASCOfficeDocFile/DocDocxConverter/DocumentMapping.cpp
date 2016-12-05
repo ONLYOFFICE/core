@@ -41,7 +41,7 @@
 
 namespace DocFileFormat
 {
-	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller):_skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
+	DocumentMapping::DocumentMapping(ConversionContext* context, IMapping* caller) : _skipRuns(0), _lastValidPapx(NULL), _lastValidSepx(NULL),
 		_fldCharCounter(0), AbstractOpenXmlMapping( new XMLTools::CStringXmlWriter() ), _sectionNr(0), _footnoteNr(0),
 		_endnoteNr(0), _commentNr(0), _caller(caller)
 	{
@@ -53,6 +53,10 @@ namespace DocFileFormat
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
+
+//--------------------------------------------
+		_embeddedObject			=	false;
+		_writeInstrText			=	false;
 	}
 
 	DocumentMapping::DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller):_skipRuns(0),  _lastValidPapx(NULL), _lastValidSepx(NULL), _writeInstrText(false),
@@ -67,6 +71,7 @@ namespace DocFileFormat
 		_writeInstrText			=	false;
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
+		_embeddedObject			=	false;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -95,6 +100,9 @@ namespace DocFileFormat
 			}
 			current++;
 		}
+		if (current + 1 >= m_document->SectionPlex->CharacterPositions.size())
+			current = m_document->SectionPlex->CharacterPositions.size() - 2;
+
 		return m_document->SectionPlex->CharacterPositions[current + 1];
 	}
 	bool DocumentMapping::isSectionEnd(int cp)
@@ -338,7 +346,8 @@ namespace DocFileFormat
 
 	int DocumentMapping::writeRun (std::vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp)
 	{
-		int cp = initialCp;
+		int cp			= initialCp;
+		int result_cp	= cp + chars->size();
 
 		if ((_skipRuns <= 0) && (chars->size() > 0))
 		{
@@ -405,7 +414,9 @@ namespace DocFileFormat
 			}
 			else
 			{
-				writeText(chars, cp, chpx, false);
+				int new_result_cp = writeText(chars, cp, chpx, false);
+				if (new_result_cp > result_cp)
+					result_cp = new_result_cp;
 			}
 
 			//end run
@@ -431,11 +442,11 @@ namespace DocFileFormat
 			--_skipRuns;
 		}
 
-		return cp + (int)chars->size();
+		return result_cp;
 	}
 
 	// Writes the given text to the document
-	void DocumentMapping::writeText(std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText)
+	int DocumentMapping::writeText(std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText)
 	{
 		int cp = initialCp;
 
@@ -637,13 +648,13 @@ namespace DocFileFormat
 							}
 							cpFieldSep1 = cpFieldSep2;
 						}
-						_skipRuns = 5;
+						_skipRuns = 5; //with separator
 					}
 				}
 				else if (	bEMBED  ||	bLINK ||	bQUOTE)						
 				{
-					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
-					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);
+					int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::Picture);
+					int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart,	TextMark::FieldSeparator);
 
 					if (cpPic < cpFieldEnd)
 					{
@@ -725,8 +736,8 @@ namespace DocFileFormat
 						}	
 					}
 
-					if (bEMBED)	_skipRuns = 3;
-					else		_skipRuns = 5;
+					_skipRuns		= 3;
+					_embeddedObject	= true;
 				}					
 				else
 				{
@@ -747,6 +758,7 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
 				}
+				if (_embeddedObject)	_skipRuns += 2;
 			}
 			else if (TextMark::FieldEndMark == code)
 			{
@@ -769,6 +781,7 @@ namespace DocFileFormat
 				{	
 					_writeInstrText	= false;
 				}
+				_embeddedObject = false;
 			}
 			else if ((TextMark::Symbol == code) && fSpec)
 			{
@@ -830,7 +843,10 @@ namespace DocFileFormat
 				}
 				else if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 				{
-					m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
+					bool bFormula = false;
+
+					XMLTools::CStringXmlWriter pictWriter;
+					pictWriter.WriteNodeBegin (_T("w:pict"));
 
 					bool picture = true;
 
@@ -843,13 +859,13 @@ namespace DocFileFormat
 					
 					if (picture)
 					{
-						VMLPictureMapping oVmlMapper(m_context, m_pXmlWriter, false, _caller, isInline);
+						VMLPictureMapping oVmlMapper(m_context, &pictWriter, false, _caller, isInline);
 						oPicture.Convert (&oVmlMapper);
 						
 						if (oVmlMapper.m_isEmbedded)
 						{
 							OleObject ole ( chpx, m_document->GetStorage(), m_document->bOlderVersion);
-							OleObjectMapping oleObjectMapping( m_pXmlWriter, m_context, &oPicture, _caller, oVmlMapper.GetShapeId() );
+							OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.GetShapeId() );
 							
 							ole.isEquation		= oVmlMapper.m_isEquation;
 							ole.isEmbedded		= oVmlMapper.m_isEmbedded;
@@ -857,13 +873,24 @@ namespace DocFileFormat
 						
 							ole.Convert( &oleObjectMapping );
 						}
+						else if (oVmlMapper.m_isEquation)
+						{
+							//нельзя в Run писать oMath
+							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+							_writeAfterRun = oVmlMapper.m_equationXml;
+							bFormula = true;
+						}
 					}else
 					{
-						VMLShapeMapping oVmlMapper(m_context, m_pXmlWriter, NULL, &oPicture,  _caller, isInline);
+						VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
 						oPicture.shapeContainer->Convert(&oVmlMapper);
 					}
 					
-					m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
+					pictWriter.WriteNodeEnd	 (_T("w:pict"));
+
+					if (!bFormula)
+						m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+
 				}                   
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
@@ -926,6 +953,7 @@ namespace DocFileFormat
 
             writeTextEnd(textType);
 		}
+		return cp;
 	}
 
 	void DocumentMapping::writeTextElement(const std::wstring& text, const std::wstring& textType)

@@ -86,7 +86,8 @@ namespace DocFileFormat
 				{
 					for (int i = 0; i < n; ++i)
 					{
-						Elements.push_back(T().ConstructObject(&reader, structureLength));
+                        T object;
+                        Elements.push_back(object.ConstructObject(&reader, structureLength));
 					}
 				}
 

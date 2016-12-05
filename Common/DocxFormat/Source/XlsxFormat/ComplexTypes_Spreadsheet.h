@@ -38,6 +38,16 @@ namespace ComplexTypes
 {
 	namespace Spreadsheet
 	{
+		class ComplexType
+		{
+		public:
+			ComplexType(){};
+			virtual ~ComplexType() {};
+
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode) = 0;
+			virtual std::wstring ToString() const = 0;
+		};
+
 			template<SimpleTypes::EOnOff eDefValue = SimpleTypes::onoffTrue>
 			class COnOff2 : public ComplexType
 			{
@@ -61,9 +71,9 @@ namespace ComplexTypes
 						WritingElement_ReadAttributes_ReadSingle( oReader, _T("val"), m_oVal )
 						WritingElement_ReadAttributes_End( oReader )
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					sResult += _T("val=\"");
 					sResult += m_oVal.ToString();
@@ -104,9 +114,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -152,22 +162,22 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_sVal.IsInit() )
 					{
 						sResult += _T("val=\"");
-						sResult += m_sVal->GetString();
+						sResult += m_sVal.get();
 						sResult += _T("\" ");
 					}
 
 					return sResult;
 				}
-				CString ToString2() const
+				std::wstring ToString2() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_sVal.IsInit() )
 						sResult += m_sVal.get();
@@ -186,7 +196,7 @@ namespace ComplexTypes
 
 			public:
 
-				nullable<CString> m_sVal;
+				nullable<std::wstring> m_sVal;
 			};
 			class CDouble : public ComplexType
 			{
@@ -210,9 +220,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -259,9 +269,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -308,9 +318,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -357,9 +367,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -406,9 +416,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -455,9 +465,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -504,9 +514,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{
@@ -553,9 +563,9 @@ namespace ComplexTypes
 					if ( !oReader.IsEmptyNode() )
 						oReader.ReadTillEnd();
 				}
-				virtual CString ToString() const
+				virtual std::wstring ToString() const
 				{
-					CString sResult;
+					std::wstring sResult;
 
 					if ( m_oVal.IsInit() )
 					{

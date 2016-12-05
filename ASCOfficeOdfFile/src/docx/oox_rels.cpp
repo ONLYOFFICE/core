@@ -42,7 +42,7 @@ namespace oox {
 const wchar_t * relationship::ns = L"";
 const wchar_t * relationship::name = L"Relationship";
 
-::std::wostream & relationship::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & relationship::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {
@@ -74,7 +74,7 @@ const wchar_t * relationship::name = L"Relationship";
 const wchar_t * rels::ns = L"";
 const wchar_t * rels::name = L"Relationships";
 
-::std::wostream & rels::xml_to_stream(::std::wostream & _Wostream) const
+std::wostream & rels::xml_to_stream(std::wostream & _Wostream) const
 {
     CP_XML_WRITER(_Wostream)
     {

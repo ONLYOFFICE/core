@@ -91,7 +91,7 @@ namespace DocFileFormat
 		int writeRun( std::vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp );
 		/// Writes the given text to the document
 		
-		void writeText( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
+		int	 writeText( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
 		void writeTextElement( const std::wstring& text, const std::wstring& textType );
         void writeTextStart( const std::wstring& textType, bool preserve_space);
 		void writeTextEnd( const std::wstring& textType );
@@ -137,6 +137,7 @@ namespace DocFileFormat
 		ParagraphPropertyExceptions*	_lastValidPapx;
 		SectionPropertyExceptions*		_lastValidSepx;
 
+		bool							_embeddedObject;
 		int								_skipRuns;
 		int								_sectionNr;
 		int								_footnoteNr;

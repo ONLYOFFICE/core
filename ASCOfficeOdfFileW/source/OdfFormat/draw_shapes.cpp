@@ -82,7 +82,8 @@ void draw_shape::serialize_attlist(CP_ATTR_NODE)
 
 void draw_rect_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:filter-name", draw_filter_name_);
+    CP_XML_ATTR_OPT(L"draw:filter-name",	draw_filter_name_);
+	CP_XML_ATTR_OPT(L"draw:corner-radius",	draw_corner_radius_);
 }
 
 const wchar_t * draw_rect::ns = L"draw";
@@ -443,7 +444,7 @@ void draw_enhanced_geometry::serialize(std::wostream & _Wostream)
 
 typedef shared_ptr<draw_handle> draw_handle_ptr;
 
-void draw_enhanced_geometry::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_enhanced_geometry::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"draw", L"handle")
     {

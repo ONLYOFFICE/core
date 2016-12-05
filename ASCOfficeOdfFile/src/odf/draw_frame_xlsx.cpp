@@ -253,7 +253,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     try {
-        const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+        const std::wstring href	= common_xlink_attlist_.href_.get_value_or(L"");
 
         odf_reader::odf_document * odf_reader = Context.root();
         
@@ -268,18 +268,18 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 //в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////
 //функциональная часть
-		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
-		chart_build objectBuild(href);
+		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
+		object_odf_context objectBuild(href);
 		
 		if (contentSubDoc)
 		{
-			process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context());
+			process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 
 		}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //отображательная часть
 
-		if (objectBuild.object_type_ == 1)//диаграмма
+		if (objectBuild.object_type_ == 1) //диаграмма
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
 			objectBuild.xlsx_convert(Context);
@@ -287,7 +287,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			Context.get_drawing_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 			Context.get_drawing_context().end_chart();		
 		}
-		else if (objectBuild.object_type_ == 2)//текст (odt text)
+		else if (objectBuild.object_type_ == 2) //текст (odt text)
 		{
 			Context.get_drawing_context().start_shape(2); 
 			Context.get_text_context().start_drawing_content();
@@ -297,14 +297,36 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 			objectBuild.xlsx_convert(Context);
 			
-			std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+			std::wstring text_content = Context.get_text_context().end_drawing_content();
 			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
 
-			if (text_content_.length()>0)
+			if (!text_content.empty())
 			{
-				Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
+				Context.get_drawing_context().set_property(_property(L"text-content", text_content));
 			}
 			Context.get_drawing_context().end_shape();		
+		}
+		else if (objectBuild.object_type_ == 3) //мат формулы
+		{
+			Context.get_drawing_context().start_shape(2); 
+
+			objectBuild.xlsx_convert(Context);
+			
+			std::wstring math_content = Context.get_math_context().end();
+	
+			if (!math_content.empty())
+			{
+				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+				text_content += L"<m:oMathParaPr/>";
+				text_content += L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+				text_content += math_content;
+				text_content += L"</m:oMath></m:oMathPara></a14:m></a:p>";
+
+				Context.get_drawing_context().set_property(_property(L"fit-to-size",	true));		
+				Context.get_drawing_context().set_property(_property(L"text-content",	text_content));
+			}
+			Context.get_drawing_context().end_shape();	
 		}
 		else
 		{

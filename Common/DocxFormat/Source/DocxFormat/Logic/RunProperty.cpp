@@ -87,7 +87,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:rPr") == sName )
@@ -158,7 +158,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth )  )
 			{
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:b") == sName )
@@ -266,7 +266,7 @@ namespace OOX
 					result = oSubReader.ReadNextNode();//textFill
 					result = oSubReader.ReadNextNode();//...Fill
 
-					CString sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
 						
 					if (_T("gradFill") == sName)
 					{

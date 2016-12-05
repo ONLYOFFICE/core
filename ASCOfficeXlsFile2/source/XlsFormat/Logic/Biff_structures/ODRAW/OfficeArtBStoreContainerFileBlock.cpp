@@ -249,7 +249,9 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 			pict_size = rc_header.recLen - skipLen;
 
 			if (pict_size > record.getDataSize() - record.getRdPtr())
+			{
 				return;
+			}
 			else
 				result = true;
 

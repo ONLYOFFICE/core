@@ -52,18 +52,18 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 public:
     number() {}
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {};
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name) {} ;
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {} ;
     virtual void add_text(const std::wstring & Text);
 
 private:
-    ::std::wstring string_;
+    std::wstring string_;
     
 };
 
@@ -75,7 +75,7 @@ CP_REGISTER_OFFICE_ELEMENT2(number);
 
 class list_item;
 typedef shared_ptr<list_item>::Type list_item_ptr;
-typedef ::std::vector<list_item_ptr> list_item_ptr_array;
+typedef std::vector<list_item_ptr> list_item_ptr_array;
 
 class list_item : public office_element_impl<list_item>
 {
@@ -90,13 +90,13 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 public:
     list_item() {} 
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text) {} ;
 
 private:
@@ -128,14 +128,14 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
 public:
     list_header() {} 
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text) {} ;
 
 private:

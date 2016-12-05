@@ -58,32 +58,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
                 writer.WriteString(_T("<definedName"));
-				if(m_oName.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" name=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oName.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
-				if(m_oLocalSheetId.IsInit())
-				{
-                    CString sVal;
-                    sVal.Format(_T(" localSheetId=\"%d\""), m_oLocalSheetId->GetValue());
-					writer.WriteString(sVal);
-				}
-                if(m_oHidden.IsInit())
-                {
-                    CString sVal;
-                    sVal.Format(_T(" hidden=\"%ls\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
-                    writer.WriteString(sVal);
-                }
+				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
+				WritingStringNullableAttrInt(L"localSheetId", m_oLocalSheetId, m_oLocalSheetId->GetValue());
+				WritingStringNullableAttrBool(L"hidden", m_oHidden);
 				writer.WriteString(_T(">"));
 				if(m_oRef.IsInit())
-					writer.WriteString(XmlUtils::EncodeXmlString(m_oRef.get()));
+					writer.WriteEncodeXmlString(m_oRef.get());
 				writer.WriteString(_T("</definedName>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -93,7 +76,7 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				m_oRef = oReader.GetText2().GetString();
+				m_oRef = oReader.GetText3();
 			}
 
 			virtual EElementType getType () const
@@ -130,23 +113,23 @@ namespace OOX
 			}
 
 		public:
-				nullable<CString>								m_oComment;
-				nullable<CString>								m_oCustomMenu;
-				nullable<CString>								m_oDescription;
+				nullable<std::wstring>								m_oComment;
+				nullable<std::wstring>								m_oCustomMenu;
+				nullable<std::wstring>								m_oDescription;
 				nullable<SimpleTypes::COnOff<>>					m_oFunction;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFunctionGroupId;
-				nullable<CString>								m_oHelp;
+				nullable<std::wstring>								m_oHelp;
 				nullable<SimpleTypes::COnOff<>>					m_oHidden;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oLocalSheetId;
-				nullable<CString>								m_oName;
+				nullable<std::wstring>								m_oName;
 				nullable<SimpleTypes::COnOff<>>					m_oPublishToServer;
-				nullable<CString>								m_oShortcutKey;
-				nullable<CString>								m_oStatusBar;
+				nullable<std::wstring>								m_oShortcutKey;
+				nullable<std::wstring>								m_oStatusBar;
 				nullable<SimpleTypes::COnOff<>>					m_oVbProcedure;
 				nullable<SimpleTypes::COnOff<>>					m_oWorkbookParameter;
 				nullable<SimpleTypes::COnOff<>>					m_oXlm;
 
-				nullable<CString>								m_oRef;
+				nullable<std::wstring>								m_oRef;
 		};
 
 		class CDefinedNames  : public WritingElementWithChilds<CDefinedName>
@@ -165,7 +148,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{
@@ -185,7 +168,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("definedName") == sName )
 						m_arrItems.push_back( new CDefinedName( oReader ));

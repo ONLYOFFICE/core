@@ -80,7 +80,7 @@ namespace MathEquation
 			}
 		}
 
-		virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol)
+        virtual void BeginChar(unsigned short uChar, uint8_t nTypeFace, bool bSpecialSymbol)
 		{
 			WriteNodeBegin("char", true);
 
@@ -1099,7 +1099,7 @@ namespace MathEquation
 			rRet += sValue;
 			rRet += "\"";
 		}
-		void WriteStringAttribute(const char* sName, Unicode_t uChar)
+        void WriteStringAttribute(const char* sName, unsigned short uChar)
 		{
 			rRet += " ";
 			rRet += sName;

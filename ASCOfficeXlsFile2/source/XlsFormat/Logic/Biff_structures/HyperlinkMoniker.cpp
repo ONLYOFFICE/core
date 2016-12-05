@@ -102,7 +102,7 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of HyperlinkMoniker.", record.getTypeString());
+		// EXCEPT::RT::WrongBiffRecord("Unsupported type of HyperlinkMoniker.", record.getTypeString());
 	}
 
 	record >> *data;

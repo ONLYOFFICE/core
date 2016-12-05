@@ -258,7 +258,7 @@ namespace NS_DWC_Common
 		{
 			if (colorStr.GetLength() == 4)
 			{
-				int lColor = XmlUtils::GetColor(colorStr.Mid(1, 3));
+				int lColor = XmlUtils::GetColorBGR(colorStr.Mid(1, 3));
 				BYTE lB = ((lColor >> 16) & 0x0F);
 				BYTE lG = ((lColor >> 20) & 0x0F);
 				BYTE lR = ((lColor >> 8) & 0x0F);
@@ -270,7 +270,7 @@ namespace NS_DWC_Common
 			}
 			else
 			{
-				int lColor = XmlUtils::GetColor(colorStr.Mid(1, 6));
+				int lColor = XmlUtils::GetColorBGR(colorStr.Mid(1, 6));
 				color.R = (BYTE)(lColor >> 0);
 				color.G = (BYTE)(lColor >> 8);
 				color.B = (BYTE)(lColor >> 16);
@@ -3630,7 +3630,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				Gs_.pos = 100 * 1000;
 				pGradFill->GsLst.push_back( Gs_ );
 			}
-			if (pGradFill->GsLst.size() < 2)	//Sindicatum.docx
+			if (pGradFill->GsLst.size() == 1)	//Sindicatum.docx
 			{
 				PPTX::Logic::Gs Gs_; 
 				Gs_.pos = 0;
@@ -4206,7 +4206,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 	if (-1 == nIndexF)
 		return S_FALSE;
 
-	int nIndexTail = (std::min)(strMainProps.Find(_T("<wp14:sizeRelH")), strMainProps.Find(_T("<wp14:sizeRelV")));
+	int nIndexTail = strMainProps.Find(_T("<wp14:sizeRel"));
 	if(-1 != nIndexTail)
 	{
 		strMainPropsTail = strMainProps.Right(strMainProps.GetLength() - nIndexTail);

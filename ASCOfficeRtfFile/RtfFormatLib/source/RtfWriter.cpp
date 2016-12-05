@@ -97,7 +97,7 @@ bool RtfWriter::SaveByItem()
 	oNewParam.poWriter = this;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-	if( m_oDocument.GetCount() > 1 && m_oDocument[0]->GetCount() == 0 )
+	if( m_oDocument.GetCount() > 1 && m_oDocument[0].props->GetCount() == 0 )
 	{
 		//пишем конец секции
 		CStringA sRtfExt = "\\sect";
@@ -125,7 +125,7 @@ bool RtfWriter::SaveByItem()
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
-			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
+			sRtf = m_oDocument[0].props->m_oProperty.RenderToRtf(oNewParam);
             RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
@@ -143,20 +143,23 @@ bool RtfWriter::SaveByItem()
 		m_oDocument.RemoveItem( 0 );
 	}
 	//пишем параграф
-	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )
+	if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )
 	{
 		CString sRtf;
-		sRtf = m_oDocument[0]->operator[](0)->RenderToRtf(oNewParam);
-		if( TYPE_RTF_PARAGRAPH == m_oDocument[0]->operator[](0)->GetType() && !(m_oDocument[0]->GetCount() == 0 && m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
+		sRtf = m_oDocument[0].props->operator[](0)->RenderToRtf(oNewParam);
+		
+		if( TYPE_RTF_PARAGRAPH ==		m_oDocument[0].props->operator[](0)->GetType() 
+								&&	!( m_oDocument[0].props->GetCount() == 0 
+									&& m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
 		{
-			sRtf += _T("\\par");
+			sRtf += L"\\par";
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
 		}
         RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
 		//m_oTempFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 
 		//удаляем элемент который только что написали
-		m_oDocument[0]->RemoveItem( 0 );
+		m_oDocument[0].props->RemoveItem( 0 );
 	}
 	return true;
 }
@@ -182,7 +185,7 @@ bool RtfWriter::SaveByItemEnd()
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
-			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
+			sRtf = m_oDocument[0].props->m_oProperty.RenderToRtf(oNewParam);
             RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
@@ -265,7 +268,7 @@ int RtfWriter::GetCount()
 {
 	int nCount = 0;
 	for( int i = 0; i < m_oDocument.GetCount(); i++ )
-		nCount += m_oDocument[i]->GetCount();
+		nCount += m_oDocument[i].props->GetCount();
 	return nCount;
 }
 CString RtfWriter::CreateRtfStart()
@@ -276,55 +279,56 @@ CString RtfWriter::CreateRtfStart()
 	oRenderParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
 
 	CString sResult;
-	sResult += _T("{\\rtf1\\ulc1");
+	sResult += L"{\\rtf1\\ulc1";
 	sResult += m_oDocument.m_oProperty.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter );
-	
-	//CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
-	//if( false == sDefCharProp.IsEmpty() )
-	//	sResult += _T("{\\*\\defchp ") + sDefCharProp + _T("}");
-	//CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
-	//if( false == sDefParProp.IsEmpty() )
-	//	sResult += _T("{\\*\\defpap ") + sDefParProp+ _T("}");
-	//sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter ) );
-	
-	sResult += m_oDocument.m_oListTabel.RenderToRtf( oRenderParameter );
-	sResult += m_oDocument.m_oListOverrideTabel.RenderToRtf( oRenderParameter );
-	sResult += m_oDocument.m_oInformation.RenderToRtf( oRenderParameter );
-	sResult += _T("\\fet2");//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
+//---------- test 	
+	CString sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
+	if( false == sDefCharProp.IsEmpty() )
+		sResult += L"{\\*\\defchp " + sDefCharProp + L"}";
+	CString sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
+	if( false == sDefParProp.IsEmpty() )
+		sResult += L"{\\*\\defpap " + sDefParProp+ L"}";
+	sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter );
+//---------- test 	
+	sResult += m_oDocument.m_oListTable.RenderToRtf			( oRenderParameter );
+	sResult += m_oDocument.m_oListOverrideTable.RenderToRtf	( oRenderParameter );
+	sResult += m_oDocument.m_oRevisionTable.RenderToRtf		( oRenderParameter );
+	sResult += m_oDocument.m_oInformation.RenderToRtf		( oRenderParameter );
+	sResult += L"\\fet2";//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
 	
 	CString sFootnote;
 	if( NULL != m_oDocument.m_oFootnoteSep )
 	{
 		sFootnote = m_oDocument.m_oFootnoteSep->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\ftnsep ") + sFootnote + _T("}");
+            sResult += L"{\\*\\ftnsep " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oFootnoteCon )
 	{
 		sFootnote = m_oDocument.m_oFootnoteCon->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\ftnsepc ") + sFootnote + _T("}");
+            sResult += L"{\\*\\ftnsepc " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oEndnoteSep )
 	{
 		sFootnote = m_oDocument.m_oEndnoteSep->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\aftnsep ") + sFootnote + _T("}");
+            sResult += L"{\\*\\aftnsep " + sFootnote + L"}";
 	}
 	if( NULL != m_oDocument.m_oEndnoteCon )
 	{
 		sFootnote = m_oDocument.m_oEndnoteCon->RenderToRtf( oRenderParameter );
 		if( !sFootnote.IsEmpty() )
-            sResult += _T("{\\*\\aftnsepc ") + sFootnote + _T("}");
+            sResult += L"{\\*\\aftnsepc " + sFootnote + L"}";
 	}
 
-	sResult += _T("\n\n");
+	sResult += L"\n\n";
 	return sResult;
 }
 
 CString RtfWriter::CreateRtfEnd( )
 {
-	return _T("\n}\n");
+	return L"\n}\n";
 }

@@ -188,7 +188,12 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
 
 void xlsx_style_manager::Impl::serialize(std::wostream & _Wostream)
 {
-    _Wostream << L"<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">";
+    _Wostream << L"<styleSheet";
+		_Wostream << L" xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"";
+		_Wostream << L" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\""; 
+		_Wostream << L" mc:Ignorable=\"x14ac\"";
+		_Wostream << L" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\"";
+	_Wostream << L">";
 
 	numFmts_.serialize	(_Wostream);
     fonts_.serialize	(_Wostream);
@@ -201,8 +206,6 @@ void xlsx_style_manager::Impl::serialize(std::wostream & _Wostream)
 	cellStyles_.serialize(_Wostream);
 
 	dxfs_.serialize(_Wostream);
-    
-
     _Wostream << L"</styleSheet>";
 }
 
@@ -253,7 +256,7 @@ size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content
                                 const std::wstring &num_format, bool  default_set)
 {
     bool is_visible;
-    return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format,default_set, is_visible);
+    return impl_->xfId(textProp, parProp, cellProp, xlxsCellFormat, num_format, default_set, is_visible);
 }
 
 size_t xlsx_style_manager::xfId(const odf_reader::text_format_properties_content		* textProp,

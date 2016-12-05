@@ -140,6 +140,16 @@ namespace NSEditorApi
 	{															\
 		m_s##memberName = newVal;								\
 	}
+    
+#define LINK_PROPERTY_OBJECT(objectType, memberName)			\
+    inline objectType& get_##memberName()						\
+    {                                                           \
+        return m_o##memberName;                                 \
+    }                                                           \
+    inline void put_##memberName(const objectType& newVal)      \
+    {                                                           \
+        m_o##memberName = newVal;                               \
+    }
 
 // JS
 #define LINK_PROPERTY_INT_JS(memberName)								\
@@ -2705,6 +2715,54 @@ namespace NSEditorApi
         double m_dMinZoom;
         double m_dMaxZoom;
         double m_dZoom;
+    };
+}
+
+namespace NSEditorApi
+{
+    class CAscUser : public IMenuEventDataBase
+    {
+    public:
+        CAscUser()
+        {
+        }
+        virtual ~CAscUser()
+        {
+        }
+        
+        LINK_PROPERTY_STRING_JS(Id)
+        LINK_PROPERTY_STRING_JS(FirstName)
+        LINK_PROPERTY_STRING_JS(LastName)
+        LINK_PROPERTY_STRING_JS(UserName)
+        LINK_PROPERTY_BOOL_JS(IsView)
+        LINK_PROPERTY_OBJECT_JS(CAscColor, Color)
+        
+    private:
+        js_wrapper<std::wstring> m_sId;
+        js_wrapper<std::wstring> m_sFirstName;
+        js_wrapper<std::wstring> m_sLastName;
+        js_wrapper<std::wstring> m_sUserName;
+        js_wrapper<bool> m_bIsView;
+        js_wrapper<CAscColor> m_oColor;
+    };
+    
+    class CAscUsers : public IMenuEventDataBase
+    {
+    public:
+        CAscUsers()
+        {
+            
+        }
+        virtual ~CAscUsers()
+        {
+            
+        }
+        
+        inline std::vector<CAscUser>& GetUsers() {return m_oUsers;}
+        inline void AddUser(const CAscUser& oSheet) {m_oUsers.push_back(oSheet);}
+        
+    private:
+        std::vector<CAscUser> m_oUsers;
     };
 }
 

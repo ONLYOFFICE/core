@@ -1208,6 +1208,102 @@ public:
 			res = Read1(length, &Binary_pPrReader::ReadPageBorders, this, &pgBorders);
 			pSectPr->pgBorders = pgBorders.toXML();
 		}
+		else if( c_oSerProp_secPrType::footnotePr == type )
+		{
+			OOX::Logic::CFtnProps oFtnProps;
+			res = Read1(length, &Binary_pPrReader::ReadFootnotePr, this, &oFtnProps);
+			pSectPr->footnotePr = oFtnProps.toXML();
+		}
+		else if( c_oSerProp_secPrType::endnotePr == type )
+		{
+			OOX::Logic::CEdnProps oEdnProps;
+			res = Read1(length, &Binary_pPrReader::ReadEndnotePr, this, &oEdnProps);
+			pSectPr->endnotePr = oEdnProps.toXML();
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFootnotePr(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CFtnProps* pFtnProps = static_cast<OOX::Logic::CFtnProps*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerNotes::PrFmt == type )
+		{
+			pFtnProps->m_oNumFmt.Init();
+			res = Read1(length, &Binary_pPrReader::ReadNumFmt, this, pFtnProps->m_oNumFmt.GetPointer());
+		}
+		else if( c_oSerNotes::PrRestart == type )
+		{
+			pFtnProps->m_oNumRestart.Init();
+			pFtnProps->m_oNumRestart->m_oVal.Init();
+			pFtnProps->m_oNumRestart->m_oVal->SetValue((SimpleTypes::ERestartNumber)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrStart == type )
+		{
+			pFtnProps->m_oNumStart.Init();
+			pFtnProps->m_oNumStart->m_oVal.Init();
+			pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerNotes::PrFntPos == type )
+		{
+			pFtnProps->m_oPos.Init();
+			pFtnProps->m_oPos->m_oVal.Init();
+			pFtnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EFtnPos)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadEndnotePr(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CEdnProps* pEdnProps = static_cast<OOX::Logic::CEdnProps*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerNotes::PrFmt == type )
+		{
+			pEdnProps->m_oNumFmt.Init();
+			res = Read1(length, &Binary_pPrReader::ReadNumFmt, this, pEdnProps->m_oNumFmt.GetPointer());
+		}
+		else if( c_oSerNotes::PrRestart == type )
+		{
+			pEdnProps->m_oNumRestart.Init();
+			pEdnProps->m_oNumRestart->m_oVal.Init();
+			pEdnProps->m_oNumRestart->m_oVal->SetValue((SimpleTypes::ERestartNumber)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrStart == type )
+		{
+			pEdnProps->m_oNumStart.Init();
+			pEdnProps->m_oNumStart->m_oVal.Init();
+			pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerNotes::PrEndPos == type )
+		{
+			pEdnProps->m_oPos.Init();
+			pEdnProps->m_oPos->m_oVal.Init();
+			pEdnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EEdnPos)m_oBufferedStream.GetUChar());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadNumFmtOut(long length, void* poResult)
+	{
+		return Read1(length, &Binary_pPrReader::ReadNumFmt, this, poResult);
+	}
+	int ReadNumFmt(BYTE type, long length, void* poResult)
+	{
+		ComplexTypes::Word::CNumFmt* pNumFmt = static_cast<ComplexTypes::Word::CNumFmt*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerNumTypes::NumFmtVal == type )
+		{
+			pNumFmt->m_oVal.Init();
+			pNumFmt->m_oVal->SetValue((SimpleTypes::ENumberFormat)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNumTypes::NumFmtFormat == type )
+		{
+			pNumFmt->m_sFormat.Init();
+			pNumFmt->m_sFormat->Append(m_oBufferedStream.GetString3(length));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -2946,10 +3042,12 @@ public:
 };
 class Binary_SettingsTableReader : public Binary_CommonReader<Binary_SettingsTableReader>
 {
+	Binary_pPrReader m_oBinary_pPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
 public:
-	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter)
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
+		Binary_CommonReader(poBufferedStream),m_oSettingWriter(oFileWriter.m_oSettingWriter),m_oFileWriter(oFileWriter),m_oBinary_pPrReader(poBufferedStream, oFileWriter)
 	{
 	}
 	int Read()
@@ -3027,10 +3125,101 @@ public:
 				m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:trackRevisions w:val=\"false\"/>");
 			}
 		}
+		else if( c_oSer_SettingsType::FootnotePr == type )
+		{
+			OOX::Settings::CFtnDocProps oFtnProps;
+			res = Read1(length, &Binary_SettingsTableReader::ReadFootnotePr, this, &oFtnProps);
+			m_oFileWriter.m_oSettingWriter.AddSetting(oFtnProps.toXML());
+		}
+		else if( c_oSer_SettingsType::EndnotePr == type )
+		{
+			OOX::Settings::CEdnDocProps oEdnProps;
+			res = Read1(length, &Binary_SettingsTableReader::ReadEndnotePr, this, &oEdnProps);
+			m_oFileWriter.m_oSettingWriter.AddSetting(oEdnProps.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};	
+	int ReadFootnotePr(BYTE type, long length, void* poResult)
+	{
+		OOX::Settings::CFtnDocProps* pFtnProps = static_cast<OOX::Settings::CFtnDocProps*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerNotes::PrFmt == type )
+		{
+			pFtnProps->m_oNumFmt.Init();
+			res = m_oBinary_pPrReader.ReadNumFmtOut(length, pFtnProps->m_oNumFmt.GetPointer());
+		}
+		else if( c_oSerNotes::PrRestart == type )
+		{
+			pFtnProps->m_oNumRestart.Init();
+			pFtnProps->m_oNumRestart->m_oVal.Init();
+			pFtnProps->m_oNumRestart->m_oVal->SetValue((SimpleTypes::ERestartNumber)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrStart == type )
+		{
+			pFtnProps->m_oNumStart.Init();
+			pFtnProps->m_oNumStart->m_oVal.Init();
+			pFtnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerNotes::PrFntPos == type )
+		{
+			pFtnProps->m_oPos.Init();
+			pFtnProps->m_oPos->m_oVal.Init();
+			pFtnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EFtnPos)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrRef == type )
+		{
+			OOX::CFtnEdnSepRef* pRef = new OOX::CFtnEdnSepRef();
+			pRef->m_eType = OOX::et_w_footnote;
+			pRef->m_oId.Init();
+			pRef->m_oId->SetValue(m_oBufferedStream.GetLong());
+			pFtnProps->m_arrFootnote.push_back(pRef);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadEndnotePr(BYTE type, long length, void* poResult)
+	{
+		OOX::Settings::CEdnDocProps* pEdnProps = static_cast<OOX::Settings::CEdnDocProps*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerNotes::PrFmt == type )
+		{
+			pEdnProps->m_oNumFmt.Init();
+			res = m_oBinary_pPrReader.ReadNumFmtOut(length, pEdnProps->m_oNumFmt.GetPointer());
+		}
+		else if( c_oSerNotes::PrRestart == type )
+		{
+			pEdnProps->m_oNumRestart.Init();
+			pEdnProps->m_oNumRestart->m_oVal.Init();
+			pEdnProps->m_oNumRestart->m_oVal->SetValue((SimpleTypes::ERestartNumber)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrStart == type )
+		{
+			pEdnProps->m_oNumStart.Init();
+			pEdnProps->m_oNumStart->m_oVal.Init();
+			pEdnProps->m_oNumStart->m_oVal->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if( c_oSerNotes::PrEndPos == type )
+		{
+			pEdnProps->m_oPos.Init();
+			pEdnProps->m_oPos->m_oVal.Init();
+			pEdnProps->m_oPos->m_oVal->SetValue((SimpleTypes::EEdnPos)m_oBufferedStream.GetUChar());
+		}
+		else if( c_oSerNotes::PrRef == type )
+		{
+			OOX::CFtnEdnSepRef* pRef = new OOX::CFtnEdnSepRef();
+			pRef->m_eType = OOX::et_w_endnote;
+			pRef->m_oId.Init();
+			pRef->m_oId->SetValue(m_oBufferedStream.GetLong());
+			pEdnProps->m_arrEndnote.push_back(pRef);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+
 	int ReadMathPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -4215,6 +4404,17 @@ public:
 			if(m_oMath_rPr.IsNoEmpty())
 			m_oMath_rPr.Write(&GetRunStringWriter());
 		}
+		else if ( c_oSerRunType::arPr == type )
+		{
+			PPTX::Logic::RunProperties rPr;
+			m_oBufferedStream.Skip(1);//skip type
+			rPr.fromPPTY(&m_oBufferedStream);
+			rPr.m_name = L"a:rPr";
+			//todo use one writer
+			NSBinPptxRW::CXmlWriter oWriter;
+			rPr.toXmlWriter(&oWriter);
+			GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		}
 		else if ( c_oSerRunType::del == type )
 		{
 			TrackRevision oRPrChange;
@@ -5213,6 +5413,17 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRPr, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:rPr>")));
 		}
+		else if ( c_oSer_OMathContentType::ARPr == type )
+		{
+			PPTX::Logic::RunProperties rPr;
+			m_oBufferedStream.Skip(1);//skip type
+			rPr.fromPPTY(&m_oBufferedStream);
+			rPr.m_name = L"a:rPr";
+			//todo use one writer
+			NSBinPptxRW::CXmlWriter oWriter;
+			rPr.toXmlWriter(&oWriter);
+			GetRunStringWriter().WriteString(oWriter.GetXmlString());
+		}
 		else if (c_oSer_OMathContentType::pagebreak == type)
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));
@@ -6028,10 +6239,66 @@ public:
 		{
 			GetRunStringWriter().WriteString(CString(_T("<w:continuationSeparator/>")));
 		}
+		else if ( c_oSerRunType::footnoteRef == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:footnoteRef/>")));
+		}
+		else if ( c_oSerRunType::endnoteRef == type)
+		{
+			GetRunStringWriter().WriteString(CString(_T("<w:endnoteRef/>")));
+		}
+		else if ( c_oSerRunType::footnoteReference == type)
+		{
+			OOX::Logic::CFootnoteReference oFootnoteRef;
+			res = Read1(length, &Binary_DocumentTableReader::ReadFootnoteRef, this, &oFootnoteRef);
+			GetRunStringWriter().WriteString(oFootnoteRef.toXML());
+		}
+		else if ( c_oSerRunType::endnoteReference == type)
+		{
+			OOX::Logic::CEndnoteReference oEndnoteRef;
+			res = Read1(length, &Binary_DocumentTableReader::ReadEndnoteRef, this, &oEndnoteRef);
+			GetRunStringWriter().WriteString(oEndnoteRef.toXML());
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};	
+	};
+	int ReadFootnoteRef(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CFootnoteReference* pFootnoteRef = static_cast<OOX::Logic::CFootnoteReference*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if (c_oSerNotes::RefCustomMarkFollows == type)
+		{
+			pFootnoteRef->m_oCustomMarkFollows.Init();
+			pFootnoteRef->m_oCustomMarkFollows->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerNotes::RefId == type)
+		{
+			pFootnoteRef->m_oId.Init();
+			pFootnoteRef->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadEndnoteRef(BYTE type, long length, void* poResult)
+	{
+		OOX::Logic::CEndnoteReference* pEndnoteRef = static_cast<OOX::Logic::CEndnoteReference*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if (c_oSerNotes::RefCustomMarkFollows == type)
+		{
+			pEndnoteRef->m_oCustomMarkFollows.Init();
+			pEndnoteRef->m_oCustomMarkFollows->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if (c_oSerNotes::RefId == type)
+		{
+			pEndnoteRef->m_oId.Init();
+			pEndnoteRef->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	void ReadDrawing(CDrawingProperty &oCDrawingProperty)
 	{
 		CString sDrawingProperty = oCDrawingProperty.Write();
@@ -6334,21 +6601,21 @@ public:
 				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
 
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-				pChartSpace->m_oChartSpace.m_externalData->m_id = new CString();
-				pChartSpace->m_oChartSpace.m_externalData->m_id->AppendFormat(L"rId%d", rIdXlsx);
+				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
+				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");
+				pChartSpace->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rIdXlsx));
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
 				pChartSpace->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 
 				//save chart.xml
-				XmlUtils::CStringWriter sw;
+				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
-				CString sChartContent = sw.GetData();
 				CString sFilename;
 				CString sRelsName;
 				int nChartIndex;
-				
-				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
+                std::wstring sContent = sw.GetData();
+                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
                 OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
@@ -6837,6 +7104,115 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItemContent(BYTE type, long length, void
 	Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
 	return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
 };
+class Binary_NotesTableReader : public Binary_CommonReader<Binary_NotesTableReader>
+{
+	Writers::FileWriter& m_oFileWriter;
+	CComments* m_pComments;
+	bool m_bIsFootnote;
+	nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+	nullable<SimpleTypes::CFtnEdn<>		> m_oType;
+public:
+	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote):
+		Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_pComments(pComments),m_bIsFootnote(bIsFootnote)
+	{
+	}
+	int Read()
+	{
+		m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
+		CString sFilename;
+		Writers::ContentWriter* pContentWriter = NULL;
+		if(m_bIsFootnote)
+		{
+			sFilename = m_oFileWriter.m_oFootnotesWriter.getFilename();
+			pContentWriter = &m_oFileWriter.m_oFootnotesWriter.m_oNotesWriter;
+		}
+		else
+		{
+			sFilename = m_oFileWriter.m_oEndnotesWriter.getFilename();
+			pContentWriter = &m_oFileWriter.m_oEndnotesWriter.m_oNotesWriter;
+		}
+		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter, m_pComments);
+
+		int res = ReadTable(&Binary_NotesTableReader::ReadNotes, this, &oBinary_DocumentTableReader);
+
+		OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + _T("word") +
+																			FILE_SEPARATOR_STR + _T("_rels")+
+																			FILE_SEPARATOR_STR + sFilename + _T(".rels");
+
+		m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
+		return res;
+	}
+	int ReadNotes(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		if ( c_oSerNotes::Note == type )
+		{
+			m_oType.reset();
+			m_oId.reset();
+			res = Read1(length, &Binary_NotesTableReader::ReadNote, this, poResult);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadNote(BYTE type, long length, void* poResult)
+	{
+		Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
+		int res = c_oSerConstants::ReadOk;
+		if ( c_oSerNotes::NoteType == type )
+		{
+			m_oType.Init();
+			m_oType->SetValue((SimpleTypes::EFtnEdn)m_oBufferedStream.GetUChar());
+		}
+		else if ( c_oSerNotes::NoteId == type )
+		{
+			m_oId.Init();
+			m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerNotes::NoteContent == type )
+		{
+			XmlUtils::CStringWriter& writer = pBinary_DocumentTableReader->m_oDocumentWriter.m_oContent;
+			if(m_bIsFootnote)
+			{
+				writer.WriteString(_T("<w:footnote"));
+			}
+			else
+			{
+				writer.WriteString(_T("<w:endnote"));
+			}
+			if(m_oType.IsInit())
+			{
+				writer.WriteString(_T(" w:type=\""));
+				writer.WriteString(m_oType->ToString());
+				writer.WriteString(_T("\""));
+			}
+			if(m_oId.IsInit())
+			{
+				writer.WriteString(_T(" w:id=\""));
+				writer.WriteString(m_oId->ToString());
+				writer.WriteString(_T("\""));
+			}
+			writer.WriteString(_T(">"));
+			res = Read1(length, &Binary_NotesTableReader::ReadNoteContent, this, poResult);
+			if(m_bIsFootnote)
+			{
+				writer.WriteString(_T("</w:footnote>"));
+			}
+			else
+			{
+				writer.WriteString(_T("</w:endnote>"));
+			}
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadNoteContent(BYTE type, long length, void* poResult)
+	{
+		Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
+		return pBinary_DocumentTableReader->ReadDocumentContent(type, length, NULL);
+	};
+};
 class BinaryFileReader
 {
 private:
@@ -6965,6 +7341,13 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				case c_oSerTableTypes::Numbering:
 					res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
 					break;
+				case c_oSerTableTypes::Footnotes:
+					res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, true).Read();
+					break;
+				case c_oSerTableTypes::Endnotes:
+					res = Binary_NotesTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments, false).Read();
+					break;
+
 				//Comments должны читаться раньше чем c_oSerTableTypes::Document
 				//case c_oSerTableTypes::Comments:
 				//	res = oBinary_CommentsTableReader.Read();
@@ -6991,6 +7374,16 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				{
 					long rId;
 					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), CString(_T("numbering.xml")), CString(), &rId);
+				}
+				if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
+				{
+					long rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes")), CString(_T("footnotes.xml")), CString(), &rId);
+				}
+				if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
+				{
+					long rId;
+					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes")), CString(_T("endnotes.xml")), CString(), &rId);
 				}
 				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
 				{

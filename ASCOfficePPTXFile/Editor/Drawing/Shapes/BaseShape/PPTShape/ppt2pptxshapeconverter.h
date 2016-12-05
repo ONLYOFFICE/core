@@ -2669,6 +2669,11 @@ namespace NSGuidesVML
 				{	
 					if (0 != m_arSlicesPath.size())
 					{
+						if ( lValue >= 0x7fffff00 || lValue <= -0x7fffff00)
+						{
+							lValue  =  0;	//process(2).ppt - todooo разобраться что за хрень это ваще приплыла
+						}
+
 						m_arSlicesPath[m_arSlicesPath.size() - 1].AddParam(lValue, eParamType);
 					}
 				}

@@ -83,8 +83,11 @@ namespace DocFileFormat
 
 			WideString* author_str = static_cast<WideString*>( _doc->RevisionAuthorTable->operator []( _revisionData->Isbt ));
 			
-			XMLTools::XMLAttribute<wchar_t> author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
-			rPrChange.AppendAttribute( author );
+			if (author_str)
+			{
+				XMLTools::XMLAttribute<wchar_t> author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
+				rPrChange.AppendAttribute( author );
+			}
 
 			//convert revision stack
 			convertSprms( _revisionData->Changes, &rPrChange );
@@ -604,7 +607,11 @@ namespace DocFileFormat
 				{
 					if ( istd < styleSheet->Styles->size() )
 					{
-						CharacterPropertyExceptions* baseChpx = styleSheet->Styles->at( istd )->chpx;
+						StyleSheetDescription* style = styleSheet->Styles->at( istd );
+						
+						if (!style) 
+							break;
+						CharacterPropertyExceptions* baseChpx = style->chpx;
 
 						if ( baseChpx != NULL )
 						{

@@ -51,34 +51,31 @@
 #include "../Table/Table.h"
 #include "../Comments/Comments.h"
 #include "../Ole/OleObjects.h"
+#include "../../../../../DesktopEditor/common/String.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработанные child:
+//необработанные child:
 		//<cellWatches>
 		//<colBreaks>
 		//<controls>
 		//<customProperties>
 		//<dataConsolidate>
 		//<dataValidations>
-		//<drawing>
-		//<drawingHF>
 		//<extLst>
-		//<headerFooter>
 		//<oleObjects>
 		//<phoneticPr>
-		//<picture>
 		//<protectedRanges>
 		//<rowBreaks>
 		//<scenarios>
 		//<sheetCalcPr>
 		//<sheetProtection>
-		//<sheetViews>
 		//<smartTags>
 		//<sortState>
 		//<webPublishItems>
+
 		class CWorksheet : public OOX::File, public OOX::Spreadsheet::IFileContainer
 		{
 		public:
@@ -114,7 +111,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("worksheet") == sName || _T("chartsheet") == sName)
 				{
 					if ( !oReader.IsEmptyNode() )
@@ -153,35 +150,44 @@ namespace OOX
 							else if ( _T("tableParts") == sName )
 								m_oTableParts = oReader;
 							else if ( _T("legacyDrawing") == sName )
-								m_oLegacyDrawingWorksheet = oReader;
+								m_oLegacyDrawing = oReader;
+							else if ( _T("legacyDrawingHF") == sName )
+								m_oLegacyDrawingHF = oReader;
 							else if ( _T("oleObjects") == sName )
 								m_oOleObjects = oReader;
+							else if ( _T("headerFooter") == sName )
+								m_oHeaderFooter = oReader;
 							else if (_T("sheetPr") == sName)
 								m_oSheetPr = oReader;
                             else if (_T("extLst") == sName)
                                 m_oExtLst = oReader;
+                            else if (_T("picture") == sName)
+                                m_oPicture = oReader;
 						}
 					}
-					if(m_oLegacyDrawingWorksheet.IsInit() && m_oLegacyDrawingWorksheet->m_oId.IsInit())
+					if(m_oLegacyDrawing.IsInit() && m_oLegacyDrawing->m_oId.IsInit())
 					{
-						OOX::RId oRId(m_oLegacyDrawingWorksheet->m_oId->GetValue());
+						OOX::RId oRId(m_oLegacyDrawing->m_oId->GetValue());
 						
 						smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
 						smart_ptr<OOX::File> oComments = IFileContainer::Get(FileTypes::Comments);
 						
 						if (oComments.IsInit() && FileTypes::Comments == oComments->type() && oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
 						{
-							OOX::Spreadsheet::CComments* pComments		= static_cast<OOX::Spreadsheet::CComments*>(oComments.operator->());
+							OOX::Spreadsheet::CComments* pComments	= static_cast<OOX::Spreadsheet::CComments*>(oComments.operator->());
 							OOX::CVmlDrawing* pVmlDrawing	= static_cast<OOX::CVmlDrawing*>(oVmlDrawing.operator->());
 							
 							PrepareComments(pComments, pVmlDrawing);
 						}
 					}
+					if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawingHF->m_oId.IsInit())
+					{
+					}
 				}		
 			}
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::CVmlDrawing* pVmlDrawing)
 			{
-				std::vector<CString*> & aAuthors = pComments->m_oAuthors->m_arrItems;
+				std::vector<std::wstring*> & aAuthors = pComments->m_oAuthors->m_arrItems;
 				
 				if(pComments->m_oCommentList.IsInit())
 				{
@@ -192,7 +198,7 @@ namespace OOX
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
 						{
 							int nRow, nCol;
-							if(parseRef(pComment->m_oRef->GetValue(), nRow, nCol))
+							if(CCell::parseRef(string2std_string(pComment->m_oRef->GetValue()), nRow, nCol))
 							{
 								CCommentItem* pCommentItem = new CCommentItem();
 								pCommentItem->m_nRow = nRow - 1;
@@ -205,7 +211,7 @@ namespace OOX
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 								if(NULL != pSi)
 									pCommentItem->m_oText.reset(pSi);
-								CString sNewId;sNewId.Format(_T("%d-%d"), pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get());
+								std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
 								m_mapComments [sNewId] = pCommentItem;
 							}
 						}
@@ -228,9 +234,9 @@ namespace OOX
 							{
 								int nRow = pClientData->m_oRow->GetValue();
 								int nCol = pClientData->m_oColumn->GetValue();
-								CString sId;sId.Format(_T("%d-%d"), nRow, nCol);
+								std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
-								std::map<CString, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+								std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 								if(pPair != m_mapComments.end())
 								{
 									CCommentItem* pCommentItem = pPair->second;
@@ -329,7 +335,7 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				XmlUtils::CStringWriter sXml;
+				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" mc:Ignorable=\"x14ac\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">"));
 				if(m_oSheetPr.IsInit())
 					m_oSheetPr->toXML(sXml);
@@ -357,17 +363,25 @@ namespace OOX
 					m_oPageSetup->toXML(sXml);
 				if(m_oDrawing.IsInit())
 					m_oDrawing->toXML(sXml);
-				if(m_oLegacyDrawingWorksheet.IsInit())
-					m_oLegacyDrawingWorksheet->toXML(sXml);
+				if(m_oLegacyDrawing.IsInit())
+					m_oLegacyDrawing->toXML(sXml);
+				if(m_oLegacyDrawingHF.IsInit())
+					m_oLegacyDrawingHF->toXML(sXml);
 				if(m_oOleObjects.IsInit())
 					m_oOleObjects->toXML(sXml);
 				if(m_oTableParts.IsInit())
 					m_oTableParts->toXML(sXml);
                 if(m_oExtLst.IsInit())
-                    sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+				{
+					CString sExtLst = m_oExtLst->toXMLWithNS(_T(""));
+					sXml.WriteString(sExtLst.GetBuffer());
+					sExtLst.ReleaseBuffer();
+				}
 				sXml.WriteString(_T("</worksheet>"));
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				CString sPath = oPath.GetPath();
+				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
+				sPath.ReleaseBuffer();
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
 			}
@@ -403,105 +417,10 @@ namespace OOX
 					return rId;
 				}
 			}
-			static bool parse3DRef(const CString& sRef, CString& workbook, CString& sheetFrom, CString& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
-			{
-				bool bRes = false;
-				int nIndex = sRef.Find('!');
-				CString sCellRef;
-				if(-1 != nIndex)
-				{
-					CString sSheetPrefix = sRef.Left(nIndex);
-					if(sSheetPrefix.GetLength() > 0 && '\'' == sSheetPrefix[0] && '\'' == sSheetPrefix[sSheetPrefix.GetLength() - 1])
-					{
-						sSheetPrefix = sSheetPrefix.Mid(1, sSheetPrefix.GetLength() - 2);
-					}
-					sSheetPrefix.Replace(L"''", L"'");
-					int nIndexWbStart = sSheetPrefix.Find('[');
-					int nIndexWbEnd = sSheetPrefix.Find(']');
-					if(-1 != nIndexWbStart && -1 != nIndexWbEnd)
-					{
-						workbook = sSheetPrefix.Mid(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
-						sSheetPrefix = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexWbEnd - 1);
-					}
-					int nIndexColon = sSheetPrefix.Find(':');
-					if(-1 != nIndexColon)
-					{
-						sheetFrom = sSheetPrefix.Left(nIndexColon);
-						sheetTo = sSheetPrefix.Right(sSheetPrefix.GetLength() - nIndexColon - 1);
-					}
-					else
-					{
-						sheetFrom = sSheetPrefix;
-					}
-					sCellRef = sRef.Right(sRef.GetLength() - nIndex - 1);
-				}
-				else
-				{
-					sCellRef = sRef;
-				}
-				sCellRef.Replace(L"$", L"");
-				int nIndexColon = sCellRef.Find(':');
-				if(-1 != nIndexColon)
-				{
-					bRes = parseRef(sCellRef.Left(nIndexColon), nRow1, nCol1) && parseRef(sCellRef.Right(sCellRef.GetLength() - nIndexColon - 1), nRow2, nCol2);
-				}
-				else
-				{
-					bRes = parseRef(sCellRef, nRow1, nCol1);
-					nRow2 = nRow1;
-					nCol2 = nCol1;
-				}
-				return bRes;
-			}
-			static bool parseRef(CString sRef, int& nRow, int& nCol)
-			{
-				bool bRes = false;
-				nRow = 0;
-				nCol = 0;
-				int nLegnth = sRef.GetLength();
-				if(nLegnth > 0)
-				{
-					int nIndex = 0;
-					sRef.MakeUpper();
-					TCHAR cCurLetter = sRef[nIndex];
-					while('A' <= cCurLetter && cCurLetter <= 'Z' && nIndex < nLegnth)
-					{
-						nIndex++;
-						cCurLetter = sRef[nIndex];
-					}
-					if(nIndex > 0)
-					{
-						CString sAdd = sRef.Left(nIndex);
-						CString sDig = sRef.Right(nLegnth - nIndex);
-						for(int i = 0, length = sAdd.GetLength(); i < length; ++i)
-						{
-							nCol = nCol * 26 + sAdd[i] - 'A' + 1;
-						}
-						nRow = _wtoi(sDig);
-						bRes = true;
-					}
-				}
-				return bRes;
-			}
-			static CString combineRef(int nRow, int nCol)
-			{
-				nRow++;
-				CString sRes = _T("");
-				if(nCol >= 0){
-					int columnNumber = nCol + 1;
-					while(columnNumber > 0){
-						int currentLetterNumber = (columnNumber - 1) % 26;
-						sRes.Insert(0, 'A' + currentLetterNumber);
-						columnNumber = (columnNumber - (currentLetterNumber + 1)) / 26;
-					}
-				}
-				sRes.AppendFormat(_T("%d"), nRow);
-				return sRes;
-			}
 		private:
 			void ClearItems()
 			{
-				for (std::map<CString, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+				for (std::map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 				{
 					delete it->second;
 				}
@@ -528,11 +447,14 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CPrintOptions>				m_oPrintOptions;
 			nullable<OOX::Spreadsheet::CAutofilter>					m_oAutofilter;
 			nullable<OOX::Spreadsheet::CTableParts>					m_oTableParts;
-			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawingWorksheet;
+			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
-			std::map<CString, CCommentItem*>						m_mapComments;
+			std::map<std::wstring, CCommentItem*>						m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
+			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;
+			nullable<OOX::Spreadsheet::CLegacyDrawingHFWorksheet>	m_oLegacyDrawingHF;
+			nullable<OOX::Spreadsheet::CPictureWorksheet>			m_oPicture;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};

@@ -56,36 +56,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oDescending.IsInit() || m_oRef.IsInit() || m_oSortBy.IsInit() || m_oDxfId.IsInit())
 				{
-					writer.WriteString(CString(_T("<sortCondition")));
-					if(m_oSortBy.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" sortBy=\"%ls\""), m_oSortBy->ToString());
-						writer.WriteString(sXml);
-					}
-					if(m_oDescending.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" descending=\"%ls\""), m_oDescending->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sXml);
-					}
-					if(m_oRef.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-						writer.WriteString(sXml);
-					}
-					if(m_oDxfId.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" dxfId=\"%d\""), m_oDxfId->GetValue());
-						writer.WriteString(sXml);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"<sortCondition");
+					WritingStringNullableAttrString(L"sortBy", m_oSortBy, m_oSortBy->ToString());
+					WritingStringNullableAttrBool(L"descending", m_oDescending);
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -136,21 +116,19 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oRef.IsInit() && m_arrItems.size() > 0)
 				{
-					CString sXml;
-					sXml.Format(_T("<sortState ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-					if(m_oCaseSensitive.IsInit())
-                        sXml.AppendFormat(_T(" caseSensitive=\"%ls\""), (const TCHAR *) m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
-					sXml.Append(_T(">"));
-					writer.WriteString(sXml);
+					writer.WriteString(L"<sortState");
+					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString2());
+					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
+					writer.WriteString(L">");
 
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
-					writer.WriteString(CString(_T("</sortState>")));
+					writer.WriteString(L"</sortState>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -163,7 +141,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("sortCondition") == sName )
 						m_arrItems.push_back(new CSortCondition(oReader));
@@ -208,16 +186,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oDxfId.IsInit())
 				{
-					CString sXml;
-					sXml.Format(_T("<colorFilter dxfId=\"%d\""), m_oDxfId->GetValue());
-					writer.WriteString(sXml);
+					writer.WriteString(L"<colorFilter");
+					WritingStringAttrInt(L"dxfId", m_oDxfId->GetValue());
 					if(m_oCellColor.IsInit() && false == m_oCellColor->ToBool())
-						writer.WriteString(CString(_T(" cellColor=\"0\"")));
-					writer.WriteString(CString(_T("/>")));
+						writer.WriteString(L" cellColor=\"0\"");
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -264,26 +241,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oType.IsInit())
 				{
-					CString sXml;
-					sXml.Format(_T("<dynamicFilter type=\"%ls\""), m_oType->ToString());
-					writer.WriteString(sXml);
-					if(m_oVal.IsInit())
-					{
-						CString sVal;
-						sVal.Format(_T(" val=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
-						writer.WriteString(sVal);
-					}
-					if(m_oMaxVal.IsInit())
-					{
-						CString sVal;
-						sVal.Format(_T(" maxVal=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oMaxVal->GetValue()));
-						writer.WriteString(sVal);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"<dynamicFilter");
+					WritingStringAttrString(L"type", m_oType->ToString());
+					WritingStringNullableAttrDouble(L"val", m_oVal, m_oVal->GetValue());
+					WritingStringNullableAttrDouble(L"maxVal", m_oMaxVal, m_oMaxVal->GetValue());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -332,13 +298,15 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oOperator.IsInit() && m_oVal.IsInit())
 				{
-					CString sXml;
-					sXml.Format(_T("<customFilter operator=\"%ls\" val=\"%ls\"/>"), m_oOperator->ToString(), m_oVal.get());
-					writer.WriteString(sXml);
+					writer.WriteString(L"<customFilter operator=\"");
+					writer.WriteString(m_oOperator->ToString());
+					writer.WriteString(L"\" val=\"");
+					writer.WriteString(m_oVal.get());
+					writer.WriteString(L"\"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -367,7 +335,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CCustomFilter<> > m_oOperator;
-			nullable<CString > m_oVal;
+			nullable<std::wstring > m_oVal;
 		};
 		class CCustomFilters : public WritingElementWithChilds<CCustomFilter>
 		{
@@ -385,17 +353,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{
-					writer.WriteString(CString(_T("<customFilters")));
-					if(m_oAnd.IsInit() && true == m_oAnd->ToBool())
-						writer.WriteString(CString(_T(" and=\"1\"")));
-					writer.WriteString(CString(_T(">")));
+					writer.WriteString(L"<customFilters");
+					if (m_oAnd.IsInit() && true == m_oAnd->ToBool())
+						writer.WriteString(L" and=\"1\"");
+					writer.WriteString(L">");
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
-					writer.WriteString(CString(_T("</customFilters>")));
+					writer.WriteString(L"</customFilters>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -408,7 +376,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("customFilter") == sName )
 						m_arrItems.push_back( new CCustomFilter(oReader));
@@ -449,13 +417,11 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oVal.IsInit())
 				{
-					CString sXml;
-					sXml.Format(_T("<filter val=\"%ls\"/>"), XmlUtils::EncodeXmlString(m_oVal.get()));
-					writer.WriteString(sXml);
+					WritingStringValAttrEncodeXmlString(L"filter", m_oVal.get());
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -482,7 +448,7 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CString > m_oVal;
+			nullable<std::wstring > m_oVal;
 		};
 		class CDateGroupItem : public WritingElement
 		{
@@ -500,54 +466,19 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oDateTimeGrouping.IsInit())
 				{
-					writer.WriteString(CString(_T("<dateGroupItem")));
-					if(m_oYear.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" year=\"%d\""), m_oYear->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oMonth.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" month=\"%d\""), m_oMonth->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oDay.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" day=\"%d\""), m_oDay->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oHour.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" hour=\"%d\""), m_oHour->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oMinute.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" minute=\"%d\""), m_oMinute->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oSecond.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" second=\"%d\""), m_oSecond->GetValue());
-						writer.WriteString(sXml);
-					}
-					if(m_oDateTimeGrouping.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" dateTimeGrouping=\"%ls\""), m_oDateTimeGrouping->ToString());
-						writer.WriteString(sXml);
-					}
-					writer.WriteString(CString(_T("/>")));
+					writer.WriteString(L"<dateGroupItem");
+					WritingStringNullableAttrInt(L"year", m_oYear, m_oYear->GetValue());
+					WritingStringNullableAttrInt(L"month", m_oMonth, m_oMonth->GetValue());
+					WritingStringNullableAttrInt(L"day", m_oDay, m_oDay->GetValue());
+					WritingStringNullableAttrInt(L"hour", m_oHour, m_oHour->GetValue());
+					WritingStringNullableAttrInt(L"minute", m_oMinute, m_oMinute->GetValue());
+					WritingStringNullableAttrInt(L"second", m_oSecond, m_oSecond->GetValue());
+					WritingStringNullableAttrString(L"dateTimeGrouping", m_oDateTimeGrouping, m_oDateTimeGrouping->ToString());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -604,17 +535,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0 || m_oBlank.IsInit())
 				{
 					writer.WriteString(_T("<filters"));
-					if(m_oBlank.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" blank=\"%ls\""), m_oBlank->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sXml);
-					}
+					WritingStringNullableAttrBool(L"blank", m_oBlank);
 					writer.WriteString(_T(">"));
 
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
@@ -633,7 +559,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("dateGroupItem") == sName )
 						m_arrItems.push_back( new CDateGroupItem(oReader));
@@ -676,28 +602,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oVal.IsInit())
 				{
-					writer.WriteString(CString(_T("<top10")));
+					writer.WriteString(L"<top10");
 					if(m_oTop.IsInit() && false == m_oTop->ToBool())
-						writer.WriteString(CString(_T(" top=\"0\"")));
+						writer.WriteString(L" top=\"0\"");
 					if(m_oPercent.IsInit() && true == m_oPercent->ToBool())
-						writer.WriteString(CString(_T(" percent=\"1\"")));
-					if(m_oVal.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" val=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
-						writer.WriteString(sXml);
-					}
-					if(m_oFilterVal.IsInit())
-					{
-						CString sXml;
-						sXml.Format(_T(" filterVal=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oFilterVal->GetValue()));
-						writer.WriteString(sXml);
-					}
-					writer.WriteString(CString(_T("/>")));
+						writer.WriteString(L" percent=\"1\"");
+					WritingStringNullableAttrDouble(L"val", m_oVal, m_oVal->GetValue());
+					WritingStringNullableAttrDouble(L"filterVal", m_oFilterVal, m_oFilterVal->GetValue());
+					writer.WriteString(L"/>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -748,22 +664,17 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oColId.IsInit() && (m_oColorFilter.IsInit() || m_oDynamicFilter.IsInit() || m_oCustomFilters.IsInit() || m_oFilters.IsInit() ||
 										m_oTop10.IsInit() || m_oShowButton.IsInit() || m_oHiddenButton.IsInit()))
 				{
-					CString sXml;
-					sXml.Format(_T("<filterColumn colId=\"%d\""), m_oColId->GetValue());
-					writer.WriteString(sXml);
+					writer.WriteString(L"<filterColumn");
+					WritingStringNullableAttrInt(L"colId", m_oColId, m_oColId->GetValue());
 					if(m_oShowButton.IsInit() && false == m_oShowButton->ToBool())
-						writer.WriteString(CString(_T(" showButton=\"0\"")));
-					if(m_oHiddenButton.IsInit())
-					{
-						CString sXml;sXml.Format(_T(" hiddenButton=\"%ls\""), m_oHiddenButton->ToString2(SimpleTypes::onofftostring1));
-						writer.WriteString(sXml);
-					}
-					writer.WriteString(CString(_T(">")));
+						writer.WriteString(L" showButton=\"0\"");
+					WritingStringNullableAttrBool(L"hiddenButton", m_oHiddenButton);
+					writer.WriteString(L">");
 					if(m_oColorFilter.IsInit())
 						m_oColorFilter->toXML(writer);
 					if(m_oDynamicFilter.IsInit())
@@ -774,7 +685,7 @@ namespace OOX
 						m_oFilters->toXML(writer);
 					if(m_oTop10.IsInit())
 						m_oTop10->toXML(writer);
-					writer.WriteString(CString(_T("</filterColumn>")));
+					writer.WriteString(L"</filterColumn>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -787,7 +698,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("colorFilter") == sName )
 						m_oColorFilter = oReader;
@@ -846,18 +757,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oRef.IsInit())
 				{
-					CString sXml;
-					sXml.Format(_T("<autoFilter ref=\"%ls\">"), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
-					writer.WriteString(sXml);
+					writer.WriteString(L"<autoFilter");
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					writer.WriteString(L">");
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
-					writer.WriteString(CString(_T("</autoFilter>")));
+					writer.WriteString(L"</autoFilter>");
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -870,7 +781,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("filterColumn") == sName )
 						m_arrItems.push_back(new CFilterColumn(oReader));

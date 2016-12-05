@@ -75,13 +75,13 @@ public:
 
 	void set_root(bool root){is_root_ = root;}
 ////////////////////////
-    virtual ::std::wostream & serialize(::std::wostream & _Wostream) const
+    virtual std::wostream & serialize(std::wostream & _Wostream) const
     {
         _CP_LOG << L"[warning] use base text_to_stream\n";
         return _Wostream;
     }
 
-    virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const
+    virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const
     {
         _CP_LOG << L"[warning] use base xml_to_stream\n";
         return _Wostream;

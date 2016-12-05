@@ -341,6 +341,10 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\..\build\bin\icu\win_32\icuuc.lib"
 			>
 		</File>

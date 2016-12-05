@@ -43,7 +43,7 @@ int BinDocxRW::g_nCurFormatVersion = 0;
 
 BinDocxRW::CDocxSerializer::CDocxSerializer()
 {
-	m_oBinaryFileWriter = NULL;
+	m_pParamsWriter = NULL;
 	m_pCurFileWriter = NULL;
 	m_bIsNoBase64Save = false;
 	m_bSaveChartAsImg = false;
@@ -136,10 +136,10 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	oDrawingConverter.SetMainDocument(this);
 	oDrawingConverter.SetMediaDstPath(pathMedia.GetPath());
 	
-	ParamsWriter oParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
+	m_pParamsWriter = new ParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
 
-	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
-	m_oBinaryFileWriter->intoBindoc(sDstPath);
+	BinaryFileWriter oBinaryFileWriter(*m_pParamsWriter);
+	oBinaryFileWriter.intoBindoc(sDstPath);
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
 
@@ -159,13 +159,13 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 		{
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(string2std_string(sSrcFileName));
-			oFile.WriteStringUTF8(string2std_string(m_oBinaryFileWriter->WriteFileHeader(nBinBufferLen)));
+			oFile.WriteStringUTF8(string2std_string(oBinaryFileWriter.WriteFileHeader(nBinBufferLen)));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}
 		RELEASEARRAYOBJECTS(pbBase64Buffer);
 	}
-	RELEASEOBJECT(m_oBinaryFileWriter);
+	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
@@ -283,7 +283,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				oDrawingConverter.SetMainDocument(this);
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
-				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
+				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
@@ -346,6 +346,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				m_pCurFileWriter->m_oNumberingWriter.Write();
 				m_pCurFileWriter->m_oFontTableWriter.Write();
 				m_pCurFileWriter->m_oHeaderFooterWriter.Write();
+				m_pCurFileWriter->m_oFootnotesWriter.Write();
+				m_pCurFileWriter->m_oEndnotesWriter.Write();
 				//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
 				m_pCurFileWriter->m_oSettingWriter.Write();
 				m_pCurFileWriter->m_oWebSettingsWriter.Write();
@@ -378,7 +380,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 }
 bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 {
-	if(NULL == m_oBinaryFileWriter)
+	if(NULL == m_pParamsWriter)
 		return false;
 	long nStartPos = oBufferedStream.GetPosition();
 
@@ -399,12 +401,12 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 	{
         oReader.ReadNextNode();//root
         oReader.ReadNextNode();//v:textbox
-		CString sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
+		std::wstring sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
 		if(_T("textbox") == sRootName)
 			oReader.ReadNextNode();//w:txbxContent
 		oSdtContent.fromXML(oReader);
 	}
-	BinDocxRW::ParamsWriter& oParamsWriter = m_oBinaryFileWriter->m_oParamsWriter;
+	BinDocxRW::ParamsWriter& oParamsWriter = *m_pParamsWriter;
 	NSBinPptxRW::CBinaryFileWriter* pBufferedStreamOld = oParamsWriter.m_pCBufferedStream;
 	oParamsWriter.m_pCBufferedStream = &oBufferedStream;
 
@@ -420,6 +422,62 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 	lDataSize = nEndPos - nStartPos;
 	return true;
 }
+bool BinDocxRW::CDocxSerializer::getBinaryContentElem(OOX::EElementType eElemType, void* pElem, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
+{
+	if(NULL == m_pParamsWriter)
+		return false;
+	long nStartPos = oBufferedStream.GetPosition();
+
+	BinDocxRW::ParamsWriter& oParamsWriter = *m_pParamsWriter;
+	NSBinPptxRW::CBinaryFileWriter* pBufferedStreamOld = oParamsWriter.m_pCBufferedStream;
+	oParamsWriter.m_pCBufferedStream = &oBufferedStream;
+
+	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
+	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
+	if(OOX::et_m_oMathPara == eElemType)
+	{
+		OOX::Logic::COMathPara* pMathPara = static_cast<OOX::Logic::COMathPara*>(pElem);
+		oBinaryDocumentTableWriter.WriteMathOMathPara(pMathPara->m_arrItems);
+	}
+	else if(OOX::et_m_oMath == eElemType)
+	{
+		OOX::Logic::COMath* pMath = static_cast<OOX::Logic::COMath*>(pElem);
+		oBinaryDocumentTableWriter.WriteMathArgNodes(pMath->m_arrItems);
+	}
+	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
+
+	oParamsWriter.m_pCBufferedStream = pBufferedStreamOld;
+	long nEndPos = oBufferedStream.GetPosition();
+	lDataSize = nEndPos - nStartPos;
+	return true;
+}
+
+bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sOutputXml)
+{
+	long nLength = oBufferedStream.GetLong();
+	Writers::ContentWriter oTempContentWriter;
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
+
+	if(OOX::et_m_oMathPara == eType)
+	{
+		oTempContentWriter.m_oContent.WriteString(CString(_T("<m:oMathPara>")));
+		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathOMathPara, &oBinary_DocumentTableReader, NULL);
+		oTempContentWriter.m_oContent.WriteString(CString(_T("</m:oMathPara>")));
+	}
+	else if(OOX::et_m_oMath == eType)
+	{
+		oTempContentWriter.m_oContent.WriteString(CString(_T("<m:oMath>")));
+		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathArg, &oBinary_DocumentTableReader, NULL);
+		oTempContentWriter.m_oContent.WriteString(CString(_T("</m:oMath>")));
+	}
+
+
+	sOutputXml = oTempContentWriter.m_oContent.GetData();
+	return true;
+}
+
 void BinDocxRW::CDocxSerializer::setFontDir(const CString& sFontDir)
 {
 	m_sFontDir = sFontDir;

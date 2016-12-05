@@ -68,6 +68,12 @@ namespace SimpleTypes
 		{
 			return m_sValue;
 		}
+		std::wstring ToString2()
+		{
+			std::wstring sRes(m_sValue.GetBuffer());
+			m_sValue.ReleaseBuffer();
+			return sRes;
+		}
 
 		SimpleType_FromString2    (CString)
 		SimpleType_Operator_Equal (CRelationshipId)
@@ -295,16 +301,16 @@ namespace SimpleTypes
 		}
 #endif
 
-		bool    FromString(const CWCharWrapper& wsStr)
+		bool    FromString(const std::wstring& wsStr)
 		{
 			// TO DO: переделать
-			CString sTemp( wsStr.m_cwsString );
+			CString sTemp( wsStr.c_str() );
 			return FromString( (CString &)sTemp );
 		}
         bool    FromString(const wchar_t* cwsStr)
         {
-            CWCharWrapper wsStr = cwsStr;
-            return FromString( (const CWCharWrapper&)wsStr );
+            std::wstring wsStr = cwsStr;
+            return FromString( (const std::wstring&)wsStr );
         }
 		CString ToString  () const 
 		{
@@ -550,7 +556,47 @@ namespace SimpleTypes
 			default         : return _T("false");
 			}
 		}
-		CString ToString2(EOnOffToString eType) const 
+		CString ToString2(EOnOffToString eType) const
+		{
+			if (onofftostringTrue == eType)
+			{
+				switch (this->m_eValue)
+				{
+				case onoffFalse: return _T("false");
+				case onoffTrue: return _T("true");
+				default: return _T("false");
+				}
+			}
+			else if (onofftostring1 == eType)
+			{
+				switch (this->m_eValue)
+				{
+				case onoffFalse: return _T("0");
+				case onoffTrue: return _T("1");
+				default: return _T("0");
+				}
+			}
+			else if (onofftostringOn == eType)
+			{
+				switch (this->m_eValue)
+				{
+				case onoffFalse: return _T("off");
+				case onoffTrue: return _T("on");
+				default: return _T("off");
+				}
+			}
+			else if (onofftostringT == eType)
+			{
+				switch (this->m_eValue)
+				{
+				case onoffFalse: return _T("f");
+				case onoffTrue: return _T("t");
+				default: return _T("f");
+				}
+			}
+			return _T("false");
+		}
+		std::wstring ToString3(EOnOffToString eType) const
 		{
 			if(onofftostringTrue == eType)
 			{

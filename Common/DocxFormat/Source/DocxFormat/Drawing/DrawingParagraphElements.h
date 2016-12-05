@@ -69,7 +69,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 				}
 			}
@@ -122,7 +122,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					
 				}
 			}
@@ -178,7 +178,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					
 					if ( _T("a:spcPct") == sName )
 						m_oLineSpacingPercent = oReader;

@@ -45,44 +45,45 @@ public:
 		XmlUtils::CXmlLiteReader oXmlReader;
 		if( TRUE ==  oXmlReader.OpenFromXmlNode(oParam.oNode) )
 		{
-			CString nCount = oXmlReader.ReadNodeAttribute( _T("w:count") );
-			if( _T("") != nCount )
+			CString nCount = oXmlReader.ReadNodeAttribute( L"w:count" );
+			if( !nCount.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nCount = Strings::ToInteger( nCount );
-			CString nLocked = oXmlReader.ReadNodeAttribute( _T("w:defLockedState") );
-			if( _T("") != nLocked )
+			CString nLocked = oXmlReader.ReadNodeAttribute( L"w:defLockedState" );
+			if( !nLocked.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nLocked= Strings::ToInteger( nLocked );
-			CString nSemiHid = oXmlReader.ReadNodeAttribute( _T("w:defSemiHidden") );
-			if( _T("") != nSemiHid )
+			CString nSemiHid = oXmlReader.ReadNodeAttribute( L"w:defSemiHidden" );
+			if( !nSemiHid.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nSemiHidden= Strings::ToInteger( nSemiHid );
-			CString nUNhidWU = oXmlReader.ReadNodeAttribute( _T("w:defUnhideWhenUsed") );
-			if( _T("") != nUNhidWU )
+			CString nUNhidWU = oXmlReader.ReadNodeAttribute( L"w:defUnhideWhenUsed" );
+			if( !nUNhidWU.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nUnHiddenWhenUse= Strings::ToInteger( nUNhidWU );
-			CString nQFormat = oXmlReader.ReadNodeAttribute( _T("w:defQFormat") );
-			if( _T("") != nQFormat )
+			CString nQFormat = oXmlReader.ReadNodeAttribute( L"w:defQFormat" );
+			if( !nQFormat.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nQFormat= Strings::ToInteger( nQFormat );
-			CString nUIPriority = oXmlReader.ReadNodeAttribute( _T("w:defUIPriority") );
-			if( _T("") != nUIPriority )
+			CString nUIPriority = oXmlReader.ReadNodeAttribute( L"w:defUIPriority" );
+			if( !nUIPriority.IsEmpty() )
 				oParam.oRtf->m_oLatentStyleTable.m_nPriority= Strings::ToInteger( nUIPriority );
 
-			oXmlReader.ReadNodeList( _T("w:lsdException") );
+			oXmlReader.ReadNodeList( L"w:lsdException" );
 			for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
 			{
 				RtfStyleException oNewException;
-				oNewException.m_sName = oXmlReader.ReadNodeAttribute( _T("w:name"), _T("") );
-				CString nPriority = oXmlReader.ReadNodeAttribute( _T("w:uiPriority"));
-				if( _T("") != nPriority )
+				oNewException.m_sName	= oXmlReader.ReadNodeAttribute( L"w:name", L"" );
+				CString nPriority		= oXmlReader.ReadNodeAttribute( L"w:uiPriority");
+				
+				if( !nPriority.IsEmpty() )
 					oNewException.m_nPriority = Strings::ToInteger( nPriority );
-				CString nHiddenWhenUse = oXmlReader.ReadNodeAttribute( _T("w:unhideWhenUsed") );
-				if( _T("") != nHiddenWhenUse )
+				CString nHiddenWhenUse = oXmlReader.ReadNodeAttribute( L"w:unhideWhenUsed");
+				if( !nHiddenWhenUse.IsEmpty() )
 					oNewException.m_nHiddenWhenUse = Strings::ToInteger( nHiddenWhenUse );
-				CString nQFormat = oXmlReader.ReadNodeAttribute( _T("w:qFormat") );
-				if( _T("") != nQFormat )
+				CString nQFormat = oXmlReader.ReadNodeAttribute( L"w:qFormat" );
+				if( !nQFormat.IsEmpty() )
 					oNewException.m_nQFormat = Strings::ToInteger( nQFormat );
-				CString nLocked = oXmlReader.ReadNodeAttribute( _T("w:locked") );
-				if( _T("") != nLocked )
+				CString nLocked = oXmlReader.ReadNodeAttribute( L"w:locked" );
+				if( !nLocked.IsEmpty() )
 					oNewException.m_nLocked = Strings::ToInteger( nLocked );
-				CString nSemiHidden = oXmlReader.ReadNodeAttribute( _T("w:semiHidden") );
-				if( _T("") != nSemiHidden )
+				CString nSemiHidden = oXmlReader.ReadNodeAttribute( L"w:semiHidden");
+				if( !nSemiHidden.IsEmpty() )
 					oNewException.m_nSemiHidden = Strings::ToInteger( nSemiHidden );
 
 				if( true == oNewException.IsValid() )

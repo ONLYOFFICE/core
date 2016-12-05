@@ -102,7 +102,20 @@ enum ElementType
     typeTextUserIndex,
     typeTextAlphabeticalIndex,
     typeTextBibliography,
-    typeShape,
+    
+	typeTextTrackedChanges,
+	typeTextChangedRegion,
+	typeTextChangeStart,
+	typeTextChangeEnd,
+	typeTextChange,
+	typeOfficeChangeInfo,
+	
+	typeTextUnknownChange,
+	typeTextDeletion,
+	typeTextFormatChange,
+	typeTextInsertion,
+
+	typeShape,
     typeChangeMarks,
 
     typeOfficeAutomaticStyles,
@@ -204,6 +217,7 @@ enum ElementType
     typeOfficeDocumentMeta,
     typeOfficeDocumentSettings,
 
+	typeMathElement,
 	typeMath,
 	typeMathSemantics,
 	typeMathAnnotation,

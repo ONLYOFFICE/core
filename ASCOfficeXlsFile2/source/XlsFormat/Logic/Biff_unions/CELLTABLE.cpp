@@ -211,9 +211,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					bool xf_set = true;
 					if (row->fGhostDirty == false) xf_set = false;
 					
-					if (row->ixfe_val && xf_set)
+					if (xf_set)
 					{
-						int xf = row->ixfe_val >= global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : row->ixfe_val;
+						int xf = row->ixfe_val >= global_info_->cellStyleXfs_count ? row->ixfe_val - global_info_->cellStyleXfs_count : -1/*row->ixfe_val*/;
 						
 						if (xf < global_info_->cellXfs_count && xf >= 0)
 						{

@@ -70,7 +70,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("a:clrMap") == sName )
 					m_eType = et_a_clrMap;
 				else if ( _T("a:overrideClrMapping") == sName )
@@ -86,7 +86,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 				}
@@ -160,8 +160,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar0 = wsName[0]; 
 
@@ -256,8 +256,8 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sNameFull = oReader.GetName();
-					CString sName = XmlUtils::GetNameNoNS(sNameFull);
+					std::wstring sNameFull = oReader.GetName();
+					std::wstring sName = XmlUtils::GetNameNoNS(sNameFull);
 					
 					if ( _T("accent1") == sName )
 						m_oAccent1 = oReader;
@@ -380,7 +380,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:custClr") == sName )
 					{
 						OOX::Drawing::CCustomColor *oCustClr = new OOX::Drawing::CCustomColor(oReader);
@@ -441,7 +441,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:clrScheme") == sName )
 						m_oClrScheme = oReader;
 					else if ( _T("a:clrMap") == sName )
@@ -507,7 +507,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:extraClrScheme") == sName )
 					{
 						OOX::Drawing::CColorSchemeAndMapping *oExtra = new OOX::Drawing::CColorSchemeAndMapping(oReader);
@@ -601,7 +601,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 					else if ( _T("a:lnDef") == sName )
@@ -671,7 +671,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("a:clrScheme") == sName )
 						m_oClrScheme = oReader;
 					else if ( _T("a:extLst") == sName )

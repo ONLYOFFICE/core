@@ -44,6 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)../XML/include&quot;;&quot;$(ProjectDir)../XML/include/libxml&quot;;&quot;$(ProjectDir)/support&quot;"
+				PreprocessorDefinitions="_MSC_VER=1400"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

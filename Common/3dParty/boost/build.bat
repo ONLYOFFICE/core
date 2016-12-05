@@ -14,52 +14,52 @@ if exist "stage" (
 md build
 
 SET folder=build/win_32
-echo "x86..."
 
-if exist "%folder%" (
-	RMDIR "%folder%" /S /Q
+if not exist "%folder%" (
+  echo "x86..."
+  
+  md  %folder%
+  md  %folder%\static
+  md  %folder%\static_fpic
+  md  %folder%\shared
+
+  .\b2.exe --clean
+  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex
+  XCOPY /Y stage\lib\* "%folder%\static\"
+
+  .\b2.exe --clean
+  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex
+  XCOPY /Y stage\lib\* "%folder%\static_fpic\"
+
+  .\b2.exe --clean
+  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex
+  XCOPY /Y stage\lib\* "%folder%\shared\"
 )
-md  %folder%
-md  %folder%\static
-md  %folder%\static_fpic
-md  %folder%\shared
-
-.\b2.exe --clean
-.\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex
-XCOPY stage\lib\* "%folder%\static\"
-
-.\b2.exe --clean
-.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex
-XCOPY stage\lib\* "%folder%\static_fpic\"
-
-.\b2.exe --clean
-.\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex
-XCOPY stage\lib\* "%folder%\shared\"
 
 SET folder=build/win_64
-echo "x64..."
 
-if exist "%folder%" (
-	RMDIR "%folder%" /S /Q
+
+if not exist "%folder%" (
+  echo "x64..."
+  
+  if exist "stage" (
+    RMDIR "stage" /S /Q
+  )
+
+  md  %folder%
+  md  %folder%\static
+  md  %folder%\static_fpic
+  md  %folder%\shared
+
+  .\b2.exe --clean
+  .\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex address-model=64
+  XCOPY /Y stage\lib\* "%folder%\static\"
+
+  .\b2.exe --clean
+  .\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex address-model=64
+  XCOPY /Y stage\lib\* "%folder%\static_fpic\"
+
+  .\b2.exe --clean
+  .\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex address-model=64
+  XCOPY /Y stage\lib\* "%folder%\shared\"
 )
-
-if exist "stage" (
-	RMDIR "stage" /S /Q
-)
-
-md  %folder%
-md  %folder%\static
-md  %folder%\static_fpic
-md  %folder%\shared
-
-.\b2.exe --clean
-.\bjam.exe link=static --with-filesystem --with-system --with-date_time --with-regex address-model=64
-XCOPY stage\lib\* "%folder%\static\"
-
-.\b2.exe --clean
-.\bjam.exe link=static cxxflags=-fPIC --with-filesystem --with-system --with-date_time --with-regex address-model=64
-XCOPY stage\lib\* "%folder%\static_fpic\"
-
-.\b2.exe --clean
-.\bjam.exe link=shared --with-filesystem --with-system --with-date_time --with-regex address-model=64
-XCOPY stage\lib\* "%folder%\shared\"

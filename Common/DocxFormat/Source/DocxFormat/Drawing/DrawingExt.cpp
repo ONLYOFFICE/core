@@ -45,7 +45,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (sName == _T("compatExt"))//2.3.1.2 compatExt
 					{	//attributes spid -https://msdn.microsoft.com/en-us/library/hh657207(v=office.12).aspx
 						m_oCompatExt = oReader;
@@ -88,9 +88,9 @@ namespace OOX
 			}
 			if(m_oSparklineGroups.IsInit())
 			{
-                XmlUtils::CStringWriter writer;
+				NSStringUtils::CStringBuilder writer;
 				m_oSparklineGroups->toXML(writer);
-                sResult += writer.GetData();
+                sResult += writer.GetData().c_str();
 			}
 
             sResult += _T("</");

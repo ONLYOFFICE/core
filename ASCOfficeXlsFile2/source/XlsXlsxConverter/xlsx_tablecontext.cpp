@@ -69,7 +69,7 @@ void xlsx_table_context::end_table()
 		get_drawing_context().serialize(strm);
 		
 		const std::pair<std::wstring, std::wstring> drawingName	= 
-			context_.get_drawing_context_handle().add_drawing_xml(strm.str(), get_drawing_context().get_drawings_rels());
+			context_.get_drawing_context_handle().add_drawing_xml(strm.str(), get_drawing_context().get_rels());
 
 		context_.current_sheet().set_drawing_link(drawingName.first, drawingName.second);
 
@@ -81,22 +81,33 @@ void xlsx_table_context::end_table()
             }
         }
     }
+	if (!get_drawing_context().empty_vml_HF())
+    {
+		std::wstringstream strm;
+		get_drawing_context().serialize_vml_HF(strm);
+		
+		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
+			context_.get_drawing_context_handle().add_drawing_vml(strm.str(), get_drawing_context().get_vml_HF_rels());
+
+		context_.current_sheet().set_vml_drawing_link_HF(vmlDrawingName.first, vmlDrawingName.second);
+
+	}
 	if (!get_comments_context().empty())
     {
         std::wstringstream strm;
         get_comments_context().write_comments(strm);
         
         std::wstringstream vml_strm;
-        get_comments_context().write_comments_vml(vml_strm);
+		get_drawing_context().serialize_vml_comments(vml_strm);
 		
 		const std::pair<std::wstring, std::wstring> commentsName =
-            context_.get_comments_context_handle().add_comments_xml(strm.str(), vml_strm.str(), context_.get_comments_context().get_comments() );
+            context_.get_comments_context_handle().add_comments_xml(strm.str(), context_.get_comments_context().get_comments());
 
-		const std::pair<std::wstring, std::wstring> vml_drawingName =
-								context_.get_comments_context_handle().get_vml_drawing_xml();
+		const std::pair<std::wstring, std::wstring> vmlDrawingName	= 
+			context_.get_drawing_context_handle().add_drawing_vml(vml_strm.str(), get_drawing_context().get_vml_comments_rels());
 
-        context_.current_sheet().set_comments_link(commentsName.first, commentsName.second);
-        context_.current_sheet().set_vml_drawing_link(vml_drawingName.first, vml_drawingName.second);
+        context_.current_sheet().set_comments_link		(commentsName.first, commentsName.second);
+        context_.current_sheet().set_vml_drawing_link	(vmlDrawingName.first, vmlDrawingName.second);
     }    
 }
 

@@ -55,7 +55,7 @@ public:
     static const ElementType type = typeStyleColumns;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
@@ -80,7 +80,7 @@ public:
     static const ElementType type = typeStyleColumn;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
 	virtual void serialize(std::wostream & strm);
 
@@ -104,7 +104,7 @@ public:
     static const ElementType type = typeStyleColumnSep;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
 	
 	virtual void serialize(std::wostream & strm);
@@ -128,7 +128,7 @@ public:
     static const ElementType type = typeStyleSectionProperties;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);

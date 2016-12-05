@@ -56,15 +56,16 @@ public:
 
 //-----------------------------
 	std::wstring	guidSView;
+	
 	bool			fHFDiffOddEven;
 	bool			fHFDiffFirst;
 	bool			fHFScaleWithDoc;
 	bool			fHFAlignMargins;
 	
-	_UINT16 cchHeaderEven;
-	_UINT16 cchFooterEven;
-	_UINT16 cchHeaderFirst;
-	_UINT16 cchFooterFirst;
+	_UINT16			cchHeaderEven;
+	_UINT16			cchFooterEven;
+	_UINT16			cchHeaderFirst;
+	_UINT16			cchFooterFirst;
 
 	XLUnicodeString strHeaderEven;
 	XLUnicodeString strFooterEven;

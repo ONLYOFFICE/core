@@ -45,6 +45,9 @@ namespace cpdoccore {
 namespace odf_reader {
 
 //---------------------------------------------------------------
+const wchar_t * office_math_element::ns = L"math";
+const wchar_t * office_math_element::name = L"math-element";
+//---------------------------------------------------------------
 const wchar_t * office_math::ns = L"math";
 const wchar_t * office_math::name = L"math";
 
@@ -55,7 +58,7 @@ void office_math::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void office_math::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_math::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME1(L"semantics")
     {
@@ -64,10 +67,13 @@ void office_math::add_child_element( xml::sax * Reader, const ::std::wstring & N
 }
 
 
-void office_math::docx_convert(oox::docx_conversion_context & Context) 
+void office_math::oox_convert(oox::math_context & Context)
 {
 	if (semantics_)
-		semantics_->docx_convert(Context);
+	{
+		office_math_element* math_element = dynamic_cast<office_math_element*>(semantics_.get());
+		math_element->oox_convert(Context);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -79,7 +85,7 @@ void math_semantics::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void math_semantics::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_semantics::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME1(L"annotation")
     {
@@ -91,16 +97,13 @@ void math_semantics::add_child_element( xml::sax * Reader, const ::std::wstring 
 }
 
 
-void math_semantics::docx_convert(oox::docx_conversion_context & Context) 
+void math_semantics::oox_convert(oox::math_context & Context)
 {
-	Context.start_math_formula();
-
-	BOOST_FOREACH(const office_element_ptr & elm, content_)
+	for (int i = 0 ; i < content_.size(); i++)
     {
-        elm->docx_convert(Context);
+		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+        math_element->oox_convert(Context);
     }
-
-	Context.end_math_formula();
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -118,7 +121,7 @@ void math_annotation::add_attributes( const xml::attributes_wc_ptr & Attributes 
 	
 }
 
-void math_annotation::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_annotation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 
@@ -129,7 +132,7 @@ void math_annotation::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-void math_annotation::docx_convert(oox::docx_conversion_context & Context) 
+void math_annotation::oox_convert(oox::math_context & Context)
 {
 
 }
@@ -149,7 +152,7 @@ void math_annotation_xml::add_attributes( const xml::attributes_wc_ptr & Attribu
 	
 }
 
-void math_annotation_xml::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math_annotation_xml::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 
@@ -160,7 +163,7 @@ void math_annotation_xml::add_text(const std::wstring & Text)
     text_ = Text;
 }
 
-void math_annotation_xml::docx_convert(oox::docx_conversion_context & Context) 
+void math_annotation_xml::oox_convert(oox::math_context & Context)
 {
 
 }

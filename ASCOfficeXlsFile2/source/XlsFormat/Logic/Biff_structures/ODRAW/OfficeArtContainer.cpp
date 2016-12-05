@@ -206,12 +206,13 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 		}
 		else // If the found record is not implemented or unknown
 		{
+			if (rh_child.size() > record.getDataSize() - container_beginning_ptr)
+				break;
 			try
 			{
 				size_t sz = rh_child.size();
 
-				record.skipNunBytes(rh_child.size()); // skip header
-				record.skipNunBytes(rh_child.recLen); // skip record data
+				record.skipNunBytes(rh_child.size()); // skip art record header + data
 				Log::warning(std::wstring(L"Unsupported OfficeArtRecord skipped (recType=0x") + 
 					STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)) + std::wstring(L")"));
 			}

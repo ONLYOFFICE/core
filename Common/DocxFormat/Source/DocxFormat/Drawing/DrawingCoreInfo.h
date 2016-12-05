@@ -185,7 +185,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
 				}
@@ -357,7 +357,7 @@ namespace OOX
 				m_eDashType   = linedashtypeUnknown;
 				m_eJoinType   = linejointypeUnknown;
 
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				if ( _T("a:ln") == sName )
 					m_eType = et_a_ln;
 				else
@@ -631,7 +631,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 
 					if ( _T("a:extLst") == sName )
 						m_oExtLst = oReader;
@@ -833,7 +833,7 @@ namespace OOX
 				m_eGeomType   = geomtypeUnknown;
 				m_eEffectType = effecttypeUnknown;
 
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 					if ( _T("a:spPr") == sName )
 					m_eType = et_a_spPr;
 				else if ( _T("pic:spPr") == sName )
@@ -1148,7 +1148,7 @@ namespace OOX
 				m_eFillType   = filltypeUnknown;
 				m_eEffectType = effecttypeUnknown;
 
-                CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				if ( _T("a:grpSpPr") == sName )
 					m_eType = 		et_a_groupSpPr;
 				else if ( _T("xdr:grpSpPr") == sName )
@@ -1286,7 +1286,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    CString sName = oReader.GetName();
+                    std::wstring sName = oReader.GetName();
 					if ( _T("a:effectRef") == sName )
 						m_oEffectRef = oReader;
 					else if ( _T("a:fillRef") == sName )

@@ -4724,8 +4724,8 @@ namespace SimpleTypes
 	enum ERestartNumber
 	{
 		restartnumberContinious = 0,
-		restartnumberEachPage   = 1,
-		restartnumberEachSect   = 2
+		restartnumberEachSect   = 1,
+		restartnumberEachPage   = 2
 	};
 
 	template<ERestartNumber eDefValue = restartnumberContinious>

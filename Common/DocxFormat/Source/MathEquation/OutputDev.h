@@ -51,18 +51,18 @@ namespace MathEquation
 		virtual void EndBlock()   = 0;
 
 		// Выставляем размер в текущем блоке
-		virtual void SetSize(uint16_t nSize) = 0;
+        virtual void SetSize(_UINT16 nSize) = 0;
 
 		// Добавляем символ. К символу могут быть добавлены разные элементы. Зачеркивание, добавление акцента и т.д.
-		virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol) = 0;
+        virtual void BeginChar(unsigned short uChar, unsigned char nTypeFace, bool bSpecialSymbol) = 0;
 		virtual void AddCharEmbel(MEMBELTYPE eType) = 0;
 		virtual void EndChar() = 0;
 
 		// Матрица. Количество блоков здесь равно nRows * nCol, посылаются последовательно в обычном порядке (первая строка слева направо, вторая строка слева направо и т.д.)
-		virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders) = 0;
+        virtual void BeginMatrix(unsigned char nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, unsigned char nRows, unsigned char nCols, unsigned char* pVerBorders, unsigned char* pHorBorders) = 0;
 		virtual void EndMatrix  () = 0;
 
-		virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign) = 0;
+        virtual void StartPile(unsigned char nHAlign, unsigned char nVAlign) = 0;
 		virtual void EndPile() = 0;
 
 		// Скобки с элементом внутри
@@ -111,7 +111,7 @@ namespace MathEquation
 		virtual void BeginAngleBracketsWithSeparator(MANGLEBRACKETSWITHSEPARATORTYPE eType) = 0;
 		virtual void EndAngleBracketsWithSeparator  () = 0;
 
-		void AddFont(uint8_t nTypeFace, std::string sName, bool bBold, bool bItalic)
+        void AddFont(unsigned char nTypeFace, std::string sName, bool bBold, bool bItalic)
 		{
 			TMathFont aFont;
 			aFont.sName   = sName;
@@ -120,7 +120,7 @@ namespace MathEquation
 			m_mFonts[nTypeFace] = aFont;
 		}
 
-		TMathFont* GetFont(uint8_t nTypeFace)
+        TMathFont* GetFont(unsigned char nTypeFace)
 		{
 			TFontMap::iterator itFind = m_mFonts.find(nTypeFace);
 			if (itFind != m_mFonts.end())			

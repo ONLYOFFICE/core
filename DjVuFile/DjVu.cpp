@@ -83,10 +83,10 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
-void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
+void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 {
 	if (m_pImplementation)
-        m_pImplementation->ConvertToRaster(nPageIndex, wsDstPath, nImageType);
+        m_pImplementation->ConvertToRaster(nPageIndex, wsDstPath, nImageType, nRasterW, nRasterH);
 }
 void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 {

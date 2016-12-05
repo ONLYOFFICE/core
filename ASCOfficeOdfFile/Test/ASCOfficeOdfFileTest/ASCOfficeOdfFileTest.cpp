@@ -31,10 +31,6 @@
  */
 // OdfFileTest.cpp 
 
-
-#include <boost/timer.hpp>
-#include <iostream>
-
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
@@ -44,7 +40,6 @@
 int _tmain(int argc, _TCHAR* argv[])
 {
 	HRESULT hr = S_OK;
-    boost::timer t1;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstPath		= argv[2];
@@ -70,6 +65,5 @@ int _tmain(int argc, _TCHAR* argv[])
 	FileSystem::Directory::DeleteDirectory(dstTempPath);
 
 ////////////////////////////////////////////////////////////////////////
-    std::cout << "\n\nTime : " << t1.elapsed() << "\n";   
 	return 0;
 }

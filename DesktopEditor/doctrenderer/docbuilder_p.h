@@ -898,7 +898,7 @@ namespace NSDoctRenderer
             RELEASEOBJECT(m_pWorker);
         }
 
-        bool SaveFile(const int& type, const std::wstring& path)
+        bool SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
         {
             Init();
 
@@ -949,6 +949,12 @@ namespace NSDoctRenderer
             oBuilder.WriteString(L"<m_nDoctParams>");
             oBuilder.WriteString(std::to_wstring(nDoctRendererParam));
             oBuilder.WriteString(L"</m_nDoctParams>");
+
+            if (NULL != params)
+            {
+                std::wstring sConvertionParams(params);
+                oBuilder.WriteString(sConvertionParams);
+            }
 
             oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
@@ -1177,7 +1183,7 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
-    void ParceParameters(const std::string& command, std::wstring* params)
+    void ParceParameters(const std::string& command, std::wstring* params, int& nCount)
     {
         const char* _commandsPtr = command.c_str();
         size_t _commandsLen = command.length();
@@ -1209,6 +1215,8 @@ namespace NSDoctRenderer
             if (_currentPos >= _commandsLen)
                 break;
         }
+
+        nCount = nIndex;
     }
 
     bool CDocBuilder::CreateFile(const int& type)
@@ -1327,7 +1335,8 @@ namespace NSDoctRenderer
                     ++_pos;
 
                 std::string sFuncNum(_data + 8, _pos - 8);
-                ParceParameters(command, _builder_params);
+                int nCountParameters = 0;
+                ParceParameters(command, _builder_params, nCountParameters);
 
                 if ("OpenFile" == sFuncNum)
                     bIsNoError = this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str());
@@ -1370,6 +1379,10 @@ namespace NSDoctRenderer
                         nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
                     else if (L"pdf" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+                    else if (L"jpg" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
+                    else if (L"png" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
 
                     if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
                     {
@@ -1377,7 +1390,11 @@ namespace NSDoctRenderer
                         this->ExecuteCommand(L"_api.asc_Save();");
                     }
 
-                    this->SaveFile(nFormat, _builder_params[1].c_str());
+                    const wchar_t* sParams = NULL;
+                    if (nCountParameters > 2)
+                        sParams = _builder_params[2].c_str();
+
+                    this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
                 }
             }
             else

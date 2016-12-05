@@ -82,7 +82,7 @@ namespace OOX
                                 RELEASEOBJECT(m_pCalcChain);
                             if(bDeleteWorksheets)
                             {
-                                for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+								for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
                                 {
                                     if (NULL != it->second)
                                         delete it->second;
@@ -148,7 +148,7 @@ namespace OOX
 
                                 for (std::map<CString, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
                                 {
-                                    m_aWorksheets [it->first] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
+                                    m_aWorksheets [string2std_string(it->first)] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
                                 }
                             }
 
@@ -242,7 +242,7 @@ namespace OOX
                             if(NULL != m_pStyles)
                                 m_pStyles->PrepareToWrite();
 
-                            for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+							for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
                             {
                                 if (NULL != it->second)
                                     it->second->PrepareToWrite();
@@ -293,7 +293,7 @@ namespace OOX
 			{
 				return m_pCalcChain;
 			}
-			std::map<CString, CWorksheet*>  &GetWorksheets ()
+			std::map<std::wstring, CWorksheet*>  &GetWorksheets ()
 			{
 				return m_aWorksheets;
 			}
@@ -324,7 +324,7 @@ namespace OOX
 					OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 					pWorksheet->m_oDimension.Init();
 					pWorksheet->m_oDimension->m_oRef.Init();
-					pWorksheet->m_oDimension->m_oRef->Append(_T("A1"));
+					pWorksheet->m_oDimension->m_oRef->append(_T("A1"));
 					pWorksheet->m_oSheetViews.Init();
 					OOX::Spreadsheet::CSheetView* pSheetView = new OOX::Spreadsheet::CSheetView();
 					pSheetView->m_oTabSelected.Init();
@@ -350,11 +350,11 @@ namespace OOX
 					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
 					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
 					OOX::RId oRId = this->Add(pWorksheetFile);
-					m_aWorksheets [oRId.ToString()] = pWorksheet;
+					m_aWorksheets [string2std_string(oRId.ToString())] = pWorksheet;
 					m_pWorkbook->m_oSheets.Init();
 					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 					pSheet->m_oName.Init();
-					pSheet->m_oName->Append(_T("Sheet1"));
+					pSheet->m_oName->append(_T("Sheet1"));
 					pSheet->m_oSheetId.Init();
 					pSheet->m_oSheetId->SetValue(1);
 					pSheet->m_oRid.Init();
@@ -373,7 +373,13 @@ namespace OOX
 					if(false == pFont->m_oRFont.IsInit())
 					{
 						pFont->m_oRFont.Init();
-						pFont->m_oRFont->m_sVal = _T("Arial");
+						pFont->m_oRFont->m_sVal = _T("Calibri");
+					}
+					if(false == pFont->m_oScheme.IsInit())
+					{
+						pFont->m_oScheme.Init();
+						pFont->m_oScheme->m_oFontScheme.Init();
+						pFont->m_oScheme->m_oFontScheme->SetValue(SimpleTypes::Spreadsheet::fontschemeMinor);
 					}
 					if(false == pFont->m_oSz.IsInit() || false == pFont->m_oSz->m_oVal.IsInit())
 					{
@@ -429,7 +435,7 @@ namespace OOX
 					}
 				}
 				//переносим теги <is> и ячейки с типом str в sharedString
-				for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
+				for (std::map<std::wstring, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 				{
 					PrepareWorksheet(it->second);
 				}
@@ -461,7 +467,7 @@ namespace OOX
 										int nIndex = pSharedStrings->AddSi(pSi);
 										//меняем значение ячейки
 										pCell->m_oValue.Init();
-										pCell->m_oValue->m_sText.Format(_T("%d"), nIndex);
+										pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 										//меняем тип ячейки
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -472,7 +478,7 @@ namespace OOX
 									CSharedStrings* pSharedStrings = GetSharedStrings();
 									if(NULL == pSharedStrings)
 										pSharedStrings = CreateSharedStrings();
-									CString sValue;
+									std::wstring sValue;
 									if(pCell->m_oValue.IsInit())
 										sValue = pCell->m_oValue->ToString();
 									//добавляем в SharedStrings
@@ -483,7 +489,7 @@ namespace OOX
 									int nIndex = pSharedStrings->AddSi(pSi);
 									//меняем значение ячейки
 									pCell->m_oValue.Init();
-									pCell->m_oValue->m_sText.Format(_T("%d"), nIndex);
+									pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 									//меняем тип ячейки
 									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{
@@ -497,7 +503,8 @@ namespace OOX
 									if(pCell->m_oValue.IsInit())
 									{
 										SimpleTypes::COnOff<> oOnOff;
-										oOnOff.FromString(pCell->m_oValue->ToString());
+                                        std::wstring sVal = pCell->m_oValue->ToString();
+                                        oOnOff.FromString(sVal.c_str());
 										pCell->m_oValue.Init();
 										if(oOnOff.ToBool())
 											pCell->m_oValue->m_sText = _T("1");
@@ -537,7 +544,7 @@ namespace OOX
 			bool bDeleteTheme;
 			CCalcChain  *m_pCalcChain;
 			bool bDeleteCalcChain;
-			std::map<CString, CWorksheet*> m_aWorksheets;
+			std::map<std::wstring, CWorksheet*> m_aWorksheets;
 			bool bDeleteWorksheets;
 		};
 

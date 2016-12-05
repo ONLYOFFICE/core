@@ -99,7 +99,7 @@ public:
 		}
 		return false;
 	}
-	bool GetColor( RtfColor::ThemeColor oTheme, RtfColor& oColor)
+	bool GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor)
 	{
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		if( oTheme == m_aArray[i].m_eTheme )
@@ -111,7 +111,7 @@ public:
 	}
 	bool GetColor( CString sTheme, RtfColor& oColor)
 	{
-		 RtfColor::ThemeColor oTheme = RtfColor::TC_NONE;
+		 RtfColor::_ThemeColor oTheme = RtfColor::TC_NONE;
 		
 		 if( true == RtfColor::GetThemeByString(sTheme,oTheme  ) )
 		 {
@@ -186,8 +186,8 @@ public:
 	 }
 	RtfStylePtr GetStyleResulting( RtfStylePtr oInputStyle )
 	 {
-		RtfStylePtr oResultStyle;
-		RtfStyle::StyleType eStyleType = RtfStyle::st_none;
+		RtfStylePtr				oResultStyle;
+		RtfStyle::_StyleType	eStyleType	= RtfStyle::st_none;
 		
 		int nStyleId = oInputStyle->m_nID;
 		int nLinked = PROP_DEF;
@@ -195,19 +195,19 @@ public:
 		
 		if( RtfStyle::stCharacter == oInputStyle->m_eType )
 		{
-			eStyleType = RtfStyle::stCharacter;
-			oResultStyle = RtfCharStylePtr( new RtfCharStyle() );
+			eStyleType		= RtfStyle::stCharacter;
+			oResultStyle	= RtfCharStylePtr( new RtfCharStyle() );
 		}
 		else if( RtfStyle::stParagraph == oInputStyle->m_eType )
 		{
-			eStyleType = RtfStyle::stParagraph;
-			oResultStyle = RtfParagraphStylePtr( new RtfParagraphStyle() );
-			nLinked = oInputStyle->m_nLink;//linked будем смотреть только у стилей параграфа, чтобы избежать рекурсии
+			eStyleType		= RtfStyle::stParagraph;
+			oResultStyle	= RtfParagraphStylePtr( new RtfParagraphStyle() );
+			nLinked			= oInputStyle->m_nLink;//linked будем смотреть только у стилей параграфа, чтобы избежать рекурсии
 		}
 		else if( RtfStyle::stTable == oInputStyle->m_eType )
 		{
-			eStyleType = RtfStyle::stTable;
-			oResultStyle = RtfTableStylePtr( new RtfTableStyle() );
+			eStyleType		= RtfStyle::stTable;
+			oResultStyle	= RtfTableStylePtr( new RtfTableStyle() );
 		}
 		else
 			return oInputStyle;	//ОПАСНО .. потом может другим затереться todooo
@@ -239,7 +239,7 @@ public:
 		oResultStyle->Merge( oInputStyle );
 
 		return oResultStyle;
-	 }
+	}
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
@@ -431,3 +431,73 @@ public:
 		}
 		CString RenderToOOX(RenderParameter oRenderParameter);
 };
+
+class RtfRevisionTable : public IDocumentElement, public ItemContainer<CString>
+{
+public:
+	CString RenderToRtf(RenderParameter oRenderParameter)
+	{
+		if (m_aArray.empty()) return L"";
+
+		CString sResult;
+
+		sResult += _T("{\\*\\revtbl ");
+
+		sResult += L"{Unknown;}";
+		for( int i = 0; i < (int)m_aArray.size(); i++)
+        {
+			sResult += _T("{");
+			sResult += m_aArray[i] + L";";
+			sResult += _T("}");
+       }
+		sResult += _T("}");
+
+		return sResult;
+	}
+	CString RenderToOOX(RenderParameter oRenderParameter)
+	{
+		return L"";
+	}
+
+	int AddAuthor(CString author)
+	{
+		int i = Find(author);
+		if (i < 0)
+			i = AddItem(author);
+		return i;
+	}
+	CString GetAuthor(int ind)
+	{
+		if (ind == PROP_DEF || ind > m_aArray.size())
+			return L"";
+		
+		return m_aArray[ind];
+	}
+	
+};
+
+//class RtfRSIDTable : public IDocumentElement, public ItemContainer<rsidString>
+//{
+//public:
+//
+//	CString RenderToRtf(RenderParameter oRenderParameter)
+//	{
+//		CString sResult;
+//		if( m_aArray.size() > 0 )
+//		{
+//			sResult += _T("{\\*\\rsidtbl ");
+//
+//			for( int i = 0; i < (int)m_aArray.size(); i++)
+//            {
+//				sResult += _T("{");
+//				sResult += m_aArray[i];
+// 				sResult += _T("}");
+//           }
+//			sResult += _T("}");
+//		}
+//		return sResult;
+//	}
+//	CString RenderToOOX(RenderParameter oRenderParameter)
+//	{
+//	}
+//};

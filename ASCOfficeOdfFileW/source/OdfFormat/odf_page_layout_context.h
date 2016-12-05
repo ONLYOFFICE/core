@@ -60,9 +60,8 @@ public:
 
 	void set_styles_context	(odf_style_context * Context);
 
-	void start_master_page(std::wstring oox_name);
-		void create_layout_page();
-	void end_master_page();
+	void add_master_page(std::wstring oox_name);
+	void create_layout_page();
 
 	void set_current_master_page_base();
 
@@ -76,38 +75,38 @@ public:
 	odf_style_context* get_local_styles_context() //для автоматических стилей самих стилей
 		{return local_style_context_.get();}
 
-	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
-	void set_page_margin(_CP_OPT(odf_types::length) top, _CP_OPT(odf_types::length) left, _CP_OPT(odf_types::length) bottom, _CP_OPT(odf_types::length) right);
-	void set_page_gutter(_CP_OPT(odf_types::length) length_);
+	void set_page_margin				(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
+	void set_page_margin				(_CP_OPT(odf_types::length) top, _CP_OPT(odf_types::length) left, _CP_OPT(odf_types::length) bottom, _CP_OPT(odf_types::length) right);
+	void set_page_gutter				(_CP_OPT(odf_types::length) length_);
 	
-	void set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right);
-	void set_page_border_shadow(bool val);
+	void set_page_border				(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right);
+	void set_page_border_shadow			(bool val);
 	
-	void set_page_border_padding_bottom(int offset_type, double length_pt);
-	void set_page_border_padding_top(int offset_type, double length_pt);
-	void set_page_border_padding_left(int offset_type, double length_pt);
-	void set_page_border_padding_right(int offset_type, double length_pt);
+	void set_page_border_padding		(int border, double length_pt);
+	void set_page_border_offset			(int type);
 
-	void set_page_orientation(int type);
-	void set_page_size(_CP_OPT(odf_types::length) width, _CP_OPT(odf_types::length) height);
+	void set_page_orientation			(int type);
+	void set_page_size					(_CP_OPT(odf_types::length) width, _CP_OPT(odf_types::length) height);
 
-	void set_title_page_enable(bool val);
-	void set_pages_mirrored(bool val);
-	void set_even_and_left_headers(bool val);
+	void set_title_page_enable			(bool val);
+	void set_pages_mirrored				(bool val);
 	
 	bool add_footer(int type);
 		void set_footer_size(_CP_OPT(odf_types::length) length_);
-	bool add_header(int type);
+	
+		bool add_header(int type);
 		void set_header_size(_CP_OPT(odf_types::length) length_);
 
-	void set_background(_CP_OPT(odf_types::color) & color, int type);
+	void set_background					(_CP_OPT(odf_types::color) & color, int type);
 
-	void set_page_number_format(_CP_OPT(int) & type, _CP_OPT(int) & start);
+	void set_page_number_format			(_CP_OPT(int) & type, _CP_OPT(int) & start);
 
-	double current_page_width_;
+	office_element_ptr	root_header_footer_; //для топовых элементов в style:footer
+	
+	double				current_page_width_;
+	bool				even_and_left_headers_;
 private:
 
-	bool even_and_left_headers_;
 
 	style_page_layout_properties	*get_properties();
 	style_header_footer_properties	*get_header_properties();

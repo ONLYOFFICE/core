@@ -55,35 +55,33 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				CString sStart = _T("<") + sName + _T(">");
-				writer.WriteString(sStart);
+				writer.WriteString(L"<");
+				writer.WriteString(sName);
+				writer.WriteString(L">");
 				if(m_oCol.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<xdr:col>%d</xdr:col>"), m_oCol->GetValue());
-					writer.WriteString(sVal);
+					WritingStringValInt(L"xdr:col", m_oCol->GetValue());
 				}
 				if(m_oColOff.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<xdr:colOff>%lld</xdr:colOff>"), m_oColOff->ToEmu());
-					writer.WriteString(sVal);
+					WritingStringValInt64(L"xdr:colOff", m_oColOff->ToEmu());
 				}
 				if(m_oRow.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<xdr:row>%d</xdr:row>"), m_oRow->GetValue());
-					writer.WriteString(sVal);
+					WritingStringValInt(L"xdr:row", m_oRow->GetValue());
 				}
 				if(m_oRowOff.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<xdr:rowOff>%lld</xdr:rowOff>"), m_oRowOff->ToEmu());
-					writer.WriteString(sVal);
+					WritingStringValInt64(L"xdr:rowOff", m_oRowOff->ToEmu());
 				}
-				CString sEnd = _T("</") + sName + _T(">");
-				writer.WriteString(sEnd);
+				writer.WriteString(L"</");
+				writer.WriteString(sName);
+				writer.WriteString(L">");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -95,7 +93,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("col") == sName )
 						m_oCol = oReader.GetText2().GetString();
@@ -139,19 +137,11 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:ext"));
-				if(m_oCx.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" cx=\"%lld\""), m_oCx->ToEmu());
-					writer.WriteString(sVal);
-				}
-				if(m_oCy.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" cy=\"%lld\""), m_oCy->ToEmu());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt64(L"cx", m_oCx, m_oCx->ToEmu());
+				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->ToEmu());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

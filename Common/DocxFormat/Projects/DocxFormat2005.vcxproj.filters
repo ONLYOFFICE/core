@@ -2,157 +2,157 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Rels">
-      <UniqueIdentifier>{9f782695-5740-4d0b-b8ed-5e35b72e449e}</UniqueIdentifier>
+      <UniqueIdentifier>{fb61ca71-d240-4c7d-9213-6b40a02821fe}</UniqueIdentifier>
     </Filter>
     <Filter Include="App">
-      <UniqueIdentifier>{6def82be-6f0a-4ac2-8875-dfde054c4f9f}</UniqueIdentifier>
+      <UniqueIdentifier>{e78217ce-0000-4c11-a4c3-4fd19438b461}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
-      <UniqueIdentifier>{0d988f22-5697-495f-a497-ccfcdd8289b4}</UniqueIdentifier>
+      <UniqueIdentifier>{65d6b6b5-abea-4dbe-98a8-bef4452b2a5a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Settings">
-      <UniqueIdentifier>{23c379ad-a004-45b8-a224-5f4f35a63f34}</UniqueIdentifier>
+      <UniqueIdentifier>{fa90ebef-1273-45f7-85ef-1ad2f018f669}</UniqueIdentifier>
     </Filter>
     <Filter Include="Settings\WebSettings">
-      <UniqueIdentifier>{198ca2e9-643d-4e9c-ab04-75fcc59d0f0c}</UniqueIdentifier>
+      <UniqueIdentifier>{ee695cc6-c3cf-44cc-878e-6d80907cfada}</UniqueIdentifier>
     </Filter>
     <Filter Include="Settings\DocumentSettings">
-      <UniqueIdentifier>{d95e558b-01d9-4839-a68b-0960c686ca4e}</UniqueIdentifier>
+      <UniqueIdentifier>{92ec6d5f-34d9-449d-8467-877a9bdd0ba8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Theme">
-      <UniqueIdentifier>{e5208831-fdb3-4e85-b52b-3b47d3d63f75}</UniqueIdentifier>
+      <UniqueIdentifier>{10be7ce6-6f2d-4d7a-9fa4-1e43c51eba37}</UniqueIdentifier>
     </Filter>
     <Filter Include="ContentTypes">
-      <UniqueIdentifier>{1b5869a3-76a2-44cb-8bae-c49e2fb2f6b2}</UniqueIdentifier>
+      <UniqueIdentifier>{44bdb22f-c97e-4eb4-8a29-3627ce7093e5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Styles">
-      <UniqueIdentifier>{d2d04f3c-ac94-46c5-aadf-7ab664100229}</UniqueIdentifier>
+      <UniqueIdentifier>{04dd16c8-34df-4527-a632-877955f62428}</UniqueIdentifier>
     </Filter>
     <Filter Include="Custom XML">
-      <UniqueIdentifier>{6769a9ab-dff0-4c59-99c3-735b0fda1080}</UniqueIdentifier>
+      <UniqueIdentifier>{370d2ed3-259e-4e8f-9431-352cdbb99dca}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic">
-      <UniqueIdentifier>{342efc94-f57a-4e07-aff3-940f24528f54}</UniqueIdentifier>
+      <UniqueIdentifier>{e0539ed5-6b70-4e47-a371-046c5a2b38c1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Tables">
-      <UniqueIdentifier>{d08cac75-8666-45a1-9d26-ee03d91f5971}</UniqueIdentifier>
+      <UniqueIdentifier>{2b988694-3d69-4615-b1d5-a975ab7375cf}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Fields and Hyperlinks">
-      <UniqueIdentifier>{8b7ea98b-f80d-42d2-8238-a73400132c55}</UniqueIdentifier>
+      <UniqueIdentifier>{51352473-c85e-44b2-898a-82ec58de25c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Custom Markup">
-      <UniqueIdentifier>{75d405f4-a7b0-4809-b7cb-c4fe17dfe936}</UniqueIdentifier>
+      <UniqueIdentifier>{35eaa5bd-92ed-4737-a829-c6fc6217be80}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Custom Markup\Sdt">
-      <UniqueIdentifier>{73716d98-82c6-48b2-b5d5-49e84fc4e689}</UniqueIdentifier>
+      <UniqueIdentifier>{08a05d9e-7312-4cd1-891b-2bbaf10a7855}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Paragraph and Runs">
-      <UniqueIdentifier>{7b2ca3af-d661-4d23-a876-a2fb17346d23}</UniqueIdentifier>
+      <UniqueIdentifier>{fd961369-5064-4639-80f2-9f501e06b5e5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Paragraph and Runs\Paragraph">
-      <UniqueIdentifier>{c7cb1e19-d05f-44e9-9bbb-3e4344058778}</UniqueIdentifier>
+      <UniqueIdentifier>{f0f6d075-36f1-4227-b39f-500f9335c79f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Paragraph and Runs\Run">
-      <UniqueIdentifier>{5deb2d67-8936-4e8d-a707-038e4b8de3f8}</UniqueIdentifier>
+      <UniqueIdentifier>{b3cb173f-bcf3-4693-b618-a337a1d21a3c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Paragraph and Runs\Run\Pict">
-      <UniqueIdentifier>{2663cc5b-4d6a-49f1-a2d0-ddecb7b9658a}</UniqueIdentifier>
+      <UniqueIdentifier>{71ff7555-68aa-4e7b-8692-d99c0d651f4a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Annotations">
-      <UniqueIdentifier>{adb03a57-c2a7-4f22-9748-25fb5b68a0ec}</UniqueIdentifier>
+      <UniqueIdentifier>{bf2d2c96-2cf6-4123-93ba-356d760ada73}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Drawing">
-      <UniqueIdentifier>{7c84540e-57ca-4e30-a159-ac41db9a3435}</UniqueIdentifier>
+      <UniqueIdentifier>{1c71004d-28f5-4749-8fdb-8658ea02b3c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Logic\Sections">
-      <UniqueIdentifier>{52f5e22d-0acd-4a5d-a7ee-0536be8578d1}</UniqueIdentifier>
+      <UniqueIdentifier>{158fd0b2-46b1-4d00-940f-c1b437bbeb84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Numbering">
-      <UniqueIdentifier>{38578999-598b-4865-96f7-4ebc2735f5d7}</UniqueIdentifier>
+      <UniqueIdentifier>{966e1451-7b61-4afb-bcbe-759139845a11}</UniqueIdentifier>
     </Filter>
     <Filter Include="Bibliography">
-      <UniqueIdentifier>{c57cd404-27d7-427c-9012-89837e6a8799}</UniqueIdentifier>
+      <UniqueIdentifier>{ffce8b7a-ecba-43bf-b649-ba94c5a4c510}</UniqueIdentifier>
     </Filter>
     <Filter Include="Footnotes and Endnotes">
-      <UniqueIdentifier>{b348ec7c-3d62-4d87-a797-078bd316173d}</UniqueIdentifier>
+      <UniqueIdentifier>{b7d00ae2-b175-4ce2-889a-9f31b59d5a3c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headers and Footers">
-      <UniqueIdentifier>{d1762c5a-135e-4e85-8623-f5414729487b}</UniqueIdentifier>
+      <UniqueIdentifier>{43bb2f4f-4c2c-44f7-bf8e-65c76649d2c1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Fonts">
-      <UniqueIdentifier>{e4dbb546-7041-4d89-879f-c26ddac4f3ff}</UniqueIdentifier>
+      <UniqueIdentifier>{c9330b22-a8be-41d2-b926-38912a687870}</UniqueIdentifier>
     </Filter>
     <Filter Include="Media">
-      <UniqueIdentifier>{d8cf81fb-08b3-4f76-8fce-4252ef52561f}</UniqueIdentifier>
+      <UniqueIdentifier>{3834f170-22f7-4393-9821-b49591edd3c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="External">
-      <UniqueIdentifier>{f23d32f6-3fdc-47f0-819a-e157e99a006c}</UniqueIdentifier>
+      <UniqueIdentifier>{714ab9a0-306e-40ce-880f-53968b714b2c}</UniqueIdentifier>
     </Filter>
     <Filter Include="DrawingML">
-      <UniqueIdentifier>{2e386f0b-41e6-4bf1-8141-1f8ee78c42a5}</UniqueIdentifier>
+      <UniqueIdentifier>{74e3f7c6-c74c-4a55-b54a-b6ad038f2c8c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility">
-      <UniqueIdentifier>{8127c09a-b209-4278-82fd-3892ede18be1}</UniqueIdentifier>
+      <UniqueIdentifier>{aebb09e8-1793-4f30-9342-6e5aaded3d03}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility\FileSys">
-      <UniqueIdentifier>{e4529119-fdce-43e8-ab0d-17b915ac972a}</UniqueIdentifier>
+      <UniqueIdentifier>{c7b9f40e-e21e-4d6c-8ec9-4809271910be}</UniqueIdentifier>
     </Filter>
     <Filter Include="Common">
-      <UniqueIdentifier>{70db2b18-f4d6-4e3d-a700-9d1b067b3b47}</UniqueIdentifier>
+      <UniqueIdentifier>{5ff0f359-7544-4e65-8ec4-9854efc45c49}</UniqueIdentifier>
     </Filter>
     <Filter Include="Comments">
-      <UniqueIdentifier>{123d0f57-ae78-4c79-ac95-5bad8a652c05}</UniqueIdentifier>
+      <UniqueIdentifier>{a2e5dda3-967c-463b-82d7-3dc6c4b0cd76}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat">
-      <UniqueIdentifier>{c59dff16-5b44-41e7-9e9b-03ed45059ec9}</UniqueIdentifier>
+      <UniqueIdentifier>{707a763c-1da3-4b38-a1a4-c8c699ae7fd8}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\CalcChain">
-      <UniqueIdentifier>{cde57b60-d9f8-4f10-8a31-8f9fb8440a87}</UniqueIdentifier>
+      <UniqueIdentifier>{1fe1f31f-82ce-437e-8e46-62cfb01a5b48}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Chart">
-      <UniqueIdentifier>{c1cda87b-ffab-4f13-b904-d0994423d20d}</UniqueIdentifier>
+      <UniqueIdentifier>{5857506b-5f19-4ed2-bef3-fe3ab4b8b871}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Comments">
-      <UniqueIdentifier>{bf4bdc5f-bf4b-4be0-8fac-e9a517af7cd5}</UniqueIdentifier>
+      <UniqueIdentifier>{e6faab74-8d8d-47fc-8e87-0133a872c4d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Drawing">
-      <UniqueIdentifier>{3ae69e64-983a-44de-b1b6-7596cba7a751}</UniqueIdentifier>
+      <UniqueIdentifier>{2865bf5a-0b47-4575-a294-f97ca9ba8a74}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\SharedStrings">
-      <UniqueIdentifier>{74b156a0-0b51-49e0-be9c-72183c399a97}</UniqueIdentifier>
+      <UniqueIdentifier>{59dee908-a36c-407f-ac8a-4e937f05d708}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Styles">
-      <UniqueIdentifier>{6cbef400-5de6-44d8-a9a1-0aa5ee63253b}</UniqueIdentifier>
+      <UniqueIdentifier>{1981ecf4-578a-4889-b713-11c73d25d94f}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Table">
-      <UniqueIdentifier>{b0ec8060-4803-41b4-9619-03b0e18f89f3}</UniqueIdentifier>
+      <UniqueIdentifier>{1f6c9b65-49c9-449f-8080-8cf61188cbd4}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Workbook">
-      <UniqueIdentifier>{250870a1-2de9-4bac-9d91-f8c6c564b8b3}</UniqueIdentifier>
+      <UniqueIdentifier>{489c7e65-b842-4f8c-8f05-04c7d12bc7d3}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\Worksheets">
-      <UniqueIdentifier>{3187bb9b-0b31-4a28-9a41-16758007f912}</UniqueIdentifier>
+      <UniqueIdentifier>{7790209b-a48d-466b-8850-829820d652f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="XlsxFormat\ExternalLinks">
-      <UniqueIdentifier>{6a21f408-4f51-4389-b788-1e08f9f68f85}</UniqueIdentifier>
+      <UniqueIdentifier>{693d6296-2cae-45ff-a385-5da702ce1d4c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Math">
-      <UniqueIdentifier>{33d3e906-0b7e-4c5b-bb32-13711514dfb1}</UniqueIdentifier>
+      <UniqueIdentifier>{9999c61d-3b82-4f3d-bcaa-b201e49a8a63}</UniqueIdentifier>
     </Filter>
     <Filter Include="DiagramML">
-      <UniqueIdentifier>{d20bb33a-9694-473c-a1ff-c1252ab1d05e}</UniqueIdentifier>
+      <UniqueIdentifier>{b39b48bd-5471-44c1-a963-571b9e4d0b8a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Base">
-      <UniqueIdentifier>{d1065eab-cc66-41c9-a0de-9f7e41a6947f}</UniqueIdentifier>
+      <UniqueIdentifier>{c900b10f-ac04-4c12-ae93-6b81bd1c1fda}</UniqueIdentifier>
     </Filter>
     <Filter Include="XML">
-      <UniqueIdentifier>{9719900a-ae34-4756-aa5f-efdf6e03e8ed}</UniqueIdentifier>
+      <UniqueIdentifier>{c30fe263-8bdb-4c0e-8b22-4eaef569d9a6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Equation">
-      <UniqueIdentifier>{fae869e7-f027-4890-b886-6a5ed06239aa}</UniqueIdentifier>
+      <UniqueIdentifier>{36c19e9b-f30c-4a6d-9bcc-43f958a63a3d}</UniqueIdentifier>
     </Filter>
     <Filter Include="VectorML">
-      <UniqueIdentifier>{7b7224bf-c9d9-4de9-bcab-1dfe744d617e}</UniqueIdentifier>
+      <UniqueIdentifier>{9c0ad51f-4bd2-4fa5-8baf-6d40d35040db}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -736,6 +736,9 @@
       <Filter>DrawingML</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingEffects.cpp">
+      <Filter>DrawingML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingExt.cpp">
       <Filter>DrawingML</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\SystemUtility\FileSystem\Directory.cpp">

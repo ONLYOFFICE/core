@@ -66,11 +66,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+    <_ProjectFileVersion>12.0.21005.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft Visual Studio 9.0\VC\atlmfc\include;D:\WORK\boost\1_60_0;C:\__Work\core\Common\DocxFormat\Source\XML\libxml2\XML\include;C:\__Work\core\Common\3dParty\curl\include;C:\__Work\core\DesktopEditor\freetype-2.5.2\include;C:\__Work\core\UnicodeConverter\icubuilds\win_32\include;C:\__Work\core\Common\DocxFormat\Source\XML\libxml2\win_build;$(IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);C:\Program Files %28x86%29\Microsoft Visual Studio 9.0\VC\atlmfc\lib;D:\WORK\boost\1_60_0\stage\lib\i386;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -149,23 +151,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp" />
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp" />
-    <ClCompile Include="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp" />
-    <ClCompile Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\DocxFormat\Source\XML\stringcommon.cpp" />
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -175,17 +160,17 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\DocxFormat\Source\XML\stringcommon.cpp" />
     <ClCompile Include="..\Editor\BinaryFileReaderWriter.cpp" />
+    <ClCompile Include="..\Editor\Drawing\Elements.cpp" />
     <ClCompile Include="..\Editor\FontPicker.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
     </ClCompile>
-    <ClCompile Include="..\File.cpp" />
-    <ClCompile Include="..\PPTXFormat\DocxFormat\IFileContainer.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile Include="..\Editor\Drawing\Layout.cpp" />
+    <ClCompile Include="..\Editor\Drawing\TextAttributesEx.cpp" />
     <ClCompile Include="..\PPTXFormat\FileContainer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
@@ -194,12 +179,19 @@
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\FileFactory.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Folder.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\DocxFormat\IFileContainer.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
@@ -214,25 +206,38 @@
     <ClCompile Include="..\PPTXFormat\Logic\CNvGrpSpPr.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\Colors\SchemeClr.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\ContentPart.cpp" />
-    <ClCompile Include="..\PPTXFormat\Logic\Controls.cpp" />
-    <ClCompile Include="..\PPTXFormat\Logic\CxnSp.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\EffectDag.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\EffectLst.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\EffectProperties.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\EffectStyle.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\Geometry.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\GrpSpPr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\NvGraphicFramePr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\NvGrpSpPr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\SpTree.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\SpTreeElem.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\UniColor.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\UniEffect.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\Fills\Blip.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
@@ -240,8 +245,30 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\Geometry.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    <ClCompile Include="..\PPTXFormat\Logic\Colors\SchemeClr.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\Runs\MathParaWrapper.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\Transitions\TransitionBase.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\Timing\BuildNodeBase.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\Timing\TimeNodeBase.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\GraphicFrame.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
@@ -250,16 +277,23 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\GrpSpPr.cpp" />
-    <ClCompile Include="..\PPTXFormat\Logic\Hyperlink.cpp" />
-    <ClCompile Include="..\PPTXFormat\Logic\NvGraphicFramePr.cpp" />
-    <ClCompile Include="..\PPTXFormat\Logic\NvGrpSpPr.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\SmartArt.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\CxnSp.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\Pic.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Logic\TxBody.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\Shape.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
@@ -282,20 +316,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\SmartArt.cpp" />
     <ClCompile Include="..\PPTXFormat\Logic\SpPr.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\SpTree.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\SpTreeElem.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -306,102 +330,45 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\Timing\BuildNodeBase.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
+    <ClCompile Include="..\PPTXFormat\Logic\Controls.cpp" />
+    <ClCompile Include="..\PPTXFormat\Logic\Hyperlink.cpp" />
+    <ClCompile Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\Timing\TimeNodeBase.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\Transitions\TransitionBase.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\TxBody.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\UniColor.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="..\PPTXFormat\Logic\UniEffect.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
-    </ClCompile>
+    <ClCompile Include="..\File.cpp" />
+    <ClCompile Include="..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\FileTypes.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Unit.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\UnknowTypeFile.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\FileSystem\FileSystem.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\XML\stringcommon.h" />
     <ClInclude Include="..\ASCOfficeDrawingConverter.h" />
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
-    <ClInclude Include="..\Directory.h" />
-    <ClInclude Include="..\Editor\BinaryFileReaderWriter.h" />
-    <ClInclude Include="..\Editor\BinReaderWriterDefines.h" />
-    <ClInclude Include="..\Editor\BinWriters.h" />
-    <ClInclude Include="..\Editor\CalculatorCRC32.h" />
-    <ClInclude Include="..\Editor\Converter.h" />
-    <ClInclude Include="..\Editor\DefaultNotesMaster.h" />
-    <ClInclude Include="..\Editor\DefaultNotesTheme.h" />
-    <ClInclude Include="..\Editor\FontCutter.h" />
-    <ClInclude Include="..\Editor\FontPicker.h" />
-    <ClInclude Include="..\Editor\imagemanager.h" />
-    <ClInclude Include="..\Editor\PPTXWriter.h" />
-    <ClInclude Include="..\Editor\WMFToImageConverter.h" />
-    <ClInclude Include="..\File.h" />
-    <ClInclude Include="..\PPTXFormat\App.h" />
-    <ClInclude Include="..\PPTXFormat\CommentAuthors.h" />
-    <ClInclude Include="..\PPTXFormat\Comments.h" />
-    <ClInclude Include="..\PPTXFormat\Core.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\Default.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\DefaultTable.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\ExtensionTable.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\File.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\Override.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\OverrideTable.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\XML\stringcommon.h" />
     <ClInclude Include="..\PPTXFormat\DocxFormat\DateTime.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Drawing\LegacyDiagramText.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Drawing\VmlDrawing.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\External\External.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalAudio.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalImage.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalVideo.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\External\HyperLink.h" />
     <ClInclude Include="..\PPTXFormat\DocxFormat\File.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\FileType.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\IFileContainer.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Audio.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Image.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Media.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Video.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\NamespaceOwn.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Namespaces.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\File.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\RelationShip.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\RelationTable.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\RId.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\WritingElement.h" />
-    <ClInclude Include="..\PPTXFormat\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\PPTXFormat\FileContainer.h" />
     <ClInclude Include="..\PPTXFormat\FileFactory.h" />
     <ClInclude Include="..\PPTXFormat\FileMap.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\FileType.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\FileTypes.h" />
     <ClInclude Include="..\PPTXFormat\Folder.h" />
-    <ClInclude Include="..\PPTXFormat\HandoutMaster.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\IFileContainer.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\NamespaceOwn.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Namespaces.h" />
+    <ClInclude Include="..\PPTXFormat\PPTX.h" />
+    <ClInclude Include="..\PPTXFormat\PPTXEvent.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\RId.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Unit.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\PPTXFormat\WrapperFile.h" />
+    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\PPTXFormat\Limit\AlbumLayout.h" />
     <ClInclude Include="..\PPTXFormat\Limit\AnimationDgmBuild.h" />
     <ClInclude Include="..\PPTXFormat\Limit\BaseLimit.h" />
@@ -499,6 +466,60 @@
     <ClInclude Include="..\PPTXFormat\Logic\Bg.h" />
     <ClInclude Include="..\PPTXFormat\Logic\BgPr.h" />
     <ClInclude Include="..\PPTXFormat\Logic\BodyPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Camera.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Cell3D.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\ClrMap.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\ClrMapOvr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CSld.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CustGeom.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\FillStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Gd.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Geometry.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Gs.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\HeadingVariant.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Hf.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\LightRig.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Lin.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\LineEnd.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\LineJoin.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\LineStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Ln.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\PartTitle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Path.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Path2D.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Ph.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\PrstDash.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\PrstGeom.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\PrstTxWarp.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Rect.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Rot.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Scene3d.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\SpTree.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\SpTreeElem.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\StyleRef.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\UniColor.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\UniEffect.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\UniFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\UniMedia.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\UniPath2D.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Xfrm.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\XmlId.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\Blip.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\BlipFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\GradFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\NoFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\PattFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\SolidFill.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\Stretch.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Fills\Tile.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\ColorBase.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\ColorModifier.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\PrstClr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\SchemeClr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\SrgbClr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Colors\SysClr.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuAutoNum.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuBlip.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuChar.h" />
@@ -513,32 +534,6 @@
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuSzPct.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuSzPts.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Bullets\BuSzTx.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Camera.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Cell3D.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\ClrMap.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\ClrMapOvr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvCxnSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvGraphicFramePr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvGrpSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvPicPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CNvSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\ColorBase.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\ColorModifier.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\PrstClr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\SchemeClr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\SrgbClr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Colors\SysClr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Controls.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CSld.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CustGeom.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Cxn.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\CxnSp.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\DefaultShapeDefinition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\EffectDag.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\EffectLst.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\EffectProperties.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\EffectStyle.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\AlphaBiLevel.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\AlphaCeiling.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\AlphaFloor.h" />
@@ -553,7 +548,11 @@
     <ClInclude Include="..\PPTXFormat\Logic\Effects\ClrChange.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\ClrRepl.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\Duotone.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\EffectDag.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\EffectElement.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\EffectLst.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\EffectProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\EffectStyle.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\FillEffect.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\FillOverlay.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\Glow.h" />
@@ -568,44 +567,6 @@
     <ClInclude Include="..\PPTXFormat\Logic\Effects\SoftEdge.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\TintEffect.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Effects\XfrmEffect.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\FillStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\Blip.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\BlipFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\GradFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\NoFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\PattFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\SolidFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\Stretch.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Fills\Tile.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\FontCollection.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\FontRef.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Gd.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Geometry.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\GraphicFrame.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\GrpSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Gs.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\HeadingVariant.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Hf.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Hyperlink.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\LightRig.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Lin.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\LineEnd.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\LineJoin.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\LineStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Ln.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Media\AudioCD.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Media\MediaFile.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Media\WavAudioFile.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvCxnSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvGraphicFramePr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvGrpSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvPicPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\NvSpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Paragraph.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\PartTitle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Path.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Path2D.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\ArcTo.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\Close.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\CubicBezTo.h" />
@@ -613,49 +574,23 @@
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\MoveTo.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\PathBase.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Path2D\QuadBezTo.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Ph.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Pic.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\PrstDash.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\PrstGeom.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\PrstTxWarp.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Rect.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Rot.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\RunElem.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\RunProperties.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Runs\Br.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Runs\Fld.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Runs\Run.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Runs\RunBase.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Scene3d.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Shape.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\ShapeProperties.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\ShapeStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\ShapeTextProperties.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\SmartArt.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Sp3d.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\SpPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\SpTree.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\SpTreeElem.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\StyleRef.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\SupplementalFont.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Tab.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TableBgStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TablePartStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TableStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\Table.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCell.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCellProperties.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCol.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\TableProperties.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Table\TableRow.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TcBdr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TcStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TcTxStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TextFit.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TextFont.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TextListStyle.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TextParagraphPr.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\TextSpacing.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\CornerDirectionTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\EightDirectionTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\EmptyTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\OptionalBlackTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\OrientationTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SideDirectionTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SndAc.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SplitTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\StSnd.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\Transition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\TransitionBase.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\WheelTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Transitions\ZoomTransition.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Anim.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\AnimClr.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\AnimEffect.h" />
@@ -696,51 +631,63 @@
     <ClInclude Include="..\PPTXFormat\Logic\Timing\TnLst.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\TxEl.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Video.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\CornerDirectionTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\EightDirectionTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\EmptyTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\OptionalBlackTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\OrientationTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SideDirectionTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SndAc.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\SplitTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\StSnd.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\Transition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\TransitionBase.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\WheelTransition.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Transitions\ZoomTransition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvGraphicFramePr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\GraphicFrame.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvGraphicFramePr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\SmartArt.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvCxnSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Cxn.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CxnSp.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvCxnSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvPicPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvPicPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Pic.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvGrpSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\GrpSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvGrpSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\FontCollection.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\FontRef.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Paragraph.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\RunElem.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\RunProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\SupplementalFont.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Tab.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TextFit.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TextFont.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TextListStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TextParagraphPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TextSpacing.h" />
     <ClInclude Include="..\PPTXFormat\Logic\TxBody.h" />
     <ClInclude Include="..\PPTXFormat\Logic\TxStyles.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\UniColor.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\UniEffect.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\UniFill.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\UniMedia.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\UniPath2D.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\Xfrm.h" />
-    <ClInclude Include="..\PPTXFormat\Logic\XmlId.h" />
-    <ClInclude Include="..\PPTXFormat\NotesMaster.h" />
-    <ClInclude Include="..\PPTXFormat\NotesSlide.h" />
-    <ClInclude Include="..\PPTXFormat\PPTX.h" />
-    <ClInclude Include="..\PPTXFormat\PPTXEvent.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\EmbeddedFont.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\EmbeddedFontDataId.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\Kinsoku.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\NotesSz.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\PhotoAlbum.h" />
-    <ClInclude Include="..\PPTXFormat\Presentation\SldSz.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TableBgStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TablePartStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TableStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TcBdr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TcStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\TcTxStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\CNvSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\DefaultShapeDefinition.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\NvSpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Shape.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\ShapeProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\ShapeStyle.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\ShapeTextProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Sp3d.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\SpPr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Media\AudioCD.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Media\MediaFile.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Media\WavAudioFile.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\Table.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCell.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCellProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\TableCol.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\TableProperties.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Table\TableRow.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Controls.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Hyperlink.h" />
+    <ClInclude Include="..\PPTXFormat\App.h" />
+    <ClInclude Include="..\PPTXFormat\Core.h" />
     <ClInclude Include="..\PPTXFormat\PresProps.h" />
-    <ClInclude Include="..\PPTXFormat\Slide.h" />
-    <ClInclude Include="..\PPTXFormat\SlideLayout.h" />
-    <ClInclude Include="..\PPTXFormat\SlideMaster.h" />
-    <ClInclude Include="..\PPTXFormat\TableStyles.h" />
-    <ClInclude Include="..\PPTXFormat\Theme.h" />
-    <ClInclude Include="..\PPTXFormat\Theme\ClrScheme.h" />
-    <ClInclude Include="..\PPTXFormat\Theme\ExtraClrScheme.h" />
-    <ClInclude Include="..\PPTXFormat\Theme\FmtScheme.h" />
-    <ClInclude Include="..\PPTXFormat\Theme\FontScheme.h" />
-    <ClInclude Include="..\PPTXFormat\Theme\ThemeElements.h" />
-    <ClInclude Include="..\PPTXFormat\ViewProps.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\CSldViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\CViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\GridSpacing.h" />
@@ -756,15 +703,67 @@
     <ClInclude Include="..\PPTXFormat\ViewProps\Sld.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\SlideViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\SorterViewPr.h" />
-    <ClInclude Include="..\PPTXFormat\WrapperFile.h" />
-    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h" />
+    <ClInclude Include="..\PPTXFormat\ViewProps.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\EmbeddedFont.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\EmbeddedFontDataId.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\Kinsoku.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\NotesSz.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\PhotoAlbum.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation.h" />
+    <ClInclude Include="..\PPTXFormat\Presentation\SldSz.h" />
+    <ClInclude Include="..\PPTXFormat\Slide.h" />
+    <ClInclude Include="..\PPTXFormat\Theme\ClrScheme.h" />
+    <ClInclude Include="..\PPTXFormat\Theme\ExtraClrScheme.h" />
+    <ClInclude Include="..\PPTXFormat\Theme\FmtScheme.h" />
+    <ClInclude Include="..\PPTXFormat\Theme\FontScheme.h" />
+    <ClInclude Include="..\PPTXFormat\Theme.h" />
+    <ClInclude Include="..\PPTXFormat\Theme\ThemeElements.h" />
+    <ClInclude Include="..\PPTXFormat\SlideLayout.h" />
+    <ClInclude Include="..\PPTXFormat\NotesMaster.h" />
+    <ClInclude Include="..\PPTXFormat\NotesSlide.h" />
+    <ClInclude Include="..\PPTXFormat\SlideMaster.h" />
+    <ClInclude Include="..\PPTXFormat\HandoutMaster.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\Default.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\DefaultTable.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\ExtensionTable.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\File.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\Override.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\ContentTypes\OverrideTable.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\File.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\RelationShip.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Rels\RelationTable.h" />
+    <ClInclude Include="..\PPTXFormat\TableStyles.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Audio.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Image.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Media.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Media\Video.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\External\External.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalAudio.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalImage.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\External\ExternalVideo.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\External\HyperLink.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Drawing\LegacyDiagramText.h" />
+    <ClInclude Include="..\PPTXFormat\DocxFormat\Drawing\VmlDrawing.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\FileSystem\FileSystem.h" />
+    <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\Directory.h" />
+    <ClInclude Include="..\File.h" />
     <ClInclude Include="..\Settings.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ASCHTMLRenderer\ASCHTMLRendererLib.vcxproj">
-      <Project>{dc24710e-8df2-4a7a-b7c3-2313e294143c}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ClInclude Include="..\PPTXFormat\CommentAuthors.h" />
+    <ClInclude Include="..\PPTXFormat\Comments.h" />
+    <ClInclude Include="..\Editor\BinaryFileReaderWriter.h" />
+    <ClInclude Include="..\Editor\BinReaderWriterDefines.h" />
+    <ClInclude Include="..\Editor\BinWriters.h" />
+    <ClInclude Include="..\Editor\CalculatorCRC32.h" />
+    <ClInclude Include="..\Editor\Converter.h" />
+    <ClInclude Include="..\Editor\DefaultNotesMaster.h" />
+    <ClInclude Include="..\Editor\DefaultNotesTheme.h" />
+    <ClInclude Include="..\Editor\FontCutter.h" />
+    <ClInclude Include="..\Editor\FontPicker.h" />
+    <ClInclude Include="..\Editor\imagemanager.h" />
+    <ClInclude Include="..\Editor\PPTXWriter.h" />
+    <ClInclude Include="..\Editor\WMFToImageConverter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -109,7 +109,7 @@ void number_time_style::serialize(std::wostream & strm)
 		}
 	}
 }
-void number_style_base::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_style_base::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -238,7 +238,7 @@ void number_number::serialize(std::wostream & strm)
 	}
 }
 
-void number_number::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_number::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"number", L"embedded-text")
     {

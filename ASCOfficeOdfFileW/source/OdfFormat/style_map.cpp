@@ -50,7 +50,7 @@ namespace odf_writer {
 const wchar_t * style_map::ns = L"style";
 const wchar_t * style_map::name = L"map";
 
-void style_map::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_map::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

@@ -57,6 +57,9 @@ public:
 	
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false)
 	{
+		if (ptg_stack.empty()) 
+			return;
+
 		std::wstring operand2(ptg_stack.top());
 		ptg_stack.pop();
 		ptg_stack.top() += getOperatorSymbols() + operand2;
@@ -74,6 +77,9 @@ public:
 	UOperatorPtg_T() : OperatorPtg(fixedType) {};
 	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false)
 	{
+		if (ptg_stack.empty())
+			return;
+
 		ptg_stack.top() = T::getSymbols() + ptg_stack.top();
 	};
 	virtual const unsigned short getPtgId() const {return fixedType;};

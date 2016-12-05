@@ -16,7 +16,7 @@
 
 #define CXIMAGE_SUPPORT_DECODE	1
 #define CXIMAGE_SUPPORT_ENCODE	1		//<vho><T.Peck>
-#define	CXIMAGE_SUPPORT_WINDOWS 1
+//#define	CXIMAGE_SUPPORT_WINDOWS 1
 #define	CXIMAGE_SUPPORT_EXIF    1
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@
 #define CXIMAGE_SUPPORT_TGA 1
 #define CXIMAGE_SUPPORT_PCX 1
 #define CXIMAGE_SUPPORT_WBMP 1
-#define CXIMAGE_SUPPORT_WMF 1
+#define CXIMAGE_SUPPORT_WMF 0
 
 #define CXIMAGE_SUPPORT_JP2 1
 #define CXIMAGE_SUPPORT_JPC 1

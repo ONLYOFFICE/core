@@ -59,7 +59,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<r>"));
 				if(m_oRPr.IsInit())
@@ -78,7 +78,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("rPr") == sName )
 						m_oRPr = oReader;

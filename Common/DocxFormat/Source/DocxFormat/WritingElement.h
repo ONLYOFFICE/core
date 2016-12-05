@@ -81,8 +81,8 @@ namespace OOX
 		return;\
 	if ( !Reader.MoveToFirstAttribute() )\
 		return;\
-    CString wsName = Reader.GetName();\
-    while( !wsName.IsEmpty() )\
+	std::wstring wsName = Reader.GetName();\
+    while( !wsName.empty() )\
 	{
 
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
@@ -90,8 +90,8 @@ namespace OOX
 		return;\
 	if ( !Reader.MoveToFirstAttribute() )\
 		return;\
-	CString wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
-	while( !wsName.IsEmpty() )\
+	std::wstring wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
+	while( !wsName.empty() )\
 	{
 
 #define WritingElement_ReadAttributes_Read_if(Reader, AttrName, Value) \
@@ -331,6 +331,7 @@ namespace OOX
 		et_dsp_style,			// <dsp:style>
 		et_dsp_groupSpPr,		// <dsp:grpSpPr>
 		et_dsp_cNvPr,
+		et_dsp_txXfrm,
 		
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>

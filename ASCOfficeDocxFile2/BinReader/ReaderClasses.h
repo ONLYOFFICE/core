@@ -56,6 +56,8 @@ public:
 	CString sectPrChange;
 	CString cols;
 	CString pgBorders;
+	CString footnotePr;
+	CString endnotePr;
 
 	bool bHeader;
 	bool bFooter;
@@ -97,6 +99,10 @@ public:
 		long nMFooter = SerializeCommon::Round(Footer * g_dKoef_mm_to_twips);
 		if(!sHeaderFooterReference.IsEmpty())
 			sRes.Append(sHeaderFooterReference);
+		if(!footnotePr.IsEmpty())
+			sRes.Append(footnotePr);
+		if(!endnotePr.IsEmpty())
+			sRes.Append(endnotePr);
 		if(bSectionType)
 		{
 			CString sType;

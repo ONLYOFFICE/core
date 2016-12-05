@@ -59,33 +59,33 @@ public:
 
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult = _T("<w:tbl>");
+		CString sResult = L"<w:tbl>";
 		sResult += m_oProperty.RenderToOOX(oRenderParameter);
-		sResult += _T("<w:tblGrid>");
+		sResult += L"<w:tblGrid>";
 		
 		for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
 		{
-			sResult.AppendFormat(_T("<w:gridCol w:w=\"%d\"/>"), m_aTableGrid[i]);
+			sResult.AppendFormat(L"<w:gridCol w:w=\"%d\"/>", m_aTableGrid[i]);
 		}
-		sResult += _T("</w:tblGrid>");	
+		sResult += L"</w:tblGrid>";	
 
 		for(int i = 0; i < (int)m_aArray.size(); i++)
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter );
 		}
-		sResult += _T("</w:tbl>");
+		sResult += L"</w:tbl>";
 		return sResult;
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString result;
 		
-		result += _T("\n");
+		result += L"\n";
 		for(int i = 0 ; i < (int)m_aArray.size(); i++)
 		{
 			result += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
-		result += _T("\n");
+		result += L"\n";
 		return result;
 	}
 

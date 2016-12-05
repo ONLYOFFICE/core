@@ -59,7 +59,7 @@ const wchar_t * draw_base::ns = L"draw";
 const wchar_t * draw_base::name = L"base";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void draw_base::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_base::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }

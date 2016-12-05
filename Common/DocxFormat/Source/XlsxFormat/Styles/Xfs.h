@@ -55,54 +55,18 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<alignment"));
-				if(m_oHorizontal.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" horizontal=\"%ls\""), m_oHorizontal->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oIndent.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" indent=\"%d\""), m_oIndent->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oJustifyLastLine.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" justifyLastLine=\"%ls\""), m_oJustifyLastLine->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oReadingOrder.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" readingOrder=\"%d\""), m_oReadingOrder->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oRelativeIndent.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" relativeIndent=\"%d\""), m_oRelativeIndent->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oShrinkToFit.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" shrinkToFit=\"%ls\""), m_oShrinkToFit->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oTextRotation.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" textRotation=\"%d\""), m_oTextRotation->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oVertical.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" vertical=\"%ls\""), m_oVertical->ToString());
-					writer.WriteString(sVal);
-				}
-				if(m_oWrapText.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" wrapText=\"%ls\""), m_oWrapText->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrString(L"horizontal", m_oHorizontal, m_oHorizontal->ToString());
+				WritingStringNullableAttrInt(L"indent", m_oIndent, m_oIndent->GetValue());
+				WritingStringNullableAttrBool(L"justifyLastLine", m_oJustifyLastLine);
+				WritingStringNullableAttrInt(L"readingOrder", m_oReadingOrder, m_oReadingOrder->GetValue());
+				WritingStringNullableAttrInt(L"relativeIndent", m_oRelativeIndent, m_oRelativeIndent->GetValue());
+				WritingStringNullableAttrBool(L"shrinkToFit", m_oShrinkToFit);
+				WritingStringNullableAttrInt(L"textRotation", m_oTextRotation, m_oTextRotation->GetValue());
+				WritingStringNullableAttrString(L"vertical", m_oVertical, m_oVertical->ToString());
+				WritingStringNullableAttrBool(L"wrapText", m_oWrapText);
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -167,7 +131,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -216,64 +180,20 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xf"));
-				if(m_oFontId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" fontId=\"%d\""), m_oFontId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oFillId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" fillId=\"%d\""), m_oFillId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oBorderId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" borderId=\"%d\""), m_oBorderId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oNumFmtId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" numFmtId=\"%d\""), m_oNumFmtId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oXfId.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" xfId=\"%d\""), m_oXfId->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oApplyNumberFormat.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" applyNumberFormat=\"%ls\""), m_oApplyNumberFormat->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oApplyFont.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" applyFont=\"%ls\""), m_oApplyFont->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oApplyFill.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" applyFill=\"%ls\""), m_oApplyFill->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oApplyBorder.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" applyBorder=\"%ls\""), m_oApplyBorder->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oApplyAlignment.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" applyAlignment=\"%ls\""), m_oApplyAlignment->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oQuotePrefix.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" quotePrefix=\"%ls\""), m_oQuotePrefix->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"fontId", m_oFontId, m_oFontId->GetValue());
+				WritingStringNullableAttrInt(L"fillId", m_oFillId, m_oFillId->GetValue());
+				WritingStringNullableAttrInt(L"borderId", m_oBorderId, m_oBorderId->GetValue());
+				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
+				WritingStringNullableAttrInt(L"xfId", m_oXfId, m_oXfId->GetValue());
+				WritingStringNullableAttrBool(L"applyNumberFormat", m_oApplyNumberFormat);
+				WritingStringNullableAttrBool(L"applyFont", m_oApplyFont);
+				WritingStringNullableAttrBool(L"applyFill", m_oApplyFill);
+				WritingStringNullableAttrBool(L"applyBorder", m_oApplyBorder);
+				WritingStringNullableAttrBool(L"applyAlignment", m_oApplyAlignment);
+				WritingStringNullableAttrBool(L"quotePrefix", m_oQuotePrefix);
 				if(m_oAligment.IsInit())
 				{
 					writer.WriteString(_T(">"));
@@ -292,7 +212,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("alignment") == sName )
 						m_oAligment = oReader;
@@ -365,14 +285,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<cellXfs"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
@@ -388,7 +304,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("xf") == sName )
 						m_arrItems.push_back( new CXfs( oReader ));
@@ -429,14 +345,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<cellStyleXfs"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
@@ -452,7 +364,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("xf") == sName )
 						m_arrItems.push_back( new CXfs( oReader ));

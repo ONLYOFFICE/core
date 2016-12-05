@@ -302,7 +302,7 @@ namespace OOX
 				if ( m_oSup.IsInit() )
 					sResult += m_oSup->toXML();
 				
-				sResult += _T("</m:oMathPara>");
+				sResult += _T("</m:nary>");
 
 				return sResult;
 			}
@@ -410,6 +410,9 @@ namespace OOX
 
 				 if ( m_oMRPr.IsInit() )
 					 sResult += m_oMRPr->toXML();
+
+				 if ( m_oARPr.IsInit() )
+					 sResult += m_oARPr->toXML();
 
 				 if ( m_oRPr.IsInit() )
 					 sResult += m_oRPr->toXML();

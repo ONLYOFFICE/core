@@ -98,7 +98,7 @@ namespace OOX
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
 			SimpleTypes::CDouble                                            m_oHrPct;
 			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>				m_oAllowInCell;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
@@ -192,8 +192,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -276,8 +276,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -361,8 +361,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -418,7 +418,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("o:fill") == sName )
 						m_oFill = oReader;
 				}
@@ -513,8 +513,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -658,7 +658,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("v:fill") == sName )
 						m_oFill = oReader;
 				}
@@ -703,8 +703,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -780,7 +780,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("v:f") == sName )
 					{
 						OOX::Vml::CF *oF = new OOX::Vml::CF(oReader);
@@ -899,8 +899,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -984,7 +984,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("v:h") == sName )
 					{
 						OOX::Vml::CH *oH = new OOX::Vml::CH(oReader);
@@ -1108,8 +1108,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1256,8 +1256,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1424,8 +1424,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1585,8 +1585,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1712,8 +1712,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1831,8 +1831,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -1943,8 +1943,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2035,8 +2035,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 			
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2115,8 +2115,8 @@ namespace OOX
 
 				CString sGfxData;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2238,7 +2238,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if ( _T("o:left") == sName )
 						m_oLeft = oReader;
@@ -2369,8 +2369,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2511,7 +2511,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if ( _T("w:txbxContent") == sName )
 						m_oTxtbxContent = oReader;
@@ -2560,8 +2560,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2635,19 +2635,19 @@ namespace OOX
 				ComplexTypes_WriteAttribute2( _T("id=\""),    m_oId );
 				ComplexTypes_WriteAttribute ( _T("style=\""), m_oStyle );
 
-				if ( SimpleTypes::booleanFalse != m_oOn.GetValue() )
+				if ( (m_oOn.IsInit()) && (SimpleTypes::booleanFalse != m_oOn->GetValue()) )
 					sResult += _T("on=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oFitShape.GetValue() )
+				if ( (m_oFitShape.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitShape->GetValue()) )
 					sResult += _T("fitshape=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oFitPath.GetValue() )
+				if ( (m_oFitPath.IsInit()) && ( SimpleTypes::booleanFalse != m_oFitPath->GetValue()) )
 					sResult += _T("fitpath=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oTrim.GetValue() )
+				if ( (m_oTrim.IsInit()) && ( SimpleTypes::booleanFalse != m_oTrim->GetValue()) )
 					sResult += _T("trim=\"true\" ");
 
-				if ( SimpleTypes::booleanFalse != m_oXScale.GetValue() )
+				if ( (m_oXScale.IsInit()) && ( SimpleTypes::booleanFalse != m_oXScale->GetValue()) )
 					sResult += _T("xscale=\"true\" ");
 
 				ComplexTypes_WriteAttribute2( _T("string=\""), m_sString );
@@ -2671,8 +2671,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2710,14 +2710,14 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oFitPath;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oFitShape;
-			nullable<CString>                                     m_oId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oOn;
-			nullable<CString>                                     m_sString;
-			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oTrim;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oXScale;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oFitPath;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oFitShape;
+			nullable<CString>										m_oId;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oOn;
+			nullable<CString>										m_sString;
+			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oTrim;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oXScale;
 			
 			nullable<CString>                                     m_sStringOriginal;
 		};
@@ -2756,8 +2756,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
@@ -2897,7 +2897,7 @@ namespace OOX
 			SimpleTypes::CDouble                                            m_oHrPct;
 			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
 			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
@@ -2951,7 +2951,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("v:fill") == sName )
 						m_oVmlFill = oReader;
 					else if ( _T("v:stroke") == sName )
@@ -3051,8 +3051,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 				
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )

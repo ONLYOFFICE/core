@@ -97,7 +97,7 @@ void draw_image::serialize(std::wostream & _Wostream)
 	}
 }
 
-void draw_image::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_image::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"office", L"binary-data")
     {
@@ -144,7 +144,7 @@ void draw_chart::serialize(std::wostream & _Wostream)
 }
 
 
-void draw_chart::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_chart::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -174,7 +174,7 @@ void draw_g::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void draw_g::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_g::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -204,7 +204,7 @@ void draw_frame::serialize(std::wostream & _Wostream)
 	}
 }
 
-void draw_frame::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_frame::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"draw", L"text-box") ||
         CP_CHECK_NAME(L"draw", L"image") ||//копия чарта в виде картинки ну.. или просто картинка
@@ -293,7 +293,7 @@ void draw_text_box::serialize(std::wostream & _Wostream)
 	}
 }
 
-void draw_text_box::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_text_box::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_); 
 }
@@ -318,7 +318,7 @@ void draw_object::serialize(std::wostream & _Wostream)
 	}
 }
 
-void draw_object::create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_object::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); // TODO
 }
@@ -343,7 +343,7 @@ void draw_object_ole::serialize(std::wostream & _Wostream)
 	}
 }
 
-void draw_object_ole::create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_object_ole::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); 
 }

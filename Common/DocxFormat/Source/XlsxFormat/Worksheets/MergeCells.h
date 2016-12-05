@@ -58,17 +58,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<mergeCell"));
-				if(m_oRef.IsInit())
-				{
-					CString sVal;
-					sVal.Append(_T(" ref=\""));
-					sVal.Append(XmlUtils::EncodeXmlString(m_oRef.get()));
-					sVal.Append(_T("\""));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -97,7 +90,7 @@ namespace OOX
 			}
 
 		public:
-				nullable<CString>						m_oRef;
+				nullable<std::wstring>						m_oRef;
 		};
 
 		class CMergeCells  : public WritingElementWithChilds<CMergeCell>
@@ -116,16 +109,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(_T("<mergeCells"));
-					if(m_oCount.IsInit())
-					{
-						CString sVal; sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-						writer.WriteString(sVal);
-					}
+					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
@@ -142,7 +131,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("mergeCell") == sName )
 						m_arrItems.push_back( new CMergeCell( oReader ));

@@ -1236,7 +1236,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:col") == sName )
 					{
 						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
@@ -1357,7 +1357,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:numFmt") == sName )
 						m_oNumFmt = oReader;
 					else if ( _T("w:numRestart") == sName )
@@ -1458,7 +1458,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:numFmt") == sName )
 						m_oNumFmt = oReader;
 					else if ( _T("w:numRestart") == sName )
@@ -1564,7 +1564,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:bottom") == sName )
 						m_oBottom = oReader;
 					else if ( _T("w:left") == sName )
@@ -1871,7 +1871,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:bidi") == sName )
 						m_oBidi = oReader;
 					else if ( _T("w:cols") == sName )

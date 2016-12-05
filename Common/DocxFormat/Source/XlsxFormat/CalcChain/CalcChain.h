@@ -55,7 +55,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -90,7 +90,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oArray;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oSheetId;
 			nullable<SimpleTypes::COnOff<>>					m_oDependencyLevel;
-			nullable<CString>								m_oRef;
+			nullable<std::wstring>								m_oRef;
 			nullable<SimpleTypes::COnOff<>>					m_oChildChain;
 			nullable<SimpleTypes::COnOff<>>					m_oNewThread;
 		};
@@ -131,7 +131,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("calcChain") == sName )
 				{
 					ReadAttributes( oReader );

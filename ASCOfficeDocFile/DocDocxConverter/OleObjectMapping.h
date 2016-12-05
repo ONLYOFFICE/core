@@ -70,9 +70,7 @@ namespace DocFileFormat
 				//type
 				if ( ole->bLinked )
 				{
-					int relID = -1;
-					
-					m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
+					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
 					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );

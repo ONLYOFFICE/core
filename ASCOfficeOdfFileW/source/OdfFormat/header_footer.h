@@ -75,7 +75,7 @@ public:
     static const ElementType type = typeStyleHeaderFooterProperties;
     CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child)
     {
         _CP_LOG << L"Non add child in " << ns << L":" << name << std::endl;
@@ -102,12 +102,13 @@ public:
 class header_footer_content
 {
 public:
-    void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name, odf_conversion_context * Context);
-    void add_child_element( const office_element_ptr & child);
+    void create_child_element	( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context);
+    void add_child_element		( const office_element_ptr & child, odf_conversion_context * Context);
 
 	void serialize(std::wostream & strm);
-
-    office_element_ptr_array content_;
+private:
+	office_element_ptr			tracked_changes_;
+    office_element_ptr_array	content_;
     
 };
 

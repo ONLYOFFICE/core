@@ -72,7 +72,11 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)
 	{
-		m_arFonts.push_back(elements_.front());
+		Font *font = dynamic_cast<Font *>(elements_.front().get());
+		if ((font) && (font->correct))
+		{
+			m_arFonts.push_back(elements_.front());
+		}
 		elements_.pop_front();
 		count--;
 	}	
@@ -106,8 +110,6 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}	
-
-	global_info->cellStyleDxfs_count = m_arDXF.size(); // + будут юзерские
 	//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{
@@ -140,6 +142,33 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	}
 
 	return true;
+}
+
+void FORMATTING::concatinate(FORMATTING* ext)
+{
+	if (ext->m_XFS)
+	{
+		if (!m_XFS)
+			m_XFS = ext->m_XFS;
+		else
+		{
+			XFS * xf		= dynamic_cast<XFS*>(m_XFS.get());
+			XFS * xf_ext	= dynamic_cast<XFS*>(ext->m_XFS.get());
+		}
+	}
+	if (ext->m_Styles)
+	{
+		if (!m_Styles)
+			m_Styles = ext->m_Styles;
+		else
+		{
+			STYLES * st		= dynamic_cast<STYLES*>(m_Styles.get());
+			STYLES * st_ext	= dynamic_cast<STYLES*>(ext->m_Styles.get());
+			if (st && st_ext)
+				st->elements_.insert(st->elements_.end(), st_ext->elements_.begin(), st_ext->elements_.end());
+
+		}
+	}
 }
 
 int FORMATTING::serialize1(std::wostream & stream)

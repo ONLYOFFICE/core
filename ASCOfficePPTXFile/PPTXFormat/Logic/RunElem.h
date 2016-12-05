@@ -38,6 +38,7 @@
 #include "Runs/Run.h"
 #include "Runs/Fld.h"
 #include "Runs/Br.h"
+#include "Runs/MathParaWrapper.h"
 
 namespace PPTX
 {
@@ -59,6 +60,8 @@ namespace PPTX
 					Elem.reset(new Logic::Fld(node));
 				else if(name == _T("br"))
 					Elem.reset(new Logic::Br(node));
+				else if(name == _T("m"))
+					Elem.reset(new Logic::MathParaWrapper(node));
 				else Elem.reset();
 			}
 			virtual CString toXML() const

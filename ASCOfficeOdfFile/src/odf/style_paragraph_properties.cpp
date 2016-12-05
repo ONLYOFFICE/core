@@ -55,7 +55,7 @@ namespace odf_reader {
 const wchar_t * style_tab_stop::ns = L"style";
 const wchar_t * style_tab_stop::name = L"tab-stop";
 
-::std::wostream & style_tab_stop::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_tab_stop::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -75,7 +75,7 @@ void style_tab_stop::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void style_tab_stop::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_tab_stop::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {}
 
 void style_tab_stop::add_text(const std::wstring & Text)
@@ -86,7 +86,7 @@ void style_tab_stop::add_text(const std::wstring & Text)
 const wchar_t * style_tab_stops::ns = L"style";
 const wchar_t * style_tab_stops::name = L"tab-stops";
 
-::std::wostream & style_tab_stops::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_tab_stops::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -94,7 +94,7 @@ const wchar_t * style_tab_stops::name = L"tab-stops";
 void style_tab_stops::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {}
 
-void style_tab_stops::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_tab_stops::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"tab-stop" == Name)
         CP_CREATE_ELEMENT(style_tab_stops_);
@@ -112,7 +112,7 @@ void style_tab_stops::add_text(const std::wstring & Text)
 const wchar_t * style_drop_cap::ns = L"style";
 const wchar_t * style_drop_cap::name = L"drop-cap";
 
-::std::wostream & style_drop_cap::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_drop_cap::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -125,7 +125,7 @@ void style_drop_cap::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:style-name", style_style_name_);
 }
 
-void style_drop_cap::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_drop_cap::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {}
 
 void style_drop_cap::add_text(const std::wstring & Text)
@@ -137,7 +137,7 @@ void style_drop_cap::add_text(const std::wstring & Text)
 const wchar_t * style_background_image::ns = L"style";
 const wchar_t * style_background_image::name = L"background-image";
 
-::std::wostream & style_background_image::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_background_image::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -156,7 +156,7 @@ void style_background_image::add_attributes( const xml::attributes_wc_ptr & Attr
     }
 }
 
-void style_background_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_background_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"office" == Ns && L"binary-data" == Name)
         CP_CREATE_ELEMENT(office_binary_data_);
@@ -345,7 +345,7 @@ void paragraph_format_properties::add_attributes( const xml::attributes_wc_ptr &
     CP_APPLY_ATTR(L"style:join_border", style_join_border_);
 }
 
-bool paragraph_format_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+bool paragraph_format_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (L"style" == Ns)
     {
@@ -377,7 +377,7 @@ bool paragraph_format_properties::add_child_element( xml::sax * Reader, const ::
 const wchar_t * style_paragraph_properties::ns = L"style";
 const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
-::std::wostream & style_paragraph_properties::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_paragraph_properties::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -387,7 +387,7 @@ void style_paragraph_properties::add_attributes( const xml::attributes_wc_ptr & 
      style_paragraph_properties_content_.add_attributes(Attributes);
 }
 
-void style_paragraph_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_paragraph_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (!style_paragraph_properties_content_.add_child_element(Reader, Ns, Name, getContext()))    
          CP_NOT_APPLICABLE_ELM();

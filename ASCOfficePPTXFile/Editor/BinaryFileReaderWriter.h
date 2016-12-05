@@ -288,18 +288,16 @@ namespace NSBinPptxRW
 		void WriteDoubleReal(const double& dValue);
 		
 		void WriteStringW(const WCHAR* sBuffer);
+		void WriteStringWStd(const std::wstring& sBuffer);
 		void WriteBYTEArray(const BYTE* pBuffer, size_t len);
 		void WriteStringA(const char* sBuffer);
 		void WriteStringA(CStringA& sBuffer);
 		void WriteStringW(CString& sBuffer);
 		void WriteStringW2(const WCHAR* sBuffer);
-        void WriteStringW2_2(const WCHAR* sBuffer);
-        void WriteStringW2_4(const WCHAR* sBuffer);
 		void WriteStringW2(CString& sBuffer);
 		void WriteStringW3(const WCHAR* sBuffer);
 		void WriteStringW3(CString& sBuffer);
-        void WriteStringW3_2(const WCHAR* sBuffer);
-        void WriteStringW3_4(const WCHAR* sBuffer);
+		void WriteStringW4(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64(const _INT64& lValue);
 		void WriteDouble64(const double& dValue);
@@ -399,6 +397,9 @@ namespace NSBinPptxRW
         bool Serialize(NSShapeImageGen::CImageManager* pManager, BYTE **ppArray, size_t& szCount);
 
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
+	private:
+		_INT32 _WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		void _WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
 	class CSlideMasterInfo
 	{
@@ -520,6 +521,7 @@ namespace NSBinPptxRW
 		CStringA GetString1(_INT32 len);
 		CString GetString2();
 		CString GetString3(_INT32 len);
+		std::wstring GetString4(_INT32 len);
 
         //LPSAFEARRAY GetArray(_INT32 len);
         bool GetArray(BYTE **pBuffer, _INT32 len);

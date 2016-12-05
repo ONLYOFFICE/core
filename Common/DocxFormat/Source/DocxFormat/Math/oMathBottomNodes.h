@@ -171,7 +171,7 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
-				CString sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( _T("m:brkBin") == sName )
 					eType = et_m_brkBin;
 				else if ( _T("m:brkBinSub") == sName )
@@ -212,9 +212,14 @@ namespace OOX
 			{
 				if (sNodeName.IsEmpty()) return L"";
 
-				CString sResult = _T("<") + sNodeName + _T(" m:val=\"");
-				sResult +=  m_val->ToString();
-				sResult +=  _T("\" />");
+				CString sResult = _T("<") + sNodeName;
+				if (m_val.IsInit())
+				{
+					sResult += _T(" m:val=\"");
+					sResult +=  m_val->ToString();
+					sResult +=  _T("\"");
+				}
+				sResult +=  _T("/>");
 				return sResult;
 			}
 

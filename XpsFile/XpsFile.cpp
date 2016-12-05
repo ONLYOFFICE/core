@@ -157,7 +157,7 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
-void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
+void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 {
     CFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
 	CFontsCache* pFontCache = new CFontsCache();
@@ -171,8 +171,8 @@ void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, in
 	double dWidth, dHeight;
 	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
-	int nWidth  = (int)dWidth * 96 / dPageDpiX;
-	int nHeight = (int)dHeight * 96 / dPageDpiX;
+    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
+    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
 
 	BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 	if (!pBgraData)

@@ -61,6 +61,8 @@ public:
 
 	void loadFields(XLS::CFRecord& record);
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtSpgrContainer;
+
 	std::vector<OfficeArtContainerPtr>		m_OfficeArtSpgrContainerFileBlock;
 };
 
@@ -81,6 +83,8 @@ class OfficeArtSpContainer : public OfficeArtContainer
 public:
 	OfficeArtSpContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtSpContainer;
 
 	void loadFields(XLS::CFRecord& record);
 

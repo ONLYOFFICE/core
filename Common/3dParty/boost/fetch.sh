@@ -29,7 +29,7 @@ else
 wget http://freefr.dl.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.7z
 fi
 
-if [ -d "$SCRIPTPATH/boost" ]; then
+if [ -d "$SCRIPTPATH/boost_1_58_0" ]; then
 echo "boost already extracted"
 else
 if [[ "$platform" == *"linux"* ]]

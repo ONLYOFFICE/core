@@ -65,56 +65,56 @@ public :
 			delete pBuffer;
 	}
 
-    uint8_t  ReadUInt8()
+    unsigned char  ReadUInt8()
     {
         if (pCur + 1 >= pEnd)
             return 0;
 
-        uint8_t unResult = pCur[0];
+        unsigned char unResult = pCur[0];
         pCur++;
         return unResult;
     }
 
-    uint16_t ReadUInt16()
+    _UINT16 ReadUInt16()
     {
         if (pCur + 2 >= pEnd)
             return 0;
 
-        uint16_t ushResult = (pCur[0]) | ((pCur[1]) << 8);
+        _UINT16 ushResult = (pCur[0]) | ((pCur[1]) << 8);
         pCur += 2;
         return ushResult;
     }
 
-    uint32_t ReadUInt32()
+    _UINT32 ReadUInt32()
     {
         if (pCur + 4 >= pEnd)
             return 0;
-        uint32_t unResult = (uint32_t)((pCur[0]<< 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
+        _UINT32 unResult = (_UINT32)((pCur[0]<< 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
         pCur += 4;
         return unResult;
     }
 
-	void operator>>(uint8_t  &nValue)
+    void operator>>(unsigned char  &nValue)
 	{
 		nValue = ReadUInt8();
 	}
 
-	void operator>>(uint16_t &nValue)
+    void operator>>(_UINT16 &nValue)
 	{
 		nValue = ReadUInt16();
 	}
 
-	void operator>>(uint32_t &nValue)
+    void operator>>(_UINT32 &nValue)
 	{
 		nValue = ReadUInt32();
 	}
 
-	void operator>>(int8_t   &nValue)
+    void operator>>(char   &nValue)
 	{
 		nValue = ReadUInt8();
 	}
 
-	void operator>>(int16_t  &nValue)
+    void operator>>(short  &nValue)
 	{
         nValue = ReadUInt16();
 	}
@@ -137,12 +137,12 @@ public :
 
 
 
-	uint32_t Tell()
+    _UINT32 Tell()
 	{
-		return (uint32_t)(pCur - pBuffer);
+        return (_UINT32)(pCur - pBuffer);
 	}
 
-	void SeekRel(uint32_t nPos)
+    void SeekRel(_UINT32 nPos)
 	{
 		pCur += nPos;
 	}

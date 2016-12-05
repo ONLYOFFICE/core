@@ -63,7 +63,7 @@ namespace PdfReader
         virtual int GetPagesCount();
         virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
         virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-        virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType);
+        virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
         EError       GetError();
         double       GetVersion();

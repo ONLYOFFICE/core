@@ -58,7 +58,7 @@ public:
 		}
 		else if(ooxColor.getType() == OOX::Drawing::colorSheme)
 		{
-			RtfColor::ThemeColor oTheme;
+			RtfColor::_ThemeColor oTheme;
 			if( true == RtfColor::GetThemeByOOX( ooxColor.m_oShemeClr.m_oVal.GetValue(), oTheme ))
 				return oParam.oRtf->m_oColorTable.GetColor( oTheme, oOutputColor );
 			return false;
@@ -105,9 +105,13 @@ public:
 			oOutputColor.SetTint( ooxColor.m_oThemeTint->GetValue() );
 			res = true;
 		}
-		if ((ooxColor.m_oVal.IsInit()) && (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorRGB))
+		if (ooxColor.m_oVal.IsInit())
 		{
-			oOutputColor.SetRGB(ooxColor.m_oVal->Get_R(), ooxColor.m_oVal->Get_G(), ooxColor.m_oVal->Get_B());
+			if (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorRGB)
+				oOutputColor.SetRGB(ooxColor.m_oVal->Get_R(), ooxColor.m_oVal->Get_G(), ooxColor.m_oVal->Get_B());
+			if (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
+				oOutputColor.m_bAuto = true;
+			
 			res = true;
 		}
 		return res;

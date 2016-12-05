@@ -48,7 +48,7 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		sResult += _T("\n");
+		sResult += L"\n";
 		if( RENDER_TO_RTF_PARAM_NESTED == oRenderParameter.nType )
 		{
 
@@ -56,9 +56,9 @@ public:
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
-			sResult += _T("{\\*\\nesttableprops");
+			sResult += L"{\\*\\nesttableprops";
 			sResult += m_oProperty.RenderToRtf( oRenderParameter );
-			sResult += _T("\\nestrow}{\\nonesttables \\par}");
+			sResult += L"\\nestrow}{\\nonesttables \\par}";
 		}
 		else
 		{
@@ -67,28 +67,29 @@ public:
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
-			sResult += _T("\\row");
+			sResult += L"\\row";
 		}
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		XmlUtils::CXmlWriter oXmlWriter;
-		oXmlWriter.WriteNodeBegin(_T("w:tr"),0);
+		oXmlWriter.WriteNodeBegin(L"w:tr",0);
+		
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
 		CString sRowProp = m_oProperty.RenderToOOX(oNewParam);
 		if( false == sRowProp.IsEmpty() )
 		{
-			CString sXml = _T("<w:trPr>") + sRowProp + _T("</w:trPr>");
+			CString sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
 			oXmlWriter.WriteString(sXml);
 		}
 		for(int i = 0 ; i < (int)m_aArray.size(); i++)
 		{
 			oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );
 		}
-		oXmlWriter.WriteNodeEnd(_T("w:tr"));
+		oXmlWriter.WriteNodeEnd(L"w:tr");
 		return oXmlWriter.GetXmlString();
 	}
 

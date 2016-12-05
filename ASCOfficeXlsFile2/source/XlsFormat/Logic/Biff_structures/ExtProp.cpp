@@ -77,7 +77,7 @@ void ExtProp::load(CFRecord& record)
 			record >> extPropData.indent_level;
 			break;
 		default:
-			//throw EXCEPT::RT::WrongBiffRecord("Unsupported type of the extension.", record.getTypeString());
+			//EXCEPT::RT::WrongBiffRecord("Unsupported type of the extension.", record.getTypeString());
 			break;
 	}
 }

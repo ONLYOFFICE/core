@@ -68,6 +68,7 @@ pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odf
 	,pptx_table_context_(*this)
 	,pptx_comments_context_(comments_context_handle_)
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
+	,math_context_(true)
 	,last_idx_placeHolder(1)
 	,last_uniq_big_id(1)
 {

@@ -61,12 +61,12 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(isValid())
 				{
-					CString sStart;
-					CString sEnd;
+					std::wstring sStart;
+					std::wstring sEnd;
 					if(m_oFrom.IsInit() && m_oTo.IsInit())
 					{
 						sStart	= _T("<xdr:twoCellAnchor editAs=\"") + m_oAnchorType.ToString() + _T("\">");
@@ -80,7 +80,7 @@ namespace OOX
 					}
 					else if(m_oFrom.IsInit() && m_oExt.IsInit())
 					{
-						sStart.Append(_T("<xdr:oneCellAnchor>"));
+						sStart.append(_T("<xdr:oneCellAnchor>"));
 						sEnd = _T("</xdr:oneCellAnchor>");
 						writer.WriteString(sStart);
 						if(m_oFrom.IsInit())
@@ -90,7 +90,7 @@ namespace OOX
 					}
 					else if(m_oPos.IsInit() && m_oExt.IsInit())
 					{
-						sStart.Append(_T("<xdr:absoluteAnchor>"));
+						sStart.append(_T("<xdr:absoluteAnchor>"));
 						sEnd = _T("</xdr:absoluteAnchor>");
 						writer.WriteString(sStart);
 						if(m_oPos.IsInit())
@@ -117,7 +117,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("from") == sName )
 						m_oFrom = oReader;
@@ -161,14 +161,14 @@ namespace OOX
 								xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
 								xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
 							xmlString += L">";
-							xmlString += *m_oXml;
+							xmlString += m_oXml->c_str();
 							xmlString += L"</root>";
                                                         bool result =oShapeReader.FromString(xmlString);
 
 							result = oShapeReader.ReadNextNode();//root
 							result = oShapeReader.ReadNextNode();
 
-							CString sName = XmlUtils::GetNameNoNS(oShapeReader.GetName());
+							std::wstring sName = XmlUtils::GetNameNoNS(oShapeReader.GetName());
 							
 							if (_T("pic") == sName)
 								m_oPicture = oShapeReader;
@@ -186,7 +186,7 @@ namespace OOX
 										{
 											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
 											m_oXml.reset();
-											m_sSpId = pExt->m_oCompatExt->m_sSpId;
+											m_sSpId = string2std_string(pExt->m_oCompatExt->m_sSpId.get());
 										}
 									}
 								}
@@ -206,9 +206,11 @@ namespace OOX
 							nCurDepth++;
 							while( oReader.ReadNextSiblingNode( nCurDepth ) )
 							{
-								CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
-								if ( _T("Fallback") == sName )
+								std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+								if ( _T("Fallback") == sName || _T("Choice") == sName )
 								{
+									CString sRequires;
+									ReadAttributesRequire(oReader, sRequires);
 									CString xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
 									xmlString += L"<root ";
 										xmlString += L"xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" ";
@@ -218,7 +220,13 @@ namespace OOX
 										xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
 									xmlString += L">";
 									xmlString += oReader.GetOuterXml();
-									xmlString += L"</root>";										
+									xmlString += L"</root>";
+
+									//todo better check (a14 can be math, slicer)
+									if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.Find(L"a14:m")))
+									{
+										continue;
+									}
 									XmlUtils::CXmlLiteReader oSubReader;
 									
 									if (oSubReader.FromString(xmlString))
@@ -263,6 +271,13 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, CString& sRequire)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("Requires"),      sRequire )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 		public:
 			SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oFrom;
@@ -276,10 +291,10 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 
 			// для pptx:ObjectDrawingConverter
-			nullable<CString>								m_oXml;
+			nullable<std::wstring>								m_oXml;
 
 			//для удобства
-			nullable<CString>								m_sSpId;
+			nullable<std::wstring>								m_sSpId;
 		};
 	} //Spreadsheet
 } // namespace OOX

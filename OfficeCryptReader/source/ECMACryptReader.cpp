@@ -465,7 +465,16 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 	decryptor.SetCryptData(cryptData);
 	
 	if (!decryptor.SetPassword(password))
-		return false;
+	{
+		if (password.empty())
+		{
+			password = L"VelvetSweatshop";
+			if (!decryptor.SetPassword(password))
+				return false;
+		}
+		else
+			return false;
+	}
 //------------------------------------------------------------------------------------------------------------
 	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
 	if (pStream->size() > 0)

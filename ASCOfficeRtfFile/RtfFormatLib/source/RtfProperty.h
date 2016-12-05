@@ -33,22 +33,21 @@
 
 #include "Basic.h"
 #include "Utils.h"
-#include "RtfDefine.h"
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
 #if defined (_WIN32) || defined (_WIN64)
     #define MERGE_PROPERTY(propName, propObj)\
-        if( PROP_DEF != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
+        if ( PROP_DEF != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
 
     #define MERGE_PROPERTY_DEF(propName, propObj, defval)\
-        if( defval != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
+        if ( defval != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
 #else
     #define MERGE_PROPERTY(propName, propObj)\
-        if( PROP_DEF != propObj.propName )	propName = propObj.propName;
+        if ( PROP_DEF != propObj.propName )	propName = propObj.propName;
 
     #define MERGE_PROPERTY_DEF(propName, propObj, defval)\
-        if( defval != propObj.propName )	propName = propObj.propName;
+        if ( defval != propObj.propName )	propName = propObj.propName;
 #endif
 
 #define DEFAULT_PROPERTY(propName)\
@@ -58,66 +57,66 @@
 		propName = defval;
 
 #define RENDER_OOX_BOOL( prop, sResult, sName)\
-		if( 0 == prop )\
+		if ( 0 == prop )\
 		{\
-			sResult += _T("<");\
+			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( _T(" w:val=\"false\"/>"));\
+			sResult.AppendFormat( L" w:val=\"false\"/>" );\
 		}\
-		else if(  PROP_DEF != prop  )\
+		else if (  PROP_DEF != prop  )\
 		{\
-			sResult += _T("<");\
+			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( _T(" w:val=\"true\"/>"));\
+			sResult.AppendFormat( L" w:val=\"true\"/>" );\
 		}
 
 #define RENDER_OOX_INT( prop, sResult, sName)\
-		if( PROP_DEF != prop )\
+		if ( PROP_DEF != prop )\
 		{\
-			sResult += _T("<");\
+			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( _T(" w:val=\"%d\"/>"), prop  );\
+			sResult.AppendFormat( L" w:val=\"%d\"/>", prop  );\
 		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
-		if( PROP_DEF != prop )\
+		if ( PROP_DEF != prop )\
 		{\
-			sResult += _T(" ");\
+			sResult += L" ";\
 			sResult += sName;\
-			sResult.AppendFormat( _T("=\"%d\""), prop  );\
+			sResult.AppendFormat( L"=\"%d\"", prop  );\
 		}
 #define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
-		if( 0 == prop )\
+		if ( 0 == prop )\
 		{\
-			sResult += _T(" ");\
+			sResult += L" ";\
 			sResult += sName;\
-			sResult += _T("=\"0\"");\
+			sResult += L"=\"0\"";\
 		}\
-		else if(  PROP_DEF != prop  )\
+		else if (  PROP_DEF != prop  )\
 		{\
-			sResult += _T(" ");\
+			sResult += L" ";\
 			sResult += sName;\
-			sResult += _T("=\"1\"");\
+			sResult += L"=\"1\"";\
 		}
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
-		if( 0 == prop )\
+		if ( 0 == prop )\
 		{\
-			sResult += _T("\\");\
+			sResult += L"\\";\
 			sResult += sName;\
-			sResult += _T("0");\
+			sResult += L"0";\
 		}\
-		else if(  PROP_DEF != prop  )\
+		else if (  PROP_DEF != prop  )\
 		{\
-			sResult += _T("\\");\
+			sResult += L"\\";\
 			sResult += sName;\
 		}
 
 #define RENDER_RTF_INT( prop, sResult, sName)\
-		if( PROP_DEF != prop )\
+		if ( PROP_DEF != prop )\
 		{\
-			sResult += _T("\\");\
+			sResult += L"\\";\
 			sResult += sName;\
-			sResult.AppendFormat( _T("%d"), prop  );\
+			sResult.AppendFormat( L"%d", prop  );\
 		}
 
 class RtfSection;
@@ -150,16 +149,14 @@ public:
 	}
 	bool operator==( const RtfFont& oFont)
 	{
-		return m_eFontTheme == oFont.m_eFontTheme && m_eFontFamily == oFont.m_eFontFamily && 
-				m_sPanose == oFont.m_sPanose && m_nID == oFont.m_nID && 
-				m_sName == oFont.m_sName && m_sAltName == oFont.m_sAltName && 
-				m_nCharset == oFont.m_nCharset && m_nCodePage == oFont.m_nCodePage && 
-				m_nPitch == oFont.m_nPitch;
+		return m_eFontTheme == oFont.m_eFontTheme	&& m_eFontFamily	== oFont.m_eFontFamily	&& 
+				m_sPanose	== oFont.m_sPanose		&& m_nID			== oFont.m_nID			&& 
+				m_sName		== oFont.m_sName		&& m_sAltName		== oFont.m_sAltName		&& 
+				m_nCharset	== oFont.m_nCharset		&& m_nCodePage		== oFont.m_nCodePage	&& 
+				m_nPitch	== oFont.m_nPitch;
 	}
 	bool IsValid()
 	{
-		//return PROP_DEF != m_nID && _T("") != m_sName && ff_fnil == m_eFontFamily;
-		//return PROP_DEF != m_nID && _T("") != m_sName; //wordpad не всегда пишет m_sName
 		return PROP_DEF != m_nID;
 	}
 	void SetDefaultRtf()
@@ -175,12 +172,12 @@ public:
 	{
 		DEFAULT_PROPERTY_DEF( m_eFontTheme, ft_none )
 		DEFAULT_PROPERTY_DEF( m_eFontFamily, ff_fnil )
-		DEFAULT_PROPERTY_DEF( m_sPanose, _T("") )
-		DEFAULT_PROPERTY( m_nID )
-		DEFAULT_PROPERTY_DEF( m_sName, _T("") )
-		DEFAULT_PROPERTY_DEF( m_sAltName, _T("") )
-		DEFAULT_PROPERTY( m_nCharset )
-		DEFAULT_PROPERTY( m_nCodePage )
+		DEFAULT_PROPERTY_DEF( m_sPanose, L"" )
+		DEFAULT_PROPERTY	( m_nID )
+		DEFAULT_PROPERTY_DEF( m_sName, L"" )
+		DEFAULT_PROPERTY_DEF( m_sAltName, L"" )
+		DEFAULT_PROPERTY	( m_nCharset )
+		DEFAULT_PROPERTY	( m_nCodePage )
 		DEFAULT_PROPERTY_DEF( m_nPitch, 2 )
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
@@ -190,10 +187,10 @@ public:
 class RtfColor : public IRenderableProperty
 {
 public: 
-	typedef enum {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo} ThemeColor;
+	enum _ThemeColor {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo};
 	
 	bool		m_bAuto;
-	ThemeColor	m_eTheme;
+	_ThemeColor	m_eTheme;
 
     BYTE		m_byteRed;
     BYTE		m_byteGreen;
@@ -231,6 +228,7 @@ public:
 	void SetDefault()
 	{
 		m_bAuto		= false;
+
 		m_byteRed	= 0;
 		m_byteGreen = 0;
 		m_byteBlue	= 0;
@@ -240,20 +238,20 @@ public:
 	}
     BYTE GetR()
 	{
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
+        BYTE	byteRed = SetShade( m_byteRed );
+				byteRed = SetTint( byteRed );
 		return byteRed;
 	}
     BYTE GetG()
 	{
-        BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
+        BYTE	byteGreen = SetShade( m_byteGreen );
+				byteGreen = SetTint( byteGreen );
 		return byteGreen;
 	}
     BYTE GetB()
 	{
-        BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
+        BYTE	byteBlue = SetShade( m_byteBlue );
+				byteBlue = SetTint( byteBlue );
 		return byteBlue;
 	}
 	
@@ -265,6 +263,7 @@ public:
 	void SetHEX(int color)
 	{
 		SetDefault();
+		
 		m_byteRed	= (color&0xFF0000) >> 16;
 		m_byteGreen = (color&0xFF00) >> 8;
 		m_byteBlue	= (color&0xFF);
@@ -272,15 +271,13 @@ public:
 	void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
 		SetDefault();
-		m_byteRed = red;
+
+		m_byteRed	= red;
 		m_byteGreen = green;
-		m_byteBlue = blue;
+		m_byteBlue	= blue;
 	}
 	void SetHSL(double nHue, double nSat, double nLum)
-	{
-  //// Given H,S,L in range of 0-1
-  //// Returns a Color (RGB struct) in range of 0-255
-  //public static ColorRGB HSL2RGB(double nHue, double nSat, double nLum)
+	{													// Given H,S,L in range of 0-1
         double v;
         double r,g,b;
         r = nLum;   // default to gray
@@ -337,55 +334,57 @@ public:
                           break;
               }
         }
-        m_byteRed = (BYTE)(r * 255.0f);
+        m_byteRed	= (BYTE)(r * 255.0f);
         m_byteGreen = (BYTE)(g * 255.0f);
-        m_byteBlue = (BYTE)(b * 255.0f);
-        m_byteRed = (BYTE)(r * 255);
+        m_byteBlue	= (BYTE)(b * 255.0f);
+        m_byteRed	= (BYTE)(r * 255);
         m_byteGreen = (BYTE)(g * 255);
-        m_byteBlue = (BYTE)(b * 255);
+        m_byteBlue	= (BYTE)(b * 255);
 	}
 	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
 	{
-		m_byteRed = (BYTE)(nRedPer * 255 / 100);
+		m_byteRed	= (BYTE)(nRedPer * 255 / 100);
 		m_byteGreen = (BYTE)(nGreenPer * 255/ 100);
-		m_byteBlue = (BYTE)(nBluePer * 255 / 100);
+		m_byteBlue	= (BYTE)(nBluePer * 255 / 100);
 	}
 	void SetHEXString(CString hex)
 	{
-		if( _T("auto") != hex )
+		if ( L"auto" != hex )
 		{
 			SetDefault();
 			int color	= Strings::ToColor(hex);
 			m_byteRed	= (color&0xFF);
-			m_byteGreen = (color&0xFF00) >>8;
-			m_byteBlue	=  (color&0xFF0000) >>16;
+			m_byteGreen = (color&0xFF00)	>> 8;
+			m_byteBlue	= (color&0xFF0000)	>> 16;
 		}
 		else
 			SetDefault();
 	}
 	CString ToHexColor(bool bBGR = false)
 	{
+		if (m_bAuto) return L"auto";
+
         BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
 		CString sRed;
-		if( byteRed < 0x10 )
-			sRed.AppendFormat( _T("0%x"), byteRed );
+		if ( byteRed < 0x10 )
+			sRed.AppendFormat( L"0%x", byteRed );
 		else
-			sRed.AppendFormat( _T("%x"), byteRed );
+			sRed.AppendFormat( L"%x", byteRed );
         BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
 		CString sGreen;
-		if( byteGreen < 0x10 )
-			sGreen.AppendFormat( _T("0%x"), byteGreen );
+		if ( byteGreen < 0x10 )
+			sGreen.AppendFormat( L"0%x", byteGreen );
 		else
-			sGreen.AppendFormat( _T("%x"), byteGreen );
+			sGreen.AppendFormat( L"%x", byteGreen );
         BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 		CString sBlue;
-		if( byteBlue < 0x10 )
-			sBlue.AppendFormat( _T("0%x"), byteBlue );
+		if ( byteBlue < 0x10 )
+			sBlue.AppendFormat( L"0%x", byteBlue );
 		else
-			sBlue.AppendFormat( _T("%x"), byteBlue );
+			sBlue.AppendFormat( L"%x", byteBlue );
 
 		if (bBGR)	return sBlue + sGreen + sRed ;
 		else		return sRed + sGreen + sBlue ;
@@ -396,9 +395,11 @@ public:
 		CString sResult;
         BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
-        BYTE byteGreen = SetShade( m_byteGreen );
+        
+		BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
-        BYTE byteBlue = SetShade( m_byteBlue );
+       
+		BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 
 		int nColor = (byteRed << 16) | (byteGreen << 8) | byteBlue;
@@ -418,209 +419,146 @@ public:
 	 }
 	static bool GetHighlightByColor( RtfColor oOutputColor,CString& oStr ) //todo
 	{
-		if( oOutputColor ==  RtfColor(0x000000) ) {oStr = _T("black");return true;}
-		else if( oOutputColor ==  RtfColor(0x0000FF) ) {oStr = _T("blue");return true;}
-		else if( oOutputColor ==  RtfColor(0x00FFFF) ) {oStr = _T("cyan");return true;}
-		else if( oOutputColor ==  RtfColor(0x00008B) ) {oStr = _T("darkBlue");return true;}
-		else if( oOutputColor ==  RtfColor(0x008B8B) ) {oStr = _T("darkCyan");return true;}
-		else if( oOutputColor ==  RtfColor(0xA9A9A9) ) {oStr = _T("darkGray");return true;}
-		else if( oOutputColor ==  RtfColor(0x006400) ) {oStr = _T("darkGreen");return true;}
-		else if( oOutputColor ==  RtfColor(0x800080) ) {oStr = _T("darkMagenta");return true;}
-		else if( oOutputColor ==  RtfColor(0x8B0000) ) {oStr = _T("darkRed");return true;}
-		else if( oOutputColor ==  RtfColor(0x808000) ) {oStr = _T("darkYellow");return true;}
-		else if( oOutputColor ==  RtfColor(0x00FF00) ) {oStr = _T("green");return true;}
-		else if( oOutputColor ==  RtfColor(0xD3D3D3) ) {oStr = _T("lightGray");return true;}
-		else if( oOutputColor ==  RtfColor(0xFF00FF) ) {oStr = _T("magenta");return true;}
-		else if( oOutputColor ==  RtfColor(0xFF0000) ) {oStr = _T("red");return true;}
-		else if( oOutputColor ==  RtfColor(0xFFFFFF) ) {oStr = _T("white");return true;}
-		else if( oOutputColor ==  RtfColor(0xFFFF00) ) {oStr = _T("yellow");return true;}
+		if		( oOutputColor ==  RtfColor(0x000000) ) {oStr = L"black";		return true;}
+		else if ( oOutputColor ==  RtfColor(0x0000FF) ) {oStr = L"blue";		return true;}
+		else if ( oOutputColor ==  RtfColor(0x00FFFF) ) {oStr = L"cyan";		return true;}
+		else if ( oOutputColor ==  RtfColor(0x00008B) ) {oStr = L"darkBlue";	return true;}
+		else if ( oOutputColor ==  RtfColor(0x008B8B) ) {oStr = L"darkCyan";	return true;}
+		else if ( oOutputColor ==  RtfColor(0xA9A9A9) ) {oStr = L"darkGray";	return true;}
+		else if ( oOutputColor ==  RtfColor(0x006400) ) {oStr = L"darkGreen";	return true;}
+		else if ( oOutputColor ==  RtfColor(0x800080) ) {oStr = L"darkMagenta";	return true;}
+		else if ( oOutputColor ==  RtfColor(0x8B0000) ) {oStr = L"darkRed";		return true;}
+		else if ( oOutputColor ==  RtfColor(0x808000) ) {oStr = L"darkYellow";	return true;}
+		else if ( oOutputColor ==  RtfColor(0x00FF00) ) {oStr = L"green";		return true;}
+		else if ( oOutputColor ==  RtfColor(0xD3D3D3) ) {oStr = L"lightGray";	return true;}
+		else if ( oOutputColor ==  RtfColor(0xFF00FF) ) {oStr = L"magenta";		return true;}
+		else if ( oOutputColor ==  RtfColor(0xFF0000) ) {oStr = L"red";			return true;}
+		else if ( oOutputColor ==  RtfColor(0xFFFFFF) ) {oStr = L"white";		return true;}
+		else if ( oOutputColor ==  RtfColor(0xFFFF00) ) {oStr = L"yellow";		return true;}
 		return false;
 	}
 	static RtfColor GetColorByPreset( CString oStr )
 	{
-		if( oStr == _T("aliceBlue") ) return RtfColor(240,248,255);
-		else if( oStr == _T("aniqueWhite") ) return RtfColor(250,235,215);
-		else if( oStr == _T("aqua") ) return RtfColor(0,255,255);
-		else if( oStr == _T("aquamarine") ) return RtfColor(127,255,212);
-		else if( oStr == _T("azure") ) return RtfColor(240,255,255);
-		else if( oStr == _T("beige") ) return RtfColor(245,245,220);
-		else if( oStr == _T("bisque") ) return RtfColor(255,228,196);
-		else if( oStr == _T("black") ) return RtfColor(0,0,0);
-		else if( oStr == _T("blanchedAlmond") ) return RtfColor(255,235,205);
-		else if( oStr == _T("blueViolet") ) return RtfColor(138,43,226);
-		else if( oStr == _T("brown") ) return RtfColor(165,42,42);
-		else if( oStr == _T("burlyWood") ) return RtfColor(222,184,135);
+		if		( oStr == L"aliceBlue" )	return RtfColor(240,248,255);
+		else if ( oStr == L"aniqueWhite" )	return RtfColor(250,235,215);
+		else if ( oStr == L"aqua" )			return RtfColor(0,255,255);
+		else if ( oStr == L"aquamarine" )	return RtfColor(127,255,212);
+		else if ( oStr == L"azure" )		return RtfColor(240,255,255);
+		else if ( oStr == L"beige" )		return RtfColor(245,245,220);
+		else if ( oStr == L"bisque" )		return RtfColor(255,228,196);
+		else if ( oStr == L"black" )		return RtfColor(0,0,0);
+		else if ( oStr == L"blanchedAlmond" ) return RtfColor(255,235,205);
+		else if ( oStr == L"blueViolet" )	return RtfColor(138,43,226);
+		else if ( oStr == L"brown" )		return RtfColor(165,42,42);
+		else if ( oStr == L"burlyWood" )	return RtfColor(222,184,135);
 
-		else if( oStr == _T("cyan") ) return RtfColor(0,255,255);
-		else if( oStr == _T("gold") ) return RtfColor(255,215,0);
-		else if( oStr == _T("green") ) return RtfColor(0,128,0);
-		else if( oStr == _T("grey") ) return RtfColor(128,128,128);
-		else if( oStr == _T("red") ) return RtfColor(255,0,0);
-		else if( oStr == _T("yellow") ) return RtfColor(255,255,0);
+		else if ( oStr == L"cyan" )			return RtfColor(0,255,255);
+		else if ( oStr == L"gold" )			return RtfColor(255,215,0);
+		else if ( oStr == L"green" )		return RtfColor(0,128,0);
+		else if ( oStr == L"grey" )			return RtfColor(128,128,128);
+		else if ( oStr == L"red" )			return RtfColor(255,0,0);
+		else if ( oStr == L"yellow" )		return RtfColor(255,255,0);
 
 		return RtfColor(0,0,0);
 	}
 	static CString GetPresetByColor( RtfColor oCol ) //стр. 3320
 	{
-		if( oCol == RtfColor(240,248,255)) return _T("aliceBlue");
-		else if( oCol ==  RtfColor(250,235,215)) return _T("aniqueWhite");
-		else if( oCol ==  RtfColor(0,255,255)) return _T("aqua");
-		else if( oCol ==  RtfColor(127,255,212)) return _T("aquamarine");
-		else if( oCol ==  RtfColor(240,255,255)) return _T("azure");
-		else if( oCol ==  RtfColor(245,245,220)) return _T("beige");
-		else if( oCol ==  RtfColor(255,228,196)) return _T("bisque");
-		else if( oCol ==  RtfColor(0,0,0)) return _T("black");
-		else if( oCol ==  RtfColor(255,235,205)) return _T("blanchedAlmond");
-		else if( oCol ==  RtfColor(138,43,226)) return _T("blueViolet");
-		else if( oCol ==  RtfColor(165,42,42)) return _T("brown");
-		else if( oCol ==  RtfColor(222,184,135)) return _T("burlyWood");
+		if		( oCol == RtfColor(240,248,255))	return L"aliceBlue";
+		else if ( oCol == RtfColor(250,235,215))	return L"aniqueWhite";
+		else if ( oCol == RtfColor(0,255,255))		return L"aqua";
+		else if ( oCol == RtfColor(127,255,212))	return L"aquamarine";
+		else if ( oCol == RtfColor(240,255,255))	return L"azure";
+		else if ( oCol == RtfColor(245,245,220))	return L"beige";
+		else if ( oCol == RtfColor(255,228,196))	return L"bisque";
+		else if ( oCol == RtfColor(0,0,0))			return L"black";
+		else if ( oCol == RtfColor(255,235,205))	return L"blanchedAlmond";
+		else if ( oCol == RtfColor(138,43,226))		return L"blueViolet";
+		else if ( oCol == RtfColor(165,42,42))		return L"brown";
+		else if ( oCol == RtfColor(222,184,135))	return L"burlyWood";
 
-		else if( oCol ==  RtfColor(0,255,255)) return _T("cyan");
-		else if( oCol ==  RtfColor(255,215,0)) return _T("gold");
-		else if( oCol ==  RtfColor(0,128,0)) return _T("green");
-		else if( oCol ==  RtfColor(128,128,128)) return _T("grey");
-		else if( oCol ==  RtfColor(255,0,0)) return _T("red");
-		else if( oCol ==  RtfColor(255,255,0)) return _T("yellow");
+		else if ( oCol == RtfColor(0,255,255))		return L"cyan";
+		else if ( oCol == RtfColor(255,215,0))		return L"gold";
+		else if ( oCol == RtfColor(0,128,0))		return L"green";
+		else if ( oCol == RtfColor(128,128,128))	return L"grey";
+		else if ( oCol == RtfColor(255,0,0))		return L"red";
+		else if ( oCol == RtfColor(255,255,0))		return L"yellow";
 
-		return _T("black");
+		return L"black";
 	}
-	static bool GetThemeByString( CString sTheme ,ThemeColor & oOutTheme )
+	static bool GetThemeByString( CString sTheme, _ThemeColor & oOutTheme )
 	{
-		if( sTheme == _T("accent1") )
-		{oOutTheme = caccentone; return true;}
-		else if( sTheme ==  _T("accent2") )
-			{oOutTheme = caccenttwo;  return true;}
-		else if( sTheme == _T("accent3") )
-			{oOutTheme = caccentthree;  return true;}
-		else if( sTheme == _T("accent4"))
-			{oOutTheme = caccentfour;  return true;}
-		else if( sTheme == _T("accent5") )
-			{oOutTheme = caccentfive;  return true;}
-		else if( sTheme == _T("accent6") )
-			{oOutTheme = caccentsix;  return true;}
-		else if( sTheme == _T("bg1") )
-			{oOutTheme = cbackgroundone;  return true;}
-		else if( sTheme == _T("bg2"))
-			{oOutTheme = cbackgroundtwo;  return true;}
-		else if( sTheme == _T("dk1"))
-			{oOutTheme = cmaindarkone;  return true;}
-		else if( sTheme == _T("dk2"))
-			{oOutTheme = cmaindarktwo;  return true;}
-		else if( sTheme == _T("folHlink") )
-			{oOutTheme = cfollowedhyperlink;  return true;}
-		else if( sTheme == _T("hlink") )
-			{oOutTheme = chyperlink;  return true;}
-		else if( sTheme == _T("lt1") )
-			{oOutTheme = cmainlightone;  return true;}
-		else if( sTheme == _T("lt2") )
-			{oOutTheme = cmainlighttwo;  return true;}
-		else if( sTheme == _T("phClr") )
-			{oOutTheme = cmainlighttwo;  return true;}
-		else if( sTheme ==  _T("tx1") )
-			{oOutTheme = ctextone;  return true;}
-		else if( sTheme =  _T("tx2") )
-			{oOutTheme = ctexttwo;  return true;}
+		if		( sTheme == L"accent1" )	{oOutTheme = caccentone;		return true;}
+		else if ( sTheme == L"accent2" )	{oOutTheme = caccenttwo;		return true;}
+		else if ( sTheme == L"accent3" )	{oOutTheme = caccentthree;		return true;}
+		else if ( sTheme == L"accent4" )	{oOutTheme = caccentfour;		return true;}
+		else if ( sTheme == L"accent5" )	{oOutTheme = caccentfive;		return true;}
+		else if ( sTheme == L"accent6" )	{oOutTheme = caccentsix;		return true;}
+		else if ( sTheme == L"bg1" )		{oOutTheme = cbackgroundone;	return true;}
+		else if ( sTheme == L"bg2" )		{oOutTheme = cbackgroundtwo;	return true;}
+		else if ( sTheme == L"dk1" )		{oOutTheme = cmaindarkone;		return true;}
+		else if ( sTheme == L"dk2" )		{oOutTheme = cmaindarktwo;		return true;}
+		else if ( sTheme == L"folHlink" )	{oOutTheme = cfollowedhyperlink;return true;}
+		else if ( sTheme == L"hlink" )		{oOutTheme = chyperlink;		return true;}
+		else if ( sTheme == L"lt1" )		{oOutTheme = cmainlightone;		return true;}
+		else if ( sTheme == L"lt2" )		{oOutTheme = cmainlighttwo;		return true;}
+		else if ( sTheme == L"phClr" )		{oOutTheme = cmainlighttwo;		return true;}
+		else if ( sTheme ==  L"tx1" )		{oOutTheme = ctextone;			return true;}
+		else if ( sTheme =  L"tx2" )		{oOutTheme = ctexttwo;			return true;}
 		return false;
 	}
-	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val ,ThemeColor & oOutTheme )
+	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val, _ThemeColor & oOutTheme )
 	{
         switch(val)
 		{
-		case SimpleTypes::shemecolorvalAccent1:  {oOutTheme = caccentone; return true;}			
-		case SimpleTypes::shemecolorvalAccent2:  {oOutTheme = caccenttwo;  return true;}		
-		case SimpleTypes::shemecolorvalAccent3:  {oOutTheme = caccentthree;  return true;}				
-		case SimpleTypes::shemecolorvalAccent4:  {oOutTheme = caccentfour;  return true;}			
-		case SimpleTypes::shemecolorvalAccent5:  {oOutTheme = caccentfive;  return true;}			
-		case SimpleTypes::shemecolorvalAccent6:  {oOutTheme = caccentsix;  return true;}				
-		case SimpleTypes::shemecolorvalBg1:      {oOutTheme = cbackgroundone;  return true;}				
-		case SimpleTypes::shemecolorvalBg2:      {oOutTheme = cbackgroundtwo;  return true;}				
-		case SimpleTypes::shemecolorvalDk1:      {oOutTheme = cmaindarkone;  return true;}		
-		case SimpleTypes::shemecolorvalDk2:      {oOutTheme = cmaindarktwo;  return true;}				
-		case SimpleTypes::shemecolorvalFolHlink: {oOutTheme = cfollowedhyperlink;  return true;}			
-		case SimpleTypes::shemecolorvalHlink:    {oOutTheme = chyperlink;  return true;}				
-		case SimpleTypes::shemecolorvalLt1:      {oOutTheme = cmainlightone;  return true;}			
-		case SimpleTypes::shemecolorvalLt2:      {oOutTheme = cmainlighttwo;  return true;}			
-		case SimpleTypes::shemecolorvalPhClr:    {oOutTheme = cmainlighttwo;  return true;} //???			
-		case SimpleTypes::shemecolorvalTx1:      {oOutTheme = ctextone;  return true;}			
-		case SimpleTypes::shemecolorvalTx2:      {oOutTheme = ctexttwo;  return true;}				
-		default :								 {oOutTheme = caccentone; return true;}
+		case SimpleTypes::shemecolorvalAccent1:  {oOutTheme = caccentone;			return true;}			
+		case SimpleTypes::shemecolorvalAccent2:  {oOutTheme = caccenttwo;			return true;}		
+		case SimpleTypes::shemecolorvalAccent3:  {oOutTheme = caccentthree;			return true;}				
+		case SimpleTypes::shemecolorvalAccent4:  {oOutTheme = caccentfour;			return true;}			
+		case SimpleTypes::shemecolorvalAccent5:  {oOutTheme = caccentfive;			return true;}			
+		case SimpleTypes::shemecolorvalAccent6:  {oOutTheme = caccentsix;			return true;}				
+		case SimpleTypes::shemecolorvalBg1:      {oOutTheme = cbackgroundone;		return true;}				
+		case SimpleTypes::shemecolorvalBg2:      {oOutTheme = cbackgroundtwo;		return true;}				
+		case SimpleTypes::shemecolorvalDk1:      {oOutTheme = cmaindarkone;			return true;}		
+		case SimpleTypes::shemecolorvalDk2:      {oOutTheme = cmaindarktwo;			return true;}				
+		case SimpleTypes::shemecolorvalFolHlink: {oOutTheme = cfollowedhyperlink;	return true;}			
+		case SimpleTypes::shemecolorvalHlink:    {oOutTheme = chyperlink;			return true;}				
+		case SimpleTypes::shemecolorvalLt1:      {oOutTheme = cmainlightone;		return true;}			
+		case SimpleTypes::shemecolorvalLt2:      {oOutTheme = cmainlighttwo;		return true;}			
+		case SimpleTypes::shemecolorvalPhClr:    {oOutTheme = cmainlighttwo;		return true;} //???			
+		case SimpleTypes::shemecolorvalTx1:      {oOutTheme = ctextone;				return true;}			
+		case SimpleTypes::shemecolorvalTx2:      {oOutTheme = ctexttwo;				return true;}				
+		default :								 {oOutTheme = caccentone;			return true;}
 		}
 		
 		return false;
 	}
-	static bool GetStringByTheme( CString sTheme , ThemeColor& oOutTheme )
+	static bool GetStringByTheme( CString sTheme , _ThemeColor& oOutTheme )
 	{
-		if( _T("accent1") == sTheme )
-		{oOutTheme = caccentone; return true;}
-		else if( _T("accent2") == sTheme )
-			{oOutTheme =  caccenttwo; return true;}
-		else if( _T("accent3") == sTheme )
-			{oOutTheme =  caccentthree; return true;}
-		else if( _T("accent4") == sTheme )
-			{oOutTheme =  caccentfour; return true;}
-		else if( _T("accent5") == sTheme )
-			{oOutTheme =  caccentfive; return true;}
-		else if( _T("accent6") == sTheme )
-			{oOutTheme =  caccentsix; return true;}
-		else if( _T("bg1") == sTheme )
-			{oOutTheme =  cbackgroundone; return true;}
-		else if( _T("bg2") == sTheme )
-			{oOutTheme =  cbackgroundtwo; return true;}
-		else if( _T("dk1") == sTheme )
-			{oOutTheme =  cmaindarkone; return true;}
-		else if( _T("dk2") == sTheme )
-			{oOutTheme =  cmaindarktwo; return true;}
-		else if( _T("folHlink") == sTheme )
-			{oOutTheme =  cfollowedhyperlink; return true;}
-		else if( _T("hlink") == sTheme )
-			{oOutTheme =  chyperlink; return true;}
-		else if( _T("lt1") == sTheme )
-			{oOutTheme =  cmainlightone; return true;}
-		else if( _T("lt2") == sTheme )
-			{oOutTheme =  cmainlighttwo; return true;}
-		else if( _T("phClr") == sTheme )
-			{oOutTheme =  cmainlighttwo; return true;}
-		else if( _T("tx1") == sTheme )
-			{oOutTheme =  ctextone; return true;}
-		else if( _T("tx2") == sTheme )
-			{oOutTheme =  ctexttwo; return true;}
+		if		( L"accent1"	== sTheme )	{oOutTheme = caccentone;		return true;}
+		else if ( L"accent2"	== sTheme )	{oOutTheme = caccenttwo;		return true;}
+		else if ( L"accent3"	== sTheme )	{oOutTheme = caccentthree;		return true;}
+		else if ( L"accent4"	== sTheme )	{oOutTheme = caccentfour;		return true;}
+		else if ( L"accent5"	== sTheme )	{oOutTheme = caccentfive;		return true;}
+		else if ( L"accent6"	== sTheme )	{oOutTheme = caccentsix;		return true;}
+		else if ( L"bg1"		== sTheme )	{oOutTheme = cbackgroundone;	return true;}
+		else if ( L"bg2"		== sTheme )	{oOutTheme = cbackgroundtwo;	return true;}
+		else if ( L"dk1"		== sTheme )	{oOutTheme = cmaindarkone;		return true;}
+		else if ( L"dk2"		== sTheme )	{oOutTheme = cmaindarktwo;		return true;}
+		else if ( L"folHlink"	== sTheme )	{oOutTheme = cfollowedhyperlink;return true;}
+		else if ( L"hlink"		== sTheme )	{oOutTheme = chyperlink;		return true;}
+		else if ( L"lt1"		== sTheme )	{oOutTheme = cmainlightone;		return true;}
+		else if ( L"lt2"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
+		else if ( L"phClr"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
+		else if ( L"tx1"		== sTheme )	{oOutTheme = ctextone;			return true;}
+		else if ( L"tx2"		== sTheme )	{oOutTheme = ctexttwo;			return true;}
 		return false;
 	}
+
 	CString GetHighLight()
 	{
-		//CString sBlack = _T("000000");
-		//CString blue = _T("0000FF");
-		//CString cyan = _T("00FFFF");
-		//CString darkBlue = _T("00008B");
-		//CString darkCyan = _T("008B8B");
-		//CString darkGray = _T("A9A9A9");
-		//CString darkGreen = _T("006400");
-		//CString darkMagenta = _T("800080");
-		//CString darkRed = _T("8B0000");
-		//CString darkYellow = _T("808000");
-		//CString green = _T("00FF00");
-		//CString lightGray = _T("D3D3D3");
-		//CString magenta = _T("FF00FF");
-		//CString red = _T("FF0000");
-		//CString white = _T("FFFFFF");
-		//CString yellow = _T("FFFF00");
+		if (m_bAuto) return L"auto";
 
 		std::vector< RtfColor > sColors;
-		//sColors.push_back( RtfColor(sBlack) );
-		//sColors.push_back( RtfColor(blue) );
-		//sColors.push_back( RtfColor(cyan) );
-		//sColors.push_back( RtfColor(darkBlue) );
-		//sColors.push_back( RtfColor(darkCyan) );
-		//sColors.push_back( RtfColor(darkGray) );
-		//sColors.push_back( RtfColor(darkMagenta) );
-		//sColors.push_back( RtfColor(darkRed) );
-		//sColors.push_back( RtfColor(darkYellow) );
-		//sColors.push_back( RtfColor(green) );
-		//sColors.push_back( RtfColor(lightGray) );
-		//sColors.push_back( RtfColor(magenta) );
-		//sColors.push_back( RtfColor(red) );
-		//sColors.push_back( RtfColor(white) );
-		//sColors.push_back( RtfColor(yellow) );
 
 		sColors.push_back( RtfColor( 0x000000 ) );
 		sColors.push_back( RtfColor( 0x0000FF ) );
@@ -639,23 +577,6 @@ public:
 		sColors.push_back( RtfColor( 0xFFFFFF ) );
 		sColors.push_back( RtfColor( 0xFFFF00 ) );
 
-		//CString sBlack = _T("000000");
-		//CString blue = _T("0000FF");
-		//CString cyan = _T("00FFFF");
-		//CString darkBlue = _T("00008B");
-		//CString darkCyan = _T("008B8B");
-		//CString darkGray = _T("A9A9A9");
-		//CString darkGreen = _T("006400");
-		//CString darkMagenta = _T("800080");
-		//CString darkRed = _T("8B0000");
-		//CString darkYellow = _T("808000");
-		//CString green = _T("00FF00");
-		//CString lightGray = _T("D3D3D3");
-		//CString magenta = _T("FF00FF");
-		//CString red = _T("FF0000");
-		//CString white = _T("FFFFFF");
-		//CString yellow = _T("FFFF00");
-
         long nMinDelta = 0x7FFFFFFF; //MAXLONG;
 		int nIndex = -1;
 		for( int i = 0; i < (int)sColors.size(); i++ )
@@ -663,7 +584,7 @@ public:
 			int nCurDelta = ( sColors[i].GetR() - GetR() ) * ( sColors[i].GetR() - GetR() ) + 
 							( sColors[i].GetG() - GetG() ) * ( sColors[i].GetG() - GetG() ) + 
 							( sColors[i].GetB() - GetB() ) * ( sColors[i].GetB() - GetB() );
-			if( nCurDelta < nMinDelta )
+			if ( nCurDelta < nMinDelta )
 			{
 				nIndex = i;
 				nMinDelta = nCurDelta;
@@ -671,57 +592,57 @@ public:
 		}
 		switch ( nIndex )
 		{
-			case 0: return _T("black");
-			case 1: return _T("blue");
-			case 2: return _T("cyan");
-			case 3: return _T("darkBlue");
-			case 4: return _T("darkCyan");
-			case 5: return _T("darkGray");
-			case 6: return _T("darkGreen");
-			case 7: return _T("darkMagenta");
-			case 8: return _T("darkRed");
-			case 9: return _T("darkYellow");
-			case 10: return _T("green");
-			case 11: return _T("lightGray");
-			case 12: return _T("magenta");
-			case 13: return _T("red");
-			case 14: return _T("white");
-			case 15: return _T("yellow");
+			case 0: return L"black";
+			case 1: return L"blue";
+			case 2: return L"cyan";
+			case 3: return L"darkBlue";
+			case 4: return L"darkCyan";
+			case 5: return L"darkGray";
+			case 6: return L"darkGreen";
+			case 7: return L"darkMagenta";
+			case 8: return L"darkRed";
+			case 9: return L"darkYellow";
+			case 10: return L"green";
+			case 11: return L"lightGray";
+			case 12: return L"magenta";
+			case 13: return L"red";
+			case 14: return L"white";
+			case 15: return L"yellow";
 		}
-		return _T("none");
+		return L"none";
 	}
 private:
 	CString WriteOOXAttribute( CString sParam )
 	 {
 		 CString sResult;
-         if( m_eTheme == TC_NONE )
+         if ( m_eTheme == TC_NONE )
          {
-             if( _T("") == sParam )
+             if ( L"" == sParam )
              {
-                 sResult = _T("color = \"");
-                 sResult.Append(ToHexColor());
-                 sResult.Append(_T("\""));
+                 sResult = L"color = \"";
+                 sResult += ToHexColor();
+                 sResult += L"\"";
              }
-             else if( _T("Fill") == sParam )
+             else if ( L"Fill" == sParam )
              {
-                 sResult = _T("fill = \"");
-                 sResult.Append(ToHexColor());
-                 sResult.Append(_T("\""));
+                 sResult = L"fill = \"";
+                 sResult += ToHexColor();
+                 sResult += L"\"";
              }
          }
          else
          {
              CString sTheme;
-             if( true == GetStringByTheme( sTheme, m_eTheme ) )
+             if ( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-				sResult += _T("theme") + sParam + _T("Color");
-				sResult += _T("=\"") + sTheme +_T("\"");
+				sResult += L"theme" + sParam + L"Color";
+				sResult += L"=\"" + sTheme +L"\"";
 				
-				sResult += _T(" theme") + sParam + _T("Shade");
-				sResult.AppendFormat(_T("=\"%d\""), m_byteShade);
+				sResult += L" theme" + sParam + L"Shade";
+				sResult.AppendFormat(L"=\"%d\"", m_byteShade);
 				
-				sResult += _T(" theme") + sParam + _T("Tint"); 
-				sResult.AppendFormat(_T("=\"%d\""), m_byteTint);   
+				sResult += L" theme" + sParam + L"Tint"; 
+				sResult.AppendFormat(L"=\"%d\"", m_byteTint);   
 			 }
          }
          return sResult;
@@ -731,7 +652,7 @@ private:
 class RtfShading
 {
 public: 
-	typedef enum 
+	enum _ShadingType
 	{	st_none, 
 		st_chbghoriz,	//bghoriz	Specifies a horizontal background pattern for the paragraph.
 		st_chbgvert,	//bgvert	Specifies a vertical background pattern for the paragraph.
@@ -746,9 +667,8 @@ public:
 		st_chbgdkcross,	//bgdkcross	Specifies a dark cross background pattern for the paragraph.
 		st_chbgdkdcross,	//bgdkdcross	Specifies a dark diagonal cross background pattern for the paragraph.
 		st_clshdrawnil,	//clshdrawnil	Specifies a dark diagonal cross background pattern for the paragraph.
-	}ShadingType;
+	}	m_eType;
 
-	ShadingType m_eType;
 	int m_nValue;
 	int m_nForeColor;
 	int m_nBackColor;
@@ -787,7 +707,7 @@ public:
 	void Merge( RtfShading& oParPr )
 	{
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if( st_none != oParPr.m_eType || PROP_DEF != oParPr.m_nValue || PROP_DEF != oParPr.m_nForeColor || PROP_DEF != oParPr.m_nBackColor )
+		if ( st_none != oParPr.m_eType || PROP_DEF != oParPr.m_nValue || PROP_DEF != oParPr.m_nForeColor || PROP_DEF != oParPr.m_nBackColor )
 		{
 			m_eType			= oParPr.m_eType;
 			m_nValue		= oParPr.m_nValue;
@@ -850,41 +770,40 @@ public:
 class RtfBorder
 {
 public: 
-	typedef enum 
+	enum _BorderType
 	{ 
 		bt_none,
-		bt_brdrs,	//brdrs	Single-thickness border.
-		bt_brdrth,	//brdrth	Double-thickness border.
-		bt_brdrsh,	//brdrsh	Shadowed border.
-		bt_brdrdb,	//brdrdb	Double border.
-		bt_brdrdot,	//brdrdot	Dotted border.
-		bt_brdrdash,	//brdrdash	Dashed border.
-		bt_brdrhair,	//brdrhair	Hairline border.
-		bt_brdrdashsm,	//brdrdashsm	Dashed border (small).
-		bt_brdrdashd,	//brdrdashd	Dot-dashed border.
-		bt_brdrdashdd,	//brdrdashdd	Dot-dot-dashed border.
-		bt_brdrdashdot,	//brdrdashdot	Dot-dashed border (alias for \brdrdashd read but not written by Word)
-		bt_brdrinset,	//brdrinset	Inset border.
-		bt_brdrnone,	//brdrnone	No border.
-		bt_brdroutset,	//brdroutset	Outset border.
-		bt_brdrtriple,	//brdrtriple	Triple border.
-		bt_brdrtnthsg,	//brdrtnthsg	Thick-thin border (small).
-		bt_brdrthtnsg,	//brdrthtnsg	Thin-thick border (small).
+		bt_brdrs,			//brdrs	Single-thickness border.
+		bt_brdrth,			//brdrth	Double-thickness border.
+		bt_brdrsh,			//brdrsh	Shadowed border.
+		bt_brdrdb,			//brdrdb	Double border.
+		bt_brdrdot,			//brdrdot	Dotted border.
+		bt_brdrdash,		//brdrdash	Dashed border.
+		bt_brdrhair,		//brdrhair	Hairline border.
+		bt_brdrdashsm,		//brdrdashsm	Dashed border (small).
+		bt_brdrdashd,		//brdrdashd	Dot-dashed border.
+		bt_brdrdashdd,		//brdrdashdd	Dot-dot-dashed border.
+		bt_brdrdashdot,		//brdrdashdot	Dot-dashed border (alias for \brdrdashd read but not written by Word)
+		bt_brdrinset,		//brdrinset	Inset border.
+		bt_brdrnone,		//brdrnone	No border.
+		bt_brdroutset,		//brdroutset	Outset border.
+		bt_brdrtriple,		//brdrtriple	Triple border.
+		bt_brdrtnthsg,		//brdrtnthsg	Thick-thin border (small).
+		bt_brdrthtnsg,		//brdrthtnsg	Thin-thick border (small).
 		bt_brdrtnthtnsg,	//brdrtnthtnsg	Thin-thick thin border (small).
-		bt_brdrtnthmg,	//brdrtnthmg	Thick-thin border (medium).
-		bt_brdrthtnmg,	//brdrthtnmg	Thin-thick border (medium).
+		bt_brdrtnthmg,		//brdrtnthmg	Thick-thin border (medium).
+		bt_brdrthtnmg,		//brdrthtnmg	Thin-thick border (medium).
 		bt_brdrtnthtnmg,	//brdrtnthtnmg	Thin-thick thin border (medium).
-		bt_brdrtnthlg,	//brdrtnthlg	Thick-thin border (large).
-		bt_brdrthtnlg,	//brdrthtnlg	Thin-thick border (large).
+		bt_brdrtnthlg,		//brdrtnthlg	Thick-thin border (large).
+		bt_brdrthtnlg,		//brdrthtnlg	Thin-thick border (large).
 		bt_brdrtnthtnlg,	//brdrtnthtnlg	Thin-thick-thin border (large).
-		bt_brdrwavy,	//brdrwavy	Wavy border.
-		bt_brdrwavydb,	//brdrwavydb	Double wavy border.
+		bt_brdrwavy,		//brdrwavy	Wavy border.
+		bt_brdrwavydb,		//brdrwavydb	Double wavy border.
 		bt_brdrdashdotstr,	//brdrdashdotstr	Striped border.
-		bt_brdremboss,	//brdremboss	Embossed border.
-		bt_brdrengrave,	//brdrengrave	Engraved border.
-	} BorderType;
-
-	BorderType m_eType;
+		bt_brdremboss,		//brdremboss	Embossed border.
+		bt_brdrengrave,		//brdrengrave	Engraved border.
+	}	m_eType;
+	
 	int m_nWidth;
 	int m_nSpace;
 	int m_nColor;
@@ -916,46 +835,47 @@ public:
 	void SetDefault( )
 	{
 		DEFAULT_PROPERTY_DEF( m_eType, bt_none )
-		DEFAULT_PROPERTY( m_nWidth )
-		DEFAULT_PROPERTY( m_nSpace )
-		DEFAULT_PROPERTY( m_nColor )
+		DEFAULT_PROPERTY	( m_nWidth )
+		DEFAULT_PROPERTY	( m_nSpace )
+		DEFAULT_PROPERTY	( m_nColor )
 	}
 	void SetEmpty( )
 	{
-		m_eType = bt_brdrnone;
-		m_nWidth = 0;
-		m_nSpace = 0;
-		m_nColor = PROP_DEF;
+		m_eType		= bt_brdrnone;
+		m_nWidth	= 0;
+		m_nSpace	= 0;
+		m_nColor	= PROP_DEF;
 	}
 	void Merge( RtfBorder& oBorPr )
 	{
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if( bt_none != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
+		if ( bt_none != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
 		{
-			m_eType = oBorPr.m_eType;
-			m_nWidth = oBorPr.m_nWidth;
-			m_nSpace = oBorPr.m_nSpace;
-			m_nColor = oBorPr.m_nColor;
+			m_eType		= oBorPr.m_eType;
+			m_nWidth	= oBorPr.m_nWidth;
+			m_nSpace	= oBorPr.m_nSpace;
+			m_nColor	= oBorPr.m_nColor;
 		}
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
-	static bool GetStringRtfByType( BorderType nValue, CString& sValue )
+	
+	static bool GetStringRtfByType( _BorderType nValue, CString& sValue )
 	{
-		sValue = _T("\\brdrs");
+		sValue = L"\\brdrs";
 		//switch( nValue )
 		//{
-		//default: sResult = _T("\\brdrs"); break;
+		//default: sResult = L"\\brdrs"; break;
 		////}
 		return false;
 	}
-	static CString GetStringOOXByType( BorderType nValue, CString& sValue )
+	static CString GetStringOOXByType( _BorderType nValue, CString& sValue )
 	{
 		CString sResult;
-		sResult = _T("single");
+		sResult = L"single";
 		//switch( nValue )
 		//{
-		//default: sResult = _T("single"); break;
+		//default: sResult = L"single"; break;
 		//}
 		return sResult;
 	}
@@ -964,25 +884,25 @@ public:
 class RtfTab : public IRenderableProperty
 {
 public:
-	typedef enum 
+	enum _TabLeader
 	{	tl_none,
 		tl_dot ,	//tldot 	Absolute position tab with a leading that uses period symbols (.....).
 		tl_mdot ,	//tlmdot 	Absolute position tab with a leading that uses middle dot symbols (•••••).
 		tl_hyph ,	//tlhyph 	Absolute position tab with a leading that uses minus symbols (-----).
-		tl_ul ,	//tlul 	Absolute position tab with a leading that uses underscore symbols (_____).
-	}TabLeader;
-	typedef enum 
+		tl_ul ,		//tlul 		Absolute position tab with a leading that uses underscore symbols (_____).
+	}m_eLeader;
+
+	enum _TabKind
 	{	tk_none,
 		tk_tql,
-		tk_tqr,	//tqr	Flush-right tab.
-		tk_tqc,	//tqc	Centered tab.
+		tk_tqr,		//tqr	Flush-right tab.
+		tk_tqc,		//tqc	Centered tab.
 		tk_tqdec,	//tqdec	Decimal tab.
-		tk_tqbar//tbN	Bar tab position in twips from the left margin.
-	}TabKind;
+		tk_tqbar	//tbN	Bar tab position in twips from the left margin.
+	}	m_eKind;
 	
 	int m_nTab;		//tbN or \txN	Tab position in twips from the left margin.
-	TabLeader m_eLeader;
-	TabKind m_eKind;
+
 	RtfTab()
 	{
 		SetDefault();
@@ -997,9 +917,9 @@ public:
 	}
 	void SetDefault()
 	{
-		DEFAULT_PROPERTY( m_nTab );
-		DEFAULT_PROPERTY_DEF( m_eLeader, tl_none );
-		DEFAULT_PROPERTY_DEF( m_eKind, tk_tql );
+		DEFAULT_PROPERTY	( m_nTab );
+		DEFAULT_PROPERTY_DEF( m_eLeader,	tl_none );
+		DEFAULT_PROPERTY_DEF( m_eKind,		tk_tql );
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
@@ -1049,57 +969,74 @@ public:
 		}
 
 		CString sResult;
-		if( !sTabs.IsEmpty() )
-            sResult += _T("<w:tabs>") + sTabs + _T("</w:tabs>");
+		if ( !sTabs.IsEmpty() )
+            sResult += L"<w:tabs>" + sTabs + L"</w:tabs>";
 
 		return sResult;
 	}
 };
+//----------------------------------------------------------------------------------------------------------
+class RtfCharProperty;
+typedef boost::shared_ptr<RtfCharProperty> RtfCharPropertyPtr;
+
 class RtfCharProperty: public IRenderableProperty
 {
 public: 
-	typedef enum {uls_none, uls_Single, uls_Dotted,uls_Dashed ,uls_Dash_dotted,uls_Dash_dot_dotted,uls_Double,uls_Heavy_wave,uls_Long_dashe,uls_Stops_all,uls_Thick,uls_Thick_dotted,uls_Thick_dashed,uls_Thick_dash_dotted,uls_Thick_dash_dot_dotted,uls_Thick_long_dashed,uls_Double_wave,uls_Word,uls_Wave} UnderlineStyle;
+	enum _UnderlineStyle {uls_none, uls_Single, uls_Dotted,uls_Dashed ,uls_Dash_dotted,uls_Dash_dot_dotted,uls_Double,uls_Heavy_wave,uls_Long_dashe,uls_Stops_all,uls_Thick,uls_Thick_dotted,uls_Thick_dashed,uls_Thick_dash_dotted,uls_Thick_dash_dot_dotted,uls_Thick_long_dashed,uls_Double_wave,uls_Word,uls_Wave};
 
 	int m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
 
-	int m_bBold;		//b*	Bold.
-	int m_bCaps;		//caps*	All capitals.
-	int m_nScalex;		//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
+	int m_bBold;			//b*	Bold.
+	int m_bCaps;			//caps*	All capitals.
+	int m_nScalex;			//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
 	int m_nCharStyle;		//csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
-	int m_nDown;		//dnN	Move down N half-points (default is 6).
-	int m_bEmbo;		//embo*	Emboss.
-	int m_nCharacterSpacing;		//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
-	int m_nFitText;		//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
-	int m_nFont;		//fN	Font number. N refers to an entry in the font table.
-	int m_nFont2; //
-	int m_nFont3; //
+	int m_nDown;			//dnN	Move down N half-points (default is 6).
+	int m_bEmbo;			//embo*	Emboss.
+	int m_nCharacterSpacing;//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
+	int m_nFitText;			//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
+	int m_nFont;			//fN	Font number. N refers to an entry in the font table.
+	int m_nFont2; 
+	int m_nFont3; 
 	int m_nFontSize;		//fsN	Font size in half-points (default is 24).
-	int m_bItalic;		//i*	Italic.
-	int m_bImprint;		//impr*	Engrave (imprint).
-	int m_nKerning;		//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
+	int m_bItalic;			//i*	Italic.
+	int m_bImprint;			//impr*	Engrave (imprint).
+	int m_nKerning;			//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
 	int m_bRightToLeft;		//rtlch	Character data following this control word is treated as a right-to-left run.
 	int m_nLanguage;
 	int m_nComplexScript;
-	int m_bOutline;		//outl*	Outline.
-	int m_bScaps;		//scaps*	Small capitals.
-	int m_bShadow;		//shad*	Shadow.
-	int m_bStrike;		//strike*	Strikethrough.
-	int m_nStriked;		//striked1	Double strikethrough. \striked0 turns it off.
-	int m_bSub;		//sub	Subscripts text and shrinks point size according to font information.
-	int m_bSuper;		//super	Superscripts text and shrinks point size according to font information.
-	int m_bHidden;		//v*	Hidden text.
-	int m_nHightlited; //
+	int m_bOutline;			//outl*	Outline.
+	int m_bScaps;			//scaps*	Small capitals.
+	int m_bShadow;			//shad*	Shadow.
+	int m_bStrike;			//strike*	Strikethrough.
+	int m_nStriked;			//striked1	Double strikethrough. \striked0 turns it off.
+	int m_bSub;				//sub	Subscripts text and shrinks point size according to font information.
+	int m_bSuper;			//super	Superscripts text and shrinks point size according to font information.
+	int m_bHidden;			//v*	Hidden text.
+	int m_nHightlited; 
 
-	int m_nForeColor; //
+	int				m_nForeColor; 
 
-//		int m_bUnderline;		//ul*	Continuous underline. \ul0 turns off all underlining.
-	UnderlineStyle m_eUnderStyle; //
-	int m_nUnderlineColor; //
-	int m_nUp;		//upN	Move up N half-points (default is 6).
+	int				m_nCrAuth;
+	int				m_nCrDate;
 
+	int				m_nDeleted;
+	int				m_nRevised;
+	int				m_nRevauth;
+	int				m_nRevdttm;
+	int				m_nRevauthDel;
+	int				m_nRevdttmDel;
 
-	RtfBorder m_poBorder;
-	RtfShadingChar m_poShading;
+	int				m_nInsrsid;
+
+//	int				m_bUnderline;					//ul*	Continuous underline. \ul0 turns off all underlining.
+	_UnderlineStyle	m_eUnderStyle;		//
+	int				m_nUnderlineColor;	//
+	int				m_nUp;				//upN	Move up N half-points (default is 6).
+
+	RtfCharPropertyPtr	m_pOldCharProp;
+	RtfBorder			m_poBorder;
+	RtfShadingChar		m_poShading;
+	
 	bool operator==( const RtfCharProperty& oChar )
 	{
 		return m_nAnimated == oChar.m_nAnimated && m_bBold == oChar.m_bBold && m_bCaps == oChar.m_bCaps && m_nScalex == oChar.m_nScalex && 
@@ -1110,7 +1047,9 @@ public:
 				m_bShadow == oChar.m_bShadow && m_bStrike == oChar.m_bStrike && m_bSub == oChar.m_bSub && m_bSuper == oChar.m_bSuper && 
 				m_bHidden == oChar.m_bHidden && m_nHightlited == oChar.m_nHightlited && m_nForeColor == oChar.m_nForeColor && 
 				m_eUnderStyle == oChar.m_eUnderStyle && m_nUnderlineColor == oChar.m_nUnderlineColor && m_nUp == oChar.m_nUp &&
-				m_poBorder == oChar.m_poBorder && m_poShading == oChar.m_poShading;
+				m_poBorder == oChar.m_poBorder && m_poShading == oChar.m_poShading && m_nDeleted == oChar.m_nDeleted &&
+				m_nRevised == oChar.m_nRevised && m_nCrAuth == oChar.m_nCrAuth && m_nRevauthDel == oChar.m_nRevauthDel &&
+				m_nRevdttm == oChar.m_nRevdttm && m_nRevdttmDel == oChar.m_nRevdttmDel && m_nCrDate == oChar.m_nCrDate;
 	}
 
 	RtfCharProperty()
@@ -1124,118 +1063,150 @@ public:
 	void SetDefaultRtf()
 	{
 		SetDefault();
-		m_nFontSize = 24;
+		
 		m_poShading.SetDefaultRtf();
 		m_poBorder.SetDefaultRtf();
+		
+		m_nFontSize = 24;
 	}
 	void SetDefaultOOX()
 	{
 		SetDefault();
+		
 		m_poShading.SetDefaultOOX();
 		m_poBorder.SetDefaultOOX();
+		
 		m_nFontSize = 20;
 	}
 	void SetDefault()
 	{
-		DEFAULT_PROPERTY( m_nAnimated )
-		DEFAULT_PROPERTY( m_bBold )
-		DEFAULT_PROPERTY( m_bCaps )
-		DEFAULT_PROPERTY( m_nScalex )
-		DEFAULT_PROPERTY( m_nCharStyle )
-		DEFAULT_PROPERTY( m_nDown )
-		DEFAULT_PROPERTY( m_bEmbo )
-		DEFAULT_PROPERTY( m_nCharacterSpacing )
-		DEFAULT_PROPERTY( m_nFitText )
-		DEFAULT_PROPERTY( m_nFont )
-		DEFAULT_PROPERTY( m_nFont2 )
-		DEFAULT_PROPERTY( m_nFont3 )
-		DEFAULT_PROPERTY( m_nFontSize )
-		DEFAULT_PROPERTY( m_bItalic )
-		DEFAULT_PROPERTY( m_bImprint )
-		DEFAULT_PROPERTY( m_nKerning )
-		DEFAULT_PROPERTY( m_bRightToLeft )
-		DEFAULT_PROPERTY( m_bOutline )
-		DEFAULT_PROPERTY( m_bScaps )
-		DEFAULT_PROPERTY( m_bShadow )
-		DEFAULT_PROPERTY( m_bStrike )
-		DEFAULT_PROPERTY( m_nStriked )
-		DEFAULT_PROPERTY( m_bSub )
-		DEFAULT_PROPERTY( m_bSuper )
-		DEFAULT_PROPERTY( m_bHidden )
-		DEFAULT_PROPERTY( m_nHightlited )
-		DEFAULT_PROPERTY( m_nForeColor )
+		DEFAULT_PROPERTY	( m_nAnimated )
+		DEFAULT_PROPERTY	( m_bBold )
+		DEFAULT_PROPERTY	( m_bCaps )
+		DEFAULT_PROPERTY	( m_nScalex )
+		DEFAULT_PROPERTY	( m_nCharStyle )
+		DEFAULT_PROPERTY	( m_nDown )
+		DEFAULT_PROPERTY	( m_bEmbo )
+		DEFAULT_PROPERTY	( m_nCharacterSpacing )
+		DEFAULT_PROPERTY	( m_nFitText )
+		DEFAULT_PROPERTY	( m_nFont )
+		DEFAULT_PROPERTY	( m_nFont2 )
+		DEFAULT_PROPERTY	( m_nFont3 )
+		DEFAULT_PROPERTY	( m_nFontSize )
+		DEFAULT_PROPERTY	( m_bItalic )
+		DEFAULT_PROPERTY	( m_bImprint )
+		DEFAULT_PROPERTY	( m_nKerning )
+		DEFAULT_PROPERTY	( m_bRightToLeft )
+		DEFAULT_PROPERTY	( m_bOutline )
+		DEFAULT_PROPERTY	( m_bScaps )
+		DEFAULT_PROPERTY	( m_bShadow )
+		DEFAULT_PROPERTY	( m_bStrike )
+		DEFAULT_PROPERTY	( m_nStriked )
+		DEFAULT_PROPERTY	( m_bSub )
+		DEFAULT_PROPERTY	( m_bSuper )
+		DEFAULT_PROPERTY	( m_bHidden )
+		DEFAULT_PROPERTY	( m_nHightlited )
+		DEFAULT_PROPERTY	( m_nForeColor )
 		DEFAULT_PROPERTY_DEF( m_eUnderStyle, uls_none )
-		DEFAULT_PROPERTY( m_nUnderlineColor )
-		DEFAULT_PROPERTY( m_nUp )
+		DEFAULT_PROPERTY	( m_nUnderlineColor )
+		DEFAULT_PROPERTY	( m_nUp )
+		DEFAULT_PROPERTY	( m_nComplexScript )
+		DEFAULT_PROPERTY	( m_nLanguage )
+		
+		DEFAULT_PROPERTY	( m_nCrAuth)
+		DEFAULT_PROPERTY	( m_nCrDate)
+
+		DEFAULT_PROPERTY	( m_nDeleted)
+		DEFAULT_PROPERTY	( m_nRevised)
+		DEFAULT_PROPERTY	( m_nRevauth)
+		DEFAULT_PROPERTY	( m_nRevdttm)
+		DEFAULT_PROPERTY	( m_nRevauthDel)
+		DEFAULT_PROPERTY	( m_nRevdttmDel)
+
+		DEFAULT_PROPERTY	( m_nInsrsid)
+
 		m_poShading.SetDefault();
 		m_poBorder.SetDefault();
-		DEFAULT_PROPERTY( m_nComplexScript )
-		DEFAULT_PROPERTY( m_nLanguage )
+
+		m_pOldCharProp = RtfCharPropertyPtr(NULL);
 	}
 	void Merge( RtfCharProperty& oCharPr )
 	{
-		MERGE_PROPERTY( m_nAnimated, oCharPr )
-		MERGE_PROPERTY( m_bBold, oCharPr )
-		MERGE_PROPERTY( m_bCaps, oCharPr )
-		MERGE_PROPERTY( m_nScalex, oCharPr )
-		MERGE_PROPERTY( m_nCharStyle, oCharPr )
-		MERGE_PROPERTY( m_nDown, oCharPr )
-		MERGE_PROPERTY( m_bEmbo, oCharPr )
+		MERGE_PROPERTY( m_nAnimated,	oCharPr )
+		MERGE_PROPERTY( m_bBold,		oCharPr )
+		MERGE_PROPERTY( m_bCaps,		oCharPr )
+		MERGE_PROPERTY( m_nScalex,		oCharPr )
+		MERGE_PROPERTY( m_nCharStyle,	oCharPr )
+		MERGE_PROPERTY( m_nDown,		oCharPr )
+		MERGE_PROPERTY( m_bEmbo,		oCharPr )
 		MERGE_PROPERTY( m_nCharacterSpacing, oCharPr )
-		MERGE_PROPERTY( m_nFitText, oCharPr )
-		MERGE_PROPERTY( m_nFont, oCharPr )
-		MERGE_PROPERTY( m_nFont2, oCharPr )
-		MERGE_PROPERTY( m_nFont3, oCharPr )
-		MERGE_PROPERTY( m_nFontSize, oCharPr )
-		MERGE_PROPERTY( m_bItalic, oCharPr )
-		MERGE_PROPERTY( m_bImprint, oCharPr )
-		MERGE_PROPERTY( m_nKerning, oCharPr )
+		MERGE_PROPERTY( m_nFitText,		oCharPr )
+		MERGE_PROPERTY( m_nFont,		oCharPr )
+		MERGE_PROPERTY( m_nFont2,		oCharPr )
+		MERGE_PROPERTY( m_nFont3,		oCharPr )
+		MERGE_PROPERTY( m_nFontSize,	oCharPr )
+		MERGE_PROPERTY( m_bItalic,		oCharPr )
+		MERGE_PROPERTY( m_bImprint,		oCharPr )
+		MERGE_PROPERTY( m_nKerning,		oCharPr )
 		MERGE_PROPERTY( m_bRightToLeft, oCharPr )
-		MERGE_PROPERTY( m_nLanguage, oCharPr )
-		MERGE_PROPERTY( m_bOutline, oCharPr )
-		MERGE_PROPERTY( m_bScaps, oCharPr )
-		MERGE_PROPERTY( m_bShadow, oCharPr )
-		MERGE_PROPERTY( m_bStrike, oCharPr )
-		MERGE_PROPERTY( m_nStriked, oCharPr )
-		MERGE_PROPERTY( m_bSub, oCharPr )
-		MERGE_PROPERTY( m_bSuper, oCharPr )
-		MERGE_PROPERTY( m_bHidden, oCharPr )
-		MERGE_PROPERTY( m_nHightlited, oCharPr )
-		MERGE_PROPERTY( m_nForeColor, oCharPr )
+		MERGE_PROPERTY( m_nLanguage,	oCharPr )
+		MERGE_PROPERTY( m_bOutline,		oCharPr )
+		MERGE_PROPERTY( m_bScaps,		oCharPr )
+		MERGE_PROPERTY( m_bShadow,		oCharPr )
+		MERGE_PROPERTY( m_bStrike,		oCharPr )
+		MERGE_PROPERTY( m_nStriked,		oCharPr )
+		MERGE_PROPERTY( m_bSub,			oCharPr )
+		MERGE_PROPERTY( m_bSuper,		oCharPr )
+		MERGE_PROPERTY( m_bHidden,		oCharPr )
+		MERGE_PROPERTY( m_nHightlited,	oCharPr )
+		MERGE_PROPERTY( m_nForeColor,	oCharPr )
+		MERGE_PROPERTY( m_nCrAuth,		oCharPr )
+		MERGE_PROPERTY( m_nCrDate,		oCharPr )
+		MERGE_PROPERTY( m_nDeleted,		oCharPr )
+		MERGE_PROPERTY( m_nRevised,		oCharPr )
+		MERGE_PROPERTY( m_nRevauth,		oCharPr )
+		MERGE_PROPERTY( m_nRevdttm,		oCharPr )
+		MERGE_PROPERTY( m_nRevauthDel,	oCharPr )
+		MERGE_PROPERTY( m_nRevdttmDel,	oCharPr )
+		MERGE_PROPERTY( m_nInsrsid,		oCharPr )
+
 		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
+		if ( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
 		{
 			m_eUnderStyle = oCharPr.m_eUnderStyle;
 			m_nUnderlineColor = oCharPr.m_nUnderlineColor;
 		}
-		MERGE_PROPERTY_DEF( m_bSub, oCharPr, uls_none )
-		MERGE_PROPERTY( m_nUp, oCharPr )
-		MERGE_PROPERTY( m_nComplexScript, oCharPr )
+		MERGE_PROPERTY_DEF	( m_bSub, oCharPr, uls_none )
+		MERGE_PROPERTY		( m_nUp, oCharPr )
+		MERGE_PROPERTY		( m_nComplexScript, oCharPr )
+		
 		m_poBorder.Merge( oCharPr.m_poBorder );
 		m_poShading.Merge( oCharPr.m_poShading );
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfListLevelProperty : IRenderableProperty
 {
 public: 
-	int m_nLevel; //OOX
-	int m_nNumberType;		//levelnfcN \levelnfcnN Specifies the number type for the level
-	int m_bTentative;		//lvltentative 	Specifies that a given numbering level was been saved by a producer but was not used in the parent document. This means that this numbering level may be redefined by a future consumer without changing the actual content of the document.
-	int m_nJustification;		//leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
-	int m_nFollow;		//levelfollowN
-	int m_nStart;		//levelstartatN	N specifies the start-at value for the level.
-	CString m_sText; //как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
+	int		m_nLevel;			///OOX
+	int		m_nNumberType;		//levelnfcN \levelnfcnN Specifies the number type for the level
+	int		m_bTentative;		//lvltentative 	Specifies that a given numbering level was been saved by a producer but was not used in the parent document. This means that this numbering level may be redefined by a future consumer without changing the actual content of the document.
+	int		m_nJustification;	//leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
+	int		m_nFollow;			//levelfollowN
+	int		m_nStart;			//levelstartatN	N specifies the start-at value for the level.
+	CString m_sText;			//как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
 	CString m_sNumber;
-	int m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
-	int m_nLegal;		//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
-	int m_nPictureIndex;		//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
+	int		m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
+	int		m_nLegal;			//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
+	int		m_nPictureIndex;	//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
 
-	RtfTabs m_oTabs; //ParagraphProp
-	int m_nFirstIndent;
-	int m_nIndent;
-	int m_nIndentStart;
+	RtfTabs m_oTabs;			//ParagraphProp
+	int		m_nFirstIndent;
+	int		m_nIndent;
+	int		m_nIndentStart;
+	
 	RtfCharProperty m_oCharProp; //Char
 
 	RtfListLevelProperty()
@@ -1260,7 +1231,7 @@ public:
 		sResult += swBullet.c_str();
 		//CString sOOXNumber = GetLevelTextOOX();
 		//for( int i = 0; i < sOOXNumber.GetLength(); i++ )
-		//	if( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )
+		//	if ( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )
 		//	{
 		//		sResult += swBullet;
 		//		i++;
@@ -1271,22 +1242,22 @@ public:
 	 }
 	void SetDefault()
 	{
-		DEFAULT_PROPERTY( m_nLevel )
-		DEFAULT_PROPERTY( m_nNumberType )
-		DEFAULT_PROPERTY( m_bTentative )
-		DEFAULT_PROPERTY( m_nJustification )
-		DEFAULT_PROPERTY( m_nFollow )
-		DEFAULT_PROPERTY( m_nStart )
-		DEFAULT_PROPERTY_DEF( m_sText, _T("") )
-		DEFAULT_PROPERTY_DEF( m_sNumber, _T("") )
-		DEFAULT_PROPERTY( m_nNoRestart )
-		DEFAULT_PROPERTY( m_nLegal )
-		DEFAULT_PROPERTY( m_nPictureIndex )
-		m_oTabs.SetDefault();
-		DEFAULT_PROPERTY( m_nFirstIndent )
-		DEFAULT_PROPERTY( m_nIndent )
-		DEFAULT_PROPERTY( m_nIndentStart )
+		DEFAULT_PROPERTY	( m_nLevel )
+		DEFAULT_PROPERTY	( m_nNumberType )
+		DEFAULT_PROPERTY	( m_bTentative )
+		DEFAULT_PROPERTY	( m_nJustification )
+		DEFAULT_PROPERTY	( m_nFollow )
+		DEFAULT_PROPERTY	( m_nStart )
+		DEFAULT_PROPERTY_DEF( m_sText, L"" )
+		DEFAULT_PROPERTY_DEF( m_sNumber, L"" )
+		DEFAULT_PROPERTY	( m_nNoRestart )
+		DEFAULT_PROPERTY	( m_nLegal )
+		DEFAULT_PROPERTY	( m_nPictureIndex )
+		DEFAULT_PROPERTY	( m_nFirstIndent )
+		DEFAULT_PROPERTY	( m_nIndent )
+		DEFAULT_PROPERTY	( m_nIndentStart )
 
+		m_oTabs.SetDefault();
 		m_oCharProp.SetDefault();
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
@@ -1298,212 +1269,148 @@ public:
 		CString sResult;
 		switch(nNumFormat)
 		{
-			case 0: sResult = _T("decimal");break;
-			case 1: sResult = _T("upperRoman");break;
-			case 2: sResult = _T("lowerRoman");break;
-			case 3: sResult = _T("upperLetter");break;
-			case 4: sResult = _T("lowerLetter");break;
-			case 5: sResult = _T("ordinal");break;
-			case 6: sResult = _T("cardinalText");break;
-			case 7: sResult = _T("ordinalText");break;
-			case 8: sResult = _T("hex");break;
-			case 9: sResult = _T("chicago");break;
-			case 10: sResult = _T("ideographDigital");break;
-			case 11: sResult = _T("japaneseCounting");break;
-			case 12: sResult = _T("aiueo");break;
-			case 13: sResult = _T("iroha");break;
-			case 14: sResult = _T("decimalFullWidth");break;
-			case 15: sResult = _T("decimalHalfWidth");break;
-			case 16: sResult = _T("japaneseLegal");break;
-			case 17: sResult = _T("japaneseDigitalTenThousand");break;
-			case 18: sResult = _T("decimalEnclosedCircle");break;
-			case 19: sResult = _T("decimalFullWidth2");break;
-			case 20: sResult = _T("aiueoFullWidth");break;
-			case 21: sResult = _T("irohaFullWidth");break;
-			case 22: sResult = _T("decimalZero");break;
-			case 23: sResult = _T("bullet");break;
-			case 24: sResult = _T("ganada");break;
-			case 25: sResult = _T("chosung");break;
-			case 26: sResult = _T("decimalEnclosedFullstop");break;
-			case 27: sResult = _T("decimalEnclosedParen");break;
-			case 28: sResult = _T("decimalEnclosedCircleChinese");break;
-			case 29: sResult = _T("ideographEnclosedCircle");break;
-			case 30: sResult = _T("ideographTraditional");break;
-			case 31: sResult = _T("ideographZodiac");break;
-			case 32: sResult = _T("ideographZodiacTraditional");break;
-			case 33: sResult = _T("taiwaneseCounting");break;
-			case 34: sResult = _T("ideographLegalTraditional");break;
-			case 35: sResult = _T("taiwaneseCountingThousand");break;
-			case 36: sResult = _T("taiwaneseDigital");break;
-			case 37: sResult = _T("chineseCounting");break;
-			case 38: sResult = _T("chineseLegalSimplified");break;
-			case 39: sResult = _T("chineseCountingThousand");break;
-			case 40: sResult = _T("chineseCounting");break;
-			case 41: sResult = _T("koreanDigital");break;
-			case 42: sResult = _T("koreanCounting");break;
-			case 43: sResult = _T("koreanLegal");break;
-			case 44: sResult = _T("koreanDigital2");break;
-			case 45: sResult = _T("hebrew1");break;
-			case 46: sResult = _T("arabicAlpha");break;
-			case 47: sResult = _T("hebrew2");break;
-			case 48: sResult = _T("arabicAbjad");break;
-			case 49: sResult = _T("hindiVowels");break;
-			case 50: sResult = _T("hindiConsonants");break;
-			case 51: sResult = _T("hindiNumbers");break;
-			case 52: sResult = _T("hindiCounting");break;
-			case 53: sResult = _T("thaiLetters");break;
-			case 54: sResult = _T("thaiNumbers");break;
-			case 55: sResult = _T("thaiCounting");break;
-			case 56: sResult = _T("vietnameseCounting");break;
-			case 57: sResult = _T("numberInDash");break;
-			case 58: sResult = _T("russianLower");break;
-			case 59: sResult = _T("russianUpper");break;
+			case 0: sResult = L"decimal";			break;
+			case 1: sResult = L"upperRoman";		break;
+			case 2: sResult = L"lowerRoman";		break;
+			case 3: sResult = L"upperLetter";		break;
+			case 4: sResult = L"lowerLetter";		break;
+			case 5: sResult = L"ordinal";			break;
+			case 6: sResult = L"cardinalText";		break;
+			case 7: sResult = L"ordinalText";		break;
+			case 8: sResult = L"hex";				break;
+			case 9: sResult = L"chicago";			break;
+			case 10: sResult = L"ideographDigital";	break;
+			case 11: sResult = L"japaneseCounting";	break;
+			case 12: sResult = L"aiueo";			break;
+			case 13: sResult = L"iroha";			break;
+			case 14: sResult = L"decimalFullWidth";	break;
+			case 15: sResult = L"decimalHalfWidth";	break;
+			case 16: sResult = L"japaneseLegal";	break;
+			case 17: sResult = L"japaneseDigitalTenThousand";	break;
+			case 18: sResult = L"decimalEnclosedCircle";		break;
+			case 19: sResult = L"decimalFullWidth2";			break;
+			case 20: sResult = L"aiueoFullWidth";	break;
+			case 21: sResult = L"irohaFullWidth";	break;
+			case 22: sResult = L"decimalZero";		break;
+			case 23: sResult = L"bullet";			break;
+			case 24: sResult = L"ganada";			break;
+			case 25: sResult = L"chosung";			break;
+			case 26: sResult = L"decimalEnclosedFullstop";		break;
+			case 27: sResult = L"decimalEnclosedParen";			break;
+			case 28: sResult = L"decimalEnclosedCircleChinese";	break;
+			case 29: sResult = L"ideographEnclosedCircle";		break;
+			case 30: sResult = L"ideographTraditional";			break;
+			case 31: sResult = L"ideographZodiac";				break;
+			case 32: sResult = L"ideographZodiacTraditional";	break;
+			case 33: sResult = L"taiwaneseCounting";			break;
+			case 34: sResult = L"ideographLegalTraditional";	break;
+			case 35: sResult = L"taiwaneseCountingThousand";	break;
+			case 36: sResult = L"taiwaneseDigital";				break;
+			case 37: sResult = L"chineseCounting";				break;
+			case 38: sResult = L"chineseLegalSimplified";		break;
+			case 39: sResult = L"chineseCountingThousand";		break;
+			case 40: sResult = L"chineseCounting";				break;
+			case 41: sResult = L"koreanDigital";		break;
+			case 42: sResult = L"koreanCounting";		break;
+			case 43: sResult = L"koreanLegal";			break;
+			case 44: sResult = L"koreanDigital2";		break;
+			case 45: sResult = L"hebrew1";				break;
+			case 46: sResult = L"arabicAlpha";			break;
+			case 47: sResult = L"hebrew2";				break;
+			case 48: sResult = L"arabicAbjad";			break;
+			case 49: sResult = L"hindiVowels";			break;
+			case 50: sResult = L"hindiConsonants";		break;
+			case 51: sResult = L"hindiNumbers";			break;
+			case 52: sResult = L"hindiCounting";		break;
+			case 53: sResult = L"thaiLetters";			break;
+			case 54: sResult = L"thaiNumbers";			break;
+			case 55: sResult = L"thaiCounting";			break;
+			case 56: sResult = L"vietnameseCounting";	break;
+			case 57: sResult = L"numberInDash";			break;
+			case 58: sResult = L"russianLower";			break;
+			case 59: sResult = L"russianUpper";			break;
 
-			case 70: sResult = _T("chicago");break;
+			case 70: sResult = L"chicago";				break;
 
-			case 255: sResult = _T("none");break;
-			default: sResult = _T("decimal");
+			case 255: sResult = L"none";				break;
+			default: sResult = L"decimal";
 		}
 		return sResult;
 	}
 	static int GetFormat( CString sFormat)
 	{
-		if( _T("aiueo") == sFormat )
-			return 12;
-		else if( _T("aiueoFullWidth") == sFormat )
-			return 20;
-		else if( _T("arabicAbjad") == sFormat )
-			return 48;
-		else if( _T("arabicAlpha") == sFormat )
-			return 46;
-		else if( _T("bahtText") == sFormat )
-			return 0;
-		else if( _T("bullet") == sFormat )
-			return 23;
-		else if( _T("cardinalText") == sFormat )
-			return 6;
-		else if( _T("chicago") == sFormat )
-			return 9;
-		else if( _T("chineseCounting") == sFormat )
-			return 37;
-		else if( _T("chineseCountingThousand") == sFormat )
-			return 39;
-		else if( _T("chineseLegalSimplified") == sFormat )
-			return 38;
-		else if( _T("chosung") == sFormat )
-			return 25;
-		else if( _T("custom") == sFormat )
-			return 0;
-		else if( _T("decimal") == sFormat )
-			return 0;
-		else if( _T("decimalEnclosedCircle") == sFormat )
-			return 18;
-		else if( _T("decimalEnclosedCircleChinese") == sFormat )
-			return 28;
-		else if( _T("decimalEnclosedFullstop") == sFormat )
-			return 26;
-		else if( _T("decimalEnclosedParen") == sFormat )
-			return 27;
-		else if( _T("decimalFullWidth") == sFormat )
-			return 14;
-		else if( _T("decimalFullWidth2") == sFormat )
-			return 19;
-		else if( _T("decimalHalfWidth") == sFormat )
-			return 15;
-		else if( _T("decimalZero") == sFormat )
-			return 22;
-		else if( _T("dollarText") == sFormat )
-			return 0;
-		else if( _T("ganada") == sFormat )
-			return 24;
-		else if( _T("hebrew1") == sFormat )
-			return 45;
-		else if( _T("hebrew1") == sFormat )
-			return 45;
-		else if( _T("hebrew2") == sFormat )
-			return 47;
-		else if( _T("hex") == sFormat )
-			return 8;
-		else if( _T("hindiConsonants") == sFormat )
-			return 50;
-		else if( _T("hindiCounting") == sFormat )
-			return 52;
-		else if( _T("hindiNumbers") == sFormat )
-			return 51;
-		else if( _T("hindiVowels") == sFormat )
-			return 49;
-		else if( _T("ideographDigital") == sFormat )
-			return 10;
-		else if( _T("ideographEnclosedCircle") == sFormat )
-			return 29;
-		else if( _T("ideographLegalTraditional") == sFormat )
-			return 34;
-		else if( _T("ideographTraditional") == sFormat )
-			return 30;
-		else if( _T("ideographZodiac") == sFormat )
-			return 31;
-		else if( _T("ideographZodiacTraditional") == sFormat )
-			return 32;
-		else if( _T("iroha") == sFormat )
-			return 13;
-		else if( _T("irohaFullWidth") == sFormat )
-			return 21;
-		else if( _T("japaneseCounting") == sFormat )
-			return 11;
-		else if( _T("japaneseDigitalTenThousand") == sFormat )
-			return 17;
-		else if( _T("japaneseLegal") == sFormat )
-			return 16;
-		else if( _T("koreanCounting") == sFormat )
-			return 42;
-		else if( _T("koreanDigital") == sFormat )
-			return 41;
-		else if( _T("koreanDigital2") == sFormat )
-			return 44;
-		else if( _T("koreanLegal") == sFormat )
-			return 43;
-		else if( _T("lowerLetter") == sFormat )
-			return 4;
-		else if( _T("lowerRoman") == sFormat )
-			return 2;
-		else if( _T("none") == sFormat )
-			return 255;
-		else if( _T("numberInDash") == sFormat )
-			return 57;
-		else if( _T("ordinal") == sFormat )
-			return 5;
-		else if( _T("ordinalText") == sFormat )
-			return 7;
-		else if( _T("russianLower") == sFormat )
-			return 58;
-		else if( _T("russianUpper") == sFormat )
-			return 59;
-		else if( _T("taiwaneseCounting") == sFormat )
-			return 33;
-		else if( _T("taiwaneseCountingThousand") == sFormat )
-			return 35;
-		else if( _T("taiwaneseDigital") == sFormat )
-			return 36;
-		else if( _T("thaiCounting") == sFormat )
-			return 55;
-		else if( _T("thaiLetters") == sFormat )
-			return 53;
-		else if( _T("thaiNumbers") == sFormat )
-			return 54;
-		else if( _T("upperLetter") == sFormat )
-			return 3;
-		else if( _T("upperRoman") == sFormat )
-			return 1;
-		else if( _T("vietnameseCounting") == sFormat )
-			return 56;
-		else if( _T("chicago") == sFormat )
-			return 70;
+		if		( L"aiueo" == sFormat )							return 12;
+		else if ( L"aiueoFullWidth" == sFormat )				return 20;
+		else if ( L"arabicAbjad" == sFormat )					return 48;
+		else if ( L"arabicAlpha" == sFormat )					return 46;
+		else if ( L"bahtText" == sFormat )						return 0;
+		else if ( L"bullet" == sFormat )						return 23;
+		else if ( L"cardinalText" == sFormat )					return 6;
+		else if ( L"chicago" == sFormat )						return 9;
+		else if ( L"chineseCounting" == sFormat )				return 37;
+		else if ( L"chineseCountingThousand" == sFormat )		return 39;
+		else if ( L"chineseLegalSimplified" == sFormat )		return 38;
+		else if ( L"chosung" == sFormat )						return 25;
+		else if ( L"custom" == sFormat )						return 0;
+		else if ( L"decimal" == sFormat )						return 0;
+		else if ( L"decimalEnclosedCircle" == sFormat )			return 18;
+		else if ( L"decimalEnclosedCircleChinese" == sFormat )	return 28;
+		else if ( L"decimalEnclosedFullstop" == sFormat )		return 26;
+		else if ( L"decimalEnclosedParen" == sFormat )			return 27;
+		else if ( L"decimalFullWidth" == sFormat )				return 14;
+		else if ( L"decimalFullWidth2" == sFormat )				return 19;
+		else if ( L"decimalHalfWidth" == sFormat )				return 15;
+		else if ( L"decimalZero" == sFormat )					return 22;
+		else if ( L"dollarText" == sFormat )					return 0;
+		else if ( L"ganada" == sFormat )						return 24;
+		else if ( L"hebrew1" == sFormat )						return 45;
+		else if ( L"hebrew1" == sFormat )						return 45;
+		else if ( L"hebrew2" == sFormat )						return 47;
+		else if ( L"hex" == sFormat )							return 8;
+		else if ( L"hindiConsonants" == sFormat )				return 50;
+		else if ( L"hindiCounting" == sFormat )					return 52;
+		else if ( L"hindiNumbers" == sFormat )					return 51;
+		else if ( L"hindiVowels" == sFormat )					return 49;
+		else if ( L"ideographDigital" == sFormat )				return 10;
+		else if ( L"ideographEnclosedCircle" == sFormat )		return 29;
+		else if ( L"ideographLegalTraditional" == sFormat )		return 34;
+		else if ( L"ideographTraditional" == sFormat )			return 30;
+		else if ( L"ideographZodiac" == sFormat )				return 31;
+		else if ( L"ideographZodiacTraditional" == sFormat )	return 32;
+		else if ( L"iroha" == sFormat )							return 13;
+		else if ( L"irohaFullWidth" == sFormat )				return 21;
+		else if ( L"japaneseCounting" == sFormat )				return 11;
+		else if ( L"japaneseDigitalTenThousand" == sFormat )	return 17;
+		else if ( L"japaneseLegal" == sFormat )					return 16;
+		else if ( L"koreanCounting" == sFormat )				return 42;
+		else if ( L"koreanDigital" == sFormat )					return 41;
+		else if ( L"koreanDigital2" == sFormat )				return 44;
+		else if ( L"koreanLegal" == sFormat )					return 43;
+		else if ( L"lowerLetter" == sFormat )					return 4;
+		else if ( L"lowerRoman" == sFormat )					return 2;
+		else if ( L"none" == sFormat )							return 255;
+		else if ( L"numberInDash" == sFormat )					return 57;
+		else if ( L"ordinal" == sFormat )						return 5;
+		else if ( L"ordinalText" == sFormat )					return 7;
+		else if ( L"russianLower" == sFormat )					return 58;
+		else if ( L"russianUpper" == sFormat )					return 59;
+		else if ( L"taiwaneseCounting" == sFormat )				return 33;
+		else if ( L"taiwaneseCountingThousand" == sFormat )		return 35;
+		else if ( L"taiwaneseDigital" == sFormat )				return 36;
+		else if ( L"thaiCounting" == sFormat )					return 55;
+		else if ( L"thaiLetters" == sFormat )					return 53;
+		else if ( L"thaiNumbers" == sFormat )					return 54;
+		else if ( L"upperLetter" == sFormat )					return 3;
+		else if ( L"upperRoman" == sFormat )					return 1;
+		else if ( L"vietnameseCounting" == sFormat )			return 56;
+		else if ( L"chicago" == sFormat )						return 70;
+		
 		return 0; //decimal
 	}
 	CString GetLevelTextOOX()
 	{
 		CString sResult = m_sText;
-		if( sResult.GetLength() > 0 )
+		if ( sResult.GetLength() > 0 )
 		{
 			int nLevelTextLength = sResult[0];
 			nLevelTextLength--;
@@ -1511,7 +1418,7 @@ public:
 			{
 				int nReplaceNumber = m_sNumber[i];
 				nReplaceNumber--;
-				if( nReplaceNumber >= 0 && nReplaceNumber < sResult.GetLength() )
+				if ( nReplaceNumber >= 0 && nReplaceNumber < sResult.GetLength() )
 				{
 					int nLevel = sResult[ nReplaceNumber ];
 
@@ -1521,14 +1428,14 @@ public:
 						nLevel = sResult[ nReplaceNumber];
 					}
 					CString sExt;
-					sExt.AppendFormat( _T("%%%d"), nLevel );
+					sExt.AppendFormat( L"%%%d", nLevel );
 					sResult.Delete( nReplaceNumber );
 					sResult.Insert(nReplaceNumber, sExt);
 					nLevelTextLength += sExt.GetLength() - 1;
 				}
 			}
 			sResult = sResult.Right( sResult.GetLength() - 1 );
-			if( nLevelTextLength < sResult.GetLength() )
+			if ( nLevelTextLength < sResult.GetLength() )
 				sResult = sResult.Left( nLevelTextLength );
 
 		}
@@ -1536,12 +1443,13 @@ public:
 	}
 	void SetLevelTextOOX(CString sText)
 	{
-		m_sText = _T("");
-		m_sNumber = _T("");
+		m_sText		= L"";
+		m_sNumber	= L"";
+
 		 int nNumberIndex = 0; //индекс символа который отвечает за уровень символа
 		 for( int i = 0; i < sText.GetLength() ; i++ )
 		 {
-			 if( sText[i] == '%' && i + 1 < sText.GetLength() && isdigit( sText[ i + 1 ] ))
+			 if ( sText[i] == '%' && i + 1 < sText.GetLength() && isdigit( sText[ i + 1 ] ))
 			 {
 				 int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
 				 m_sText.AppendChar( nLevel );
@@ -1560,10 +1468,10 @@ public:
 class RtfListProperty : public IRenderableProperty, public ItemContainer<RtfListLevelProperty>
 {
 public: 
-	int m_nID;		//listidN	Each list must have a unique list ID that should be randomly generated. N is a long integer. The list ID cannot be between –1 and –5. 
-	int m_nTemplateId;		//listtemplateidN	Each list should have a unique template ID as well, which also should be randomly generated. The template ID –1 means the template ID is undefined. N is a long integer. 
-	int m_nListSimple;		//listsimpleN	1 if the list has one level; 0 (default) if the list has nine levels.
-	int m_bListHybrid;		//listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
+	int		m_nID;		//listidN	Each list must have a unique list ID that should be randomly generated. N is a long integer. The list ID cannot be between –1 and –5. 
+	int		m_nTemplateId;		//listtemplateidN	Each list should have a unique template ID as well, which also should be randomly generated. The template ID –1 means the template ID is undefined. N is a long integer. 
+	int		m_nListSimple;		//listsimpleN	1 if the list has one level; 0 (default) if the list has nine levels.
+	int		m_bListHybrid;		//listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
 	CString m_sName;		//listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
 
 	RtfListProperty()
@@ -1572,17 +1480,17 @@ public:
 	}
 	void SetDefault()
 	{
-		DEFAULT_PROPERTY( m_nID )
-		DEFAULT_PROPERTY( m_nTemplateId )
-		DEFAULT_PROPERTY( m_nListSimple )
-		DEFAULT_PROPERTY( m_bListHybrid )
-		DEFAULT_PROPERTY_DEF( m_sName, _T("") )
+		DEFAULT_PROPERTY	( m_nID )
+		DEFAULT_PROPERTY	( m_nTemplateId )
+		DEFAULT_PROPERTY	( m_nListSimple )
+		DEFAULT_PROPERTY	( m_bListHybrid )
+		DEFAULT_PROPERTY_DEF( m_sName, L"" )
 
 		m_aArray.clear();
 	}
 	bool IsValid()
 	{
-		return (PROP_DEF != m_nID) ;		//&& (_T("") != m_sName);
+		return (PROP_DEF != m_nID) ;		//&& (L"" != m_sName);
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
@@ -1628,22 +1536,22 @@ public:
 			CString sResult;
 			int nOverrideCount = (int)m_aOverrideLevels.size();
 			for( int i = 0; i < nOverrideCount; i++ )
-				if( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
+				if ( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
 					nOverrideCount--;
-			sResult.AppendFormat( _T("\\listoverridecount%d"), nOverrideCount );
+			sResult.AppendFormat( L"\\listoverridecount%d", nOverrideCount );
 			for( int i = 0; i < nOverrideCount; i++ )
 			{
-				if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
+				if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 				{
-					sResult += _T("{\\lfolevel");
+					sResult += L"{\\lfolevel";
 					
-					if( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
-						sResult.AppendFormat( _T("\\listoverrideformat%d"), m_aOverrideLevels[i].m_nLevelIndex );
-					if( PROP_DEF != m_aOverrideLevels[i].m_nStart )
-						sResult.AppendFormat( _T("\\listoverridestartat%d"), m_aOverrideLevels[i].m_nStart );
+					if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
+						sResult.AppendFormat( L"\\listoverrideformat%d", m_aOverrideLevels[i].m_nLevelIndex );
+					if ( PROP_DEF != m_aOverrideLevels[i].m_nStart )
+						sResult.AppendFormat( L"\\listoverridestartat%d", m_aOverrideLevels[i].m_nStart );
 					
 					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
-					sResult += _T("}");
+					sResult += L"}";
 				}
 			}
 			return sResult;
@@ -1654,13 +1562,13 @@ public:
 			for( int i = 0; i < (int)m_aOverrideLevels.size(); i++ )
 			{
 				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
-				if( PROP_DEF != OverrideLevel.m_nLevelIndex )
+				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
 				{
-					sResult.AppendFormat( _T("<w:lvlOverride w:ilvl=\"%d\">"), OverrideLevel.m_nLevelIndex );
-					if( PROP_DEF != OverrideLevel.m_nStart )
-						sResult.AppendFormat( _T("<w:startOverride w:val=\"%d\"/>"), OverrideLevel.m_nStart );
+					sResult.AppendFormat( L"<w:lvlOverride w:ilvl=\"%d\">", OverrideLevel.m_nLevelIndex );
+					if ( PROP_DEF != OverrideLevel.m_nStart )
+						sResult.AppendFormat( L"<w:startOverride w:val=\"%d\"/>", OverrideLevel.m_nStart );
 					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
-					sResult += _T("</w:lvlOverride>");
+					sResult += L"</w:lvlOverride>";
 				}
 			}
 			return sResult;
@@ -1668,6 +1576,7 @@ public:
 	};
 	int m_nListID;		//listidN	Should exactly match the \listid of one of the lists in the List table. The value N is a long integer.
 	int m_nIndex;		//lsN	The (1-based) index of this \listoverride in the \listoverride table. This value should never be zero inside a \listoverride and must be unique for all \listoverride’s within a document. The valid values are from 1 to 2000. The value 0 means no list.
+	
 	ListOverrideLevels m_oOverrideLevels;
 
 	RtfListOverrideProperty()
@@ -1695,12 +1604,12 @@ typedef boost::shared_ptr<RtfStyle> RtfStylePtr;
 class RtfStyle: public IRenderableProperty
 {
 public: 
-	typedef enum { st_none, stParagraph, stCharacter, stSection, stTable, stNumbering} StyleType;
+	enum _StyleType { st_none, stParagraph, stCharacter, stSection, stTable, stNumbering} ;
 
-	StyleType m_eType;
-	CString m_sName;
-	int m_nID;
-	CString m_sID;
+	_StyleType	m_eType;
+	CString		m_sName;
+	int			m_nID;
+	CString		m_sID;
 
 	int m_bAdditive;
 	int m_nBasedOn;
@@ -1715,6 +1624,7 @@ public:
 	int m_bQFormat;
 	int m_nPriority;
 	int m_bUnhiddenWhenUse;
+
 	RtfStyle()
 	{
 		SetDefault();
@@ -1740,45 +1650,46 @@ public:
 	void SetDefault()
 	{
 		DEFAULT_PROPERTY_DEF( m_eType, st_none )
-		DEFAULT_PROPERTY_DEF( m_sName, _T("") )
-		DEFAULT_PROPERTY_DEF( m_sID, _T("") )
-		DEFAULT_PROPERTY( m_nID )
-		DEFAULT_PROPERTY( m_bAdditive )
-		DEFAULT_PROPERTY( m_nBasedOn )
-		DEFAULT_PROPERTY( m_nNext )
-		DEFAULT_PROPERTY( m_bHidden )
-		DEFAULT_PROPERTY( m_nLink )
-		DEFAULT_PROPERTY( m_bLocked )
-		DEFAULT_PROPERTY( m_bPersonal )
-		DEFAULT_PROPERTY( m_bCompose )
-		DEFAULT_PROPERTY( m_bReply )
-		DEFAULT_PROPERTY( m_nSemiHidden )
-		DEFAULT_PROPERTY( m_bQFormat )
-		DEFAULT_PROPERTY( m_nPriority )
-		DEFAULT_PROPERTY( m_bUnhiddenWhenUse )
+		DEFAULT_PROPERTY_DEF( m_sName, L"" )
+		DEFAULT_PROPERTY_DEF( m_sID, L"" )
+		DEFAULT_PROPERTY	( m_nID )
+		DEFAULT_PROPERTY	( m_bAdditive )
+		DEFAULT_PROPERTY	( m_nBasedOn )
+		DEFAULT_PROPERTY	( m_nNext )
+		DEFAULT_PROPERTY	( m_bHidden )
+		DEFAULT_PROPERTY	( m_nLink )
+		DEFAULT_PROPERTY	( m_bLocked )
+		DEFAULT_PROPERTY	( m_bPersonal )
+		DEFAULT_PROPERTY	( m_bCompose )
+		DEFAULT_PROPERTY	( m_bReply )
+		DEFAULT_PROPERTY	( m_nSemiHidden )
+		DEFAULT_PROPERTY	( m_bQFormat )
+		DEFAULT_PROPERTY	( m_nPriority )
+		DEFAULT_PROPERTY	( m_bUnhiddenWhenUse )
 	}
 
 	virtual void Merge( RtfStylePtr oStyle )
 	{
 		RtfStyle& oCurStyle = *oStyle;
-		MERGE_PROPERTY_DEF( m_eType, oCurStyle, st_none )
-		MERGE_PROPERTY_DEF( m_sName, oCurStyle, _T("") )
-		MERGE_PROPERTY( m_nID, oCurStyle )
-		MERGE_PROPERTY_DEF( m_sID, oCurStyle, _T("") )
+		
+		MERGE_PROPERTY_DEF	( m_eType, oCurStyle, st_none )
+		MERGE_PROPERTY_DEF	( m_sName, oCurStyle, L"" )
+		MERGE_PROPERTY		( m_nID, oCurStyle )
+		MERGE_PROPERTY_DEF	( m_sID, oCurStyle, L"" )
 
-		MERGE_PROPERTY( m_bAdditive, oCurStyle )
-		MERGE_PROPERTY( m_nBasedOn, oCurStyle )
-		MERGE_PROPERTY( m_nNext, oCurStyle )
-		MERGE_PROPERTY( m_bHidden, oCurStyle )
-		MERGE_PROPERTY( m_nLink, oCurStyle )
-		MERGE_PROPERTY( m_bLocked, oCurStyle )
-		MERGE_PROPERTY( m_bPersonal, oCurStyle )
-		MERGE_PROPERTY( m_bCompose, oCurStyle )
-		MERGE_PROPERTY( m_bReply, oCurStyle )
-		MERGE_PROPERTY( m_nSemiHidden, oCurStyle )
-		MERGE_PROPERTY( m_bQFormat, oCurStyle )
-		MERGE_PROPERTY( m_nPriority, oCurStyle )
-		MERGE_PROPERTY( m_bUnhiddenWhenUse, oCurStyle )
+		MERGE_PROPERTY		( m_bAdditive, oCurStyle )
+		MERGE_PROPERTY		( m_nBasedOn, oCurStyle )
+		MERGE_PROPERTY		( m_nNext, oCurStyle )
+		MERGE_PROPERTY		( m_bHidden, oCurStyle )
+		MERGE_PROPERTY		( m_nLink, oCurStyle )
+		MERGE_PROPERTY		( m_bLocked, oCurStyle )
+		MERGE_PROPERTY		( m_bPersonal, oCurStyle )
+		MERGE_PROPERTY		( m_bCompose, oCurStyle )
+		MERGE_PROPERTY		( m_bReply, oCurStyle )
+		MERGE_PROPERTY		( m_nSemiHidden, oCurStyle )
+		MERGE_PROPERTY		( m_bQFormat, oCurStyle )
+		MERGE_PROPERTY		( m_nPriority, oCurStyle )
+		MERGE_PROPERTY		( m_bUnhiddenWhenUse, oCurStyle )
 	}
 
 	bool operator==( const RtfStyle& oProperty )
@@ -1791,16 +1702,16 @@ public:
 	}
 	CString RenderToRtfBegin( RenderParameter oRenderParameter )
 	{
-		if( false == IsValid() )
-			return _T("");
+		if ( false == IsValid() )
+			return L"";
 
 		CString sResult;
 		switch( m_eType )
 		{
-		case stParagraph : sResult.AppendFormat(_T("{\\s%d"), m_nID);break;
-		case stCharacter : sResult.AppendFormat(_T("{\\*\\cs%d"), m_nID);break;
-		case stSection : sResult.AppendFormat(_T("{\\*\\ds%d"), m_nID);break;
-		case stTable : sResult.AppendFormat(_T("{\\*\\ts%d\\tsrowd"), m_nID);break;
+			case stParagraph :	sResult.AppendFormat(L"{\\s%d", m_nID);break;
+			case stCharacter :	sResult.AppendFormat(L"{\\*\\cs%d", m_nID);break;
+			case stSection :	sResult.AppendFormat(L"{\\*\\ds%d", m_nID);break;
+			case stTable :		sResult.AppendFormat(L"{\\*\\ts%d\\tsrowd", m_nID);break;
 		}
 		return sResult;
 	}
@@ -1809,75 +1720,84 @@ public:
 	CString RenderToOOXEnd(RenderParameter oRenderParameter);
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
-		return _T("");
+		return L"";
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
-		return _T("");
+		return L"";
 	}
 };
 
 class RtfTableProperty: public IRenderableProperty
 {
 public: 
-	typedef enum{hr_none,
-				hr_phmrg,	//\tphmrg	Use margin as horizontal reference frame.
-				hr_phpg,	//tphpg	Use page as horizontal reference frame.
-				hr_phcol//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
-					} HRef;
-	typedef enum{vr_none,
-				vr_pvmrg,	//tpvmrg	Position table vertically relative to the top margin. This is the default if no vertical table positioning information is given.
-				vr_pvpg, //tpvpg	Position table vertically relative to the top of the page.
-				vr_pvpara//tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
-					} VRef;
-	typedef enum{hp_none, 
-				hp_posxc,	//tposxc	Center table within the horizontal reference frame.
-				hp_posxi,	//tposxi	Position table inside the horizontal reference frame.
-				hp_posxo,	//tposxo	Position table outside the horizontal reference frame.
-				hp_posxl,	//tposxl	Position table at the left of the horizontal reference frame.
-				hp_posxr //tposxr	Position table at the right of the horizontal reference frame.
-					} HPos;
-	typedef enum{vp_none,
-				vp_posyt, //tposyt	Position table at the top of the vertical reference frame.
-				vp_posyil,	//tposyil	Position table to be inline.
-				vp_posyb, //tposyb	Position table at the bottom of the vertical reference frame.
-				vp_posyc, //tposyc	Center table within the vertical reference frame
-				vp_posyin,	//tposyin	Position table inside within the vertical reference frame.
-				vp_posyout//tposyout	Position table outside within the vertical reference frame.
-					} VPos;
+	enum _HRef
+	{
+		hr_none,
+		hr_phmrg,	// tphmrg	Use margin as horizontal reference frame.
+		hr_phpg,	//tphpg	Use page as horizontal reference frame.
+		hr_phcol	//tphcol	Use column as horizontal reference frame. This is the default if no horizontal table positioning information is given.
+	} ;
+	enum _VRef
+	{
+		vr_none,
+		vr_pvmrg,	//tpvmrg	Position table vertically relative to the top margin. This is the default if no vertical table positioning information is given.
+		vr_pvpg,	//tpvpg	Position table vertically relative to the top of the page.
+		vr_pvpara	//tpvpara	Position table vertically relative to the upper left corner of the next unframed paragraph in the stream.
+	};
+	enum _HPos
+	{
+		hp_none, 
+		hp_posxc,	//tposxc	Center table within the horizontal reference frame.
+		hp_posxi,	//tposxi	Position table inside the horizontal reference frame.
+		hp_posxo,	//tposxo	Position table outside the horizontal reference frame.
+		hp_posxl,	//tposxl	Position table at the left of the horizontal reference frame.
+		hp_posxr	//tposxr	Position table at the right of the horizontal reference frame.
+	};
+	enum _VPos
+	{
+		vp_none,
+		vp_posyt,	//tposyt	Position table at the top of the vertical reference frame.
+		vp_posyil,	//tposyil	Position table to be inline.
+		vp_posyb,	//tposyb	Position table at the bottom of the vertical reference frame.
+		vp_posyc,	//tposyc	Center table within the vertical reference frame
+		vp_posyin,	//tposyin	Position table inside within the vertical reference frame.
+		vp_posyout	//tposyout	Position table outside within the vertical reference frame.
+	};
 
-	int m_bBidi;		//taprtl	Table direction is right to left.
-	int m_nAutoFit;		//trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
-	int m_nGraph;		//trgaphN	Half the space between the cells of a table row in twips.
+	int m_bBidi;			//taprtl	Table direction is right to left.
+	int m_nAutoFit;			//trautofitN	AutoFit:0	No AutoFit (default).1	AutoFit is on for the row. Overridden by \clwWidthN and \trwWidthN in any table row
+	int m_nGraph;			//trgaphN	Half the space between the cells of a table row in twips.
 
 	int nTableIndent;		//tblindN 
-	int nTableIndentUnits;		//\tblindtypeN  
+	int nTableIndentUnits;	// tblindtypeN  
 
-	typedef enum{rj_none,
-				rj_trql,	//trql	Left-justifies a table row with respect to its containing column.
-				rj_trqr,	//trqr	Right-justifies a table row with respect to its containing column.
-				rj_trqc //trqc	Centers a table row with respect to its containing column.
-					} RowJust;
-	RowJust m_eJust; // 
+	enum _RowJust
+	{
+		rj_none,
+		rj_trql,		//trql	Left-justifies a table row with respect to its containing column.
+		rj_trqr,		//trqr	Right-justifies a table row with respect to its containing column.
+		rj_trqc			//trqc	Centers a table row with respect to its containing column.
+	}	m_eJust; 
 
 	int m_nWrapLeft;		//tdfrmtxtLeftN	Distance in twips, between the left of the table and surrounding text (default is 0).
 	int m_nWrapRight;		//tdfrmtxtRightN	Distance in twips, between the right of the table and surrounding text (default is 0).
-	int m_nWrapTop;		//tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
+	int m_nWrapTop;			//tdfrmtxtTopN	Distance in twips, between the top of the table and surrounding text (default is 0).
 	int m_nWrapBottom;		//tdfrmtxtBottomN	Distance in twips, between the bottom of the table and surrounding text (default is 0).
-	int m_bOverlap;		//tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
+	int m_bOverlap;			//tabsnoovrlp	Do not allow table to overlap with other tables or shapes with similar wrapping not contained within it.
 
-	HRef m_eHRef;
-	VRef m_eVRef;
-	HPos m_eHPos;
-	int m_nHPos;		//tposxN	Position table N twips from the left edge of the horizontal reference frame.
-	VPos m_eVPos;
-	int m_nVPos;		//tposyN	Position table N twips from the top edge of the vertical reference frame.
+	_HRef			m_eHRef;
+	_VRef			m_eVRef;
+	_HPos			m_eHPos;
+	int				m_nHPos;				//tposxN	Position table N twips from the left edge of the horizontal reference frame.
+	_VPos			m_eVPos;
+	int				m_nVPos;				//tposyN	Position table N twips from the top edge of the vertical reference frame.
 
-	int m_nLeft;
-	int m_nWidth;		//trwWidthN	Preferred row width. Overrides \trautofitN.
-	MetricUnits m_eMUWidth;		//trftsWidthN	Units for \trwWidthN:
+	int				m_nLeft;
+	int				m_nWidth;				//trwWidthN	Preferred row width. Overrides \trautofitN.
+	_MetricUnits	m_eMUWidth;		//trftsWidthN	Units for \trwWidthN:
 
-	int m_nDefCellMarBottom;		//trpaddbN	Default bottom cell margin or padding for the row.
+	int m_nDefCellMarBottom;	//trpaddbN	Default bottom cell margin or padding for the row.
 	int m_nDefCellMarLeft;		//trpaddlN	Default left cell margin or padding for the row.
 	int m_nDefCellMarRight;		//trpaddrN	Default right cell margin or padding for the row.
 	int m_nDefCellMarTop;		//trpaddtN	Default top cell margin or padding for the row.
@@ -1958,6 +1878,7 @@ public:
 
 		DEFAULT_PROPERTY( m_nLeft )
 		DEFAULT_PROPERTY( m_nWidth )
+		
 		m_eMUWidth = mu_none;
 
 		//m_nDefCellMarBottom = 0;
@@ -2015,56 +1936,56 @@ public:
 	}
 	void Merge( RtfTableProperty& oTablePr )
 	{
-		MERGE_PROPERTY( m_bBidi, oTablePr )
-		MERGE_PROPERTY( m_nAutoFit, oTablePr )
-		MERGE_PROPERTY( m_nGraph, oTablePr )
-		MERGE_PROPERTY( nTableIndent, oTablePr )
-		MERGE_PROPERTY( nTableIndentUnits, oTablePr )
+		MERGE_PROPERTY( m_bBidi,			oTablePr )
+		MERGE_PROPERTY( m_nAutoFit,			oTablePr )
+		MERGE_PROPERTY( m_nGraph,			oTablePr )
+		MERGE_PROPERTY( nTableIndent,		oTablePr )
+		MERGE_PROPERTY( nTableIndentUnits,	oTablePr )
 
-		MERGE_PROPERTY_DEF( m_eJust, oTablePr, rj_none )
+		MERGE_PROPERTY_DEF( m_eJust,	oTablePr, rj_none )
 
-		MERGE_PROPERTY( m_nWrapLeft, oTablePr )
-		MERGE_PROPERTY( m_nWrapRight, oTablePr )
-		MERGE_PROPERTY( m_nWrapTop, oTablePr )
-		MERGE_PROPERTY( m_nWrapBottom, oTablePr )
-		MERGE_PROPERTY( m_bOverlap, oTablePr )
+		MERGE_PROPERTY( m_nWrapLeft,	oTablePr )
+		MERGE_PROPERTY( m_nWrapRight,	oTablePr )
+		MERGE_PROPERTY( m_nWrapTop,		oTablePr )
+		MERGE_PROPERTY( m_nWrapBottom,	oTablePr )
+		MERGE_PROPERTY( m_bOverlap,		oTablePr )
 
-		MERGE_PROPERTY_DEF( m_eHRef, oTablePr, hr_none )
-		MERGE_PROPERTY_DEF( m_eVRef, oTablePr, vr_none )
-		MERGE_PROPERTY_DEF( m_eHPos, oTablePr, hp_none )
-		MERGE_PROPERTY_DEF( m_eVPos, oTablePr, vp_none )
-		MERGE_PROPERTY( m_nHPos, oTablePr )
-		MERGE_PROPERTY( m_nVPos, oTablePr )
+		MERGE_PROPERTY_DEF( m_eHRef,	oTablePr, hr_none )
+		MERGE_PROPERTY_DEF( m_eVRef,	oTablePr, vr_none )
+		MERGE_PROPERTY_DEF( m_eHPos,	oTablePr, hp_none )
+		MERGE_PROPERTY_DEF( m_eVPos,	oTablePr, vp_none )
+		MERGE_PROPERTY( m_nHPos,		oTablePr )
+		MERGE_PROPERTY( m_nVPos,		oTablePr )
 
-		MERGE_PROPERTY( m_nLeft, oTablePr )
-		MERGE_PROPERTY( m_nWidth, oTablePr )
-		MERGE_PROPERTY_DEF( m_eMUWidth, oTablePr, mu_none )
+		MERGE_PROPERTY( m_nLeft,					oTablePr )
+		MERGE_PROPERTY( m_nWidth,					oTablePr )
+		MERGE_PROPERTY_DEF( m_eMUWidth,				oTablePr, mu_none )
 
-		MERGE_PROPERTY( m_nDefCellMarBottom, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRight, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeft, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTop, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarBottomUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRightUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeftUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTopUnits, oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarBottom,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarRight,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarLeft,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarTop,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarBottomUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarRightUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarLeftUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellMarTopUnits,		oTablePr )
 
-		MERGE_PROPERTY( m_nDefCellSpBottom, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeft, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRight, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTop, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpBottomUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeftUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRightUnits, oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTopUnits, oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpBottom,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpLeft,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpRight,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpTop,			oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpBottomUnits,	oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpLeftUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpRightUnits,		oTablePr )
+		MERGE_PROPERTY( m_nDefCellSpTopUnits,		oTablePr )
 
-		m_oBorderLeft.Merge( oTablePr.m_oBorderLeft );
+		m_oBorderLeft.Merge	( oTablePr.m_oBorderLeft );
 		m_oBorderRight.Merge( oTablePr.m_oBorderRight );
-		m_oBorderTop.Merge( oTablePr.m_oBorderTop );
+		m_oBorderTop.Merge	( oTablePr.m_oBorderTop );
 		m_oBorderBottom.Merge( oTablePr.m_oBorderBottom );
-		m_oBorderVert.Merge( oTablePr.m_oBorderVert );
-		m_oBorderHor.Merge( oTablePr.m_oBorderHor );
-		m_oShading.Merge( oTablePr.m_oShading );
+		m_oBorderVert.Merge	( oTablePr.m_oBorderVert );
+		m_oBorderHor.Merge	( oTablePr.m_oBorderHor );
+		m_oShading.Merge	( oTablePr.m_oShading );
 
 		MERGE_PROPERTY( m_nStyle, oTablePr )
 
@@ -2082,153 +2003,167 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 
-class RtfFrame: public IRenderableProperty
+class RtfFrame : public IRenderableProperty
 {
 public:
-	typedef enum{hr_none,
-				hr_phmrg,
-				hr_phpg,
-				hr_phcol
-				} HRef;
-	typedef enum{vr_none,
-				vr_pvmrg,
-				vr_pvpg,
-				vr_pvpara
-					} VRef;
-		typedef enum{hp_none, 
-				hp_posxc,
-				hp_posxi,
-				hp_posxo,
-				hp_posxl,
-				hp_posxr 
-					} HPos;
-		typedef enum{vp_none,
-				vp_posyt,
-				vp_posyil,
-				vp_posyb,
-				vp_posyc,
-				vp_posyin,
-				vp_posyout
-				} VPos;
-		typedef enum{tw_none,
-				tw_wrapdefault,
-				tw_wraparound,
-				tw_wraptight,
-				tw_wrapthrough
-					} TextWrap;
+	enum _HRef
+	{
+		hr_none,
+		hr_phmrg,
+		hr_phpg,
+		hr_phcol
+	};
+	enum _VRef
+	{
+		vr_none,
+		vr_pvmrg,
+		vr_pvpg,
+		vr_pvpara
+	};
+	enum _HPos
+	{
+		hp_none, 
+		hp_posxc,
+		hp_posxi,
+		hp_posxo,
+		hp_posxl,
+		hp_posxr 
+	};
+	enum _VPos
+	{
+		vp_none,
+		vp_posyt,
+		vp_posyil,
+		vp_posyb,
+		vp_posyc,
+		vp_posyin,
+		vp_posyout
+	};
+	enum _TextWrap
+	{
+		tw_none,
+		tw_wrapdefault,
+		tw_wraparound,
+		tw_wraptight,
+		tw_wrapthrough
+	};
 
 
-		int m_nWidth;
-		int m_nHeight;
-		HRef m_eHRef;
-		VRef m_eVRef;
-		HPos m_eHPos;
-		int m_nHPos;
-		VPos m_eVPos;
-		int m_nVPos;
-		int m_bLockAnchor;
-		TextWrap m_eWrap;
-		int m_DropcapType;
-		int m_DropcapLines;
-		int m_nHorSpace;		//\dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
-		int m_nVerSpace;		//\dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
-		int m_nAllSpace;		//\dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
+	int			m_nWidth;
+	int			m_nHeight;
+	_HRef		m_eHRef;
+	_VRef		m_eVRef;
+	_HPos		m_eHPos;
+	int			m_nHPos;
+	_VPos		m_eVPos;
+	int			m_nVPos;
+	int			m_bLockAnchor;
+	_TextWrap	m_eWrap;
+	int			m_DropcapType;
+	int			m_DropcapLines;
+	int			m_nHorSpace;		// dxfrtextN	Distance in twips of a positioned paragraph from text in the main text flow in all directions.
+	int			m_nVerSpace;		// dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
+	int			m_nAllSpace;		// dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
 
-		RtfFrame()
+	RtfFrame()
+	{
+		SetDefault();
+	}
+	void SetDefaultRtf()
+	{
+		SetDefault();
+	}
+	void SetDefaultOOX()
+	{
+		SetDefault();
+	}
+	void SetDefault()
+	{
+		DEFAULT_PROPERTY		( m_nWidth )
+		DEFAULT_PROPERTY		( m_nHeight )
+		DEFAULT_PROPERTY_DEF	( m_eHRef, hr_none )
+		DEFAULT_PROPERTY_DEF	( m_eVRef, vr_none )
+		DEFAULT_PROPERTY_DEF	( m_eHPos, hp_none )
+		DEFAULT_PROPERTY_DEF	( m_eVPos, vp_none )
+		DEFAULT_PROPERTY		( m_nHPos )
+		DEFAULT_PROPERTY		( m_nVPos )
+		DEFAULT_PROPERTY		( m_bLockAnchor )
+		DEFAULT_PROPERTY_DEF	( m_eWrap, tw_none )
+		DEFAULT_PROPERTY		( m_DropcapType )
+		DEFAULT_PROPERTY		( m_DropcapLines )
+		DEFAULT_PROPERTY		( m_nHorSpace )
+		DEFAULT_PROPERTY		( m_nVerSpace )
+		DEFAULT_PROPERTY		( m_nAllSpace )
+	}
+	void Merge( RtfFrame& oFramePr )
+	{
+		MERGE_PROPERTY		( m_nWidth, oFramePr )
+		MERGE_PROPERTY		( m_nHeight, oFramePr )
+		MERGE_PROPERTY_DEF	( m_eHRef, oFramePr, hr_none )
+		MERGE_PROPERTY_DEF	( m_eVRef, oFramePr, vr_none )
+		MERGE_PROPERTY_DEF	( m_eHPos, oFramePr, hp_none )
+		MERGE_PROPERTY_DEF	( m_eVPos, oFramePr, vp_none )
+		MERGE_PROPERTY		( m_bLockAnchor, oFramePr )
+		MERGE_PROPERTY_DEF	( m_eWrap, oFramePr, tw_none )
+		MERGE_PROPERTY		( m_DropcapType, oFramePr )
+		MERGE_PROPERTY		( m_DropcapLines, oFramePr )
+		MERGE_PROPERTY		( m_nHorSpace, oFramePr )
+		MERGE_PROPERTY		( m_nVerSpace, oFramePr )
+		MERGE_PROPERTY		( m_nAllSpace, oFramePr )
+	}
+	CString RenderToRtf(RenderParameter oRenderParameter);
+	CString RenderToOOX(RenderParameter oRenderParameter);
+	
+	void ApplyParagraphProp( RtfTableProperty& oProp )
+	{
+		m_nHPos = oProp.m_nHPos;
+		m_nVPos = oProp.m_nVPos;
+		switch ( oProp.m_eHRef )
 		{
-			SetDefault();
+			case RtfTableProperty::hr_phmrg: m_eHRef = hr_phmrg;break;
+			case RtfTableProperty::hr_phpg: m_eHRef = hr_phpg;break;
+			case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
 		}
-		void SetDefaultRtf()
+		switch ( oProp.m_eVRef )
 		{
-			SetDefault();
+			case RtfTableProperty::vr_pvmrg: m_eVRef = vr_pvmrg;break;
+			case RtfTableProperty::vr_pvpg: m_eVRef = vr_pvpg;break;
+			case RtfTableProperty::vr_pvpara: m_eVRef = vr_pvpara;break;
 		}
-		void SetDefaultOOX()
+		switch ( oProp.m_eHPos )
 		{
-			SetDefault();
+			case RtfTableProperty::hp_posxc: m_eHPos = hp_posxc;break;
+			case RtfTableProperty::hp_posxi: m_eHPos = hp_posxi;break;
+			case RtfTableProperty::hp_posxo: m_eHPos = hp_posxo;break;
+			case RtfTableProperty::hp_posxl: m_eHPos = hp_posxl;break;
+			case RtfTableProperty::hp_posxr: m_eHPos = hp_posxr;break;
 		}
-		void SetDefault()
+		switch ( oProp.m_eVPos )
 		{
-			DEFAULT_PROPERTY( m_nWidth )
-			DEFAULT_PROPERTY( m_nHeight )
-			DEFAULT_PROPERTY_DEF( m_eHRef, hr_none )
-			DEFAULT_PROPERTY_DEF( m_eVRef, vr_none )
-			DEFAULT_PROPERTY_DEF( m_eHPos, hp_none )
-			DEFAULT_PROPERTY_DEF( m_eVPos, vp_none )
-			DEFAULT_PROPERTY( m_nHPos )
-			DEFAULT_PROPERTY( m_nVPos )
-			DEFAULT_PROPERTY( m_bLockAnchor )
-			DEFAULT_PROPERTY_DEF( m_eWrap, tw_none )
-			DEFAULT_PROPERTY( m_DropcapType )
-			DEFAULT_PROPERTY( m_DropcapLines )
-			DEFAULT_PROPERTY( m_nHorSpace )
-			DEFAULT_PROPERTY( m_nVerSpace )
-			DEFAULT_PROPERTY( m_nAllSpace )
+			case RtfTableProperty::vp_posyc: m_eVPos = vp_posyc;break;
+			case RtfTableProperty::vp_posyin: m_eVPos = vp_posyin;break;
+			case RtfTableProperty::vp_posyout: m_eVPos = vp_posyout;break;
+			case RtfTableProperty::vp_posyt: m_eVPos = vp_posyt;break;
+			case RtfTableProperty::vp_posyb: m_eVPos = vp_posyb;break;
 		}
-		void Merge( RtfFrame& oFramePr )
-		{
-			MERGE_PROPERTY( m_nWidth, oFramePr )
-			MERGE_PROPERTY( m_nHeight, oFramePr )
-			MERGE_PROPERTY_DEF( m_eHRef, oFramePr, hr_none )
-			MERGE_PROPERTY_DEF( m_eVRef, oFramePr, vr_none )
-			MERGE_PROPERTY_DEF( m_eHPos, oFramePr, hp_none )
-			MERGE_PROPERTY_DEF( m_eVPos, oFramePr, vp_none )
-			MERGE_PROPERTY( m_bLockAnchor, oFramePr )
-			MERGE_PROPERTY_DEF( m_eWrap, oFramePr, tw_none )
-			MERGE_PROPERTY( m_DropcapType, oFramePr )
-			MERGE_PROPERTY( m_DropcapLines, oFramePr )
-			MERGE_PROPERTY( m_nHorSpace, oFramePr )
-			MERGE_PROPERTY( m_nVerSpace, oFramePr )
-			MERGE_PROPERTY( m_nAllSpace, oFramePr )
-		}
-		CString RenderToRtf(RenderParameter oRenderParameter);
-		CString RenderToOOX(RenderParameter oRenderParameter);
-		void ApplyParagraphProp( RtfTableProperty& oProp )
-		{
-			m_nHPos = oProp.m_nHPos;
-			m_nVPos = oProp.m_nVPos;
-			switch ( oProp.m_eHRef )
-			{
-				case RtfTableProperty::hr_phmrg: m_eHRef = hr_phmrg;break;
-				case RtfTableProperty::hr_phpg: m_eHRef = hr_phpg;break;
-				case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
-			}
-			switch ( oProp.m_eVRef )
-			{
-				case RtfTableProperty::vr_pvmrg: m_eVRef = vr_pvmrg;break;
-				case RtfTableProperty::vr_pvpg: m_eVRef = vr_pvpg;break;
-				case RtfTableProperty::vr_pvpara: m_eVRef = vr_pvpara;break;
-			}
-			switch ( oProp.m_eHPos )
-			{
-				case RtfTableProperty::hp_posxc: m_eHPos = hp_posxc;break;
-				case RtfTableProperty::hp_posxi: m_eHPos = hp_posxi;break;
-				case RtfTableProperty::hp_posxo: m_eHPos = hp_posxo;break;
-				case RtfTableProperty::hp_posxl: m_eHPos = hp_posxl;break;
-				case RtfTableProperty::hp_posxr: m_eHPos = hp_posxr;break;
-			}
-			switch ( oProp.m_eVPos )
-			{
-				case RtfTableProperty::vp_posyc: m_eVPos = vp_posyc;break;
-				case RtfTableProperty::vp_posyin: m_eVPos = vp_posyin;break;
-				case RtfTableProperty::vp_posyout: m_eVPos = vp_posyout;break;
-				case RtfTableProperty::vp_posyt: m_eVPos = vp_posyt;break;
-				case RtfTableProperty::vp_posyb: m_eVPos = vp_posyb;break;
-			}
-		}
+	}
 };
+
+class RtfCellProperty;
+typedef boost::shared_ptr<RtfCellProperty>	RtfCellPropertyPtr;
 
 class RtfCellProperty: public IRenderableProperty
 {	
 public:
-	int m_bMergeFirst;		//clmgf	The first cell in a range of table cells to be merged.
-	int m_bMerge;		//clmrg	Contents of the table cell are merged with those of the preceding cell.
-	int m_bMergeFirstVertical;		//clvmgf	The first cell in a range of table cells to be vertically merged.
+	int m_bMergeFirst;			//clmgf		The first cell in a range of table cells to be merged.
+	int m_bMerge;				//clmrg		Contents of the table cell are merged with those of the preceding cell.
+	int m_bMergeFirstVertical;	//clvmgf	The first cell in a range of table cells to be vertically merged.
 	int m_bMergeVertical;		//clvmrg	Contents of the table cell are vertically merged with those of the preceding cell.
 
-	int m_bFitText;		//clFitText	Fit text in cell, compressing each paragraph to the width of the cell.
-	int m_bNoWrap;		//clNoWrap	Do not wrap text for the cell. Only has an effect if the table cell does not have a preferred \clwWidthN, which overrides \trautofitN.
+	int m_bFitText;				//clFitText	Fit text in cell, compressing each paragraph to the width of the cell.
+	int m_bNoWrap;				//clNoWrap	Do not wrap text for the cell. Only has an effect if the table cell does not have a preferred \clwWidthN, which overrides \trautofitN.
 
-	int m_nPaddingLeft;		//clpadlN	Left cell margin or padding. Overrides \trpaddlN.
+	int m_nPaddingLeft;			//clpadlN	Left cell margin or padding. Overrides \trpaddlN.
 	int m_nIsPaddingLeft;		//clpadflN	Units for \clpadlN:
 	int m_nPaddingRight;
 	int m_nIsPaddingRight;
@@ -2237,7 +2172,7 @@ public:
 	int m_nPaddingBottom;
 	int m_nIsPaddingBottom;
 
-	int m_nSpacingLeft;		//clsplN	Left cell margin or padding. Overrides \trspdlN.
+	int m_nSpacingLeft;			//clsplN	Left cell margin or padding. Overrides \trspdlN.
 	int m_nIsSpacingLeft;		//clspflN	Units for \clsplN:
 	int m_nSpacingRight;
 	int m_nIsSpacingRight;
@@ -2246,10 +2181,10 @@ public:
 	int m_nSpacingBottom;
 	int m_nIsSpacingBottom;
 
-	int m_nWidth;		//clwWidthN	Preferred cell width. Overrides \trautofitN.
-	MetricUnits m_eWidthUnits;		//clftsWidthN	Units for \clwWidthN:
+	int				m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
+	_MetricUnits	m_eWidthUnits;		//clftsWidthN	Units for \clwWidthN:
 
-	int m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
+	int				m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
 
 	RtfBorder m_oBorderDiagonalLR;
 	RtfBorder m_oBorderDiagonalRL;
@@ -2282,18 +2217,18 @@ public:
 	int m_nSpan;
 
 //Table Style Specific
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;		// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;		// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;		// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;		// tscnecell	NE cell
+	int m_bStyleSWCell;		// tscswcell	SW cell.
+	int m_bStyleSECell;		// tscsecell	SE cell.
 
 	RtfCellProperty()
 	{
@@ -2442,54 +2377,63 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter);
 	bool GetAlignFromStringRtf(  CString & oAlign, CellAlign& oOutput )
 	{
-		if( _T("clvertalt") == oAlign ) { oOutput = ca_Top; return true;}
-		else if( _T("clvertalc") == oAlign ){ oOutput = ca_Center; return true;}
-		else if( _T("clvertalb") == oAlign ){ oOutput = ca_Bottom; return true;}
+		if ( L"clvertalt" == oAlign ) { oOutput = ca_Top; return true;}
+		else if ( L"clvertalc" == oAlign ){ oOutput = ca_Center; return true;}
+		else if ( L"clvertalb" == oAlign ){ oOutput = ca_Bottom; return true;}
 		return false;
 	}
 	bool GetAlignFromStringOOX(  CString & oAlign, CellAlign& oOutput )
 	{
-		if( _T("top") == oAlign ) { oOutput = ca_Top; return true;}
-		else if( _T("center") == oAlign ){ oOutput = ca_Center; return true;}
-		else if( _T("bottom") == oAlign ){ oOutput = ca_Bottom; return true;}
+		if ( L"top" == oAlign ) { oOutput = ca_Top; return true;}
+		else if ( L"center" == oAlign ){ oOutput = ca_Center; return true;}
+		else if ( L"bottom" == oAlign ){ oOutput = ca_Bottom; return true;}
 		return false;
 	}
 
 };
+
+class RtfRowProperty;
+typedef boost::shared_ptr<RtfRowProperty>	RtfRowPropertyPtr;
+
 class RtfRowProperty: public RtfTableProperty, public ItemContainer< RtfCellProperty >
 {
 public: 
 	int m_nIndex;		//irowN	N is the row index of this row.
-	int m_nBandIndex;		//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
+	int m_nBandIndex;	//irowbandN	N is the row index of the row, adjusted to account for header rows. A header row has a value of –1.
 
 	int m_bLastRow;		//lastrow	Output if this is the last row in the table.
 
-	int m_bIsHeader;		//trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
+	int m_bIsHeader;	//trhdr	Table row header. This row should appear at the top of every page on which the current table appears.
 	int m_bKeep;		//trkeep	Keep table row together. This row cannot be split by a page break. This property is assumed to be off unless the control word is present.
 
 	int m_nHeight;		//trrhN	Height of a table row in twips. When 0, the height is sufficient for all the text in the line; when positive, the height is guaranteed to be at least the specified height; when negative, the absolute value of the height is used, regardless of the height of the text in the line.
 
-	int m_nWidthStartInvCell;		//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
-	MetricUnits m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
+	int				m_nWidthStartInvCell;			//trwWidthBN	Width of invisible cell at the beginning of the row. Used only in cases where rows have different widths.
+	_MetricUnits	m_eMUStartInvCell;		//trftsWidthBN	Units for \trwWidthBN:
 
-	int m_nWidthEndInvCell;		//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
-	MetricUnits m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
+	int				m_nWidthEndInvCell;				//trwWidthAN	Width of invisible cell at the end of the row. Used only when rows have different widths.
+	_MetricUnits	m_eMUEndInvCell;		//trftsWidthAN	Units for \trwWidthAN:
 
-	int m_nGridBefore; //для oox
-	int m_nGridAfter; //для oox
+	int m_nGridBefore;	//для oox
+	int m_nGridAfter;	//для oox
 
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCol;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCol;		//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCol;		// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCol;		// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;	// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;	// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			// tscnecell	NE cell
+	int m_bStyleSWCell;			// tscswcell	SW cell.
+	int m_bStyleSECell;			// tscsecell	SE cell.
+
+	int m_nTrAuth;
+	int m_nTrDate;
+
+	RtfRowPropertyPtr	m_pOldRowProperty;
 
 	RtfRowProperty()
 	{
@@ -2506,6 +2450,13 @@ public:
 	void SetDefault()
 	{
 		RtfTableProperty::SetDefault();
+//не SetEmpty() !!!		
+		m_oBorderLeft.SetDefault();
+		m_oBorderRight.SetDefault();
+		m_oBorderTop.SetDefault();
+		m_oBorderBottom.SetDefault();
+		m_oBorderVert.SetDefault();
+		m_oBorderHor.SetDefault();
 
 		DEFAULT_PROPERTY( m_nIndex )
 		DEFAULT_PROPERTY( m_nBandIndex )
@@ -2536,6 +2487,11 @@ public:
 		DEFAULT_PROPERTY( m_bStyleNECell )
 		DEFAULT_PROPERTY( m_bStyleSWCell )
 		DEFAULT_PROPERTY( m_bStyleSECell )
+	
+		DEFAULT_PROPERTY( m_nTrAuth)
+		DEFAULT_PROPERTY( m_nTrDate)
+
+		m_pOldRowProperty = RtfRowPropertyPtr(NULL);
 	}
 	bool IsValid()
 	{
@@ -2545,68 +2501,75 @@ public:
 	{
 		RtfTableProperty::Merge( oRowPr );
 
-		MERGE_PROPERTY( m_nIndex, oRowPr )
-		MERGE_PROPERTY( m_nBandIndex, oRowPr )
-		MERGE_PROPERTY( m_bLastRow, oRowPr )
+		MERGE_PROPERTY( m_nIndex,		oRowPr )
+		MERGE_PROPERTY( m_nBandIndex,	oRowPr )
+		MERGE_PROPERTY( m_bLastRow,		oRowPr )
 
-		MERGE_PROPERTY( m_nAutoFit, oRowPr )
-		MERGE_PROPERTY( m_bIsHeader, oRowPr )
-		MERGE_PROPERTY( m_bKeep, oRowPr )
+		MERGE_PROPERTY( m_nAutoFit,		oRowPr )
+		MERGE_PROPERTY( m_bIsHeader,	oRowPr )
+		MERGE_PROPERTY( m_bKeep,		oRowPr )
 
-		MERGE_PROPERTY( m_nHeight, oRowPr )
+		MERGE_PROPERTY( m_nHeight,		oRowPr )
 
-		MERGE_PROPERTY( m_nWidthStartInvCell, oRowPr )
-		MERGE_PROPERTY_DEF( m_eMUStartInvCell, oRowPr, mu_none )
-		MERGE_PROPERTY( m_nWidthEndInvCell, oRowPr )
-		MERGE_PROPERTY_DEF( m_eMUEndInvCell, oRowPr, mu_none )
+		MERGE_PROPERTY		( m_nWidthStartInvCell,	oRowPr )
+		MERGE_PROPERTY_DEF	( m_eMUStartInvCell,	oRowPr, mu_none )
+		MERGE_PROPERTY		( m_nWidthEndInvCell,	oRowPr )
+		MERGE_PROPERTY_DEF	( m_eMUEndInvCell,		oRowPr, mu_none )
 
-		MERGE_PROPERTY_DEF( m_nGridBefore, oRowPr, mu_none )
-		MERGE_PROPERTY_DEF( m_nGridAfter, oRowPr, mu_none )
+		MERGE_PROPERTY_DEF	( m_nGridBefore,		oRowPr, mu_none )
+		MERGE_PROPERTY_DEF	( m_nGridAfter,			oRowPr, mu_none )
 
-		MERGE_PROPERTY( m_bStyleFirstRow, oRowPr )
-		MERGE_PROPERTY( m_bStyleLastRow, oRowPr )
-		MERGE_PROPERTY( m_bStyleFirstCol, oRowPr )
-		MERGE_PROPERTY( m_bStyleLastCol, oRowPr )
-		MERGE_PROPERTY( m_bStyleOddRowBand, oRowPr )
-		MERGE_PROPERTY( m_bStyleEvenRowBand, oRowPr )
-		MERGE_PROPERTY( m_bStyleOddColBand, oRowPr )
-		MERGE_PROPERTY( m_bStyleEvenColBand, oRowPr )
-		MERGE_PROPERTY( m_bStyleNWCell, oRowPr )
-		MERGE_PROPERTY( m_bStyleNECell, oRowPr )
-		MERGE_PROPERTY( m_bStyleSWCell, oRowPr )
-		MERGE_PROPERTY( m_bStyleSECell, oRowPr )
+		MERGE_PROPERTY( m_bStyleFirstRow,		oRowPr )
+		MERGE_PROPERTY( m_bStyleLastRow,		oRowPr )
+		MERGE_PROPERTY( m_bStyleFirstCol,		oRowPr )
+		MERGE_PROPERTY( m_bStyleLastCol,		oRowPr )
+		MERGE_PROPERTY( m_bStyleOddRowBand,		oRowPr )
+		MERGE_PROPERTY( m_bStyleEvenRowBand,	oRowPr )
+		MERGE_PROPERTY( m_bStyleOddColBand,		oRowPr )
+		MERGE_PROPERTY( m_bStyleEvenColBand,	oRowPr )
+		MERGE_PROPERTY( m_bStyleNWCell,			oRowPr )
+		MERGE_PROPERTY( m_bStyleNECell,			oRowPr )
+		MERGE_PROPERTY( m_bStyleSWCell,			oRowPr )
+		MERGE_PROPERTY( m_bStyleSECell,			oRowPr )
+		
+		MERGE_PROPERTY( m_nTrAuth,				oRowPr )
+		MERGE_PROPERTY( m_nTrDate,				oRowPr )
 	}
 
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
 
+//----------------------------------------------------------------------------------------------------------
+class RtfParagraphProperty;
+typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 
 class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
-	bool	m_bOldList;
-
+	bool					m_bOldList;
+	RtfParagraphPropertyPtr m_pOldParagraphProp;
+//-------------
 	int		m_bAutoHyphenation;	//hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
 	int		m_bInTable;			//intbl	Paragraph is part of a table.
 	int		m_nItap;			//itapN	Paragraph nesting level, where 0 is the main document, 1 is a table cell, 2 is a nested table cell, 3 is a doubly nested table cell, and so forth (default is 1).
 	int		m_bKeep;			//keep	Keep paragraph intact (completely on one page if possible).
 	int		m_bKeepNext;		//keepn	Keep paragraph with the next paragraph.
 	int		m_bPageBB;			//pagebb	Break page before the paragraph.
-	int		m_nOutlinelevel;	//\outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
+	int		m_nOutlinelevel;	// outlinelevelN	Outline level of paragraph. The N argument is a value from 0 to 8 representing the outline level of the paragraph. In the default case, no outline level is specified (same as body text).
 	int		m_nStyle;			//sN	Designates paragraph style. If a paragraph style is specified, style properties must be specified with the paragraph. N references an entry in the style sheet.
 
 	typedef enum 
 	{
 		pa_none,
-		pa_qc,		//qc	Centered.
-		pa_qj,		//qj	Justified.
-		pa_ql,		//ql	Left-aligned (the default).
-		pa_qr,		//qr	Right-aligned.
-		pa_qd,		//qd	Distributed.
-		pa_qk0,		//qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
-		pa_qk10,	//
-		pa_qk20,	//
+		pa_qc,					//qc	Centered.
+		pa_qj,					//qj	Justified.
+		pa_ql,					//ql	Left-aligned (the default).
+		pa_qr,					//qr	Right-aligned.
+		pa_qd,					//qd	Distributed.
+		pa_qk0,					//qkN	Percentage of line occupied by Kashida justification (0 – low, 10 – medium, 20 – high).
+		pa_qk10,
+		pa_qk20,
 	} ParagraphAlign;
 	
 	ParagraphAlign m_eAlign;
@@ -2614,88 +2577,92 @@ public:
 	typedef enum 
 	{
 		fa_none,
-		fa_faauto,	//faauto	Font alignment. The default setting for this is "Auto."
-		fa_fahang,	//fahang	Font alignment: Hanging.
-		fa_facenter,	//facenter	Font alignment: Center.
-		fa_faroman,	//faroman	Font alignment: Roman (default).
-		fa_favar,	//favar	Font alignment: Upholding variable.
-		fa_fafixed,	//fafixed	Font alignment: Upholding fixed.
+		fa_faauto,				//faauto	Font alignment. The default setting for this is "Auto."
+		fa_fahang,				//fahang	Font alignment: Hanging.
+		fa_facenter,			//facenter	Font alignment: Center.
+		fa_faroman,				//faroman	Font alignment: Roman (default).
+		fa_favar,				//favar	Font alignment: Upholding variable.
+		fa_fafixed,				//fafixed	Font alignment: Upholding fixed.
 	} FontAlign;
 	
 	FontAlign m_eFontAlign;
 
 	int m_nIndFirstLine;		//fiN	First-line indent in twips (default is 0).
-	int m_nIndLeft;		//liN	Left indent in twips (default is 0).
-	int m_nIndRight;		//riN	Right indent in twips (default is 0).
-	int m_nIndStart;		//linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
-	int m_nIndEnd;		//rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
+	int m_nIndLeft;				//liN	Left indent in twips (default is 0).
+	int m_nIndRight;			//riN	Right indent in twips (default is 0).
+	int m_nIndStart;			//linN	Left indent for left-to-right paragraphs; right indent for right-to-left paragraphs (default is 0). \linN defines space before the paragraph.
+	int m_nIndEnd;				//rinN	Right indent for left-to-right paragraphs; left indent for right-to-left paragraphs (default is 0). \rinN defines space after the paragraph.
 	int m_bIndRightAuto;		//adjustright	Automatically adjust right indent when document grid is defined.
-	int m_bIndMirror;		//indmirror...
+	int m_bIndMirror;			//indmirror...
 
-	int m_nSpaceBefore;		//sbN	Space before in twips (default is 0).
-	int m_nSpaceAfter;		//saN	Space after in twips (default is 0).
+	int m_nSpaceBefore;			//sbN	Space before in twips (default is 0).
+	int m_nSpaceAfter;			//saN	Space after in twips (default is 0).
 	int m_nSpaceBeforeAuto;		//sbautoN	Auto spacing before:
 	int m_nSpaceAfterAuto;		//saautoN	Auto spacing after:
 	int m_nSpaceBeforeLine;		//lisbN	Space before in hundredths of a character unit. Overrides \sbN, although they should both be emitted with equivalent values.
 	int m_nSpaceAfterLine;		//lisaN	Space after in hundredths of a character unit. Overrides \saN, although they should both be emitted with equivalent values.
 	int m_nSpaceBetween;		//slN	Space between lines. If this control word is missing or if \sl0 is used, the line spacing is automatically determined by the tallest character in the line. If N is a positive value, this size is used only if it is taller than the tallest character (otherwise, the tallest character is used); if N is a negative value, the absolute value of N is used, even if it is shorter than the tallest character.
 	int m_nSpaceMultiLine;		//slmultN
-	int m_bContextualSpacing;		//contextualspace
+	int m_bContextualSpacing;	//contextualspace
 
-	int m_bRtl;		//rtlpar	Text in this paragraph will display with right-to-left precedence.
-	int m_bNoWordWrap;		//nowwrap
-	int m_bSnapToGrid;		//nosnaplinegrid	Disable snap line to grid.
+	int m_bRtl;					//rtlpar	Text in this paragraph will display with right-to-left precedence.
+	int m_bNoWordWrap;			//nowwrap
+	int m_bSnapToGrid;			//nosnaplinegrid	Disable snap line to grid.
 
-	typedef enum {tbw_none,
-					tbw_txbxtwno,	//txbxtwno
-					tbw_txbxtwalways,	//txbxtwalways
-					tbw_txbxtwfirstlast,	//txbxtwfirstlast
-					tbw_txbxtwfirst,	//txbxtwfirst
-					tbw_txbxtwlast,	//txbxtwlast
+	enum _TextBoxWrap
+	{
+		tbw_none,
+		tbw_txbxtwno,			//txbxtwno
+		tbw_txbxtwalways,		//txbxtwalways
+		tbw_txbxtwfirstlast,	//txbxtwfirstlast
+		tbw_txbxtwfirst,		//txbxtwfirst
+		tbw_txbxtwlast,			//txbxtwlast
+	}			m_eTextBoxWrap;
+	int			m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
+	int			m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
 
-						} TextBoxWrap;
-	TextBoxWrap m_eTextBoxWrap; //1
-	int m_nListId;		//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
-	int m_nListLevel;		//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
+	RtfShadingPar m_oShading;
 
-	RtfShadingPar m_oShading; //
+	RtfBorder m_oBorderTop;
+	RtfBorder m_oBorderLeft;
+	RtfBorder m_oBorderBottom;
+	RtfBorder m_oBorderRight;
+	RtfBorder m_oBorderBox;
+	RtfBorder m_oBorderBar;
 
-	RtfBorder m_oBorderTop; //
-	RtfBorder m_oBorderLeft; //
-	RtfBorder m_oBorderBottom; //
-	RtfBorder m_oBorderRight; //
-	RtfBorder m_oBorderBox; //
-	RtfBorder m_oBorderBar; //
-
-	RtfFrame m_oFrame; //
-	int m_bOverlap;		//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
-	typedef enum{tf_none,
-			tf_frmtxlrtb,	//frmtxlrtb	Frame box flows from left to right and top to bottom (default).
-			tf_frmtxtbrl,	//frmtxtbrl	Frame box flows right to left and top to bottom.
-			tf_frmtxbtlr,	//frmtxbtlr	Frame box flows left to right and bottom to top.
-			tf_frmtxlrtbv,	//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
-			tf_frmtxtbrlv //frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
-				} TextFollow;
-	TextFollow m_eTextFollow;
-	RtfTabs m_oTabs;
+	RtfFrame	m_oFrame;
+	int			m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
+	enum _TextFollow
+	{
+		tf_none,
+		tf_frmtxlrtb,		//frmtxlrtb	Frame box flows from left to right and top to bottom (default).
+		tf_frmtxtbrl,		//frmtxtbrl	Frame box flows right to left and top to bottom.
+		tf_frmtxbtlr,		//frmtxbtlr	Frame box flows left to right and bottom to top.
+		tf_frmtxlrtbv,		//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
+		tf_frmtxtbrlv		//frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
+	}			m_eTextFollow;
+	RtfTabs		m_oTabs;
 
 //Table Style Specific
-	int m_nTableStyle;		//\ytsN	Designates the table style handle that was applied to the row/cell.
-	int m_bStyleFirstRow;		//\tscfirstrow	This cell is in the first row.
-	int m_bStyleLastRow;		//\tsclastrow	This cell is in the last row.
-	int m_bStyleFirstCollumn;		//\tscfirstcol	This cell is in the first column.
-	int m_bStyleLastCollumn;		//\tsclastcol	This cell is in the last column.
-	int m_bStyleOddRowBand;		//\tscbandhorzodd	This cell is in the odd row band.
-	int m_bStyleEvenRowBand;		//\tscbandhorzeven	This cell is in the even row band.
-	int m_bStyleOddColBand;		//\tscbandvertodd	This cell is in the odd column band.
-	int m_bStyleEvenColBand;		//\tscbandverteven	This cell is in the even column band.
-	int m_bStyleNWCell;		//\tscnwcell	This is the NW (north west) cell in the table (upper left).
-	int m_bStyleNECell;		//\tscnecell	NE cell.
-	int m_bStyleSWCell;		//\tscswcell	SW cell.
-	int m_bStyleSECell;		//\tscsecell	SE cell.
-
+	int m_nTableStyle;			// ytsN	Designates the table style handle that was applied to the row/cell.
+	int m_bStyleFirstRow;		// tscfirstrow	This cell is in the first row.
+	int m_bStyleLastRow;		// tsclastrow	This cell is in the last row.
+	int m_bStyleFirstCollumn;	// tscfirstcol	This cell is in the first column.
+	int m_bStyleLastCollumn;	// tsclastcol	This cell is in the last column.
+	int m_bStyleOddRowBand;		// tscbandhorzodd	This cell is in the odd row band.
+	int m_bStyleEvenRowBand;	// tscbandhorzeven	This cell is in the even row band.
+	int m_bStyleOddColBand;		// tscbandvertodd	This cell is in the odd column band.
+	int m_bStyleEvenColBand;	// tscbandverteven	This cell is in the even column band.
+	int m_bStyleNWCell;			// tscnwcell	This is the NW (north west) cell in the table (upper left).
+	int m_bStyleNECell;			// tscnecell	NE cell.
+	int m_bStyleSWCell;			// tscswcell	SW cell.
+	int m_bStyleSECell;			// tscsecell	SE cell.
+	
+	int m_nPrAuth;
+	int m_nPrDate;
+	
 	RtfCharProperty		m_oCharProperty;
-
+//--------------------------------------------------------------------------------------------------------------
 	RtfParagraphProperty()
 	{
 		SetDefault();
@@ -2735,7 +2702,6 @@ public:
 		DEFAULT_PROPERTY( m_nIndEnd )
 		DEFAULT_PROPERTY( m_bIndRightAuto )
 		DEFAULT_PROPERTY( m_bIndMirror )
-
 
 		DEFAULT_PROPERTY( m_nSpaceBefore )
 		
@@ -2785,76 +2751,81 @@ public:
 		DEFAULT_PROPERTY( m_bStyleSWCell )
 		DEFAULT_PROPERTY( m_bStyleSECell )
 
+		DEFAULT_PROPERTY( m_nPrAuth)
+		DEFAULT_PROPERTY( m_nPrDate)
+		
 		m_oCharProperty.SetDefault();
 
-		m_bOldList = false;
+		m_bOldList			= false;
+		m_pOldParagraphProp = RtfParagraphPropertyPtr(NULL);
 	}
 	void Merge( RtfParagraphProperty& oParPr )
 	{
-		MERGE_PROPERTY( m_bAutoHyphenation, oParPr )
-		MERGE_PROPERTY( m_bInTable, oParPr )
-		MERGE_PROPERTY( m_nItap, oParPr )
-		MERGE_PROPERTY( m_bKeep, oParPr )
-		MERGE_PROPERTY( m_bKeepNext, oParPr )
-		MERGE_PROPERTY( m_bPageBB, oParPr )
-		MERGE_PROPERTY( m_nOutlinelevel, oParPr )
-		MERGE_PROPERTY( m_nStyle, oParPr )
-		MERGE_PROPERTY_DEF( m_eAlign, oParPr, pa_none )
-		MERGE_PROPERTY_DEF( m_eFontAlign, oParPr, fa_none )
-		MERGE_PROPERTY( m_nIndFirstLine, oParPr )
-		MERGE_PROPERTY( m_nIndLeft, oParPr )
-		MERGE_PROPERTY( m_nIndRight, oParPr )
-		MERGE_PROPERTY( m_nIndStart, oParPr )
-		MERGE_PROPERTY( m_nIndEnd, oParPr )
-		MERGE_PROPERTY( m_bIndRightAuto, oParPr )
-		MERGE_PROPERTY( m_bIndMirror, oParPr )
+		MERGE_PROPERTY		( m_bAutoHyphenation,	oParPr )
+		MERGE_PROPERTY		( m_bInTable,			oParPr )
+		MERGE_PROPERTY		( m_nItap,				oParPr )
+		MERGE_PROPERTY		( m_bKeep,				oParPr )
+		MERGE_PROPERTY		( m_bKeepNext,			oParPr )
+		MERGE_PROPERTY		( m_bPageBB,			oParPr )
+		MERGE_PROPERTY		( m_nOutlinelevel,		oParPr )
+		MERGE_PROPERTY		( m_nStyle,				oParPr )
+		MERGE_PROPERTY_DEF	( m_eAlign,				oParPr, pa_none )
+		MERGE_PROPERTY_DEF	( m_eFontAlign,			oParPr, fa_none )
+		MERGE_PROPERTY		( m_nIndFirstLine,		oParPr )
+		MERGE_PROPERTY		( m_nIndLeft,			oParPr )
+		MERGE_PROPERTY		( m_nIndRight,			oParPr )
+		MERGE_PROPERTY		( m_nIndStart,			oParPr )
+		MERGE_PROPERTY		( m_nIndEnd,			oParPr )
+		MERGE_PROPERTY		( m_bIndRightAuto,		oParPr )
+		MERGE_PROPERTY		( m_bIndMirror,			oParPr )
 
-		MERGE_PROPERTY( m_nSpaceBefore, oParPr )
-		MERGE_PROPERTY( m_nSpaceAfter, oParPr )
-		MERGE_PROPERTY( m_nSpaceBeforeAuto, oParPr )
-		MERGE_PROPERTY( m_nSpaceAfterAuto, oParPr )
-		MERGE_PROPERTY( m_nSpaceBeforeLine, oParPr )
-		MERGE_PROPERTY( m_nSpaceAfterLine, oParPr )
-		MERGE_PROPERTY( m_nSpaceBetween, oParPr )
-		MERGE_PROPERTY( m_nSpaceMultiLine, oParPr )
-		MERGE_PROPERTY( m_bSnapToGrid, oParPr )
-		MERGE_PROPERTY( m_bContextualSpacing, oParPr )
+		MERGE_PROPERTY		( m_nSpaceBefore,		oParPr )
+		MERGE_PROPERTY		( m_nSpaceAfter,		oParPr )
+		MERGE_PROPERTY		( m_nSpaceBeforeAuto,	oParPr )
+		MERGE_PROPERTY		( m_nSpaceAfterAuto,	oParPr )
+		MERGE_PROPERTY		( m_nSpaceBeforeLine,	oParPr )
+		MERGE_PROPERTY		( m_nSpaceAfterLine,	oParPr )
+		MERGE_PROPERTY		( m_nSpaceBetween,		oParPr )
+		MERGE_PROPERTY		( m_nSpaceMultiLine,	oParPr )
+		MERGE_PROPERTY		( m_bSnapToGrid,		oParPr )
+		MERGE_PROPERTY		( m_bContextualSpacing, oParPr )
 
-		MERGE_PROPERTY( m_bRtl, oParPr )
-		MERGE_PROPERTY( m_bNoWordWrap, oParPr )
-		MERGE_PROPERTY_DEF( m_eTextBoxWrap, oParPr, tbw_none )
+		MERGE_PROPERTY		( m_bRtl,			oParPr )
+		MERGE_PROPERTY		( m_bNoWordWrap,	oParPr )
+		MERGE_PROPERTY_DEF	( m_eTextBoxWrap,	oParPr, tbw_none )
 
-		MERGE_PROPERTY( m_nListId, oParPr )
-		MERGE_PROPERTY( m_nListLevel, oParPr )
+		MERGE_PROPERTY		( m_nListId,	oParPr )
+		MERGE_PROPERTY		( m_nListLevel, oParPr )
 
-		m_oShading.Merge( oParPr.m_oShading );
-		m_oBorderTop.Merge( oParPr.m_oBorderTop );
-		m_oBorderLeft.Merge( oParPr.m_oBorderLeft );
-		m_oBorderBottom.Merge( oParPr.m_oBorderBottom );
-		m_oBorderRight.Merge( oParPr.m_oBorderRight );
-		m_oBorderBox.Merge( oParPr.m_oBorderBox );
-		m_oBorderBar.Merge( oParPr.m_oBorderBar );
+		m_oShading.Merge		( oParPr.m_oShading		);
+		m_oBorderTop.Merge		( oParPr.m_oBorderTop	);
+		m_oBorderLeft.Merge		( oParPr.m_oBorderLeft	);
+		m_oBorderBottom.Merge	( oParPr.m_oBorderBottom );
+		m_oBorderRight.Merge	( oParPr.m_oBorderRight );
+		m_oBorderBox.Merge		( oParPr.m_oBorderBox	);
+		m_oBorderBar.Merge		( oParPr.m_oBorderBar	);
+		m_oFrame.Merge			( oParPr.m_oFrame );
+		m_oTabs.Merge			( oParPr.m_oTabs );
 
-		m_oFrame.Merge( oParPr.m_oFrame );
+		MERGE_PROPERTY			( m_bOverlap,		oParPr )
+		MERGE_PROPERTY_DEF		( m_eTextFollow,	oParPr, tf_none )
+		
+		MERGE_PROPERTY( m_nTableStyle,			oParPr )
+		MERGE_PROPERTY( m_bStyleFirstRow,		oParPr )
+		MERGE_PROPERTY( m_bStyleLastRow,		oParPr )
+		MERGE_PROPERTY( m_bStyleFirstCollumn,	oParPr )
+		MERGE_PROPERTY( m_bStyleLastCollumn,	oParPr )
+		MERGE_PROPERTY( m_bStyleOddRowBand,		oParPr )
+		MERGE_PROPERTY( m_bStyleEvenRowBand,	oParPr )
+		MERGE_PROPERTY( m_bStyleOddColBand,		oParPr )
+		MERGE_PROPERTY( m_bStyleEvenColBand,	oParPr )
+		MERGE_PROPERTY( m_bStyleNWCell,			oParPr )
+		MERGE_PROPERTY( m_bStyleNECell,			oParPr )
+		MERGE_PROPERTY( m_bStyleSWCell,			oParPr )
+		MERGE_PROPERTY( m_bStyleSECell,			oParPr )
 
-		MERGE_PROPERTY( m_bOverlap, oParPr )
-		MERGE_PROPERTY_DEF( m_eTextFollow, oParPr, tf_none )
-
-		m_oTabs.Merge( oParPr.m_oTabs );
-
-		MERGE_PROPERTY( m_nTableStyle, oParPr )
-		MERGE_PROPERTY( m_bStyleFirstRow, oParPr )
-		MERGE_PROPERTY( m_bStyleLastRow, oParPr )
-		MERGE_PROPERTY( m_bStyleFirstCollumn, oParPr )
-		MERGE_PROPERTY( m_bStyleLastCollumn, oParPr )
-		MERGE_PROPERTY( m_bStyleOddRowBand, oParPr )
-		MERGE_PROPERTY( m_bStyleEvenRowBand, oParPr )
-		MERGE_PROPERTY( m_bStyleOddColBand, oParPr )
-		MERGE_PROPERTY( m_bStyleEvenColBand, oParPr )
-		MERGE_PROPERTY( m_bStyleNWCell, oParPr )
-		MERGE_PROPERTY( m_bStyleNECell, oParPr )
-		MERGE_PROPERTY( m_bStyleSWCell, oParPr )
-		MERGE_PROPERTY( m_bStyleSECell, oParPr )
+		MERGE_PROPERTY( m_nPrAuth,				oParPr )
+		MERGE_PROPERTY( m_nPrDate,				oParPr )
 
 		//m_oCharProperty.Merge( oParPr.m_oCharProperty );
 	}
@@ -2887,7 +2858,7 @@ public:
 //		{
 //			CString sResult;
 //			sResult += m_oRowProperty.RenderToRtf(  oRenderParameter  );
-//			sResult += _T(" {") + RtfParagraphProperty::RenderToRtf(  oRenderParameter  )+_T(" }");
+//			sResult += L" {" + RtfParagraphProperty::RenderToRtf(  oRenderParameter  ) + L" }";
 //			return sResult;
 //		}
 //};
@@ -2974,17 +2945,17 @@ public:
 	}
 	void SetDefault()
 	{
-		m_sTitle = _T("");
-		m_sSubject = _T("");
-		m_sAuthor = _T("");
-		m_sManager = _T("");
-		m_sCompany = _T("");
-		m_sOperator = _T("");
-		m_sCategory = _T("");
-		m_sKeywords = _T("");
-		m_sComment = _T("");
-		m_sDocCom = _T("");
-		m_sLinkBase = _T("");
+		m_sTitle = L"";
+		m_sSubject = L"";
+		m_sAuthor = L"";
+		m_sManager = L"";
+		m_sCompany = L"";
+		m_sOperator = L"";
+		m_sCategory = L"";
+		m_sKeywords = L"";
+		m_sComment = L"";
+		m_sDocCom = L"";
+		m_sLinkBase = L"";
 		m_oCreateTime.SetDefault();
 		m_oRevTime.SetDefault();
 		m_oPrintTime.SetDefault();
@@ -3041,9 +3012,10 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
 };
-
+//---------------------------------------------------------------------------------------
 class RtfTableStyle;
 typedef boost::shared_ptr<RtfTableStyle> RtfTableStylePtr;
+
 class RtfTableStyle: public RtfParagraphStyle
 {
 public: 
@@ -3101,18 +3073,15 @@ typedef boost::shared_ptr<RtfCharStyle>				RtfCharStylePtr;
 typedef boost::shared_ptr<RtfParagraphStyle>		RtfParagraphStylePtr;
 typedef boost::shared_ptr<RtfInformation>			RtfInformationPtr;
 typedef boost::shared_ptr<RtfTime>					RtfTimePtr;
-typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 typedef boost::shared_ptr<RtfRowProperty>			RtfRowPropertyPtr;
 typedef boost::shared_ptr<RtfCellProperty>			RtfCellPropertyPtr;
 typedef boost::shared_ptr<RtfFrame>					RtfFramePtr;
 typedef boost::shared_ptr<RtfTableProperty>			RtfTablePropertyPtr;
 typedef boost::shared_ptr<RtfTab>					RtfTabPtr;
-//typedef boost::shared_ptr<RtfStyleException>		RtfStyleExceptionPtr;
 
 typedef boost::shared_ptr<RtfListOverrideProperty>	RtfListOverridePropertyPtr;
 typedef boost::shared_ptr<RtfListProperty>			RtfListPropertyPtr;
 typedef boost::shared_ptr<RtfListLevelProperty>		RtfListLevelPropertyPtr;
-typedef boost::shared_ptr<RtfCharProperty>			RtfCharPropertyPtr;
 typedef boost::shared_ptr<RtfBorder>				RtfBorderPtr;
 typedef boost::shared_ptr<RtfShadingTableStyle>		RtfShadingTableStylePtr;
 typedef boost::shared_ptr<RtfShadingRow>			RtfShadingRowPtr;
@@ -3122,4 +3091,3 @@ typedef boost::shared_ptr<RtfShadingPar>			RtfShadingParPtr;
 typedef boost::shared_ptr<RtfShading>				RtfShadingPtr;
 typedef boost::shared_ptr<RtfColor>					RtfColorPtr;
 typedef boost::shared_ptr<RtfFont>					RtfFontPtr;
-//typedef boost::shared_ptr<RtfColorSchemeMapping> RtfColorSchemeMappingPtr;

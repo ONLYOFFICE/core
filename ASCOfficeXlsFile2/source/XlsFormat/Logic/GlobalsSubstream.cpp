@@ -95,6 +95,8 @@
 #include <Logic/Biff_records/DXF.h>
 #include <Logic/Biff_unions/STYLES.h>
 
+#include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
+
 namespace XLS
 {;
 
@@ -183,6 +185,8 @@ WORKBOOK = BOF WORKBOOKCONTENT
 const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 {
 	int	count = 0;
+
+	global_info_ = proc.getGlobalWorkbookInfo();
 	
 	while (true)
 	{
@@ -210,7 +214,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					}
 				}
 			}break;
-			case rt_WriteProtect:	proc.optional<WriteProtect>();	break;
+			case rt_WriteProtect:	
+			{
+				if (proc.optional<WriteProtect>())
+				{
+					m_WriteProtect = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FilePass:		
 			{
 				if (proc.optional<FilePass>())
@@ -218,11 +229,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
 						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
 					{
-						if (proc.getGlobalWorkbookInfo()->password.empty())
-						{
-							if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
-								return false;
-						}else return false;
+						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop", 2))
+							return false;
 					}
 				}
 			}break;
@@ -245,7 +253,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_CodeName:			proc.optional<CodeName>();		break;
 			case rt_BuiltInFnGroupCount:proc.optional<FNGROUPS>();		break;
 			case rt_OleObjectSize:		proc.optional<OleObjectSize>();	break;
-			case rt_WinProtect:			proc.optional<PROTECTION>();	break;
+			case rt_WinProtect:			
+			{
+				if (proc.optional<PROTECTION>())
+				{
+					m_PROTECTION = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_FileSharing:		proc.optional<FileSharing>();	break;
 			case rt_CodePage:
 			{
@@ -303,14 +318,32 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.mandatory<FORMATTING>())
 				{
-					m_Formating = elements_.back();
-					elements_.pop_back();
-
-					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
-					if (fmts)
+					if (!m_Formating )
 					{
-						proc.getGlobalWorkbookInfo()->m_arFonts = &fmts->m_arFonts;
+						m_Formating = elements_.back();
+						elements_.pop_back();
+						FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+
+						if (fmts)
+						{		
+							proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+							proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+						}
 					}
+					//else
+					//{
+					//	FORMATTING* fmts		= dynamic_cast<FORMATTING*>(m_Formating.get());
+					//	FORMATTING* fmts_add	= dynamic_cast<FORMATTING*>(elements_.back().get());
+
+					//	if (fmts && fmts_add)
+					//	{
+					//		fmts->concatinate(fmts_add);
+					//		elements_.pop_back();
+
+					//		proc.getGlobalWorkbookInfo()->cellStyleDxfs_count	= fmts->m_arDXF.size(); 
+					//		proc.getGlobalWorkbookInfo()->m_arFonts				= &fmts->m_arFonts;
+					//	}
+					//}
 				}		
 			}break;
 			case rt_SXStreamID:			proc.repeated<PIVOTCACHEDEFINITION>(0, 0);	break;
@@ -467,8 +500,50 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			}
 		}
 	}
+	LoadHFPicture();	
 
 	return true;
+}
+
+void GlobalsSubstream::LoadHFPicture()
+{
+	if (m_arHFPicture.empty()) return;
+
+	int current_size_hf = 0, j = 0;
+	for ( int i = 0; i < m_arHFPicture.size(); i++)
+	{
+		HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[i].get());
+		if ((hf) && (hf->recordDrawingGroup))
+		{
+			if (!hf->fContinue && current_size_hf > 0)
+			{
+				XLS::CFRecord record(CFRecordType::ANY_TYPE, global_info_);
+				for (; j < i; j++)
+				{
+					hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
+					record.appendRawData(hf->recordDrawingGroup);
+				}
+				ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
+				rgDrawing->loadFields(record);
+				m_arHFPictureDrawing.push_back(rgDrawing);
+				current_size_hf = 0;
+
+			}
+			current_size_hf += hf->recordDrawingGroup->getDataSize();
+		}
+	}
+	if (current_size_hf > 0)
+	{
+		XLS::CFRecord record(ODRAW::OfficeArtRecord::DggContainer, global_info_);
+		for (; j < m_arHFPicture.size(); j++)
+		{
+			HFPicture* hf = dynamic_cast<HFPicture*>(m_arHFPicture[j].get());
+			record.appendRawData(hf->recordDrawingGroup);
+		}
+		ODRAW::OfficeArtDgContainerPtr rgDrawing = ODRAW::OfficeArtDgContainerPtr(new ODRAW::OfficeArtDgContainer(ODRAW::OfficeArtRecord::CA_HF));
+		rgDrawing->loadFields(record);
+		m_arHFPictureDrawing.push_back(rgDrawing);
+	}
 }
 
 } // namespace XLS

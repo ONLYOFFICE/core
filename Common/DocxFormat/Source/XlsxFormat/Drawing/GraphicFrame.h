@@ -58,7 +58,7 @@ namespace OOX
 			{
 				return _T("<xdr:cNvGraphicFramePr/>");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:cNvGraphicFramePr/>"));
 			}
@@ -72,7 +72,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("picLocks") == sName )
 						m_oPicLocks = oReader;
@@ -120,11 +120,16 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<xdr:nvGraphicFramePr>"));
 
-				if (m_oCNvPr.IsInit())				m_oCNvPr->toXML(writer);
+				if (m_oCNvPr.IsInit())
+				{
+					CString sCNvPr = m_oCNvPr->toXML();
+					writer.WriteString(sCNvPr.GetBuffer());
+					sCNvPr.ReleaseBuffer();
+				}
 				else								writer.WriteString(_T("<xdr:cNvPr id=\"1\" name=\"diagram\"/>"));
 
 				if (m_oCNvGraphicFramePr.IsInit())	m_oCNvGraphicFramePr->toXML(writer);
@@ -141,7 +146,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
@@ -184,7 +189,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -233,7 +238,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -246,7 +251,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("chart") == sName )
 					{
@@ -276,7 +281,7 @@ namespace OOX
 			}
 		public:
 			nullable<CGraphicChart>		m_oChart;
-			nullable<CString>			m_sSpId;
+			nullable<std::wstring>			m_sSpId;
 			//Any element in any namespace
 		};
 		
@@ -299,7 +304,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -312,7 +317,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("graphicData") == sName )
 						m_oGraphicData = oReader;
@@ -351,7 +356,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_oChartGraphic.IsInit() && m_oChartGraphic->m_oGraphicData.IsInit() && m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
 				{
@@ -368,7 +373,7 @@ namespace OOX
 						writer.WriteString(_T("<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">"));
 						writer.WriteString(_T("<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "));
 							writer.WriteString(_T("r:id=\""));
-								writer.WriteString(m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->ToString());
+								writer.WriteString(m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->ToString2());
 							writer.WriteString(_T("\"/>"));
 						writer.WriteString(_T("</a:graphicData>"));
 						writer.WriteString(_T("</a:graphic>"));
@@ -395,7 +400,7 @@ namespace OOX
 				int nCurDepth = oSubReader.GetDepth();
 				while( oSubReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
 
 					if ( _T("graphic") == sName )
 						m_oChartGraphic = oSubReader;

@@ -68,7 +68,7 @@ void draw_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void draw_shape::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_shape::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -449,7 +449,7 @@ void draw_enhanced_geometry::add_attributes( const xml::attributes_wc_ptr & Attr
 
 typedef shared_ptr<draw_handle> draw_handle_ptr;
 
-void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"draw", L"handle")
     {
@@ -467,8 +467,6 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const ::std::
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
-	word_art_ = false;
-
 	if (draw_enhanced_geometry_attlist_.draw_text_path_ &&
 			*draw_enhanced_geometry_attlist_.draw_text_path_ == true)
 	{
@@ -489,12 +487,13 @@ void draw_enhanced_geometry::find_draw_type_oox()
 			{
 				if (_OO_OOX_wordart[i].odf_reader == odf_type)
 				{
+					word_art_ = true;
 					draw_type_oox_index_ = i;
 					break;
 				}
 			}
 		}
-		else
+		if (!draw_type_oox_index_)
 		{
 			int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
 			int pos = odf_type.find(L"ooxml-");
@@ -546,7 +545,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		catch(...)
 		{
 		}
-		if (min <0 ) min=0;
+		if (min < 0 ) min=0;
 
 		try
 		{	

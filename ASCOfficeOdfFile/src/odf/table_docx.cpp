@@ -67,8 +67,8 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
 
-    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
-    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( style_ref(L"") ).style_name();
+    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or(L"");
+    const std::wstring defaultCellStyle = table_table_row_attlist_.table_default_cell_style_name_.get_value_or(L"");
 
     for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
     {
@@ -148,12 +148,12 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
 	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
 	
-	std::wstring tableStyleName = L"";
-	if (table_table_attlist_.table_style_name_)
-		tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
+	std::wstring tableStyleName = table_table_attlist_.table_style_name_.get_value_or(L"");
 
 	_Wostream << L"<w:tbl>";    
 
+	Context.start_changes(); //TblPrChange
+	
 	Context.get_table_context().start_table(tableStyleName);
 
     style_instance * inst = 
@@ -164,7 +164,8 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
     if (inst && inst->content())
         inst->content()->docx_convert(Context);
 
-	Context.get_styles_context().docx_serialize_table_style(_Wostream);
+
+	Context.get_styles_context().docx_serialize_table_style(_Wostream, Context.get_text_tracked_context().dumpTblPr_);
 
 	_Wostream << L"<w:tblGrid>";
 	table_columns_and_groups_.docx_convert(Context);
@@ -174,18 +175,6 @@ void table_table::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_table_context().end_table();
 	_Wostream << L"</w:tbl>";
-
-    if (office_element * elm = Context.get_section_properties_in_table())
-    {
-        if (Context.get_table_context().in_table())
-            Context.section_properties_in_table(elm);
-        else
-        {
-            _Wostream << L"<w:p><w:pPr>";
-            elm->docx_convert(Context);
-            _Wostream << L"</w:pPr></w:p>";            
-        }
-    }
 }
 
 void table_columns::docx_convert(oox::docx_conversion_context & Context)
@@ -246,14 +235,14 @@ void table_table_column::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
     const unsigned int columnsRepeated = table_table_column_attlist_.table_number_columns_repeated_;
-    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring defaultCellStyle = table_table_column_attlist_.table_default_cell_style_name_.get_value_or(L"");
     Context.get_table_context().start_column(columnsRepeated, defaultCellStyle);
 
     for (unsigned int i = 0; i < columnsRepeated; ++i)
     {
         if (table_table_column_attlist_.table_style_name_)
         {
-            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_->style_name();
+            const std::wstring colStyleName = table_table_column_attlist_.table_style_name_.get();
             if (style_instance * inst = 
                 Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,Context.process_headers_footers_ ))
             {
@@ -278,8 +267,7 @@ void table_table_cell::docx_convert(oox::docx_conversion_context & Context)
         _Wostream << L"<w:tc>";
         _Wostream << L"<w:tcPr>";
 
-		const std::wstring styleName = table_table_cell_attlist_.table_style_name_ ?
-            table_table_cell_attlist_.table_style_name_->style_name() : L""; 
+		const std::wstring styleName = table_table_cell_attlist_.table_style_name_.get_value_or(L""); 
 
 		//_Wostream << L"<w:tcW w:w=\"0\" w:type=\"auto\" />";
 		

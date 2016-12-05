@@ -62,7 +62,7 @@ class table_format_properties
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    bool add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
+    bool add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
    
 	void docx_convert(oox::docx_conversion_context & Context);
 
@@ -105,7 +105,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
  
     table_format_properties table_format_properties_;
 
@@ -143,7 +143,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     style_table_column_properties_attlist style_table_column_properties_attlist_;
@@ -186,7 +186,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     style_table_row_properties_attlist	style_table_row_properties_attlist_;
@@ -261,7 +261,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
     style_table_cell_properties_attlist style_table_cell_properties_attlist_;

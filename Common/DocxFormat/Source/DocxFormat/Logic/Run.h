@@ -118,7 +118,7 @@ namespace OOX
 					{
 						if ( oChilds.GetAt( nIndex, oItem ) )
 						{
-							CString sName = oItem.GetName();
+							std::wstring sName = oItem.GetName();
 							WritingElement *pItem = NULL;
 
 							if ( _T("w:annotationRef") == sName )
@@ -210,7 +210,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					WritingElement *pItem = NULL;
 
 					if ( _T("mc:AlternateContent") == sName )
@@ -329,8 +329,8 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
 				{
 					if ( _T("w:rsidDel") == wsName )
 						m_oRsidDel = oReader.GetText();

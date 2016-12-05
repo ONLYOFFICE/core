@@ -107,11 +107,27 @@ using namespace ATL;
 
 
 #ifndef _wtof
-    #include <string>
     #define _wtof std::stod
-    #define _wtoi std::stoi
+    //#define _wtoi std::stoi
     #define _wtoi64(p) std::wcstoll((p),NULL,10)
 
+    static int _wtoi(std::wstring sVal)
+    {
+        int iVal = 0;
+        try
+        {
+            iVal = std::stod(sVal.c_str());
+        }catch(...)
+        {
+            try
+            {
+                iVal = std::wcstoll(sVal.c_str(), NULL, 10);
+            }catch(...)
+            {
+            }
+        }
+        return iVal;
+    }
     #ifdef UNICODE
         #define _ttoi _wtoi
         #define _tstof _wtof

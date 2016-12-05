@@ -51,7 +51,7 @@ namespace odf_writer {
 
 using xml::xml_char_wc;
 
-// style:tab-stop
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_tab_stop::ns = L"style";
 const wchar_t * style_tab_stop::name = L"tab-stop";
@@ -75,7 +75,6 @@ void style_tab_stop::serialize(std::wostream & strm)
 		}
 	}
 }
-// style:tab-stop
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_tab_stops::ns = L"style";
 const wchar_t * style_tab_stops::name = L"tab-stops";
@@ -97,7 +96,7 @@ void style_tab_stops::add_child_element( const office_element_ptr & child_elemen
 {
 	style_tab_stops_.push_back(child_element);
 }
-// style:drop-cap
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_drop_cap::ns = L"style";
 const wchar_t * style_drop_cap::name = L"drop-cap";
@@ -116,7 +115,7 @@ void style_drop_cap::serialize(std::wostream & strm)
 	}
 
 }
-// style:background-image
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_background_image::ns = L"style";
 const wchar_t * style_background_image::name = L"background-image";
@@ -138,7 +137,7 @@ void style_background_image::serialize(std::wostream & strm)
 	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
-void paragraph_format_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context)
+void paragraph_format_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name,odf_conversion_context * Context)
 {
     if (L"style" == Ns)
     {
@@ -252,7 +251,7 @@ void paragraph_format_properties::serialize(std::wostream & _Wostream ,const wch
 const wchar_t * style_paragraph_properties::ns = L"style";
 const wchar_t * style_paragraph_properties::name = L"paragraph-properties";
 
-void style_paragraph_properties::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_paragraph_properties::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     style_paragraph_properties_content_.create_child_element(Ns, Name, getContext());    
 }
@@ -287,41 +286,40 @@ void paragraph_format_properties::clear()
 	fo_hyphenation_keep_		= boost::none;
 	fo_hyphenation_ladder_count_= boost::none;
 	style_register_true_		= boost::none;
-	fo_margin_left_			= boost::none;
-	fo_margin_right_		= boost::none; 
+	fo_margin_left_				= boost::none;
+	fo_margin_right_			= boost::none; 
 	//fo_text_indent_			= boost::none;//заточено под буквицу
-	style_auto_text_indent_	= boost::none;
-	fo_margin_top_			= boost::none;
-	fo_margin_bottom_		= boost::none;
-	fo_margin_				= boost::none;
-	fo_break_before_		= boost::none;
-	fo_break_after_			= boost::none;
-	fo_background_color_	= boost::none;
-	fo_padding_				= boost::none;
-	fo_padding_top_			= boost::none;
-	fo_padding_bottom_		= boost::none;
-	fo_padding_left_		= boost::none;
-	fo_padding_right_		= boost::none;
-	outline_level_			= boost::none;
-	style_page_number_		= boost::none;
-	style_snap_to_layout_grid_= boost::none;
-	style_join_border_		= boost::none;
-	style_text_autospace_	= boost::none;
-	fo_keep_with_next_		= boost::none;
-	fo_background_color_	= boost::none;
-	style_vertical_align_	= boost::none;
-	style_writing_mode_		= boost::none;
+	style_auto_text_indent_		= boost::none;
+	fo_margin_top_				= boost::none;
+	fo_margin_bottom_			= boost::none;
+	fo_margin_					= boost::none;
+	fo_break_before_			= boost::none;
+	fo_break_after_				= boost::none;
+	fo_background_color_		= boost::none;
+	fo_padding_					= boost::none;
+	fo_padding_top_				= boost::none;
+	fo_padding_bottom_			= boost::none;
+	fo_padding_left_			= boost::none;
+	fo_padding_right_			= boost::none;
+	outline_level_				= boost::none;
+	style_page_number_			= boost::none;
+	style_snap_to_layout_grid_	= boost::none;
+	style_join_border_			= boost::none;
+	style_text_autospace_		= boost::none;
+	fo_keep_with_next_			= boost::none;
+	fo_background_color_		= boost::none;
+	style_vertical_align_		= boost::none;
+	style_writing_mode_			= boost::none;
 	style_writing_mode_automatic_= boost::none;
-	style_line_break_		= boost::none;
+	style_line_break_			= boost::none;
 	style_background_transparency_= boost::none;
-	style_text_autospace_= boost::none;
-	text_line_number_		= boost::none;
-	style_line_break_		= boost::none;
-	text_number_lines_		= boost::none; 
-	style_shadow_			= boost::none;
+	style_text_autospace_		= boost::none;
+	text_line_number_			= boost::none;
+	style_line_break_			= boost::none;
+	text_number_lines_			= boost::none; 
+	style_shadow_				= boost::none;
 
-
-		//todo borders !!!
+	//todooo borders
 }
 
 void paragraph_format_properties::apply_from(paragraph_format_properties & Other)

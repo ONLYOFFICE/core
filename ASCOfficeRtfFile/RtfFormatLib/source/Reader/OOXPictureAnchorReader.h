@@ -51,11 +51,11 @@ public:
 		oOutput.m_eAnchorTypeShape	= RtfShape::st_anchor;
 		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
 
-		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool() : false;
-		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit() ? 	m_ooxAnchor->m_oBehindDoc->ToBool() : false;
-		oOutput.m_bHidden			= m_ooxAnchor->m_oHidden.IsInit() ? m_ooxAnchor->m_oHidden->ToBool() : false;
-		oOutput.m_bLayoutInCell		= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool() : false;
-		oOutput.m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit() ? m_ooxAnchor->m_oLocked->ToBool() : false;
+		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool()	: false;
+		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit()	? m_ooxAnchor->m_oBehindDoc->ToBool()		: false;
+		oOutput.m_bHidden			= m_ooxAnchor->m_oHidden.IsInit()		? m_ooxAnchor->m_oHidden->ToBool()			: false;
+		oOutput.m_bLayoutInCell		= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool()	: false;
+		oOutput.m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
 		oOutput.m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
 			
 		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
@@ -68,11 +68,13 @@ public:
 		int nWidth	= PROP_DEF;
 		int nHeight = PROP_DEF;
 
+		int nLeft	= PROP_DEF;
+		int nTop	= PROP_DEF;
+
 		if( m_ooxAnchor->m_oSimplePos.IsInit())
 		{
-			int nLeft = m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
-			int nTop = m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
-
+			nLeft	= m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
+			nTop	= m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
 		}
 		
 		if( m_ooxAnchor->m_oExtent.IsInit() )
@@ -82,8 +84,8 @@ public:
 
 			if( PROP_DEF != oOutput.m_nLeft && PROP_DEF != oOutput.m_nTop )//всегда !!
 			{
-				oOutput.m_nRight = oOutput.m_nLeft + nWidth;
-				oOutput.m_nBottom = oOutput.m_nTop + nHeight;
+				oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
+				oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
 			}
 		}
 		if( m_ooxAnchor->m_oPositionH.IsInit() )
@@ -92,46 +94,46 @@ public:
 			{
 				switch(m_ooxAnchor->m_oPositionH->m_oRelativeFrom->GetValue())
 				{
-				case SimpleTypes::relfromhCharacter     : 
-					{
-				oOutput.m_nPositionHRelative = 3;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhColumn        : 					
-					{
-				oOutput.m_nPositionHRelative = 2;
-				oOutput.m_eXAnchor = RtfShape::ax_column;
-					}break;
-				case SimpleTypes::relfromhInsideMargin  : 					
-					{
-				oOutput.m_nPositionHRelative = 6;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhLeftMargin    : 					
-					{
-				oOutput.m_nPositionHRelative = 4;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhMargin        : 					
-					{
-				oOutput.m_nPositionHRelative = 0;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
-				case SimpleTypes::relfromhOutsideMargin : 					
-					{
-				oOutput.m_nPositionHRelative = 7;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
+				case SimpleTypes::relfromhCharacter: 
+				{
+					oOutput.m_nPositionHRelative	= 3;
+					oOutput.m_eXAnchor				= RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhColumn: 					
+				{
+					oOutput.m_nPositionHRelative = 2;
+					oOutput.m_eXAnchor = RtfShape::ax_column;
+				}break;
+				case SimpleTypes::relfromhInsideMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 6;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhLeftMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 4;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 0;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
+				case SimpleTypes::relfromhOutsideMargin: 					
+				{
+					oOutput.m_nPositionHRelative = 7;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
 				case SimpleTypes::relfromhPage          : 					
-					{
-				oOutput.m_nPositionHRelative = 1;
-				oOutput.m_eXAnchor = RtfShape::ax_page;
-					}break;
+				{
+					oOutput.m_nPositionHRelative = 1;
+					oOutput.m_eXAnchor = RtfShape::ax_page;
+				}break;
 				case SimpleTypes::relfromhRightMargin   : 					
-					{
-				oOutput.m_nPositionHRelative = 5;
-				oOutput.m_eXAnchor = RtfShape::ax_margin;
-					}break;
+				{
+					oOutput.m_nPositionHRelative = 5;
+					oOutput.m_eXAnchor = RtfShape::ax_margin;
+				}break;
 				}
 			}
 			if (m_ooxAnchor->m_oPositionH->m_oAlign.IsInit())
@@ -210,6 +212,7 @@ public:
 			if(m_ooxAnchor->m_oPositionV->m_oPosOffset.IsInit())
 				oOutput.m_nTop = m_ooxAnchor->m_oPositionV->m_oPosOffset->ToTwips();
 		}
+
 		if(m_ooxAnchor->m_oWrapNone.IsInit())
 			oOutput.m_nWrapType = 3;
 		if(m_ooxAnchor->m_oWrapSquare.IsInit())
@@ -305,14 +308,21 @@ public:
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )
 		{
 			int nNewScale = (int)(100 * ( 1.0 * nWidth / oOutput.m_oPicture->m_nWidthGoal ));
-			oOutput.m_oPicture->m_dScaleX = nNewScale;
+			oOutput.m_oPicture->m_dScaleX	= nNewScale;
 		}
 		if( PROP_DEF != nHeight && PROP_DEF != oOutput.m_oPicture->m_nHeightGoal )
 		{
 			int nNewScale = (int)(100 * ( 1.0 * nHeight / oOutput.m_oPicture->m_nHeightGoal ));
-			oOutput.m_oPicture->m_dScaleY = nNewScale;
+			oOutput.m_oPicture->m_dScaleY	= nNewScale;
 		}
-
+		if( PROP_DEF == oOutput.m_nBottom && oOutput.m_nTop !=PROP_DEF )
+		{
+			oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
+		}
+		if( PROP_DEF == oOutput.m_nRight && oOutput.m_nLeft !=PROP_DEF )
+		{
+			oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
+		}
 		return true;
 	}
 };

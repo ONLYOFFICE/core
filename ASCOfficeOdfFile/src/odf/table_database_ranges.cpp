@@ -53,7 +53,7 @@ void table_database_ranges::add_attributes(xml::attributes_wc_ptr const & Attrib
 {
 }
 
-void table_database_ranges::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_database_ranges::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
@@ -80,7 +80,7 @@ void table_database_range::add_attributes(xml::attributes_wc_ptr const & Attribu
 	CP_APPLY_ATTR(L"table:contains-header"			, table_contains_header_);				
 }
 
-void table_database_range::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_database_range::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 
@@ -114,7 +114,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 const wchar_t * table_sort::ns		= L"table";
 const wchar_t * table_sort::name	= L"sort";
 
-void table_sort::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_sort::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"table" == Ns && L"sort-by" == Name)
     {

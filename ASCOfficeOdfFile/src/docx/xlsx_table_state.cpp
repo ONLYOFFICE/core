@@ -64,6 +64,8 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 {
 	if (bySort.empty()) return;
 
+	if (byRow) return;
+
 	CP_XML_WRITER(_Wostream)
 	{			
 		CP_XML_NODE(L"sortState")
@@ -189,8 +191,8 @@ std::wstring xlsx_table_state::default_row_cell_style() const
 
 std::wstring xlsx_table_state::default_column_cell_style() const
 {
-	if (current_table_column_ < column_default_cell_style_name_.size())
-		return column_default_cell_style_name_.at(current_table_column_);
+	if (current_table_column_ + 1 < column_default_cell_style_name_.size())
+		return column_default_cell_style_name_.at(current_table_column_ + 1);
 	else
 	{
 		//непонятная хрень!! - неправильно сформирован ods???

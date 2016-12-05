@@ -60,7 +60,7 @@ void UserBView::writeFields(CFRecord& record)
 	_GUID_ guid_num;
 	if(!STR::bstr2guid(guid, guid_num))
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserBView", guid);
+		// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserBView", guid);
 	}
 	record << guid_num << x << y << dx << dy << wTabRatio;
 
@@ -82,7 +82,7 @@ void UserBView::writeFields(CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of mdNoteDisp.", record.getTypeString());
+		// EXCEPT::RT::WrongBiffRecord("Unsupported value of mdNoteDisp.", record.getTypeString());
 	}
 	SETBITS(flags1, 2, 3, mdNoteDisp_num);
 	SETBIT(flags1, 4, fDspHScroll);
@@ -106,7 +106,7 @@ void UserBView::writeFields(CFRecord& record)
 	}
 	else
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported value of fHideObj.", record.getTypeString());
+		// EXCEPT::RT::WrongBiffRecord("Unsupported value of fHideObj.", record.getTypeString());
 	}
 	SETBITS(flags1, 8, 9, fHideObj_num);
 	SETBIT(flags1, 10, fPrintIncl);

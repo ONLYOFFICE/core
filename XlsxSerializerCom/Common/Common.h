@@ -55,11 +55,11 @@ namespace SerializeCommon
 	class CommentData
 	{
 	public :
-		CString sText;
-		CString sTime;
-		CString sUserId;
-		CString sUserName;
-		CString sQuoteText;
+		std::wstring sText;
+		std::wstring sTime;
+		std::wstring sUserId;
+		std::wstring sUserName;
+		std::wstring sQuoteText;
 		bool Solved;
 		bool Document;
 

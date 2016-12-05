@@ -72,7 +72,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("a:themeOverride") == sName && !oReader.IsEmptyNode() )
 			{
 				int nThemeDepth = oReader.GetDepth();

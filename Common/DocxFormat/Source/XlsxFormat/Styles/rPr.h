@@ -68,7 +68,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -99,7 +99,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -112,7 +112,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("rgbColor") == sName )
 						m_arrItems.push_back( new CRgbColor( oReader ));
@@ -370,49 +370,31 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				// вызовем по default
 				toXML2(writer, _T("color"));
 			}
-			void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
+			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
 				writer.WriteString(_T("<"));
 				writer.WriteString(sName);
-				if(m_oAuto.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" auto=\"%ls\""), m_oAuto->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(sVal);
-				}
-				if(m_oIndexed.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" indexed=\"%d\""), m_oIndexed->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrBool(L"auto", m_oAuto);
+				WritingStringNullableAttrInt(L"indexed", m_oIndexed, m_oIndexed->GetValue());
 				if(m_oRgb.IsInit())
 				{
 					int nIndex = OOX::Spreadsheet::CIndexedColors::GetDefaultIndexByRGBA(m_oRgb->Get_R(), m_oRgb->Get_G(), m_oRgb->Get_B(), m_oRgb->Get_A());
 					if(-1 == nIndex)
 					{
-						CString sVal;sVal.Format(_T(" rgb=\"%ls\""), m_oRgb->ToString());
-						writer.WriteString(sVal);
+						WritingStringAttrString(L"rgb", m_oRgb->ToString());
 					}
 					else
 					{
-						CString sVal;sVal.Format(_T(" indexed=\"%d\""), nIndex);
-						writer.WriteString(sVal);
+						WritingStringAttrInt(L"indexed", nIndex);
 					}
 				}
-				if(m_oThemeColor.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" theme=\"%d\""), m_oThemeColor->GetValue());
-					writer.WriteString(sVal);
-				}
-				if(m_oTint.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" tint=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oTint->GetValue()));
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"theme", m_oThemeColor, m_oThemeColor->GetValue());
+				WritingStringNullableAttrDouble(L"tint", m_oTint, m_oTint->GetValue());
 
 				writer.WriteString(_T("/>"));
 			}
@@ -465,7 +447,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -478,7 +460,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("color") == sName )
 						m_arrItems.push_back( new CColor( oReader ));
@@ -667,7 +649,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<rPr>"));
 				if(m_oBold.IsInit())
@@ -679,8 +661,7 @@ namespace OOX
 				}
 				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<charset val=\"%ls\"/>"), m_oCharset->m_oCharset->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"charset", m_oCharset->m_oCharset->ToString());
 				}
 				if(m_oColor.IsInit())
 					m_oColor->toXML2(writer, _T("color"));
@@ -700,8 +681,7 @@ namespace OOX
 				}
 				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<family val=\"%ls\"/>"), m_oFamily->m_oFontFamily->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"family", m_oFamily->m_oFontFamily->ToString());
 				}
 				if(m_oItalic.IsInit())
 				{
@@ -719,16 +699,11 @@ namespace OOX
 				}
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					CString sVal;
-					sVal.Append(_T("<rFont val=\""));
-					sVal.Append( XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
-					sVal.Append(_T("\"/>"));
-					writer.WriteString(sVal);
+					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<scheme val=\"%ls\"/>"), m_oScheme->m_oFontScheme->ToString());
-					writer.WriteString(sVal);
+					WritingStringValAttrString(L"scheme", m_oScheme->m_oFontScheme->ToString());
 				}
 				if(m_oShadow.IsInit())
 				{
@@ -746,22 +721,26 @@ namespace OOX
 				}
 				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<sz val=\"%ls\"/>"), SpreadsheetCommon::WriteDouble(m_oSz->m_oVal->GetValue()));
-					writer.WriteString(sVal);
+					WritingStringValAttrDouble(L"sz", m_oSz->m_oVal->GetValue());
 				}
 				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
-					CString sVal;
 					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-						sVal.Format(_T("<u val=\"%ls\"/>"), m_oUnderline->m_oUnderline->ToString());
+					{
+						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
+					}
 					else
-						sVal.Format(_T("<u/>"), m_oUnderline->m_oUnderline->ToString());
-					writer.WriteString(sVal);
+					{
+						writer.WriteString(L"<u/>");
+					}
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<vertAlign val=\"%ls\"/>"), m_oVertAlign->m_oVerticalAlign->ToString());
-					writer.WriteString(sVal);
+					CString sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
+					writer.WriteString(L"<vertAlign val=\"");
+					writer.WriteString(sVerticalAlign.GetBuffer());
+					writer.WriteString(L"\"/>");
+					sVerticalAlign.ReleaseBuffer();
 				}
 				writer.WriteString(_T("</rPr>"));
 			}
@@ -775,7 +754,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("b") == sName )
 						m_oBold = oReader;

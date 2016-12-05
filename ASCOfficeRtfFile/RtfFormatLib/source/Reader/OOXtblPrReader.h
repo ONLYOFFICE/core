@@ -164,7 +164,7 @@ public:
 		}
 		if( m_ooxTableProps->m_oTblCellMar.IsInit() )
 		{			
-			MetricUnits eMetric = mu_none;
+			_MetricUnits eMetric = mu_none;
 			int nValue = PROP_DEF;
 			//if( mu_Twips == eMetric && PROP_DEF != nValue )
 			//todooo сделать вариант с процентми

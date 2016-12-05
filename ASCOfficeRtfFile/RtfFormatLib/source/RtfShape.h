@@ -34,30 +34,35 @@
 
 class RtfShape: public IRenderableProperty
 {
+private:
+	bool m_bInsert;
+	bool m_bDelete;
+	
 public: 
 	bool m_bIsOle;
 	bool m_bInGroup; //local anchor
 
 //-----------------------------
-	typedef enum{ st_none, st_inline, st_anchor }AnchorTypeShape;
-	typedef enum
+	enum _AnchorTypeShape { st_none, st_inline, st_anchor };
+	enum _AnchorX
 	{
 		ax_none,
 		//ax_ignore,			//shpbxignore	Ignore \shpbxpage, \shpbxmargin, and \shpbxcolumn, in favor of the posrelh property. The ignored properties will be written for backward compatibility with older readers that do not understand \posrelh.
 		ax_page,				//shpbxpage 	The shape is positioned relative to the page in the x (horizontal) direction. 
 		ax_margin,				//shpbxmargin 	The shape is positioned relative to the margin in the x (horizontal) direction.
 		ax_column				//shpbxcolumn	The shape is positioned relative to the column in the x (horizontal) direction.
-	}AnchorX;
-	typedef enum
+	};
+	
+	enum _AnchorY
 	{ 
 		ay_none,
 		//ay_ignore,			//shpbyignore	Ignore \shpbypage, \shpbymargin, and \shpbxpara, in favor of the posrelh property. The ignored properties will be written for backward compatibility with older readers that do not understand the posrelh property.
 		ay_page,				//shpbypage 	The shape is positioned relative to the page in the y (vertical) direction. 
 		ay_margin,				//shpbymargin 	The shape is positioned relative to the margin in the y (vertical) direction.
 		ay_Para					//shpbypara	The shape is positioned relative to the paragraph in the y (vertical) direction.
-	}AnchorY;
+	};
 
-	AnchorTypeShape m_eAnchorTypeShape;
+	_AnchorTypeShape m_eAnchorTypeShape;
 
     CString m_sName;
     CString m_sDescription;
@@ -74,8 +79,8 @@ public:
 	int m_nZOrderRelative;			//shpfblwtxtN	Describes relative z-ordering:
 	int m_bLockAnchor;				//shplockanchor	Lock anchor for a shape.
 	
-	AnchorX m_eXAnchor;
-	AnchorY m_eYAnchor;
+	_AnchorX m_eXAnchor;
+	_AnchorY m_eYAnchor;
 
 //----------------ShapeProperty--------------------
 //Position absolute
@@ -179,6 +184,13 @@ public:
 	CString m_sGtextFont;
 	int		m_nGtextSize;
 	int		m_bGtext;
+	int		m_bGtextFVertical;
+	int		m_bGtextFKern;
+	int		m_bGtextFStretch;
+	int		m_bGtextFShrinkFit;
+	int		m_bGtextFBestFit;
+
+	RtfCharProperty			m_oCharProperty; // тут могут быть track changes ....
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	std::vector< std::pair<int, int> >	m_aWrapPoints;
@@ -204,6 +216,7 @@ public:
 		SetDefault();
 	}
 	void SetDefault();
+
 	CString RenderToRtf		(RenderParameter oRenderParameter);
 	CString RenderToOOX		(RenderParameter oRenderParameter);
 
@@ -212,24 +225,26 @@ public:
 	
 	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 	{
+		nAngel = nAngel/ 65536;
 		//поворачиваем на 45 градусов
 		nAngel -= 45;
 		//делаем угол от 0 до 360
 		nAngel = nAngel % 360;
-		if( nAngel < 0 )
-			nAngel += 360;
+		
+		if( nAngel < 0 )	nAngel += 360;
+
 		int nQuater = nAngel / 90; // определяем четверть
 		if( 0 == nQuater || 2 == nQuater )
 		{
 			//поворачиваем относительно центра на 90 градусов обратно
-			int nCenterX = ( nLeft + nRight ) / 2;
-			int nCenterY = ( nTop + nBottom ) / 2;
-			int nWidth = nRight - nLeft;
-			int nHeight = nBottom - nTop;
+			int nCenterX	= ( nLeft + nRight ) / 2;
+			int nCenterY	= ( nTop + nBottom ) / 2;
+			int nWidth		= nRight - nLeft;
+			int nHeight		= nBottom - nTop;
 
-			nLeft = nCenterX - nHeight / 2;
-			nRight = nCenterX + nHeight / 2;
-			nTop = nCenterY - nWidth / 2;
+			nLeft	= nCenterX - nHeight / 2;
+			nRight	= nCenterX + nHeight / 2;
+			nTop	= nCenterY - nWidth / 2;
 			nBottom = nCenterY + nWidth / 2;
 		}
 	}

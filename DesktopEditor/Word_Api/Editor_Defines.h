@@ -355,6 +355,12 @@
 #define c_oAscZoomType_FitWidth		1
 #define c_oAscZoomType_FitPage		2
 
+#define c_oAscLockLockTypeNone                      1 // никто не залочил данный объект
+#define c_oAscLockLockTypeMine                      2 // данный объект залочен текущим пользователем
+#define c_oAscLockLockTypeOther                     3 // данный объект залочен другим(не текущим) пользователем
+#define c_oAscLockLockTypeOther2                    4 // данный объект залочен другим(не текущим) пользователем (обновления уже пришли)
+#define c_oAscLockLockTypeOther3                    5 // данный объект был залочен (обновления пришли) и снова стал залочен
+
 #define c_oAscAsyncActionType_Information			0
 #define c_oAscAsyncActionType_BlockInteraction		1
 
@@ -739,8 +745,11 @@
 #define ASC_MENU_EVENT_TYPE_ERROR                   500
 
 
-#define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
-#define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
+#define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES               2404    //  CAscColorSchemes
+#define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME         2415    //  SET(int)
 
+#define ASC_MENU_EVENT_TYPE_AUTH_PARTICIPANTS_CHANGED   2416
+#define ASC_MENU_EVENT_TYPE_LOST_CONNECTION             2420
+#define ASC_MENU_EVENT_TYPE_DROP_CONNECTION             2421
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

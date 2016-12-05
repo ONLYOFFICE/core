@@ -43,9 +43,12 @@ private:
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElem;
 
 public: 
+	RtfCharProperty										m_oCharProperty;
+
 	OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
 	{
 		m_ooxElem = ooxElem;
+		m_oCharProperty.SetDefault();
 	}
 
 	bool ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath);
@@ -56,10 +59,10 @@ public:
 
 		for(int i = 0; i < m_ooxElem->m_arrItems.size(); i++)
 		{
-			RtfMathPtr oNewMath;
-			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], oNewMath))
+			RtfMathPtr pNewMath;
+			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], pNewMath))
 			{
-				oOutput.AddItem( oNewMath );
+				oOutput.AddItem( pNewMath );
 			}
 		}
 		return true;

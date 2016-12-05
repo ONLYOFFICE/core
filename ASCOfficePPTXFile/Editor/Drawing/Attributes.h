@@ -449,7 +449,7 @@ namespace NSPresentationEditor
 			int lColor;
 			if (str.Find(_T("#")) == 0)
 			{
-				lColor = XmlUtils::GetColor(str.Mid(1, 6));
+				lColor = XmlUtils::GetColorBGR(str.Mid(1, 6));
 				R = (BYTE)(lColor);
 				G = (BYTE)(lColor >> 8);
 				B = (BYTE)(lColor >> 16);

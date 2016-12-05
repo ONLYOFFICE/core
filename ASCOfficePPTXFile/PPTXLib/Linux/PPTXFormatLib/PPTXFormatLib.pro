@@ -95,6 +95,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
+	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \
@@ -300,6 +301,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/Path2D/QuadBezTo.h \
     ../../../PPTXFormat/Logic/Runs/Br.h \
     ../../../PPTXFormat/Logic/Runs/Fld.h \
+    ../../../PPTXFormat/Logic/Runs/MathParaWrapper.h \
     ../../../PPTXFormat/Logic/Runs/Run.h \
     ../../../PPTXFormat/Logic/Runs/RunBase.h \
     ../../../PPTXFormat/Logic/Table/Table.h \

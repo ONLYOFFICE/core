@@ -36,17 +36,29 @@
 #include "RtfSection.h"
 #include "RtfMath.h"
 
-class RtfDocument :public ItemContainer<RtfSectionPtr>
+struct _section
+{
+	_section() : start_para(0), end_para(-1) {}
+
+	_section(RtfSectionPtr &p, int start = 0, int end = -1) : props(p), start_para(start), end_para(end) {}
+
+	RtfSectionPtr props;
+	int start_para;
+	int end_para;
+};
+
+class RtfDocument : public ItemContainer<_section>
 {
 public: 
 	RtfDocumentProperty		m_oProperty;
 	RtfFontTable			m_oFontTable;
 	RtfColorTable			m_oColorTable;
 	RtfStyleTable			m_oStyleTable;
+	RtfRevisionTable		m_oRevisionTable;
 	RtfInformation			m_oInformation;
 
-	RtfListTable			m_oListTabel;
-	RtfListOverrideTable	m_oListOverrideTabel;
+	RtfListTable			m_oListTable;
+	RtfListOverrideTable	m_oListOverrideTable;
 
 	RtfParagraphProperty	m_oDefaultParagraphProp;
 	RtfCharProperty			m_oDefaultCharProp;
@@ -60,14 +72,9 @@ public:
 //для того чтобы конвертировать старый формат List в Numbering
 	std::vector<RtfOldListPtr> m_aOldLists;
 
-	struct _status_section
-	{
-		bool	start_new;
-		int		number;
-	}m_oStatusSection;
-
 private: 
 	std::vector<int> m_aShapeId;
+
 public: 
 	IdGenerator m_oIdGenerator;
 	void SetShapeId( int nShapeId )

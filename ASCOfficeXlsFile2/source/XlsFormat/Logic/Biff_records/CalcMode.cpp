@@ -69,7 +69,7 @@ void CalcMode::writeFields(CFRecord& record)
 	}
 	else 
 	{
-		throw;// EXCEPT::LE::AttributeDataWrong(L"fAutoRecalc", record.getTypeString().c_str(), fAutoRecalc);
+		// EXCEPT::LE::AttributeDataWrong(L"fAutoRecalc", record.getTypeString().c_str(), fAutoRecalc);
 	}
 	record << fAutoRecalc_num;
 }

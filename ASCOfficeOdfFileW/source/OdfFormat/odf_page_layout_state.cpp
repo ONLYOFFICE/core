@@ -110,7 +110,7 @@ void odf_master_state::add_footer(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	odf_element_state state = {elm, L"", office_element_ptr(), 1};
 	elements_.push_back(state);
 
 }
@@ -121,7 +121,7 @@ void odf_master_state::add_header(office_element_ptr & elm)
 
 	style_->add_child_element(elm);
 
-	odf_element_state state = {elm,L"",office_element_ptr(), 1};
+	odf_element_state state = {elm, L"", office_element_ptr(), 1};
 	elements_.push_back(state);
 
 }
@@ -185,7 +185,7 @@ style_page_layout_properties *odf_layout_state::get_properties()
 
 style_header_footer_properties *odf_layout_state::get_header_properties()
 {
-	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	for (long i = 1; i < elements_.size(); i++)//"0" - root
 	{
 		style_header_style *style_ = dynamic_cast<style_header_style *>(elements_[i].elm.get());
 		if (style_)
@@ -197,7 +197,7 @@ style_header_footer_properties *odf_layout_state::get_header_properties()
 }
 style_header_footer_properties *odf_layout_state::get_footer_properties()
 {
-	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	for (long i = 1; i < elements_.size(); i++)//"0" - root
 	{
 		style_footer_style *style_ = dynamic_cast<style_footer_style *>(elements_[i].elm.get());
 		if (style_)

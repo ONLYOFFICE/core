@@ -119,6 +119,7 @@ private:
     std::wstringstream	paragraph_;	//перманенто скидываемые параграфы
     std::wstringstream	run_;		//перманенто скидываемые куски с быть может разными свойствами
   
+	 std::wstring		store_cell_string_;
     xlsx_shared_strings xlsx_shared_strings_;
 	
 	std::wstring		paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
@@ -427,12 +428,12 @@ std::wstring xlsx_text_context::Impl::dump_paragraph(/*bool last*/)
 std::wstring xlsx_text_context::Impl::dump_run()
 {
     const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
-
-	if (content.length()<1) 
+	
+	if (content.empty()) 
 		return L"";
 
 	std::wstring	prefix_draw;
-	if (in_draw)	prefix_draw=L"a:";
+	if (in_draw)	prefix_draw = L"a:";
    
 	CP_XML_WRITER(run_)
     {
@@ -445,6 +446,7 @@ std::wstring xlsx_text_context::Impl::dump_run()
 				CP_XML_NODE(prefix_draw + L"t")
 				{
 					if (!in_draw)CP_XML_ATTR(L"xml:space", L"preserve");
+					
 					CP_XML_STREAM() << content;
                 }
 	         }
@@ -452,19 +454,21 @@ std::wstring xlsx_text_context::Impl::dump_run()
         }
     }
 
-	hyperlink_hId =L"";
     return content;
 }
 
 void xlsx_text_context::Impl::start_cell_content()
 {
-    paragraphs_cout_ = 0;
- 	local_styles_ptr_ =NULL;
+    paragraphs_cout_	= 0;
+ 	local_styles_ptr_	= NULL;
    
 	run_.str(std::wstring());
 	paragraph_.str(std::wstring());
     text_.str(std::wstring());
-    
+
+	store_cell_string_.clear();
+ 	hyperlink_hId.clear();
+   
 	paragraph_style_name_	= L"";
     span_style_name_		= L"";
 
@@ -488,6 +492,13 @@ void xlsx_text_context::Impl::start_comment_content()
 }
 void xlsx_text_context::Impl::start_drawing_content()
 {
+	if (in_cell_content)
+	{
+		dump_run();
+
+		store_cell_string_ = run_.str();	
+	}
+
     paragraphs_cout_ = 0;
    
 	run_.str(std::wstring());
@@ -539,9 +550,12 @@ int xlsx_text_context::Impl::end_cell_content()
 {
 	dump_run();
 
-	const int sharedStrId = run_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(run_.str()));
-	//???? нужно ли здесь очищать все ????? - проверить стили на кучках - и проверить как меняются стили внутри одной ячейки - то есть здешнее переопределение внешнего стиля
-	in_cell_content = false;   
+	std::wstring cell_string = store_cell_string_ + run_.str();
+	store_cell_string_.clear();
+	
+	in_cell_content = false;  
+
+	const int sharedStrId = cell_string.empty() ? (-1) :  xlsx_shared_strings_.add(cell_string);
 	return sharedStrId;
 }
 

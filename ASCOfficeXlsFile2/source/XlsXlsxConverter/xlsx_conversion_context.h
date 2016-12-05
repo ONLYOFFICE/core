@@ -55,7 +55,7 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context(package::xlsx_document * outputDocument);
+    xlsx_conversion_context	(package::xlsx_document * outputDocument);
     ~xlsx_conversion_context();
 
     //void set_font_directory(std::wstring pathFonts);
@@ -70,21 +70,21 @@ public:
     void start_chart();
     void end_chart();
 
-	std::wostream				& shared_strings()			{ return xlsx_shared_strings_; }    
- 	std::wostream				& defined_names()			{ return xlsx_defined_names_; }    
-	std::wostream				& workbook_views()			{ return xlsx_workbook_views_; }
-	std::wostream				& custom_views()			{ return xlsx_custom_views_; }
+	std::wostream					& shared_strings()		{ return xlsx_shared_strings_; }    
+ 	std::wostream					& defined_names()		{ return xlsx_defined_names_; }    
+	std::wostream					& workbook_views()		{ return xlsx_workbook_views_; }
+	std::wostream					& custom_views()		{ return xlsx_custom_views_; }
 
-	xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
-    xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
-    xlsx_xml_worksheet          & current_sheet();
+	xlsx_text_context				& get_text_context()	{ return xlsx_text_context_; }
+    xlsx_table_context				& get_table_context()	{ return xlsx_table_context_; }
+    xlsx_xml_worksheet				& current_sheet();
  
-	oox_chart_context			& current_chart();
+	oox_chart_context				& current_chart();
 
-	xlsx_drawing_context        & get_drawing_context();
-	xlsx_drawing_context_handle & get_drawing_context_handle();	
- 	xlsx_comments_context       & get_comments_context();
-	xlsx_comments_context_handle & get_comments_context_handle();
+	xlsx_drawing_context			& get_drawing_context();
+	xlsx_drawing_context_handle		& get_drawing_context_handle();	
+ 	xlsx_comments_context			& get_comments_context();
+	xlsx_comments_context_handle	& get_comments_context_handle();
 
 	external_items & get_mediaitems() { return mediaitems_; }
 private:
@@ -102,6 +102,8 @@ private:
     //std::pair<float,float>              maxDigitSize_;
     //num_format_context                  num_format_context_;
     //size_t                              default_style_;
+
+	size_t								next_vml_file_id_; //используется для footer/header & comments
   
     xlsx_table_context					xlsx_table_context_;
     xlsx_text_context					xlsx_text_context_;

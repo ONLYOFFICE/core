@@ -56,14 +56,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<externalReference"));
-				if(m_oRid.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -110,7 +106,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<externalReferences>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
@@ -127,7 +123,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("externalReference") == sName )
 						m_arrItems.push_back( new CExternalReference( oReader ));

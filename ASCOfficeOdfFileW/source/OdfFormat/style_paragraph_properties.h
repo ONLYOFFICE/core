@@ -76,7 +76,6 @@ namespace oox{
 
 namespace odf_writer {
 
-/// \class  style_tab_stop
 class style_tab_stop : public office_element_impl<style_tab_stop>
 {
 public:
@@ -87,7 +86,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
@@ -108,7 +107,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stop)
 
-/// \class  style_tab_stops
 class style_tab_stops : public office_element_impl<style_tab_stops>
 {
 public:
@@ -121,7 +119,7 @@ public:
     
     size_t size() const { return style_tab_stops_.size(); }
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
@@ -131,7 +129,7 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops)
 
-/// \class  style_drop_cap
+
 class style_drop_cap : public office_element_impl<style_drop_cap>
 {
 public:
@@ -142,7 +140,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
@@ -157,8 +155,6 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_drop_cap)
 
-/// \class  style_background_image
-///         style:background-image
 class style_background_image : public office_element_impl<style_background_image>
 {
 public:
@@ -169,7 +165,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
@@ -186,11 +182,10 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_background_image)
 
-/// \class  paragraph_format_properties
 class paragraph_format_properties 
 {
 public:
-	void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name,odf_conversion_context * Context);
+	void create_child_element(const std::wstring & Ns, const std::wstring & Name,odf_conversion_context * Context);
 	void add_child_element( const office_element_ptr & child);
 
 	void serialize(std::wostream & strm, const wchar_t * ns, const wchar_t * name );
@@ -265,7 +260,6 @@ public:
 
 };
 
-/// \class  style_paragraph_properties
 class style_paragraph_properties : public office_element_impl<style_paragraph_properties>
 {
 public:
@@ -276,7 +270,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
 
 	void apply_from(style_paragraph_properties * Other);

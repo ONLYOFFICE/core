@@ -95,7 +95,7 @@ namespace DocWrapper {
 				sFontName = pTheme->GetMinorFont();
 		}
 		if(sFontName.IsEmpty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
-			sFontName = oRFont->ToString2();
+			sFontName = std_string2string(oRFont->ToString2());
 		if(sFontName.IsEmpty())
 			sFontName = CString(gc_sNoNameFont);
 		//подбор перенесен в js

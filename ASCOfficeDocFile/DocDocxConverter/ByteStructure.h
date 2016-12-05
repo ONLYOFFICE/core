@@ -54,7 +54,7 @@ namespace DocFileFormat
 
 	  virtual ~EmptyStructure() {}
 
-	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
+      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
       {
         EmptyStructure *newObject = new EmptyStructure();
 

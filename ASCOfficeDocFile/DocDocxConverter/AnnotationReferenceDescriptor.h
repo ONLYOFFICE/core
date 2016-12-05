@@ -69,7 +69,7 @@ namespace DocFileFormat
 		{
 		}
 
-		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 
 	private:
 

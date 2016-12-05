@@ -772,7 +772,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:ilvl") == sName )
 						m_oIlvl = oReader;
 					else if ( _T("w:ins") == sName )
@@ -872,7 +872,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:bar") == sName )
 						m_oBar = oReader;
 					else if ( _T("w:between") == sName )
@@ -1070,7 +1070,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( _T("w:tab") == sName )
 					{
 						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oReader);
@@ -1260,7 +1260,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if ( _T("w:adjustRightInd") == sName )
 						m_oAdjustRightInd = oReader;
@@ -1300,13 +1300,13 @@ namespace OOX
 						m_oPageBreakBefore = oReader;
 					else if ( _T("w:pBdr") == sName )
 						m_oPBdr = oReader;
-					if ( !m_bPPrChange && _T("w:pPrChange") == sName )
+					else if ( !m_bPPrChange && _T("w:pPrChange") == sName )
 						m_oPPrChange = oReader;
 					else if ( _T("w:pStyle") == sName )
 						m_oPStyle = oReader;
-					if ( !m_bPPrChange && _T("w:rPr") == sName )
+					else if ( !m_bPPrChange && _T("w:rPr") == sName )
 						m_oRPr = oReader;
-					if ( !m_bPPrChange && _T("w:sectPr") == sName )
+					else if ( !m_bPPrChange && _T("w:sectPr") == sName )
 						m_oSectPr = oReader;
 					else if ( _T("w:shd") == sName )
 						m_oShd = oReader;

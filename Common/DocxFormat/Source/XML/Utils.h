@@ -78,7 +78,7 @@ namespace XmlUtils
 
 		return nResult;
 	}
-	AVSINLINE static int     GetColor   (const CString& string)
+	AVSINLINE static int	GetColorBGR   (const CString& string)
 	{
 		// variables
 		int blue = 0;
@@ -95,11 +95,11 @@ namespace XmlUtils
 		while (color.GetLength() < 6)
 			color = _T("0") + color;
 
-		red = 16*GetDigit(color[0]) + GetDigit(color[1]);
-		green = 16*GetDigit(color[2]) + GetDigit(color[3]);
-		blue = 16*GetDigit(color[4]) + GetDigit(color[5]);
+		red		= 16*GetDigit(color[0]) + GetDigit(color[1]);
+		green	= 16*GetDigit(color[2]) + GetDigit(color[3]);
+		blue	= 16*GetDigit(color[4]) + GetDigit(color[5]);
 
-		return RGB(red, green, blue);
+		return ((int)(((BYTE)(red)|((WORD)((BYTE)(green))<<8))|(((DWORD)(BYTE)(blue))<<16)));	//RGB(red, green, blue);
 	}
         AVSINLINE static bool    GetBoolean (const CString& string)
 	{
@@ -119,7 +119,7 @@ namespace XmlUtils
 
         try
         {
-            return _ttoi(string);
+            return _wtoi(string);
         }
         catch(...)
         {
@@ -139,7 +139,7 @@ namespace XmlUtils
         if (string.GetLength() <1) return 0;
         try
         {
-            return (size_t) _ttoi(string);
+            return (size_t) _wtoi(string);
         }
         catch(...)
         {
@@ -438,9 +438,34 @@ namespace XmlUtils
 		inline void WriteEncodeXmlString(const wchar_t* pString)
 		{
 			const wchar_t* pData = pString;
+			bool isUtf16 = sizeof(wchar_t) == 2;
+			bool skipNext = false;
 			while (*pData != 0)
 			{
-				BYTE _code = CheckCode(*pData);
+				wchar_t code = *pData;
+				BYTE _code;
+				//todo replace CString with std::wstring and choose one writer
+				if (isUtf16)
+				{
+					if (skipNext)
+					{
+						skipNext = false;
+						_code = 1;
+					}
+					else if (code >= 0xD800 && code <= 0xDFFF && *(pData + 1) != 0)
+					{
+						skipNext = true;
+						_code = 1;
+					}
+					else
+					{
+						_code = CheckCode(code);
+					}
+				}
+				else
+				{
+					_code = CheckCode(code);
+				}
 
 				switch (_code)
 				{

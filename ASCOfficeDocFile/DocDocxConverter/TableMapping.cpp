@@ -209,7 +209,7 @@ namespace DocFileFormat
 			SectionPropertyExceptions* sepxBackup = documentMapping->_lastValidSepx;
 
 			//start w:tr
-			documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tr" ) );
+			documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tr" );
 
 			//convert the properties
 			int fcRowEnd = documentMapping->findRowEndFc(cp, depth);
@@ -224,13 +224,22 @@ namespace DocFileFormat
 			documentMapping->_lastValidPapx = papxBackup;
 			documentMapping->_lastValidSepx = sepxBackup;
 
-			for ( std::list<TableCell>::iterator iter = cells.begin(); iter != cells.end(); iter++ )
+			if (cells.empty())
 			{
-				iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++ );
+				documentMapping->GetXMLWriter()->WriteNodeBegin(L"w:tc");
+					documentMapping->GetXMLWriter()->WriteNode(L"w:p", L"");
+				documentMapping->GetXMLWriter()->WriteNodeEnd(L"w:tc");
+			}
+			else
+			{
+				for ( std::list<TableCell>::iterator iter = cells.begin(); iter != cells.end(); iter++ )
+				{
+					iter->Convert( mapping, &tapx, grid, gridIndex, nCellIndex++ );
+				}
 			}
 
 			//end w:tr
-			documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tr" ) );
+			documentMapping->GetXMLWriter()->WriteNodeEnd( L"w:tr" );
 
 			RELEASEOBJECT( chpxs );
 		}

@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_
-#define OOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_
+#ifndef PPTXOOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_
+#define PPTXOOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_
 
 #include "./../WritingVector.h"
 #include "Override.h"
@@ -74,4 +74,4 @@ namespace PPTX
 	} // namespace ContentTypes
 } // namespace PPTX
 
-#endif // OOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_
+#endif // PPTXOOX_CONTENT_TYPES_OVERRIDE_TABLE_INCLUDE_H_

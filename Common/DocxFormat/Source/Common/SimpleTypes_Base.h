@@ -49,12 +49,12 @@ namespace SimpleTypes
 	}\
 	virtual Enum FromString(const wchar_t* cwsStr)\
 	{\
-		CWCharWrapper wsTemp = cwsStr;\
-		return FromString( (const CWCharWrapper&)wsTemp );\
+		std::wstring wsTemp = cwsStr;\
+		return FromString( (const std::wstring&)wsTemp );\
 	}\
-	virtual Enum FromString(const CWCharWrapper& wsStr)\
+	virtual Enum FromString(const std::wstring& wsStr)\
 	{\
-		CString sTemp( wsStr.m_cwsString );\
+		CString sTemp( wsStr.c_str() );\
 		return FromString( (CString&)sTemp );\
 	}
 
@@ -66,12 +66,12 @@ namespace SimpleTypes
 	}\
 	Enum FromString(const wchar_t* cwsStr)\
 	{\
-		CWCharWrapper wsTemp = cwsStr;\
-		return FromString( (const CWCharWrapper&)wsTemp );\
+		std::wstring wsTemp = cwsStr;\
+		return FromString( (const std::wstring&)wsTemp );\
 	}\
-	Enum FromString(const CWCharWrapper& wsStr)\
+	Enum FromString(const std::wstring& wsStr)\
 	{\
-		CString sTemp( wsStr.m_cwsString );\
+		CString sTemp( wsStr.c_str() );\
 		return FromString( (CString&)sTemp );\
 	}
 
@@ -105,7 +105,7 @@ namespace SimpleTypes
 	{\
 		FromString( cwsValue );\
 	}\
-	Class(const CWCharWrapper& wsStr)\
+	Class(const std::wstring& wsStr)\
 	{\
 		FromString( wsStr );\
 	}\
@@ -124,7 +124,7 @@ namespace SimpleTypes
 		FromString( cwsString );\
 		return *this;\
 	}\
-	const Class &operator =(const CWCharWrapper& wsStr)\
+	const Class &operator =(const std::wstring& wsStr)\
 	{\
 		FromString( wsStr );\
 		return *this;\
@@ -139,7 +139,7 @@ namespace SimpleTypes
     {\
         FromString( cwsValue );\
     }\
-    Class(const CWCharWrapper& wsStr)\
+    Class(const std::wstring& wsStr)\
     {\
         FromString( wsStr );\
     }\
@@ -153,7 +153,7 @@ namespace SimpleTypes
         FromString( cwsString );\
         return *this;\
     }\
-    const Class &operator =(const CWCharWrapper& wsStr)\
+    const Class &operator =(const std::wstring& wsStr)\
     {\
         FromString( wsStr );\
         return *this;\
@@ -479,6 +479,10 @@ namespace SimpleTypes
 			CString sResult;
 			sResult.Format( _T("%f"), m_dValue);
 			return sResult;
+		}
+		virtual std::wstring ToString2() const
+		{
+			return std::to_wstring(m_dValue);
 		}
   
 		void SetValue(double dValue)

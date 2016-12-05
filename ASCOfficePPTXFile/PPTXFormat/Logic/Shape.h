@@ -127,6 +127,8 @@ namespace PPTX
 				{
 					pWriter->WriteRecord2(3, txBody);
 				}
+
+				pWriter->WriteRecord2(6, txXfrm);
 				
 				pWriter->EndRecord();
 			}
@@ -302,6 +304,12 @@ namespace PPTX
 							TextBoxBodyPr->fromPPTY(pReader);
 							break;
 						}
+						case 6:
+						{
+							txXfrm = new PPTX::Logic::Xfrm();
+							txXfrm->fromPPTY(pReader);
+							break;
+						}
 						default:
 						{
 							break;
@@ -317,6 +325,7 @@ namespace PPTX
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
 			nullable<TxBody>		txBody;
+			nullable<Xfrm>			txXfrm;
 
 			nullable_string			TextBoxShape;
 			nullable<BodyPr>		TextBoxBodyPr;

@@ -160,10 +160,9 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptMsoWrapEdited: 
 			break;
 		case SimpleTypes::Vml::cssptMsoWrapStyle: 
-
 			if (prop->get_Value().eMsoWrapStyle == SimpleTypes::Vml::cssmsowrapstyleNone)
 				pShape->m_nWrapType = 3;
-			else 
+			else if ( pShape->m_nZOrderRelative == PROP_DEF)
 				pShape->m_nWrapType = 2;
 			break;
 		case SimpleTypes::Vml::cssptPosition: 
@@ -171,7 +170,10 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptRotation: 
 			{
 				pShape->m_nRotation = 65536 * prop->get_Value().dValue;
-				if( PROP_DEF != pShape->m_nRelRight || PROP_DEF != pShape->m_nRelLeft || PROP_DEF != pShape->m_nRelTop || PROP_DEF != pShape->m_nRelBottom  )
+				if(	PROP_DEF != pShape->m_nRelRight 
+					||	PROP_DEF != pShape->m_nRelLeft 
+					||	PROP_DEF != pShape->m_nRelTop 
+					||	PROP_DEF != pShape->m_nRelBottom )
 					pShape->m_nRelRotation = pShape->m_nRotation;
 			}break;
 		case SimpleTypes::Vml::cssptVisibility :  
@@ -183,9 +185,15 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 				int nValue = prop->get_Value().oZIndex.nOrder;
 				pShape->m_nZOrder = nValue;
 				if( nValue > 0 )
-					pShape->m_nZOrderRelative = 0;
+				{
+					pShape->m_nWrapType			= 3;
+					pShape->m_nZOrderRelative	= 0;
+				}
 				else if( nValue < 0 )
-					pShape->m_nZOrderRelative = 1;
+				{
+					pShape->m_nWrapType			= 3;
+					pShape->m_nZOrderRelative	= 1;
+				}
 			}break;
 		case SimpleTypes::Vml::cssptFontFamily:
 			{
@@ -202,11 +210,19 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 			}break;
 		case SimpleTypes::Vml::csspctMsoWidthPercent:
 			{
-				pShape->m_nPctWidth	= prop->get_Value().oValue.dValue;
+				pShape->m_nPctWidth	= prop->get_Value().dValue;
 			}break;
 		case SimpleTypes::Vml::csspctMsoHeightPercent:
 			{
-				pShape->m_nPctHeight	= prop->get_Value().oValue.dValue;
+				pShape->m_nPctHeight	= prop->get_Value().dValue;
+			}break;
+		case SimpleTypes::Vml::cssptVRotateLetters:
+			{
+				pShape->m_bGtextFVertical	= prop->get_Value().bValue;
+			}break;
+		case SimpleTypes::Vml::cssptVTextKern:
+			{
+				pShape->m_bGtextFKern		= prop->get_Value().bValue;
 			}break;
 		case SimpleTypes::Vml::cssptDirection                      : 			break;
 		case SimpleTypes::Vml::cssptLayoutFlow                     : 			break;
@@ -223,10 +239,8 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptFontWeight                     :			break;
 		case SimpleTypes::Vml::cssptMsoTextShadow                  : 			break;
 		case SimpleTypes::Vml::cssptTextDecoration                 : 			break;
-		case SimpleTypes::Vml::cssptVRotateLetters                 : 			break;
 		case SimpleTypes::Vml::cssptVSameLetterHeights             : 			break;
 		case SimpleTypes::Vml::cssptVTextAlign                     : 			break;
-		case SimpleTypes::Vml::cssptVTextKern                      : 			break;
 		case SimpleTypes::Vml::cssptVTextReverse                   : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacingMode               : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacing                   : 			break;		
@@ -276,10 +290,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
-				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : _T("") ;
+				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
 
 				if (srId.IsEmpty())
-                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : _T("") ;
+                    srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : L"" ;
 				
 				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
 				{        
@@ -293,13 +307,17 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 						oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
 						//todooo проверить что за путь тут выставляется
 						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
+
+						oOutput->m_nFillType = 2;
 					}
 				}
 				if (fill->m_oColor.IsInit())
 					oOutput->m_nFillColor = (fill->m_oColor->Get_B() << 16) + (fill->m_oColor->Get_G() << 8) + fill->m_oColor->Get_R();
 
 				if (fill->m_oColor2.IsInit())
-					oOutput->m_nFillColor2 = (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+				{
+					oOutput->m_nFillColor2	= (fill->m_oColor2->Get_B() << 16) + (fill->m_oColor2->Get_G() << 8) + fill->m_oColor2->Get_R();
+				}
 
 				if (fill->m_oOpacity.IsInit())
 					oOutput->m_nFillOpacity = fill->m_oOpacity->GetValue() * 100;
@@ -343,10 +361,10 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
-				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
+				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
 
 				if (srId.IsEmpty())
-                    srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
+                    srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
 
 				if (oParam.oReader->m_currentContainer)
 				{        
@@ -425,7 +443,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			{
 				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
 
-				if (wrap->m_oType.IsInit())
+				if (wrap->m_oType.IsInit() && oOutput->m_nZOrderRelative == PROP_DEF)
 				{
 					switch(wrap->m_oType->GetValue())
 					{
@@ -436,7 +454,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					case SimpleTypes::wraptypeTopAndBottom:	oOutput->m_nWrapType = 1;	break;
 					}
 				}
-				if (wrap->m_oSide.IsInit())
+				if (wrap->m_oSide.IsInit() && oOutput->m_nZOrderRelative == PROP_DEF)
 				{
 					switch(wrap->m_oSide->GetValue())
 					{
@@ -473,6 +491,15 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					if (text_path->m_sString.IsInit())
 					{
 						oOutput->m_sGtextUNICODE	= text_path->m_sString.get();
+					}
+					if ((text_path->m_oFitPath.IsInit()) && (text_path->m_oFitPath->GetValue()))
+					{
+						oOutput->m_bGtextFStretch	= 1;
+						oOutput->m_bGtextFBestFit	= 1;
+						oOutput->m_bGtextFShrinkFit	= 1;
+					}
+					if (text_path->m_oTrim.IsInit())
+					{
 					}
 					if (text_path->m_oStyle.IsInit())
 					{
@@ -557,7 +584,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 			}
 			if (oOutput->m_nShapeType == PROP_DEF)
 			{
-				int pos = shape->m_sType->Find(_T("#_x0000_t"));
+				int pos = shape->m_sType->Find( L"#_x0000_t" );
 				if (pos >= 0)
 				{				
 					oOutput->m_nShapeType = _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
@@ -645,10 +672,11 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if( m_vmlElement->m_oWrapCoords.IsInit())
 	{
-		if (oOutput->m_nWrapType == 3) oOutput->m_nWrapType =2;
+		if (oOutput->m_nWrapType == 3 && oOutput->m_nZOrderRelative == PROP_DEF) 
+			oOutput->m_nWrapType = 2;
 		
 		int nPosition = 0;
-		CString sPoint =  _T("start");
+		CString sPoint =  L"start";
 		for (long i =0 ;i < m_vmlElement->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlElement->m_oWrapCoords->GetX(i),
@@ -663,10 +691,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 	if( m_vmlElement->m_oCoordSize.IsInit())
 	{// shapeType content only size
-		if (oOutput->m_nGroupLeft != PROP_DEF)
-			oOutput->m_nGroupRight	= oOutput->m_nGroupLeft + m_vmlElement->m_oCoordSize->GetX();
-		if (oOutput->m_nGroupTop != PROP_DEF)
-			oOutput->m_nGroupBottom = oOutput->m_nGroupTop	+ m_vmlElement->m_oCoordSize->GetY();
+		oOutput->m_nGroupRight	= (oOutput->m_nGroupLeft != PROP_DEF ? oOutput->m_nGroupLeft : 0)	+ m_vmlElement->m_oCoordSize->GetX();
+		oOutput->m_nGroupBottom = (oOutput->m_nGroupTop != PROP_DEF ? oOutput->m_nGroupTop : 0)		+ m_vmlElement->m_oCoordSize->GetY();
 	}
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
@@ -702,6 +728,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	
 	oOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.GetValue();
 	oOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.GetValue();
+
+	oOutput->m_nZOrderRelative	= 0;
 	
 	oOutput->m_nWrapType		= 3; //def
 	
@@ -713,9 +741,9 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 
 	if( m_vmlGroup->m_oWrapCoords.IsInit())
 	{
-		if (oOutput->m_nWrapType == 3) oOutput->m_nWrapType =2;
+		if (oOutput->m_nWrapType == 3 && oOutput->m_nZOrderRelative == PROP_DEF) oOutput->m_nWrapType =2;
 		int nPosition = 0;
-		CString sPoint =  _T("start");
+		CString sPoint =  L"start";
 		for (long i =0 ;i < m_vmlGroup->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlGroup->m_oWrapCoords->GetX(i),
@@ -725,14 +753,14 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 
 	if( m_vmlGroup->m_oCoordOrigin.IsInit() )
 	{
-		oOutput->m_nGroupLeft = m_vmlGroup->m_oCoordOrigin->GetX();
-		oOutput->m_nGroupTop = m_vmlGroup->m_oCoordOrigin->GetY();
+		oOutput->m_nGroupLeft	= m_vmlGroup->m_oCoordOrigin->GetX();
+		oOutput->m_nGroupTop	= m_vmlGroup->m_oCoordOrigin->GetY();
 	}
 
 	if( m_vmlGroup->m_oCoordSize.IsInit())
 	{
-		oOutput->m_nGroupRight = oOutput->m_nGroupLeft + m_vmlGroup->m_oCoordSize->GetX();
-		oOutput->m_nGroupBottom = oOutput->m_nGroupTop + m_vmlGroup->m_oCoordSize->GetY();
+		oOutput->m_nGroupRight = (oOutput->m_nGroupLeft != PROP_DEF  ? oOutput->m_nGroupLeft : 0)	+ m_vmlGroup->m_oCoordSize->GetX();
+		oOutput->m_nGroupBottom =(oOutput->m_nGroupTop != PROP_DEF  ? oOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 	}
 
 	for( int i = 0; i < m_vmlGroup->m_arrItems.size() ; i++ )
@@ -741,13 +769,13 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 
 		if (m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_group)
 		{
-			RtfShapeGroupPtr oNewShape( new RtfShapeGroup() );
+			RtfShapeGroupPtr pNewShape( new RtfShapeGroup() );
 			
 			OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrItems[i]));
 			
-			oNewShape->m_bInGroup = true;
-			if( true == oShapeReader.Parse( oParam, oNewShape ) )
-				 oOutput->AddItem( oNewShape );
+			pNewShape->m_bInGroup = true;
+			if( true == oShapeReader.Parse( oParam, pNewShape ) )
+				 oOutput->AddItem( pNewShape );
 		}
 		else if (	m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_arc		||
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_line		||
@@ -758,13 +786,13 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_polyline	||
 					m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shapetype)
 		{
-			RtfShapePtr oNewShape( new RtfShape() );//set type .. .todooo
+			RtfShapePtr pNewShape ( new RtfShape() );//set type .. .todooo
 			
 			OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrItems[i]));
 			
-			oNewShape->m_bInGroup = true;
-			if( true == oShapeReader.Parse( oParam, oNewShape ) )
-				 oOutput->AddItem( oNewShape );
+			pNewShape->m_bInGroup = true;
+			if( true == oShapeReader.Parse( oParam, pNewShape ) )
+				 oOutput->AddItem( pNewShape );
 		}
 		else
 		{

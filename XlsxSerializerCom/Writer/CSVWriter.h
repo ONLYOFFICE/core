@@ -51,7 +51,7 @@
 
 namespace CSVWriter
 {
-    void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, bool bIsEnd = false);
+    void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false);
     void WriteFromXlsxToCsv(const CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON);
 }
 

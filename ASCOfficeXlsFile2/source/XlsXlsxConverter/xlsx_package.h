@@ -67,7 +67,6 @@ private:
     rels_file_ptr rels_;
 };
 
-/// \class  sheets_files
 class sheets_files  : public element
 {
 public:
@@ -88,7 +87,6 @@ public:
 
 };
 
-/// \class  xl_charts_files
 class xl_charts_files  : public element
 {
 public:
@@ -105,7 +103,6 @@ public:
 class xl_comments;
 typedef _CP_PTR(xl_comments) xl_comments_ptr;
 
-/// \class xl_comments
 class xl_comments: public element
 {
 public:
@@ -128,13 +125,14 @@ typedef _CP_PTR(xl_drawings) xl_drawings_ptr;
 class xl_drawings: public element
 {
 public:
+	bool vml;
     virtual void write(const std::wstring & RootPath);
     void set_rels(rels_files * rels)
     {
         rels_ = rels;
     }
 
-    xl_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms )
+    xl_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms ), vml(false)
     {
     }
 
@@ -146,7 +144,6 @@ private:
 
 };
 
-/// \class  xl_files
 class xl_files : public element
 {
 public:
@@ -155,15 +152,15 @@ public:
 public:
     virtual void write(const std::wstring & RootPath);
 
-    void set_workbook(element_ptr Element);
-    void set_styles(element_ptr Element);
-    void set_sharedStrings(element_ptr Element);
-    void add_sheet(sheet_content_ptr sheet);
-    void set_media(external_items & _Mediaitems);    
-    void set_drawings(element_ptr Element);
-	void set_vml_drawings(element_ptr Element);
-	void set_comments(element_ptr Element);
-    void add_charts(chart_content_ptr chart);
+    void set_workbook		(element_ptr Element);
+    void set_styles			(element_ptr Element);
+    void set_sharedStrings	(element_ptr Element);
+    void add_sheet			(sheet_content_ptr sheet);
+    void set_media			(external_items & _Mediaitems);    
+    void set_drawings		(element_ptr Element);
+	void set_vml_drawings	(element_ptr Element);
+	void set_comments		(element_ptr Element);
+    void add_charts			(chart_content_ptr chart);
 
 private:
     rels_files		rels_files_;
@@ -181,7 +178,6 @@ private:
 
 };
 
-/// \class  xlsx_document
 class xlsx_document : public document
 {
 public:

@@ -43,7 +43,7 @@ void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aS
 
     while ( false != oReader.ReadNextNode() )
 	{
-		CString sName = oReader.GetName();
+		std::wstring sName = oReader.GetName();
 		if(_T("v:shapetype") == sName)
 		{
 			CString sXml = oReader.GetOuterXml();

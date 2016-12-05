@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="_DEBUG;_LIB"
+				PreprocessorDefinitions="_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -710,10 +710,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\OdfFormat\odf_chart_context.h"
-				>
-			</File>
-			<File
 				RelativePath="..\OdfFormat\odf_comment_context.cpp"
 				>
 			</File>
@@ -735,6 +731,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\odf_drawing_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_notes_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odf_notes_context.h"
 				>
 			</File>
 			<File

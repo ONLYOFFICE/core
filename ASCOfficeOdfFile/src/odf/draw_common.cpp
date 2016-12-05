@@ -501,7 +501,34 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		}	
 	}
 	if (props.draw_fill_)
+	{
 		fill.type = props.draw_fill_->get_type();
+	}
+
+	switch(fill.type)
+	{
+	case 1:
+		if (!fill.solid)	fill.type = -1;
+	case 2:
+		if (!fill.bitmap)
+		{
+			if (fill.solid) fill.type = 1;
+			else			fill.type = -1;
+		}
+		break;
+	case 3:
+		if (!fill.gradient)
+		{
+			fill.gradient = oox::oox_gradient_fill::create();
+		}
+		break;
+	case 4:
+		if (!fill.hatch)
+		{
+			fill.hatch = oox::oox_hatch_fill::create();
+		}
+		break;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -511,7 +538,7 @@ const wchar_t * draw_a::ns = L"draw";
 const wchar_t * draw_a::name = L"a";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// draw-a-attlist
-void draw_a::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_a::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }

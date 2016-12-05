@@ -339,8 +339,9 @@
 				EnableEnhancedInstructionSet="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="pch.h"
-				ProgramDataBaseFileName="$(OutDir)\vc80.pdb"
-				WarningLevel="4"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="$(IntDir)\vc80.pdb"
+				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
 			/>

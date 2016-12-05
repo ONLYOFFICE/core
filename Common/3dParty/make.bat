@@ -9,7 +9,10 @@ FOR /f "tokens=*" %%i in ('DIR /a:d /b *') DO (
 	if exist %%i/fetch.bat (
 		call %%i/fetch.bat
 	)
-	
+
+	CD /D %~dp0
+	ECHO %%i
+
 	if exist %%i/build.bat (
 		call %%i/build.bat
 	)

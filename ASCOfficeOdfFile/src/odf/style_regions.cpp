@@ -69,7 +69,7 @@ void style_region_left::add_attributes( const xml::attributes_wc_ptr & Attribute
 {
 }
 
-void style_region_left::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_region_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -103,7 +103,7 @@ void style_region_right::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void style_region_right::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_region_right::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -137,7 +137,7 @@ void style_region_center::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
 }
 
-void style_region_center::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_region_center::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

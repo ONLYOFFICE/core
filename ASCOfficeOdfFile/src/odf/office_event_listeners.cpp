@@ -54,7 +54,7 @@ void office_event_listeners::add_attributes( const xml::attributes_wc_ptr & Attr
 {
 }
 
-void office_event_listeners::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_event_listeners::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if	CP_CHECK_NAME(L"presentation", L"event-listener")
         CP_CREATE_ELEMENT(presentation_event_listeners_);
@@ -92,7 +92,7 @@ void presentation_event_listener::add_attributes( const xml::attributes_wc_ptr &
 	presentation_event_listener_attlist_.add_attributes(Attributes);
 }
 
-void presentation_event_listener::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void presentation_event_listener::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"presentation", L"sound")
         CP_CREATE_ELEMENT(presentation_sound_);
@@ -118,7 +118,7 @@ void script_event_listener::add_attributes( const xml::attributes_wc_ptr & Attri
 {
 }
 
-void script_event_listener::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void script_event_listener::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

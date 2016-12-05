@@ -34,6 +34,7 @@ INCLUDEPATH += \
 SOURCES += ../DocWrapper/DocxSerializer.cpp \
     ../DocWrapper/FontProcessor.cpp \
     ../DocWrapper/XlsxSerializer.cpp \
+	../BinWriter/BinWriters.cpp \
     ../../XlsxSerializerCom/Common/Common.cpp \
     ../../XlsxSerializerCom/Reader/ChartFromToBinary.cpp \
     ../../XlsxSerializerCom/Reader/CommonWriter.cpp \

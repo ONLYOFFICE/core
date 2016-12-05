@@ -50,7 +50,7 @@ namespace text {
 const wchar_t * number::ns = L"text";
 const wchar_t * number::name = L"number";
 
-::std::wostream & number::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & number::text_to_stream(std::wostream & _Wostream) const
 {
     _Wostream << xml::utils::replace_xml_to_text( string_ );
     return _Wostream;
@@ -66,7 +66,7 @@ void number::add_text(const std::wstring & Text)
 const wchar_t * list_item::ns = L"text";
 const wchar_t * list_item::name = L"list-item";
 
-::std::wostream & list_item::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & list_item::text_to_stream(std::wostream & _Wostream) const
 {
     // TODO!!!!
     BOOST_FOREACH(const office_element_ptr & parElement, content_)
@@ -81,7 +81,7 @@ void list_item::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"text:start-value", text_start_value_);
 }
 
-void list_item::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void list_item::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"number")
     {
@@ -164,7 +164,7 @@ void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 }
 
 
-::std::wostream & list_header::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & list_header::text_to_stream(std::wostream & _Wostream) const
 {
     // TODO!!!!
     BOOST_FOREACH(const office_element_ptr & parElement, content_)
@@ -179,7 +179,7 @@ void list_header::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void list_header::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void list_header::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"text", L"number")
     {

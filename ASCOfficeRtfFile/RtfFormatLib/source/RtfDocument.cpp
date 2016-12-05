@@ -41,7 +41,11 @@
 
 RtfDocument::RtfDocument()
 {
-	m_aArray.push_back( RtfSectionPtr( new RtfSection() ) );
+    RtfSectionPtr s(new RtfSection());
+    _section section(s, 0, 0);
+	
+	m_aArray.push_back( section );
+	
 	m_oProperty.SetDefaultOOX();
 	m_oDefaultCharProp.SetDefaultRtf();
 	m_oDefaultParagraphProp.SetDefaultRtf();
@@ -53,9 +57,9 @@ int RtfDocument::GetType()
 
 CString RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
 {
-	return _T("");
+	return L"";
 }
 CString RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
-	return _T("");
+	return L"";
 }

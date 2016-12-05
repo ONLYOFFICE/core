@@ -82,14 +82,14 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 		int nCurDepth = xmlReader.GetDepth();
 		while ( xmlReader.ReadNextSiblingNode( nCurDepth ) )
 		{
-			CString sName = xmlReader.GetName();
+            std::wstring sName = xmlReader.GetName();
 
 			if (sName == _T("TXTOptions"))
 			{
 				int nCurDepth1 = xmlReader.GetDepth();
 				while ( xmlReader.ReadNextSiblingNode( nCurDepth1 ) )
 				{
-					CString sName1 = xmlReader.GetName();
+                    std::wstring sName1 = xmlReader.GetName();
 					if (sName1 == _T("Encoding"))
 					{
 						CString strValue = xmlReader.GetText2();
@@ -112,7 +112,7 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 	//As Text
 
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(std_string2string(sDstPath), _T(""), 1, false, NULL, _T(""));
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(std_string2string(sDstPath), _T(""), true, 1, false, NULL, _T(""));
 	if (pDocxWriter == NULL) return S_FALSE;
 
     CreateDocxEmpty(std_string2string(sDstPath), pDocxWriter);

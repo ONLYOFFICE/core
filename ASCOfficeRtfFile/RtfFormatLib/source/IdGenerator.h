@@ -79,14 +79,14 @@ public:
 	CString Generate_rId()
 	{
 		CString sResult;
-		sResult.AppendFormat( _T("rId%d"), m_nrIdCount++ );
+		sResult.AppendFormat( L"rId%d", m_nrIdCount++ );
 		return sResult;
 	}
 
 	CString Generate_FitTextId()
 	{
 		CString sResult;
-		sResult.AppendFormat( _T("%d"), m_nFitTextIdCount++ );
+		sResult.AppendFormat( L"%d", m_nFitTextIdCount++ );
 		return sResult;
 	}
 
@@ -134,8 +134,8 @@ public:
 	CString Generate_OleId()
 	{
 		CString sId;
-		sId.AppendFormat( _T("%d"), m_nOleId++ );
-		CString sResult = _T("_1330071130");
+		sId.AppendFormat( L"%d", m_nOleId++ );
+		CString sResult = L"_1330071130";
 		sResult = sResult.Left( sResult.GetLength() - sId.GetLength() );
 		sResult += sId;
 		return sResult;

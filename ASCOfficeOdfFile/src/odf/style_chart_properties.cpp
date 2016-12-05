@@ -210,7 +210,7 @@ void style_chart_properties::add_attributes( const xml::attributes_wc_ptr & Attr
 	//common_rotation_angle_attlist_.add_attributes(Attributes);
 }
 
-void style_chart_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_chart_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

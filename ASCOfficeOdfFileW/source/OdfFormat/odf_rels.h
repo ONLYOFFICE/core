@@ -48,7 +48,7 @@ public:
     relationship(const std::wstring & Type,const std::wstring & Target) :  type_(Type), target_(Target)
     {}
 
-    void serialize(::std::wostream & _Wostream);
+    void serialize(std::wostream & _Wostream);
 
     const std::wstring & type() const { return type_; }
     const std::wstring & target() const { return target_; }

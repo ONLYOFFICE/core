@@ -39,7 +39,6 @@ namespace XLS
 class CFStreamCacheReader;
 class BOF;
 
-// Logical representation of Globals substream 
 class GlobalsSubstream;
 typedef boost::shared_ptr<GlobalsSubstream>		GlobalsSubstreamPtr;
 
@@ -56,22 +55,30 @@ public:
 
 	static const ElementType	type = typeGlobalsSubstream;
 	
-	BaseObjectPtr				m_THEME;
-	BaseObjectPtr				m_Formating;
-	BaseObjectPtr				m_Template;
-	BaseObjectPtr				m_SHAREDSTRINGS;
-	BaseObjectPtr				m_ExtSST;
-	BaseObjectPtr				m_CodePage;
-	BaseObjectPtr				m_Country;
+	BaseObjectPtr					m_THEME;
+	BaseObjectPtr					m_Formating;
+	BaseObjectPtr					m_Template;
+	BaseObjectPtr					m_SHAREDSTRINGS;
+	BaseObjectPtr					m_ExtSST;
+	BaseObjectPtr					m_CodePage;
+	BaseObjectPtr					m_Country;
+	BaseObjectPtr					m_WriteProtect;
+	BaseObjectPtr					m_PROTECTION;
 
-	std::vector<BaseObjectPtr>	m_arHFPicture;
-	std::vector<BaseObjectPtr>	m_arLBL;
-	std::vector<BaseObjectPtr>	m_arMSODRAWINGGROUP;
-	std::vector<BaseObjectPtr>	m_arWindow1;
-	std::vector<BaseObjectPtr>	m_arUserBView;
-	std::vector<BaseObjectPtr>	m_arSUPBOOK;
+	std::vector<BaseObjectPtr>		m_arHFPicture;
+	std::vector<BaseObjectPtr>		m_arLBL;
+	std::vector<BaseObjectPtr>		m_arMSODRAWINGGROUP;
+	std::vector<BaseObjectPtr>		m_arWindow1;
+	std::vector<BaseObjectPtr>		m_arUserBView;
+	std::vector<BaseObjectPtr>		m_arSUPBOOK;
+
+	std::vector<BiffStructurePtr>	m_arHFPictureDrawing;
 	
-	unsigned short code_page_;
+	unsigned short					code_page_;
+	GlobalWorkbookInfoPtr			global_info_;
+
+private:
+	void LoadHFPicture();
 };
 
 } // namespace XLS

@@ -93,7 +93,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( m_pTblGrid && _T("w:tblGrid") == sName )
 					m_pTblGrid->fromXML( oReader );
 			}
@@ -195,7 +195,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				if ( m_pTblPrEx.IsInit() && _T("w:tblPrEx") == sName )
 					m_pTblPrEx->fromXML( oReader );
 			}
@@ -271,7 +271,7 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItem ) )
 					{
-						CString sName = oItem.GetName();
+						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						if ( _T("w:bookmarkEnd") == sName )
@@ -353,7 +353,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:bookmarkEnd") == sName )
@@ -475,7 +475,7 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItem ) )
 					{
-						CString sName = oItem.GetName();
+						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 						if ( _T("w:bookmarkEnd") == sName )
@@ -578,7 +578,7 @@ namespace OOX
 			int nNumCol = 0;
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				if ( _T("w:bookmarkEnd") == sName )
@@ -724,7 +724,7 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItem ) )
 					{
-						CString sName = oItem.GetName();
+						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
 /*						if ( _T("w:altChunk") == sName )
@@ -810,7 +810,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				/*if ( _T("w:altChunk") == sName )

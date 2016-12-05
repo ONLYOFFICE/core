@@ -67,11 +67,11 @@ public:
 
         if (oNewStyle == NULL) return true;
 
-		RtfStyle::StyleType eStyleType = oNewStyle->m_eType;
+		RtfStyle::_StyleType eStyleType = oNewStyle->m_eType;
 
 		oNewStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
 
-		oNewStyle->m_sID = m_ooxStyle->m_sStyleId.IsInit() ? m_ooxStyle->m_sStyleId.get2() : _T("");
+		oNewStyle->m_sID = m_ooxStyle->m_sStyleId.IsInit() ? m_ooxStyle->m_sStyleId.get2() : L"";
 
 		if(m_ooxStyle->m_oName.IsInit() && m_ooxStyle->m_oName->m_sVal.IsInit())
 			oNewStyle->m_sName = m_ooxStyle->m_oName->m_sVal.get2();
@@ -122,8 +122,8 @@ public:
             CcnfStyle style;
             opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style );
 			
-			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
-			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
+			//oNewParStyle->m_oParProp.m_nListId	= PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
+			//oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
 
 		}
 		if (m_ooxStyle->m_oTblPr.IsInit()  && RtfStyle::stTable == eStyleType )
@@ -265,10 +265,10 @@ public:
 
         if (oOutputStyle == NULL)
 		{
-            oOutputStyle		= RtfStylePtr( new RtfTableStyle() );
+            oOutputStyle		= RtfStylePtr ( new RtfTableStyle() );
 			oOutputStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
 		}
-		RtfStyle::StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить
+		RtfStyle::_StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить
 
 		if (oox_tableStyle->m_oRunPr.IsInit() && 
 			( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo с rtf стилями

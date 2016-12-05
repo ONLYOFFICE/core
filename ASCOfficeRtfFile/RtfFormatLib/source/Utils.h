@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "RtfDefine.h"
+
 #include "../../../Common/FileWriter.h"
 
 #ifdef _ASC_USE_UNICODE_CONVERTER_
@@ -42,6 +44,8 @@
 #if !defined (_WIN32) && !defined (_WIN64)
     #include "iconv.h"
 #endif
+
+#include <boost/date_time.hpp>
 
 #define BUF_SIZE 2048
 #define ONE_INCH 2.54
@@ -57,6 +61,9 @@
 #ifndef CP_SYMBOL        //Symbol
     #define CP_SYMBOL 42
 #endif
+
+#define GETBITS(from, numL, numH)		((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+#define SETBITS(to	, numL, numH, val)	{to &= ~(((1 << (numH - numL + 1)) - 1) << numL); to |= ((val & ((1 << (numH - numL + 1)) - 1)) << numL);}
 
 namespace Strings
 {	
@@ -74,23 +81,23 @@ namespace Strings
     static int ToColor(const CString& strValue)
     {
         // variables
-        int blue = 0;
-        int green = 0;
-        int red = 0;
+        int blue	= 0;
+        int green	= 0;
+        int red		= 0;
 
         CString color = strValue; color = color.Trim();
 				
-        if (color.Find(_T("0x"))!=-1)
-            color.Delete(0,2);
-        if (color.Find(_T("#"))!=-1)
-            color.Delete(0,1);
+        if (color.Find (L"0x") != -1)
+            color.Delete (0,2);
+        if (color.Find (L"#") != -1)
+            color.Delete (0,1);
 
         while (color.GetLength() < 6)
-            color = _T("0") + color;
+            color = L"0" + color;
 
-        red = 16*ToDigit(color[0]) + ToDigit(color[1]);
-        green = 16*ToDigit(color[2]) + ToDigit(color[3]);
-        blue = 16*ToDigit(color[4]) + ToDigit(color[5]);
+        red		= 16 * ToDigit(color[0]) + ToDigit(color[1]);
+        green	= 16 * ToDigit(color[2]) + ToDigit(color[3]);
+        blue	= 16 * ToDigit(color[4]) + ToDigit(color[5]);
 
         return RGB(red, green, blue);
     }
@@ -98,18 +105,18 @@ namespace Strings
 	{
 		CString color = strValue; color = color.Trim();
 				
-		if (color.Find(_T("0x"))!=-1)
-			color.Delete(0,2);
-		if (color.Find(_T("#"))!=-1)
-			color.Delete(0,1);
+		if (color.Find (L"0x")!=-1)
+			color.Delete (0,2);
+		if (color.Find (L"#")!=-1)
+			color.Delete (0,1);
 
 		while (color.GetLength() < 8)
-			color = _T("0") + color;
+			color = L"0" + color;
 
-		nA = 16*ToDigit(color[0]) + ToDigit(color[1]);
-		nR = 16*ToDigit(color[2]) + ToDigit(color[3]);
-		nG = 16*ToDigit(color[4]) + ToDigit(color[5]);
-		nB = 16*ToDigit(color[6]) + ToDigit(color[7]);
+		nA = 16 * ToDigit(color[0]) + ToDigit(color[1]);
+		nR = 16 * ToDigit(color[2]) + ToDigit(color[3]);
+		nG = 16 * ToDigit(color[4]) + ToDigit(color[5]);
+		nB = 16 * ToDigit(color[6]) + ToDigit(color[7]);
 	}
 	static bool ToBoolean(const CString& strValue)
 	{
@@ -117,7 +124,7 @@ namespace Strings
 		
 		s.MakeLower();
 
-		return (s == _T("true"));
+		return (s == L"true");
 	}
 	static int ToInteger(const CString& strValue)
 	{
@@ -127,7 +134,7 @@ namespace Strings
 	{
 		double d = 0;
 
-		_stscanf(strValue, _T(" %lf"), &d);
+		_stscanf(strValue, L" %lf", &d);
 
 		return d;
 	}
@@ -136,7 +143,7 @@ namespace Strings
 	{
 		CString str;
 		
-		str.Format(_T("%d"), Value);
+		str.Format(L"%d", Value);
 
 		return str;
 	}
@@ -144,16 +151,16 @@ namespace Strings
 	{
 		CString str;
 		
-		str.Format(_T("%lf"), Value);
+		str.Format(L"%lf", Value);
 
 		return str;
 	}
 	static CString FromBoolean(bool Value)
 	{
 		if (Value)
-			return _T("true");
+			return L"true";
 
-		return _T("false");
+		return L"false";
 	}
 	
 }
@@ -164,13 +171,13 @@ public:
 	static  CString ToString(int i)
 	{
 		CString result;
-		result.Format( _T("%i"), i);
+		result.Format( L"%i", i);
 		return result;
 	}
 	static  CString ToStringHex( int i, int nLen )
 	{
 		CString result;
-		result.Format( _T("%x"), i);
+		result.Format( L"%x", i);
 		for( int i = result.GetLength(); i < nLen; i++ )
 			result.Insert( 0 , '0' );
 		result.MakeUpper();
@@ -180,16 +187,16 @@ public:
 	 {
 		 int nResult;
 		 if(16 == base)
-			 _stscanf(str, _T("%x"), &nResult);
+			 _stscanf(str, L"%x", &nResult);
 		 else if(8 == base)
-			 _stscanf(str, _T("%o"), &nResult);
+			 _stscanf(str, L"%o", &nResult);
 		 else 
-			 _stscanf(str, _T("%d"), &nResult);
+			 _stscanf(str, L"%d", &nResult);
 		 return nResult;
 	 }
 };
-static const int aCodePages[][2] = {
-    //charset	codepage
+static const int aCodePages[][2] = 
+{//charset	codepage
     0,	1252, //ANSI
     1,	0,//Default
     2,	42,//Symbol
@@ -372,12 +379,67 @@ class RtfUtility
 {
 public: 
 
+//--------------------------------------------------------------------------------------------
+	static std::wstring convertDateTime (int dt)
+	{
+		if ( dt == PROP_DEF) return L"";
+
+		short	Min		= GETBITS(dt, 0	, 5);
+		short	Hour	= GETBITS(dt, 6	, 10);
+		short	Day		= GETBITS(dt, 11, 15);
+		short	Month	= GETBITS(dt, 16, 19);
+		int		Year	= GETBITS(dt, 20, 28) + 1900;
+
+		//to 1899-12-31T05:37:46.66569 - iso_extended_string
+		std::wstring date_str = std::to_wstring(Year) 
+								+ L"-" 
+								+ (Month < 10 ? L"0": L"") + std::to_wstring(Month) 
+								+ L"-" 
+								+ (Day < 10 ? L"0": L"") + std::to_wstring(Day)
+								+ L"T"
+								+ (Hour < 10 ? L"0": L"") + std::to_wstring(Hour)
+								+ L":" 
+								+ (Min < 10 ? L"0": L"") + std::to_wstring(Min)
+								+ L":00Z";
+
+		return date_str;
+	}
+	static int convertDateTime (std::wstring & dt_)
+	{
+		if ( dt_.empty() ) return PROP_DEF;
+
+		std::string dt(dt_.begin(), dt_.end());
+
+		boost::posix_time::ptime date_time_;
+
+		boost::posix_time::time_input_facet *tif = new boost::posix_time::time_input_facet;
+		tif->set_iso_extended_format();
+		std::istringstream strm(dt);
+		strm.imbue(std::locale(std::locale::classic(), tif));
+		strm >> date_time_;
+
+		short	Min		= date_time_.time_of_day().minutes();	
+		short	Hour	= date_time_.time_of_day().hours();		
+		short	Day		= date_time_.date().day();	
+		short	Month	= date_time_.date().month().as_number();
+		int		Year	= date_time_.date().year() - 1900;	
+
+		int result = 0;
+		SETBITS(result, 0 , 5,  Min);
+		SETBITS(result, 6 , 10, Hour);
+		SETBITS(result, 11, 15, Day);
+		SETBITS(result, 16, 19, Month);
+		SETBITS(result, 20, 28, Year);
+
+		return result;
+	}
+//------------------------------------------------------------------------------------------------------
     class RtfInternalEncoder
     {
     public:
         static CString Encode( CString sFilename )
         {
-            return _T("{\\*filename ") + sFilename + _T("\\*end}");
+            return L"{\\*filename " + sFilename + L"\\*end}";
         }
         static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
         {
@@ -392,9 +454,9 @@ public:
 #endif
             int nStart = 0;
             int nFindRes = -1;
-            CString sFindString = _T("{\\*filename ");
+            CString sFindString = L"{\\*filename ";
             int nFindStringLen = sFindString.GetLength();
-            CString sFindEnd = _T("\\*end}");
+            CString sFindEnd = L"\\*end}";
             int nFindEndLen = sFindEnd.GetLength();
             while( -1 != (nFindRes = sText.Find( sFindString, nStart )) )
             {
@@ -448,13 +510,13 @@ public:
     static float String2Percent( CString sValue )
 	{
 		int nPosition;
-		if( (nPosition = sValue.Find( _T("f") )) != -1 )
+		if( (nPosition = sValue.Find( L"f" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			int dResult = Strings::ToInteger( sValue );
 			return (float)(1.0 * dResult / 65536);
 		}
-		else if( (nPosition = sValue.Find( _T("%") )) != -1 )
+		else if( (nPosition = sValue.Find( L"%" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			return (float)Strings::ToDouble( sValue ) / 100;
@@ -465,37 +527,37 @@ public:
 	static int String2Twips( CString sValue )
 	{
 		int nPosition;
-		if( (nPosition = sValue.Find( _T("pt") )) != -1 )
+		if( (nPosition = sValue.Find( L"pt" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pt2Twip( dResult );
 		}
-		else if( (nPosition = sValue.Find( _T("in") )) != -1 )
+		else if( (nPosition = sValue.Find( L"in" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return in2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( _T("cm") )) != -1 )
+		else if( (nPosition = sValue.Find( L"cm" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return cm2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( _T("mm") )) != -1 )
+		else if( (nPosition = sValue.Find( L"mm" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return mm2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( _T("pc") )) != -1 )
+		else if( (nPosition = sValue.Find( L"pc" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pc2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( _T("pi") )) != -1 )
+		else if( (nPosition = sValue.Find( L"pi" )) != -1 )
 		{
 			sValue = sValue.Left( nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
@@ -604,7 +666,7 @@ public:
 		for( int i = 0; i < sText.GetLength(); i++ )
 		{
             BYTE byteChar = sText[i];
-			sHexText.AppendFormat( _T("%x"), byteChar );
+			sHexText.AppendFormat( L"%x", byteChar );
 		}
 		return sHexText;
 	}
@@ -616,7 +678,7 @@ public:
 			int byte1 = ToByte( sHexText[i] );
 			int byte2 = ToByte(sHexText[i + 1] );
 			int cChar = (byte1 << 4) + byte2;
-			sText.AppendFormat( _T("%c"), cChar );
+			sText.AppendFormat( L"%c", cChar );
 		}
 		return sText;
 	}
@@ -639,7 +701,7 @@ public:
 		//sResult.Trim();
 
 		//удаляем дублирующие пробелы
-		while( sResult.Replace( _T("  "), _T(" ") ) > 0 )
+		while( sResult.Replace( L"  ", L" " ) > 0 )
 			;
 		return sResult;
 	}

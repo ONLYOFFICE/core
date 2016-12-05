@@ -211,7 +211,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 					if ( !m_bTblGridChange && _T("w:tblGridChange") == sName )
 						m_oTblGridChange = oReader;
 					else if ( _T("w:gridCol") == sName )
@@ -357,7 +357,7 @@ namespace OOX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if      ( _T("w:jc")             == sName ) m_oJc = oReader;
 					else if ( _T("w:shd")            == sName ) m_oShd = oReader;

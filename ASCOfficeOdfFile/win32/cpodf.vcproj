@@ -499,10 +499,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\docx_conversion_state.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\docx_drawing.cpp"
 					>
 				</File>

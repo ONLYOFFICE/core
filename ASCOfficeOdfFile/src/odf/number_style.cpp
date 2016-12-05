@@ -176,7 +176,7 @@ void number_time_style::add_attributes( const xml::attributes_wc_ptr & Attribute
 	
 	number_style_base::add_attributes(Attributes);
 }
-void number_style_base::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_style_base::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -208,7 +208,7 @@ void number_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void number_text::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -229,7 +229,7 @@ void number_embedded_text::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"number:position", number_position_);
 }
 
-void number_embedded_text::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_embedded_text::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -258,7 +258,7 @@ void number_number::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:grouping", number_grouping_);
 }
 
-void number_number::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"number", L"embedded-text")
     {
@@ -286,7 +286,7 @@ void number_scientific_number::add_attributes( const xml::attributes_wc_ptr & At
     CP_APPLY_ATTR(L"number:grouping", number_grouping_);
 }
 
-void number_scientific_number::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_scientific_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -302,7 +302,7 @@ void number_currency_symbol::add_attributes( const xml::attributes_wc_ptr & Attr
     CP_APPLY_ATTR(L"number:country", number_country_);
 }                      
 
-void number_currency_symbol::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_currency_symbol::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -338,7 +338,7 @@ void number_text_content::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
 }
 
-void number_text_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_text_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -414,12 +414,23 @@ void number_number::oox_convert(oox::num_format_context & Context)
 
 void number_text::oox_convert(oox::num_format_context & Context)
 {
-    std::wostream & strm = Context.output();
-    
+	std::wstringstream strm;
+
     BOOST_FOREACH(const office_element_ptr & elm, text_)
     {
         elm->text_to_stream(strm);
     }
+
+	std::wstring text_ = strm.str();
+
+	if (text_ == L"%")
+	{
+	}
+	else
+	{
+		text_ = L"\"" + text_ + L"\""; //Book 70.ods Design of Pile Cap.ods
+	}
+	Context.output() << text_;
 }
 
 
@@ -434,7 +445,7 @@ void number_day::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_day::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_day::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -466,7 +477,7 @@ void number_day_of_week::add_attributes( const xml::attributes_wc_ptr & Attribut
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_day_of_week::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_day_of_week::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -498,7 +509,7 @@ void number_quarter::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_quarter::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_quarter::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -535,7 +546,7 @@ void number_month::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_month::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_month::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -580,7 +591,7 @@ void number_year::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_year::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_year::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -621,7 +632,7 @@ void number_hours::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_hours::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_hours::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -654,7 +665,7 @@ void number_minutes::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_minutes::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_minutes::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -687,7 +698,7 @@ void number_seconds::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"number:calendar", number_calendar_);
 }
 
-void number_seconds::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_seconds::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -723,7 +734,7 @@ void number_am_pm::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void number_am_pm::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_am_pm::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -751,7 +762,7 @@ void number_fraction::add_attributes( const xml::attributes_wc_ptr & Attributes 
     CP_APPLY_ATTR(L"number:min-denominator-digits", number_min_denominator_digits_);
 }
 
-void number_fraction::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void number_fraction::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

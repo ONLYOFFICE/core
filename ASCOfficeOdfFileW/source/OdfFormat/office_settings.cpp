@@ -45,7 +45,7 @@ namespace odf_writer {
 const wchar_t * office_settings::ns = L"office";
 const wchar_t * office_settings::name = L"settings";
 
-void office_settings::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_settings::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -73,7 +73,7 @@ void office_settings::add_child_element( const office_element_ptr & child_elemen
 const wchar_t * settings_config_item_set::ns = L"config";
 const wchar_t * settings_config_item_set::name = L"config-item-set";
 
-void settings_config_item_set::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_set::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -104,7 +104,7 @@ void settings_config_item_set::add_child_element( const office_element_ptr & chi
 const wchar_t * settings_config_item::ns = L"config";
 const wchar_t * settings_config_item::name = L"config-item";
 
-void settings_config_item::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 }
 
@@ -132,7 +132,7 @@ const wchar_t * settings_config_item_map_indexed::ns = L"config";
 const wchar_t * settings_config_item_map_indexed::name = L"config-item-map-indexed";
 
 
-void settings_config_item_map_indexed::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_indexed::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -161,7 +161,7 @@ void settings_config_item_map_indexed::add_child_element( const office_element_p
 const wchar_t * settings_config_item_map_named::ns = L"config";
 const wchar_t * settings_config_item_map_named::name = L"config-item-map-named";
 
-void settings_config_item_map_named::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_named::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -190,7 +190,7 @@ void settings_config_item_map_named::add_child_element( const office_element_ptr
 const wchar_t * settings_config_item_map_entry::ns = L"config";
 const wchar_t * settings_config_item_map_entry::name = L"config-item-map-entry";
 
-void settings_config_item_map_entry::create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name)
+void settings_config_item_map_entry::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

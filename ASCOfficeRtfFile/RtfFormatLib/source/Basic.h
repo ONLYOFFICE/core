@@ -37,9 +37,9 @@
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include <boost/shared_ptr.hpp>
+#include "boost/shared_ptr.hpp"
  
-typedef enum{ mu_none, mu_Auto, mu_Percent, mu_Twips } MetricUnits;
+enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 
 
 class RenderParameter
@@ -49,19 +49,19 @@ class RenderParameter
 		void* poDocument;
 		void* poRels;
 		
-		int nType;
-		int nValue;
-		CString sValue;
-		int RtfType;
+		int			nType;
+		int			nValue;
+		CString		sValue;
+		int			RtfType;
 		
 		RenderParameter()
 		{
-			poWriter = NULL;
-			poDocument = NULL;
-			poRels = NULL;
-			nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-			nValue = PROP_DEF;
-			RtfType = RTF_MAX;
+			poWriter	= NULL;
+			poDocument	= NULL;
+			poRels		= NULL;
+			nType		= RENDER_TO_OOX_PARAM_UNKNOWN;
+			nValue		= PROP_DEF;
+			RtfType		= RTF_MAX;
 		}
 };
 
@@ -92,10 +92,8 @@ public:
 template<class T>
 class ItemContainer
 {
-protected:
-    std::vector<T> m_aArray;
-
 public:
+    std::vector<T> m_aArray;
 
     ItemContainer( )
 	{
@@ -122,6 +120,8 @@ public:
 	}
 	int Find( T piRend )
 	{
+		//todooo - add map for seach
+
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 			if( m_aArray[i] == piRend )
 				return i;
@@ -138,9 +138,13 @@ public:
 	void RemoveItem( int nIndex = -1 )
 	{
 		if( nIndex >= 0 && nIndex < (int)m_aArray.size() )
+		{
 			m_aArray.erase(m_aArray.begin() + nIndex );
+		}
 		else if( -1 == nIndex && 0 < (int)m_aArray.size() )
+		{
 			m_aArray.pop_back();
+		}
 
 	}
 	void RemoveAll()
@@ -149,14 +153,19 @@ public:
 	}
 	bool GetItem(T& oOutput,int nIndex = -1)
 	{
-		if( -1 == nIndex && (int)m_aArray.size() > 0 )
+		if( -1 == nIndex && !m_aArray.empty() )
 		{
-			oOutput = m_aArray[m_aArray.size() - 1];
+			oOutput = m_aArray.back();
 			return true;
 		}
 		if( nIndex >= 0 && nIndex < (int)m_aArray.size())
 		{
 			oOutput = m_aArray[nIndex];
+			return true;
+		}
+		else if (!m_aArray.empty())
+		{
+			oOutput = m_aArray[0]; // default
 			return true;
 		}
 		return false;
@@ -239,13 +248,13 @@ public:
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
 		CString sResult;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for( int i = 0; i < (int)m_aArray.size(); i++ )//идем с конца - из за св-в секций
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 
 			if( TYPE_RTF_PARAGRAPH == m_aArray[i]->GetType() && i != (int)m_aArray.size() - 1)
 			{
-				sResult += _T("\\par") ;
+				sResult += L"\\par";
 			}
 		}
 		return sResult;
@@ -253,8 +262,12 @@ public:
 	CString RenderToOOX(RenderParameter oRenderParameter)
 	{
 		CString sResult;
+       
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
-			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+		{
+            sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+		}
+
 		return sResult;
 	}
 	bool IsValid()

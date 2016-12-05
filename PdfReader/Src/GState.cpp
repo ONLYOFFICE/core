@@ -2764,7 +2764,7 @@ namespace PdfReader
 			oDictItem.Free();
 		}
 
-		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
+		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
 		double dXMin, dXMax, dYMin, dYMax;
 		double arrCMin[GrColorMaxComps], arrCMax[GrColorMaxComps];
 		double dXMul, dYMul;
@@ -3129,7 +3129,7 @@ namespace PdfReader
 		double arrCMul[GrColorMaxComps];
 		int nComponentsCount = 0;
 
-		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
+		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
 		if (pDict->Search("Decode", &oDictItem)->IsArray() && oDictItem.ArrayGetLength() >= 6)
 		{
 			Object oTemp;
@@ -4420,8 +4420,18 @@ namespace PdfReader
 		double arrInvCTM[6];
 		double dXMin, dYMin, dXMax, dYMax;
 
+		double dDet_ = m_arrCTM[0] * m_arrCTM[3] - m_arrCTM[1] * m_arrCTM[2];
+		if (fabs(dDet_) < FLT_EPSILON)
+		{
+			*pdXMin = 0;
+			*pdYMin = 0;
+			*pdXMax = 0;
+			*pdYMax = 0;
+			return;
+		}
+
 		// Обратная матрица для матрицы CTM
-		double dDet = 1 / (m_arrCTM[0] * m_arrCTM[3] - m_arrCTM[1] * m_arrCTM[2]);
+		double dDet = 1 / dDet_;
 		arrInvCTM[0] =  m_arrCTM[3] * dDet;
 		arrInvCTM[1] = -m_arrCTM[1] * dDet;
 		arrInvCTM[2] = -m_arrCTM[2] * dDet;

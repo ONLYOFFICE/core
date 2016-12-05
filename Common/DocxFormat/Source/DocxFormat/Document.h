@@ -92,7 +92,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					std::wstring sName = oReader.GetName();
 
 					if ( _T("w:drawing") == sName )
 						m_oDrawing = oReader;
@@ -223,7 +223,7 @@ namespace OOX
 		{
 			while ( oReader.ReadNextSiblingNode( Depth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				
 				WritingElement *pItem = NULL;
 
@@ -321,7 +321,7 @@ namespace OOX
 			if ( !oReader.ReadNextNode() )
 				return;
 
-			CWCharWrapper sName = oReader.GetName();
+			std::wstring sName = oReader.GetName();
 			if ( _T("w:document") == sName || _T("w:wordDocument") == sName)
 			{
 				ReadAttributes( oReader );
@@ -368,7 +368,7 @@ namespace OOX
 						{
 							if ( oBodyChilds.GetAt( nIndex, oItem ) )
 							{
-								CString sName = oItem.GetName();
+								std::wstring sName = oItem.GetName();
 								WritingElement *pItem = NULL;
 
 								/*if ( _T("w:altChunk") == sName )

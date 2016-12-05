@@ -57,8 +57,8 @@ void table_named_expressions::add_attributes(const xml::attributes_wc_ptr & Attr
 }
 
 void table_named_expressions::add_child_element(xml::sax * Reader,
-                                                const ::std::wstring & Ns,
-                                                const ::std::wstring & Name)
+                                                const std::wstring & Ns,
+                                                const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }
@@ -106,7 +106,7 @@ void table_named_range::add_attributes(xml::attributes_wc_ptr const & Attributes
     CP_APPLY_ATTR(L"table:base-cell-address",	table_base_cell_address_);
 }
 
-void table_named_range::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_named_range::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -142,7 +142,7 @@ void table_named_expression::add_attributes(xml::attributes_wc_ptr const & Attri
     CP_APPLY_ATTR(L"table:base-cell-address", table_base_cell_address_);
 }
 
-void table_named_expression::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_named_expression::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }

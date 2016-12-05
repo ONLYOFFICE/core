@@ -895,11 +895,12 @@ namespace PdfReader
 				{
 					if (eFontType != fontType1C      && eFontType != fontType1COT
 						&& eFontType != fontTrueTypeOT  && eFontType != fontCIDType0C
-						&& eFontType != fontCIDType0COT && eFontType != fontCIDType2OT)
+						&& eFontType != fontCIDType0COT && eFontType != fontCIDType2OT
+						&& eFontType != fontCIDType2)
 					{
 						if (eFontType == fontType1 || eFontType == fontTrueType)
 							eFontType = fontType1C;
-						else if (eFontType == fontCIDType0 || eFontType == fontCIDType2)
+						else if (eFontType == fontCIDType0)
 							eFontType = fontCIDType0C;
 					}
 				}

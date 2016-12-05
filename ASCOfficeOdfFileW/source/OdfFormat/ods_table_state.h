@@ -134,8 +134,18 @@ namespace utils {
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());
 	}
-    static void parsing_ref (const std::wstring & ref, int & col,int & row)
+    static void parsing_ref (std::wstring ref, int & col,int & row)
 	{
+		int pos = ref.rfind(L"!");//oox table name
+		if (pos >= 0)
+			ref = ref.substr(pos + 1);
+		else
+		{
+			pos = ref.rfind(L".");//odf table name
+			if (pos >= 0)
+				ref = ref.substr(pos + 1);
+		}
+		
 		std::wstring strCol, strRow;
 		splitCellAddress(ref,strCol,strRow);
 

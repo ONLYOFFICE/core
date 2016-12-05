@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_DATE_TIME_INCLUDE_H_
-#define OOX_DATE_TIME_INCLUDE_H_
+#ifndef PPTXOOX_DATE_TIME_INCLUDE_H_
+#define PPTXOOX_DATE_TIME_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Utility/Utility.h"
 
@@ -79,4 +79,4 @@ namespace PPTX
     const CString DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
 } // namespace PPTX
 
-#endif // OOX_DATE_TIME_INCLUDE_H_
+#endif // PPTXOOX_DATE_TIME_INCLUDE_H_

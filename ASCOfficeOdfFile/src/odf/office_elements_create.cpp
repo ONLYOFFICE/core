@@ -47,7 +47,7 @@ office_element_creator::office_element_creator()
 {
 }
 
-office_element_ptr office_element_creator::create(const ::std::wstring & ns, const ::std::wstring & name, document_context * Context, bool isRoot) const
+office_element_ptr office_element_creator::create(const std::wstring & ns, const std::wstring & name, document_context * Context, bool isRoot) const
 {
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
 

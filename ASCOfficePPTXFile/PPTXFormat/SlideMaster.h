@@ -121,6 +121,8 @@ namespace PPTX
 			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
+			oAttr.Write(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
+			oAttr.Write(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
 			oAttr.Write(_T("preserve"), preserve);
 
 			XmlUtils::CNodeValue oValue;
@@ -412,6 +414,8 @@ namespace PPTX
 			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
 			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
 			pWriter->WriteAttribute(_T("preserve"), preserve);
 			pWriter->EndAttributes();
 

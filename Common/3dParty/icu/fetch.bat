@@ -39,13 +39,13 @@ if exist "%SCRIPTPATH%%platform%\icu\" (
 )
 
 if "%platform%" == "win_64" (
-XCOPY "%SCRIPTPATH%%platform%\icu\bin64\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\bin64\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\lib64\icudt.lib" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\lib64\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin64\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin64\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib64\icudt.lib" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib64\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
 ) else (
-XCOPY "%SCRIPTPATH%%platform%\icu\bin\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\bin\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\lib\icudt.lib" "%SCRIPTPATH%%platform%\build\"
-XCOPY "%SCRIPTPATH%%platform%\icu\lib\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin\icudt55.dll" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\bin\icuuc55.dll" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib\icudt.lib" "%SCRIPTPATH%%platform%\build\"
+XCOPY /Y "%SCRIPTPATH%%platform%\icu\lib\icuuc.lib" "%SCRIPTPATH%%platform%\build\"
 )

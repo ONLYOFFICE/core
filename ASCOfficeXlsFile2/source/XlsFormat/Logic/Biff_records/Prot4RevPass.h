@@ -54,7 +54,8 @@ public:
 	static const ElementType	type = typeProt4RevPass;
 
 //-----------------------------
-	BIFF_BSTR protPwdRev;
+	unsigned short	protPwdRev_num;
+	std::wstring	protPwdRev;
 
 };
 

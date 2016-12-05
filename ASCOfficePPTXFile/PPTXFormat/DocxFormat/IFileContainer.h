@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_IFILE_CONTAINER_INCLUDE_H_
-#define OOX_IFILE_CONTAINER_INCLUDE_H_
+#ifndef PPTXOOX_IFILE_CONTAINER_INCLUDE_H_
+#define PPTXOOX_IFILE_CONTAINER_INCLUDE_H_
 
 #include "RId.h"
 #include "UnknowTypeFile.h"
@@ -126,4 +126,4 @@ namespace PPTX
 
 } // namespace PPTX
 
-#endif // OOX_IFILE_CONTAINER_INCLUDE_H_
+#endif // PPTXOOX_IFILE_CONTAINER_INCLUDE_H_

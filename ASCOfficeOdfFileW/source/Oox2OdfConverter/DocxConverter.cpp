@@ -72,7 +72,8 @@ DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* 
 	pCallBack = CallBack;
 
 //set flags to default
-    last_section_properties = NULL;
+	current_section_properties	= NULL;
+    last_section_properties		= NULL;
 	
 	if (UpdateProgress(290000))return;
 }
@@ -198,14 +199,43 @@ void DocxConverter::convert_document()
 	const OOX::CDocument* document = docx_document->GetDocument();
 	if (!document)return;
 
+	std::vector<_section> sections;
+//----------------------------------------------------------------------------------------------------------
+	int last_section_start = 0;
+
+	//считаем количесво секций и запоминаем их свойства .. 
+	for (long i = 0; i < document->m_arrItems.size(); i++)
+	{
+		if (document->m_arrItems[i] == NULL) continue;
+
+		if (document->m_arrItems[i]->getType() == OOX::et_w_p)
+		{
+			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(document->m_arrItems[i]);
+			
+			if ((para) && (para->m_oParagraphProperty))
+			{
+				if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
+				{
+					sections.push_back(_section(para->m_oParagraphProperty->m_oSectPr.GetPointer(), last_section_start, i + 1));
+					last_section_start = i + 1;
+				}
+			}
+		}
+	}
+	sections.push_back(_section(document->m_oSectPr.GetPointer(), last_section_start, document->m_arrItems.size(), true));
+//----------------------------------------------------------------------------------------------------------
+
 	odt_context->text_context()->clear_params();
 
-	for (unsigned int nIndex = 0; nIndex < document->m_arrItems.size(); nIndex++ )
+	for (int sect = 0; sect < sections.size(); sect++)
 	{
-		convert(document->m_arrItems[nIndex]);
-	}
+		current_section_properties = &sections[sect];
 
-	convert(document->m_oSectPr.GetPointer(),true);
+		for (long i = sections[sect].start_para; i < sections[sect].end_para; i++)
+		{
+			convert(document->m_arrItems[i]);
+		}
+	}
 }
 void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
@@ -213,6 +243,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 	switch(oox_unknown->getType())
 	{
+		case OOX::et_w_ptab:
+		{
+			OOX::Logic::CPTab* pT= static_cast<OOX::Logic::CPTab*>(oox_unknown);
+			convert(pT);
+		}break;
 		case OOX::et_w_sdt:
 		{
 			OOX::Logic::CSdt* pP= static_cast<OOX::Logic::CSdt*>(oox_unknown);
@@ -237,6 +272,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			OOX::Logic::CIns* pIns= static_cast<OOX::Logic::CIns*>(oox_unknown);
 			convert(pIns);
+		}break;
+		case OOX::et_w_del:
+		{
+			OOX::Logic::CDel* pDel= static_cast<OOX::Logic::CDel*>(oox_unknown);
+			convert(pDel);
 		}break;
 		case OOX::et_w_smartTag:
 		{
@@ -323,6 +363,16 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
 			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
 		}break;
+		case OOX::et_w_footnoteReference:
+		{
+			OOX::Logic::CFootnoteReference* pRef= static_cast<OOX::Logic::CFootnoteReference*>(oox_unknown);
+			convert(pRef);
+		}break;
+		case OOX::et_w_endnoteReference:
+		{
+			OOX::Logic::CEndnoteReference* pRef= static_cast<OOX::Logic::CEndnoteReference*>(oox_unknown);
+			convert(pRef);
+		}break;
 		case OOX::et_w_tbl:
 		{
 			OOX::Logic::CTbl* pTable= static_cast<OOX::Logic::CTbl*>(oox_unknown);
@@ -344,6 +394,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		}break;
 	}
 }
+
 void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 {
 	if (oox_sdt == NULL) return;
@@ -362,8 +413,15 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 {
 	if (oox_paragraph == NULL) return; 
 
-	bool bStyled = false;
-
+//---------------------------------------------------------------------------------------------------------------------
+	if (current_section_properties)
+	{
+		if (odt_context->text_context()->get_KeepNextParagraph())
+			odt_context->end_paragraph();
+		odt_context->text_context()->set_KeepNextParagraph(false);
+	}
+//---------------------------------------------------------------------------------------------------------------------
+	bool bStyled			= false;
 	bool bStartNewParagraph = !odt_context->text_context()->get_KeepNextParagraph();
 	
 	bool		 list_present = false;
@@ -372,6 +430,44 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	int			 list_level = -1;
 	int			 list_style_id = -1;
 
+//---------------------------------------------------------------------------------------------------------------------
+	std::vector<std::pair<int, int>> id_change_properties;
+	
+	if (oox_paragraph->m_oParagraphProperty)
+	{//цепочка изменений форматов в удаленных кусках либрой (и оо) не поддерживается - 
+		int id;
+
+		if (oox_paragraph->m_oParagraphProperty->m_oRPr.IsInit())
+		{
+			//удаление знака абзаца - объединение со следующим - в либре нету
+			//id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oDel.GetPointer(), 2);
+			//if (id >= 0)	
+			//	id_change_properties.push_back(std::pair<int, int> (2, id)); 
+
+			//вставка знака абзаца - разделение текущего параграфа - в либре нету
+			//if (oox_paragraph->m_arrItems.size() < 2)//только для пустых 
+			{
+				id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oIns.GetPointer(), 1); 
+				if (id >= 0)	
+					id_change_properties.push_back(std::pair<int, int> (1, id));
+			}
+
+			id = convert(oox_paragraph->m_oParagraphProperty->m_oRPr->m_oRPrChange.GetPointer());
+			if (id >= 0)	
+				id_change_properties.push_back(std::pair<int, int> (3, id));
+		}			
+		
+		//if (oox_paragraph->m_oParagraphProperty->m_oSectPr.IsInit())
+		//{
+		//	id = convert(oox_paragraph->m_oParagraphProperty->m_oSectPr->m_oSectPrChange.GetPointer());
+		//	if (id >= 0)	id_change_properties.push_back(std::pair<int, int> (3, id));
+		//}
+
+		id = convert(oox_paragraph->m_oParagraphProperty->m_oPPrChange.GetPointer());
+		if (id >= 0)	
+			id_change_properties.push_back(std::pair<int, int> (3, id));
+	}	
+//---------------------------------------------------------------------------------------------------------------------
 	if(oox_paragraph->m_oParagraphProperty && odt_context->text_context()->get_list_item_state() == false)
 	{
 		if (oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
@@ -379,7 +475,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			std::wstring style_name = string2std_string(*oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal);
 
 			odf_writer::odf_style_state_ptr style_state;
-			if (odt_context->styles_context()->find_odf_style_state(style_name,odf_types::style_family::Paragraph, style_state) && style_state)
+			if (odt_context->styles_context()->find_odf_style_state(style_name, odf_types::style_family::Paragraph, style_state) && style_state)
 			{
 				list_present	= style_state->get_list_style_exist();
 				list_level		= style_state->get_list_style_level();
@@ -403,29 +499,40 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				list_style_id = oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal->GetValue();
 		}
 	}
-	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section())
+	if (oox_paragraph->m_oParagraphProperty || odt_context->is_empty_section() || current_section_properties)
 	{
-		bStyled = true;
-		odf_writer::style_paragraph_properties	*paragraph_properties = NULL;
+		bStyled			= true;
+		bool bRunPara	= oox_paragraph->m_oParagraphProperty ? (oox_paragraph->m_oParagraphProperty->m_oRPr.IsInit() ? true : false) : false;
+		
+		odf_writer::style_paragraph_properties	*paragraph_properties	= NULL;
+		odf_writer::style_text_properties		*text_properties		= NULL;
 
 		if (odt_context->text_context()->get_KeepNextParagraph())
 		{
 			odf_writer::odf_style_state_ptr state =  odt_context->styles_context()->last_state(odf_types::style_family::Paragraph);
 			if (state)
 			{
-				paragraph_properties = state->get_paragraph_properties();
+				paragraph_properties	= state->get_paragraph_properties();
 
-				if (oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
+				if (bRunPara)
+					text_properties		= state->get_text_properties();
+
+				if (oox_paragraph->m_oParagraphProperty && oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
 				{
 					//перезатираем все свойства ... наложение не катит -- ваще то надо чистить после буквицы (Nadpis.docx) .. проверить надобность с остальными случами
 					paragraph_properties->content().clear();
+					if (text_properties)
+						text_properties->content().clear();
 				}
 			}
 		}
 		else
 		{
-			odt_context->styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);					
-			paragraph_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
+			odt_context->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
+			
+			paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
+			if (bRunPara)
+				text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
 			
 			if(list_present && list_style_id >= 0)
 			{
@@ -434,7 +541,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			}
 		}
 		convert(oox_paragraph->m_oParagraphProperty, paragraph_properties); 
-
+		
+		if (text_properties && oox_paragraph->m_oParagraphProperty)
+			convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
 	}
 	else 
 	{
@@ -449,6 +558,22 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	if ((list_present = odt_context->text_context()->get_list_item_state()) == false) odt_context->set_no_list();
 
+	if (oox_paragraph->m_arrItems.size() < 2 && odt_context->text_context()->get_KeepNextParagraph())
+	{//rapcomnat12.docx - стр 185
+		bool empty_para = true;
+
+		for (unsigned int nIndex = 0; empty_para && nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
+		{		
+			switch(oox_paragraph->m_arrItems[nIndex]->getType())
+			{
+				case OOX::et_w_pPr: break;
+				default:
+					empty_para = false;
+			}
+		}
+		if (empty_para) return;
+	}
+
 	if (bStartNewParagraph)
 	{
 		odt_context->start_paragraph(bStyled);
@@ -459,6 +584,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 											  odt_context->page_layout_context()->last_master()->get_name() : L"");
 		}		
 	}
+
+//---------------------------------------------------------------------------------------------------------------------
 	for (unsigned int nIndex = 0; nIndex < oox_paragraph->m_arrItems.size(); nIndex++ )
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
@@ -473,42 +600,52 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 				break;
 		}
 	}
+//---------------------------------------------------------------------------------------------------------------------
 
-	if (odt_context->text_context()->get_KeepNextParagraph()) odt_context->end_drop_cap();
+	if (odt_context->text_context()->get_KeepNextParagraph())	odt_context->end_drop_cap();
 
 	if (!odt_context->text_context()->get_KeepNextParagraph())  odt_context->end_paragraph();
-
+	
 	if(list_present && !odt_context->text_context()->get_KeepNextParagraph())
 	{
 		odt_context->end_list_item();
 	}
+//---------------------------------------------------------------------------------------------------------------------
+	//std::sort(id_change_properties.begin(), id_change_properties.end());
 
-
-
+	for (int i = 0; i < id_change_properties.size(); i++)
+	{
+		odt_context->end_change(id_change_properties[i].second, id_change_properties[i].first); 
+	}
 }
 void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87 math 17.3.2.25
 {
 	if (oox_run == NULL) return;
-	
-	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-    for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
-	{
-		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
-		{
-			odt_context->add_page_break();
-		}
-	}	
-	bool styled = false;	
+	//хм разобраться а нужен ли он ... частенько бывает в неправильном месте!!! - A   GRUBU.docx
+	//https://forums.asp.net/t/1951556.aspx?Facing+problem+finding+out+page+end+in+Ms+Word+Open+XML+SDK+Asp+net+c+We+can+t+get+a+lastRenderedPageBreak
+	////test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
+	//for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
+	//{
+	//	if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
+	//	{
+	//		odt_context->add_page_break();
+	//	}
+	//}	
+	bool styled					= false;	
+	int id_change_properties	= -1;
+
 	if (oox_run->m_oRunProperty) 
 	{
 		styled = true;
 
+		id_change_properties = convert(oox_run->m_oRunProperty->m_oRPrChange.GetPointer());
+		
 		odt_context->styles_context()->create_style(L"",odf_types::style_family::Text, true, false, -1);					
 		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 
 		convert(oox_run->m_oRunProperty, text_properties);
 	}
-	
+
 	odt_context->start_run(styled);
 	
 	for(unsigned int i = 0; i < oox_run->m_arrItems.size(); ++i)
@@ -526,18 +663,29 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 				OOX::Logic::CInstrText* pInstrText= static_cast<OOX::Logic::CInstrText*>(oox_run->m_arrItems[i]);
 				convert(pInstrText);
 			}break;
-			case OOX::et_w_rPr:
+			case OOX::et_w_delText:
 			{
-				// пропускаем .. 
+				OOX::Logic::CDelText* pDelText= static_cast<OOX::Logic::CDelText*>(oox_run->m_arrItems[i]);
+				convert(pDelText);
+			}break;
+			case OOX::et_w_rPr:	// пропускаем .. 
+			{
 			}break;		
-			case OOX::et_w_lastRenderedPageBreak:
+			case OOX::et_w_lastRenderedPageBreak: // не информативное .. может быть неверно записано
 			{
-				//odt_context->text_context()->add_page_break(); выше
 			}break;
 			case OOX::et_w_br:
 			{
 				OOX::Logic::CBr* pBr= static_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
-				if (pBr)odt_context->text_context()->set_type_break(pBr->m_oType.GetValue(), pBr->m_oClear.GetValue());
+				if (pBr)
+				{
+					int type = pBr->m_oType.GetValue();
+					
+					bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
+
+					if (need_restart_para)
+						odt_context->add_paragraph_break(type);
+				}
 			}break;
 			case OOX::et_w_t:
 			{
@@ -554,27 +702,16 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 				OOX::Logic::CTab* pTab= static_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
 				odt_context->text_context()->add_tab();
 			}break;
-			case OOX::et_w_delText:
-			{
-			}break;
+
 			case OOX::et_w_separator:
 			case OOX::et_w_continuationSeparator:
 			{
 			}break;
-			//annotationRef
-			//endnoteRef
-			//endnoteReference
-			//footnoteRef
-			//footnoteReference
-			//commentReference
-			//separator			
 			//contentPart
 			//cr
 			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
-			//delText
 			//noBreakHyphen
 			//pgNum
-			//ptab
 			//ruby
 			//softHyphen
 			//delInstrText
@@ -583,8 +720,66 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 		}
 	}
 	odt_context->end_run();
+
+	if (id_change_properties >= 0)
+		odt_context->end_change(id_change_properties, 3); //todooo change int type to enum
+
 }
 
+void DocxConverter::convert(OOX::Logic::CPTab *oox_ptab)
+{
+	if (oox_ptab == NULL) return;
+
+	_CP_OPT(int)				ref;
+
+	odf_writer::style_paragraph_properties * paragraph_properties = odt_context->styles_context()->last_state(style_family::Paragraph)->get_paragraph_properties();;
+
+	if (paragraph_properties)
+	{
+		_CP_OPT(int)				type;
+		_CP_OPT(int)				leader;
+		_CP_OPT(odf_types::length)	length;
+		if (oox_ptab->m_oAlignment.IsInit())
+		{
+			switch(oox_ptab->m_oAlignment->GetValue())
+			{
+				case SimpleTypes::ptabalignmentCenter:
+				{
+					length = odf_types::length(odt_context->page_layout_context()->current_page_width_ / 2, length::pt);
+					type = 1;	
+				}break;					
+				case SimpleTypes::ptabalignmentLeft:		type = 6;	break;//??
+				case SimpleTypes::ptabalignmentRight:
+				{
+					length = odf_types::length(odt_context->page_layout_context()->current_page_width_, length::pt);
+					type = 4;	
+				}break;
+			}
+		}
+		if (oox_ptab->m_oLeader.IsInit())
+		{
+			switch(oox_ptab->m_oLeader->GetValue())
+			{
+				case SimpleTypes::ptableaderDot:			leader = 0;	break;
+				case SimpleTypes::ptableaderHyphen:			leader = 2;	break;
+				case SimpleTypes::ptableaderMiddleDot:		leader = 3;	break;
+				case SimpleTypes::ptableaderNone:			leader = 4;	break;
+				case SimpleTypes::ptableaderUnderscore:		leader = 5;	break;
+			}
+		}
+
+		//todooo m_oRelativeTo
+		paragraph_properties->add_child_element(odf_context()->start_tabs());
+			odt_context->add_tab(type, length, leader);
+		odf_context()->end_tabs();
+		
+		odt_context->add_tab(type, length, leader);
+
+		ref = 0;
+	}
+
+	odt_context->text_context()->add_tab(ref);
+}
 void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
 {
 	if (oox_sym == NULL) return;
@@ -619,37 +814,261 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
 
 	odt_context->start_field(true);
-		if (oox_fld->m_sInstr.IsInit())	odt_context->set_field_instr(string2std_string(oox_fld->m_sInstr.get2()));
+	{	
+		if (oox_fld->m_sInstr.IsInit())	
+			odt_context->set_field_instr(string2std_string(oox_fld->m_sInstr.get2()));
 
 		for (unsigned int i=0; i< oox_fld->m_arrItems.size(); i++)
 		{
 			convert(oox_fld->m_arrItems[i]);
 		}
+	}
 	odt_context->end_field();
 }
-void DocxConverter::convert(OOX::Logic::CInstrText	*oox_instr)
+void DocxConverter::convert(OOX::Logic::CInstrText *oox_instrText)
 {
-	if (oox_instr == NULL) return;
+	if (oox_instrText == NULL) return;
 
-	odt_context->set_field_instr(string2std_string(oox_instr->m_sText));
+	odt_context->set_field_instr(string2std_string(oox_instrText->m_sText));
 
+}
+void DocxConverter::convert(OOX::Logic::CDelText *oox_delText)
+{
+	if (oox_delText == NULL) return;
+
+	if (oox_delText->m_oSpace.IsInit())
+	{
+		if (oox_delText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve)
+		{
+		}
+	}
+	odt_context->add_text_content(string2std_string(oox_delText->m_sText));
 }
 void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 {
 	if (oox_ins == NULL) return;
-	//текст-вставка авторский
-	//todooo сделать должную организацию text:change-start -> text:change-end c трейсером Abortion.docx
+	
+	std::wstring	author	= oox_ins->m_sAuthor.IsInit()	? oox_ins->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_ins->m_sUserId.IsInit()	? oox_ins->m_sUserId.get2()		: L"";
+	int				id		= oox_ins->m_oId.IsInit()		? oox_ins->m_oId->GetValue()	: -1;
+	std::wstring	date	= oox_ins->m_oDate.IsInit()		? oox_ins->m_oDate->GetValue()	: L"";
+			
+	bool start_change = odt_context->start_change(id, 1, author, userId, date);
 
 	for (unsigned int i=0; i< oox_ins->m_arrItems.size(); i++)
 	{
 		convert(oox_ins->m_arrItems[i]);
 	}
+	
+	if (start_change)
+		odt_context->end_change(id, 1);
+}
+int DocxConverter::convert(ComplexTypes::Word::CTrackChange *oox_change, int type)
+{
+	if (!oox_change) return -1;
+
+	std::wstring	author	= oox_change->m_sAuthor.IsInit()	? oox_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_change->m_sUserId.IsInit()	? oox_change->m_sUserId.get2()		: L"";
+	int				id		= oox_change->m_oId.IsInit()		? oox_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_change->m_oDate.IsInit()		? oox_change->m_oDate->GetValue()	: L"";
+
+	if (!odt_context->start_change(id, type, author, userId, date)) return -1;
+
+	return id;
+}
+int DocxConverter::convert(OOX::Logic::CSectPrChange *oox_sect_prop_change)
+{
+	if (!oox_sect_prop_change) return -1;
+
+	std::wstring	author	= oox_sect_prop_change->m_sAuthor.IsInit()	? oox_sect_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_sect_prop_change->m_sUserId.IsInit()	? oox_sect_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_sect_prop_change->m_oId.IsInit()		? oox_sect_prop_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_sect_prop_change->m_oDate.IsInit()	? oox_sect_prop_change->m_oDate->GetValue()		: L"";
+
+	if (odt_context->start_change(id, 3, author, userId, date))
+	{
+		convert(oox_sect_prop_change->m_pSecPr.GetPointer());
+
+		return id;
+	}
+	return -1;
+}
+int DocxConverter::convert(OOX::Logic::CPPrChange *oox_para_prop_change)
+{
+	if (!oox_para_prop_change) return -1;
+
+	std::wstring	author	= oox_para_prop_change->m_sAuthor.IsInit()	? oox_para_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_para_prop_change->m_sUserId.IsInit()	? oox_para_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_para_prop_change->m_oId.IsInit()		? oox_para_prop_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_para_prop_change->m_oDate.IsInit()	? oox_para_prop_change->m_oDate->GetValue()		: L"";
+	std::wstring	style_name;
+
+	if (oox_para_prop_change->m_pParPr.IsInit())
+	{
+		bool		 list_present = oox_para_prop_change->m_pParPr->m_oNumPr.IsInit();
+		std::wstring list_style_name;
+
+		int			 list_level = -1;
+		int			 list_style_id = -1;
+
+		odf_writer::style_text_properties		* text_properties		= NULL;
+		odf_writer::style_paragraph_properties	* paragraph_properties	= NULL;
+
+		bool bRunPara = oox_para_prop_change->m_pParPr->m_oRPr.IsInit() ? true : false;
+		if (list_present)
+		{
+			if (oox_para_prop_change->m_pParPr->m_oNumPr->m_oIlvl.IsInit() && oox_para_prop_change->m_pParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit())
+				list_level = oox_para_prop_change->m_pParPr->m_oNumPr->m_oIlvl->m_oVal->GetValue();		
+			
+			if (oox_para_prop_change->m_pParPr->m_oNumPr->m_oNumID.IsInit() && oox_para_prop_change->m_pParPr->m_oNumPr->m_oNumID->m_oVal.IsInit())
+				list_style_id = oox_para_prop_change->m_pParPr->m_oNumPr->m_oNumID->m_oVal->GetValue();
+		}		
+		
+		odt_context->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
+		
+		paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
+		if (bRunPara)
+			text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
+		
+		if(list_present && list_style_id >= 0)
+		{
+			list_style_name = odt_context->styles_context()->lists_styles().get_style_name(list_style_id); 
+			odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);
+		}
+		convert(oox_para_prop_change->m_pParPr.GetPointer(), paragraph_properties);
+
+		if (bRunPara)
+			convert(oox_para_prop_change->m_pParPr->m_oRPr.GetPointer(), text_properties);
+		
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Paragraph);
+		if (style_state)
+			style_name	= style_state->get_name();
+	}
+
+	if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	return id;
+}
+int DocxConverter::convert(OOX::Logic::CRPrChange *oox_run_prop_change)
+{
+	if (!oox_run_prop_change) return -1;
+		
+	std::wstring	author	= oox_run_prop_change->m_sAuthor.IsInit()	? oox_run_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_run_prop_change->m_sUserId.IsInit()	? oox_run_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_run_prop_change->m_oId.IsInit()		? oox_run_prop_change->m_oId->GetValue()	: -1;
+	std::wstring	date	= oox_run_prop_change->m_oDate.IsInit()		? oox_run_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	style_name;
+
+	if (oox_run_prop_change->m_pRunPr.IsInit())
+	{
+		odt_context->styles_context()->create_style(L"", odf_types::style_family::Text, true, false, -1);					
+		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+
+		convert(oox_run_prop_change->m_pRunPr.GetPointer(), text_properties);
+	
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Text);
+		if (style_state)
+			style_name	= style_state->get_name();
+	}
+
+	if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	return id;
+}
+int DocxConverter::convert(OOX::Logic::CTrPrChange *oox_tr_prop_change)
+{
+	if (!oox_tr_prop_change) return -1;
+	
+	std::wstring	author	= oox_tr_prop_change->m_sAuthor.IsInit()	? oox_tr_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_tr_prop_change->m_sUserId.IsInit()	? oox_tr_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_tr_prop_change->m_oId.IsInit()		? oox_tr_prop_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_tr_prop_change->m_oDate.IsInit()		? oox_tr_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	style_name;
+
+	odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Text);
+	if (style_state)
+		style_name	= style_state->get_name();
+
+	if (odt_context->start_change(id, 3, author, userId, date))
+	{
+		convert(oox_tr_prop_change->m_pTrPr.GetPointer());
+		//odt_context->end_change(id, 3); в конце row
+		return id;
+	}
+	if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	return id;	
+}
+int DocxConverter::convert(OOX::Logic::CTcPrChange *oox_tc_prop_change)
+{
+	if (!oox_tc_prop_change) return -1;
+
+	std::wstring	author	= oox_tc_prop_change->m_sAuthor.IsInit()	? oox_tc_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_tc_prop_change->m_sUserId.IsInit()	? oox_tc_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_tc_prop_change->m_oId.IsInit()		? oox_tc_prop_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_tc_prop_change->m_oDate.IsInit()		? oox_tc_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	style_name;
+
+	if (oox_tc_prop_change->m_pTcPr.IsInit())
+	{
+		convert(oox_tc_prop_change->m_pTcPr.GetPointer());
+
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::TableCell);
+		if (style_state)
+			style_name	= style_state->get_name();
+	}
+	if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	return id;	
+
+}
+int DocxConverter::convert(OOX::Logic::CTblPrChange *oox_table_prop_change)
+{
+	if (!oox_table_prop_change) return -1;
+	
+	std::wstring	author	= oox_table_prop_change->m_sAuthor.IsInit()	? oox_table_prop_change->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_table_prop_change->m_sUserId.IsInit()	? oox_table_prop_change->m_sUserId.get2()		: L"";
+	int				id		= oox_table_prop_change->m_oId.IsInit()		? oox_table_prop_change->m_oId->GetValue()		: -1;
+	std::wstring	date	= oox_table_prop_change->m_oDate.IsInit()	? oox_table_prop_change->m_oDate->GetValue()	: L"";
+	std::wstring	style_name;
+
+	if (oox_table_prop_change->m_pTblPr.IsInit())
+	{
+		bool table_styled = false;
+		if (oox_table_prop_change->m_pTblPr->m_oTblStyle.IsInit() && oox_table_prop_change->m_pTblPr->m_oTblStyle->m_sVal.IsInit())
+		{//настройка предустановленного стиля
+
+			std::wstring base_style_name = string2std_string(*oox_table_prop_change->m_pTblPr->m_oTblStyle->m_sVal);
+
+			table_styled = odt_context->styles_context()->table_styles().start_table(base_style_name);
+		}
+		convert(oox_table_prop_change->m_pTblPr.GetPointer(), table_styled); 
+
+		odf_writer::odf_style_state_ptr style_state = odt_context->styles_context()->last_state(style_family::Table);
+		if (style_state)
+			style_name	= style_state->get_name();
+	}
+
+	if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	return id;	
+
+}
+void DocxConverter::convert(OOX::Logic::CDel *oox_del)
+{
+	if (oox_del == NULL) return;
+
+	std::wstring	author	= oox_del->m_sAuthor.IsInit()	? oox_del->m_sAuthor.get2()		: L"";
+	std::wstring	userId	= oox_del->m_sUserId.IsInit()	? oox_del->m_sUserId.get2()		: L"";
+	int				id		= oox_del->m_oId.IsInit()		? oox_del->m_oId->GetValue()	: -1;
+	std::wstring	date	= oox_del->m_oDate.IsInit()		? oox_del->m_oDate->GetValue()	: L"";
+
+	bool res_change  = odt_context->start_change(id, 2, author, userId, date);
+	for (unsigned int i=0; i< oox_del->m_arrItems.size(); i++)
+	{
+		convert(oox_del->m_arrItems[i]);
+	}
+	if (res_change)
+		odt_context->end_change(id, 2);
 }
 void DocxConverter::convert(OOX::Logic::CSmartTag *oox_tag)
 {
 	if (oox_tag == NULL) return;
-	//текст-вставка авторский
-	//todooo сделать должную организацию text:change-start -> text:change-end c трейсером Abortion.docx
 
 	for (unsigned int i=0; i< oox_tag->m_arrItems.size(); i++)
 	{
@@ -660,8 +1079,15 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 {
 	odt_context->text_context()->set_KeepNextParagraph(false);
 	
-	if (!oox_paragraph_pr)		return;
 	if (!paragraph_properties)	return;
+	if (!oox_paragraph_pr)		
+	{
+		if (current_section_properties)
+		{
+			convert(current_section_properties->props, current_section_properties->root);
+		}
+		return;
+	}
 
 	int outline_level = 0;
 
@@ -671,7 +1097,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
 		/////////////////////////find parent properties 
 
-		cpdoccore::odf_writer::style_paragraph_properties  parent_paragraph_properties;
+		odf_writer::style_paragraph_properties  parent_paragraph_properties;
 		odt_context->styles_context()->calc_paragraph_properties(style_name,odf_types::style_family::Paragraph, &parent_paragraph_properties.content());
 		
 		if (parent_paragraph_properties.content().outline_level_)
@@ -688,15 +1114,18 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 		if (oox_paragraph_pr->m_oSpacing->m_oLine.IsInit())
 		{
-			_CP_OPT(odf_types::length) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length);
-			if (length && rule == SimpleTypes::linespacingruleExact)
-				paragraph_properties->content().fo_line_height_ = odf_types::line_width(*length);
-			else if (length)
+			if (rule == SimpleTypes::linespacingruleExact)
 			{
-				odf_types::percent percent(100);
+				_CP_OPT(odf_types::length) length_;
+				
+				convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
+				paragraph_properties->content().fo_line_height_ = odf_types::line_width(*length_);
+			}
+			else
+			{
+				double val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;
+				odf_types::percent percent(val * 100. / 240);
 				paragraph_properties->content().fo_line_height_ = percent;
-				//paragraph_properties->content().style_line_height_at_least_= length;
 			}
 		}
 		if (oox_paragraph_pr->m_oSpacing->m_oAfter.IsInit())
@@ -792,17 +1221,17 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		switch(oox_paragraph_pr->m_oTextDirection->m_oVal->GetValue())
 		{
 		case SimpleTypes::textdirectionLr   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Lr); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Lr);		break;
 		case SimpleTypes::textdirectionLrV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::LrTb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::LrTb);	break;
 		case SimpleTypes::textdirectionRl   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Rl); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Rl);		break;
 		case SimpleTypes::textdirectionRlV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);	break;
 		case SimpleTypes::textdirectionTb   :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Tb); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::Tb);		break;
 		case SimpleTypes::textdirectionTbV  :
-			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::TbLr); break;
+			paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::TbLr);	break;
 		}
 	}
 	if (oox_paragraph_pr->m_oOutlineLvl.IsInit())
@@ -819,23 +1248,34 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		odt_context->text_context()->set_type_break(1, 0); //page, clear_all
 	}
 
-	if (oox_paragraph_pr->m_oKeepNext.IsInit() && odt_context->table_context()->empty()/* && !oox_paragraph_pr->m_oFramePr.IsInit()*/)
+	if (oox_paragraph_pr->m_oKeepNext.IsInit() && odt_context->table_context()->empty() && !current_section_properties)
 	{
 		odt_context->text_context()->set_KeepNextParagraph(true);
 	}
 
 	convert(oox_paragraph_pr->m_oFramePr.GetPointer(), paragraph_properties);		//буквица или фрейм
 
-	if (oox_paragraph_pr->m_oSectPr.IsInit())
+	if (current_section_properties) 
 	{
-		if (oox_paragraph_pr->m_oSectPr->m_oPgNumType.IsInit())
+		if ((current_section_properties->props) && (current_section_properties->props->m_oPgNumType.IsInit()) && (current_section_properties->props->m_oPgNumType->m_oStart.IsInit()))
 		{
-			if (oox_paragraph_pr->m_oSectPr->m_oPgNumType->m_oStart.IsInit())
-				paragraph_properties->content().style_page_number_ = oox_paragraph_pr->m_oSectPr->m_oPgNumType->m_oStart->GetValue();
+			paragraph_properties->content().style_page_number_ = current_section_properties->props->m_oPgNumType->m_oStart->GetValue();
+		}
+		convert(current_section_properties->props, current_section_properties->root);
+	
+		//odf_writer::odf_style_state_ptr state =  odt_context->styles_context()->last_state(odf_types::style_family::Paragraph);
+		//if (odt_context->is_paragraph_in_current_section_ && state)
+		//{
+		//	odf_writer::style *style_ = dynamic_cast<odf_writer::style*>(state->get_office_element().get());
 
-			//paragraph//style:page-number=
-		}	
-		convert(oox_paragraph_pr->m_oSectPr.GetPointer());
+		//	if (style_)
+		//	{
+		//		odt_context->is_paragraph_in_current_section_	= false;
+		//		style_->style_master_page_name_		= odt_context->page_layout_context()->last_master() ?
+		//						  odt_context->page_layout_context()->last_master()->get_name() : L"";
+		//	}
+		//}
+
 	}
 
 	if (oox_paragraph_pr->m_oTabs.IsInit())
@@ -844,9 +1284,10 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		for (unsigned int i = 0; i < oox_paragraph_pr->m_oTabs->m_arrTabs.size(); i++)
 		{
 			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i] == NULL) continue;
-			_CP_OPT(int) type;
-			_CP_OPT(int) leader;
-			_CP_OPT(odf_types::length) length;
+			
+			_CP_OPT(int)				type;
+			_CP_OPT(int)				leader;
+			_CP_OPT(odf_types::length)	length;
 
 			if (oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal.IsInit())
 				type = oox_paragraph_pr->m_oTabs->m_arrTabs[i]->m_oVal->GetValue();
@@ -863,69 +1304,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 	}
 }
 
-void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
+void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other)
 {
 	if (props == NULL || other== NULL)return;
-
-	props->m_bSectPrChange = other->m_bSectPrChange;
-
-	// Attributes
-	if (other->m_oRsidDel.IsInit())	props->m_oRsidDel		= other->m_oRsidDel;
-	if (other->m_oRsidR.IsInit())	props->m_oRsidR			= other->m_oRsidR;
-	if (other->m_oRsidRPr.IsInit())	props->m_oRsidRPr		= other->m_oRsidRPr;
-	if (other->m_oRsidSect.IsInit())props->m_oRsidSect		= other->m_oRsidSect;
-
-	// Child Elements
-	if (other->m_oBidi.IsInit())		props->m_oBidi		= other->m_oBidi;
-	if (other->m_oDocGrid.IsInit())		props->m_oDocGrid	= other->m_oDocGrid;
-	if (other->m_oEndnotePr.IsInit())	props->m_oEndnotePr	= other->m_oEndnotePr;
-	if (other->m_oRsidSect.IsInit())	props->m_oRsidSect	= other->m_oRsidSect;
-
-	if (other->m_oFootnotePr.IsInit())	props->m_oFootnotePr= other->m_oFootnotePr;
-	if (other->m_oFormProt.IsInit())	props->m_oFormProt	= other->m_oFormProt;
-	if (other->m_oLnNumType.IsInit())	props->m_oLnNumType	= other->m_oLnNumType;
-	if (other->m_oNoEndnote.IsInit())	props->m_oNoEndnote	= other->m_oNoEndnote;
-
-	if (other->m_oPaperSrc.IsInit())	props->m_oPaperSrc	= other->m_oPaperSrc;
-	if (other->m_oPgBorders.IsInit())	props->m_oPgBorders	= other->m_oPgBorders;
-	if (other->m_oPgMar.IsInit())		props->m_oPgMar		= other->m_oPgMar;
-	if (other->m_oPgNumType.IsInit())	props->m_oPgNumType	= other->m_oPgNumType;
-	if (other->m_oPgSz.IsInit())		props->m_oPgSz		= other->m_oPgSz;
-	if (other->m_oPrinterSettings.IsInit())	props->m_oPrinterSettings = other->m_oPrinterSettings;
-
-	if (other->m_oRtlGutter.IsInit())		props->m_oRtlGutter		= other->m_oRtlGutter;
-	if (other->m_oSectPrChange.IsInit())	props->m_oSectPrChange	= other->m_oSectPrChange;
-	if (other->m_oTextDirection.IsInit())	props->m_oTextDirection	= other->m_oTextDirection;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-	if (other->m_oType.IsInit())			props->m_oType			= other->m_oType;
-	if (other->m_oVAlign.IsInit())			props->m_oVAlign		= other->m_oVAlign;
-	if (other->m_oTitlePg.IsInit())			props->m_oTitlePg		= other->m_oTitlePg;
-
-	if (other->m_oCols.IsInit())
-	{
-		props->m_oCols.Init();
-		props->m_oCols->m_oEqualWidth	= other->m_oCols->m_oEqualWidth;
-		props->m_oCols->m_oNum			= other->m_oCols->m_oNum;	//тут может быть неверное число если колонки определены массивом
-		props->m_oCols->m_oSep			= other->m_oCols->m_oSep;
-		props->m_oCols->m_oSpace		= other->m_oCols->m_oSpace;
-
-		for (unsigned int i =0; i < other->m_oCols->m_arrColumns.size(); i++)
-		{	
-			if (other->m_oCols->m_arrColumns[i] == NULL)continue;
-
-			ComplexTypes::Word::CColumn* col = new ComplexTypes::Word::CColumn();
-		
-			if (other->m_oCols->m_arrColumns[i]->m_oW.IsInit())		col->m_oW		= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oW.GetPointer());
-			if (other->m_oCols->m_arrColumns[i]->m_oSpace.IsInit()) col->m_oSpace	= new SimpleTypes::CTwipsMeasure(*other->m_oCols->m_arrColumns[i]->m_oSpace.GetPointer());
-
-			props->m_oCols->m_arrColumns.push_back(col);
-		}
-		if (props->m_oCols->m_arrColumns.size() > 0 && other->m_oCols->m_oNum->GetValue() > 1)
-		{
-			props->m_oCols->m_oNum = new SimpleTypes::CDecimalNumber<0>();
-			props->m_oCols->m_oNum->SetValue(props->m_oCols->m_arrColumns.size());
-		}
-	}
 
 	if (other->m_arrFooterReference.size() > 0)
 	{
@@ -970,10 +1351,11 @@ void DocxConverter::apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::
 void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool root)
 {
 	if (oox_section_pr == NULL) return;
+	current_section_properties = NULL;
 
 	odt_context->text_context()->set_type_break(-1, 0);
  
-	bool continuous	= false;
+	bool continuous = false;
 
 	if (oox_section_pr->m_oType.IsInit() && oox_section_pr->m_oType->m_oVal.IsInit())
 	{
@@ -990,36 +1372,34 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			break;
 		}
 	}
-
-    if (continuous && last_section_properties)
-	{	// нужно убрать автоматический разрыв.на следующую страницу
-		// + 
-		//нужно текущие совйства накотить на предыдущие !! .. и так пока continues далее повторяется 
-        apply_from(last_section_properties, oox_section_pr);
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   if (!last_section_properties && (root || continuous == false || oox_section_pr->m_oTitlePg.IsInit()))
+	{	
+		last_section_properties = oox_section_pr;
 	}
-	else
+	else if (root || continuous == false)
 	{
+        apply_HF_from(last_section_properties, oox_section_pr);
 	}
-
-    //oox_section_pr = last_section_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	if (!continuous || (root && odt_context->page_layout_context()->last_master() == NULL))
+	if (root  || continuous == false)
 	{
-		odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
+		odt_context->page_layout_context()->add_master_page(root ? L"Standard" : L"");
 	}
 	
-	bool present_header = false;
-	bool present_footer = false;
+	bool present_header		= false;
+	bool present_footer		= false;
 
 	if (oox_section_pr->m_oPgMar.IsInit())
 	{
 		_CP_OPT(odf_types::length) top, left, right, bottom, other;
-		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(), bottom);
-		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer()	, left);
-		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer()	, right);
-		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer()	, top);
+
+		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(),	bottom);
+		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer(),		left);
+		convert(oox_section_pr->m_oPgMar->m_oRight.GetPointer(),	right);
+		convert(oox_section_pr->m_oPgMar->m_oTop.GetPointer(),		top);
 		
-		odt_context->page_layout_context()->set_page_margin(top,left,bottom, right);
+		odt_context->page_layout_context()->set_page_margin(top, left, bottom, right);
 		
 		convert(oox_section_pr->m_oPgMar->m_oGutter.GetPointer(), other);
 		odt_context->page_layout_context()->set_page_gutter(other);
@@ -1041,26 +1421,50 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	if (oox_section_pr->m_oPgBorders.IsInit())
 	{
 		std::wstring top, left, right, bottom;
+
 		convert(oox_section_pr->m_oPgBorders->m_oBottom.GetPointer(), bottom);
 		convert(oox_section_pr->m_oPgBorders->m_oLeft.GetPointer()	, left);
 		convert(oox_section_pr->m_oPgBorders->m_oRight.GetPointer()	, right);
 		convert(oox_section_pr->m_oPgBorders->m_oTop.GetPointer()	, top);
 		
-		odt_context->page_layout_context()->set_page_border(top,left,bottom, right);
+		odt_context->page_layout_context()->set_page_border(top, left, bottom, right);
 
-		int border_offset = 1;
 		
 		if (oox_section_pr->m_oPgBorders->m_oOffsetFrom.IsInit() && 
-			(oox_section_pr->m_oPgBorders->m_oOffsetFrom->GetValue() == SimpleTypes::pageborderoffsetPage))border_offset = 2;
+			(oox_section_pr->m_oPgBorders->m_oOffsetFrom->GetValue() == SimpleTypes::pageborderoffsetPage))
+		{
+			odt_context->page_layout_context()->set_page_border_offset(2);
 
-		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit() && oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_bottom(border_offset,oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit() && oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_top(border_offset,oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit() && oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_left(border_offset,oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
-		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit() && oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
-			odt_context->page_layout_context()->set_page_border_padding_right(border_offset,oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		}
+
+		if (oox_section_pr->m_oPgBorders->m_oBottom.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oBottom->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding(2, oox_section_pr->m_oPgBorders->m_oBottom->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oTop.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oTop->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+
+			if (oox_section_pr->m_oPgBorders->m_oTop->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding(1, oox_section_pr->m_oPgBorders->m_oTop->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oLeft.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oLeft->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+			
+			if (oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding(3, oox_section_pr->m_oPgBorders->m_oLeft->m_oSpace->ToPoints());
+		}
+		if (oox_section_pr->m_oPgBorders->m_oRight.IsInit())
+		{
+			int type = (oox_section_pr->m_oPgBorders->m_oBottom->m_oVal.IsInit() ? oox_section_pr->m_oPgBorders->m_oRight->m_oVal->GetValue() : SimpleTypes::bordervalueSingle);
+		
+			if (oox_section_pr->m_oPgBorders->m_oRight->m_oSpace.IsInit())
+				odt_context->page_layout_context()->set_page_border_padding(4, oox_section_pr->m_oPgBorders->m_oRight->m_oSpace->ToPoints());
+		}
 
 
 		bool shadow = false;
@@ -1102,67 +1506,96 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;	
 	if (oox_section_pr->m_oPgNumType.IsInit())
 	{
 		_CP_OPT(int) format;
 		_CP_OPT(int) start;
 
-		if (oox_section_pr->m_oPgNumType->m_oFmt.IsInit())	format = oox_section_pr->m_oPgNumType->m_oFmt->GetValue();
-		if (oox_section_pr->m_oPgNumType->m_oStart.IsInit())start  = oox_section_pr->m_oPgNumType->m_oStart->GetValue();
+		if (oox_section_pr->m_oPgNumType->m_oFmt.IsInit())		format = oox_section_pr->m_oPgNumType->m_oFmt->GetValue();
+		if (oox_section_pr->m_oPgNumType->m_oStart.IsInit())	start  = oox_section_pr->m_oPgNumType->m_oStart->GetValue();
 
 		odt_context->page_layout_context()->set_page_number_format(	format, start);
 			//nullable<SimpleTypes::CChapterSep<>    > m_oChapSep;
-			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;
+			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
-	OOX::Logic::CSectionProperty * s = oox_section_pr;
-    if (present_header && s->m_arrHeaderReference.size() <1 && last_section_properties)
-        s = last_section_properties;
-
-	for (unsigned int i=0; i< s->m_arrHeaderReference.size(); i++)
-	{
-		if (s->m_arrHeaderReference[i] == NULL) continue;
-
-		int type =s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() :0 ;
-		if (odt_context->start_header(type))
-		{
-			if (s->m_arrHeaderReference[i]->m_oId.IsInit())
-			{
-				convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
-				convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
-			}
-
-			odt_context->end_header_footer();
-		}
-	}
-	s = oox_section_pr;
-    if (present_footer && s->m_arrFooterReference.size() <1 && last_section_properties)
-        s = last_section_properties; // нужно хранить ссылки на ВСЕ !!!
-
-	for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
-	{
-		if (s->m_arrFooterReference[i] == NULL) continue;
-
-		int type =s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
-		if (odt_context->start_footer(type))
-		{
-			if (s->m_arrFooterReference[i]->m_oId.IsInit())
-			{
-				convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
-				convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
-			}
-
-			odt_context->end_header_footer();	
-		}
-	}
-//--------------------------------------------------------------------------------------------------------------------------------------------		
 	
-	if (!continuous)
-		odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
-                                          odt_context->page_layout_context()->last_master()->get_name() : L"");
+	if (continuous == false || root || oox_section_pr->m_oTitlePg.IsInit())
+	{
+		OOX::Logic::CSectionProperty*	s = last_section_properties; 
+		
+		bool present_title_page			= s->m_oTitlePg.IsInit() ? true : false;
+		bool present_odd_even_pages		= odt_context->page_layout_context()->even_and_left_headers_;
+		
+		bool add_title_header			= false, add_title_footer			= false;
+		bool add_odd_even_pages_header	= false, add_odd_even_pages_footer	= false;
+		bool add_default_header			= false, add_default_footer			= false;
 
+		std::vector<int> types;
+
+		for (unsigned int i = 0; i < s->m_arrHeaderReference.size(); i++)
+		{
+			if (s->m_arrHeaderReference[i] == NULL) continue;
+
+			int type = s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() : 0 ;
+
+			if (type == 2 && !present_title_page)		continue;
+			if (type == 1 && !present_odd_even_pages)	continue;
+
+			if (type == 2 && present_title_page)		add_title_header			= true;
+			if (type == 1 && present_odd_even_pages)	add_odd_even_pages_header	= true; //swap even & odd ?
+			if (type == 0)								add_default_header			= true;
+
+			if (odt_context->start_header(type))
+			{
+				if (s->m_arrHeaderReference[i]->m_oId.IsInit())
+				{
+					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
+					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 2);
+				}
+
+				odt_context->end_header_footer();
+			}
+		}
+		if (!add_title_header			&& present_title_page)								odt_context->add_empty_header(2);
+		if (!add_odd_even_pages_header	&& present_odd_even_pages)							odt_context->add_empty_header(1);
+		if (!add_default_header			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_header(0);
+
+		for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
+		{
+			if (s->m_arrFooterReference[i] == NULL) continue;
+
+			int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() :0 ;
+
+			if (type == 2 && !present_title_page)		continue;
+			if (type == 1 && !present_odd_even_pages)	continue;
+
+			if (type == 2 && present_title_page)		add_title_footer			= true;
+			if (type == 1 && present_odd_even_pages)	add_odd_even_pages_footer	= true;
+			if (type == 0)								add_default_footer			= true;
+
+			if (odt_context->start_footer(type))
+			{
+				if (s->m_arrFooterReference[i]->m_oId.IsInit())
+				{
+					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
+					convert(docx_document->GetDocument()->m_oBackground.GetPointer(), 3);
+				}
+
+				odt_context->end_header_footer();	
+			}
+		}
+		if (!add_title_footer			&& present_title_page)								odt_context->add_empty_footer(2);
+		if (!add_odd_even_pages_footer	&& present_odd_even_pages)							odt_context->add_empty_footer(1);
+		if (!add_default_footer			&& (present_odd_even_pages || present_title_page))	odt_context->add_empty_footer(0);
+
+		odt_context->is_paragraph_in_current_section_ = true;
+
+		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
+	}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
-	//if (!root)odt_context->add_section(continuous);
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
@@ -1190,7 +1623,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 
 	if (/*num_columns != odt_context->get_current_section_columns() || */num_columns >= 1) //колонки
 	{
-		odt_context->add_section(continuous);
+		if (!root || num_columns > 1)
+			odt_context->add_section(continuous);
 		
 		if (oox_section_pr->m_oCols.IsInit())
 		{
@@ -1223,17 +1657,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//}
 			odt_context->add_section_column(width_space);
 		}
-
-		if (root) odt_context->flush_section();
 	}
-
-	if (!continuous)	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
-	if (root)
-	{
-		odt_context->page_layout_context()->set_current_master_page_base();
-	}
-
-    last_section_properties = oox_section_pr;
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {
@@ -1420,16 +1844,16 @@ void DocxConverter::convert(OOX::Logic::CPBdr *oox_border, odf_writer::style_par
 
 		paragraph_properties->content().common_border_attlist_.fo_border_ = boost::none;
 
-		if (bottom.length() >0 )paragraph_properties->content().common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0 )	paragraph_properties->content().common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	paragraph_properties->content().common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) paragraph_properties->content().common_border_attlist_.fo_border_right_		= right;
+		if (bottom.length() > 0 )	paragraph_properties->content().common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length()	> 0 )	paragraph_properties->content().common_border_attlist_.fo_border_top_		= top;
+		if (left.length()	> 0 )	paragraph_properties->content().common_border_attlist_.fo_border_left_		= left;
+		if (right.length()	> 0 )	paragraph_properties->content().common_border_attlist_.fo_border_right_		= right;
 	}
-	bool shadow = false;
-	if (oox_border->m_oBottom.IsInit() && oox_border->m_oBottom->m_oShadow.IsInit() && oox_border->m_oBottom->m_oShadow->ToBool()) shadow = true;
-	if (oox_border->m_oTop.IsInit() && oox_border->m_oTop->m_oShadow.IsInit() && oox_border->m_oTop->m_oShadow->ToBool()) shadow = true;
-	if (oox_border->m_oLeft.IsInit() && oox_border->m_oLeft->m_oShadow.IsInit() && oox_border->m_oLeft->m_oShadow->ToBool()) shadow = true;
-	if (oox_border->m_oRight.IsInit() && oox_border->m_oRight->m_oShadow.IsInit() && oox_border->m_oRight->m_oShadow->ToBool()) shadow = true;
+	bool shadow = false;//в либре только одна тень (
+	if (oox_border->m_oBottom.IsInit()	&& oox_border->m_oBottom->m_oShadow.IsInit()	&& oox_border->m_oBottom->m_oShadow->ToBool())		shadow = true;
+	if (oox_border->m_oTop.IsInit()		&& oox_border->m_oTop->m_oShadow.IsInit()		&& oox_border->m_oTop->m_oShadow->ToBool())			shadow = true;
+	if (oox_border->m_oLeft.IsInit()	&& oox_border->m_oLeft->m_oShadow.IsInit()		&& oox_border->m_oLeft->m_oShadow->ToBool())		shadow = true;
+	if (oox_border->m_oRight.IsInit()	&& oox_border->m_oRight->m_oShadow.IsInit()			&& oox_border->m_oRight->m_oShadow->ToBool())	shadow = true;
 	
 	if (shadow)
 	{
@@ -1607,15 +2031,15 @@ void DocxConverter::convert(ComplexTypes::Word::CTblWidth *oox_size, _CP_OPT(odf
 		odf_size = odf_types::length(oox_size->m_oW->GetValue() / 20., odf_types::length::pt);
 	}
 
-		//tblwidthAuto = 0,
-		//tblwidthDxa  = 1,
-		//tblwidthNil  = 2,
-		//tblwidthPct  = 3
+	//tblwidthAuto = 0,
+	//tblwidthDxa  = 1,
+	//tblwidthNil  = 2,
+	//tblwidthPct  = 3
 }
 void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties)
 {
-	if (oox_run_pr == NULL) return;
-	if (text_properties == NULL)return;
+	if (oox_run_pr		== NULL) return;
+	if (text_properties == NULL) return;
 	
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
@@ -1629,17 +2053,27 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
+	bool set_color = false;
 	if (oox_run_pr->m_oGradFill.IsInit())
 	{
-		bool res = odf_context()->drawing_context()->change_text_box_2_wordart();
+		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
+		if (drawing_context)
+		{
+			if (odf_context()->drawing_context()->change_text_box_2_wordart())
+			{
+				odf_context()->drawing_context()->start_area_properties();
+				{		
+					OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+				}
+				odf_context()->drawing_context()->end_area_properties();
 
-		odf_context()->drawing_context()->start_area_properties();
-		{		
-			OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+				set_color = true;
+			}
 		}
-		odf_context()->drawing_context()->end_area_properties();
+		else{}	//обычный текст .. градиент по телу абзаца (
 	}
-	else if (oox_run_pr->m_oColor.IsInit())
+	
+	if (!set_color && oox_run_pr->m_oColor.IsInit())
 	{
 		if(oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
 			text_properties->content().fo_color_ = odf_types::color(L"#000000");
@@ -1647,7 +2081,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
 	}
 
-    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);
+    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
 	if (oox_run_pr->m_oU.IsInit())
 	{
 		text_properties->content().style_text_underline_style_	= odf_types::line_style(odf_types::line_style::Solid);
@@ -1671,7 +2105,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::underlineNone			:
 				{
-                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::Non);
+                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);
 					text_properties->content().style_text_underline_style_	= boost::none;
 					text_properties->content().style_text_underline_color_  = boost::none;
 				}break;
@@ -1754,7 +2188,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		text_properties->content().style_text_scale_ = odf_types::percent(oox_run_pr->m_oW->m_oVal->GetValue());
 	}
-	if (oox_run_pr->m_oStrike.IsInit() && oox_run_pr->m_oStrike->m_oVal.ToBool())
+	if (oox_run_pr->m_oStrike.IsInit()  && oox_run_pr->m_oStrike->m_oVal.ToBool())
 	{
 		text_properties->content().style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 	}
@@ -1791,6 +2225,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 
 	if (oox_run_pr->m_oVanish.IsInit())
 		text_properties->content().text_display_ = odf_types::text_display(odf_types::text_display::None);
+
 }
 
 void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
@@ -1891,10 +2326,10 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	odt_context->start_drawings();
 			
 	if (odt_context->table_context()->empty())
-		odf_context()->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);//default
+		odf_context()->drawing_context()->set_anchor(anchor_type::AsChar);//default
 	else
 	{
-		odf_context()->drawing_context()->set_anchor(odf_types::anchor_type::Paragraph);
+		odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);
 		odf_context()->drawing_context()->set_object_background(true);
 	}
 		
@@ -1993,7 +2428,10 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		else if (oox_pic->m_oShapeRoundRect.IsInit())
 		{
 			odf_context()->drawing_context()->set_name(L"RoundRect");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRoundRect);
+			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
+
+			odf_types::length corner = odf_types::length(0.5, odf_types::length::cm);
+			odf_context()->drawing_context()->set_corner_radius(corner);
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
 			OoxConverter::convert(oox_pic->m_oShapeRoundRect.GetPointer());
@@ -2016,10 +2454,13 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		else // and oox_pic->m_oShapeRect
 		{
 			bool bSet = false;
+			OOX::Vml::CShapeType* shape_type = NULL;
+			
 			if (oox_pic->m_oShape.IsInit())
 			{
-                OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
-                if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+                OOX::Vml::SptType sptType = oox_pic->m_oShape->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShape->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+               
+				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 				{
 					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
@@ -2039,12 +2480,43 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					odf_context()->drawing_context()->set_line_width(1.);
 					bSet = true;
 				}
+
+				if (oox_pic->m_oShape->m_sType.IsInit())
+				{
+					std::wstring type( oox_pic->m_oShape->m_sType.get());
+					type = type.substr(1);//without #
+					std::map<std::wstring, OOX::Vml::CShapeType*>::iterator it = odf_context()->drawing_context()->m_mapVmlShapeTypes.find(type);
+					
+					if ( it != odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
+					{
+						shape_type = it->second;
+
+						sptType = shape_type->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(shape_type->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+						
+						if (!bSet && sptType != OOX::Vml::SptType::sptNotPrimitive)
+						{
+							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+							bSet = true;
+						}
+					}
+					if (!bSet)
+					{
+						int pos = oox_pic->m_oShape->m_sType->Find(_T("#_x0000_t"));
+						if (pos >= 0)
+						{				
+							sptType = (OOX::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->Mid(pos + 9, oox_pic->m_oShape->m_sType->GetLength() - pos - 9).GetString());
+							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+							bSet = true;
+						}
+					}
+				}				
 			}
 			if (!bSet)
 			{
 				odf_context()->drawing_context()->set_name(L"Rect");
 				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
 			}
+			OoxConverter::convert(shape_type);
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 			
 			odf_context()->drawing_context()->end_shape(); 
 		}
@@ -2075,7 +2547,10 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	bool bSet = false;
 	if (oox_obj->m_oShape.IsInit())
 	{
-        OOX::Vml::SptType sptType = oox_obj->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+        OOX::Vml::SptType sptType = OOX::Vml::SptType::sptNotPrimitive;
+		
+		if ((oox_obj->m_oShapeType.IsInit()) && (oox_obj->m_oShapeType->m_oSpt.IsInit()))
+			sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue());
 
         if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
@@ -2103,9 +2578,11 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 		odf_context()->drawing_context()->set_name(L"Rect");
 		odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
 	}
-	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 			
-	odf_context()->drawing_context()->end_shape(); 
+	OoxConverter::convert(oox_obj->m_oShape.GetPointer()); 	
 
+	odf_context()->drawing_context()->set_type_fill(2); //temp ...  image 
+
+	odf_context()->drawing_context()->end_shape(); 
 	odf_context()->drawing_context()->end_drawing();
 
 	odt_context->end_drawings();
@@ -2132,37 +2609,61 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		width = oox_anchor->m_oExtent->m_oCx.ToPoints();
 		height = oox_anchor->m_oExtent->m_oCy.ToPoints();
 	}
-	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_anchor->m_oDistL->ToPoints());
-	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_anchor->m_oDistT->ToPoints());
-	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_anchor->m_oDistR->ToPoints());
-	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_anchor->m_oDistB->ToPoints());
+	if (oox_anchor->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left	(oox_anchor->m_oDistL->ToPoints());
+	if (oox_anchor->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top	(oox_anchor->m_oDistT->ToPoints());
+	if (oox_anchor->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right	(oox_anchor->m_oDistR->ToPoints());
+	if (oox_anchor->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom	(oox_anchor->m_oDistB->ToPoints());
 
 	odt_context->drawing_context()->set_drawings_rect(x, y, width, height);
 
+	_CP_OPT(int) anchor_type_x, anchor_type_y;
+
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
-		odt_context->drawing_context()->set_vertical_rel(oox_anchor->m_oPositionV->m_oRelativeFrom->GetValue());
+		int vert_rel = oox_anchor->m_oPositionV->m_oRelativeFrom->GetValue();
+
+		odt_context->drawing_context()->set_vertical_rel(vert_rel);
 
 		if ( oox_anchor->m_oPositionV->m_oAlign.IsInit())
 			odt_context->drawing_context()->set_vertical_pos(oox_anchor->m_oPositionV->m_oAlign->GetValue());
 
 		else if(oox_anchor->m_oPositionV->m_oPosOffset.IsInit())
+		{
+			switch(vert_rel)
+			{
+				case 3:	
+				case 6:	anchor_type_y = anchor_type::Paragraph;	break;  
+				case 5:	anchor_type_y = anchor_type::Page;		break;       
+			}
 			odt_context->drawing_context()->set_vertical_pos(oox_anchor->m_oPositionV->m_oPosOffset->ToPoints());
+		}
 		else
 			odt_context->drawing_context()->set_vertical_pos(SimpleTypes::alignvTop);
 	}
 	if (oox_anchor->m_oPositionH.IsInit() && oox_anchor->m_oPositionH->m_oRelativeFrom.IsInit())
 	{
-		odt_context->drawing_context()->set_horizontal_rel(oox_anchor->m_oPositionH->m_oRelativeFrom->GetValue());
+		int horiz_rel = oox_anchor->m_oPositionH->m_oRelativeFrom->GetValue();
+		odt_context->drawing_context()->set_horizontal_rel(horiz_rel);
 		
 		if (oox_anchor->m_oPositionH->m_oAlign.IsInit())
 			odt_context->drawing_context()->set_horizontal_pos(oox_anchor->m_oPositionH->m_oAlign->GetValue());
 		
 		else if(oox_anchor->m_oPositionH->m_oPosOffset.IsInit())
+		{
 			odt_context->drawing_context()->set_horizontal_pos(oox_anchor->m_oPositionH->m_oPosOffset->ToPoints());
+			switch(horiz_rel)
+			{
+				case 1:
+				case 2:	anchor_type_x = anchor_type::Paragraph;	break;  
+				case 6:	anchor_type_x = anchor_type::Page;		break;       
+			}
+		}
 		else
 			odt_context->drawing_context()->set_horizontal_pos(SimpleTypes::alignhLeft);
 	}
+
+	if ( (anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
+		odt_context->drawing_context()->set_anchor(*anchor_type_x);
 
 	bool wrap_set = false;
 	if (oox_anchor->m_oWrapSquare.IsInit())
@@ -2232,10 +2733,10 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 
 	odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar); 
 	
-	if (oox_inline->m_oDistL.IsInit())odt_context->drawing_context()->set_margin_left(oox_inline->m_oDistL->ToPoints());
-	if (oox_inline->m_oDistT.IsInit())odt_context->drawing_context()->set_margin_top(oox_inline->m_oDistT->ToPoints());
-	if (oox_inline->m_oDistR.IsInit())odt_context->drawing_context()->set_margin_right(oox_inline->m_oDistR->ToPoints());
-	if (oox_inline->m_oDistB.IsInit())odt_context->drawing_context()->set_margin_bottom(oox_inline->m_oDistB->ToPoints());
+	if (oox_inline->m_oDistL.IsInit())	odt_context->drawing_context()->set_margin_left		(oox_inline->m_oDistL->ToPoints());
+	if (oox_inline->m_oDistT.IsInit())	odt_context->drawing_context()->set_margin_top		(oox_inline->m_oDistT->ToPoints());
+	if (oox_inline->m_oDistR.IsInit())	odt_context->drawing_context()->set_margin_right	(oox_inline->m_oDistR->ToPoints());
+	if (oox_inline->m_oDistB.IsInit())	odt_context->drawing_context()->set_margin_bottom	(oox_inline->m_oDistB->ToPoints());
 
 	//вертикальное выравнивание относительно строки поставим в середину (иначе по нижнему краю почемуто)
 
@@ -2629,8 +3130,7 @@ void DocxConverter::convert_settings()
 		odt_context->page_layout_context()->set_pages_mirrored(true);
 	}
 
-	if (docx_settings->m_oEvenAndOddHeaders.IsInit())odt_context->page_layout_context()->set_even_and_left_headers(true);
-	else odt_context->page_layout_context()->set_even_and_left_headers(false);
+	odt_context->page_layout_context()->even_and_left_headers_ = docx_settings->m_oEvenAndOddHeaders.IsInit();
 
 	if (docx_settings->m_oPrintTwoOnOne.IsInit())
 	{
@@ -3241,8 +3741,8 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeEnd* oox_comm_end)
 }
 void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 {
-	if(oox_comm_ref == NULL)return;
-	if (oox_comm_ref->m_oId.IsInit() == false) return;
+	if (oox_comm_ref == NULL)					return;
+	if (oox_comm_ref->m_oId.IsInit() == false)	return;
 
 	int oox_comm_id = oox_comm_ref->m_oId->GetValue();
 
@@ -3253,28 +3753,46 @@ void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 		//значит старт тута а не по RangeStart
 		convert_comment(oox_comm_id);
 	}
+}
+void DocxConverter::convert(OOX::Logic::CFootnoteReference* oox_ref)
+{
+	if (oox_ref == NULL)					return;
+	if (oox_ref->m_oId.IsInit() == false)	return;
 
+	int oox_ref_id = oox_ref->m_oId->GetValue();
+
+	convert_footnote(oox_ref_id);
+}
+void DocxConverter::convert(OOX::Logic::CEndnoteReference* oox_ref)
+{
+	if (oox_ref == NULL)					return;
+	if (oox_ref->m_oId.IsInit() == false)	return;
+
+	int oox_ref_id = oox_ref->m_oId->GetValue();
+
+	convert_endnote(oox_ref_id);
 }
 void DocxConverter::convert_comment(int oox_comm_id)
 {
 	OOX::CComments * docx_comments = docx_document->GetComments();
 	if (!docx_comments)return;
 
-	for (unsigned int comm =0 ; comm < docx_comments->m_arrComments.size(); comm++)
+	for (unsigned int comm = 0 ; comm < docx_comments->m_arrComments.size(); comm++)
 	{
 		OOX::CComment* oox_comment = docx_comments->m_arrComments[comm];
-		if (oox_comment == NULL) continue;
-		if (oox_comment->m_oId.IsInit() == false) continue;
+		
+		if (oox_comment == NULL)					continue;
+		if (oox_comment->m_oId.IsInit() == false)	continue;
 		
 		if (oox_comment->m_oId->GetValue() == oox_comm_id)
 		{
 			odt_context->start_comment_content();
 			{
-				if (oox_comment->m_oAuthor.IsInit())odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
-				if (oox_comment->m_oDate.IsInit())	odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
-				if (oox_comment->m_oInitials.IsInit()){}
+				if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
+				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
+				if (oox_comment->m_oInitials.IsInit())	{}
 
-				for (unsigned int i=0; i <oox_comment->m_arrItems.size(); i++)
+				for (unsigned int i = 0; i <oox_comment->m_arrItems.size(); i++)
 				{
 					convert(oox_comment->m_arrItems[i]);
 				}
@@ -3282,6 +3800,62 @@ void DocxConverter::convert_comment(int oox_comm_id)
 			odt_context->end_comment_content();
 		}
 	}
+}
+void DocxConverter::convert_footnote(int oox_ref_id)
+{
+	OOX::CFootnotes * footnotes = docx_document->GetFootnotes();
+	if (!footnotes)return;
+
+	odt_context->start_note(oox_ref_id, 1);
+
+	for (unsigned int n = 0 ; n < footnotes->m_arrFootnote.size(); n++)
+	{
+		OOX::CFtnEdn* oox_note = footnotes->m_arrFootnote[n];
+		
+		if (oox_note == NULL)					continue;
+		if (oox_note->m_oId.IsInit() == false)	continue;
+		
+		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		{
+			odt_context->start_note_content();
+			{
+				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				{
+					convert(oox_note->m_arrItems[i]);
+				}
+			}
+			odt_context->end_note_content();
+		}
+	}
+	odt_context->end_note();
+}
+void DocxConverter::convert_endnote(int oox_ref_id)
+{
+	OOX::CEndnotes * endnotes = docx_document->GetEndnotes();
+	if (!endnotes)return;
+
+	odt_context->start_note(oox_ref_id, 2);
+
+	for (unsigned int n = 0 ; n < endnotes->m_arrEndnote.size(); n++)
+	{
+		OOX::CFtnEdn* oox_note = endnotes->m_arrEndnote[n];
+		
+		if (oox_note == NULL)					continue;
+		if (oox_note->m_oId.IsInit() == false)	continue;
+		
+		if (oox_note->m_oId->GetValue() == oox_ref_id)
+		{
+			odt_context->start_note_content();
+			{
+				for (unsigned int i = 0; i < oox_note->m_arrItems.size(); i++)
+				{
+					convert(oox_note->m_arrItems[i]);
+				}
+			}
+			odt_context->end_note_content();
+		}
+	}
+	odt_context->end_note();
 }
 void DocxConverter::convert_hdr_ftr	(CString sId)
 {
@@ -3296,6 +3870,7 @@ void DocxConverter::convert_hdr_ftr	(CString sId)
 	}
 	oox_current_child_document  = NULL;
 }
+
 void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 {
 	if (oox_table == NULL) return;
@@ -3309,10 +3884,15 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	//if (in_list, but not in paragraph)
 	odt_context->set_no_list();
 
-	bool styled_table		= false;
-	bool in_frame			= false;
-	int  in_frame_anchor	= odf_types::anchor_type::Paragraph;
+	bool styled_table			= false;
+	bool in_frame				= false;
+	int  in_frame_anchor		= odf_types::anchor_type::Paragraph;
+	int	 id_change_properties	= -1;
 	
+	if (oox_table->m_oTableProperties)
+		id_change_properties = convert(oox_table->m_oTableProperties->m_oTblPrChange.GetPointer());
+
+
 	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
 	{//настройка предустановленного стиля
 		std::wstring base_style_name = string2std_string(*oox_table->m_oTableProperties->m_oTblStyle->m_sVal);
@@ -3345,7 +3925,16 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	if (in_frame)
 	{
+		if (current_section_properties)
+			convert(current_section_properties->props, current_section_properties->root);
+		
 		odt_context->start_paragraph();
+
+		if (odt_context->is_paragraph_in_current_section_)
+		{
+			odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+								  odt_context->page_layout_context()->last_master()->get_name() : L"");
+		}
 			odt_context->start_drawings();
 				_CP_OPT(double) width, height, x, y ;
 				
@@ -3369,8 +3958,14 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				{
 					switch(oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor->GetValue())
 					{
-						case SimpleTypes::vanchorMargin: odt_context->drawing_context()->set_vertical_rel(6); break;//1???
-						case SimpleTypes::vanchorPage:	 odt_context->drawing_context()->set_vertical_rel(5); break;
+						case SimpleTypes::vanchorMargin: 
+						{	odt_context->drawing_context()->set_anchor(anchor_type::Paragraph);
+							odt_context->drawing_context()->set_vertical_rel(6); //1???
+						}break;
+						case SimpleTypes::vanchorPage:	
+						{	odt_context->drawing_context()->set_anchor(anchor_type::Page);
+							odt_context->drawing_context()->set_vertical_rel(5); 
+						}break;
 					}
 				}
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oHorzAnchor.IsInit())
@@ -3399,6 +3994,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 				odt_context->drawing_context()->start_drawing();	
 
 				odt_context->drawing_context()->start_text_box();
+					odt_context->drawing_context()->set_text_box_tableframe(true);
 					odt_context->drawing_context()->set_text_box_min_size(0, 1.);
 					odt_context->drawing_context()->set_z_order(0x7fffffff-1);
 					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");
@@ -3438,9 +4034,8 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	odt_context->table_context()->set_table_inside_v(border_inside_v);
 	odt_context->table_context()->set_table_inside_h(border_inside_h);
 
-	int count_rows = oox_table->m_nCountRow;
-	int count_columns = 0;
-	if (oox_table->m_oTblGrid.IsInit())count_columns = oox_table->m_oTblGrid->m_arrGridCol.size();
+	int count_rows		= oox_table->m_nCountRow;
+	int count_columns	= oox_table->m_oTblGrid.IsInit() ? oox_table->m_oTblGrid->m_arrGridCol.size() : 0;
 	
 	odt_context->styles_context()->table_styles().set_current_dimension(count_columns, count_rows);
 	odt_context->table_context()->count_rows(count_rows);
@@ -3485,13 +4080,19 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		
 		odt_context->text_context()->set_KeepNextParagraph(true);
 	}	
+
+	if (id_change_properties >= 0)
+		odt_context->end_change(id_change_properties, 3); 
 }
+
 void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 {
 	if (oox_table_grid == NULL) return;
 
+	int id_change_properties = convert(oox_table_grid->m_oTblGridChange.GetPointer());
+
 	odt_context->start_table_columns();
-	//nullable<OOX::Logic::CTblGridChange          > m_oTblGridChange;
+
 	for (int i =0 ; i < oox_table_grid->m_arrGridCol.size(); i++)
 	{
 		if (oox_table_grid->m_arrGridCol[i] == NULL) continue;
@@ -3512,7 +4113,26 @@ void DocxConverter::convert(OOX::Logic::CTblGrid	*oox_table_grid)
 			
 	}	
 	odt_context->end_table_columns();
+
+	if (id_change_properties >= 0)
+		odt_context->end_change(id_change_properties, 3); 
 }
+
+int DocxConverter::convert(OOX::Logic::CTblGridChange *oox_table_grid_prop_change)
+{
+	if (!oox_table_grid_prop_change) return -1;
+
+	int				id		= oox_table_grid_prop_change->m_oId.IsInit()		? oox_table_grid_prop_change->m_oId->GetValue()		: -1;
+	//std::wstring	author	= oox_table_grid_prop_change->m_sAuthor.IsInit()	? oox_table_grid_prop_change->m_sAuthor.get2()		: L"";
+	//std::wstring	userId	= oox_table_grid_prop_change->m_sUserId.IsInit()	? oox_table_grid_prop_change->m_sUserId.get2()		: L"";
+	//std::wstring	date	= oox_table_grid_prop_change->m_oDate.IsInit()		? oox_table_grid_prop_change->m_oDate->GetValue()	: L"";
+
+	/// ( нету в либре подходящей схемы
+	//if (!odt_context->start_change(id, 3, author, userId, date, style_name)) return -1;
+	//return id;
+	return -1;
+}
+	
 void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 {
 	if (oox_table_row == NULL) return;
@@ -3520,6 +4140,16 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	bool styled = oox_table_row->m_oTableRowProperties ? true : false;
 	bool is_header = false;
 
+	int id_insert_row	= -1;
+	int id_delete_row	= -1;
+
+	if (oox_table_row->m_oTableRowProperties)
+	{//+ Format ???
+		//id_insert_row = convert(oox_table_row->m_oTableRowProperties->m_oIns.GetPointer(), 1);
+		//id_delete_row = convert(oox_table_row->m_oTableRowProperties->m_oDel.GetPointer(), 2); 
+		//??? как в электороных таблицах? или ваще нету?
+	}
+		
 	if (styled && oox_table_row->m_oTableRowProperties->m_oTblHeader.IsInit()
 		&& oox_table_row->m_oTableRowProperties->m_oTblHeader->m_oVal.ToBool() )is_header = true;
 
@@ -3544,15 +4174,27 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	odt_context->end_table_row();
 
 	if (is_header)odt_context->end_table_header_rows();
+
+	if (id_insert_row >= 0)
+		odt_context->end_change(id_insert_row, 1);
+
+	if (id_delete_row >= 0)
+		odt_context->end_change(id_delete_row, 2);
 }
 void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 {
 	if (oox_table_cell == NULL) return;
 
-	bool covered = false;
+	bool covered				= false;
+	int id_change_properties	= -1;
 
 	if (oox_table_cell->m_oTableCellProperties)
 	{
+		//id_change_properties = convert(oox_table_cell->m_oTableCellProperties->m_oCellIns.GetPointer()); ?? 
+		//id_change_properties = convert(oox_table_cell->m_oTableCellProperties->m_oCellDel.GetPointer()); ??
+		//id_change_properties = convert(oox_table_cell->m_oTableCellProperties->m_oTcPrChange.GetPointer());
+		//??? как в электороных таблицах? или ваще нету?
+
 		if (oox_table_cell->m_oTableCellProperties->m_oVMerge.IsInit())
 		{
 			if (!(oox_table_cell->m_oTableCellProperties->m_oVMerge->m_oVal.IsInit() && 
@@ -3590,6 +4232,9 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 		}
 	}		
 	odt_context->end_table_cell();
+
+	if (id_change_properties >= 0)
+		odt_context->end_change(id_change_properties, 3);
 }
 bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_properties	* table_properties )
 {
@@ -3670,11 +4315,10 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 	//nullable<ComplexTypes::Word::CString_                        > m_oTblDescription;
 	//nullable<ComplexTypes::Word::CTblLayoutType                  > m_oTblLayout;
 	//nullable<ComplexTypes::Word::CTblOverlap                     > m_oTblOverlap;
-	//nullable<OOX::Logic::CTblPrChange                            > m_oTblPrChange;
-
 
 	return true;
 }
+
 void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties	* table_cell_properties)
 {
 	if (oox_table_pr == NULL || oox_table_pr == NULL) return;
@@ -3780,7 +4424,6 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
 	//nullable<OOX::Logic::CTrPrChange                             > m_oTrPrChange;
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oWBefore;
-
 }
 bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,odf_writer::style_table_cell_properties	* table_cell_properties)
 {

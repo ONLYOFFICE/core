@@ -41,48 +41,65 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-//  office_text
-//  office:text
 class office_text : public office_element_impl<office_text>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeOfficeText;
+    static const ElementType type		= typeOfficeText;
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-
-public:
     office_text();
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-private:
     bool text_global_;
     // TODO: office-text-content-prelude:
     //  TODO: office-forms
-    //  TODO: text-tracked-changes
     //  TODO: text-decls
     //  TODO: table-decls
 
-    office_element_ptr_array text_content_;
+	office_element_ptr			tracked_changes_;
+    office_element_ptr_array	content_;
     // TODO: text-page-sequence
     // TODO: office-text-content-epilogue:
-    //  TODO: table-functions
+    // TODO: table-functions
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_text);
+//----------------------------------------------------------------------------------------------------
+
+class office_change_info : public office_element_impl<office_change_info>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeOfficeChangeInfo;
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    virtual void docx_convert(oox::docx_conversion_context & Context) ;
+
+private:
+	virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+    office_element_ptr		dc_date_;
+    office_element_ptr		dc_creator_;
+
+	_CP_OPT(std::wstring)	office_chg_author_;
+	_CP_OPT(std::wstring)	office_chg_date_time_;
+	
+};
+CP_REGISTER_OFFICE_ELEMENT2(office_change_info)
+
 
 }
 }

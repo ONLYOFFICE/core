@@ -131,15 +131,16 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	}else
 	{
 		if (common_padding_attlist_.fo_padding_left_) 
-			properties.push_back(_property(L"text-padding-left", common_padding_attlist_.fo_padding_left_->get_value_unit(length::emu)));
+			properties.push_back(_property(L"text-padding-left",	common_padding_attlist_.fo_padding_left_->get_value_unit(length::emu)));
 		if (common_padding_attlist_.fo_padding_right_) 
-			properties.push_back(_property(L"text-padding-right", common_padding_attlist_.fo_padding_right_->get_value_unit(length::emu)));
+			properties.push_back(_property(L"text-padding-right",	common_padding_attlist_.fo_padding_right_->get_value_unit(length::emu)));
 		if (common_padding_attlist_.fo_padding_top_) 
-			properties.push_back(_property(L"text-padding-top", common_padding_attlist_.fo_padding_top_->get_value_unit(length::emu)));
+			properties.push_back(_property(L"text-padding-top",		common_padding_attlist_.fo_padding_top_->get_value_unit(length::emu)));
 		if (common_padding_attlist_.fo_padding_bottom_) 
-			properties.push_back(_property(L"text-padding-bottom", common_padding_attlist_.fo_padding_bottom_->get_value_unit(length::emu)));
+			properties.push_back(_property(L"text-padding-bottom",	common_padding_attlist_.fo_padding_bottom_->get_value_unit(length::emu)));
 	}
-	if (fo_wrap_option_)	properties.push_back(_property(L"text-wrap",	(int)fo_wrap_option_->get_type()));
+	if (fo_wrap_option_)	
+		properties.push_back(_property(L"text-wrap", (int)fo_wrap_option_->get_type()));
 }
 void graphic_format_properties::apply_from(const graphic_format_properties & Other)
 {
@@ -210,7 +211,7 @@ void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & At
 	graphic_format_properties_.add_attributes(Attributes);
 }
 
-void style_graphic_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_graphic_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
      if (L"style" == Ns && L"background-image" == Name)
     {

@@ -50,7 +50,7 @@ public:
     std::wstring convert(std::wstring const & expr);
     
     // $Лист1.$A$1 -> Лист1!$A$1
-    std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true);
+	std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true, std::wstring separator = L" ");
 
 	//a-la convert without check formula
     std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true);

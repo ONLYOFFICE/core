@@ -55,59 +55,23 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				CString sRoot;
-				writer.WriteString(CString(_T("<oleObject")));
-				if(m_oProgId.IsInit())
-				{
-					writer.WriteString(L" progId=\"");
-					writer.WriteEncodeXmlString(m_oProgId.get());
-					writer.WriteString(L"\"");
-				}
-				if(m_oDvAspect.IsInit())
-				{
-					writer.WriteString(L" dvAspect=\"");
-					writer.WriteString(m_oDvAspect->ToString());
-					writer.WriteString(L"\"");
-				}
-				if(m_oLink.IsInit())
-				{
-					writer.WriteString(L" link=\"");
-					writer.WriteEncodeXmlString(m_oLink.get());
-					writer.WriteString(L"\"");
-				}
-				if(m_oOleUpdate.IsInit())
-				{
-					writer.WriteString(L" oleUpdate=\"");
-					writer.WriteString(m_oOleUpdate->ToString());
-					writer.WriteString(L"\"");
-				}
-				if(m_oAutoLoad.IsInit())
-				{
-					writer.WriteString(L" autoLoad=\"");
-					writer.WriteString(m_oAutoLoad->ToString2(SimpleTypes::onofftostring1));
-					writer.WriteString(L"\"");
-				}
-				if(m_oShapeId.IsInit())
-				{
-					writer.WriteString(L" shapeId=\"");
-					writer.WriteString(m_oShapeId->ToString());
-					writer.WriteString(L"\"");
-				}
-				if(m_oRid.IsInit())
-				{
-					writer.WriteString(L" r:id=\"");
-					writer.WriteString(m_oRid->GetValue());
-					writer.WriteString(L"\"");
-				}
-
-				writer.WriteString(CString(_T("/>")));
+				writer.WriteString(L"<oleObject");
+				WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
+				WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
+				WritingStringNullableAttrEncodeXmlString(L"link", m_oLink, m_oLink.get());
+				WritingStringNullableAttrString(L"oleUpdate", m_oOleUpdate, m_oOleUpdate->ToString());
+				WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
+				WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				writer.WriteString(L"/>");
 			}
-			void toXMLPptx(XmlUtils::CStringWriter& writer, CString qqq) const
+			void toXMLPptx(NSStringUtils::CStringBuilder& writer, CString qqq) const
 			{
 				CString sRoot;
-				writer.WriteString(CString(_T("<o:OLEObject")));
+				writer.WriteString(L"<o:OLEObject");
 				if(m_oDvAspect.IsInit())
 				{
 					writer.WriteString(L" DrawAspect=\"");
@@ -117,24 +81,9 @@ namespace OOX
 						writer.WriteString(L"Icon");
 					writer.WriteString(L"\"");
 				}
-				if(m_oRid.IsInit())
-				{
-					writer.WriteString(L" r:id=\"");
-					writer.WriteString(m_oRid->GetValue());
-					writer.WriteString(L"\"");
-				}
-				if(m_oProgId.IsInit())
-				{
-					writer.WriteString(L" ProgID=\"");
-					writer.WriteEncodeXmlString(m_oProgId.get());
-					writer.WriteString(L"\"");
-				}
-				if(m_oShapeId.IsInit())
-				{
-					writer.WriteString(L" ShapeID=\"");
-					writer.WriteString(m_oShapeId->ToString());
-					writer.WriteString(L"\"");
-				}
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
+				WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
 				writer.WriteString(L" Type=\"Embed\"");
 				if(m_oOleUpdate.IsInit())
 				{
@@ -145,28 +94,11 @@ namespace OOX
 						writer.WriteString(L"OnCall");
 					writer.WriteString(L"\"");
 				}
-				if(m_oFilepathBin.IsInit())
-				{
-					writer.WriteString(L" pathbin=\"");
-					writer.WriteEncodeXmlString(m_oFilepathBin.get());
-					writer.WriteString(L"\"");
-				}
+				WritingStringNullableAttrEncodeXmlString(L"pathbin", m_oFilepathBin, m_oFilepathBin.get());
+				WritingStringNullableAttrEncodeXmlString(L"pathimg", m_oFilepathImg, m_oFilepathImg.get());
+				WritingStringNullableAttrString(L"idimg", m_oRidImg, m_oRidImg->ToString2());
 
-				if(m_oFilepathImg.IsInit())
-				{
-					writer.WriteString(L" pathimg=\"");
-					writer.WriteEncodeXmlString(m_oFilepathImg.get());
-					writer.WriteString(L"\"");
-				}
-
-				if(m_oRidImg.IsInit())
-				{
-					writer.WriteString(L" idimg=\"");
-					writer.WriteString(m_oRidImg->GetValue());
-					writer.WriteString(L"\"");
-				}
-
-				writer.WriteString(CString(_T("/>")));
+				writer.WriteString(L"/>");
 			}
 			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -204,16 +136,16 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CString > m_oProgId;
+			nullable<std::wstring > m_oProgId;
 			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<> > m_oDvAspect;
-			nullable<CString > m_oLink;
+			nullable<std::wstring > m_oLink;
 			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<> > m_oOleUpdate;
 			nullable<SimpleTypes::COnOff<> > m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
 			//internal
-			nullable<CString > m_oFilepathBin;
-			nullable<CString > m_oFilepathImg;
+			nullable<std::wstring > m_oFilepathBin;
+			nullable<std::wstring > m_oFilepathImg;
 			nullable<SimpleTypes::CRelationshipId > m_oRidImg;
 		};
 
@@ -238,7 +170,7 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_mapOleObjects.size() > 0)
 				{
@@ -247,7 +179,7 @@ namespace OOX
 					{
 						it->second->toXML(writer);
 					}
-					writer.WriteString(CString(_T("</oleObjects>")));
+					writer.WriteString(L"</oleObjects>");
 				}
 			}
 			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -260,7 +192,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("oleObject") == sName )
 					{
@@ -279,13 +211,13 @@ namespace OOX
 						int nSubDepth = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nSubDepth ) )
 						{
-							CString sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 							if ( _T("Fallback") == sSubName || _T("Choice") == sSubName )
 							{
 								int nSubSubDepth = oReader.GetDepth();
 								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
 								{
-									CString sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 									if ( _T("oleObject") == sSubSubName )
 									{
 										COleObject* pOleObject = new COleObject(oReader);

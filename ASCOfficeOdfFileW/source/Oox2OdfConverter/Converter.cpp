@@ -353,6 +353,7 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 	{
 		if (oox_group_spPr->m_oXfrm->m_oFlipH.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_group_flip_H(true);
+		
 		if (oox_group_spPr->m_oXfrm->m_oFlipV.GetValue() == SimpleTypes::onoffTrue)
 			odf_context()->drawing_context()->set_group_flip_V(true);
 
@@ -362,22 +363,24 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 			
 			cx		= oox_group_spPr->m_oXfrm->m_oExt->m_oCx.ToPoints();
 			cy		= oox_group_spPr->m_oXfrm->m_oExt->m_oCy.ToPoints();
+			
 			ch_cx	= oox_group_spPr->m_oXfrm->m_oChExt->m_oCx.ToPoints();
 			ch_cy	= oox_group_spPr->m_oXfrm->m_oChExt->m_oCy.ToPoints();
 
-			odf_context()->drawing_context()->set_group_size(cx,cy,ch_cx,ch_cy);
+			odf_context()->drawing_context()->set_group_size(cx, cy, ch_cx, ch_cy);
 		}
 		if (
 			oox_group_spPr->m_oXfrm->m_oOff.IsInit() && oox_group_spPr->m_oXfrm->m_oChOff.IsInit())
 		{
 			_CP_OPT(double) x,y, ch_x, ch_y;
+			
 			x =	oox_group_spPr->m_oXfrm->m_oOff->m_oX.ToPoints();
 			y = oox_group_spPr->m_oXfrm->m_oOff->m_oY.ToPoints();
 
 			ch_x = oox_group_spPr->m_oXfrm->m_oChOff->m_oX.ToPoints();
 			ch_y = oox_group_spPr->m_oXfrm->m_oChOff->m_oY.ToPoints();
 
-			odf_context()->drawing_context()->set_group_position(	x,y, ch_x, ch_y);
+			odf_context()->drawing_context()->set_group_position(	x, y, ch_x, ch_y);
 		}
 
 		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)
@@ -1220,6 +1223,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oLatinFont->m_oTypeFace->GetValue());
 		else
 		{
+			text_properties->content().fo_font_family_ = L"Calibri";//default_font; ???? 
 		}
 	}
 	if (oox_run_pr->m_oAsianFont.IsInit())
@@ -1266,7 +1270,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 		switch(type)
 		{
 		case SimpleTypes::underlineNone	:
-                text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);break;
+                text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
 		case SimpleTypes::underlineDash :
 		case SimpleTypes::underlineDashedHeavy:
 				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Dash);break;

@@ -66,6 +66,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
+	math_context_		(true),
 	xlsx_style_			(this),
 	
 	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
@@ -100,13 +101,10 @@ void xlsx_conversion_context::start_chart(std::wstring name)
 	//добавляем новую форму для диаграммы
 	 //в ней будет информационная часть - и она пишется каждый раз в свою xml (их - по числу диаграмм)
 	//этот контекст нужно передавать в файл
-
 }
 
 void xlsx_conversion_context::end_chart()
 {
-	//current_chart().set_drawing_link(current_sheet().get_drawing_link());
-	//излишняя инфа
 }
 
 void xlsx_conversion_context::start_document()
@@ -115,9 +113,9 @@ void xlsx_conversion_context::start_document()
     std::vector<const odf_reader::style_instance *> instances;
     
 	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::TableCell,false));
+	instances.push_back(odfContext.styleContainer().style_by_name(L"Default", odf_types::style_family::TableCell, false));
 
-    odf_reader::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::text_format_properties_content		textFormatProperties	= calc_text_properties_content(instances);
     odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
     odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
 
@@ -126,7 +124,7 @@ void xlsx_conversion_context::start_document()
 	cellFormat.set_cell_type(XlsxCellType::s);
     cellFormat.set_num_format(oox::odf_string_to_build_in(0));
 
-    default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"",true);
+    default_style_ = get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, L"", true);
 
 }
 
@@ -181,7 +179,7 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name", sheet->name());
+                CP_XML_ATTR(L"name", sheet->name()); // office 2010 ! ограничение на длину имени !!!
                 CP_XML_ATTR(L"sheetId", count);
                 CP_XML_ATTR(L"state", L"visible");
                 CP_XML_ATTR(L"r:id", id);            

@@ -65,9 +65,11 @@ namespace odf_reader {
 
 	namespace {
 
-std::wstring process_border(const border_style & borderStyle,
-    const _CP_OPT(border_widths) & borderLineWidths,
-    const _CP_OPT(length) & borderPadding, const std::wstring & Shadow = L"")
+std::wstring process_border(const border_style	& borderStyle,
+			const	_CP_OPT(border_widths)		& borderLineWidths,
+					_CP_OPT(length)				& borderPadding, 
+					_CP_OPT(length_or_percent)	& margin, 
+			const	std::wstring				& Shadow = L"")
 {
     std::wstring w_sz;
     std::wstring w_color;
@@ -233,7 +235,7 @@ void style_content::docx_convert(oox::docx_conversion_context & Context, bool in
     Context.end_process_style_content(in_styles);
 }
 
-void style_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void style_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {   
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
@@ -286,7 +288,7 @@ void style_content::add_child_element( xml::sax * Reader, const ::std::wstring &
 const wchar_t * default_style::ns = L"style";
 const wchar_t * default_style::name = L"default-style";
 
-::std::wostream & default_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & default_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -296,7 +298,7 @@ void default_style::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"style:family", style_family_, style_family());
 }
 
-void default_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void default_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     style_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -315,7 +317,7 @@ void draw_fill_image::add_attributes( const xml::attributes_wc_ptr & Attributes 
 	xlink_attlist_.add_attributes(Attributes);
 }
 
-void draw_fill_image::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_fill_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -343,7 +345,7 @@ void draw_gradient::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void draw_gradient::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_gradient::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -361,7 +363,7 @@ void draw_hatch::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"draw:rotation",		draw_rotation_);
 }
 
-void draw_hatch::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_hatch::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -384,7 +386,7 @@ void draw_opacity::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 }
 
-void draw_opacity::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void draw_opacity::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -393,7 +395,7 @@ void draw_opacity::add_child_element( xml::sax * Reader, const ::std::wstring & 
 const wchar_t * style::ns = L"style";
 const wchar_t * style::name = L"style";
 
-::std::wostream & style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -421,7 +423,7 @@ void style::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	}
 }
 
-void style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"style", L"map")
     {
@@ -438,7 +440,7 @@ void style::add_text(const std::wstring & Text)
 // styles & draw_styles
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"style", L"style")
     {
@@ -466,7 +468,7 @@ void styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, co
     }
 }
 
-void templates::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void templates::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-template")
     {
@@ -474,7 +476,7 @@ void templates::add_child_element( xml::sax * Reader, const ::std::wstring & Ns,
     } 
 }
 
-void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void draw_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"draw", L"gradient")
     {
@@ -512,7 +514,7 @@ void draw_styles::add_child_element( xml::sax * Reader, const ::std::wstring & N
 const wchar_t * office_automatic_styles::ns = L"office";
 const wchar_t * office_automatic_styles::name = L"automatic-styles";
 
-::std::wostream & office_automatic_styles::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_automatic_styles::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -520,7 +522,7 @@ const wchar_t * office_automatic_styles::name = L"automatic-styles";
 void office_automatic_styles::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {}
 
-void office_automatic_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_automatic_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"page-layout" == Name)
     {
@@ -540,7 +542,7 @@ void office_automatic_styles::add_text(const std::wstring & Text)
 const wchar_t * office_master_styles::ns = L"office";
 const wchar_t * office_master_styles::name = L"master-styles";
 
-::std::wostream & office_master_styles::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & office_master_styles::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -549,7 +551,7 @@ void office_master_styles::add_attributes( const xml::attributes_wc_ptr & Attrib
 {
 }
 
-void office_master_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_master_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"master-page" == Name)
         CP_CREATE_ELEMENT(style_master_page_);
@@ -577,7 +579,7 @@ void office_styles::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void office_styles::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (CP_CHECK_NAME(L"style",		L"style") ||
         CP_CHECK_NAME(L"text",		L"list-style") ||
@@ -640,7 +642,7 @@ void style_header::add_attributes( const xml::attributes_wc_ptr & Attributes )
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -654,7 +656,7 @@ void style_footer::add_attributes( const xml::attributes_wc_ptr & Attributes )
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -668,7 +670,7 @@ void style_header_first::add_attributes( const xml::attributes_wc_ptr & Attribut
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header_first::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -682,7 +684,7 @@ void style_footer_first::add_attributes( const xml::attributes_wc_ptr & Attribut
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer_first::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_first::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -696,7 +698,7 @@ void style_header_left::add_attributes( const xml::attributes_wc_ptr & Attribute
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_header_left::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -710,7 +712,7 @@ void style_footer_left::add_attributes( const xml::attributes_wc_ptr & Attribute
     content().common_style_header_footer_attlist_.add_attributes(Attributes);
 }
 
-void style_footer_left::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_left::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     content().header_footer_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -726,7 +728,7 @@ void style_columns::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"fo:column-gap", fo_column_gap_);
 }
 
-void style_columns::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"column" == Name)
         CP_CREATE_ELEMENT(style_column_);
@@ -745,15 +747,15 @@ const wchar_t * style_column::name = L"column";
 
 void style_column::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"fo:start-indent", fo_start_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:end-indent", fo_end_indent_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-before", fo_space_before_, length(0.0, length::cm));
-    CP_APPLY_ATTR(L"fo:space-after", fo_space_after_, length(0.0, length::cm));
+    CP_APPLY_ATTR(L"style:rel-width",	style_rel_width_);
+    CP_APPLY_ATTR(L"fo:start-indent",	fo_start_indent_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:end-indent",		fo_end_indent_,		length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-before",	fo_space_before_,	length(0.0, length::cm));
+    CP_APPLY_ATTR(L"fo:space-after",	fo_space_after_,	length(0.0, length::cm));
     
 }
 
-void style_column::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -772,7 +774,7 @@ void style_column_sep::add_attributes( const xml::attributes_wc_ptr & Attributes
     CP_APPLY_ATTR(L"style:color", style_color_, color(L"#000000"));  
 }
 
-void style_column_sep::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_column_sep::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -792,7 +794,7 @@ void style_section_properties::add_attributes( const xml::attributes_wc_ptr & At
     common_writing_mode_attlist_.add_attributes(Attributes);
 }
 
-void style_section_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_section_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"background-image" == Name)
         CP_CREATE_ELEMENT(style_background_image_);    
@@ -809,7 +811,7 @@ void style_section_properties::add_child_element( xml::sax * Reader, const ::std
 const wchar_t * style_header_style::ns = L"style";
 const wchar_t * style_header_style::name = L"header-style";
 
-::std::wostream & style_header_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_header_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -818,7 +820,7 @@ void style_header_style::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void style_header_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_header_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -835,7 +837,7 @@ void style_header_style::add_child_element( xml::sax * Reader, const ::std::wstr
 const wchar_t * style_footer_style::ns = L"style";
 const wchar_t * style_footer_style::name = L"footer-style";
 
-::std::wostream & style_footer_style::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_footer_style::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -844,7 +846,7 @@ void style_footer_style::add_attributes( const xml::attributes_wc_ptr & Attribut
 {
 }
 
-void style_footer_style::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footer_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-footer-properties" == Name)
     {
@@ -869,7 +871,7 @@ void style_page_layout_attlist::add_attributes( const xml::attributes_wc_ptr & A
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
 
-::std::wostream & style_page_layout::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_page_layout::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;    
 }
@@ -879,7 +881,7 @@ void style_page_layout::add_attributes( const xml::attributes_wc_ptr & Attribute
     style_page_layout_attlist_.add_attributes(Attributes);
 }
 
-void style_page_layout::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header-style" == Name)
     {
@@ -969,24 +971,19 @@ Choice [0..6]
 
 namespace {
 
-std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, 
-								 const _CP_OPT(length_or_percent) & Val2, 
-								 const _CP_OPT(length) & AddVal = _CP_OPT(length)())
+std::wstring process_page_margin(const _CP_OPT(length_or_percent)	& Val, 
+								 const _CP_OPT(length)				& AddVal = _CP_OPT(length)())
 {
-    if (!Val ||
-        Val->get_type() == length_or_percent::Percent)
-        return L"0";
+    //if ((!Val) || (Val->get_type() == length_or_percent::Percent))
+    //    return L"0";
 
-    double v1 = (!Val || Val->get_type() == length_or_percent::Percent) ? 0 :
-        (20.0 * Val->get_length().get_value_unit(length::pt));
+    double v = (!Val || Val->get_type() == length_or_percent::Percent) ? 0 :
+						(20.0 * Val->get_length().get_value_unit(length::pt));
 
-    double v2 = (!Val2 || Val2->get_type() == length_or_percent::Percent) ? 0 :
-        (20.0 * Val2->get_length().get_value_unit(length::pt));
-    
     double dAddVal = 20.0 * AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
 
 	if (dAddVal < 0 ) dAddVal = 0;
-    return boost::lexical_cast<std::wstring>( (int)( (!Val ? v2 : v1) + dAddVal));
+    return boost::lexical_cast<std::wstring>( (int)( v + dAddVal));
 }
 
 }
@@ -1041,27 +1038,39 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
 		strm << L"/>";
 	}
+	if (!common_padding_attlist_.fo_padding_top_)
+		common_padding_attlist_.fo_padding_top_		= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_bottom_)
+		common_padding_attlist_.fo_padding_bottom_	= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_left_)
+		common_padding_attlist_.fo_padding_left_	= common_padding_attlist_.fo_padding_;
+	if (!common_padding_attlist_.fo_padding_right_)
+		common_padding_attlist_.fo_padding_right_	= common_padding_attlist_.fo_padding_;
 
-	if (common_border_attlist_.fo_border_)
+	if (!common_horizontal_margin_attlist_.fo_margin_left_)
+		common_horizontal_margin_attlist_.fo_margin_left_	= common_margin_attlist_.fo_margin_;
+	if (!common_horizontal_margin_attlist_.fo_margin_right_)
+		common_horizontal_margin_attlist_.fo_margin_right_	= common_margin_attlist_.fo_margin_;
+	if (!common_vertical_margin_attlist_.fo_margin_top_)
+		common_vertical_margin_attlist_.fo_margin_top_		= common_margin_attlist_.fo_margin_;
+	if (!common_vertical_margin_attlist_.fo_margin_bottom_)
+		common_vertical_margin_attlist_.fo_margin_bottom_	= common_margin_attlist_.fo_margin_;
+
+//hange offset border from text to from page
+	if (common_padding_attlist_.fo_padding_left_ && common_horizontal_margin_attlist_.fo_margin_left_)
 	{
-		std::wstring w_border, w_shadow;
-		
-		if (common_shadow_attlist_.style_shadow_)
-			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
-
-		w_border = process_border(*common_border_attlist_.fo_border_,	
-									common_border_line_width_attlist_.style_border_line_width_, 
-									common_padding_attlist_.fo_padding_, 
-									w_shadow);
-
-		 strm << L"<w:pgBorders>";
-			strm << L"<w:top "		<< w_border << L"/>";
-			strm << L"<w:left "		<< w_border << L"/>";
-			strm << L"<w:bottom "	<< w_border << L"/>";
-			strm << L"<w:right "	<< w_border << L"/>";
-		 strm << L"</w:pgBorders>";
 	}
-	else if (common_border_attlist_.fo_border_top_ || common_border_attlist_.fo_border_bottom_ ||
+	if (common_padding_attlist_.fo_padding_right_ && common_horizontal_margin_attlist_.fo_margin_right_)
+	{
+	}	
+	if (common_padding_attlist_.fo_padding_top_ && common_vertical_margin_attlist_.fo_margin_top_)
+	{
+	}
+	if (common_padding_attlist_.fo_padding_bottom_ && common_vertical_margin_attlist_.fo_margin_bottom_)
+	{
+	}
+			
+	if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_top_ || common_border_attlist_.fo_border_bottom_ ||
 			common_border_attlist_.fo_border_left_ || common_border_attlist_.fo_border_right_ )
 	{
 		std::wstring w_top, w_left, w_right, w_bottom, w_shadow;
@@ -1069,23 +1078,39 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		if (common_shadow_attlist_.style_shadow_)
 			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
 
-		if (common_border_attlist_.fo_border_top_)
-			w_top = process_border(			*common_border_attlist_.fo_border_top_, 
-											common_border_line_width_attlist_.style_border_line_width_top_, 
-											common_padding_attlist_.fo_padding_top_, w_shadow);
-		if (common_border_attlist_.fo_border_bottom_)
-			w_bottom = process_border(		*common_border_attlist_.fo_border_bottom_, 
-											common_border_line_width_attlist_.style_border_line_width_bottom_, 
-											common_padding_attlist_.fo_padding_bottom_, w_shadow);
-		if (common_border_attlist_.fo_border_left_)
-			w_left = process_border(		*common_border_attlist_.fo_border_left_, 
-											common_border_line_width_attlist_.style_border_line_width_left_, 
-											common_padding_attlist_.fo_padding_left_, w_shadow);
-		if (common_border_attlist_.fo_border_right_)
-			w_right = process_border(		*common_border_attlist_.fo_border_right_, 
-											common_border_line_width_attlist_.style_border_line_width_right_, 
-											common_padding_attlist_.fo_padding_right_, w_shadow);
-		 strm << L"<w:pgBorders>";
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_top_)
+		{
+			w_top = process_border (	common_border_attlist_.fo_border_top_ ? *common_border_attlist_.fo_border_top_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_top_
+										, common_padding_attlist_.fo_padding_top_
+										, common_vertical_margin_attlist_.fo_margin_top_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_bottom_)
+		{
+			w_bottom = process_border (	common_border_attlist_.fo_border_bottom_ ? *common_border_attlist_.fo_border_bottom_ : *common_border_attlist_.fo_border_
+										, common_border_line_width_attlist_.style_border_line_width_bottom_ 
+										, common_padding_attlist_.fo_padding_bottom_
+										, common_vertical_margin_attlist_.fo_margin_bottom_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_left_)
+		{
+			w_left = process_border (	common_border_attlist_.fo_border_left_ ? *common_border_attlist_.fo_border_left_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_left_
+										, common_padding_attlist_.fo_padding_left_
+										, common_horizontal_margin_attlist_.fo_margin_left_
+										, w_shadow);
+		}
+		if (common_border_attlist_.fo_border_ || common_border_attlist_.fo_border_right_)
+		{
+			w_right = process_border (	common_border_attlist_.fo_border_right_ ? *common_border_attlist_.fo_border_right_ : *common_border_attlist_.fo_border_ 
+										, common_border_line_width_attlist_.style_border_line_width_right_
+										, common_padding_attlist_.fo_padding_right_
+										, common_horizontal_margin_attlist_.fo_margin_right_
+										, w_shadow);
+		}
+		 strm << L"<w:pgBorders w:offsetFrom=\"text\">";
 			if (!w_top.empty())			strm << L"<w:top "		<< w_top	<< L" />";
 			if (!w_left.empty())		strm << L"<w:left "		<< w_left	<< L" />";
 			if (!w_right.empty())		strm << L"<w:right "	<< w_right	<< L" />";
@@ -1095,27 +1120,28 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
    
 	CP_XML_WRITER(strm)
 	{
-		if (common_horizontal_margin_attlist_.fo_margin_left_ ||
-		common_horizontal_margin_attlist_.fo_margin_right_ ||
-		common_vertical_margin_attlist_.fo_margin_top_ ||
-		common_vertical_margin_attlist_.fo_margin_bottom_ ||
-		common_margin_attlist_.fo_margin_ || margin_right || margin_left
+		if (common_horizontal_margin_attlist_.fo_margin_left_	||
+			common_horizontal_margin_attlist_.fo_margin_right_	||
+			common_vertical_margin_attlist_.fo_margin_top_		||
+			common_vertical_margin_attlist_.fo_margin_bottom_	||
+			margin_right || margin_left
 			)
 		{
 			_CP_OPT(odf_types::length)  margin_left_length, margin_right_length;
 
-			if (margin_left)	margin_left_length = margin_left->get_length();
+			if (margin_left)	margin_left_length	= margin_left->get_length();
 			if (margin_right)	margin_right_length = margin_right->get_length();
 
 			CP_XML_NODE(L"w:pgMar")
 			{
-				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().footer()) );
-				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_) );
+				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
+				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
 				CP_XML_ATTR(L"w:gutter"	, 0 );
-				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_) );
-				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_, margin_left_length) );
-				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_, margin_right_length) );
-				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) );
+				
+				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_	, margin_left_length) );
+				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, margin_right_length) );
+				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	, Context.get_header_footer_context().header()) );
+				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_	, Context.get_header_footer_context().footer()) );
 			}
 		}
 
@@ -1151,20 +1177,23 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 
     if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
     {
-        std::wstring w_w = L"",w_h = L"";
+        std::wstring w_w, w_h;
 
-		int h=0,w=0;
+		_INT64 h = 0, w = 0;
 		
 		if (fo_page_width_)
 		{
 			w =  fo_page_width_->get_value_unit(length::emu);
+			if (w < 914400) w = 914400;
 
-			w_w = boost::lexical_cast<std::wstring>(w);
+			w_w = std::to_wstring(w);
 		}
         if (fo_page_height_)
 		{
 			h = fo_page_height_->get_value_unit(length::emu);
-			w_h = boost::lexical_cast<std::wstring>(h);
+			if (h < 914400) h = 914400;
+
+			w_h = std::to_wstring(h);
 		}
                 
         std::wstring w_orient = L"custom";
@@ -1193,13 +1222,13 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 // style-footnote-sep-attlist
 void style_footnote_sep_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:width", style_width_);
-    CP_APPLY_ATTR(L"style:rel-width", style_rel_width_);
-    CP_APPLY_ATTR(L"style:color", style_color_);
-    CP_APPLY_ATTR(L"style:line-style", style_line_style_);
-    CP_APPLY_ATTR(L"style:type", style_adjustment_, style_type(style_type::Left)); // default Left
-    CP_APPLY_ATTR(L"style:distance-before-sep", style_distance_before_sep_);
-    CP_APPLY_ATTR(L"style:distance-after-sep", style_distance_after_sep_);
+    CP_APPLY_ATTR(L"style:width",					style_width_);
+    CP_APPLY_ATTR(L"style:rel-width",				style_rel_width_);
+    CP_APPLY_ATTR(L"style:color",					style_color_);
+    CP_APPLY_ATTR(L"style:line-style",				style_line_style_);
+    CP_APPLY_ATTR(L"style:type",					style_adjustment_, style_type(style_type::Left)); // default Left
+    CP_APPLY_ATTR(L"style:distance-before-sep",		style_distance_before_sep_);
+    CP_APPLY_ATTR(L"style:distance-after-sep",		style_distance_after_sep_);
 }
 
 /// style:footnote-sep
@@ -1212,7 +1241,7 @@ void style_footnote_sep::add_attributes( const xml::attributes_wc_ptr & Attribut
     style_footnote_sep_attlist_.add_attributes( Attributes );
 }
 
-void style_footnote_sep::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_footnote_sep::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -1227,7 +1256,7 @@ void style_page_layout_properties::add_attributes( const xml::attributes_wc_ptr 
     style_page_layout_properties_attlist_.add_attributes(Attributes);
 }
 
-void style_page_layout_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_page_layout_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -1249,13 +1278,6 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 }
 void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
 {
-	if (Context.get_table_context().in_table())
-    {
-        // мы находимся внутри таблицы, устанавливаем специальное значение
-        Context.section_properties_in_table(this);
-        return;
-    }
-
 	style_columns * columns = dynamic_cast<style_columns *>( style_page_layout_properties_elements_.style_columns_.get());
 
 	CP_XML_WRITER(strm)
@@ -1305,7 +1327,7 @@ void style_page_layout_properties::pptx_convert(oox::pptx_conversion_context & C
 // style-page-layout-properties-elements
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void style_page_layout_properties_elements::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context )
+void style_page_layout_properties_elements::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context )
 {
     if (L"style" == Ns && L"background-image" == Name)
     {
@@ -1341,7 +1363,7 @@ void style_master_page_attlist::add_attributes( const xml::attributes_wc_ptr & A
 const wchar_t * style_master_page::ns = L"style";
 const wchar_t * style_master_page::name = L"master-page";
 
-::std::wostream & style_master_page::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_master_page::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;
 }
@@ -1351,7 +1373,7 @@ void style_master_page::add_attributes( const xml::attributes_wc_ptr & Attribute
     style_master_page_attlist_.add_attributes(Attributes);
 }
 
-void style_master_page::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_master_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"style" == Ns && L"header" == Name)
         CP_CREATE_ELEMENT(style_header_);
@@ -1436,39 +1458,42 @@ void style_master_page::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////
 
 const wchar_t * hdrHeader = L"<w:hdr \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 mc:Ignorable=\"w14 wp14\">";
 
+
 const wchar_t * ftrHeader = L"<w:ftr \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 mc:Ignorable=\"w14 wp14\">";
 
 void style_header::docx_convert(oox::docx_conversion_context & Context)
@@ -1477,7 +1502,8 @@ void style_header::docx_convert(oox::docx_conversion_context & Context)
 
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer::docx_convert(oox::docx_conversion_context & Context)
@@ -1485,7 +1511,8 @@ void style_footer::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 void style_header_first::docx_convert(oox::docx_conversion_context & Context)
@@ -1494,7 +1521,8 @@ void style_header_first::docx_convert(oox::docx_conversion_context & Context)
 
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
@@ -1502,7 +1530,8 @@ void style_footer_first::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 
@@ -1511,7 +1540,8 @@ void style_header_left::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << hdrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:hdr>";
+    
+	strm << L"</w:hdr>";
 }
 
 void style_footer_left::docx_convert(oox::docx_conversion_context & Context)
@@ -1519,14 +1549,18 @@ void style_footer_left::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
     strm << ftrHeader;
     header_footer_impl::docx_convert(Context);
-    strm << L"</w:ftr>";
+    
+	strm << L"</w:ftr>";
 }
 
 void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 {
-    BOOST_FOREACH(const office_element_ptr & elm, content_.header_footer_content_.content_)
+	if (content_.header_footer_content_.tracked_changes_)
+		content_.header_footer_content_.tracked_changes_->docx_convert(Context);
+
+    for (int i=0; i < content_.header_footer_content_.content_.size(); i++)
     {
-        elm->docx_convert(Context);
+        content_.header_footer_content_.content_[i]->docx_convert(Context);
     }
 }
 
@@ -1551,7 +1585,7 @@ void text_notes_configuration::add_attributes( const xml::attributes_wc_ptr & At
 
 }
 
-void text_notes_configuration::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void text_notes_configuration::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     
     if CP_CHECK_NAME(L"text", L"note-continuation-notice-forward")
@@ -1571,7 +1605,7 @@ void text_notes_configuration::add_text(const std::wstring & Text)
 const wchar_t * style_presentation_page_layout::ns = L"style";
 const wchar_t * style_presentation_page_layout::name = L"presentation-page-layout";
 
-::std::wostream & style_presentation_page_layout::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & style_presentation_page_layout::text_to_stream(std::wostream & _Wostream) const
 {
     return _Wostream;    
 } 
@@ -1582,7 +1616,7 @@ void style_presentation_page_layout::add_attributes( const xml::attributes_wc_pt
 	//style:display-name
 }
 
-void style_presentation_page_layout::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void style_presentation_page_layout::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"presentation" == Ns && L"placeholder" == Name)
     {

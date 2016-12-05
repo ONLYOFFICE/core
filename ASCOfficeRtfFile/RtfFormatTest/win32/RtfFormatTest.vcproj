@@ -344,6 +344,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
 				>
 			</File>
@@ -370,6 +374,14 @@
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\Common\FileDownloader\FileDownloader_win.cpp"

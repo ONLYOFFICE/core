@@ -52,6 +52,8 @@ public:
 	static const bool CheckIfContainerStartFound(XLS::CFRecord& record);
 	static const bool CheckIfContainerSizeOK(XLS::CFRecord& record);
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtDgContainer;
+
 	void loadFields(XLS::CFRecord& record);
 	
 	OfficeArtRecordPtr					m_OfficeArtFDG;

@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "office_elements_create.h"
 
 #include <iostream>
@@ -45,7 +44,7 @@ office_element_creator::office_element_creator()
 {
 }
 
-office_element_ptr office_element_creator::create(const ::std::wstring & ns, const ::std::wstring & name, odf_conversion_context * Context, bool isRoot) const
+office_element_ptr office_element_creator::create(const std::wstring & ns, const std::wstring & name, odf_conversion_context * Context, bool isRoot) const
 {
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
 
@@ -124,8 +123,8 @@ void not_applicable_element(const office_element * CurrentElm, const std::wstrin
     not_applicable_element(ss.str(), Ns, Name);
 }
 
-bool create_element(const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+bool create_element(const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr & _Element,
                              odf_conversion_context * Context,
                              bool isRoot)
@@ -149,8 +148,8 @@ bool create_element(const ::std::wstring & Ns,
     return false;
 }
 
-bool create_element(const ::std::wstring & Ns,
-                             const ::std::wstring & Name,
+bool create_element(const std::wstring & Ns,
+                             const std::wstring & Name,
                              office_element_ptr_array & _Elements,
                              odf_conversion_context * Context,
                              bool isRoot)

@@ -70,10 +70,10 @@ class draw_rect_attlist
 {
 public:
 
-   _CP_OPT(std::wstring) draw_filter_name_;
+	_CP_OPT(odf_types::length)	draw_corner_radius_;
+	_CP_OPT(std::wstring)		draw_filter_name_;
+	
 	void serialize(CP_ATTR_NODE);   
-
-
 };
 
 class draw_rect : public draw_shape
@@ -256,7 +256,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
     CPDOCCORE_DEFINE_VISITABLE();
 	
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
@@ -302,7 +302,7 @@ public:
 	static const xml::NodeType xml_type = xml::typeElement;
 	CPDOCCORE_DEFINE_VISITABLE();
 		
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
@@ -343,7 +343,7 @@ public:
 	static const ElementType type = typeDrawEnhancedGeometry;
 	static const xml::NodeType xml_type = xml::typeElement;
 	
-	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);

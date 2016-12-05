@@ -103,7 +103,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 
 				if ( _T("wd:borderbottom") == sName )
 					m_eType = et_wd_borderbottom;

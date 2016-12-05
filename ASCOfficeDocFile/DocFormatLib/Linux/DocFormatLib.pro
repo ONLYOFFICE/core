@@ -27,7 +27,9 @@ DEFINES +=  UNICODE \
         _USE_LIBXML2_READER_ \
         LIBXML_READER_ENABLED
 
-INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
+INCLUDEPATH += \
+	../../../DesktopEditor/freetype-2.5.2/include \
+	../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
     QMAKE_MAC_SDK = macosx10.11

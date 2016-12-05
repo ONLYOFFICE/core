@@ -33,6 +33,7 @@
 #define _MATH_EQUATION_READER_H
 
 #include "../../../3dParty/pole/pole.h"
+
 #include "Types.h"
 #include "LEStream.h"
 #include "String.h"
@@ -100,39 +101,39 @@ namespace MathEquation
 		inline int xfRULER (BYTE nTest) {return nTest & 0x20;}
 
 		void HandleNudge();
-		int  HandleChar(uint8_t nTag);
+        int  HandleChar(unsigned char nTag);
 		int  HandleTemplate();
-		void HandleStartTemplate(uint8_t nSelector, uint8_t nVariation);
-		void HandleEndTemplate  (uint8_t nSelector, uint8_t nVariation);
+        void HandleStartTemplate(unsigned char nSelector, unsigned char nVariation);
+        void HandleEndTemplate  (unsigned char nSelector, unsigned char nVariation);
 		int  HandlePile();
 		int  HandleMatrix();
 		void HandleEmblishments();
 		void HandleSetSize(MTOKENS eType);
 		void HandleRuler();
 		void HandleFont();
-		bool IsSpecialChar(Unicode_t nChar);
+        bool IsSpecialChar(unsigned short nChar);
 
 	private:
 
 		// Header
 		struct
 		{
-			uint32_t nCBHdr;
-			uint16_t nVersion;
-			uint16_t nCf;
-			uint32_t nCBObject;
-			uint32_t nReserved1;
-			uint32_t nReserved2;
-			uint32_t nReserved3;
-			uint32_t nReserved4;
+            _UINT32 nCBHdr;
+            _UINT16 nVersion;
+            _UINT16 nCf;
+            _UINT32 nCBObject;
+            _UINT32 nReserved1;
+            _UINT32 nReserved2;
+            _UINT32 nReserved3;
+            _UINT32 nReserved4;
 		} oHeader;
 
 		// Ver 2 Header
-		uint8_t nVersion;
-		uint8_t nPlatform;
-		uint8_t nProduct;
-		uint8_t nProdVersion;
-		uint8_t nProdSubVersion;
+        unsigned char nVersion;
+        unsigned char nPlatform;
+        unsigned char nProduct;
+        unsigned char nProdVersion;
+        unsigned char nProdSubVersion;
 
 		Storage m_oStorage;
 
@@ -141,10 +142,10 @@ namespace MathEquation
 
 		IOutputDev* pOutputDev;
 
-		uint16_t aSizeTable[7];
+        _UINT16 aSizeTable[7];
 
-		uint8_t nHAlign;
-		uint8_t nVAlign;
+        unsigned char nHAlign;
+        unsigned char nVAlign;
 
 		TFontMap mFontMap;
 	};

@@ -60,9 +60,9 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(CString(_T("<dxf>")));
+				writer.WriteString(L"<dxf>");
 				if(m_oFont.IsInit())
 					m_oFont->toXML(writer);
 				if(m_oNumFmt.IsInit())
@@ -75,7 +75,7 @@ namespace OOX
 					m_oBorder->toXML(writer);
 				if(m_oProtection.IsInit())
 					m_oProtection->toXML(writer);
-				writer.WriteString(CString(_T("</dxf>")));
+				writer.WriteString(L"</dxf>");
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -87,7 +87,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("alignment") == sName )
 						m_oAlignment = oReader;
@@ -137,14 +137,10 @@ namespace OOX
 			{
 				return _T("");
 			}
-			virtual void toXML(XmlUtils::CStringWriter& writer) const
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<dxfs"));
-				if(m_oCount.IsInit())
-				{
-					CString sVal;sVal.Format(_T(" count=\"%d\""), m_oCount->GetValue());
-					writer.WriteString(sVal);
-				}
+				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
@@ -160,7 +156,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("dxf") == sName )
 						m_arrItems.push_back( new CDxf(oReader));

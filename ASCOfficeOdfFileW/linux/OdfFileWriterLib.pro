@@ -53,6 +53,7 @@ SOURCES += \
     ../source/OdfFormat/object_package.cpp \
     ../source/OdfFormat/odf_chart_context.cpp \
     ../source/OdfFormat/odf_comment_context.cpp \
+    ../source/OdfFormat/odf_notes_context.cpp \
     ../source/OdfFormat/odf_conversion_context.cpp \
     ../source/OdfFormat/odf_drawing_context.cpp \
     ../source/OdfFormat/odf_lists_styles_context.cpp \
@@ -116,6 +117,7 @@ HEADERS += \
     ../source/OdfFormat/object_package.h \
     ../source/OdfFormat/odf_chart_context.h \
     ../source/OdfFormat/odf_comment_context.h \
+    ../source/OdfFormat/odf_notes_context.h \
     ../source/OdfFormat/odf_conversion_context.h \
     ../source/OdfFormat/odf_drawing_context.h \
     ../source/OdfFormat/odf_lists_styles_context.h \

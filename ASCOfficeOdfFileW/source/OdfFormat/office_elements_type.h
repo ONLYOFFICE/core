@@ -87,6 +87,18 @@ enum ElementType
     typeTextSectionSource,
     typeTextIndexTitle,
     typeTextIndexBody,
+    
+	typeTextTrackedChanges,
+	typeTextChangedRegion,
+	typeTextChangeStart,
+	typeTextChangeEnd,
+	typeTextChange,
+	typeOfficeChangeInfo,
+	
+	typeTextUnknownChange,
+	typeTextDeletion,
+	typeTextFormatChange,
+	typeTextInsertion,
 
     typeTextNumberedParagraph,    
    
@@ -188,7 +200,17 @@ enum ElementType
     typeTableTableRowGroup,
 	typeTableTableRowNoGroup,
         
-    typeOfficeBody,
+    typeTableShapes,
+	typeTableCalculationSettings,
+    typeTableNullDate,	
+	
+	typeTableTrackedChanges,
+	typeTableChangeTrackTableCell,
+	typeTableCellContentChange,
+	typeTableDeletion,
+	typeTablePrevious,
+
+	typeOfficeBody,
     typeOfficeText,
     typeOfficeDocument,
     typeOfficeDocumentContent,
@@ -278,8 +300,7 @@ enum ElementType
 
 	typeScriptEventListener,
 
-	typeTableCalculationSettings,
-    typeTableNullDate,
+
 
     typeNumberNumberStyle,
     typeNumberDataStyle,
@@ -303,7 +324,6 @@ enum ElementType
     typeNumberMinutes,
     typeNumberSeconds,
     typeNumberAmPm,
-    typeTableShapes,
 
     typeChartChart,
     typeChartTitle,

@@ -46,6 +46,8 @@
 #include "style_text_properties.h"
 
 #include "office_text.h"
+#include "office_annotation.h"
+
 #include "paragraph_elements.h"
 #include "text_elements.h"
 
@@ -73,19 +75,22 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context (TextDocument, outputDocument),
-		comment_context_(this), main_text_context_(NULL),table_context_(this)	
+		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
 {
-	current_field_.enabled = false;
-	current_field_.started = false;
-	current_field_.in_span = false;
+
+	current_field_.enabled		= false;
+	current_field_.started		= false;
+	current_field_.in_span		= false;
 	
-	is_hyperlink_		= false;
+	is_hyperlink_				= false;
 
-	is_header_	= false;
-	is_footer_	= false;
+	is_header_					= false;
+	is_footer_					= false;
 
-	is_paragraph_in_current_section_ = false;
+	is_paragraph_in_current_section_		= false;
 
+	text_changes_state_.main_text_context	= NULL; //header, footer, drawing, main, ..
+	
 	drop_cap_state_.clear();
 }
 
@@ -98,13 +103,11 @@ void odt_conversion_context::start_document()
 {
 	start_text();
 	
-	root_document_ = get_current_object_element();
-	root_text_ = dynamic_cast<office_text*>(root_document_.get());
-	main_text_context_ = new odf_text_context(this); 
+	root_document_		= get_current_object_element();
+	root_text_			= dynamic_cast<office_text*>(root_document_.get());
+	main_text_context_	= new odf_text_context(this); 
 
 	page_layout_context()->set_styles_context(styles_context());
-
-	//current_level_.push_back(get_current_object_element());
 
 /////////////////настройки дефолтовые
 
@@ -209,7 +212,7 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 }
 void odt_conversion_context::add_to_root()
 {
-	if (text_context_.size() >0) return; // не root element (embedded) ????
+	if (!text_context_.empty()) return; // не root element (embedded) ????
 
 	if (comment_context_.is_started()) return;
 
@@ -241,7 +244,7 @@ void odt_conversion_context::end_drawings()
 		anchor_type::type anchor = drawing_context()->get_anchor();
 
 		bool bSet = false;
-		if ( anchor == anchor_type::Page || anchor == anchor_type::Paragraph)
+		if (( anchor == anchor_type::Page || anchor == anchor_type::Paragraph) || (is_header_ || is_footer_))
 		{
 			for (long i = text_context()->current_level_.size()-1; i>=0; i--)
 			{
@@ -272,19 +275,22 @@ void odt_conversion_context::end_drawings()
 }
 void odt_conversion_context::start_paragraph(bool styled)
 {
+	if (is_paragraph_in_current_section_ && !styled) 
+	{
+		styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);					
+		styled = true;
+	}
+
 	text_context()->start_paragraph(styled);	
 	
 	add_to_root();
 }
-void odt_conversion_context::add_page_break()
+void odt_conversion_context::add_paragraph_break(int type)
 {
-	office_element_ptr elm;
-	create_element(L"text", L"soft-page-break", elm, this);	
-	
-	if (current_root_elements_.size()>0/* && text_context()->is_need_break()*/)			
+	if (current_root_elements_.size() > 0)			
 	{ 	
-		text_p* para = NULL;
-		style * style_ = NULL;
+		//text_p* para	= NULL;
+		//style * style_	= NULL;
 		//http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1415190_253892949
 		//нихере не работает !! в span, ... приходится генерить разрыв вручную !!
 
@@ -294,47 +300,50 @@ void odt_conversion_context::add_page_break()
 		//	end_paragraph();
 		//}	
 		//else/* if (header = dynamic_cast<text_h*>(current_root_elements_.back().elm.get()))*/
-		{
+		//{
 			//тут получается что разрыв будет прописан внутри элемента (не параграфа) - так что вручную свойство запишем
 			//в случае разрыва параграфов оно запишется при старте после-разрывного параграфа
-			text_context()->save_property_break();
-		}
-		text_context()->start_element(elm);
-		add_to_root();
-		text_context()->end_element();
-
-		if (para)
-		{
-			styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	
-			//styles_context()->last_state().apply_from(style_);
-			if (style_ )
-			{
-				style_paragraph_properties * new_props = NULL;
-				if (styles_context()->last_state())
-				{// нужна именно копия св-в так как будет добавочные свойства
-					new_props = styles_context()->last_state()->get_paragraph_properties();				
-					if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
-					
-					if (style_->style_parent_style_name_)
-						styles_context()->last_state()->set_parent_style_name(*style_->style_parent_style_name_);
-				}
-			}	
-			start_paragraph(true);
-		}
+			//text_context()->set_type_break(type, 0);
+		text_context()->save_property_break();
+		//}
+		//if (type == 1)	//page
+		//{
+		//	text_context()->start_element(elm);
+		//	//add_to_root();
+		//	text_context()->end_element();
+		//}
+		//if (para)
+		//{
+		//	styles_context()->create_style(L"",	odf_types::style_family::Paragraph, true, false, -1);	
+		//	//styles_context()->last_state().apply_from(style_);
+		//	if (style_ )
+		//	{
+		//		style_paragraph_properties * new_props = NULL;
+		//		if (styles_context()->last_state())
+		//		{// нужна именно копия св-в так как будет добавочные свойства
+		//			new_props = styles_context()->last_state()->get_paragraph_properties();				
+		//			if (new_props)new_props->apply_from(style_->style_content_.get_style_paragraph_properties());
+		//			
+		//			if (style_->style_parent_style_name_)
+		//				styles_context()->last_state()->set_parent_style_name(*style_->style_parent_style_name_);
+		//		}
+		//	}	
+		//	start_paragraph(true);
+		//}
 	}
 }
 void odt_conversion_context::start_hyperlink(std::wstring ref)
 {
 	office_element_ptr hyperlink_elm;
-	create_element(L"text", L"a",hyperlink_elm,this);
+	create_element(L"text", L"a", hyperlink_elm, this);
 
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (!hyperlink)return;
 
 ////////////////////////////
 
-	hyperlink->common_xlink_attlist_.href_ = ref;
-	hyperlink->common_xlink_attlist_.type_= xlink_type::Simple;
+	hyperlink->common_xlink_attlist_.href_	= ref;
+	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 	
 	//current_level_.back()->add_child_element(hyperlink_elm);
 	//current_level_.push_back(hyperlink_elm);
@@ -423,10 +432,18 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 		return;
 	}
 
-	is_paragraph_in_current_section_ = false;
-	style *style_ = dynamic_cast<style*>(current_root_elements_[0].style_elm.get());
+	style *style_ = dynamic_cast<style*>(current_root_elements_.back().style_elm.get());
 
-	if (style_)style_->style_master_page_name_ = master_name;
+	if (style_)
+	{
+		is_paragraph_in_current_section_	= false;
+		style_->style_master_page_name_		= master_name;
+	}
+	else
+	{
+		if (text_context()->set_master_page_name(master_name))
+			is_paragraph_in_current_section_ = false;		
+	}
 }
 int odt_conversion_context::get_current_section_columns()
 {
@@ -437,12 +454,13 @@ int odt_conversion_context::get_current_section_columns()
 void odt_conversion_context::add_section(bool continuous)
 {
 	odt_section_state state;
-	state.empty = true;
-	state.continuous = continuous;
+	
+	state.empty			= true;
+	state.continuous	= continuous;
 //----------------------------------------------------------------
-	styles_context()->create_style(L"",odf_types::style_family::Section, true, false, -1);		
+	styles_context()->create_style(L"", odf_types::style_family::Section, true, false, -1);		
 
-	create_element(L"text", L"section",state.elm,this);
+	create_element(L"text", L"section", state.elm, this);
 	state.style_elm		= styles_context()->last_state()->get_office_element();
 	state.style_name	= styles_context()->last_state()->get_name();
 	
@@ -451,7 +469,7 @@ void odt_conversion_context::add_section(bool continuous)
 
 	sections_.push_back(state);
 }
-void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator )
+void odt_conversion_context::add_section_columns(int count, double space_pt, bool separator)
 {
 	if (sections_.size() < 1 || count < 1) return;
 
@@ -463,7 +481,7 @@ void odt_conversion_context::add_section_columns(int count, double space_pt, boo
 	create_element(L"style", L"columns",section_properties->style_columns_,this);	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
-	sections_.back().count_columns = count;
+	sections_.back().count_columns	= count;
 
 						columns->fo_column_count_	= count;
 	if (space_pt >= 0)	columns->fo_column_gap_		= length(length(space_pt,length::pt).get_value_unit(length::cm),length::cm);
@@ -488,8 +506,8 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	style* style_ = dynamic_cast<style*>(sections_.back().style_elm.get());
 	if (!style_)return;
 
-	style_section_properties	* section_properties	= style_->style_content_.get_style_section_properties();
-	//section_properties->text_dont_balance_text_columns_ = true;
+	style_section_properties	* section_properties		= style_->style_content_.get_style_section_properties();
+	//section_properties->text_dont_balance_text_columns_	= true;
 	
 	style_columns* columns = dynamic_cast<style_columns*>(section_properties->style_columns_.get());
 	if (!columns)return;
@@ -560,7 +578,7 @@ void odt_conversion_context::start_list_item(int level, std::wstring style_name 
 	//	add_to_root();
 	//	text_context()->start_list_item();
 	//}
-	level = level +1; //отсчет от 1 (а не 0)
+	level = level + 1; //отсчет от 1 (а не 0)
 
 	if (text_context()->list_state_.style_name != style_name && text_context()->list_state_.started_list)
 	{
@@ -618,7 +636,7 @@ void odt_conversion_context::flush_section()
 	{
 		for (long i=0; i< current_root_elements_.size(); i++)
 		{
-			if ((sections_.back().continuous && i<2) || !sections_.back().continuous)
+			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
 			{
 				text_soft_page_break * break_ = dynamic_cast<text_soft_page_break*>(current_root_elements_[i].elm.get());
@@ -641,7 +659,7 @@ void odt_conversion_context::flush_section()
 		}
 		current_root_elements_.clear();
 
-		sections_.back().empty = false;
+		//sections_.back().empty = false;
 	}
 }
 void odt_conversion_context::start_run(bool styled)
@@ -677,6 +695,7 @@ void odt_conversion_context::end_run()
 		current_field_.started = true;
 	}
 }
+//--------------------------------------------------------------------------------------------------------
 bool odt_conversion_context::start_comment(int oox_comm_id)
 {
 	int comm_state = comment_context_.find_by_id(oox_comm_id);
@@ -684,7 +703,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 	if (comm_state == 0)
 	{
 		office_element_ptr comm_elm;
-		create_element(L"office", L"annotation",comm_elm,this);
+		create_element(L"office", L"annotation", comm_elm, this);
 
 		comment_context_.start_comment(comm_elm, oox_comm_id);
 		
@@ -725,7 +744,7 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 	if (added == true)
 	{
 		office_element_ptr comm_elm;
-		create_element(L"office", L"annotation-end",comm_elm,this);
+		create_element(L"office", L"annotation-end", comm_elm, this);
 
 		comment_context_.end_comment(comm_elm, oox_comm_id);
 		
@@ -733,18 +752,182 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }
+//--------------------------------------------------------------------------------------------------------
+void odt_conversion_context::start_note(int oox_ref_id, int type)
+{
+	office_element_ptr note_elm;
+	create_element(L"text", L"note", note_elm, this);
+
+	notes_context_.start_note(note_elm, oox_ref_id, type);
+	
+	if (text_context()->current_level_.size() > 0)
+		text_context()->current_level_.back().elm->add_child_element(note_elm);
+
+	odf_element_state state = {note_elm, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	text_context()->current_level_.push_back(state);
+}
+void odt_conversion_context::start_note_content()
+{
+	notes_context_.start_note_content();
+
+    office_element_ptr note_content_element = notes_context_.get_note_content();
+
+	odf_element_state state = {note_content_element, L"", office_element_ptr(), (int)text_context()->current_level_.size()};
+	text_context()->current_level_.push_back(state);
+
+	start_text_context();
+
+	text_context()->start_element(note_content_element);
+}
+void odt_conversion_context::end_note_content()
+{
+	notes_context_.end_note_content();
+	
+	text_context()->end_element();
+	end_text_context();
+
+	text_context()->current_level_.pop_back();
+}
+void odt_conversion_context::end_note()
+{
+	notes_context_.end_note();
+	text_context()->current_level_.pop_back();
+}
+//--------------------------------------------------------------------------------------------------------
+bool odt_conversion_context::start_change (int id, int type, std::wstring &author, std::wstring &userId, std::wstring &date, std::wstring style_name)
+{
+	if (id < 0) return false;
+
+	if (!text_changes_state_.current_types.empty() && text_changes_state_.current_types.back() == 2) return false;
+
+	//if (!text_changes_state_.main_text_context)
+	//{
+	//	text_changes_state_.main_text_context = text_context();
+	//}
+	//if (!text_changes_state_.main_text_context) return;
+	
+	text_changes_state_.current_types.push_back(type);
+
+	std::wstring strId = L"ct" + std::to_wstring(id);
+//---------------------------------------------------------------------------------
+	office_element_ptr start_elm;
+
+	if (type == 2) create_element(L"text", L"change", start_elm, this); //место удаления ..
+	else			
+		create_element(L"text", L"change-start", start_elm, this);	//место изменения .... 
+
+	text_add_change* change = dynamic_cast<text_add_change*>(start_elm.get());
+	if (change) change->text_change_id_ = strId;
+
+	text_context()->start_element(start_elm);
+		add_to_root();//добавление/удаление параграфов и т д
+	text_context()->end_element();	
+
+	//text_changes_state_.main_text_context->start_element(start_elm);
+	//text_changes_state_.main_text_context->end_element();	
+//---------------------------------------------------------------------------------
+	office_element_ptr region_elm;
+	create_element(L"text", L"changed-region", region_elm, this);
+
+	text_changed_region* region = dynamic_cast<text_changed_region*>(region_elm.get());
+	if (region)region->text_id_ = strId;
+
+	office_element_ptr child_elm;
+	if (type == 1) create_element(L"text", L"insertion",		child_elm, this);
+	if (type == 2) create_element(L"text", L"deletion",			child_elm, this);
+	if (type == 3) create_element(L"text", L"format-change",	child_elm, this);
+
+	office_element_ptr info_elm;
+	create_element(L"office", L"change-info", info_elm, this);
+
+	child_elm->add_child_element(info_elm);
+	if (info_elm)
+	{
+		office_element_ptr creator_elm;
+		create_element(L"dc", L"creator", creator_elm, this);
+		info_elm->add_child_element(creator_elm);
+		
+		dc_creator* creator = dynamic_cast<dc_creator*>(creator_elm.get());
+		if (creator)
+			creator->content_ = author;
+
+		office_element_ptr date_elm;
+		create_element(L"dc", L"date", date_elm, this);
+		info_elm->add_child_element(date_elm);
+		
+		dc_date* date_ = dynamic_cast<dc_date*>(date_elm.get());
+		if (date_)
+			date_->content_ = date;
+	}
+
+	if (is_header_ || is_footer_)	page_layout_context()->root_header_footer_->add_child_element(region_elm);
+	else							get_current_object_element()->add_child_element(region_elm);
+
+	region_elm->add_child_element(child_elm);
+
+	if (type == 3 && !style_name.empty())
+	{
+		//не по спецификации !!!
+		text_format_change * format_change = dynamic_cast<text_format_change*> (child_elm.get());
+		if (format_change)
+			format_change->text_style_name_ = style_name;
+
+	}
+
+	if (type == 2)//delete
+	{
+		start_text_context();
+		text_context()->start_element(child_elm);
+		text_context()->start_paragraph();//ваще то не по стандарту .. может мы уже в параграфе (ради Libra! ... гы)
+	}
+	return true;
+}
+void odt_conversion_context::end_change (int id, int type)
+{
+	//if (!text_changes_state_.main_text_context) return;
+	
+	std::wstring strId = L"ct" + std::to_wstring(id);
+
+	if (type == 2)//delete
+	{
+		text_context()->end_paragraph();
+		text_context()->end_element();
+		end_text_context();
+	}
+	else
+	{
+		office_element_ptr end_elm;
+		create_element(L"text", L"change-end", end_elm, this);	
+
+		text_add_change* change = dynamic_cast<text_add_change*>(end_elm.get());
+		if (change) change->text_change_id_ = strId;
+
+		text_context()->start_element(end_elm);
+			add_to_root();
+		text_context()->end_element();	
+	}
+	text_changes_state_.current_types.pop_back();//todooo map?? удаление без проверки чего удаляешь
+}
+//bool odt_conversion_context::is_delete_changes()
+//{
+//	if (text_changes_state_.current_types.empty()) return false;
+//
+//	return (text_changes_state_.current_types.back() == 2);
+//}
+//--------------------------------------------------------------------------------------------------------
 void odt_conversion_context::start_image(const std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;
 	
-	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage,odf_ref_name);
+	mediaitems()->add_or_find(image_file_name, _mediaitems::typeImage,odf_ref_name);
 
 	drawing_context()->start_image(odf_ref_name);
 }
 
 void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragraph_properties)
 {
-	if (drop_cap_state_.enabled) end_drop_cap(); // 2 подряд ваще возможны ???
+	if (drop_cap_state_.enabled) 
+		end_drop_cap(); // 2 подряд ваще возможны ???
 
 	if (paragraph_properties == NULL) return;
 
@@ -752,7 +935,7 @@ void odt_conversion_context::start_drop_cap(style_paragraph_properties *paragrap
 	drop_cap_state_.paragraph_properties = paragraph_properties;
 
 	office_element_ptr comm_elm;
-	create_element(L"style", L"drop-cap",drop_cap_state_.paragraph_properties->content().style_drop_cap_,this);
+	create_element(L"style", L"drop-cap", drop_cap_state_.paragraph_properties->content().style_drop_cap_, this);
 }
 
 void odt_conversion_context::set_drop_cap_lines(int lines)
@@ -818,14 +1001,14 @@ void odt_conversion_context::start_table(bool styled)
 			style_name = style_state->get_name();
 		}
 	}
-	text_context()->start_element(elm,style_elm,style_name);
+	text_context()->start_element(elm, style_elm, style_name);
 
 	add_to_root();
 }
 void odt_conversion_context::start_table_columns()
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-columns",elm,this);
+	create_element(L"table", L"table-columns", elm, this);
 
 	text_context()->start_element(elm);
 }
@@ -961,6 +1144,26 @@ void odt_conversion_context::end_header_footer()
 	is_header_ = false;
 	is_footer_ = false;
 }
+
+void odt_conversion_context::add_empty_header(int type)
+{
+	if (start_header(type))
+	{
+		start_paragraph(false);
+		end_paragraph();
+	}
+	end_header_footer();
+}
+void odt_conversion_context::add_empty_footer(int type)
+{
+	if (start_footer(type))
+	{
+		start_paragraph(false);
+		end_paragraph();
+	}
+	end_header_footer();
+}
+
 
 void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
 {

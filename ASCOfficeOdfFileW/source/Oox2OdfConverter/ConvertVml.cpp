@@ -55,7 +55,19 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	if (vml_shape_type == NULL) return;
 	//custom shape 
 
-	
+//save cash to other shape with this type
+	if (vml_shape_type->m_sId.IsInit())
+	{
+		std::wstring sId (vml_shape_type->m_sId.get());
+		
+		if (odf_context()->drawing_context()->m_mapVmlShapeTypes.find( sId ) == 
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
+		{
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(odf_context()->drawing_context()->m_mapVmlShapeTypes.begin(), 
+				std::pair<std::wstring, OOX::Vml::CShapeType*>(sId, vml_shape_type));
+
+		}
+	}	
 	//m_oPreferRelative//типо можно менять размер 
 
 	for (unsigned int i=0 ; i < vml_shape_type->m_arrItems.size();i++)
@@ -79,9 +91,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 {
 	if (vml_style == NULL) return;
 
-	_CP_OPT(double) width_pt, height_pt, x, y;
+	_CP_OPT(double) width, height, x, y, x2, y2; // in pt
 
-	bool anchor_set = false;
+	_CP_OPT(int) anchor_type_x, anchor_type_y;
 
 	for (unsigned int i=0; i < vml_style->m_arrProperties.size(); i++)
 	{
@@ -90,10 +102,10 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		switch(vml_style->m_arrProperties[i]->get_Type())
 		{
 		case SimpleTypes::Vml::cssptHeight:
-			height_pt = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
+			height = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptWidth:
-			width_pt = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
+			width = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptTop:
 			y = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
@@ -102,63 +114,105 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			x = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginBottom:
-			//odf_context()->drawing_context()->set_margin_bottom(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
-			//x = vml_style->m_arrProperties[i].get_Value().oValue.dValue;
+			y2 = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginLeft:
-			//odf_context()->drawing_context()->set_margin_left (vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			x = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginRight:
-			//odf_context()->drawing_context()->set_margin_right(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
+			x2 = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 		case SimpleTypes::Vml::cssptMarginTop:
-			//odf_context()->drawing_context()->set_margin_top(vml_style->m_arrProperties[i].get_Value().oValue.dValue);
 			y = vml_style->m_arrProperties[i]->get_Value().oValue.dValue;
 			break;
 ////////////////////////////////////////////////////////////////
 		case SimpleTypes::Vml::cssptMsoPositionHorizontal:
+		{
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHor)
 			{
-			case SimpleTypes::Vml::cssmsoposhorAbsolute:	odf_context()->drawing_context()->set_horizontal_pos(2); break;
-			case SimpleTypes::Vml::cssmsoposhorLeft:		odf_context()->drawing_context()->set_horizontal_pos(2); break;
-			case SimpleTypes::Vml::cssmsoposhorCenter:		odf_context()->drawing_context()->set_horizontal_pos(0); break;
-			case SimpleTypes::Vml::cssmsoposhorRight:		odf_context()->drawing_context()->set_horizontal_pos(4); break;
-			case SimpleTypes::Vml::cssmsoposhorInside:		odf_context()->drawing_context()->set_horizontal_pos(1); break;
-			case SimpleTypes::Vml::cssmsoposhorOutside :	odf_context()->drawing_context()->set_horizontal_pos(3); break;
+				case SimpleTypes::Vml::cssmsoposhorAbsolute:	odf_context()->drawing_context()->set_horizontal_pos(2); break;
+				case SimpleTypes::Vml::cssmsoposhorLeft:		odf_context()->drawing_context()->set_horizontal_pos(2); break;
+				case SimpleTypes::Vml::cssmsoposhorCenter:		odf_context()->drawing_context()->set_horizontal_pos(0); break;
+				case SimpleTypes::Vml::cssmsoposhorRight:		odf_context()->drawing_context()->set_horizontal_pos(4); break;
+				case SimpleTypes::Vml::cssmsoposhorInside:		odf_context()->drawing_context()->set_horizontal_pos(1); break;
+				case SimpleTypes::Vml::cssmsoposhorOutside :	odf_context()->drawing_context()->set_horizontal_pos(3); break;
 			}
-			break;
+		}break;
 		case SimpleTypes::Vml::cssptMsoPositionHorizontalRelative:
+		{
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosHorRel)
 			{
-			case SimpleTypes::Vml::cssmsoposhorrelMargin:	odf_context()->drawing_context()->set_horizontal_rel(2); break; 
-			case SimpleTypes::Vml::cssmsoposhorrelPage:		odf_context()->drawing_context()->set_horizontal_rel(6); break;
-			case SimpleTypes::Vml::cssmsoposhorrelText:		odf_context()->drawing_context()->set_horizontal_rel(1); break;
-			case SimpleTypes::Vml::cssmsoposhorrelChar:		odf_context()->drawing_context()->set_horizontal_rel(0); break;
+				case SimpleTypes::Vml::cssmsoposhorrelRightMargin:
+				{
+					anchor_type_x = 2;
+					odf_context()->drawing_context()->set_horizontal_rel(5); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposhorrelLeftMargin: 
+				{
+					anchor_type_x = 2;
+					odf_context()->drawing_context()->set_horizontal_rel(4); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposhorrelMargin:	
+				{
+					anchor_type_x = 2;
+					odf_context()->drawing_context()->set_horizontal_rel(2); 
+				}break; 
+				case SimpleTypes::Vml::cssmsoposhorrelPage:		
+				{
+					anchor_type_x = 0;
+					odf_context()->drawing_context()->set_horizontal_rel(6); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposhorrelText:		
+				case SimpleTypes::Vml::cssmsoposhorrelChar:
+				{
+					anchor_type_x = 4;
+					odf_context()->drawing_context()->set_horizontal_rel(0); 
+				}break;
 			}
-			anchor_set = true;
-			break;
+		}break;
 		case SimpleTypes::Vml::cssptMsoPositionVertical:
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVer)
 			{
-			case SimpleTypes::Vml::cssmsoposverAbsolute:	odf_context()->drawing_context()->set_vertical_pos(2); break;
-			case SimpleTypes::Vml::cssmsoposverTop:			odf_context()->drawing_context()->set_vertical_pos(4); break;
-			case SimpleTypes::Vml::cssmsoposverCenter:		odf_context()->drawing_context()->set_vertical_pos(1); break;
-			case SimpleTypes::Vml::cssmsoposverBottom:		odf_context()->drawing_context()->set_vertical_pos(0); break;
-			case SimpleTypes::Vml::cssmsoposverInside:		odf_context()->drawing_context()->set_vertical_pos(2); break;//??
-			case SimpleTypes::Vml::cssmsoposverOutside:		odf_context()->drawing_context()->set_vertical_pos(3); break;//??
+				case SimpleTypes::Vml::cssmsoposverAbsolute:	odf_context()->drawing_context()->set_vertical_pos(2); break;
+				case SimpleTypes::Vml::cssmsoposverTop:			odf_context()->drawing_context()->set_vertical_pos(4); break;
+				case SimpleTypes::Vml::cssmsoposverCenter:		odf_context()->drawing_context()->set_vertical_pos(1); break;
+				case SimpleTypes::Vml::cssmsoposverBottom:		odf_context()->drawing_context()->set_vertical_pos(0); break;
+				case SimpleTypes::Vml::cssmsoposverInside:		odf_context()->drawing_context()->set_vertical_pos(2); break;//??
+				case SimpleTypes::Vml::cssmsoposverOutside:		odf_context()->drawing_context()->set_vertical_pos(3); break;//??
 			}
 			break;
 		case SimpleTypes::Vml::cssptMsoPositionVerticalRelative:
+		{
 			switch(vml_style->m_arrProperties[i]->get_Value().eMsoPosVerRel)
 			{
-			case SimpleTypes::Vml::cssmsoposverrelMargin:	odf_context()->drawing_context()->set_vertical_rel(3); break;//3 ???
-			case SimpleTypes::Vml::cssmsoposverrelPage:		odf_context()->drawing_context()->set_vertical_rel(5); break;
-			case SimpleTypes::Vml::cssmsoposverrelText:		odf_context()->drawing_context()->set_vertical_rel(6); break;
-			case SimpleTypes::Vml::cssmsoposverrelLine:		odf_context()->drawing_context()->set_vertical_rel(2); break;
+				case SimpleTypes::Vml::cssmsoposverrelBottomMargin:	
+				{
+					anchor_type_y = 2;
+					odf_context()->drawing_context()->set_vertical_pos(0);
+					odf_context()->drawing_context()->set_vertical_rel(3); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposverrelTopMargin:	
+				case SimpleTypes::Vml::cssmsoposverrelMargin:	
+				{
+					anchor_type_y = 2;
+					odf_context()->drawing_context()->set_vertical_rel(3); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposverrelPage:		
+				{
+					anchor_type_y = 0;
+					odf_context()->drawing_context()->set_vertical_rel(5); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposverrelText:	
+				{
+					anchor_type_y = 4;
+					odf_context()->drawing_context()->set_vertical_rel(6); 
+				}break;
+				case SimpleTypes::Vml::cssmsoposverrelLine:	
+				{
+					odf_context()->drawing_context()->set_vertical_rel(2); 
+				}break;
 			}
-			anchor_set= true;
-			break;
+		}break;
 		case SimpleTypes::Vml::cssptZIndex:
 			{
 				if (vml_style->m_arrProperties[i]->get_Value().oZIndex.eType == SimpleTypes::Vml::csszindextypeOrder)
@@ -227,20 +281,29 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 			}break;
 		}
 	}
+
+	if (x2 && !x && width)	x = *x2 - *width;
+	if (y2 && !y && height)	y = *y2 - *height;
+
 	if (group)
 	{
 		_CP_OPT(double) not_set;
-		odf_context()->drawing_context()->set_group_size(width_pt, height_pt, not_set ,not_set);
+		odf_context()->drawing_context()->set_group_size(width, height, width, height);//not_set ,not_set);
 
-		odf_context()->drawing_context()->set_group_position(x, y, not_set , not_set );
+		odf_context()->drawing_context()->set_group_position(x, y, x, y);//not_set , not_set );
 	}
 	else
 	{
-		odf_context()->drawing_context()->set_size		(width_pt, height_pt);		
+		odf_context()->drawing_context()->set_size		(width, height);		
 		odf_context()->drawing_context()->set_position	(x, y);
 
-		if (x && y && !anchor_set) 
+		if ( (anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
+			odf_context()->drawing_context()->set_anchor(*anchor_type_x);
+		else if (x && y)
 			odf_context()->drawing_context()->set_anchor(2);
+
+		//if (x && y && !anchor_set) 
+		//	odf_context()->drawing_context()->set_anchor(2);
 
 	}
 
@@ -627,6 +690,8 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 {
 	if (vml_wrap == NULL) return;
 
+	odf_context()->drawing_context()->set_default_wrap_style();
+	
 	if (vml_wrap->m_oType.IsInit())
 	{
 		switch(vml_wrap->m_oType->GetValue())
@@ -663,14 +728,19 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			}break;
 		}
 	}
+
+	bool anchor_page_x = false;
 	if (vml_wrap->m_oAnchorX.IsInit())
 	{
 		switch(vml_wrap->m_oAnchorX->GetValue())
 		{
 		case SimpleTypes::horizontalanchorMargin: 
 			odf_context()->drawing_context()->set_horizontal_rel(4); break;
-		case SimpleTypes::horizontalanchorPage:			
-			odf_context()->drawing_context()->set_horizontal_rel(6); break;
+		case SimpleTypes::horizontalanchorPage:		
+		{
+			anchor_page_x = true;
+			odf_context()->drawing_context()->set_horizontal_rel(6); 
+		}break;
 		case SimpleTypes::horizontalanchorText:
 			odf_context()->drawing_context()->set_horizontal_rel(1); break;//???? paragraph ????			
 		case SimpleTypes::horizontalanchorChar: 			
@@ -685,8 +755,11 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 		case SimpleTypes::verticalanchorMargin: 		
 			odf_context()->drawing_context()->set_vertical_rel(0); break;
 		case SimpleTypes::verticalanchorPage:  
-			odf_context()->drawing_context()->set_anchor(0); //page
-			odf_context()->drawing_context()->set_vertical_rel(5); break;
+		{
+			if (anchor_page_x)
+				odf_context()->drawing_context()->set_anchor(0); //page
+			odf_context()->drawing_context()->set_vertical_rel(5);
+		}break;
 		case SimpleTypes::verticalanchorText:				
 			odf_context()->drawing_context()->set_vertical_rel(0); break;
 		case SimpleTypes::verticalanchorLine: 		
@@ -694,6 +767,7 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 			odf_context()->drawing_context()->set_vertical_rel(2);//Line
 		}
 	}
+
 }
 void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 {

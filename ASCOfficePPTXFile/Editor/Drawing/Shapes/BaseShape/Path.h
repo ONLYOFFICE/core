@@ -1354,8 +1354,30 @@ namespace NSPresentationEditor
 				{	
 					switch (eParamType)
 					{
-					case ptFormula: { lValue = pManager.m_arResults[lValue]; break; }
-					case ptAdjust:  { lValue = (*(pManager.m_pAdjustments))[lValue]; break; }
+					case ptFormula:
+					{
+						if (0 <= lValue && lValue < pManager.m_arResults.size())
+						{
+							lValue = pManager.m_arResults[lValue];
+						}
+						else
+						{
+							lValue = 0;
+						}
+						break;
+					}
+					case ptAdjust:
+					{
+						if (0 <= lValue && lValue < pManager.m_pAdjustments->size())
+						{
+							lValue = (*(pManager.m_pAdjustments))[lValue];
+						}
+						else
+						{
+							lValue = 0;
+						}
+						break;
+					}
 					default: break;
 					};
 					if (0 != m_arSlices.size())

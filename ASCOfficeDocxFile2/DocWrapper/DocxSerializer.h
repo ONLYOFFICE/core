@@ -38,6 +38,7 @@
 #else
 	#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 namespace Writers
 {
@@ -51,14 +52,16 @@ namespace NSBinPptxRW
 namespace BinDocxRW
 {
 	class BinaryFileWriter;
+	class ParamsWriter;
+
 	class CDocxSerializer
 	{
-	private:
+	public:
 		CString m_sFontDir;
 		CString m_sEmbeddedFontsDir;
 		bool m_bIsNoBase64Save;
 		bool m_bSaveChartAsImg;
-		BinaryFileWriter* m_oBinaryFileWriter;
+		ParamsWriter* m_pParamsWriter;
 		Writers::FileWriter* m_pCurFileWriter;
 	public:
 		CDocxSerializer();
@@ -73,6 +76,9 @@ namespace BinDocxRW
 		bool getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml);
 		bool getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
 		
+		bool getBinaryContentElem(OOX::EElementType eElemType, void* pElem, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+		bool getXmlContentElem(OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sOutputXml);
+
 		void setFontDir(const CString& sFontDir);
 		void setEmbeddedFontsDir(const CString& sEmbeddedFontsDir);
 		void setIsNoBase64Save(bool bIsNoBase64Save);

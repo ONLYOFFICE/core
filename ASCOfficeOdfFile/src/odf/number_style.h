@@ -59,7 +59,7 @@ public:
 
 private:
     virtual void add_text(const std::wstring &);
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	odf_types::common_data_style_attlist	common_data_style_attlist_;
    
@@ -187,7 +187,7 @@ public:
 private:
 	virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes ) = 0;
     virtual void add_text			(const std::wstring &)  = 0;
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name) = 0;
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
 
 };
 
@@ -208,7 +208,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     office_element_ptr_array text_;
@@ -233,7 +233,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     // number-number-attlist
@@ -270,7 +270,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
    _CP_OPT(int) number_position_;
@@ -296,7 +296,7 @@ public:
     virtual void oox_convert(oox::num_format_context & Context);
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
 private:
@@ -331,7 +331,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(std::wstring) number_language_;
@@ -360,7 +360,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     office_element_ptr_array text_;
@@ -386,7 +386,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
 	_CP_OPT(std::wstring) number_style_;
@@ -413,7 +413,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(std::wstring) number_style_;
@@ -440,7 +440,7 @@ public:
     virtual void oox_convert(oox::num_format_context & Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
     _CP_OPT(std::wstring) number_style_;
@@ -466,7 +466,7 @@ public:
     virtual void oox_convert(oox::num_format_context & Context);
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(bool)			number_textual_;
@@ -495,7 +495,7 @@ public:
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
 	_CP_OPT(std::wstring) number_style_;
@@ -520,7 +520,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
 public:
@@ -550,7 +550,7 @@ public:
     virtual void oox_convert(oox::num_format_context & Context);
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(std::wstring) number_style_;
@@ -577,7 +577,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(std::wstring)	number_style_;
@@ -605,7 +605,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 };
 
@@ -628,7 +628,7 @@ public:
 
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element	( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
     virtual void add_text			(const std::wstring & Text);
 
     _CP_OPT(int) number_min_integer_digits_;

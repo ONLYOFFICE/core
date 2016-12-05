@@ -48,7 +48,7 @@ namespace odf_reader {
 const wchar_t * office_spreadsheet::ns = L"office";
 const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
-void office_spreadsheet::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void office_spreadsheet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	if CP_CHECK_NAME(L"table", L"database-ranges")
     {

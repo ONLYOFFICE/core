@@ -131,7 +131,7 @@ void table_table_source::add_attributes( const xml::attributes_wc_ptr & Attribut
     table_linked_source_attlist_.add_attributes(Attributes);
 }
 
-void table_table_source::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_source::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -146,7 +146,7 @@ void table_table::add_attributes( const xml::attributes_wc_ptr & Attributes )
     table_table_attlist_.add_attributes(Attributes);
 }
 
-void table_table::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if (L"table" == Ns && L"table-source" == Name)
     {
@@ -204,7 +204,7 @@ void table_table_column::add_attributes( const xml::attributes_wc_ptr & Attribut
     table_table_column_attlist_.add_attributes(Attributes);
 }
 
-void table_table_column::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_column::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM();
 }
@@ -218,7 +218,7 @@ void table_table_columns::add_attributes( const xml::attributes_wc_ptr & Attribu
 {
 }
 
-void table_table_columns::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -237,7 +237,7 @@ void table_table_header_columns::add_attributes( const xml::attributes_wc_ptr & 
 {
 }
 
-void table_table_header_columns::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-column")
     {
@@ -249,7 +249,7 @@ void table_table_header_columns::add_child_element( xml::sax * Reader, const ::s
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:columns
-void table_columns::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_columns::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-columns")
     {
@@ -269,7 +269,7 @@ table_columns_no_group::table_columns_no_group() : was_header_(false)
 {
 };
 
-void table_columns_no_group::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_columns_no_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-columns") || CP_CHECK_NAME(L"table", L"table-column"))
     {
@@ -310,7 +310,7 @@ void table_table_column_group::add_attributes( const xml::attributes_wc_ptr & At
     table_table_column_group_attlist_.add_attributes(Attributes);
 }
 
-void table_table_column_group::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_column_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     table_columns_and_groups_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -321,7 +321,7 @@ table_columns_and_groups::table_columns_and_groups()
 {
 }
 
-void table_columns_and_groups::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_columns_and_groups::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-column-group"))
     {
@@ -359,12 +359,12 @@ void table_columns_and_groups::add_child_element( xml::sax * Reader, const ::std
 // table-table-cell-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-::std::wostream & table_table_cell_content::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_cell_content::text_to_stream(std::wostream & _Wostream) const
 {
     return CP_SERIALIZE_TEXT(elements_);
 }
 
-void table_table_cell_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_table_cell_content::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     CP_CREATE_ELEMENT_SIMPLE(elements_);
 }
@@ -374,7 +374,7 @@ void table_table_cell_content::add_child_element( xml::sax * Reader, const ::std
 const wchar_t * table_table_cell::ns = L"table";
 const wchar_t * table_table_cell::name = L"table-cell";
 
-::std::wostream & table_table_cell::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_cell::text_to_stream(std::wostream & _Wostream) const
 {
     return table_table_cell_content_.text_to_stream(_Wostream);
 }
@@ -385,7 +385,7 @@ void table_table_cell::add_attributes( const xml::attributes_wc_ptr & Attributes
     table_table_cell_attlist_extra_.add_attributes(Attributes);
 }
 
-void table_table_cell::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     table_table_cell_content_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -400,7 +400,7 @@ void table_table_cell::add_text(const std::wstring & Text)
 const wchar_t * table_covered_table_cell::ns = L"table";
 const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 
-::std::wostream & table_covered_table_cell::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_covered_table_cell::text_to_stream(std::wostream & _Wostream) const
 {
     return table_table_cell_content_.text_to_stream(_Wostream);
 }
@@ -410,7 +410,7 @@ void table_covered_table_cell::add_attributes( const xml::attributes_wc_ptr & At
     table_table_cell_attlist_.add_attributes(Attributes);
 }
 
-void table_covered_table_cell::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_covered_table_cell::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	empty_ = false;
     table_table_cell_content_.add_child_element(Reader, Ns, Name, getContext());
@@ -425,7 +425,7 @@ void table_covered_table_cell::add_text(const std::wstring & Text)
 const wchar_t * table_table_row::ns = L"table";
 const wchar_t * table_table_row::name = L"table-row";
 
-::std::wostream & table_table_row::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_row::text_to_stream(std::wostream & _Wostream) const
 {
     return CP_SERIALIZE_TEXT(content_);  
 }
@@ -435,7 +435,7 @@ void table_table_row::add_attributes( const xml::attributes_wc_ptr & Attributes 
     table_table_row_attlist_.add_attributes( Attributes );
 }
 
-void table_table_row::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if ( CP_CHECK_NAME(L"table", L"table-cell") || 
          CP_CHECK_NAME(L"table", L"covered-table-cell") )
@@ -451,7 +451,7 @@ void table_table_row::add_child_element( xml::sax * Reader, const ::std::wstring
 const wchar_t * table_table_rows::ns = L"table";
 const wchar_t * table_table_rows::name = L"table-rows";
 
-::std::wostream & table_table_rows::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_rows::text_to_stream(std::wostream & _Wostream) const
 {
     return CP_SERIALIZE_TEXT(table_table_row_);  
 }
@@ -460,7 +460,7 @@ void table_table_rows::add_attributes( const xml::attributes_wc_ptr & Attributes
 {
 }
 
-void table_table_rows::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_rows::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(table_table_row_);        
 }
@@ -470,7 +470,7 @@ void table_table_rows::add_child_element( xml::sax * Reader, const ::std::wstrin
 const wchar_t * table_table_header_rows::ns = L"table";
 const wchar_t * table_table_header_rows::name = L"table-header-rows";
 
-::std::wostream & table_table_header_rows::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_header_rows::text_to_stream(std::wostream & _Wostream) const
 {
     return serialize_elements_text(_Wostream, table_table_row_);  
 }
@@ -479,7 +479,7 @@ void table_table_header_rows::add_attributes( const xml::attributes_wc_ptr & Att
 {
 }
 
-void table_table_header_rows::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_header_rows::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
@@ -495,7 +495,7 @@ void table_table_header_rows::add_text(const std::wstring & Text)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:rows
-std::wostream & table_rows::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_rows::text_to_stream(std::wostream & _Wostream) const
 {
     if (table_table_rows_)
         CP_SERIALIZE_TEXT(table_table_rows_);
@@ -504,7 +504,7 @@ std::wostream & table_rows::text_to_stream(::std::wostream & _Wostream) const
     return _Wostream;
 }
 
-void table_rows::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_rows::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if CP_CHECK_NAME(L"table", L"table-rows")
     {
@@ -534,17 +534,17 @@ table_rows_no_group::table_rows_no_group() : was_header_(false)
 {
 };
 
-::std::wostream & table_rows_no_group::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_rows_no_group::text_to_stream(std::wostream & _Wostream) const
 {
     table_rows_1_.text_to_stream(_Wostream);
     CP_SERIALIZE_TEXT(table_table_header_rows_);
     table_rows_2_.text_to_stream(_Wostream);
     return _Wostream;    
 }
-void table_rows_no_group::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
 }
-void table_rows_no_group::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_rows_no_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (CP_CHECK_NAME(L"table", L"table-rows") || CP_CHECK_NAME(L"table", L"table-row"))
     {
@@ -569,13 +569,13 @@ table_rows_and_groups::table_rows_and_groups()
 {
 }
 
-::std::wostream & table_rows_and_groups::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_rows_and_groups::text_to_stream(std::wostream & _Wostream) const
 {
     CP_SERIALIZE_TEXT(content_);
     return _Wostream;
 }
 
-void table_rows_and_groups::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)
+void table_rows_and_groups::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context)
 {
     if (L"table" == Ns && L"table-row-group" == Name)
     {
@@ -583,9 +583,24 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const ::std::w
     } 
     else if (L"table" == Ns && (L"table-rows" == Name || L"table-row" == Name || L"table-header-rows" == Name) )
     {
-        _CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
-        elm->add_child_element(Reader, Ns, Name, Context);
-        content_.push_back(elm);
+		bool add_new_no_group = false;
+		if (content_.empty())	add_new_no_group = true;
+		else
+		{
+			if (content_.back()->get_type() != typeTableTableRowNoGroup)
+				add_new_no_group = true;
+		}
+		if (add_new_no_group)
+		{
+			_CP_PTR(table_rows_no_group) elm = table_rows_no_group::create();
+			elm->add_child_element(Reader, Ns, Name, Context);
+			content_.push_back(elm);
+		}
+		else
+		{
+			table_rows_no_group* rows_no_group = static_cast<table_rows_no_group*>(content_.back().get());
+			rows_no_group->add_child_element(Reader, Ns, Name, Context);
+		}
    }
     else
         not_applicable_element(L"table-rows-and-groups", Reader, Ns, Name);
@@ -596,7 +611,7 @@ void table_rows_and_groups::add_child_element( xml::sax * Reader, const ::std::w
 const wchar_t * table_table_row_group::ns = L"table";
 const wchar_t * table_table_row_group::name = L"table-row-group";
 
-::std::wostream & table_table_row_group::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & table_table_row_group::text_to_stream(std::wostream & _Wostream) const
 {
     return table_rows_and_groups_.text_to_stream(_Wostream);
 }
@@ -606,7 +621,7 @@ void table_table_row_group::add_attributes( const xml::attributes_wc_ptr & Attri
     table_table_row_group_attlist_.add_attributes(Attributes);
 }
 
-void table_table_row_group::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_row_group::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     table_rows_and_groups_.add_child_element(Reader, Ns, Name, getContext());
 }
@@ -650,7 +665,7 @@ void table_shapes::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 }
 
-void table_shapes::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_shapes::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_CREATE_ELEMENT(content_);
 }

@@ -79,7 +79,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
-			nullable<CString>									m_oRgb;
+			nullable<std::wstring>									m_oRgb;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTheme;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
@@ -106,7 +106,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("b") == sName )
 						m_oBold = oReader;

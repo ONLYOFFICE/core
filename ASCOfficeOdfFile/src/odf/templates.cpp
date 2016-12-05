@@ -89,7 +89,7 @@ void table_table_template::add_attributes( const xml::attributes_wc_ptr & Attrib
 	CP_APPLY_ATTR(L"text:style-name",	text_style_name_);
 }
 
-void table_table_template::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void table_table_template::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {   
     if CP_CHECK_NAME(L"table", L"body")
     {

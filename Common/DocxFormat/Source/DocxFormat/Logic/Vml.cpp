@@ -69,7 +69,7 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
 				/*				if ( _T("w:altChunk") == sName )
@@ -168,7 +168,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				wchar_t wsChar1 = sName[0];
 				wchar_t wsChar3 = sName[2];
 
@@ -320,8 +320,8 @@ namespace OOX
 			if ( !oReader.MoveToFirstAttribute() )
 				return;
 			
-			CWCharWrapper wsName = oReader.GetName();
-			while( !wsName.IsNull() )
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
 			{
 				wchar_t wsChar = wsName[0];
 				switch ( wsChar )
@@ -599,7 +599,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 				wchar_t wsChar1 = sName[0];
 				wchar_t wsChar3 = sName[2];
 
@@ -993,7 +993,7 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CWCharWrapper sName = oReader.GetName();
+				std::wstring sName = oReader.GetName();
 
 				if ( _T("x:MoveWithCells") == sName )
 					m_oMoveWithCells = oReader.GetText2().GetString();

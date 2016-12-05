@@ -71,21 +71,20 @@ odf_page_layout_context::~odf_page_layout_context()
 
 odf_layout_state * odf_page_layout_context::last_layout()
 {
-
-	if (layout_state_list_.size() >0)
+	if (!layout_state_list_.empty())
         return &layout_state_list_.back();
 	else
         return NULL;
 }
 odf_master_state * odf_page_layout_context::last_master()
 {
-	if (master_state_list_.size() >0)
+	if (!master_state_list_.empty())
         return &master_state_list_.back();
 	else
         return NULL;
 }
 
-void odf_page_layout_context::start_master_page(std::wstring page_name)
+void odf_page_layout_context::add_master_page(std::wstring page_name)
 {
 	office_element_ptr elm;
 	create_element(L"style", L"master-page", elm, odf_context_);
@@ -94,75 +93,15 @@ void odf_page_layout_context::start_master_page(std::wstring page_name)
 
 	master_state_list_.push_back( odf_master_state(elm) ); 
 ///////////////////////////////////////
-	if (page_name.length() <1)page_name =L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
+	if (page_name.empty())
+		page_name = L"MasterPage" + boost::lexical_cast<std::wstring>(master_state_list_.size());
+	
 	master_state_list_.back().set_name(page_name);
 /////////////////////////
 
 	//default layout
 	create_layout_page();
 	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
-}
-void odf_page_layout_context::end_master_page()
-{
-	if (master_state_list_.size() < 1)return;
-
-	bool header=false, f_header = false, l_header = false;
-	bool footer=false, f_footer = false, l_footer = false;
-
-	for (long i = 0; i < master_state_list_.back().elements_.size(); i++)
-	{
-		if (!master_state_list_.back().elements_[i].elm)continue;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeader)header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooter)footer = true;
-
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderFirst)f_header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterFirst)f_footer = true;
-
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleHeaderLeft)l_header = true;
-		if (master_state_list_.back().elements_[i].elm->get_type() == typeStyleFooterLeft)l_footer = true;
-	}
-	if (f_header && !f_footer && footer)
-	{
-		add_footer(2);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-		
-		f_footer = true;
-	}
-	if (!f_header && f_footer && header)
-	{
-		add_header(2);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-
-		f_header = true;
-	}	
-	//Так как лажовый Libra и Apach Оо не воспринимают бланковые колонтитулы только первых страниц - городим велосипед на остальные страницы
-	if (!header && (f_header || l_header))
-	{
-		add_header(0);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-		header = true;
-	}
-	if (!footer && (f_footer || l_footer))
-	{
-		add_footer(0);
-		office_element_ptr blank_p_elm;
-		create_element(L"text", L"p", blank_p_elm, odf_context_);
-
-		master_state_list_.back().elements_.back().elm->add_child_element(blank_p_elm);
-
-		footer = true;
-	}
-
-
 }
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
@@ -316,22 +255,23 @@ void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)
 ///////////////////////////////////////////////////////////////
 bool odf_page_layout_context::add_footer(int type)
 {
-	office_element_ptr elm;
+	root_header_footer_ = office_element_ptr();
 	
 	if (type == 1) 
 	{
-		if (even_and_left_headers_)create_element(L"style", L"footer-left", elm, odf_context_);
+		if (even_and_left_headers_)
+			create_element(L"style", L"footer-left", root_header_footer_, odf_context_);
 	}
 	else if (type == 2)
-		create_element(L"style", L"footer-first", elm, odf_context_);
+		create_element(L"style", L"footer-first", root_header_footer_, odf_context_);
 	else
-		create_element(L"style", L"footer", elm, odf_context_);
+		create_element(L"style", L"footer", root_header_footer_, odf_context_);
 
-	if (!elm) return false;
+	if (!root_header_footer_) return false;
 	
 	if (master_state_list_.empty())
-		start_master_page(L"");
-	master_state_list_.back().add_footer(elm);
+		add_master_page(L"");
+	master_state_list_.back().add_footer(root_header_footer_);
 
 /////////////////////////////////////////////////////////////////////
 //настраить нужно 1 раз
@@ -373,26 +313,31 @@ bool odf_page_layout_context::add_footer(int type)
 }
 bool odf_page_layout_context::add_header(int type)
 {
-	office_element_ptr elm;
+	root_header_footer_ = office_element_ptr();
 
 	if (type == 1)
 	{
-		if (even_and_left_headers_)create_element(L"style", L"header-left", elm, odf_context_);
+		if (even_and_left_headers_) 
+			create_element(L"style", L"header-left", root_header_footer_, odf_context_);
 	}
 	else if (type == 2)
-		create_element(L"style", L"header-first", elm, odf_context_);
+		create_element(L"style", L"header-first", root_header_footer_, odf_context_);
 	else
-		create_element(L"style", L"header", elm, odf_context_);
-
-	if (!elm)return false;
+		create_element(L"style", L"header", root_header_footer_, odf_context_);
 	
-	master_state_list_.back().add_header(elm);
+	if (!root_header_footer_) return false;
+
+	if (master_state_list_.empty())
+		add_master_page(L"");
+	
+	master_state_list_.back().add_header(root_header_footer_);
 ////////////////////////////////////////////////////////////////////////
 //настроить нужно один раз
 	if (!layout_state_list_.back().header_size_) return true;
 	
 	style_header_footer_properties * header_props = get_header_properties();
 	if (!header_props)return true;
+	
 	style_page_layout_properties * props = get_properties();
 	if (!props)return true;
 
@@ -425,85 +370,44 @@ bool odf_page_layout_context::add_header(int type)
 	return true;
 }
 
-void odf_page_layout_context::set_page_border_padding_bottom(int offset_type, double length_pt)
+void odf_page_layout_context::set_page_border_offset (int type)
+{
+	if (type < 1) return;
+
+	style_page_layout_properties * props = get_properties();
+	if (!props)return;
+
+	props->style_page_layout_properties_attlist_.offset_page_border_ = type;
+}
+
+void odf_page_layout_context::set_page_border_padding(int border, double length_pt)
 {
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
+	length length_ = length(length(length_pt, length::pt).get_value_unit(length::cm), length::cm);
 
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
+	switch (border)
 	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = new_margin;
+	case 1:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_top_ = length_;		break;
+	case 2:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;	break;
+	case 3:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_left_ = length_;	break;
+	case 4:
+		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_right_ = length_;	break;
 	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;
 }
 
-
-void odf_page_layout_context::set_page_border_padding_top(int offset_type, double length_pt)
-{
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
-
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_top_ = length_;
-}
-
-
-void odf_page_layout_context::set_page_border_padding_left(int offset_type, double length_pt)
-{
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
-	
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_left_ = length_;
-}
-
-
-void odf_page_layout_context::set_page_border_padding_right(int offset_type, double length_pt)
-{
-	style_page_layout_properties * props = get_properties();
-	if (!props)return;
-	
-	length length_ = length(length(length_pt,length::pt).get_value_unit(length::cm),length::cm);
-
-	if (offset_type == 2 && props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_)
-	{
-		length new_margin = length_;
-		length_ = props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_->get_length() - length_;
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = new_margin;
-	}
-
-	props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_right_ = length_;
-}
-
-void odf_page_layout_context::set_page_border_shadow(bool val)
+void odf_page_layout_context::set_page_border_shadow (bool val)
 {
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
 	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = shadow_type::parse(L"#000000 0.159cm 0.159cm");
 }
-void odf_page_layout_context::set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
+void odf_page_layout_context::set_page_border (std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
 {
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
@@ -536,7 +440,9 @@ void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(lengt
 	if (width)
 	{
 		props->style_page_layout_properties_attlist_.fo_page_width_ = 
-												length(width->get_value_unit(length::cm),length::cm);
+												length(width->get_value_unit(length::cm), length::cm);
+
+		current_page_width_ = width->get_value_unit(length::pt);
 	}
 	if (height)
 		props->style_page_layout_properties_attlist_.fo_page_height_ = 
@@ -632,15 +538,6 @@ void odf_page_layout_context::set_pages_mirrored(bool val)
 	}	
 }
 
-void odf_page_layout_context::set_even_and_left_headers(bool val)
-{
-	even_and_left_headers_ = val;
-}
-
-void odf_page_layout_context::set_title_page_enable(bool val)
-{
-}
-
 style_page_layout_properties * odf_page_layout_context::get_properties()
 {
 	if (layout_state_list_.size() < 1) return NULL;
@@ -681,7 +578,7 @@ style_header_footer_properties *odf_page_layout_context::get_footer_properties()
 	{
 		office_element_ptr elm;
 		create_element(L"style", L"footer-style", elm, odf_context_);
-			layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
+		layout_state_list_.back().add_child(elm, office_element_ptr(),L"");
 
 		office_element_ptr pr;
 		create_element(L"style", L"header-footer-properties", pr, odf_context_);

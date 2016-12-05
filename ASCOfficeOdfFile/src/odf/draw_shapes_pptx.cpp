@@ -166,8 +166,6 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 	}
-
-    //Context.get_slide_context().end_drawing();    
 }
 void draw_rect::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -304,13 +302,70 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 {
 	find_draw_type_oox();
 
+	bool set_shape = false;
+
+	if (draw_type_oox_index_)
+	{
+		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
+
+		if (word_art_ == true)
+			Context.get_slide_context().set_property(_property(L"wordArt", true));	
+
+		set_shape = true;
+	}
 	if (sub_type_)
 	{
 		Context.get_slide_context().start_shape(sub_type_.get());
+		set_shape = true;
 	}
-	if (draw_type_oox_index_)
+
+	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
 	{
-		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index",draw_type_oox_index_.get()));	
+		std::vector<svg_path::_polyline> o_Polyline;
+	
+		bool res = false;
+		
+		try
+		{
+			res = svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+		}
+		catch(...)
+		{
+			res = false; 
+		}
+		
+		if (o_Polyline.size() > 1 && res )
+		{
+			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			std::wstringstream output_;   
+            svg_path::oox_serialize(output_, o_Polyline);
+			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
+
+			set_shape = true;
+			
+			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)
+			{
+				std::vector< std::wstring > splitted;			    
+				boost::algorithm::split(splitted, *draw_enhanced_geometry_attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				
+				if (splitted.size() == 2)
+				{
+					int w = boost::lexical_cast<int>(splitted[0]);
+					int h = boost::lexical_cast<int>(splitted[1]);
+					
+					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
+					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
+				}
+				else if (splitted.size() == 4)
+				{///???? rect ???
+					int l = boost::lexical_cast<int>(splitted[0]);
+					int t = boost::lexical_cast<int>(splitted[1]);
+					int r = boost::lexical_cast<int>(splitted[2]);
+					int b = boost::lexical_cast<int>(splitted[3]);
+
+				}
+			}
+		}
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{
@@ -324,6 +379,10 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 				Context.get_slide_context().set_property(_property(L"draw-modifiers-max",draw_handle_geometry_[0].max));	
 			}
 		}
+	}
+	if (!set_shape)
+	{
+		Context.get_slide_context().start_shape(1); //restart type shape
 	}
 }
 }

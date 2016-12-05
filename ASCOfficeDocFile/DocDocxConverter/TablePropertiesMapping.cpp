@@ -87,19 +87,19 @@ namespace DocFileFormat
 
 				case sprmOldTDefTable:
 				case sprmTDefTable:
-				{				//table definition
-
+				{				
+	//table definition
 					SprmTDefTable tDef( iter->Arguments, iter->argumentsSize );
 					//Workaround for retrieving the indent of the table:
 					//In some files there is a indent but no sprmTWidthIndent is set.
 					//For this cases we can calculate the indent of the table by getting the 
 					//first boundary of the TDef and adding the padding of the cells
+					
 					tblIndent = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
-					//add the gabHalf
 					tblIndent += gabHalf;
 					//If there follows a real sprmTWidthIndent, this value will be overwritten
 
-                    tblIndent = (std::max)((int)tblIndent,0);
+                    //tblIndent = (std::max)((int)tblIndent,0); //cerere.doc
 				}
 				break;
 

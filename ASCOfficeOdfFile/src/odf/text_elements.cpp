@@ -187,7 +187,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					Context.end_automatic_style();
 
                     Context.push_text_properties(styleContent->get_style_text_properties());
-                    return 1;
+					return 1;
                 }            
             }
             else
@@ -975,9 +975,39 @@ void text_table_index::add_child_element( xml::sax * Reader, const std::wstring 
 const wchar_t * text_illustration_index::ns = L"text";
 const wchar_t * text_illustration_index::name = L"illustration-index";
 
+void text_illustration_index::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_illustration_index::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
 void text_illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
-    if (text_index_body_)
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
         text_index_body_->docx_convert(Context);
 }
 
@@ -1005,8 +1035,77 @@ void text_illustration_index::add_child_element( xml::sax * Reader, const std::w
     {
         CP_CREATE_ELEMENT(text_index_body_);
     }
-    // TODO text-illustration-index-source
+    // todooo text-illustration-index-source
 }
+
+// text:alphabetical-index
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_alphabetical_index::ns = L"text";
+const wchar_t * text_alphabetical_index::name = L"alphabetical-index";
+
+void text_alphabetical_index::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_alphabetical_index::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
+void text_alphabetical_index::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_alphabetical_index::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+std::wostream & text_alphabetical_index::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_alphabetical_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_alphabetical_index::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // todooo text-alphabetical-index-source
+}
+
 //--------------------------------------------------------------------------------------------------------
 // text:tracked-changes
 const wchar_t * text_tracked_changes::ns	= L"text";

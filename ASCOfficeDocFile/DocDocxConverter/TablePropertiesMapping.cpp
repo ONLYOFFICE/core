@@ -87,8 +87,8 @@ namespace DocFileFormat
 
 				case sprmOldTDefTable:
 				case sprmTDefTable:
-				{				//table definition
-
+				{
+	//table definition
 					SprmTDefTable tDef( iter->Arguments, iter->argumentsSize );
 					//Workaround for retrieving the indent of the table:
 					//In some files there is a indent but no sprmTWidthIndent is set.

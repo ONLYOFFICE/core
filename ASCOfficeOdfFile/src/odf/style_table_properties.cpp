@@ -115,17 +115,17 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
     if (style_rel_width_)
     {
         int w_w = (int)(0.5 + 50.0 * style_rel_width_->get_value());
-        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\" />";
+        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\"/>";
     }
     else if (style_width_)
     {
         int w_w = (int)(0.5 + 20.0 * style_width_->get_value_unit(length::pt));
  		if (w_w > 31680)w_w = 31680;
-       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\" />";
+       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\"/>";
     }
     else
     {
-        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"5000\" />";
+        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"5000\"/>";
     }
 
     if (common_break_attlist_.fo_break_before_)

@@ -360,9 +360,6 @@ public:
     static const ElementType	type		= typeTextIllustrationIndex;
     
 	CPDOCCORE_DEFINE_VISITABLE();
-  
-	virtual void afterCreate();
-    virtual void afterReadContent();
     
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -380,36 +377,6 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index);
-//---------------------------------------------------------------------------------------------------
-class text_alphabetical_index : public text_content_impl<text_alphabetical_index>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
-    static const ElementType	type		= typeTextAlphabeticalIndex;
-    
-	CPDOCCORE_DEFINE_VISITABLE();
-    
-    virtual void afterCreate();
-    virtual void afterReadContent();
-
-	void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context) ;
-
-    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-    text_section_attr	text_section_attr_;
-    office_element_ptr	text_alphabetical_index_source_;
-    office_element_ptr	text_index_body_;
-
-};
-CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
 
 //---------------------------------------------------------------------------------------------------
 class text_index_body : public text_content_impl<text_index_body>

@@ -137,7 +137,7 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
     if (table_align_)
     {
         std::wstring w_val = L"left";
-        if (table_align_->get_type() == table_align::Margins || table_align_->get_type() == table_align::Left)
+        if (table_align_->get_type() == table_align::Margins)
 		{
 			if (common_horizontal_margin_attlist_.fo_margin_left_ && common_horizontal_margin_attlist_.fo_margin_right_)
 			{
@@ -147,15 +147,19 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 			if (w_val != L"center" && common_horizontal_margin_attlist_.fo_margin_left_ )
 			{
 				odf_types::length indent = common_horizontal_margin_attlist_.fo_margin_left_->get_length();
-				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20 << "\" w:type=\"dxa\" />";
+				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20<< "\" w:type=\"dxa\" />";
 			}
 		}
-        else //if (table_align_->get_type() == table_align::Center)
+        else
             w_val = boost::lexical_cast<std::wstring>(*table_align_);
 
         _tblPr << L"<w:jc w:val=\"" << w_val << "\" />";
     }
 
+	if (table_align_ && table_align_->get_type() == table_align::Center)
+    {
+        // TODO ()
+    }
 	_tblPr << "<w:tblLayout w:type=\"fixed\" />";
 
     if (common_background_color_attlist_.fo_background_color_)

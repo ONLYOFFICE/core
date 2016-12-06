@@ -122,6 +122,9 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 				sExt = uri.substr(n);
 		}
 	}
+
+	if (type == typeObject && sExt.empty())
+		sExt = L".bin";
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
 }

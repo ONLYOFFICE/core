@@ -143,6 +143,7 @@ bool content_types_file::add_or_find_override(const std::wstring & fileName)
 		content_type = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 	content_type_content_.add_override(fileName, content_type);
+	//add_or_find_default(extension);
 }
 
 void content_types_file::set_media(mediaitems & _Mediaitems)

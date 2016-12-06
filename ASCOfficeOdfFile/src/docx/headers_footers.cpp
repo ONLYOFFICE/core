@@ -97,9 +97,12 @@ void headers_footers::dump_rels(rels & Rels) const//внешние релсы
     }        
 }
 
-bool headers_footers::write_sectPr(const std::wstring & StyleName, std::wostream & _Wostream) const
+bool headers_footers::write_sectPr(const std::wstring & StyleName, bool next_page/*not used*/, std::wostream & _Wostream)
 {
-    if (!instances_.count(StyleName))return false;
+    if (!instances_.count(StyleName))	return false;
+	if (last_write_style_ == StyleName)	return true;
+
+	last_write_style_ = StyleName;
 
 	bool first	=	false, left	=	false;
 	bool res	=	false;

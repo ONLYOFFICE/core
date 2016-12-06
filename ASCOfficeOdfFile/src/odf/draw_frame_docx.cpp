@@ -1000,8 +1000,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
 	if (drawing->inGroup && drawing->type != oox::typeGroupShape)
 	{
-		Context.get_drawing_context().set_position_child_group(drawing->x, drawing->y);
-		Context.get_drawing_context().set_size_child_group(drawing->cx + drawing->x, drawing->cy + drawing->y);
+		Context.get_drawing_context().set_position_child_group	(drawing->x, drawing->y);
+		Context.get_drawing_context().set_size_child_group		(drawing->cx + drawing->x, drawing->cy + drawing->y);
 
 		// ваще то тут "несовсем" всерно ... нужно сначала все стартовые позиции добавить ..
         _INT32 x_group_offset, y_group_offset;
@@ -1094,7 +1094,15 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) return;
 
- 	oox::StreamsManPtr prev = Context.get_stream_man();
+ 	if (pos_replaicement >= 0 && !Context.get_drawing_context().get_use_image_replace())
+	{
+		return; //skip replacement image (math, chart, ...)  - возможно записать как альтернативный контент - todooo ???
+	}
+
+	if (drawing->type == oox::typeUnknown)
+		drawing->type = oox::typeImage;
+
+	oox::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
@@ -1115,12 +1123,6 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_drawing_context().get_text_stream_frame() = temp_stream.str();
 	Context.set_stream_man(prev);
-//--------------------------------------------------
-
-	if (pos_replaicement < 0 || Context.get_drawing_context().get_use_image_replace())
-	{
-		drawing->type = oox::typeImage;
-	}
 	
 //--------------------------------------------------
 	oox::hyperlinks::_ref hyperlink = Context.last_hyperlink();
@@ -1162,7 +1164,6 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
 		}        
 	}
-	Context.set_paragraph_state(pState);
 }
 
 void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
@@ -1378,13 +1379,19 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	oox_drawing_ = oox_drawing_ptr(new oox::_docx_drawing());
 
     Context.get_drawing_context().start_frame(this);
-
-	oox::_docx_drawing* drawing = dynamic_cast<oox::_docx_drawing *>(oox_drawing_.get()); 
     
     const _CP_OPT(std::wstring) name = 
         common_draw_attlists_.shape_with_text_and_styles_.
         common_draw_shape_with_styles_attlist_.
         common_draw_name_attlist_.draw_name_;
+	
+	Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
+	
+	oox::_docx_drawing* drawing = dynamic_cast<oox::_docx_drawing *>(oox_drawing_.get()); 
+	
+	drawing->id			= Context.get_drawing_context().get_current_frame_id();
+	drawing->name		= Context.get_drawing_context().get_current_object_name();
+	drawing->inGroup	= Context.get_drawing_context().in_group();
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 	
@@ -1392,13 +1399,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     {
 		content_[i]->docx_convert(Context);
     }
+
 //-----------------------------------------------------------------------------------------------------
-	Context.get_drawing_context().add_name_object(name.get_value_or(L"Object"));
-
-	drawing->id			= Context.get_drawing_context().get_current_frame_id();
-	drawing->name		= Context.get_drawing_context().get_current_object_name();
-	drawing->inGroup	= Context.get_drawing_context().in_group();
-
 	bool runState	= Context.get_run_state();
 	bool pState		= Context.get_paragraph_state();
 	bool keepState	= Context.get_paragraph_keep();
@@ -1473,8 +1475,9 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			drawing->objectId = Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
 		}
 		else if (objectBuild.object_type_ == 3) //мат формулы
-		{	
-			
+		{
+			//skip replacement image !!!
+
 			const std::wstring & content = Context.get_drawing_context().get_text_stream_frame();
 
 			bool in_frame	= !drawing->isInline;
@@ -1514,10 +1517,13 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		}
 		if (objectBuild.object_type_ == 4) //embedded sheet
 		{	
-			cpdoccore::oox::package::xlsx_document	outputXlsx;
-			cpdoccore::oox::xlsx_conversion_context conversionXlsxContext( &objectSubDoc);
+			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
+			use_image_replace = true;
+
+			oox::package::xlsx_document	outputXlsx;
+			oox::xlsx_conversion_context conversionXlsxContext ( &objectSubDoc);
 		   
-			conversionXlsxContext.set_output_document	(&outputXlsx);
+			conversionXlsxContext.set_output_document (&outputXlsx);
 			//conversionContext.set_font_directory	(fontsPath);
 			
 			if (objectSubDoc.xlsx_convert(conversionXlsxContext))
@@ -1527,15 +1533,18 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				std::wstring objectXlsxPath = FileSystem::Directory::CreateDirectoryWithUniqueName(folderPath);
 				outputXlsx.write(objectXlsxPath);
 
-				href = FileSystem::Directory::CreateTempFileWithUniqueName(folderPath, L"xlsx") + L".xlsx";
+				href = Context.get_drawing_context().get_current_object_name() + L".xlsx";
+
+				std::wstring temp_file = folderPath + FILE_SEPARATOR_STR + href;
 	
 				COfficeUtils oCOfficeUtils(NULL);
-				oCOfficeUtils.CompressFileOrDirectory(objectXlsxPath.c_str(), href.c_str(), -1);
+				oCOfficeUtils.CompressFileOrDirectory(objectXlsxPath.c_str(), temp_file.c_str(), -1);
 
 				FileSystem::Directory::DeleteDirectory(objectXlsxPath);
 			
 				bool isMediaInternal = true;        
-				drawing->objectId = Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+				drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, temp_file);
+				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
 			else
 			{
@@ -1564,6 +1573,20 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 	use_image_replace = true;
 
+	std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
+	if (href.empty()) return;
+
+	draw_frame*				frame	 = Context.get_drawing_context().get_current_frame();		//owner
+	if (!frame) return;
+	
+	oox::_docx_drawing *	drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	if (!drawing) return;
+			
+	drawing->type			=  oox::typeObject;
+	
+	bool isMediaInternal	= true;        
+	drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
+	drawing->objectProgId	= L""; //detect ???
 }
 
 }

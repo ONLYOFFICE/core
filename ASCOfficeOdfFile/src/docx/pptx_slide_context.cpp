@@ -707,10 +707,10 @@ void pptx_slide_context::serialize_objects(std::wostream & strm)
 		{
 			CP_XML_NODE(L"a:xfrm")
 			{
-				CP_XML_NODE(L"a:off")	{CP_XML_ATTR(L"x",0); CP_XML_ATTR(L"y",0);}
-				CP_XML_NODE(L"a:ext")	{CP_XML_ATTR(L"cx",0); CP_XML_ATTR(L"cy",0);}
-				CP_XML_NODE(L"a:chOff")	{CP_XML_ATTR(L"x",0); CP_XML_ATTR(L"y",0);}
-				CP_XML_NODE(L"a:chExt")	{CP_XML_ATTR(L"cx",0); CP_XML_ATTR(L"cy",0);}
+				CP_XML_NODE(L"a:off")	{ CP_XML_ATTR(L"x", 0);	CP_XML_ATTR(L"y", 0);	}
+				CP_XML_NODE(L"a:ext")	{ CP_XML_ATTR(L"cx",0);	CP_XML_ATTR(L"cy",0);	}
+				CP_XML_NODE(L"a:chOff")	{ CP_XML_ATTR(L"x", 0);	CP_XML_ATTR(L"y", 0);	}
+				CP_XML_NODE(L"a:chExt")	{ CP_XML_ATTR(L"cx",0);	CP_XML_ATTR(L"cy",0);	}
 			}
 		}
 	}

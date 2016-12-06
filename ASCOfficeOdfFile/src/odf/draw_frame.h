@@ -335,7 +335,7 @@ private:
 
 public:
     odf_types::common_xlink_attlist	common_xlink_attlist_;
-	_CP_OPT(std::wstring)	draw_class_id_;
+	_CP_OPT(std::wstring)			draw_class_id_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);

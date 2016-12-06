@@ -438,8 +438,6 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 						std::wstring relativeFrom = L"margin";
 						if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
 						
-						if (relativeFrom == L"column") relativeFrom = L"margin";
-
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
 						if (val.styleHorizontalPos &&
@@ -457,10 +455,10 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 
 					CP_XML_NODE(L"wp:positionV")
 					{
-						std::wstring relativeFrom = L"paragraph";
-						if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();					
-						
-						CP_XML_ATTR(L"relativeFrom",relativeFrom);
+						std::wstring relativeFrom = L"margin";
+						if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();    
+
+						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
 						if (val.styleVerticalPos && 
 							val.styleVerticalPos->get_type() != odf_types::vertical_pos::FromTop &&
@@ -511,6 +509,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 					std::wstring relativeFrom = L"paragraph";
 					if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();					
 					
+					if (relativeFrom == L"paragraph") relativeFrom = L"margin";     
+
 					CP_XML_NODE(L"wp14:sizeRelV")
 					{
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
@@ -588,8 +588,8 @@ void docx_serialize_object(std::wostream & strm, _docx_drawing & val)
 				CP_XML_ATTR(L"o:ole", "");
 				std::wstring style_str;	// = L"width:730.6pt; height:261.8pt";
 
-				style_str += L"width:"	+ std::to_wstring(val.cx / 12700) + L"pt;";
-				style_str += L"height:" + std::to_wstring(val.cy / 12700) + L"pt;";
+				style_str += L"width:"	+ std::to_wstring(val.cx / 12700.) + L"pt;";
+				style_str += L"height:" + std::to_wstring(val.cy / 12700.) + L"pt;";
 
 				CP_XML_ATTR(L"style", style_str);
 
@@ -597,19 +597,19 @@ void docx_serialize_object(std::wostream & strm, _docx_drawing & val)
 				{
 					CP_XML_NODE(L"v:imagedata")
 					{
-						CP_XML_ATTR(L"o:title", L"" );
+						CP_XML_ATTR(L"o:title", val.name);
 						CP_XML_ATTR(L"r:id",	val.fill.bitmap->rId);
 					}
 				}
 			}
 			CP_XML_NODE(L"o:OLEObject")
 			{
-				CP_XML_ATTR(L"r:id",		L"ole_" + val.objectId); 
-				CP_XML_ATTR(L"ObjectID",	L"_1480208863" );
-				CP_XML_ATTR(L"DrawAspect",	L"Content" );
-				CP_XML_ATTR(L"ShapeID",		val.objectId); 
 				CP_XML_ATTR(L"Type",		L"Embed");
 				CP_XML_ATTR(L"ProgID",		val.objectProgId);
+				CP_XML_ATTR(L"ShapeID",		L"ole_" + val.objectId); 
+				CP_XML_ATTR(L"DrawAspect",	L"Content" );
+				CP_XML_ATTR(L"ObjectID",	0x583A3000 + val.id );
+				CP_XML_ATTR(L"r:id",		val.objectId); 
 			}
 		}
 	}
@@ -617,6 +617,8 @@ void docx_serialize_object(std::wostream & strm, _docx_drawing & val)
 
 void _docx_drawing::serialize(std::wostream & strm/*, bool insideOtherDrawing*/)
 {
+	if (type == typeUnknown) return;
+
 	if (inGroup)
 		return docx_serialize_child(strm, *this);
 	

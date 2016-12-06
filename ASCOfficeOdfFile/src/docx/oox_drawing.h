@@ -42,22 +42,6 @@
 
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-static const int _odf_to_oox_ShapeType[]=
-{ 4,4,4,34,};
-
-static const std::wstring _ooxShapeType[]=
-{
-	L"rect", //frame
-	L"rect", //text box
-	L"rect", //shape
-	L"ellipse",
-	L"ellipse", 
-	L"line", 
-	L"path",
-	L"custGeom",//uses sub-sub type,
-	L"polygon", 
-};
-
 namespace cpdoccore {
 namespace oox {
 
@@ -65,38 +49,47 @@ namespace oox {
     {
         std::wstring hId;
         std::wstring hRef;
-        bool object;
+        
+		bool in_object;
     };
-    struct _oox_drawing
+
+	class _oox_drawing
     {
+	public:
         _oox_drawing() : type(typeUnknown), id(0), x(0), y(0), cx(0), cy(0), sub_type(0), inGroup(false), name(L"object")
         {
         }
-        RelsType type;
+        RelsType		type;
 
- 		bool	inGroup;
-		size_t	id;
+ 		bool			inGroup;
+		size_t			id;
 
-        std::wstring name;
+        std::wstring	name;
+        int				sub_type; //odf
 
-        _INT32 x, y;
-        _INT32 cx, cy;
+        _INT32			x, y;
+        _INT32			cx, cy;
 
-        _oox_fill fill;
+        _oox_fill		fill;
 
-        int sub_type; //odf
-        std::wstring	chartId;
+        std::wstring				objectId;
+		std::wstring				objectProgId; 
 
-        std::vector<_hlink_desc> hlinks;
+		std::vector<_hlink_desc>			hlinks;
+        std::vector<odf_reader::_property>	additional;
 
-        std::vector<odf_reader::_property> additional;
+		virtual void serialize	(std::wostream & strm) = 0;
 
+		void serialize_shape	(std::wostream & strm);
+		void serialize_xfrm		(std::wostream & strm, const std::wstring & namespace_ = L"a");
+		void serialize_bodyPr	(std::wostream & strm, const std::wstring & namespace_ = L"a");
     };
-    void oox_serialize_xfrm		(std::wostream & strm, _oox_drawing & val, const std::wstring namespace_ = L"a");
-    void oox_serialize_shape	(std::wostream & strm, _oox_drawing & val);
-    void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
-    void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
-	void oox_serialize_bodyPr	(std::wostream & strm, _oox_drawing & val, const std::wstring & namespace_ = L"a");
+   
+	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
+
+	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+    void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
 }
+
 }

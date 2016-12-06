@@ -225,6 +225,10 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.set_run_state		(runState);
 		Context.set_paragraph_state	(pState);	
 	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//office_spreadsheet_
+	}
 }
 void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -544,7 +548,7 @@ bool process_build_object::visit_rows(unsigned int repeated)
 //////////////////////////////////////////////////
 void process_build_object::on_not_impl(std::string const & message)
 {
-    _CP_LOG << L"[process_draw_chart visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
+    _CP_LOG << L"[process_object visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -570,14 +574,18 @@ void process_build_object::visit(office_chart& val)
 void process_build_object::visit(office_text& val)
 {
 	object_odf_context_.object_type_ = 2;
-	object_odf_context_.office_text_ = &val;//конвертация будет уровнем выше
+	object_odf_context_.office_text_ = &val;	//конвертация будет уровнем выше
 }
 void process_build_object::visit(office_math& val)
 {
-	object_odf_context_.object_type_ = 3; //0;//временно замещающая картинка
-	object_odf_context_.office_math_ = &val;//конвертация будет уровнем выше
+	object_odf_context_.object_type_ = 3;		//= 0 - временно замещающая картинка
+	object_odf_context_.office_math_ = &val;	//конвертация будет уровнем выше
 }
-
+void process_build_object::visit(office_spreadsheet& val)
+{
+	object_odf_context_.object_type_		= 4;	
+	object_odf_context_.office_spreadsheet_ = &val;	//конвертация будет уровнем выше
+}
 void process_build_object::visit(const chart_chart& val)
 {
 	object_odf_context_.object_type_ = 1;

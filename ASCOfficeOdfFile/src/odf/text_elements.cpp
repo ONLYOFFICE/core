@@ -137,14 +137,7 @@ typedef std::map<std::wstring, oox::text_tracked_context::_state>::iterator map_
 
 int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
 {
-	bool in_drawing	= false;
-
- 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
-	{
-		in_drawing = true;
-	}
-	
-	if (!Attr.text_style_name_.empty())
+    if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph, Context.process_headers_footers_)
@@ -195,10 +188,9 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.output_stream() << L"<w:pPr>";
 //todooo причесать			
-					if (!Context.get_section_context().dump_.empty()
-						&& !Context.get_table_context().in_table()
-						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
-						&& !in_drawing)
+					if (!Context.get_section_context().dump_.empty()	&&  
+						!Context.get_table_context().in_table()			&& 
+						(Context.get_process_note() == oox::docx_conversion_context::noNote))
 					{
 						if (Context.is_paragraph_header() )
 						{
@@ -244,10 +236,9 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 			}
 		}
 	}
-	if (!Context.get_section_context().dump_.empty() 
-		&& !Context.get_table_context().in_table()
-		&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
-		&& !in_drawing)
+	if (!Context.get_section_context().dump_.empty()	&&  
+		!Context.get_table_context().in_table()			&& 
+		(Context.get_process_note() == oox::docx_conversion_context::noNote))
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;
@@ -370,18 +361,18 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
     const std::wstring & styleName = attrs_.text_style_name_.style_name();
 	
-	bool in_drawing	= false;
+	bool drawing	= false;
 
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
-		in_drawing = true;
+		drawing = true;
 	}
 		
 	bool bIsNewParagraph = true;
 	
 	bool is_empty = content_.empty();
 
-	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !in_drawing)
+	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing)
     {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
 		bIsNewParagraph = false;
 		
@@ -434,6 +425,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		Context.remove_page_properties();
 		Context.add_page_properties(masterPageNameLayout);
 
+		Context.set_page_break(true);
+
 		is_empty = false;
     }    
 
@@ -460,8 +453,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 
-				//_Wostream << L"<w:lastRenderedPageBreak/>";
-				_Wostream << L"<w:br w:type=\"page\"/>";  
+				_Wostream << L"<w:lastRenderedPageBreak/>";
 			Context.set_page_break(false);
 		}
         elm->docx_convert(Context); 
@@ -490,7 +482,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
         Context.add_new_run(_T(""));
-        _Wostream << L"<w:br w:type=\"page\"/>";        
+        _Wostream << L"<w:br w:type=\"page\" />";        
         Context.finish_run();
     }
 

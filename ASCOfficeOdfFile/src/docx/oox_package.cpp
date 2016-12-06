@@ -112,14 +112,39 @@ content_type_content * content_types_file::content()
 
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
-	for (int i = 0 ; i < content_type_content_.get_default().size(); i++)
+	std::vector<default_content_type> & defaults = content_type_content_.get_default();
+	
+	for (int i = 0 ; i < defaults.size(); i++)
 	{
-		if (content_type_content_.get_default()[i].extension() == extension)
+		if (defaults[i].extension() == extension)
 			return true;
 	}
+	
 	content_type_content_.add_default(extension, get_mime_type(extension));
 	return true;
 }
+
+bool content_types_file::add_or_find_override(const std::wstring & fileName)
+{
+	std::vector<override_content_type> & override_ = content_type_content_.get_override();
+	
+	for (int i = 0 ; i < override_.size(); i++)
+	{
+		if (override_[i].part_name() == fileName)
+			return true;
+	}
+	
+	std::wstring content_type;
+	int pos = fileName.rfind(L".");
+	
+	std::wstring extension = pos >= 0 ? fileName.substr(pos + 1) : L"";
+	
+	if (extension == L"xlsx")
+		content_type = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+	content_type_content_.add_override(fileName, content_type);
+}
+
 void content_types_file::set_media(mediaitems & _Mediaitems)
 {
     BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
@@ -285,7 +310,7 @@ void media::write(const std::wstring & RootPath)
 
     BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
     {
-        if (item.mediaInternal && item.valid && item.type == typeImage )
+        if (item.mediaInternal && item.valid && (item.type == typeImage || item.type == typeMedia))
         {
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
@@ -301,9 +326,7 @@ void media::write(const std::wstring & RootPath)
     }
 
 }
-///////////////////////////////////////////////////////////////////////////////////
-
-
+//------------------------------------------------------------------------------------------------------------
 charts::charts(mediaitems & _ChartsItems) : chartsitems_(_ChartsItems)
 {    
 }
@@ -312,6 +335,30 @@ void charts::write(const std::wstring & RootPath)
 {
 
 }
+//--------------------------------------------------------------------------------------------------------------
+embeddings::embeddings(mediaitems & _EmbeddingsItems) : embeddingsitems_(_EmbeddingsItems)
+{    
+}
+void embeddings::write(const std::wstring & RootPath)
+{
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"embeddings";
+	FileSystem::Directory::CreateDirectory(path.c_str());
+
+	content_types_file & content_types = get_main_document()->get_content_types_file();           
+    
+	BOOST_FOREACH( mediaitems::item & item, embeddingsitems_.items() )
+    {
+        if (item.mediaInternal && item.valid && item.type == typeObject )
+        {
+			content_types.add_or_find_override(std::wstring(L"/word/") + item.outputName);
+
+			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
+			
+			NSFile::CFileBinary::Copy(item.href, file_name_out);
+		}
+    }
+}
+
 }
 }
 }

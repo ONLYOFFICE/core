@@ -184,7 +184,7 @@ double inch_to_pt(double Val)
 
 double emu_to_pt(double Val)
 {
-    return Val * 72.0 / (360000.0 * 2.54);
+    return Val / 12700;	// 1 / 12700  =  72.0 / (360000.0 * 2.54);
 }
 double px_to_pt(double Val)
 {

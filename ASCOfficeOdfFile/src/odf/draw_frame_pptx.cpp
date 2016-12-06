@@ -55,7 +55,7 @@
 #include "odf_document_impl.h"
 
 #include "calcs_styles.h"
-#include "../docx/oox_drawing.h"
+#include "../docx/pptx_drawing.h"
 #include "chart_build_oox.h"
 
 #include "datatypes/length.h"
@@ -198,14 +198,11 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 	Context.get_text_context().start_base_style(baseStyleName ,odf_types::style_family::Presentation);
 ////////////////////////////////////////////////
-	int i=0;
-	int size = content_.size();
-	while(true)
+	oox_drawing_ = oox_drawing_ptr(new oox::_pptx_drawing());
+
+	for (int i = 0; i < content_.size(); i++)
     {
-		if (i>=size)break;
-		office_element_ptr const & elm = content_[i];
-        elm->pptx_convert(Context);
-		i++;
+        content_[i]->pptx_convert(Context);
     }
 
 	Context.get_text_context().end_base_style();
@@ -219,13 +216,9 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////в принципе достаточно общая часть ...	
 	Context.get_text_context().start_object();
 
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0; i < content_.size(); i++)
     {
-		if (i>=size)break;
-		content_[i]->pptx_convert(Context);
-		i++;
+        content_[i]->pptx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
@@ -241,13 +234,9 @@ void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
     Context.get_slide_context().start_chart(href);
 
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0; i < content_.size(); i++)
     {
-		if (i>=size)break;
-		content_[i]->pptx_convert(Context);
-		i++;
+        content_[i]->pptx_convert(Context);
     }
     Context.get_slide_context().end_chart();
 }
@@ -256,14 +245,11 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().start_shape(2);//rect с наваротами
 	Context.get_text_context().start_object();
 
-	int i=0;
-	int size = content_.size();
-	while(true)
+	for (int i = 0; i < content_.size(); i++)
     {
-		if (i>=size)break;
-		content_[i]->pptx_convert(Context);
-		i++;
+        content_[i]->pptx_convert(Context);
     }
+	
 	std::wstring text_content_ = Context.get_text_context().end_object();
 
 	if (text_content_.length()>0)
@@ -330,7 +316,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			std::wstring text_content_ = Context.get_text_context().end_object();
 			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
 
-			if (text_content_.length()>0)
+			if (!text_content_.empty())
 			{
 				Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 			}

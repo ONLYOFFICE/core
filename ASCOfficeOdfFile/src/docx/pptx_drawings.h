@@ -40,8 +40,7 @@
 namespace cpdoccore {
 namespace oox {
 
-struct _pptx_drawing;
-
+class _pptx_drawing;
 class rels;
 
 class pptx_drawings;

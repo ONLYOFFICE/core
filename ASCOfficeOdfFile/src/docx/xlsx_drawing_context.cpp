@@ -535,11 +535,11 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 	
-	drawing.chartId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
-    xlsx_drawings_->add(drawing, isMediaInternal, drawing.chartId, ref, obj.type_);
+	drawing.objectId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+    xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.chartId, ref, obj.type_); // не объект
+		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
 }
 
 void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)

@@ -96,8 +96,13 @@ void word_files::write(const std::wstring & RootPath)
     {
         media_->write( path );
     }
+   
+	if (embeddings_)
+    {
+        embeddings_->write( path );
+    }
 
-    if (headers_footers_)
+	if (headers_footers_)
     {
         headers_footers_->write( path );
     }
@@ -136,7 +141,15 @@ void word_files::update_rels(docx_conversion_context & Context)
 
 void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	if (_Mediaitems.count_image > 0)
+	{
+		media_		= element_ptr( new media(_Mediaitems, pAppFonts) );
+	}
+	if (_Mediaitems.count_object > 0)
+	{
+		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+		embeddings_->set_main_document( get_main_document() );
+	}
 }
 
 void word_files::set_styles(element_ptr Element) 
@@ -197,6 +210,7 @@ void docx_charts_files::add_chart(chart_content_ptr chart)
 {
     charts_.push_back(chart);
 }
+
 void docx_charts_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR +  L"charts";

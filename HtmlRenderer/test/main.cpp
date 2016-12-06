@@ -46,7 +46,7 @@
 //#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
 #define TO_HTML_RENDERER
-//#define ONLY_TEXT
+#define ONLY_TEXT
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     //std::wstring sFile = L"D:\\bankomats.xps";
     //std::wstring sFile = L"\\\\kirillov8\\_Office\\DJVU\\Основы разработки приложений на платформе Microsoft .NET Framework. Учебный курс Microsoft экзамен 70-536.djvu";
     //std::wstring sFile = L"D:\\TESTFILES\\Алгоритмы - построение и анализ.djvu";
-    std::wstring sFile = L"D:\\knopk5_0.pdf";
+    std::wstring sFile = L"D:\\TESTFILES\\PDF 1-7 (756p).pdf";
     std::wstring sDst = L"D:\\test\\Document";
 
     //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
@@ -169,8 +169,6 @@ int main(int argc, char *argv[])
 #else
     oRenderer.SaveToFile(L"/home/oleg/activex/1/1.pdf");
 #endif
-
-    RELEASEOBJECT(pReader);
 
     return 0;
 }

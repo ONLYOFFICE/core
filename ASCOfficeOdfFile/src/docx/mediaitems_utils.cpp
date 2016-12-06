@@ -57,18 +57,26 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 
 	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
 
-	return FileSystem::Directory::IsExist(resultPath);
+	return FileSystem::Directory::IsExist(resultPath) || FileSystem::Directory::IsExist(mediaPath);
 }
 
 std::wstring get_rel_type(RelsType type)
 {
     switch (type)
     {
-    case typeImage:
+	case typeImage:
+	{
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-     case typeChart:
+	}
+	case typeChart:
+	{
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
-   default:
+	}
+	case typeObject:
+	{
+        return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+	}break;
+  default:
         return L"";
     }
 }

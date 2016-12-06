@@ -86,7 +86,7 @@ public:
 		{
 			for (int i = 0 ; i < xlsx_drawings_.size(); i++)
 			{
-				xlsx_serialize(strm, xlsx_drawings_[i]);
+				xlsx_drawings_[i].serialize(strm);
 			}
 		}
 		else
@@ -101,7 +101,7 @@ public:
 
 					for (int i = 0 ; i < xlsx_drawings_.size(); i++)
 					{
-						xlsx_serialize(CP_XML_STREAM(), xlsx_drawings_[i]);
+						xlsx_drawings_[i].serialize(CP_XML_STREAM());
 					}
 				}
 			}

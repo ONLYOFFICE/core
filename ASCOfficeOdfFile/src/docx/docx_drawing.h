@@ -44,9 +44,10 @@
 namespace cpdoccore {
 namespace oox {
 
-struct _docx_drawing : _oox_drawing
+class _docx_drawing : public _oox_drawing
 { 
-	_docx_drawing():_oox_drawing(), parallel(0), isInline(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
+public:
+	_docx_drawing() : _oox_drawing(), parallel(0), isInline(false), number_wrapped_paragraphs(0), posOffsetV(0), posOffsetH(0)
 	{
 	}
 	bool isInline;
@@ -72,15 +73,12 @@ struct _docx_drawing : _oox_drawing
 	_CP_OPT(int) pctWidth;
 	_CP_OPT(int) pctHeight;
   
-	int margin_rect[4];//0-left, 1 -top, 2- right, 3 - bottom
-	//std::wstring distB;
- //   std::wstring distT;
- //   std::wstring distL;
- //   std::wstring distR;
+	int margin_rect[4];		//0-left, 1 -top, 2- right, 3 - bottom
 
 	std::wstring content_group_;
 
-    friend void docx_serialize(std::wostream & _Wostream, _docx_drawing & val, bool insideOtherDrawing);    
+	void serialize_text	(std::wostream & strm);
+    void serialize		(std::wostream & strm/*, bool insideOtherDrawing*/);    
 };
 }
 }

@@ -40,7 +40,7 @@
 namespace cpdoccore { 
 namespace oox {
 
-enum RelsType { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroupShape};
+enum RelsType { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia, typeGroupShape, typeObject};
 
 struct _rel
 { 

@@ -43,13 +43,15 @@
 namespace cpdoccore {
 namespace oox {
 
-struct _pptx_drawing : _oox_drawing
+class _pptx_drawing : public _oox_drawing
 {
-	_pptx_drawing(): place_holder_idx_(-1){}
-	std::wstring place_holder_type_;
-	int place_holder_idx_;
+public:
+	_pptx_drawing(): _oox_drawing(), place_holder_idx_(-1) {}
+	
+	std::wstring	place_holder_type_;
+	int				place_holder_idx_;
 
-    friend void pptx_serialize(std::wostream & _Wostream, _pptx_drawing & val);    
+    void serialize (std::wostream & _Wostream);    
 };
 
 }

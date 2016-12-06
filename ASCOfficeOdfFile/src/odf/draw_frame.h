@@ -35,12 +35,20 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 #include "datatypes/common_attlists.h"
-#include "../docx/xlsxconversioncontext.h"
+
+//#include "../docx/xlsxconversioncontext.h"
 
 namespace cpdoccore { 
+	namespace oox
+	{
+		class _oox_drawing;
+	}
+	typedef shared_ptr<oox::_oox_drawing>::Type oox_drawing_ptr;
+
 namespace odf_reader {
 
 /// draw-image-attlist
@@ -53,7 +61,6 @@ public:
     _CP_OPT(std::wstring) draw_filter_name_;
 
 };
-
 
 class draw_image : public office_element_impl<draw_image>
 {
@@ -150,20 +157,17 @@ public:
     static const ElementType	type		= typeDrawFrame;
     CPDOCCORE_DEFINE_VISITABLE();
 
+	draw_frame() : oox_drawing_(NULL) {}
+
     virtual void docx_convert(oox::docx_conversion_context & Context);
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
     virtual void pptx_convert_placeHolder(oox::pptx_conversion_context & Context);
 
-public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
 	int idx_in_owner ;
+	
 	odf_types::common_presentation_attlist	common_presentation_attlist_;
 	odf_types::union_common_draw_attlists	common_draw_attlists_;
   
@@ -184,6 +188,13 @@ public:
     friend class odf_document;
     friend class draw_image;
 	friend class draw_chart;
+
+	oox_drawing_ptr							oox_drawing_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_frame);

@@ -148,6 +148,7 @@ private:
     element_ptr fontTable_;
     element_ptr numbering_;
     element_ptr media_;
+    element_ptr embeddings_;
     element_ptr headers_footers_;
     element_ptr notes_;
     element_ptr settings_;

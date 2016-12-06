@@ -76,7 +76,7 @@ public:
     {}
     std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
-    const std::wstring & part_name() const { return part_name_; }
+    const std::wstring & part_name()	const { return part_name_; }
     const std::wstring & content_type() const { return content_type_; }
 
 public:

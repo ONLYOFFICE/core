@@ -66,7 +66,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
-	math_context_		(odf_document_->odf_context().fontContainer(), true),
+	math_context_		(true),
 	xlsx_style_			(this),
 	
 	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),

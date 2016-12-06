@@ -230,11 +230,7 @@ void draw_path::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_path::reset_svg_path()
 {
-	if (!draw_path_attlist_.svg_d_)
-	{
-		bad_shape_ = true;
-	}
-	else
+	if (draw_path_attlist_.svg_d_)
 	{
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
@@ -290,11 +286,7 @@ void draw_polygon::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_polygon::reset_polygon_path()
 {
-	if (!draw_polygon_attlist_.draw_points_)
-	{
-		bad_shape_ = true;
-	}
-	else
+	if (draw_polygon_attlist_.draw_points_)
 	{
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
@@ -346,11 +338,7 @@ void draw_polyline::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_polyline::reset_polyline_path()
 {
-	if (!draw_polyline_attlist_.draw_points_)
-	{
-		bad_shape_ = true;
-	}
-	else
+	if (draw_polyline_attlist_.draw_points_)
 	{
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
@@ -613,11 +601,7 @@ void draw_connector::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void draw_connector::reset_svg_path()
 {
-	if (!draw_connector_attlist_.svg_d_)
-	{
-		bad_shape_ = true;
-	}
-	else
+	if (draw_connector_attlist_.svg_d_)
 	{
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;

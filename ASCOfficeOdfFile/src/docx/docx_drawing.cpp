@@ -268,7 +268,7 @@ void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
 				{
 					CP_XML_ATTR(L"txBox", 1);
 				}
-				if (val.inGroup == false && val.sub_type != 1 && val.sub_type != 2)
+				if (val.inGroup == false)
 				{
 					CP_XML_NODE(L"a:spLocks")
 					{
@@ -437,6 +437,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 					{
 						std::wstring relativeFrom = L"margin";
 						if (val.styleHorizontalRel) relativeFrom =val.styleHorizontalRel->get_type_str();
+						
+						if (relativeFrom == L"column") relativeFrom = L"margin";
 
 						CP_XML_ATTR(L"relativeFrom", relativeFrom);
 
@@ -506,10 +508,8 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 				}
 				if (val.pctHeight)
 				{
-					std::wstring relativeFrom = L"margin";
-					if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();	
-
-					if (relativeFrom == L"paragraph") relativeFrom = L"margin";
+					std::wstring relativeFrom = L"paragraph";
+					if (val.styleVerticalRel)relativeFrom = val.styleVerticalRel->get_type_str();					
 					
 					CP_XML_NODE(L"wp14:sizeRelV")
 					{

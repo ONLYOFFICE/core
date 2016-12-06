@@ -46,16 +46,16 @@ namespace oox {
 
 struct xlsx_drawing_position
 {
-    enum type_t {from, to};
-    type_t type; 
-    xlsx_table_position position;
+    enum type_t {from, to}	type;
+    xlsx_table_position		position;
 
-    friend void xlsx_serialize(std::wostream & _Wostream, xlsx_drawing_position const & val);
+    void serialize(std::wostream & _Wostream);
 };
 
 
-struct _xlsx_drawing : _oox_drawing
+class _xlsx_drawing : public _oox_drawing
 {
+public:
 	_xlsx_drawing() : _oox_drawing(), type_anchor(1) {}
 	
 	int type_anchor;
@@ -65,8 +65,7 @@ struct _xlsx_drawing : _oox_drawing
 
 	std::wstring			content_group_;
 
-    
-    friend void xlsx_serialize(std::wostream & _Wostream, _xlsx_drawing & val);    
+    void serialize (std::wostream & _Wostream);    
 };
 }
 }

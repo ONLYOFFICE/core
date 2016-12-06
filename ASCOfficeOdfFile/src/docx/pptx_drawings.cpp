@@ -92,9 +92,9 @@ public:
     }
 	void serialize(std::wostream & strm)
 	{
-		BOOST_FOREACH(_pptx_drawing & d, pptx_drawings_)
+		for (int i = 0; i < pptx_drawings_.size(); i++)
 		{
-			pptx_serialize(strm,d);
+			pptx_drawings_[i].serialize(strm);
 		}
 	}
 

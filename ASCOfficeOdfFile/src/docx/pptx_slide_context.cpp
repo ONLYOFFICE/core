@@ -477,8 +477,8 @@ void pptx_slide_context::process_charts()
 ////////////////////////////////////////////////////////////////
         std::wstring ref;
         bool isMediaInternal = true;
-        drawing.chartId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, typeChart, isMediaInternal, ref);        
-        impl_->add_drawing(drawing, isMediaInternal, drawing.chartId, ref, typeChart);
+        drawing.objectId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, typeChart, isMediaInternal, ref);        
+        impl_->add_drawing(drawing, isMediaInternal, drawing.objectId, ref, typeChart);
     }
 }
 

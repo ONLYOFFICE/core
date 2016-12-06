@@ -50,7 +50,7 @@ public:
  		count_image		= 0;
  		count_tables	= 0;
  		count_media		= 0;
-			
+		count_object	= 0;
 	}
 
     struct item 
@@ -77,6 +77,7 @@ public:
 	size_t count_media;
 	size_t count_shape;
 	size_t count_tables;
+	size_t count_object;
 
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref);

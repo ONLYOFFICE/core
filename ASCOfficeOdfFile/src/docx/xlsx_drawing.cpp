@@ -48,7 +48,7 @@ std::wostream & operator << (std::wostream & strm, xlsx_drawing_position::type_t
 }
 
 }
-void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
+void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val)
 {
 	_CP_OPT(std::wstring) strTextContent;
 	odf_reader::GetProperty ( val.additional ,L"text-content", strTextContent);
@@ -60,7 +60,8 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
     {
 		CP_XML_NODE(L"xdr:txBody")
 		{  
-			oox_serialize_bodyPr(CP_XML_STREAM(), val);
+			val.serialize_bodyPr(CP_XML_STREAM());
+			
 			CP_XML_NODE(L"a:lstStyle");
 			if (strTextContent)
 			{				
@@ -70,30 +71,30 @@ void xlsx_serialize_text(std::wostream & strm, _xlsx_drawing & val )
     }
 }
 
-void xlsx_serialize(std::wostream & strm, const xlsx_drawing_position & val)
+void xlsx_drawing_position::serialize(std::wostream & strm)
 {
     CP_XML_WRITER(strm)
     {
-        CP_XML_NODE(std::wstring(L"xdr:") + (val.type == xlsx_drawing_position::from ? L"from" : L"to") )
+        CP_XML_NODE(std::wstring(L"xdr:") + (type == xlsx_drawing_position::from ? L"from" : L"to") )
         {
             CP_XML_NODE(L"xdr:col")
             {
-                CP_XML_CONTENT(val.position.col);
+                CP_XML_CONTENT(position.col);
             }
             
             CP_XML_NODE(L"xdr:colOff")
             {
-                CP_XML_CONTENT(static_cast<size_t>(val.position.colOff));
+                CP_XML_CONTENT(static_cast<size_t>(position.colOff));
             }
 
             CP_XML_NODE(L"xdr:row")
             {
-                CP_XML_CONTENT(val.position.row);
+                CP_XML_CONTENT(position.row);
             }
 
             CP_XML_NODE(L"xdr:rowOff")
             {
-                CP_XML_CONTENT(static_cast<size_t>(val.position.rowOff));
+                CP_XML_CONTENT(static_cast<size_t>(position.rowOff));
             }  
         }
     }
@@ -129,7 +130,7 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing & val)
 
             CP_XML_NODE(L"xdr:spPr")
             {
-				oox_serialize_xfrm(CP_XML_STREAM(),val);
+				val.serialize_xfrm(CP_XML_STREAM());
 
                 CP_XML_NODE(L"a:prstGeom")
                 {                   
@@ -166,9 +167,9 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
             } // xdr:nv_Pr
 			CP_XML_NODE(L"xdr:spPr")
             {
-				oox_serialize_xfrm(CP_XML_STREAM(),val);
+				val.serialize_xfrm(CP_XML_STREAM());
 
-				oox_serialize_shape(CP_XML_STREAM(),val);
+				val.serialize_shape(CP_XML_STREAM());
 				
 				bool draw_always = false;
 				if (val.sub_type == 5 || val.sub_type == 6)//line собственно ) - если ее нет - в свойствах будет
@@ -198,7 +199,7 @@ void xlsx_serialize_group(std::wostream & strm, _xlsx_drawing & val)
             }
 			CP_XML_NODE(L"xdr:grpSpPr")
 			{
-				oox_serialize_xfrm(CP_XML_STREAM(),val);
+				val.serialize_xfrm(CP_XML_STREAM());
 
 			} 
 			CP_XML_STREAM() << val.content_group_;
@@ -222,7 +223,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 
                 CP_XML_NODE(L"xdr:cNvGraphicFramePr");
             } 
-			oox_serialize_xfrm(CP_XML_STREAM(),val,L"xdr");
+			val.serialize_xfrm(CP_XML_STREAM(), L"xdr");
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -235,7 +236,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 					{
 						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-						CP_XML_ATTR(L"r:id", val.chartId);
+						CP_XML_ATTR(L"r:id", val.objectId);
 					}
 				}
 			}               
@@ -261,22 +262,24 @@ void xlsx_serialize_object(std::wostream & strm, _xlsx_drawing & val)
 		xlsx_serialize_group(strm, val);
 	}
 }
-void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
+
+void _xlsx_drawing::serialize(std::wostream & strm)
 {
-	if (val.inGroup) return xlsx_serialize_object(strm, val);
+	if (inGroup) 
+		return xlsx_serialize_object(strm, *this);
 	
 	CP_XML_WRITER(strm)    
     {
-		if (val.type_anchor == 1)
+		if (type_anchor == 1)
 		{
 			CP_XML_NODE(L"xdr:twoCellAnchor")
 			{
 				CP_XML_ATTR(L"editAs", L"oneCell");//"absolute");oneCell
 
-				xlsx_serialize			(CP_XML_STREAM(), val.from_);
-				xlsx_serialize			(CP_XML_STREAM(), val.to_);
+				from_.serialize	(CP_XML_STREAM());
+				to_.serialize	(CP_XML_STREAM());
 
-				xlsx_serialize_object	(CP_XML_STREAM(),val);
+				xlsx_serialize_object	(CP_XML_STREAM(), *this);
 				
 				CP_XML_NODE(L"xdr:clientData");
 			}
@@ -287,17 +290,17 @@ void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
 			{
 				CP_XML_NODE(L"xdr:pos")
 				{
-					CP_XML_ATTR(L"x", val.x);
-					CP_XML_ATTR(L"y", val.y);
+					CP_XML_ATTR(L"x", x);
+					CP_XML_ATTR(L"y", y);
 				}
 
 				CP_XML_NODE(L"xdr:ext")
 				{
-					CP_XML_ATTR(L"cx", val.cx);
-					CP_XML_ATTR(L"cy", val.cy);
+					CP_XML_ATTR(L"cx", cx);
+					CP_XML_ATTR(L"cy", cy);
 				}
 
-				xlsx_serialize_object	(CP_XML_STREAM(),val);
+				xlsx_serialize_object	(CP_XML_STREAM(), *this);
 				
 				CP_XML_NODE(L"xdr:clientData");
 			}

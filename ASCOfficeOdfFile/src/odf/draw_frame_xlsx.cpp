@@ -53,7 +53,7 @@
 #include "odf_document_impl.h"
 
 #include "calcs_styles.h"
-#include "../docx/oox_drawing.h"
+#include "../docx/xlsx_drawing.h"
 #include "chart_build_oox.h"
 
 #include "datatypes/length.h"
@@ -190,6 +190,9 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
 																	Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_drawing_context().set_fill(fill);
+
+	oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
+
 ////////////////////////////////////////////////
 	for (int i = 0 ; i < content_.size(); i++)
     {

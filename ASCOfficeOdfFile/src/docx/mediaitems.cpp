@@ -82,6 +82,8 @@ std::wstring static get_default_file_name(RelsType type)
         return L"chart";
     case typeMedia:
         return L"media";
+    case typeObject:
+        return L"oleObject";
 	default:
         return L"";
     }
@@ -156,21 +158,26 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		sub_path = L"charts/";
 	}
+	if ( type == typeObject)
+	{
+		sub_path = L"embeddings/";
+	}
 	int number=0;
 	
 		 if ( type == typeChart)	number = count_charts	+ 1;
 	else if ( type == typeImage)	number = count_image	+ 1;
 	else if ( type == typeShape)	number = count_shape	+ 1;
 	else if ( type == typeMedia)	number = count_media	+ 1;
+	else if ( type == typeObject)	number = count_object	+ 1;
 	else
-		number = items_.size()+1;
+		number = items_.size() + 1;
 	
 	inputFileName = create_file_name(href, type, isMediaInternal, number);
 	
     std::wstring inputPath	= isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath	= isMediaInternal ? ( sub_path + inputFileName)		 : href;
 	
-	if ( type == typeChart) outputPath= outputPath + L".xml";
+	if ( type == typeChart) outputPath = outputPath + L".xml";
 
 	std::wstring id;
     for (int i = 0 ; i < items_.size(); i++)
@@ -192,7 +199,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		if ( type == typeChart)
 		{
-			id = std::wstring(L"chId") + std::to_wstring(count_charts+1);
+			id = std::wstring(L"chId") + std::to_wstring(count_charts + 1);
 			count_charts++;
 		}
 		else if ( type == typeImage)
@@ -205,12 +212,17 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 //------------------------------------------------
 			if (inputFileName.empty()) return L"";
 
-			id = std::wstring(L"picId") + std::to_wstring(count_image+1);
+			id = std::wstring(L"picId") + std::to_wstring(count_image + 1);
 			count_image++;
+		}
+		else if ( type == typeObject)
+		{
+			id = std::wstring(L"objId") + std::to_wstring(count_object + 1);
+			count_object++;
 		}
 		else
 		{
-			id = std::wstring(L"rId") + std::to_wstring(count_shape+1);
+			id = std::wstring(L"rId") + std::to_wstring(count_shape + 1);	
 			count_shape++;
 		}
 		

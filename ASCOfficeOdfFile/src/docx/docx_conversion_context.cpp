@@ -133,6 +133,7 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
 	next_dump_page_properties_	(false),
+	page_break_					(false),
 	page_break_after_			(false),
 	page_break_before_			(false),
 	in_run_						(false),

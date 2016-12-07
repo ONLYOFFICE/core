@@ -2738,7 +2738,14 @@ namespace NExtractTools
 
 		//clean up v8
 		NSDoctRenderer::CDocBuilder::Dispose();
-		return result;
+		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;
+		}
+		else
+		{
+			return result;
+		}
 	}
 
 	int FromFile(const std::wstring& file)

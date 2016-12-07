@@ -45,7 +45,7 @@
 #include <iostream>
 #include <fstream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes))
 
 namespace NExtractTools
 {
@@ -337,6 +337,8 @@ namespace NExtractTools
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
+		//output params
+		mutable bool m_bOutputConvertCorrupted;
 	public:
 		InputParams()
 		{
@@ -358,6 +360,8 @@ namespace NExtractTools
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
+
+			m_bOutputConvertCorrupted = false;
 		}
 		~InputParams()
 		{

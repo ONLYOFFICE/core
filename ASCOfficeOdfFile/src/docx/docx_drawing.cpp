@@ -622,7 +622,8 @@ void _docx_drawing::serialize(std::wostream & strm/*, bool insideOtherDrawing*/)
 	if (inGroup)
 		return docx_serialize_child(strm, *this);
 	
-	if (type == typeObject)
+	if (type == typeMsObject ||
+		type == typeOleObject)
 	{
 		docx_serialize_object(strm, *this);
 	}

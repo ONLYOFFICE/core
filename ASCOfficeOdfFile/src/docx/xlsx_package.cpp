@@ -181,30 +181,30 @@ void xl_files::write(const std::wstring & RootPath)
         sharedStrings_->write(path);
         rels_files_.add( relationship( L"shId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings", L"sharedStrings.xml" ) );
     }
-
     if (styles_)
     {
        styles_->write(path);
        rels_files_.add( relationship( L"stId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" ) );
     }
-
     if (workbook_)
     {
         workbook_->write(path);
     }
-
     if (theme_)
     {
         theme_->write(path);
     }
-
     if (media_)
     {
         media_->set_main_document(get_main_document());
         media_->write(path);
     }
-
+    if (embeddings_)
     {
+        embeddings_->set_main_document(get_main_document());
+        embeddings_->write(path);
+    }
+	{
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
@@ -243,7 +243,15 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
 
 void xl_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	{
+		media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	}
+
+	if (_Mediaitems.count_object > 0)
+	{
+		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+	}
 }
 void xl_files::set_comments(element_ptr Element)
 {
@@ -313,7 +321,7 @@ void xl_drawings::write(const std::wstring & RootPath)
         rels_files relFiles;
         rels_file_ptr r = rels_file::create(e.filename + L".rels");
         
-		e.drawings->dump_rels(r->get_rels());
+		e.drawings->dump_rels_drawing(r->get_rels());
                 
         relFiles.add_rel_file(r);
         relFiles.write(path);

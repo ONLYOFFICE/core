@@ -102,7 +102,17 @@ enum ElementType
     typeTextUserIndex,
     typeTextAlphabeticalIndex,
     typeTextBibliography,
-    
+
+	typeTextBibliographyMark,
+  	
+    typeTextTableOfContentSource,
+    typeTextIllustrationIndexSource,
+    typeTextTableIndexSource,
+    typeTextObjectIndexSource,
+    typeTextUserIndexSource,
+    typeTextAlphabeticalIndexSource,
+    typeTextBibliographySource,
+
 	typeTextTrackedChanges,
 	typeTextChangedRegion,
 	typeTextChangeStart,

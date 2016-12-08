@@ -1105,6 +1105,121 @@ void text_alphabetical_index::add_child_element( xml::sax * Reader, const std::w
     }
     // todooo text-alphabetical-index-source
 }
+// text:bibliography
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_bibliography::ns = L"text";
+const wchar_t * text_bibliography::name = L"bibliography";
+
+void text_bibliography::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_bibliography::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
+void text_bibliography::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_bibliography::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+std::wostream & text_bibliography::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_bibliography::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_bibliography::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // todooo text-bibliography-source
+}
+// text:bibliography
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_bibliography_mark::ns = L"text";
+const wchar_t * text_bibliography_mark::name = L"bibliography-mark";
+
+void text_bibliography_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:identifier",			text_identifier_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:bibliography-type",	text_bibliography_type_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:author",				text_author_);
+    CP_APPLY_ATTR(L"text:url",					text_url_);
+    CP_APPLY_ATTR(L"text:title",				text_title_);
+    CP_APPLY_ATTR(L"text:year",					text_year_);
+///
+}
+
+void text_bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_bibliography_attr_.add_attributes( Attributes );
+}
+
+void text_bibliography_mark::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+}
+
+void text_bibliography_mark::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+	content_ = elm;
+}
+
+std::wostream & text_bibliography_mark::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(content_);
+    return _Wostream;
+}
+
+void text_bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (content_)
+        content_->docx_convert(Context);
+}
+
+void text_bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (content_)
+        content_->pptx_convert(Context);
+}
 
 //--------------------------------------------------------------------------------------------------------
 // text:tracked-changes

@@ -127,7 +127,10 @@ public:
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
-    void dump_rels_hyperlinks				(rels & Rels);
+    void serialize_ole_objects				(std::wostream & _Wostream);
+    
+	void dump_rels_hyperlinks				(rels & Rels);
+	void dump_rels_ole_objects				(rels & Rels);
 
     std::wstring get_table_name()	const { return tableName_; }
 	int			 get_table_id()		const { return tableId_; }

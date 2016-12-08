@@ -85,11 +85,6 @@ void draw_chart_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 const wchar_t * draw_image::ns = L"draw";
 const wchar_t * draw_image::name = L"image";
 
-std::wostream & draw_image::text_to_stream(std::wostream & _Wostream) const
-{
-    return _Wostream;
-}
-
 void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_image_attlist_.add_attributes(Attributes);

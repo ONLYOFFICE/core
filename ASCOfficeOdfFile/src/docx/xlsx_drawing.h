@@ -49,7 +49,7 @@ struct xlsx_drawing_position
     enum type_t {from, to}	type;
     xlsx_table_position		position;
 
-    void serialize(std::wostream & _Wostream);
+	void serialize(std::wostream & _Wostream, std::wstring ns = L"xdr:");
 };
 
 
@@ -65,7 +65,8 @@ public:
 
 	std::wstring			content_group_;
 
-    void serialize (std::wostream & _Wostream);    
+    void serialize			(std::wostream & strm);    
+    void serialize_object	(std::wostream & strm);    
 };
 }
 }

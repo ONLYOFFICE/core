@@ -403,7 +403,10 @@ void xlsx_table_state::serialize_merge_cells(std::wostream & _Wostream)
 {
     return xlsx_merge_cells_.xlsx_serialize(_Wostream);
 }
-
+void xlsx_table_state::serialize_ole_objects(std::wostream & _Wostream)
+{
+    return xlsx_drawing_context_.get_drawings()->serialize_objects(_Wostream);
+}
 void xlsx_table_state::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return xlsx_hyperlinks_.xlsx_serialize(_Wostream);
@@ -415,6 +418,10 @@ void xlsx_table_state::serialize_conditionalFormatting(std::wostream & _Wostream
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {
     return xlsx_hyperlinks_.dump_rels(Rels);
+}
+void xlsx_table_state::dump_rels_ole_objects(rels & Rels)
+{
+    return get_drawing_context().get_drawings()->dump_rels_sheet(Rels);
 }
 
 void xlsx_table_state::start_hyperlink()

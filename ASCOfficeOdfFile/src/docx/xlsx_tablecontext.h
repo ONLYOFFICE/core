@@ -88,6 +88,8 @@ public:
     void serialize_merge_cells			(std::wostream & _Wostream);
 	void serialize_table_format			(std::wostream & _Wostream);
 	void serialize_conditionalFormatting(std::wostream & _Wostream);
+	void serialize_hyperlinks			(std::wostream & _Wostream);
+	void serialize_ole_objects			(std::wostream & _Wostream);
 
 	xlsx_table_metrics & get_table_metrics();
   
@@ -103,10 +105,9 @@ public:
 	void			start_hyperlink();
 	std::wstring	end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display);
 
-	void dump_rels_hyperlinks(rels & Rels);
-	
-	void serialize_hyperlinks(std::wostream & _Wostream);
-	
+	void dump_rels_hyperlinks	(rels & Rels);
+	void dump_rels_ole_objects	(rels & Rels);
+
 	void start_database_range(std::wstring table_name, std::wstring ref);
 		void set_database_orientation	(bool val);
 		void set_database_header		(bool val);

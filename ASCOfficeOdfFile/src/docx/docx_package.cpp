@@ -141,7 +141,7 @@ void word_files::update_rels(docx_conversion_context & Context)
 
 void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-	if (_Mediaitems.count_image > 0)
+	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
 	{
 		media_		= element_ptr( new media(_Mediaitems, pAppFonts) );
 	}

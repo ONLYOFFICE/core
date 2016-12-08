@@ -39,7 +39,6 @@
 namespace cpdoccore { 
 namespace oox {
 
-
 class mediaitems
 {
 public:
@@ -84,6 +83,20 @@ public:
     
 	void dump_rels(rels & Rels);
     items_array & items() { return items_; }
+
+	static std::wstring get_rel_type(RelsType type)
+	{
+		switch (type)
+		{
+		case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+		case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+		case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+		case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+		case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
+		default:
+			return L"";
+		}
+	}
 
 private:
 	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);

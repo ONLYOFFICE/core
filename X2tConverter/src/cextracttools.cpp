@@ -298,7 +298,6 @@ namespace NExtractTools
     }
     int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
 	{
-        int nRes = 0;
 		std::wstring sBinDir = FileSystem::Directory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
@@ -317,7 +316,7 @@ namespace NExtractTools
                 if (!sResult.empty() && -1 != sResult.find(_T("error")))
                 {
                     std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
-                    nRes = AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;
+					params.m_bOutputConvertCorrupted = true;
                     int nErrorIndex = -1;
                     int nErrorIndexStart = sResult.find(_T("index"));
                     if (-1 != nErrorIndexStart)
@@ -364,6 +363,6 @@ namespace NExtractTools
         }
 		else
 			sBinTo = sBinFrom;
-        return nRes;
+		return 0;
     }
 }

@@ -54,8 +54,10 @@ public:
     std::wstringstream	sort_;
     std::wstringstream	autofilter_;
 	std::wstringstream	conditionalFormatting_;
+	std::wstringstream	ole_objects_;
 
 	rels hyperlinks_rels_;
+	rels ole_objects_rels_;
 
     std::wstring drawingName_;
     std::wstring drawingId_;
@@ -128,9 +130,18 @@ std::wostream & xlsx_xml_worksheet::hyperlinks()
 {
     return impl_->hyperlinks_;
 }
+std::wostream & xlsx_xml_worksheet::ole_objects()
+{
+    return impl_->ole_objects_;
+}
+//---------------------------------------------------------------------------------------
 rels & xlsx_xml_worksheet::hyperlinks_rels()
 {
     return impl_->hyperlinks_rels_;
+}
+rels & xlsx_xml_worksheet::ole_objects_rels()
+{
+    return impl_->ole_objects_rels_;
 }
 void xlsx_xml_worksheet::write_to(std::wostream & strm)
 {
@@ -138,10 +149,12 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
     {
         CP_XML_NODE(L"worksheet")
         {
-            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");        
-            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-            CP_XML_ATTR(L"xmlns:mc", L"http://schemas.openxmlformats.org/markup-compatibility/2006");
-            CP_XML_ATTR(L"mc:Ignorable", L"x14ac");
+            CP_XML_ATTR(L"xmlns",		L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");        
+            CP_XML_ATTR(L"xmlns:r",		L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+			CP_XML_ATTR(L"xmlns:xdr",	L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+			CP_XML_ATTR(L"xmlns:x14",	L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
+            CP_XML_ATTR(L"xmlns:mc",	L"http://schemas.openxmlformats.org/markup-compatibility/2006");
+            CP_XML_ATTR(L"mc:Ignorable",L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
 			CP_XML_STREAM() << impl_->sheetFormat_.str();
@@ -179,7 +192,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id",impl_->vml_drawingId_);
 				}
 			}
-
+			if (!impl_->ole_objects_.str().empty())
+            {
+                CP_XML_NODE(L"oleObjects")
+                {
+                    CP_XML_STREAM() << impl_->ole_objects_.str();
+                }
+            }
 			//CP_XML_NODE(L"headerFooter){}
 
 			//CP_XML_NODE(L"rowBreaks){}
@@ -216,44 +235,6 @@ std::pair<std::wstring, std::wstring> xlsx_xml_worksheet::get_vml_drawing_link()
 {
     return std::pair<std::wstring, std::wstring>(impl_->vml_drawingName_, impl_->vml_drawingId_);
 }
-
-//class xlsx_xml_workbook::Impl: noncopyable
-//{
-//public:
-//    std::wstringstream sheets_;
-//};
-//
-//xlsx_xml_workbook::xlsx_xml_workbook() : impl_(new xlsx_xml_workbook::Impl)
-//{
-//}
-//
-//xlsx_xml_workbook::~xlsx_xml_workbook()
-//{
-//}
-//
-//std::wostream & xlsx_xml_workbook::sheets()
-//{
-//    return impl_->sheets_;
-//}
-//
-//void xlsx_xml_workbook::write_to(std::wostream & strm)
-//{
-//    CP_XML_WRITER(strm)
-//    {
-//        CP_XML_NODE(L"workbook")
-//        {
-//            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-//            CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-//
-//            CP_XML_NODE(L"sheets")
-//            {
-//                CP_XML_STREAM() << impl_->sheets_.str();            
-//            }
-//        }    
-//    }
-//}
-//
-
 
 }
 }

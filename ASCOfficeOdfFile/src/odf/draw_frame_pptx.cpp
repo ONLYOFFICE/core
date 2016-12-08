@@ -86,6 +86,8 @@ void draw_frame::pptx_convert_placeHolder(oox::pptx_conversion_context & Context
 }
 void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	Context.get_slide_context().start_frame();
+
 	common_draw_shape_with_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_;
 
     const int z_index = common_draw_attlist_.common_draw_z_index_attlist_.draw_z_index_.get_value_or(0);
@@ -206,13 +208,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
     }
 
 	Context.get_text_context().end_base_style();
+
+	Context.get_slide_context().end_frame();
 }
 
 void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 {
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
 
-    Context.get_slide_context().start_image(href);
+    Context.get_slide_context().set_image(href);
 ////////////////////////////////////в принципе достаточно общая часть ...	
 	Context.get_text_context().start_object();
 
@@ -224,25 +228,23 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (text_content_.length()>0)
 	{
-		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+		Context.get_slide_context().set_property(_property(L"text-content", text_content_));
 	}
-////////////////////////////////////////////////////////////////////////////3 раза уже повторилась Content -> Context
-    Context.get_slide_context().end_image();
 }
 void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
 {
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
-    Context.get_slide_context().start_chart(href);
+	Context.get_slide_context().set_chart(href);
 
 	for (int i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
-    Context.get_slide_context().end_chart();
 }
+
 void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	Context.get_slide_context().start_shape(2);//rect с наваротами
+	Context.get_slide_context().set_text_box();	//rect с наваротами
 	Context.get_text_context().start_object();
 
 	for (int i = 0; i < content_.size(); i++)
@@ -256,7 +258,6 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 	}
-    Context.get_slide_context().end_shape();    
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -282,11 +283,8 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		{
 			//здесь другой формат xml (не Open Office)
 			//временно - замещающая картинка(если она конечно присутствует)
-			Context.get_slide_context().start_object_ole();
 			return;
 		}
-
-
 		object_odf_context objectBuild(href);
 
 		process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
@@ -300,12 +298,11 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
 			objectBuild.pptx_convert(Context);
 			
-			Context.get_slide_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
-			Context.get_slide_context().end_chart();		
+			Context.get_slide_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 		}
 		else if (objectBuild.object_type_ == 2)//odt текст
 		{
-			Context.get_slide_context().start_shape(2); 
+			Context.get_slide_context().set_text_box(); 
 			Context.get_text_context().start_object();
 
 			//сменить контекст с главного на другой ... проблема со стилями!!
@@ -320,11 +317,10 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			{
 				Context.get_slide_context().set_property(_property(L"text-content",text_content_));
 			}
-			Context.get_slide_context().end_shape();		
 		}
 		else if (objectBuild.object_type_ == 3) //мат формулы
 		{
-			Context.get_slide_context().start_shape(2);  
+			Context.get_slide_context().set_text_box();  
 
 			objectBuild.pptx_convert(Context);
 			
@@ -342,11 +338,10 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().set_property(_property(L"fit-to-size",	true));		
 				Context.get_slide_context().set_property(_property(L"text-content",	text_content));
 			}
-			Context.get_slide_context().end_shape();		
 		}
 		else
 		{
-			//временно - замещающая картинка(если она конечно присутствует)
+			//замещающая картинка(если она конечно присутствует)
 			Context.get_slide_context().set_use_image_replacement();
 		}
 	
@@ -359,14 +354,14 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//объект бин в embeddings
-	//Context.get_slide_context().start_object_ole();
-	//распознать тип по guid???
+			Context.get_slide_context().set_use_image_replacement();
+	
+	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring folderPath = Context.root()->get_folder();
+	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-	//временно - замещающая картинка(если она конечно присутствует)
-	Context.get_slide_context().set_use_image_replacement();
-
-	//Context.get_slide_context().end_object_ole();
+	if (!href.empty()) 
+		Context.get_slide_context().set_ole_object(href, detectObject(objectPath));
 }
 
 }

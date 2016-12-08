@@ -39,15 +39,27 @@
 
 #include <cpdoccore/xml/utils.h>
 
-#include "mediaitems_utils.h"
-
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace cpdoccore { 
 namespace oox {
 
+bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
+{
+	if (uri.empty())return false;
+
+    std::wstring mediaPath = boost::regex_search(uri.begin(), uri.end(), boost::wregex(L"^/[A-Za-z]:")) 
+        ? std::wstring(uri.begin() + 1, uri.end()) 
+        : uri;
+
+	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
+
+	return FileSystem::Directory::IsExist(resultPath) || FileSystem::Directory::IsExist(mediaPath);
+}
 
 mediaitems::item::item(	std::wstring const & _href,
                        RelsType _type,
@@ -55,12 +67,12 @@ mediaitems::item::item(	std::wstring const & _href,
 						bool _mediaInternal,
 						std::wstring const & _Id
 					   )
-                       : href(_href),
-                       type(_type),
-                       outputName(_outputName),
-                       mediaInternal(_mediaInternal),
-					   Id(_Id),
-                       valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
+           : href(_href),
+           type(_type),
+           outputName(_outputName),
+           mediaInternal(_mediaInternal),
+		   Id(_Id),
+           valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
 {    
 	count_add = 1;
 	count_used = 0;
@@ -82,8 +94,10 @@ std::wstring static get_default_file_name(RelsType type)
         return L"chart";
     case typeMedia:
         return L"media";
-    case typeObject:
-        return L"oleObject";
+    case typeMsObject:
+       return L"msObject";
+	case typeOleObject:
+       return L"oleObject";
 	default:
         return L"";
     }
@@ -123,7 +137,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 		}
 	}
 
-	if (type == typeObject && sExt.empty())
+	if (type == typeOleObject && sExt.empty())
 		sExt = L".bin";
    
 	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
@@ -152,7 +166,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
-    bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
+    bool isMediaInternal = is_internal(href, odf_packet_);
   
 	std::wstring sub_path = L"media/";
 	
@@ -161,17 +175,18 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		sub_path = L"charts/";
 	}
-	if ( type == typeObject)
+	if ( type == typeMsObject || type == typeOleObject)
 	{
 		sub_path = L"embeddings/";
 	}
 	int number=0;
 	
-		 if ( type == typeChart)	number = count_charts	+ 1;
-	else if ( type == typeImage)	number = count_image	+ 1;
-	else if ( type == typeShape)	number = count_shape	+ 1;
-	else if ( type == typeMedia)	number = count_media	+ 1;
-	else if ( type == typeObject)	number = count_object	+ 1;
+		 if ( type == typeChart)		number = count_charts	+ 1;
+	else if ( type == typeImage)		number = count_image	+ 1;
+	else if ( type == typeShape)		number = count_shape	+ 1;
+	else if ( type == typeMedia)		number = count_media	+ 1;
+	else if ( type == typeMsObject ||
+			  type == typeOleObject)	number = count_object	+ 1;
 	else
 		number = items_.size() + 1;
 	
@@ -218,7 +233,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 			id = std::wstring(L"picId") + std::to_wstring(count_image + 1);
 			count_image++;
 		}
-		else if ( type == typeObject)
+		else if ( type == typeMsObject || type == typeOleObject)
 		{
 			id = std::wstring(L"objId") + std::to_wstring(count_object + 1);
 			count_object++;
@@ -240,16 +255,17 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 void mediaitems::dump_rels(rels & Rels)
 {
     size_t i = 0;
-    BOOST_FOREACH(item & elm, items_)
+    for (int i = 0; i < items_.size(); i++)
     {
-		if (elm.count_used > elm.count_add)continue; // уже использовали этот релс выше(колонтитул ....)
-        Rels.add( relationship(
-                elm.Id, 
-                utils::media::get_rel_type(elm.type), 
-                elm.valid ? elm.outputName : L"NULL", 
-                elm.mediaInternal ? L"" : L"External" )
+		if (items_[i].count_used > items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
+        
+		Rels.add( relationship(
+                items_[i].Id, 
+                get_rel_type (items_[i].type), 
+                items_[i].valid			? items_[i].outputName	: L"NULL", 
+                items_[i].mediaInternal	? L""					: L"External" )
                 );
-		elm.count_used++;
+		items_[i].count_used++;
     }        
 }
 

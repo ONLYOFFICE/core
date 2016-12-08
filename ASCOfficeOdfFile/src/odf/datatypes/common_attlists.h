@@ -116,7 +116,6 @@ public:
     void apply_from(const common_horizontal_margin_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length_or_percent) fo_margin_left_;
     _CP_OPT(length_or_percent) fo_margin_right_;
 };
@@ -129,7 +128,6 @@ public:
     void apply_from(const common_vertical_margin_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length_or_percent) fo_margin_top_;
     _CP_OPT(length_or_percent) fo_margin_bottom_;
 };
@@ -143,10 +141,7 @@ public:
 
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length_or_percent) fo_margin_;
-
-    friend class style_page_layout_properties_attlist;
 };
 
 //  common-math_style_attlist
@@ -158,9 +153,7 @@ public:
 
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(math_variant) mathvariant_;
-
 };
 
 // common-break-attlist
@@ -171,7 +164,6 @@ public:
     void apply_from(const common_break_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(fo_break) fo_break_before_;
     _CP_OPT(fo_break) fo_break_after_;
 
@@ -185,7 +177,6 @@ public:
     void apply_from(const common_page_number_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(unsigned int) style_page_number_;
 
 };
@@ -198,7 +189,6 @@ public:
     void apply_from(const common_background_color_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(background_color) fo_background_color_;
 
 };
@@ -211,7 +201,6 @@ public:
     void apply_from(const common_shadow_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
 	_CP_OPT(shadow_type) style_shadow_;
 
 };
@@ -224,7 +213,6 @@ public:
     void apply_from(const common_keep_with_next_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(keep_together) keep_together_;
 
 };
@@ -238,7 +226,6 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(writing_mode) style_writing_mode_;
-
 };
 
 /// common-draw-data-attlist
@@ -249,7 +236,6 @@ public:
     void apply_from(const common_xlink_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring)	href_;
     _CP_OPT(xlink_type)		type_;
     _CP_OPT(xlink_show)		show_;    
@@ -265,7 +251,6 @@ public:
     void apply_from(const common_value_and_type_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(office_value_type)	office_value_type_;
     _CP_OPT(std::wstring)		office_value_;
     _CP_OPT(std::wstring)		office_currency_;
@@ -273,7 +258,6 @@ public:
     _CP_OPT(std::wstring)		office_time_value_;
     _CP_OPT(std::wstring)		office_boolean_value_;
     _CP_OPT(std::wstring)		office_string_value_;
-
 };
 
 // common-border-attlist
@@ -284,7 +268,6 @@ public:
     void apply_from(const common_border_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(border_style) fo_border_;
     _CP_OPT(border_style) fo_border_top_;
     _CP_OPT(border_style) fo_border_bottom_;
@@ -301,16 +284,10 @@ public:
     void apply_from(const common_border_line_width_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
-    // style:border-line-width
     _CP_OPT(border_widths) style_border_line_width_;
-    // style:border-line-width-top
     _CP_OPT(border_widths) style_border_line_width_top_;
-    // style:border-line-width-bottom
     _CP_OPT(border_widths) style_border_line_width_bottom_;
-    // style:border-line-width-left
     _CP_OPT(border_widths) style_border_line_width_left_;
-    // style:border-line-width-right
     _CP_OPT(border_widths) style_border_line_width_right_;
 
 };
@@ -323,7 +300,6 @@ public:
     void apply_from(const common_padding_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length) fo_padding_;
     
     _CP_OPT(length) fo_padding_top_;
@@ -340,12 +316,11 @@ public:
     void apply_from(const common_rotation_angle_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(unsigned int) style_rotation_angle_;
 
 };
 
-///         common-num-format-attlist
+// common-num-format-attlist
 class common_num_format_attlist
 {
 public:
@@ -353,13 +328,12 @@ public:
     void apply_from(const common_num_format_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring)	style_num_format_;
     _CP_OPT(Bool)			style_num_letter_sync_;
 
 };
 
-///         common-num-format-prefix-suffix-attlist
+// common-num-format-prefix-suffix-attlist
 class common_num_format_prefix_suffix_attlist
 {
 public:
@@ -367,13 +341,12 @@ public:
     void apply_from(const common_num_format_prefix_suffix_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) style_num_prefix_;
     _CP_OPT(std::wstring) style_num_suffix_;
 };
 
 
-///         common-text-align
+// common-text-align
 class common_text_align
 {
 public:
@@ -381,11 +354,10 @@ public:
     void apply_from(const common_text_align & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(text_align) fo_text_align_;
 };
 
-///         common-draw-size-attlist
+// common-draw-size-attlist
 class common_draw_size_attlist
 {
 public:
@@ -393,7 +365,6 @@ public:
     void apply_from(const common_draw_size_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length) svg_width_;
     _CP_OPT(length) svg_height_;
 
@@ -407,7 +378,6 @@ public:
     void apply_from(const common_text_anchor_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(anchor_type)	type_;
     _CP_OPT(unsigned int)	page_number_;
 };
@@ -424,7 +394,6 @@ public:
     }
 	void serialize(CP_ATTR_NODE){}
 
-public:
  //   _CP_OPT(animation_type)			type_;
 	//_CP_OPT(animation_direction)	direction_;
 	//text:animation
@@ -435,7 +404,7 @@ public:
 };
 
 
-///         common-draw-rel-size-attlist
+// common-draw-rel-size-attlist
 class common_draw_rel_size_attlist
 {
 public:
@@ -449,7 +418,7 @@ public:
     _CP_OPT(percent_or_scale)	style_rel_height_;
 };
 
-///         common-vertical-rel-attlist
+// common-vertical-rel-attlist
 class common_vertical_rel_attlist 
 {
 public:
@@ -457,12 +426,11 @@ public:
     void apply_from(const common_vertical_rel_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 	
-public:
     _CP_OPT(vertical_rel) style_vertical_rel_; 
 
 };
 
-///         common-horizontal-rel-attlist
+// common-horizontal-rel-attlist
 class common_horizontal_rel_attlist 
 {
 public:
@@ -470,12 +438,11 @@ public:
     void apply_from(const common_horizontal_rel_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(horizontal_rel) style_horizontal_rel_;
 
 };
 
-///         common-vertical-pos-attlist
+// common-vertical-pos-attlist
 class common_vertical_pos_attlist
 {
 public:
@@ -483,13 +450,12 @@ public:
     void apply_from(const common_vertical_pos_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(vertical_pos) style_vertical_pos_;
     _CP_OPT(length) svg_y_;
 
 };
 
-///         common-horizontal-pos-attlist
+// common-horizontal-pos-attlist
 class common_horizontal_pos_attlist
 {
 public:
@@ -498,13 +464,12 @@ public:
     void apply_from(const common_horizontal_pos_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(horizontal_pos) style_horizontal_pos_;
     _CP_OPT(length) svg_x_;
 
 };
 
-///         common-draw-style-name-attlist
+// common-draw-style-name-attlist
 class common_draw_style_name_attlist
 {
 public:
@@ -512,7 +477,6 @@ public:
     void apply_from(const common_draw_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(style_ref) draw_style_name_;
     _CP_OPT(std::wstring) draw_class_names_;
     _CP_OPT(style_ref) presentation_style_name_;
@@ -528,7 +492,6 @@ public:
     void apply_from(const common_draw_z_index_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(int) draw_z_index_;
 };
 
@@ -540,7 +503,6 @@ public:
     void apply_from(const common_draw_id_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) draw_id_;
 };
 
@@ -552,7 +514,6 @@ public:
     void apply_from(const common_draw_layer_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) draw_layer_;
 };
 
@@ -564,7 +525,6 @@ public:
     void apply_from(const common_draw_transform_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) draw_transform_;
 };
 
@@ -576,7 +536,6 @@ public:
     void apply_from(const common_draw_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) draw_name_;
 };
 
@@ -588,7 +547,6 @@ public:
     void apply_from(const common_text_spreadsheet_shape_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring)		table_end_cell_address_;
     _CP_OPT(length)				table_end_x_;
     _CP_OPT(length)				table_end_y_;
@@ -606,7 +564,6 @@ public:
     void apply_from(const common_draw_shape_with_styles_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     common_draw_z_index_attlist             common_draw_z_index_attlist_;
     common_draw_id_attlist                  common_draw_id_attlist_;
     common_draw_layer_name_attlist          common_draw_layer_name_attlist_;
@@ -625,7 +582,6 @@ public:
     void apply_from(const common_draw_text_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(style_ref) draw_text_style_name_;
 };
 
@@ -637,7 +593,6 @@ public:
     void apply_from(const common_draw_position_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(length) svg_x_;
     _CP_OPT(length) svg_y_;
 
@@ -651,7 +606,6 @@ public:
     void apply_from(const common_draw_shape_with_text_and_styles_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     common_draw_shape_with_styles_attlist common_draw_shape_with_styles_attlist_;
     common_draw_text_style_name_attlist	 common_draw_text_style_name_attlist_;
 };
@@ -664,7 +618,6 @@ public:
     void apply_from(const presentation_shape_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(std::wstring) presentation_class_;
     _CP_OPT(Bool) presentation_placeholder_;
     _CP_OPT(Bool) presentation_user_transformed_;
@@ -678,7 +631,6 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(style_ref)		style_name_;
     _CP_OPT(std::wstring) number_language_;
     _CP_OPT(std::wstring) number_country_;
@@ -710,7 +662,6 @@ public:
     void apply_from(const common_presentation_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-public:
     _CP_OPT(presentation_class) presentation_class_;
 	_CP_OPT(std::wstring) style_name_;
 	_CP_OPT(Bool) presentation_placeholder_;
@@ -726,7 +677,6 @@ public:
     void apply_from(const common_anim_smil_attlist & Other);
 	void serialize(CP_ATTR_NODE){}
 
-public:
 	//_CP_OPT(std::wstring) smil_direction_;
 	//_CP_OPT(std::wstring) smil_subtype_; 
 	//_CP_OPT(std::wstring) smil_type_;

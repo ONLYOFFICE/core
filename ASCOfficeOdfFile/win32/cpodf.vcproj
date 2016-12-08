@@ -923,14 +923,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\docx\mediaitems_utils.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\docx\mediaitems_utils.h"
-					>
-				</File>
-				<File
 					RelativePath="..\src\docx\oox_conversion_context.cpp"
 					>
 				</File>

@@ -55,7 +55,7 @@ struct drawing_elm
     xlsx_drawings_ptr	drawings;
 };
 
-struct _xlsx_drawing;
+class _xlsx_drawing;
 
 class xlsx_drawings
 {
@@ -64,14 +64,15 @@ public:
     ~xlsx_drawings	();
     static xlsx_drawings_ptr create(bool inGroup);
 
-public:
-    void add	(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type);
-    void add	(bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type );
+    void add ( _xlsx_drawing const & d,	bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
+    void add (							bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel = false );
     
-	bool empty		() const;
-    void dump_rels	(rels & Rels);
+	bool empty				() const;
+    void dump_rels_sheet	(rels & Rels);
+    void dump_rels_drawing	(rels & Rels);
 
-    friend void xlsx_serialize(std::wostream & _Wostream, xlsx_drawings const & val);    
+    void serialize			(std::wostream & _Wostream);  
+	void serialize_objects	(std::wostream & _Wostream);  
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

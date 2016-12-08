@@ -107,7 +107,7 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
 
             CP_XML_NODE(L"p:spPr")
             {
-				val.serialize_xfrm(CP_XML_STREAM());
+				val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
 
                 CP_XML_NODE(L"a:prstGeom")
                 {                   
@@ -170,7 +170,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 
 				if (!bNoRect)
 				{					
-					val.serialize_xfrm(CP_XML_STREAM());
+					val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
 					val.serialize_shape(CP_XML_STREAM());
 
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
@@ -198,7 +198,7 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
             } 
-			val.serialize_xfrm(CP_XML_STREAM(), L"p");
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -235,7 +235,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
             } 
-			val.serialize_xfrm(CP_XML_STREAM(), L"p");
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -276,7 +276,7 @@ void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
             } 
-			val.serialize_xfrm(CP_XML_STREAM(), L"p");
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 

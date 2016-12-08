@@ -238,6 +238,7 @@ private:
 
 	element_ptr			comments_;
     element_ptr			media_;
+    element_ptr			embeddings_;
 };
 
 //  xlsx_document

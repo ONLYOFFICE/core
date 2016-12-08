@@ -133,14 +133,46 @@ public:
         return pptx_drawings_;
     }
 	std::wstring  odfPacket_;
+    
+	void process_drawings();
 
 private:
+	void process_common_properties(drawing_object_description& obj,_pptx_drawing & drawing);
+
+	void process_shape	(drawing_object_description& obj, _pptx_drawing & drawing);
+    void process_image	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_chart	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_table	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_object	(drawing_object_description& obj, _pptx_drawing & drawing);
+	
 	size_t rId_;
 	mediaitems mediaitems_;
     pptx_drawings_ptr pptx_drawings_;
 };
 
+void pptx_slide_context::Impl::process_drawings()
+{
+	for (int i = 0; i < objects_.size(); i++)
+	{
+		_pptx_drawing drawing	=_pptx_drawing();
 
+		drawing.type			= objects_[i].type_;			
+		drawing.name			= objects_[i].name_;
+		drawing.id				= next_rId();			
+		
+		process_common_properties(objects_[i], drawing);
+		
+		switch(objects_[i].type_)
+		{
+			case typeImage:		process_image(objects_[i], drawing);	break;
+			case typeChart:		process_chart(objects_[i], drawing);	break;
+			case typeShape:		process_shape(objects_[i], drawing);	break;
+			case typeTable:		process_table(objects_[i], drawing);	break;
+			case typeMsObject:	
+			case typeOleObject:	process_object(objects_[i], drawing);	break;
+		}
+	}
+}
 
 pptx_slide_context::pptx_slide_context(pptx_conversion_context & Context)
  : impl_(new pptx_slide_context::Impl(Context.root()->get_folder()))
@@ -191,12 +223,11 @@ void pptx_slide_context::set_transitionSpeed(std::wstring val)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void pptx_slide_context::default_set()
 {
-    impl_->object_description_.xlink_href_ = L"";
-
-    impl_->object_description_.name_ = L"";
-  
+    impl_->object_description_.xlink_href_	= L"";
+    impl_->object_description_.name_		= L"";
+	impl_->object_description_.descriptor_  = L"";
+	impl_->object_description_.anchor_		= L"";
 	impl_->object_description_.additional_.clear();
-	impl_->object_description_.anchor_ =L"";
 	
 	impl_->object_description_.clipping_string_= L"";
 	impl_->object_description_.svg_rect_	= boost::none;
@@ -347,7 +378,12 @@ void pptx_slide_context::set_text_box()
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= 2; //2,3... 
 }
-
+void pptx_slide_context::set_object(const std::wstring & path, const std::wstring & progId)
+{
+	impl_->object_description_.type_		= typeMsObject;
+	impl_->object_description_.xlink_href_	= path; 
+	impl_->object_description_.descriptor_	= progId;
+}
 void pptx_slide_context::set_ole_object(const std::wstring & path, const std::wstring & progId)
 {
 	impl_->object_description_.type_		= typeOleObject;
@@ -407,31 +443,12 @@ bool pptx_slide_context::empty() const
 
 void pptx_slide_context::process_drawings()
 {
-	for (int i = 0; i < impl_->objects_.size(); i++)
-	{
-		switch(impl_->objects_[i].type_)
-		{
-			case typeImage:		process_image(impl_->objects_[i]);	break;
-			case typeChart:		process_chart(impl_->objects_[i]);	break;
-			case typeShape:		process_shape(impl_->objects_[i]);	break;
-			case typeTable:		process_table(impl_->objects_[i]);	break;
-			case typeMsObject:	
-			case typeOleObject:	process_object(impl_->objects_[i]);	break;
-		}
-	}
+	return impl_->process_drawings();
 }
 
-void pptx_slide_context::process_image(drawing_object_description& pic)
+void pptx_slide_context::Impl::process_image(drawing_object_description& pic, _pptx_drawing & drawing)
 {
 	int pos_replaicement = 0, pos_preview = 0;
-	
-	_pptx_drawing drawing	=_pptx_drawing();
-
-	drawing.type			= pic.type_;			
-	drawing.name			= pic.name_;
-	drawing.id				= impl_->next_rId();			
-	
-	process_common_properties(pic,drawing);
 	
 	drawing.fill.bitmap		= oox_bitmap_fill::create();
 	drawing.fill.type		= 2;
@@ -444,7 +461,7 @@ void pptx_slide_context::process_image(drawing_object_description& pic)
 		drawing.sub_type	= 2;//rect
 	}
 
-	std::wstring fileName = impl_->odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
+	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
 	drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect, NULL);
 	drawing.fill.bitmap->bStretch = true;
 
@@ -452,78 +469,53 @@ void pptx_slide_context::process_image(drawing_object_description& pic)
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 	
-	drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, typeImage, isMediaInternal, ref);
+	drawing.fill.bitmap->rId = get_mediaitems().add_or_find(pic.xlink_href_, typeImage, isMediaInternal, ref);
 	
 	if (drawing.type == typeShape)
 	{
-		impl_->add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
 	
 		isMediaInternal	= true;
-		std::wstring rId = impl_->get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
-		impl_->add_drawing(drawing, isMediaInternal, rId, ref, typeShape);//объект
+		std::wstring rId = get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+		add_drawing(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
 	}else if (!drawing.fill.bitmap->rId.empty())
 	{
-		impl_->add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//объект
+		add_drawing(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, drawing.type);//объект
 	}
 }
-void pptx_slide_context::process_chart(drawing_object_description & obj)
+void pptx_slide_context::Impl::process_chart(drawing_object_description & obj, _pptx_drawing & drawing)
 {
-	_pptx_drawing drawing	=_pptx_drawing();
-
-	drawing.type			= obj.type_;			
-	drawing.name			= obj.name_;
-	drawing.id				= impl_->next_rId();			
-
-	process_common_properties(obj, drawing);
-
-////////////////////////////////////////////////////////////////
     std::wstring ref;
     bool isMediaInternal = true;
    
-	drawing.objectId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);        
-    impl_->add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
+	drawing.objectId = get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);        
+    add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
 }
 
-void pptx_slide_context::process_table(drawing_object_description & obj)
+void pptx_slide_context::Impl::process_table(drawing_object_description & obj, _pptx_drawing & drawing)
 {
-	_pptx_drawing drawing	=_pptx_drawing();
-	
-	drawing.type			= obj.type_;			
-	drawing.name			= obj.name_;
-	drawing.id				= impl_->next_rId();			
-	
-	process_common_properties(obj, drawing);
-
-////////////////////////////////////////////////////////////////
     std::wstring ref;
     bool isMediaInternal = true;
-	std::wstring rId = impl_->get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);        
+	std::wstring rId = get_mediaitems().add_or_find(L"", obj.type_, isMediaInternal, ref);        
    
-	impl_->add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
+	add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
 }
 
-void pptx_slide_context::process_shape(drawing_object_description & obj)
+void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _pptx_drawing & drawing)
 {
 	int PlaceHolderIndex = 1;
-	_pptx_drawing drawing=_pptx_drawing();
-
-	drawing.type			= obj.type_;			
-	drawing.name			= obj.name_;
-	drawing.id				= impl_->next_rId();			
-
-	process_common_properties(obj, drawing);
 
 	std::wstring ref;
     bool isMediaInternal = true;
 	
 	if (drawing.fill.bitmap)
 	{
-		drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
-		impl_->add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
 	}
 		
-	std::wstring rId = impl_->get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
+	std::wstring rId = get_mediaitems().add_or_find(L"", typeShape, isMediaInternal, ref);
    
 ////////////////////////////////////////////////////////////////
 	_CP_OPT(std::wstring) sPlaceHolderType;
@@ -539,29 +531,27 @@ void pptx_slide_context::process_shape(drawing_object_description & obj)
 
 	drawing.sub_type = obj.shape_type_;
 
-	impl_->add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
+	add_drawing(drawing, isMediaInternal, rId, ref, typeShape);
 }
 
-void pptx_slide_context::process_object(drawing_object_description& obj)
+void pptx_slide_context::Impl::process_object(drawing_object_description& obj, _pptx_drawing & drawing)
 {
-	_pptx_drawing drawing	=_pptx_drawing();
-
-	drawing.type			= obj.type_;			
-	drawing.name			= obj.name_;
-	drawing.id				= impl_->next_rId();			
-
-	process_common_properties(obj, drawing);
-
-////////////////////////////////////////////////////////////////
     std::wstring ref;
     bool isMediaInternal = true;
    
-	drawing.objectId		= impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
+	drawing.objectId		= get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);      
 	drawing.objectProgId	= obj.descriptor_;
 
-    impl_->add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
+    add_drawing(drawing, isMediaInternal, drawing.objectId, ref, drawing.type);
+
+	if (drawing.fill.bitmap)
+	{
+		drawing.fill.bitmap->rId = get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+	}
 }
-void pptx_slide_context::process_common_properties(drawing_object_description & pic,_pptx_drawing & drawing)
+
+void pptx_slide_context::Impl::process_common_properties(drawing_object_description & pic, _pptx_drawing & drawing)
 {
 	if (pic.svg_rect_)
 	{

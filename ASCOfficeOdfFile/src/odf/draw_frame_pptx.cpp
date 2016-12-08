@@ -61,6 +61,8 @@
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
 
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -262,11 +264,9 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
     try {
-        const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
-
-        odf_reader::odf_document * odf_reader	= Context.root();        
-		std::wstring folderPath					= odf_reader->get_folder();
-
+        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+		
+		std::wstring folderPath	= Context.root()->get_folder();
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR +  href;
 
 		//normalize path ??? todooo
@@ -339,6 +339,19 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().set_property(_property(L"text-content",	text_content));
 			}
 		}
+		else if (objectBuild.object_type_ == 4) //embedded sheet
+		{	
+			Context.get_slide_context().set_use_image_replacement();
+
+			std::wstring href_new = office_convert( &objectSubDoc, 2);
+			
+			if (!href_new.empty())
+			{
+				bool isMediaInternal = true;  
+				href += FILE_SEPARATOR_STR + href_new;
+				Context.get_slide_context().set_object(href, L"Excel.Sheet.12");
+			}
+		}
 		else
 		{
 			//замещающая картинка(если она конечно присутствует)
@@ -354,7 +367,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
-			Context.get_slide_context().set_use_image_replacement();
+	Context.get_slide_context().set_use_image_replacement();
 	
 	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 	std::wstring folderPath = Context.root()->get_folder();

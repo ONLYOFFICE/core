@@ -80,6 +80,7 @@ public:
 	void start_frame();
 		void set_image		(std::wstring const & path);
 		void set_chart		(std::wstring const & path);
+		void set_object		(const std::wstring & path, const std::wstring & progId);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_text_box	();
 	void end_frame();
@@ -118,14 +119,7 @@ public:
 	void set_page_number();
 	void set_date_time();
 private:
-	void process_common_properties(drawing_object_description& obj,_pptx_drawing & drawing);
 	void default_set();
-    
-	void process_shape	(drawing_object_description& obj);
-    void process_image	(drawing_object_description& obj);
-	void process_chart	(drawing_object_description& obj);
-	void process_table	(drawing_object_description& obj);
-	void process_object	(drawing_object_description& obj);
 
 	int hlinks_size_;
 	

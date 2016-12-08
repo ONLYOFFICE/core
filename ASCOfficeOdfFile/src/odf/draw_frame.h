@@ -292,16 +292,18 @@ public:
     static const ElementType type = typeDrawObject;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    virtual void docx_convert(oox::docx_conversion_context & Context);
-    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+    virtual void docx_convert (oox::docx_conversion_context & Context);
+    virtual void xlsx_convert (oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert (oox::pptx_conversion_context & Context);
 
     draw_object_attlist					draw_object_attlist_;
     odf_types::common_xlink_attlist		common_xlink_attlist_;
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+	std::wstring office_convert(odf_document * odfDocument, int type);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);

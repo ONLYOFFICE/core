@@ -87,10 +87,10 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
             {
                 CP_XML_NODE(L"p:cNvPr")
                 {
-                    CP_XML_ATTR(L"id", val.id);
-                    CP_XML_ATTR(L"name", val.name);
+                    CP_XML_ATTR(L"id",		val.id);
+                    CP_XML_ATTR(L"name",	val.name);
 
-					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_hlink(CP_XML_STREAM(), val.hlinks);
 
 				}
                 CP_XML_NODE(L"p:cNvPicPr")
@@ -218,7 +218,6 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
 		} // p:graphicFrame
     }  // CP_XML_WRITER  
 }
-
 void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
@@ -260,11 +259,55 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 }
 
 
+void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
+{
+    CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"p:graphicFrame")
+        {                  
+            CP_XML_NODE(L"p:nvGraphicFramePr")
+            {
+                CP_XML_NODE(L"p:cNvPr")
+                {
+                    CP_XML_ATTR(L"id", val.id);
+                    CP_XML_ATTR(L"name", val.name);
+                }
+
+                CP_XML_NODE(L"p:cNvGraphicFramePr");
+				CP_XML_NODE(L"p:nvPr");
+            } 
+			val.serialize_xfrm(CP_XML_STREAM(), L"p");
+
+			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+
+            CP_XML_NODE(L"a:graphic")
+            {                   
+                CP_XML_NODE(L"a:graphicData")
+				{
+					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/presentationml/2006/ole");
+					CP_XML_NODE(L"p:oleObj")
+					{
+						CP_XML_ATTR(L"r:id",	val.objectId);
+						CP_XML_ATTR(L"progId",	val.objectProgId);
+						CP_XML_ATTR(L"imgW",	val.cx );
+						CP_XML_ATTR(L"imgH",	val.cy );
+						CP_XML_NODE(L"p:embed");
+
+						val.id = 0;
+						pptx_serialize_image(CP_XML_STREAM(), val);
+					}
+				}
+			} 
+		} // p:graphicFrame
+    }  // CP_XML_WRITER  
+}
+
+
 void _pptx_drawing::serialize(std::wostream & strm)
 {
 	if (type == typeShape)
 	{
-		serialize_shape(strm);
+		pptx_serialize_shape(strm, *this);
 	}
 	else if (type == typeImage)
 	{
@@ -277,6 +320,11 @@ void _pptx_drawing::serialize(std::wostream & strm)
 	else if (type == typeTable)
 	{
 		pptx_serialize_table(strm, *this);
+	}
+	else if (type == typeMsObject || 
+				type == typeOleObject)
+	{
+		pptx_serialize_object(strm, *this);
 	}
 }
 

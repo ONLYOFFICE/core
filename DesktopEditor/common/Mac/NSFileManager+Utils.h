@@ -42,4 +42,5 @@
 @interface NSFileManager (Utils)
 - (BOOL)copyFolderAtPath:(NSString *)sourceFolder toDestinationFolderAtPath:(NSString*)destinationFolder;
 - (NSString*)createTemporaryDirectory;
+- (void)createDirectory:(NSString*)directory;
 @end

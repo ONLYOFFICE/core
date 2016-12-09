@@ -68,13 +68,20 @@
     NSError *error = nil;
     NSString* path = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), [NSUUID UUID].UUIDString];
     
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
+    if(![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
     {
         NSLog(@"Could not creat temp path %@. error %@", path, error);
         return @"";
     }
     
     return path;
+}
+
+- (void)createDirectory:(NSString*)directory {
+    NSError *error = nil;
+    if(![self createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error]) {
+        NSLog(@"Failed to create directory \"%@\". Error: %@", directory, error);
+    }
 }
 
 @end

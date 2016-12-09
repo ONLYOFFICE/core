@@ -175,13 +175,17 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->xlsx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
+	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//embedded
 	}
 }
 void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
@@ -199,7 +203,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->docx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
@@ -227,7 +231,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if(object_type_ == 4 && office_spreadsheet_)
 	{
-		//office_spreadsheet_
+		//embedded
 	}
 }
 void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
@@ -244,13 +248,17 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->pptx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
+	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//embedded
 	}
 }
 void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash)

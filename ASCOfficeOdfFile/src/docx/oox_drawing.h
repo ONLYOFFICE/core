@@ -81,7 +81,7 @@ namespace oox {
 		virtual void serialize	(std::wostream & strm) = 0;
 
 		void serialize_shape	(std::wostream & strm);
-		void serialize_xfrm		(std::wostream & strm, const std::wstring & namespace_ = L"a");
+		void serialize_xfrm		(std::wostream & strm, const std::wstring & namespace_ = L"a", bool always_position = false);
 		void serialize_bodyPr	(std::wostream & strm, const std::wstring & namespace_ = L"a");
     };
    

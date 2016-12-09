@@ -213,7 +213,6 @@ SOURCES += \
     ../src/docx/hyperlinks.cpp \
     ../src/docx/measuredigits.cpp \
     ../src/docx/mediaitems.cpp \
-    ../src/docx/mediaitems_utils.cpp \
     ../src/docx/namespaces.cpp \
     ../src/docx/oox_chart_axis.cpp \
     ../src/docx/oox_chart_context.cpp \
@@ -462,7 +461,6 @@ HEADERS += \
     ../src/docx/hyperlinks.h \
     ../src/docx/measuredigits.h \
     ../src/docx/mediaitems.h \
-    ../src/docx/mediaitems_utils.h \
     ../src/docx/namespaces.h \
     ../src/docx/oox_chart_axis.h \
     ../src/docx/oox_chart_context.h \

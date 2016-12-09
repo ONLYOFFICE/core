@@ -34,7 +34,6 @@
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "mediaitems_utils.h"
 #include "oox_rels.h"
 
 #include "pptx_drawings.h"
@@ -57,18 +56,18 @@ public:
         pptx_drawings_.push_back(d);
 		
 		bool present = false;
-        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
+        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
         {		
-			if (r.rid == rid && r.ref == ref)
+			if (pptx_drawing_rels_[i].rid == rid && pptx_drawing_rels_[i].ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
 			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
-        BOOST_FOREACH(_hlink_desc h, d.hlinks)
+        for (int i = 0; i < d.hlinks.size(); i++)
         {
-			pptx_drawing_rels_.push_back(_rel(false, h.hId, h.hRef, typeHyperlink));
+			pptx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
     }
 
@@ -80,13 +79,14 @@ public:
     {
 	
 		bool present = false;
-        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
+        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
         {		
-			if (r.rid == rid && r.ref == ref)
+			if (pptx_drawing_rels_[i].rid == rid && pptx_drawing_rels_[i].ref == ref)
 				present = true;
 		}
 		if (!present)
 		{
+			if (type == typeHyperlink)	isInternal = false;
 			pptx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
     }
@@ -105,47 +105,28 @@ public:
 
     void dump_rels(rels & Rels)
     {
-        BOOST_FOREACH(_rel const & r, pptx_drawing_rels_)
+        for (int i = 0; i < pptx_drawing_rels_.size(); i++)
         {
-			if (r.type == typeChart)//временно - нужно потом все загнать в релс
+			if (pptx_drawing_rels_[i].type == typeUnknown		|| 
+				pptx_drawing_rels_[i].type == typeTable			||
+				pptx_drawing_rels_[i].type == typeShape			||
+				pptx_drawing_rels_[i].type == typeGroupShape)	continue;
+
+			if (pptx_drawing_rels_[i].type == typeComment)
 			{
-				Rels.add(relationship(
-							r.rid,
-							utils::media::get_rel_type(r.type),
-							(r.is_internal ? std::wstring(L"../") + r.ref : r.ref),
-							(r.is_internal ? L"" : L"External")
-							) 
-					);
-			}
-			else if (r.type == typeImage)
-			{
-				Rels.add(relationship(
-							r.rid,
-							utils::media::get_rel_type(r.type),
-							r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
-							(r.is_internal ? L"" : L"External")
-							) 
-					);
-			}
- 			else if (r.type == typeHyperlink)
-			{
-				Rels.add(relationship(
-							r.rid,
-							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							r.ref,
-							L"External")
-				);
-			}
-			else if (r.type == typeComment)
-			{
-				Rels.add(relationship(
-							r.rid,
+				Rels.add(relationship( pptx_drawing_rels_[i].rid,
 							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
-							r.ref)
-				);
+							pptx_drawing_rels_[i].ref) );
+			}
+			else
+			{
+				Rels.add(relationship( pptx_drawing_rels_[i].rid, 
+							mediaitems::get_rel_type(pptx_drawing_rels_[i].type),
+							(pptx_drawing_rels_[i].is_internal ? std::wstring(L"../") + pptx_drawing_rels_[i].ref : pptx_drawing_rels_[i].ref),
+							(pptx_drawing_rels_[i].is_internal ? L"" : L"External")) );
 			}
 		}
-    }
+	}
 
 private:
 

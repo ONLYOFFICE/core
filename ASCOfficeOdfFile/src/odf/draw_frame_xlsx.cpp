@@ -128,6 +128,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 //////////////////////////////////////////////////////////////////////////
 	Context.get_drawing_context().start_drawing( name);
+	Context.get_drawing_context().start_frame();
 	
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
@@ -199,6 +200,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 		office_element_ptr const & elm = content_[i];
         elm->xlsx_convert(Context);
     }
+	Context.get_drawing_context().end_frame();
     Context.get_drawing_context().end_drawing();    
 
 	Context.get_drawing_context().clear();
@@ -207,7 +209,8 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
-    Context.get_drawing_context().start_image(href);
+    Context.get_drawing_context().set_image(href);
+
 ////////////////////////////////////в принципе достаточно общая часть ...
 	Context.get_text_context().start_drawing_content();//...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
 
@@ -219,25 +222,24 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (text_content_.length()>0)
 	{
-		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
+		Context.get_drawing_context().set_property(_property(L"text-content", text_content_));
 	}
-////////////////////////////////////////////////////////////////////////////3 раза уже повторилась Content -> Context
-    Context.get_drawing_context().end_image();
 }
+
 void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
-    Context.get_drawing_context().start_chart(href);
+    Context.get_drawing_context().set_chart(href);
 
  	for (int i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }
-    Context.get_drawing_context().end_chart();
 }
 void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_drawing_context().start_shape(2);//rect с наваротами
+	Context.get_drawing_context().set_text_box();
+
 	Context.get_text_context().start_drawing_content();
 
 	for (int i = 0 ; i < content_.size(); i++)
@@ -251,26 +253,20 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
 	}
-    Context.get_drawing_context().end_shape();  
 }
 void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     try {
-        const std::wstring href	= common_xlink_attlist_.href_.get_value_or(L"");
+        std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
-        odf_reader::odf_document * odf_reader = Context.root();
-        
-		std::wstring folderPath = odf_reader->get_folder();
+		std::wstring folderPath = Context.root()->get_folder();
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 		// normalize path ???? todooo
 		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
-///////////////////////////////////////////////////////////////////////////
-//функциональная часть
+//---------------------------------------------------------------------------------------------------------------------
 		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		object_odf_context objectBuild(href);
 		
@@ -279,39 +275,30 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
 			contentSubDoc->accept(process_build_object_); 
 		}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//отображательная часть
-
+//---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1) //диаграмма
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
 			objectBuild.xlsx_convert(Context);
 			
-			Context.get_drawing_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
-			Context.get_drawing_context().end_chart();		
+			Context.get_drawing_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 		}
 		else if (objectBuild.object_type_ == 2) //текст (odt text)
 		{
-			Context.get_drawing_context().start_shape(2); 
-			Context.get_text_context().start_drawing_content();
+			Context.get_drawing_context().set_use_image_replacement();
 
-			//сменить контекст с главного на другой ... проблема со стилями!!
-			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
-
-			objectBuild.xlsx_convert(Context);
+			std::wstring href_new = office_convert( &objectSubDoc, 1);
 			
-			std::wstring text_content = Context.get_text_context().end_drawing_content();
-			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
-
-			if (!text_content.empty())
+			if (!href_new.empty())
 			{
-				Context.get_drawing_context().set_property(_property(L"text-content", text_content));
+				bool isMediaInternal = true;  
+				href += FILE_SEPARATOR_STR + href_new;
+				Context.get_drawing_context().set_ms_object(href, L"Word.Document");
 			}
-			Context.get_drawing_context().end_shape();		
 		}
 		else if (objectBuild.object_type_ == 3) //мат формулы
 		{
-			Context.get_drawing_context().start_shape(2); 
+			Context.get_drawing_context().set_text_box(); 
 
 			objectBuild.xlsx_convert(Context);
 			
@@ -329,11 +316,15 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 				Context.get_drawing_context().set_property(_property(L"fit-to-size",	true));		
 				Context.get_drawing_context().set_property(_property(L"text-content",	text_content));
 			}
-			Context.get_drawing_context().end_shape();	
+		}
+		else if (objectBuild.object_type_ == 4) // embedded sheet
+		{
+			Context.get_drawing_context().set_use_image_replacement();
+			//???
 		}
 		else
 		{
-			//временно - замещающая картинка(если она конечно присутствует)
+			//замещающая картинка(если она конечно присутствует)
 			Context.get_drawing_context().set_use_image_replacement();
 		}
 	
@@ -343,15 +334,20 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
         _CP_LOG << "[error] : convert draw::object error" << std::endl;
     }
 }
-void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
-{
-	//временно - замещающая картинка(если она конечно присутствует)
-	//Context.get_drawing_context().start_object_ole();
 
+void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
+{	
 	Context.get_drawing_context().set_use_image_replacement();
 
-	//Context.get_drawing_context().end_object_ole();
+	std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
+	std::wstring folderPath = Context.root()->get_folder();
+	std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
+
+	if (!href.empty()) 
+		Context.get_drawing_context().set_ole_object(href, detectObject(objectPath));
+	
 }
+
 }
 }
 

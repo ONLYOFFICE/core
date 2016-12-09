@@ -426,7 +426,7 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 	}
 }
 
-void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & name_space)
+void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & name_space, bool always_position)
 {
 	CP_XML_WRITER(strm)
     {
@@ -470,7 +470,7 @@ void _oox_drawing::serialize_xfrm(std::wostream & strm, const std::wstring & nam
 
 			CP_XML_NODE(L"a:off") 
 			{
-				if (inGroup)
+				if (inGroup || always_position)
 				{	
 					CP_XML_ATTR(L"x", x);
 					CP_XML_ATTR(L"y", y);

@@ -62,8 +62,10 @@ public:
 	std::wostream & autofilter();
 	std::wostream & conditionalFormatting();
 	std::wostream & sort();
+	std::wostream & ole_objects();
 	
 	rels & hyperlinks_rels();
+	rels & ole_objects_rels();
 
     void write_to(std::wostream & strm);
 

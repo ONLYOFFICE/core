@@ -1134,14 +1134,14 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
 			CP_XML_NODE(L"w:pgMar")
 			{
-				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
-				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
-				CP_XML_ATTR(L"w:gutter"	, 0 );
-				
 				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_	, margin_left_length) );
 				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, margin_right_length) );
 				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	, Context.get_header_footer_context().header()) );
 				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_	, Context.get_header_footer_context().footer()) );
+				
+				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
+				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
+				CP_XML_ATTR(L"w:gutter"	, 0 );
 			}
 		}
 
@@ -1286,19 +1286,17 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 		{
 			Context.process_section( CP_XML_STREAM(), columns);
 			
+			bool next_page = Context.is_next_dump_page_properties();
+			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (Context.is_next_dump_page_properties())
-				{
-					CP_XML_ATTR(L"w:val", L"nextPage");
-				}else
-				{
-					CP_XML_ATTR(L"w:val", L"continuous");
-				}
+				if (next_page)	CP_XML_ATTR(L"w:val", L"nextPage");
+				else			CP_XML_ATTR(L"w:val", L"continuous");
 			}			
 
 			std::wstring masterPageName = Context.get_master_page_name();
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+			
 			if (res == false)
 			{
 				// default???
@@ -1308,7 +1306,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 				Context.remove_page_properties();
 				Context.add_page_properties(masterPageNameLayout);
 				
-				bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+				bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
 			}
 	
 			oox::section_context::_section & section = Context.get_section_context().get();

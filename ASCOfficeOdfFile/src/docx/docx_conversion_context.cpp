@@ -82,6 +82,8 @@ void text_tracked_context::start_changes_content()
 
 void text_tracked_context::end_changes_content()
 {
+	docx_context_.finish_run();	//0106GS-GettingStartedWithWriter_el.odt - удаленный заголовок
+
 	current_state_.content.push_back(changes_stream_.str());
 	
 	docx_context_.set_delete_text_state	(false);		
@@ -130,7 +132,6 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 //----------------------------------------------------------------------------------------------------------------
 
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
-	mediaitems_			(OdfDocument->get_folder() ),
 	next_dump_page_properties_	(false),
 	page_break_					(false),
 	page_break_after_			(false),
@@ -151,7 +152,8 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
 	process_comment_			(false),
-	math_context_				(false),
+	mediaitems_					(OdfDocument->get_folder() ),
+	math_context_				(OdfDocument->odf_context().fontContainer(), false),
 	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
@@ -833,13 +835,20 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
  //in_styles = true -> styles.xml
 //почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
 {
+	bool in_drawing	= false;
+
+ 	if (get_drawing_context().get_current_shape() || get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+	}
 	std::wstringstream & paragraph_style	= get_styles_context().paragraph_nodes();
  	std::wstringstream & run_style			= get_styles_context().text_style();
    
 	CP_XML_WRITER(strm)
 	{
+		//Tutor_Charlotte_Tutor_the_Entire_World_.odt
 		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_ || in_header_) 
-			 && !get_table_context().in_table())
+			 && !get_table_context().in_table() && !in_drawing)
 		{//две подряд секции или если стиль определен и в заголовки нельзя пихать !!!
 			CP_XML_NODE(L"w:pPr")
 			{
@@ -854,7 +863,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 		{		
 			CP_XML_NODE(L"w:pPr")
 			{
-				if ( !get_table_context().in_table() )
+				if ( !get_table_context().in_table() && !in_drawing)
 				{
 					CP_XML_STREAM() << get_section_context().dump_;
 					get_section_context().dump_.clear();

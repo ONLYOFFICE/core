@@ -234,7 +234,6 @@ public:
 
 };
 
-//---------------------------------------------------------------------------------------------------
 class text_section : public text_content_impl<text_section>
 {
 public:
@@ -360,6 +359,9 @@ public:
     static const ElementType	type		= typeTextIllustrationIndex;
     
 	CPDOCCORE_DEFINE_VISITABLE();
+  
+	virtual void afterCreate();
+    virtual void afterReadContent();
     
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
@@ -377,7 +379,114 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index);
+//---------------------------------------------------------------------------------------------------
+class text_alphabetical_index : public text_content_impl<text_alphabetical_index>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextAlphabeticalIndex;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+    virtual void afterCreate();
+    virtual void afterReadContent();
 
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+public:
+    text_section_attr	text_section_attr_;
+    office_element_ptr	text_alphabetical_index_source_;
+    office_element_ptr	text_index_body_;
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index);
+//------------------------------------------------------------------------------------------------------------
+class text_bibliography : public text_content_impl<text_bibliography>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextBibliography;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+    
+    virtual void afterCreate();
+    virtual void afterReadContent();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+
+public:
+    text_section_attr	text_section_attr_;
+    office_element_ptr	text_bibliography_source_;
+    office_element_ptr	text_index_body_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography);
+//---------------------------------------------------------------------------------------------------
+//typeTextTableIndex,
+//typeTextObjectIndex,
+//typeTextUserIndex,
+
+//---------------------------------------------------------------------------------------------------
+//text:bibliography-mark
+
+class text_bibliography_attr
+{
+public:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+
+    std::wstring			text_identifier_;
+    std::wstring			text_bibliography_type_; // todoooo in datatype
+    
+	_CP_OPT(std::wstring)	text_url_;
+    _CP_OPT(std::wstring)	text_author_;
+    _CP_OPT(std::wstring)	text_title_;
+    _CP_OPT(std::wstring)	text_year_;
+    _CP_OPT(std::wstring)	text_isbn_;
+	_CP_OPT(std::wstring)	text_chapter_;
+	//todooo to map or list
+};
+
+class text_bibliography_mark : public text_content_impl<text_bibliography_mark>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeTextBibliographyMark;
+    
+	CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+    virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
+
+    text_bibliography_attr	text_bibliography_attr_;
+    office_element_ptr		content_;
+
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_text			(const std::wstring & Text);
+};
+CP_REGISTER_OFFICE_ELEMENT2(text_bibliography_mark);
 //---------------------------------------------------------------------------------------------------
 class text_index_body : public text_content_impl<text_index_body>
 {
@@ -393,13 +502,11 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
+    office_element_ptr_array index_content_main_;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-public:
-    office_element_ptr_array index_content_main_;
-    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_body);
 
@@ -428,6 +535,9 @@ public:
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_index_title);
+
+//---------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------
 class text_unknown_base_change : public office_element_impl<text_unknown_base_change>
 {

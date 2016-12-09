@@ -137,7 +137,14 @@ typedef std::map<std::wstring, oox::text_tracked_context::_state>::iterator map_
 
 int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
 {
-    if (!Attr.text_style_name_.empty())
+	bool in_drawing	= false;
+
+ 	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+	}
+	
+	if (!Attr.text_style_name_.empty())
     {
         if (style_instance * styleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_.style_name(), style_family::Paragraph, Context.process_headers_footers_)
@@ -180,7 +187,7 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 					Context.end_automatic_style();
 
                     Context.push_text_properties(styleContent->get_style_text_properties());
-                    return 1;
+					return 1;
                 }            
             }
             else
@@ -188,9 +195,10 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
                 Context.output_stream() << L"<w:pPr>";
 //todooo причесать			
-					if (!Context.get_section_context().dump_.empty()	&&  
-						!Context.get_table_context().in_table()			&& 
-						(Context.get_process_note() == oox::docx_conversion_context::noNote))
+					if (!Context.get_section_context().dump_.empty()
+						&& !Context.get_table_context().in_table()
+						&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+						&& !in_drawing)
 					{
 						if (Context.is_paragraph_header() )
 						{
@@ -236,9 +244,10 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
 			}
 		}
 	}
-	if (!Context.get_section_context().dump_.empty()	&&  
-		!Context.get_table_context().in_table()			&& 
-		(Context.get_process_note() == oox::docx_conversion_context::noNote))
+	if (!Context.get_section_context().dump_.empty() 
+		&& !Context.get_table_context().in_table()
+		&& (Context.get_process_note() == oox::docx_conversion_context::noNote)
+		&& !in_drawing)
 	{
         Context.output_stream() << L"<w:pPr>";
 			Context.output_stream() << Context.get_section_context().dump_;
@@ -361,18 +370,18 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
     const std::wstring & styleName = attrs_.text_style_name_.style_name();
 	
-	bool drawing	= false;
+	bool in_drawing	= false;
 
  	if (Context.get_drawing_context().get_current_shape() || Context.get_drawing_context().get_current_frame())
 	{
-		drawing = true;
+		in_drawing = true;
 	}
 		
 	bool bIsNewParagraph = true;
 	
 	bool is_empty = content_.empty();
 
-	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !drawing)
+	if (Context.get_paragraph_state() && (Context.get_process_note() == oox::docx_conversion_context::noNote) && !in_drawing)
     {//вложеннные элементы ... или после графики embedded_linux_kernel_and_drivers_labs_zh_TW.odt
 		bIsNewParagraph = false;
 		
@@ -425,8 +434,6 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		Context.remove_page_properties();
 		Context.add_page_properties(masterPageNameLayout);
 
-		Context.set_page_break(true);
-
 		is_empty = false;
     }    
 
@@ -453,7 +460,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 
-				_Wostream << L"<w:lastRenderedPageBreak/>";
+				//_Wostream << L"<w:lastRenderedPageBreak/>";
+				_Wostream << L"<w:br w:type=\"page\"/>";  
 			Context.set_page_break(false);
 		}
         elm->docx_convert(Context); 
@@ -482,7 +490,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 
 		is_empty = false;
         Context.add_new_run(_T(""));
-        _Wostream << L"<w:br w:type=\"page\" />";        
+        _Wostream << L"<w:br w:type=\"page\"/>";        
         Context.finish_run();
     }
 
@@ -967,9 +975,39 @@ void text_table_index::add_child_element( xml::sax * Reader, const std::wstring 
 const wchar_t * text_illustration_index::ns = L"text";
 const wchar_t * text_illustration_index::name = L"illustration-index";
 
+void text_illustration_index::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_illustration_index::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
 void text_illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
-    if (text_index_body_)
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
         text_index_body_->docx_convert(Context);
 }
 
@@ -997,8 +1035,192 @@ void text_illustration_index::add_child_element( xml::sax * Reader, const std::w
     {
         CP_CREATE_ELEMENT(text_index_body_);
     }
-    // TODO text-illustration-index-source
+    // todooo text-illustration-index-source
 }
+
+// text:alphabetical-index
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_alphabetical_index::ns = L"text";
+const wchar_t * text_alphabetical_index::name = L"alphabetical-index";
+
+void text_alphabetical_index::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_alphabetical_index::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
+void text_alphabetical_index::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_alphabetical_index::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+std::wostream & text_alphabetical_index::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_alphabetical_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_alphabetical_index::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // todooo text-alphabetical-index-source
+}
+// text:bibliography
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_bibliography::ns = L"text";
+const wchar_t * text_bibliography::name = L"bibliography";
+
+void text_bibliography::afterCreate()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_section(true);        
+        }
+    }
+}
+
+void text_bibliography::afterReadContent()
+{
+    if (document_context * context = getContext())
+    {
+        if (paragraph * lastPar = context->get_last_paragraph())
+        {
+            lastPar->set_next_end_section(true);        
+        }
+    }
+}
+void text_bibliography::docx_convert(oox::docx_conversion_context & Context)
+{
+	std::wstring current_page_properties = Context.get_page_properties();
+   
+	Context.get_section_context().add_section(
+		text_section_attr_.text_name_, 
+		text_section_attr_.text_style_name_.get_value_or(style_ref()).style_name(),
+		current_page_properties
+		);
+	 Context.add_page_properties(current_page_properties);
+
+	 if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_bibliography::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+std::wostream & text_bibliography::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_bibliography::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_bibliography::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // todooo text-bibliography-source
+}
+// text:bibliography
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_bibliography_mark::ns = L"text";
+const wchar_t * text_bibliography_mark::name = L"bibliography-mark";
+
+void text_bibliography_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"text:identifier",			text_identifier_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:bibliography-type",	text_bibliography_type_, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:author",				text_author_);
+    CP_APPLY_ATTR(L"text:url",					text_url_);
+    CP_APPLY_ATTR(L"text:title",				text_title_);
+    CP_APPLY_ATTR(L"text:year",					text_year_);
+///
+}
+
+void text_bibliography_mark::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_bibliography_attr_.add_attributes( Attributes );
+}
+
+void text_bibliography_mark::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+}
+
+void text_bibliography_mark::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+	content_ = elm;
+}
+
+std::wostream & text_bibliography_mark::text_to_stream(std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(content_);
+    return _Wostream;
+}
+
+void text_bibliography_mark::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (content_)
+        content_->docx_convert(Context);
+}
+
+void text_bibliography_mark::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (content_)
+        content_->pptx_convert(Context);
+}
+
 //--------------------------------------------------------------------------------------------------------
 // text:tracked-changes
 const wchar_t * text_tracked_changes::ns	= L"text";

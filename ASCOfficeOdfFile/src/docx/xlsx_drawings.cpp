@@ -36,7 +36,6 @@
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "mediaitems_utils.h"
 #include "oox_rels.h"
 
 namespace cpdoccore {
@@ -45,40 +44,44 @@ namespace oox {
 class xlsx_drawings::Impl
 {
 public:
-    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
+    void add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel )//объект
     {
         xlsx_drawings_.push_back(d);
 		
-		bool present = false;
-		for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
-        {		
-			if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
-				present = true;
-		}
-		if (!present)
-		{
-			xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
-		}
-        for (int i = 0 ; i < d.hlinks.size(); i++)
+		add (isInternal, rid, ref, type, sheet_rel);
+        
+		for (int i = 0 ; i < d.hlinks.size(); i++)
         {
 			xlsx_drawing_rels_.push_back(_rel(false, d.hlinks[i].hId, d.hlinks[i].hRef, typeHyperlink));
 		}
     }
-    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
+    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel) //не объект
     {
 		bool present = false;
-        for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
-        {		
-			if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
-				present = true;
-		}
-		if (!present)
+		
+		if (type == typeHyperlink)	isInternal = false;
+
+		if (sheet_rel)
 		{
-			xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
+			for (int i = 0 ; i < xlsx_sheet_rels_.size(); i++)
+			{		
+				if (xlsx_sheet_rels_[i].rid == rid && xlsx_sheet_rels_[i].ref == ref)
+					present = true;
+			}
+			if (!present)
+				xlsx_sheet_rels_.push_back	(_rel(isInternal, rid, ref, type));
+		}
+		else
+		{
+			for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
+			{		
+				if (xlsx_drawing_rels_[i].rid == rid && xlsx_drawing_rels_[i].ref == ref)
+					present = true;
+			}
+			if (!present)
+				xlsx_drawing_rels_.push_back(_rel(isInternal, rid, ref, type));
 		}
     }
-
-
 	
 	void serialize(std::wostream & strm) 
     {
@@ -107,54 +110,56 @@ public:
 			}
 		}
     }
+	void serialize_objects(std::wostream & strm) 
+    {
+		for (int i = 0 ; i < xlsx_drawings_.size(); i++)
+		{
+			if (xlsx_drawings_[i].type != typeOleObject && xlsx_drawings_[i].type != typeMsObject) continue;
+
+			xlsx_drawings_[i].serialize_object(strm);
+		}
+    }
     
     bool empty() const
     {
         return (xlsx_drawings_.empty());
     }
 
-    void dump_rels(rels & Rels)
+    void dump_rels_drawing(rels & Rels)
     {
         for (int i = 0 ; i < xlsx_drawing_rels_.size(); i++)
         {
-			if (xlsx_drawing_rels_[i].type == typeChart)
+			if (xlsx_drawing_rels_[i].type == typeImage		|| 
+				xlsx_drawing_rels_[i].type == typeMedia		||
+				xlsx_drawing_rels_[i].type == typeChart		||
+				xlsx_drawing_rels_[i].type == typeHyperlink  )
 			{
-				Rels.add(relationship(
-							xlsx_drawing_rels_[i].rid,
-							utils::media::get_rel_type(xlsx_drawing_rels_[i].type),
+
+				Rels.add(relationship( xlsx_drawing_rels_[i].rid,
+							mediaitems::get_rel_type(xlsx_drawing_rels_[i].type),
 							(xlsx_drawing_rels_[i].is_internal ? std::wstring(L"../") + xlsx_drawing_rels_[i].ref : xlsx_drawing_rels_[i].ref),
-							(xlsx_drawing_rels_[i].is_internal ? L"" : L"External")
-							) 
-					);
-			}
-			else if (xlsx_drawing_rels_[i].type == typeImage)
-			{
-				Rels.add(relationship(
-							xlsx_drawing_rels_[i].rid,
-							utils::media::get_rel_type(xlsx_drawing_rels_[i].type),
-							xlsx_drawing_rels_[i].is_internal ? std::wstring(L"../") + xlsx_drawing_rels_[i].ref : xlsx_drawing_rels_[i].ref,
-							(xlsx_drawing_rels_[i].is_internal ? L"" : L"External")
-							) 
-					);
-			}
- 			else if (xlsx_drawing_rels_[i].type == typeHyperlink)
-			{
-				Rels.add(relationship(
-							xlsx_drawing_rels_[i].rid,
-							L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
-							xlsx_drawing_rels_[i].ref,
-							L"External")
-				);
+							(xlsx_drawing_rels_[i].is_internal ? L"" : L"External")) );
 			}
 		}
     }
-
+    void dump_rels_sheet(rels & Rels)
+    {
+        for (int i = 0 ; i < xlsx_sheet_rels_.size(); i++)
+        {
+			Rels.add(relationship( xlsx_sheet_rels_[i].rid,
+						mediaitems::get_rel_type(xlsx_sheet_rels_[i].type),
+						(xlsx_sheet_rels_[i].is_internal ? std::wstring(L"../") + xlsx_sheet_rels_[i].ref : xlsx_sheet_rels_[i].ref),
+						(xlsx_sheet_rels_[i].is_internal ? L"" : L"External")) );
+		}
+    }
 	bool inGroup;
 
 private:
 
 	std::vector<_xlsx_drawing>	xlsx_drawings_;	
+	
 	std::vector<_rel>			xlsx_drawing_rels_;
+	std::vector<_rel>			xlsx_sheet_rels_;
 };
 
 xlsx_drawings::xlsx_drawings(bool inGroup_) : impl_( new xlsx_drawings::Impl() )
@@ -167,19 +172,24 @@ xlsx_drawings::~xlsx_drawings()
 }
 
 void xlsx_drawings::add(_xlsx_drawing const & d, bool isInternal, std::wstring const & rid,
-															std::wstring const & ref, RelsType type)
+															std::wstring const & ref, RelsType type, bool sheet_rel)
 {
-    impl_->add(d, isInternal, rid, ref, type);
+    impl_->add(d, isInternal, rid, ref, type, sheet_rel);
 }
 
-void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type)
+void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel)
 {
-    impl_->add(isInternal, rid, ref, type);
+    impl_->add(isInternal, rid, ref, type, sheet_rel);
 }
 
-void xlsx_serialize(std::wostream & _Wostream, xlsx_drawings const & val)
+void xlsx_drawings::serialize(std::wostream & strm)
 {
-    val.impl_->serialize(_Wostream);
+    impl_->serialize(strm);
+}
+
+void xlsx_drawings::serialize_objects(std::wostream & strm)
+{
+    impl_->serialize_objects(strm);
 }
 
 bool xlsx_drawings::empty() const
@@ -187,9 +197,14 @@ bool xlsx_drawings::empty() const
     return impl_->empty();
 }
 
-void xlsx_drawings::dump_rels(rels & Rels)
+void xlsx_drawings::dump_rels_drawing(rels & Rels)
 {
-    return impl_->dump_rels(Rels);
+    return impl_->dump_rels_drawing(Rels);
+}
+
+void xlsx_drawings::dump_rels_sheet(rels & Rels)
+{
+	return impl_->dump_rels_sheet(Rels);
 }
 
 xlsx_drawings_ptr xlsx_drawings::create(bool inGroup)

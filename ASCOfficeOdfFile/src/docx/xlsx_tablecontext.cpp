@@ -320,9 +320,17 @@ void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return state()->serialize_hyperlinks(_Wostream);
 }
+void xlsx_table_context::serialize_ole_objects(std::wostream & _Wostream)
+{
+    return state()->serialize_ole_objects(_Wostream);
+}
 void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {
 	return state()->dump_rels_hyperlinks(Rels);
+}
+void xlsx_table_context::dump_rels_ole_objects(rels & Rels)
+{
+	return state()->dump_rels_ole_objects(Rels);
 }
 
 xlsx_table_metrics & xlsx_table_context::get_table_metrics()

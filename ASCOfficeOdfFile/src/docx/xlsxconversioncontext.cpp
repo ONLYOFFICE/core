@@ -66,7 +66,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	num_format_context_	(odf_document_->odf_context()),
 	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_	(this, xlsx_text_context_),
-	math_context_		(true),
+	math_context_		(odf_document_->odf_context().fontContainer(), true),
 	xlsx_style_			(this),
 	
 	maxDigitSize_	(std::pair<float,float>(-1.0, -1.0) ),
@@ -132,12 +132,11 @@ void xlsx_conversion_context::end_document()
 {
 	std::wstringstream workbook_content;
 
-    unsigned int count = 0;
-    // добавляем таблицы
-    BOOST_FOREACH(const xlsx_xml_worksheet_ptr& sheet, sheets_)
+	for (int i = 0; i < sheets_.size(); i++)
     {
-        count++;
-		const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
+		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
+		
+		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i+1);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -152,6 +151,7 @@ void xlsx_conversion_context::end_document()
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////
         content->add_rels(sheet->hyperlinks_rels());
+        content->add_rels(sheet->ole_objects_rels());
 /////////////////////////////////////////////////////////////////////////////////////////////////
 		const std::pair<std::wstring, std::wstring> p2 = sheet->get_comments_link();        
 		if (!p2.first.empty())
@@ -179,24 +179,22 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name", sheet->name()); // office 2010 ! ограничение на длину имени !!!
-                CP_XML_ATTR(L"sheetId", count);
-                CP_XML_ATTR(L"state", L"visible");
-                CP_XML_ATTR(L"r:id", id);            
+                CP_XML_ATTR(L"name",	sheet->name()); // office 2010 ! ограничение на длину имени !!!
+                CP_XML_ATTR(L"sheetId", i + 1);
+                CP_XML_ATTR(L"state",	L"visible");
+                CP_XML_ATTR(L"r:id",	id);            
             }
         }
 
     }
 	//добавляем диаграммы
 
-	count = 0;
-    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+    for (int i = 0; i < charts_.size(); i++)
     {
-		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->serialize(content->content());
-		chart->dump_rels(content->get_rel_file()->get_rels());
+		charts_[i]->serialize(content->content());
+		charts_[i]->dump_rels(content->get_rel_file()->get_rels());
 		
 		output_document_->get_xl_files().add_charts(content);
 	}
@@ -322,12 +320,16 @@ void xlsx_conversion_context::end_table()
     get_table_context().serialize_autofilter			(current_sheet().autofilter());
     get_table_context().serialize_sort					(current_sheet().sort());
     get_table_context().serialize_merge_cells			(current_sheet().mergeCells());
-    get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
+    
+	get_drawing_context().set_odf_packet_path			(root()->get_folder());
+    get_drawing_context().process_objects				(get_table_metrics());
+	
+	get_table_context().serialize_hyperlinks			(current_sheet().hyperlinks());
+    get_table_context().serialize_ole_objects			(current_sheet().ole_objects());
+	
 	get_table_context().dump_rels_hyperlinks			(current_sheet().hyperlinks_rels());
+	get_table_context().dump_rels_ole_objects			(current_sheet().ole_objects_rels());
 
-	get_drawing_context().set_odf_packet_path(root()->get_folder());
-
-    get_drawing_context().process_objects(get_table_metrics());
 
 	if (!get_drawing_context().empty())
     {

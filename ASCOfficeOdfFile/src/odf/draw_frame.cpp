@@ -339,6 +339,25 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 	std::wstring folderPath		= odfDocument->get_folder();	
 	std::wstring objectOutPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(folderPath);
 	
+	if (type == 1)
+	{
+		oox::package::docx_document	outputDocx;
+		oox::docx_conversion_context conversionDocxContext ( odfDocument);
+	   
+		conversionDocxContext.set_output_document (&outputDocx);
+		//conversionContext.set_font_directory	(fontsPath);
+		
+		if (odfDocument->docx_convert(conversionDocxContext))
+		{	    
+			outputDocx.write(objectOutPath);
+
+			href_result = common_xlink_attlist_.href_.get_value_or(L"Object");
+			int pos = href_result.find(L"./");
+			if (pos >= 0) href_result = href_result.substr(2);
+			
+			href_result = L"docx" +  href_result + L".docx";
+		}
+	}
 	if (type == 2)
 	{
 		oox::package::xlsx_document	outputXlsx;

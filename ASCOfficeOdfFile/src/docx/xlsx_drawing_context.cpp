@@ -288,8 +288,13 @@ void xlsx_drawing_context::set_ole_object(const std::wstring & path, const std::
 	impl_->object_description_.xlink_href_	= path; 
 	impl_->object_description_.descriptor_	= progId;
 }
-
-void xlsx_drawing_context::set_image(std::wstring const & path)
+void xlsx_drawing_context::set_ms_object(const std::wstring & path, const std::wstring & progId)
+{
+	impl_->object_description_.type_		= typeMsObject;
+	impl_->object_description_.xlink_href_	= path; 
+	impl_->object_description_.descriptor_	= progId;
+}
+void xlsx_drawing_context::set_image(const std::wstring & path)
 {
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
@@ -312,7 +317,7 @@ void xlsx_drawing_context::end_frame()
     impl_->current_level_->push_back(impl_->object_description_);
 }
 
-void xlsx_drawing_context::set_chart(std::wstring const & path)
+void xlsx_drawing_context::set_chart(const std::wstring & path)
 {
 	impl_->object_description_.type_		= typeChart;
 	impl_->object_description_.xlink_href_	= path; 

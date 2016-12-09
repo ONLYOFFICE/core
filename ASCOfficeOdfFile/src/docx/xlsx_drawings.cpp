@@ -114,7 +114,7 @@ public:
     {
 		for (int i = 0 ; i < xlsx_drawings_.size(); i++)
 		{
-			if (xlsx_drawings_[i].type != typeOleObject) continue;
+			if (xlsx_drawings_[i].type != typeOleObject && xlsx_drawings_[i].type != typeMsObject) continue;
 
 			xlsx_drawings_[i].serialize_object(strm);
 		}

@@ -74,6 +74,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	else if (L"docx" == extension)	return  L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 	else if (L"doc" == extension)	return  L"application/msword";
 	else							return	L"application/octet-stream";
 

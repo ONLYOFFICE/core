@@ -78,9 +78,9 @@ public:
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
 
 	void start_frame();
-		void set_image		(std::wstring const & path);
-		void set_chart		(std::wstring const & path);
-		void set_object		(const std::wstring & path, const std::wstring & progId);
+		void set_image		(const std::wstring & path);
+		void set_chart		(const std::wstring & path);
+		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
 		void set_text_box	();
 	void end_frame();

@@ -1433,7 +1433,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath ,NULL);    
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------------------
 		draw_frame*				frame			= NULL;
 		oox::_docx_drawing *	drawing			= NULL;
 		office_element*			contentSubDoc	= objectSubDoc.get_impl()->get_content();
@@ -1450,7 +1450,6 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			if (frame)
 				drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 		}		
-
 //------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
 		{

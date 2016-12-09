@@ -273,11 +273,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath, NULL);    
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//в отдельных embd объектах чаще всего диаграммы, уравнения... но МОГУТ быть и обычные объекты подтипа frame!!! 
-		//пример RemanejamentoOrcamentario.ods
-///////////////////////////////////////////////////////////////////////////
-//функциональная часть
+//---------------------------------------------------------------------------------------------------------------------
 		office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		if (!contentSubDoc)
 		{
@@ -290,9 +286,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		process_build_object process_build_object_(objectBuild, objectSubDoc.odf_context());
         contentSubDoc->accept(process_build_object_); 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//отображательная часть	
-
+//---------------------------------------------------------------------------------------------------------------------
 		if (objectBuild.object_type_ == 1)//диаграмма
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
@@ -300,25 +294,20 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			
 			Context.get_slide_context().set_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 		}
-		else if (objectBuild.object_type_ == 2)//odt текст
+		else if (objectBuild.object_type_ == 2)//odt text
 		{
-			Context.get_slide_context().set_text_box(); 
-			Context.get_text_context().start_object();
+			Context.get_slide_context().set_use_image_replacement();
 
-			//сменить контекст с главного на другой ... проблема со стилями!!
-			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
-
-			objectBuild.pptx_convert(Context);
+			std::wstring href_new = office_convert( &objectSubDoc, 1);
 			
-			std::wstring text_content_ = Context.get_text_context().end_object();
-			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
-
-			if (!text_content_.empty())
+			if (!href_new.empty())
 			{
-				Context.get_slide_context().set_property(_property(L"text-content",text_content_));
+				bool isMediaInternal = true;  
+				href += FILE_SEPARATOR_STR + href_new;
+				Context.get_slide_context().set_ms_object(href, L"Word.Document");
 			}
 		}
-		else if (objectBuild.object_type_ == 3) //мат формулы
+		else if (objectBuild.object_type_ == 3) //math
 		{
 			Context.get_slide_context().set_text_box();  
 
@@ -339,7 +328,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().set_property(_property(L"text-content",	text_content));
 			}
 		}
-		else if (objectBuild.object_type_ == 4) //embedded sheet
+		else if (objectBuild.object_type_ == 4) //ods sheet
 		{	
 			Context.get_slide_context().set_use_image_replacement();
 
@@ -349,7 +338,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			{
 				bool isMediaInternal = true;  
 				href += FILE_SEPARATOR_STR + href_new;
-				Context.get_slide_context().set_object(href, L"Excel.Sheet.12");
+				Context.get_slide_context().set_ms_object(href, L"Excel.Sheet");
 			}
 		}
 		else

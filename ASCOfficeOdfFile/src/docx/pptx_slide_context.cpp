@@ -378,7 +378,7 @@ void pptx_slide_context::set_text_box()
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= 2; //2,3... 
 }
-void pptx_slide_context::set_object(const std::wstring & path, const std::wstring & progId)
+void pptx_slide_context::set_ms_object(const std::wstring & path, const std::wstring & progId)
 {
 	impl_->object_description_.type_		= typeMsObject;
 	impl_->object_description_.xlink_href_	= path; 
@@ -391,7 +391,7 @@ void pptx_slide_context::set_ole_object(const std::wstring & path, const std::ws
 	impl_->object_description_.descriptor_	= progId;
 }
 
-void pptx_slide_context::set_image(std::wstring const & path)
+void pptx_slide_context::set_image(const std::wstring & path)
 {
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
@@ -403,6 +403,7 @@ void pptx_slide_context::set_image(std::wstring const & path)
 		impl_->object_description_.fill_.type	= 2;
 		impl_->object_description_.fill_.bitmap = oox::oox_bitmap_fill::create();
 		impl_->object_description_.fill_.bitmap->xlink_href_ = path;
+		impl_->object_description_.fill_.bitmap->bStretch = true;
 	}
 }
 
@@ -411,7 +412,7 @@ void pptx_slide_context::start_frame()
 	impl_->object_description_.type_ = typeUnknown;
 }
 
-void pptx_slide_context::set_chart(std::wstring const & path)
+void pptx_slide_context::set_chart(const std::wstring & path)
 {
 	impl_->object_description_.type_		= typeChart;
 	impl_->object_description_.xlink_href_	= path; 

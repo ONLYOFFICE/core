@@ -53,8 +53,8 @@ std::wstring getColAddress(size_t col)
 
     if (r0 > 0)
     {
-        const std::wstring rest = getColAddress(col - r*r0);
-        const std::wstring res = getColAddress(r0-1) + rest;
+        const std::wstring rest = getColAddress(col - r * r0);
+        const std::wstring res	= getColAddress(r0-1) + rest;
         return res;
     }
     else
@@ -65,12 +65,12 @@ std::wstring getColAddress(size_t col)
 
 std::wstring getRowAddress(size_t row)
 {
-    return boost::lexical_cast<std::wstring>(row+1);
+    return boost::lexical_cast<std::wstring>(row + 1);
 }
 
 std::wstring getCellAddress(size_t col, size_t row)
 {
-    return getColAddress(col) + getRowAddress(row);
+	return getColAddress(col) + getRowAddress(row);
 }
 
 //_ASSERTE(getColAddressInv(L"A") == 0);
@@ -148,11 +148,11 @@ void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring 
 //_ASSERTE(rowS == 999);
 void getCellAddressInv(const std::wstring & a_, size_t & col, size_t & row)
 {
-    std::wstring colStr=L"", rowStr=L"";
+    std::wstring colStr = L"", rowStr = L"";
     splitCellAddress(a_, colStr, rowStr);
     
-    col = getColAddressInv(colStr);
-    row = getRowAdderssInv(rowStr);
+    col = getColAddressInv( colStr );
+    row = getRowAdderssInv( rowStr );
 }
 
 bool parseBoolVal(const std::wstring & str)

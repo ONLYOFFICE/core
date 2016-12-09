@@ -344,6 +344,7 @@ double charsToSize(unsigned int charsCount, double maxDigitSize)
 void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 {
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
+
 	CP_XML_WRITER(_Wostream)
 	{
 		odf_reader::style_table_properties	* table_prop = NULL;
@@ -367,9 +368,22 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 				//<pageSetUpPr fitToPage="true"/>
 			}
 		}
-		//<dimension ref="B1:T65536"/>
+		int columns = (std::max)(current_table_column_, (int)columns_count_);
+		int rows	= (std::max)(current_table_row_,	1);
+
+		if (columns	< 1024 && columns	> 1 &&
+			rows	< 1024 && rows		> 1)
+		{
+			CP_XML_NODE(L"dimension")
+			{
+				std::wstring ref2 = getCellAddress( current_table_column_, current_table_row_);
+				CP_XML_ATTR(L"ref", L"A1:" + ref2);
+			}
+		}
 		CP_XML_NODE(L"sheetView")
 		{
+			if (odfContext.Settings().get_views_count() > 0)
+				CP_XML_ATTR(L"workbookViewId", 0);
 			//	-showGridLines
 			//	-showRowColHeaders
 			//	-rightToLeft

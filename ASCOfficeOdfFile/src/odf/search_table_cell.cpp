@@ -96,14 +96,14 @@ public:
     typedef boost::function< void (const office_element * elm, std::wstring defaultColumnStyle, std::wstring defaultRowStyle) > on_found_callback;
 
     table_round(std::wstring const & targetTable, int targetColumn, int targetRow, on_found_callback on_found)
-        : target_table_(targetTable),
-        target_column_(targetColumn),
-        target_row_(targetRow),
-        on_found_(on_found),
-        current_table_column_(0),
-        current_table_row_(0),
-        columns_spanned_num_(0),
-        columns_count_(0),
+        : target_table_			(targetTable),
+        target_column_			(targetColumn),
+        target_row_				(targetRow),
+        on_found_				(on_found),
+        current_table_column_	(0),
+        current_table_row_		(0),
+        columns_spanned_num_	(0),
+        columns_count_			(0),
         stop_(false)
       {}
 

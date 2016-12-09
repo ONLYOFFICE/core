@@ -93,6 +93,7 @@ const wchar_t * settings_config_item_map_indexed::name = L"config-item-map-index
 
 void settings_config_item_map_indexed::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"config:name", config_name_, std::wstring(L""));
 }
 
 void settings_config_item_map_indexed::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -106,6 +107,7 @@ const wchar_t * settings_config_item_map_named::name = L"config-item-map-named";
 
 void settings_config_item_map_named::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"config:name", config_name_, std::wstring(L""));
 }
 
 void settings_config_item_map_named::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

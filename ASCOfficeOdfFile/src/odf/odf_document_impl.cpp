@@ -294,7 +294,38 @@ void odf_document::Impl::parse_settings()
 				context_->Settings().add(sett->config_name_, elm_sett);
 			}
 		}
-	}
+		else if (item_set->config_name_ == L"ooo:view-settings")
+		{
+			BOOST_FOREACH(office_element_ptr & elm_sett, item_set->content_)
+			{		
+				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
+				if (sett)
+					context_->Settings().add_view(sett->config_name_, elm_sett);
+				else
+				{
+					settings_config_item_map_indexed *map_sett = dynamic_cast<settings_config_item_map_indexed *>(elm_sett.get());
+					if ((map_sett) && (map_sett->config_name_ == L"Views"))
+					{
+						for (int i = 0; i < map_sett->content_.size(); i++)
+						{
+							settings_config_item_map_entry *entry = dynamic_cast<settings_config_item_map_entry *>(map_sett->content_[i].get());
+
+							if (!entry) continue;
+							
+							context_->Settings().start_view();
+							for (int j = 0; (entry) && (j < entry->content_.size()); j++)
+							{
+								settings_config_item * sett = dynamic_cast<settings_config_item *>(entry->content_[j].get());
+								if (!sett)continue;
+								
+								context_->Settings().add_view(sett->config_name_, entry->content_[j]);
+							}
+							context_->Settings().end_view();
+						}
+					}
+				}
+			}
+		}	}
 }
 
 void odf_document::Impl::parse_styles()

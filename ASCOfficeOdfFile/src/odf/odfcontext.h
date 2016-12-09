@@ -280,8 +280,8 @@ class fonts_container
 {
 public:
     typedef std::vector<font_instance_ptr> instances_array;
-public:
-    font_instance * font_by_style_name(const std::wstring & StyleName);
+
+	font_instance * font_by_style_name(const std::wstring & StyleName);
     font_instance * font_by_name(const std::wstring & Name);
     instances_array & instances() { return instances_; }
     void add_font( font_instance_ptr FontInstance );
@@ -322,8 +322,7 @@ class list_style_container
 public:
     typedef std::vector<list_style_instance_ptr> instances_array;
 
-public:
-    void add_list_style(text_list_style * textListStyle);
+	void add_list_style(text_list_style * textListStyle);
     void add_list_style(text_list_style * textListStyle, const std::wstring & NewName);
 
     /// получить экземпляр по имени стиля
@@ -367,10 +366,10 @@ public:
     
 	notes_configuration &	noteConfiguration()		{ return notes_configuration_; }
    
-	styles_lite_container &	numberStyles()			{ return number_style_container_; }
-    styles_lite_container &	drawStyles()			{ return draw_style_container_; }
-	styles_lite_container &	Templates()				{ return template_container_; }
-	styles_lite_container &	Settings()				{ return settings_container_; }
+	styles_lite_container&	numberStyles()			{ return number_style_container_; }
+    styles_lite_container&	drawStyles()			{ return draw_style_container_; }
+	styles_lite_container&	Templates()				{ return template_container_; }
+	settings_container&		Settings()				{ return settings_container_; }
 
 private:
     styles_container		major_style_container_;
@@ -383,7 +382,7 @@ private:
     styles_lite_container	draw_style_container_;
     styles_lite_container	template_container_;
     
-	styles_lite_container	settings_container_;
+	settings_container		settings_container_;
 
 };
 

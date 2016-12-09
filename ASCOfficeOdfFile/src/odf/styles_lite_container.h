@@ -33,6 +33,7 @@
 
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPScopedPtr.h>
+#include <cpdoccore/CPOptional.h>
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -45,14 +46,36 @@ class styles_lite_container
 public:
     styles_lite_container();
     ~styles_lite_container();
-public:
-    void add(const std::wstring & style_name, office_element_ptr content);
+
+	void add(const std::wstring & style_name, office_element_ptr content);
     office_element_ptr find_by_style_name(const std::wstring & style_name);
     
 private:
     struct Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 
+};
+
+class settings_container
+{
+public:
+	settings_container();
+	~settings_container();
+
+	_CP_OPT(std::wstring) find_by_name		(const std::wstring & name);
+    _CP_OPT(std::wstring) find_view_by_name	(const std::wstring & name, int index = -1); //"-1" - common
+
+	int	get_views_count();
+
+	void add		(const std::wstring & name, office_element_ptr content);
+
+	void start_view	();
+	void end_view	();
+
+	void add_view	(const std::wstring & name, office_element_ptr content);
+private:
+    class Impl;
+    _CP_SCOPED_PTR(Impl) impl_;
 };
 
 }

@@ -340,7 +340,7 @@ void _xlsx_drawing::serialize(std::wostream & strm)
 
 void _xlsx_drawing::serialize_object (std::wostream & strm)
 {
-	if (type != typeOleObject) return;
+	if (type != typeOleObject && type != typeMsObject) return;
 
 	CP_XML_WRITER(strm)    
     {

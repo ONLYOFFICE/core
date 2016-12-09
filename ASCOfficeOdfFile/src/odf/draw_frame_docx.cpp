@@ -49,16 +49,12 @@
 
 #include "draw_common.h"
 #include "../docx/docx_drawing.h"
-#include "../docx/xlsx_package.h"
 #include "chart_build_oox.h"
 
 #include "calcs_styles.h"
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
-
-#include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../../Common/3dParty/pole/pole.h"
 
 namespace cpdoccore { 
 
@@ -1437,7 +1433,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath ,NULL);    
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------------------
 		draw_frame*				frame			= NULL;
 		oox::_docx_drawing *	drawing			= NULL;
 		office_element*			contentSubDoc	= objectSubDoc.get_impl()->get_content();
@@ -1454,7 +1450,6 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			if (frame)
 				drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 		}		
-
 //------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
 		{
@@ -1463,7 +1458,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 
 		if (objectBuild.object_type_ == 1) //диаграмма
 		{	
-			drawing->type		= oox::typeChart;
+			drawing->type = oox::typeChart;
 			
 			bool isMediaInternal = true;        
 			drawing->objectId = Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
@@ -1511,47 +1506,26 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			}
 			Context.get_drawing_context().clear_stream_frame();						
 		}
-		if (objectBuild.object_type_ == 4) //embedded sheet
+		else if (objectBuild.object_type_ == 4) //embedded sheet
 		{	
 			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 			use_image_replace = true;
 
-			oox::package::xlsx_document	outputXlsx;
-			oox::xlsx_conversion_context conversionXlsxContext ( &objectSubDoc);
-		   
-			conversionXlsxContext.set_output_document (&outputXlsx);
-			//conversionContext.set_font_directory	(fontsPath);
-			
-			if (objectSubDoc.xlsx_convert(conversionXlsxContext))
-			{	    
-				drawing->type	=  oox::typeMsObject;
-				
-				std::wstring objectXlsxPath = FileSystem::Directory::CreateDirectoryWithUniqueName(folderPath);
-				outputXlsx.write(objectXlsxPath);
+			std::wstring href_new = office_convert(&objectSubDoc, 2);
 
-				href = Context.get_drawing_context().get_current_object_name() + L".xlsx";
-
-				std::wstring temp_file = folderPath + FILE_SEPARATOR_STR + href;
-	
-				COfficeUtils oCOfficeUtils(NULL);
-				oCOfficeUtils.CompressFileOrDirectory(objectXlsxPath.c_str(), temp_file.c_str(), -1);
-
-				FileSystem::Directory::DeleteDirectory(objectXlsxPath);
-			
+			if (!href_new.empty())
+			{
+				drawing->type = oox::typeMsObject;
 				bool isMediaInternal = true;        
-				drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, temp_file);
+				
+				href += FILE_SEPARATOR_STR + href_new;
+				drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
 				drawing->objectProgId	= L"Excel.Sheet.12";
 			}
-			else
-			{
-				objectBuild.object_type_ = 0;
-			}
 		}
-		
-		if (objectBuild.object_type_ == 0) 
+		else
 		{
 			//замещающая картинка(если она конечно присутствует)
-
 			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
 			use_image_replace = true;
 		}
@@ -1574,10 +1548,10 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 
 	if (href.empty()) return;
 
-	draw_frame*				frame	 = Context.get_drawing_context().get_current_frame();		//owner
+	draw_frame*	frame	 = Context.get_drawing_context().get_current_frame();		//owner
 	if (!frame) return;
 	
-	oox::_docx_drawing *	drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
+	oox::_docx_drawing * drawing	= dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get());
 	if (!drawing) return;
 			
 	drawing->type			=  oox::typeOleObject;
@@ -1586,52 +1560,6 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 	drawing->objectId		= Context.add_mediaitem(href, drawing->type, isMediaInternal, href);
 
 	drawing->objectProgId	= detectObject(objectPath); 
-}
-
-std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
-{
-	POLE::Storage *storage = new POLE::Storage(fileName.c_str());
-	if (storage == NULL) return L"";
-
-	if (storage->open(false, false) == false)
-	{
-		delete storage;
-		return L"";
-	}
-	std::wstring prog;
-	POLE::Stream* pStream = new POLE::Stream(storage, "CompObj");
-	if ((pStream) && (pStream->size() > 28))
-	{
-		//skip the CompObjHeader
-		pStream->seek(28);
-
-		int sz_obj = pStream->size() - 28;
-
-		std::vector<std::string> str;
-		
-		while (sz_obj > 0)
-		{
-			_UINT32 sz = 0;			
-			pStream->read((unsigned char*)&sz, 4); sz_obj-= 4;
-			
-			if (sz > sz_obj) 
-				break;
-			unsigned char *data  = new unsigned char[sz];
-			pStream->read(data, sz);
-
-			str.push_back(std::string((char*)data, sz));
-			delete []data;
-
-			sz_obj-= sz;
-		}
-		if (!str.empty())
-		{
-			prog = std::wstring (str.back().begin(), str.back().end());
-		}
-		delete pStream;
-	}
-	delete storage;
-	return prog;
 }
 
 }

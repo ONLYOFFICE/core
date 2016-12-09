@@ -74,6 +74,8 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	else if (L"docx" == extension)	return  L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	else if (L"doc" == extension)	return  L"application/msword";
 	else							return	L"application/octet-stream";
 
 
@@ -135,8 +137,8 @@ bool content_types_file::add_or_find_override(const std::wstring & fileName)
 	}
 	
 	std::wstring content_type;
-	int pos = fileName.rfind(L".");
 	
+	int pos = fileName.rfind(L".");	
 	std::wstring extension = pos >= 0 ? fileName.substr(pos + 1) : L"";
 	
 	if (extension == L"xlsx")
@@ -362,7 +364,10 @@ void embeddings::write(const std::wstring & RootPath)
         if ( items[i].mediaInternal && items[i].valid &&
 			(items[i].type == typeMsObject || items[i].type == typeOleObject))
         {
-			content_types.add_or_find_override(std::wstring(L"/word/") + items[i].outputName);
+			int pos = items[i].outputName.rfind(L".");	
+			std::wstring extension = pos >= 0 ? items[i].outputName.substr(pos + 1) : L"";
+			
+			content_types.add_or_find_default(extension);
 
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].outputName;
 			

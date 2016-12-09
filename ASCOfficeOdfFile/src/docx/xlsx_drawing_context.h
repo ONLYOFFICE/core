@@ -91,9 +91,10 @@ public:
     void end_shape();
 
 	void start_frame();
-		void set_image		(std::wstring const & path);
-		void set_chart		(std::wstring const & path);
+		void set_image		(const std::wstring & path);
+		void set_chart		(const std::wstring & path);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
+		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
 		void set_text_box	();
 	void end_frame();
 

@@ -36,7 +36,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
@@ -48,16 +47,20 @@
 #include "style_graphic_properties.h"
 #include "odfcontext.h"
 
+#include "../docx/xlsx_package.h"
+#include "../docx/docx_package.h"
+#include "../docx/pptx_package.h"
+
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
+
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../Common/3dParty/pole/pole.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
 
-
-
-/// draw-image-attlist
-
+// draw-image-attlist
 void draw_image_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"draw:filter-name", draw_filter_name_);
@@ -281,6 +284,109 @@ void draw_object_ole::add_attributes( const xml::attributes_wc_ptr & Attributes 
 void draw_object_ole::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
     CP_NOT_APPLICABLE_ELM(); 
+}
+
+std::wstring draw_object_ole::detectObject(const std::wstring &fileName)
+{
+	POLE::Storage *storage = new POLE::Storage(fileName.c_str());
+	if (storage == NULL) return L"";
+
+	if (storage->open(false, false) == false)
+	{
+		delete storage;
+		return L"";
+	}
+	std::wstring prog;
+	POLE::Stream* pStream = new POLE::Stream(storage, "CompObj");
+	if ((pStream) && (pStream->size() > 28))
+	{
+		//skip the CompObjHeader
+		pStream->seek(28);
+
+		int sz_obj = pStream->size() - 28;
+
+		std::vector<std::string> str;
+		
+		while (sz_obj > 0)
+		{
+			_UINT32 sz = 0;			
+			pStream->read((unsigned char*)&sz, 4); sz_obj-= 4;
+			
+			if (sz > sz_obj) 
+				break;
+			unsigned char *data  = new unsigned char[sz];
+			pStream->read(data, sz);
+
+			str.push_back(std::string((char*)data, sz));
+			delete []data;
+
+			sz_obj-= sz;
+		}
+		if (!str.empty())
+		{
+			prog = std::wstring (str.back().begin(), str.back().end());
+		}
+		delete pStream;
+	}
+	delete storage;
+	return prog;
+}
+
+
+std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
+{
+	std::wstring href_result;
+	std::wstring folderPath		= odfDocument->get_folder();	
+	std::wstring objectOutPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(folderPath);
+	
+	if (type == 1)
+	{
+		oox::package::docx_document	outputDocx;
+		oox::docx_conversion_context conversionDocxContext ( odfDocument);
+	   
+		conversionDocxContext.set_output_document (&outputDocx);
+		//conversionContext.set_font_directory	(fontsPath);
+		
+		if (odfDocument->docx_convert(conversionDocxContext))
+		{	    
+			outputDocx.write(objectOutPath);
+
+			href_result = common_xlink_attlist_.href_.get_value_or(L"Object");
+			int pos = href_result.find(L"./");
+			if (pos >= 0) href_result = href_result.substr(2);
+			
+			href_result = L"docx" +  href_result + L".docx";
+		}
+	}
+	if (type == 2)
+	{
+		oox::package::xlsx_document	outputXlsx;
+		oox::xlsx_conversion_context conversionXlsxContext ( odfDocument);
+	   
+		conversionXlsxContext.set_output_document (&outputXlsx);
+		//conversionContext.set_font_directory	(fontsPath);
+		
+		if (odfDocument->xlsx_convert(conversionXlsxContext))
+		{	    
+			outputXlsx.write(objectOutPath);
+
+			href_result = common_xlink_attlist_.href_.get_value_or(L"Object");
+			int pos = href_result.find(L"./");
+			if (pos >= 0) href_result = href_result.substr(2);
+			
+			href_result = L"xlsx" +  href_result + L".xlsx";
+		}
+	}
+	if (!href_result.empty())
+	{
+		std::wstring temp_file = folderPath + FILE_SEPARATOR_STR + href_result;
+
+		COfficeUtils oCOfficeUtils(NULL);
+		oCOfficeUtils.CompressFileOrDirectory(objectOutPath.c_str(), temp_file.c_str(), -1);
+	}	
+	FileSystem::Directory::DeleteDirectory(objectOutPath);
+	
+	return href_result;
 }
 
 }

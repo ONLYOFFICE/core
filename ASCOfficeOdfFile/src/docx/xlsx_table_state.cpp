@@ -380,14 +380,52 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 				CP_XML_ATTR(L"ref", L"A1:" + ref2);
 			}
 		}
-		CP_XML_NODE(L"sheetView")
+		if (odfContext.Settings().get_views_count() > 0)
 		{
-			if (odfContext.Settings().get_views_count() > 0)
-				CP_XML_ATTR(L"workbookViewId", 0);
-			//	-showGridLines
+			CP_XML_NODE(L"sheetViews")
+			{
+				CP_XML_NODE(L"sheetView")
+				{
+					CP_XML_ATTR(L"workbookViewId", 0);
+
+					std::wstring s_col, s_row;
+					for (int i = 0; i < odfContext.Settings().get_table_view_count(0, tableName_); i++)
+					{
+						std::pair<std::wstring, std::wstring> value = odfContext.Settings().get_table_view(0, tableName_, i);
+
+						if (value.first == L"ZoomValue")
+						{
+							CP_XML_ATTR(L"zoomScale",		value.second);
+							CP_XML_ATTR(L"zoomScaleNormal", value.second);
+						}
+						if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
+						if (value.first == L"CursorPositionX")	s_col = value.second;
+						if (value.first == L"CursorPositionY")	s_row = value.second;
+					}
+
+					int col = -1, row = -1;
+					try
+					{
+						col =  boost::lexical_cast<int>(s_col);
+						row =  boost::lexical_cast<int>(s_row);
+					}
+					catch(...){}
+
+					if (col >= 0 && row >= 0)
+					{
+						CP_XML_NODE(L"selection")
+						{	
+							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCellId",	0);			
+							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
+							CP_XML_ATTR(L"pane",			L"topLeft");			
+						}
+						
+					}
+				}
+			}
 			//	-showRowColHeaders
 			//	-rightToLeft
-			//	-zoomScale
 		} 
 
 		double default_height = (2 * context_->getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.

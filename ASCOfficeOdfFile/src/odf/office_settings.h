@@ -152,7 +152,8 @@ public:
     static const ElementType type = typeOfficeSettingsConfigItemMapEntry;
     CPDOCCORE_DEFINE_VISITABLE();
 
-    office_element_ptr_array content_;
+ 	std::wstring				config_name_;
+   office_element_ptr_array		content_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );

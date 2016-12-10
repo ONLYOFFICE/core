@@ -121,6 +121,7 @@ const wchar_t * settings_config_item_map_entry::name = L"config-item-map-entry";
 
 void settings_config_item_map_entry::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+    CP_APPLY_ATTR(L"config:name", config_name_, std::wstring(L""));
 }
 
 void settings_config_item_map_entry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

@@ -47,6 +47,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_pDC					= m_oPlayer.GetDC();
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
+		 m_currentLanguage		= 0;
 		 m_currentActionType	= 0;
 		 m_bMainStream			= true;
 	 };
@@ -57,6 +58,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_pDC					= m_oPlayer.GetDC();
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
+		 m_currentLanguage		= 0;
 		 m_currentActionType	= 0;
 		 m_bMainStream			= true;
 	 }
@@ -75,6 +77,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 		m_currentActionVersion	= 0;
 		m_currentCharset		= 0;
+		m_currentLanguage		= 0;
 	}
 	TRect*   GetBounds()
 	{
@@ -193,6 +196,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 	unsigned short		m_currentActionVersion;
 	unsigned short		m_currentCharset;
+	unsigned short		m_currentLanguage;
 	unsigned short		m_currentActionType;
 
 	unsigned int		m_unRecordSize;
@@ -236,6 +240,8 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_SECTREGIONCLIPREGION();
 
 	void Read_META_STRETCHTEXT();
+
+	void Read_META_TEXTLANGUAGE();
 
 	void Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons, std::vector<TSvmPolygon> & complexPolygons);
 

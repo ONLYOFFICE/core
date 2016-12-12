@@ -160,7 +160,7 @@ void CSvmFile::PlayMetaFile()
 			case META_TEXTFILLCOLOR_ACTION:		Read_META_SETTEXTFILLCOLOR();	break;
 			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
 			case META_STRETCHTEXT_ACTION:		Read_META_STRETCHTEXT();		break;
-			case META_TEXTLANGUAGE_ACTION:
+			case META_TEXTLANGUAGE_ACTION:		Read_META_TEXTLANGUAGE();		break;
 			case META_TEXTLINECOLOR_ACTION:
 			case META_TEXTLINE_ACTION:
 				break;
@@ -465,6 +465,11 @@ void CSvmFile::Read_META_SETMAPMODE()
 	m_oCurrnetOffset = mapMode.origin;
 
 	UpdateOutputDC();
+}
+
+void CSvmFile::Read_META_TEXTLANGUAGE()
+{
+	m_oStream >> m_currentLanguage;
 }
 
 void CSvmFile::Read_META_STRETCHTEXT()

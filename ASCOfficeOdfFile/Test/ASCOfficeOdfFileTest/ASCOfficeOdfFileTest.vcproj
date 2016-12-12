@@ -346,7 +346,23 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\Common\3dParty\icu\win_32\lib\icuuc.lib"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

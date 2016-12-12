@@ -104,7 +104,7 @@ struct view_elm : settings_elm
 class settings_container::Impl
 {
 public:
-	settings_container::Impl() : inViewTable(false), inView(false) {}
+    Impl() : inViewTable(false), inView(false) {}
 
 	settings_elm				common; 
 	settings_elm				common_view;

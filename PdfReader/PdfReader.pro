@@ -25,6 +25,10 @@ include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
 core_windows {
+
+#UnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+
 LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \

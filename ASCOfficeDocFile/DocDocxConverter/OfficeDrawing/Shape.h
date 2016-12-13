@@ -39,33 +39,20 @@ namespace DocFileFormat
 	class Shape: public Record
 	{
 	public: 
-		int spid;
-		/// This shape is a group shape 
-		bool fGroup;
-		/// Not a top-level shape 
-		bool fChild;
-		/// This is the topmost group shape.
-		/// Exactly one of these per drawing. 
-		bool fPatriarch; 
-		/// The shape has been deleted 
-		bool fDeleted;
-		/// The shape is an OLE object 
-		bool fOleShape;
-		/// Shape has a hspMaster property 
-		bool fHaveMaster;
-		/// Shape is flipped horizontally 
-		bool fFlipH;
-		/// Shape is flipped vertically 
-		bool fFlipV;
-		/// Connector type of shape 
-		bool fConnector;
-		/// Shape has an anchor of some kind 
-		bool fHaveAnchor;
-		/// Background shape 
-		bool fBackground;
-		/// Shape has a shape type property
-		bool fHaveSpt;
-		/// The shape type of the shape
+		int		spid;
+		bool	fGroup;
+		bool	fChild;
+		bool	fPatriarch;			// This is the topmost group shape. Exactly one of these per drawing.
+		bool	fDeleted;			// The shape has been deleted 
+		bool	fOleShape;			// The shape is an OLE object
+		bool	fHaveMaster;
+		bool	fFlipH;
+		bool	fFlipV;
+		bool	fConnector;
+		bool	fHaveAnchor;
+		bool	fBackground;
+		bool	fHaveSpt;
+
 		ShapeType* shapeType;
 
 	public:

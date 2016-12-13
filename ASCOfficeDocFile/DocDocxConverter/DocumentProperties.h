@@ -54,6 +54,7 @@ namespace DocFileFormat
 
         friend class SettingsMapping;
 
+		bool bDisplayBackgroundShape;
 	private:    
         // True when facing pages should be printed
 		bool fFacingPages;

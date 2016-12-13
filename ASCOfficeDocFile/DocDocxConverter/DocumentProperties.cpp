@@ -43,7 +43,8 @@ namespace DocFileFormat
 
 		/*========================================================================================================*/
 		
-	WordDocumentProperties::WordDocumentProperties(FileInformationBlock* fib, POLE::Stream* tableStream) : doptypography(NULL), dogrid(NULL), asumyi(NULL)
+	WordDocumentProperties::WordDocumentProperties(FileInformationBlock* fib, POLE::Stream* tableStream) : 
+			doptypography(NULL), dogrid(NULL), asumyi(NULL), bDisplayBackgroundShape(false)
 	{
 		Initialize();
 		
@@ -226,7 +227,7 @@ namespace DocFileFormat
                         dywDispPag	= FormatUtils::BytesToInt16( bytes, 498, size );
 
 //WORD 2000, 2002, 2003 PART
-                        if ( size > 500 )
+                        if ( size > 500/* && fib->m_FibNew.nFibNew > Fib1997*/)
                         {
                             ilvlLastBulletMain	= bytes[500];
                             ilvlLastNumberMain	= bytes[501];
@@ -266,138 +267,158 @@ namespace DocFileFormat
                             fDntULTrlSpc				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 14 );
                             fDntBlnSbDbWid				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 15 );
                             fSuppressTopSpacingMac5		= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 16 );
-                            fTruncDxaExpand = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 17 );
-                            fPrintBodyBeforeHdr = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 18 );
-                            fNoLeading = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 19 );
-                            fMakeSpaceForUL = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 20 );
-                            fMWSmallCaps = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 21 );
-                            f2ptExtLeadingOnly = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 22 );
-                            fTruncFontHeight = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 23 );
-                            fSubOnSize = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 24 );
-                            fLineWrapLikeWord6 = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 25 );
-                            fWW6BorderRules = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 26 );
-                            fExactOnTop = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 27 );
-                            fExtraAfter = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 28 );
-                            fWPSpace = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 29 );
-                            fWPJust = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 30 );
-                            fPrintMet = FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 31 );
+                            fTruncDxaExpand				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 17 );
+                            fPrintBodyBeforeHdr			= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 18 );
+                            fNoLeading					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 19 );
+                            fMakeSpaceForUL				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 20 );
+                            fMWSmallCaps				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 21 );
+                            f2ptExtLeadingOnly			= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 22 );
+                            fTruncFontHeight			= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 23 );
+                            fSubOnSize					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 24 );
+                            fLineWrapLikeWord6			= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 25 );
+                            fWW6BorderRules				= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 26 );
+                            fExactOnTop					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 27 );
+                            fExtraAfter					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 28 );
+                            fWPSpace					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 29 );
+                            fWPJust						= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 30 );
+                            fPrintMet					= FormatUtils::GetBitFromBytes( ( bytes + 508 ), 4, 31 );
 
-                            //split bytes 512,513,514,515 into bits
-                            fSpLayoutLikeWW8 = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 0 );
-                            fFtnLayoutLikeWW8 = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 1 );
-                            fDontUseHTMLParagraphAutoSpacing = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 2 );
-                            fDontAdjustLineHeightInTable = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 3 );
-                            fForgetLastTabAlign = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 4 );
-                            fUseAutoSpaceForFullWidthAlpha = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 5 );
-                            fAlignTablesRowByRow = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 6 );
-                            fLayoutRawTableWidth = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 7 );
-                            fLayoutTableRowsApart = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 8 );
-                            fUserWord97LineBreakingRules = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 9 );
-                            fDontBreakWrappedTables = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 10 );
-                            fDontSnapToGridInCell = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 11 );
-                            fDontAllowFieldEndSelect = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 12 );
-                            fApplyBreakingRules = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 13 );
-                            fDontWrapTextWithPunct = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 14 );
-                            fDontUseAsianBreakRules = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 15 );
-                            fUseWord2002TableStyleRules = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 16 );
-                            fGrowAutofit = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 17 );
-                            fUseNormalStyleForList = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 18 );
-                            fDontUseIndentAsNumberingTabStop = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 19 );
-                            fFELineBreak11 = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 20 );
-                            fAllowSpaceOfSameStyleInTable = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 21 );
-                            fWW11IndentRules = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 22 );
-                            fDontAutofitConstrainedTables = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 23 );
-                            fAutofitLikeWW11 = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 24 );
-                            fUnderlineTabInNumList = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 25 );
-                            fHangulWidthLikeWW11 = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 26 );
-                            fSplitPgBreakAndParaMark = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 27 );
-                            fDontVertAlignCellWithSp = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 28 );
-                            fDontBreakConstrainedForcedTables = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 29 );
-                            fDontVertAlignInTxbx = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 30 );
-                            fWord11KerningPairs = FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 31 );
-                            fCachedColBalance = FormatUtils::GetBitFromBytes( ( bytes + 516 ), 4, 0 );
+                      //split bytes 512,513,514,515 into bits
+                            fSpLayoutLikeWW8					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 0 );
+                            fFtnLayoutLikeWW8					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 1 );
+                            fDontUseHTMLParagraphAutoSpacing	= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 2 );
+                            fDontAdjustLineHeightInTable		= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 3 );
+                            fForgetLastTabAlign					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 4 );
+                            fUseAutoSpaceForFullWidthAlpha		= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 5 );
+                            fAlignTablesRowByRow				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 6 );
+                            fLayoutRawTableWidth				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 7 );
+                            fLayoutTableRowsApart				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 8 );
+                            fUserWord97LineBreakingRules		= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 9 );
+                            fDontBreakWrappedTables				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 10 );
+                            fDontSnapToGridInCell				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 11 );
+                            fDontAllowFieldEndSelect			= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 12 );
+                            fApplyBreakingRules					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 13 );
+                            fDontWrapTextWithPunct				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 14 );
+                            fDontUseAsianBreakRules				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 15 );
+                            fUseWord2002TableStyleRules			= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 16 );
+                            fGrowAutofit						= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 17 );
+                            fUseNormalStyleForList				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 18 );
+                            fDontUseIndentAsNumberingTabStop	= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 19 );
+                            fFELineBreak11						= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 20 );
+                            fAllowSpaceOfSameStyleInTable		= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 21 );
+                            fWW11IndentRules					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 22 );
+                            fDontAutofitConstrainedTables		= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 23 );
+                            fAutofitLikeWW11					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 24 );
+                            fUnderlineTabInNumList				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 25 );
+                            fHangulWidthLikeWW11				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 26 );
+                            fSplitPgBreakAndParaMark			= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 27 );
+                            fDontVertAlignCellWithSp			= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 28 );
+                            fDontBreakConstrainedForcedTables	= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 29 );
+                            fDontVertAlignInTxbx				= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 30 );
+                            fWord11KerningPairs					= FormatUtils::GetBitFromBytes( ( bytes + 512 ), 4, 31 );
+
+                            fCachedColBalance			= FormatUtils::GetBitFromBytes( ( bytes + 516 ), 4, 0 );
                             
-                            //bytes 517-539 are unused
+                            //bytes 517-539 are unused 
 
-                            verCompatPreW10		= (unsigned short)FormatUtils::GetUIntFromBytesBits( ( bytes + 540 ), 4, 0, 16 );
-                            fNoMargPgvwSaved	= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 16 );
-                            fNoMargPgvWPag		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 17 );
-                            fWebViewPag			= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 18 );
-                            fSeeDrawingsPag		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 19 );
-                            fBulletProofed		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 20 );
-                            fCorrupted			= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 21 );
-                            fSaveUim			= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 22 );
-                            fFilterPrivacy		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 23 );
-                            fInFReplaceNoRM		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 24 );
-                            fSeenRepairs = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 25 );
-                            fHasXML = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 26 );
-                            fSeeScriptAnchorsPag = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 27 );
-                            fValidateXML = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 28 );
-                            fSaveIfInvalidXML = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 29 );
-                            fShowXMLErrors = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 30 );
-                            fAlwaysMergeEmptyNamespace = FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 31 );
+                            verCompatPreW10				= (unsigned short)FormatUtils::GetUIntFromBytesBits( ( bytes + 540 ), 4, 0, 16 );
+                            fNoMargPgvwSaved			= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 16 );
+                            fNoMargPgvWPag				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 17 );
+                            fWebViewPag					= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 18 );
+                            fSeeDrawingsPag				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 19 );
+                            fBulletProofed				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 20 );
+                            fCorrupted					= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 21 );
+                            fSaveUim					= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 22 );
+                            fFilterPrivacy				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 23 );
+                            fInFReplaceNoRM				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 24 );
+                            fSeenRepairs				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 25 );
+                            fHasXML						= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 26 );
+                            fSeeScriptAnchorsPag		= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 27 );
+                            fValidateXML				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 28 );
+                            fSaveIfInvalidXML			= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 29 );
+                            fShowXMLErrors				= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 30 );
+                            fAlwaysMergeEmptyNamespace	= FormatUtils::GetBitFromBytes( ( bytes + 540 ), 4, 31 );
+							
+							if ( size > 544/* && fib->m_FibNew.nFibNew > Fib2000*/)
+							{
+								cpMaxListCacheMainDoc		= FormatUtils::BytesToInt32( bytes, 544, size );	//unused
 
-                            cpMaxListCacheMainDoc = FormatUtils::BytesToInt32( bytes, 544, size );
+								//split bytes 548,549 into bits
+								fDoNotEmbedSystemFont = FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 0 );
+								fWordCompact		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 1 );
+								fLiveRecover		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 2 );
+								fEmbedFactoids		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 3 );
+								fFactoidXML			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 4 );
+								fFactoidAllDone		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 5 );
+								fFolioPrint			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 6 );
+								fReverseFolio		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 7 );
+								iTextLineEnding		= (short)FormatUtils::GetUIntFromBytesBits( ( bytes + 548 ), 2, 8, 3 );
+								fHideFcc			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 11 );
+								fAcetateShowMarkup	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 12 );
+								fAcetateShowAtn		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 13 );
+								fAcetateShowInsDel	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 14 );
+								fAcetateShowProps	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 15 );
 
-                            //split bytes 548,549 into bits
-                            fDoNotEmbedSystemFont = FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 0 );
-                            fWordCompact		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 1 );
-                            fLiveRecover		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 2 );
-                            fEmbedFactoids		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 3 );
-                            fFactoidXML			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 4 );
-                            fFactoidAllDone		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 5 );
-                            fFolioPrint			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 6 );
-                            fReverseFolio		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 7 );
-                            iTextLineEnding		= (short)FormatUtils::GetUIntFromBytesBits( ( bytes + 548 ), 2, 8, 3 );
-                            fHideFcc			= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 11 );
-                            fAcetateShowMarkup	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 12 );
-                            fAcetateShowAtn		= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 13 );
-                            fAcetateShowInsDel	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 14 );
-                            fAcetateShowProps	= FormatUtils::GetBitFromBytes( ( bytes + 548 ), 2, 15 );
+								istdTableDflt		= FormatUtils::BytesToUInt16( bytes, 550, size );
+								verCompat			= FormatUtils::BytesToUInt16( bytes, 552, size );
+								grfFmtFilter		= FormatUtils::BytesToUInt16( bytes, 554, size );
+								iFolioPages			= FormatUtils::BytesToInt16	( bytes, 556, size );
+								cpgText				= FormatUtils::BytesToUInt16( bytes, 558, size );
+								cpMinRMText			= FormatUtils::BytesToInt32	( bytes, 560, size );
+								cpMinRMFtn			= FormatUtils::BytesToInt32	( bytes, 564, size );
+								cpMinRMHdd			= FormatUtils::BytesToInt32	( bytes, 568, size );
+								cpMinRMAtn			= FormatUtils::BytesToInt32	( bytes, 572, size );
+								cpMinRMEdn			= FormatUtils::BytesToInt32	( bytes, 576, size );
+								cpMinRMTxbx			= FormatUtils::BytesToInt32	( bytes, 580, size );
+								cpMinRMHdrTxbx		= FormatUtils::BytesToInt32	( bytes, 584, size );
+								rsidRoot			= FormatUtils::BytesToInt32	( bytes, 588, size );
+								//unused 2
 
-                            istdTableDflt		= FormatUtils::BytesToUInt16( bytes, 550, size );
-                            verCompat			= FormatUtils::BytesToUInt16( bytes, 552, size );
-                            grfFmtFilter		= FormatUtils::BytesToUInt16( bytes, 554, size );
-                            iFolioPages			= FormatUtils::BytesToInt16( bytes, 556, size );
-                            cpgText				= FormatUtils::BytesToUInt16( bytes, 558, size );
-                            cpMinRMText			= FormatUtils::BytesToInt32( bytes, 560, size );
-                            cpMinRMFtn			= FormatUtils::BytesToInt32( bytes, 564, size );
-                            cpMinRMHdd			= FormatUtils::BytesToInt32( bytes, 568, size );
-                            cpMinRMAtn			= FormatUtils::BytesToInt32( bytes, 572, size );
-                            cpMinRMEdn			= FormatUtils::BytesToInt32( bytes, 576, size );
-                            cpMinRMTxbx			= FormatUtils::BytesToInt32( bytes, 580, size );
-                            cpMinRMHdrTxbx		= FormatUtils::BytesToInt32( bytes, 584, size );
-                            rsidRoot			= FormatUtils::BytesToInt32( bytes, 588, size );
+								if ( size > 594/* && fib->m_FibNew.nFibNew > Fib2002*/)
+								{
+									//split bytes 592,593,594,595 into bits
+									fTreatLockAtnAsReadOnly = FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 0 );
+									fStyleLock				= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 1 );
+									fAutoFmtOverride		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 2 );
+									fRemoveWordML			= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 3 );
+									fApplyCustomXForm		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 4 );
+									fStyeLockEnforced		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 5 );
+									fFakeLockAtn			= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 6 );
+									fIgnoreMixedContent		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 7 );
+									fShowPlaceholderText	= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 8 );
+									grf						= FormatUtils::GetUIntFromBytesBits( ( bytes + 592 ), 4, 9, 23 );
 
-                            if ( size == 610 )
-                            {
-                                //split bytes 592,593,594,595 into bits
-                                fTreatLockAtnAsReadOnly = FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 0 );
-                                fStyleLock				= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 1 );
-                                fAutoFmtOverride		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 2 );
-                                fRemoveWordML			= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 3 );
-                                fApplyCustomXForm		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 4 );
-                                fStyeLockEnforced		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 5 );
-                                fFakeLockAtn			= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 6 );
-                                fIgnoreMixedContent		= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 7 );
-                                fShowPlaceholderText	= FormatUtils::GetBitFromBytes( ( bytes + 592 ), 4, 8 );
-                                grf						= FormatUtils::GetUIntFromBytesBits( ( bytes + 592 ), 4, 9, 23 );
+									//split bytes 596 and 597 into bits
+									fReadingModeInkLockDown = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 0 );
+									fAcetateShowInkAtn		= FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 1 );
+									fFilterDttm				= FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 2 );
+									fEnforceDocProt			= FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 3 );
+									iDocProtCur				= (unsigned short)FormatUtils::GetUIntFromBytesBits( ( bytes + 596 ), 2, 4, 3 );
+									fDispBkSpSaved			= FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 7 );
 
-                                //split bytes 596 and 597 into bits
-                                fReadingModeInkLockDown = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 0 );
-                                fAcetateShowInkAtn = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 1 );
-                                fFilterDttm = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 2 );
-                                fEnforceDocProt = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 3 );
-                                iDocProtCur = (unsigned short)FormatUtils::GetUIntFromBytesBits( ( bytes + 596 ), 2, 4, 3 );
-                                fDispBkSpSaved = FormatUtils::GetBitFromBytes( ( bytes + 596 ), 2, 7 );
-
-                                dxaPageLock = FormatUtils::BytesToInt16( bytes, 598, size );
-                                dyaPageLock = FormatUtils::BytesToInt16( bytes, 600, size );
-                                pctFontLock = FormatUtils::BytesToInt32( bytes, 602, size );
-                                grfitbid = bytes[606];
-                                //unsigned char 607 is unused
-                                ilfoMacAtCleanup = FormatUtils::BytesToUInt16( bytes, 608, size );
-                            }
+									dxaPageLock = FormatUtils::BytesToInt16( bytes, 598, size );
+									dyaPageLock = FormatUtils::BytesToInt16( bytes, 600, size );
+									pctFontLock = FormatUtils::BytesToInt32( bytes, 602, size );
+									grfitbid = bytes[606];
+									//unsigned char 607 is unused
+									ilfoMacAtCleanup = FormatUtils::BytesToUInt16( bytes, 608, size );
+		 
+									if ( size > 616/* && fib->m_FibNew.nFibNew > Fib2003*/)
+									{
+										//4 bytes reserved
+										bool fRMTrackFormatting = FormatUtils::GetBitFromBytes( ( bytes + 620 ), 2, 0 );
+										bool fRMTrackMoves		= FormatUtils::GetBitFromBytes( ( bytes + 620 ), 2, 1 );
+										//dopMth  = 34 bytes from 624 = 658
+										
+										if ( size > 674/* && fib->m_FibNew.nFibNew > Fib2007*/)
+										{
+											if ( size > 690/* && fib->m_FibNew.nFibNew > Fib2010*/)
+											{
+											}
+										}
+									}
+								}
+							}
                         }
                     }
                 }

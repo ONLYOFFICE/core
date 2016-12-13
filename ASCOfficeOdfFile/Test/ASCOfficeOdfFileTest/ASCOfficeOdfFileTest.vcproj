@@ -346,10 +346,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\3dParty\icu\win_32\lib\icuuc.lib"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
 				>
 				<FileConfiguration

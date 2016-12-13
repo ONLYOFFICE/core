@@ -50,8 +50,10 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	if (argc < 2) return 1;
+
 	std::wstring sSrcDoc	= argv[1];
-    std::wstring sDstDocx	= argv[2];
+	std::wstring sDstDocx	= argc > 2 ? argv[2] : sSrcDoc + L"-my.docx";
 
 	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(sDstDocx);
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);

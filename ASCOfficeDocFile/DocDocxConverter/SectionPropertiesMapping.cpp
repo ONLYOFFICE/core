@@ -476,6 +476,7 @@ namespace DocFileFormat
 
 			default:
 				{
+					int sz = iter->argumentsSize;
 				}break;
 			}
 		}

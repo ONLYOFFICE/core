@@ -37,12 +37,21 @@
 
 #include "../../src/ConvertOO2OOX.h"
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	if (argc < 2) return 1;
+	
 	HRESULT hr = S_OK;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argv[2];
+	std::wstring dstPath		= argc > 2 ? argv[2] : sSrcDoc + L"-my.docx"; //xlsx pptx
+	
 	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);
 	
 	std::wstring srcTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);

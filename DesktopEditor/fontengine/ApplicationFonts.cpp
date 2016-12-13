@@ -1832,9 +1832,7 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #if defined(__linux__) && !defined(_MAC)
      CArray<std::wstring> _array = NSDirectory::GetFiles(L"/usr/share/fonts", true);
      NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
-     NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
-     NSDirectory::GetFiles2(L"~/.fonts", _array, true);
-     NSDirectory::GetFiles2(L"~/.local/share/fonts", _array, true);
+     NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);     
      return _array;
 #endif
 

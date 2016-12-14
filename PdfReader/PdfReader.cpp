@@ -288,8 +288,12 @@ namespace PdfReader
 		oFrame.put_Height(nHeight);
 		oFrame.put_Stride(-4 * nWidth);
 
-		oRenderer.CreateFromBgraFrame(&oFrame);
+        oRenderer.CreateFromBgraFrame(&oFrame);
 		oRenderer.SetSwapRGB(false);
+
+        dWidth  *= 25.4 / dDpiX;
+        dHeight *= 25.4 / dDpiY;
+
 		oRenderer.put_Width(dWidth);
 		oRenderer.put_Height(dHeight);
 

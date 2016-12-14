@@ -529,10 +529,11 @@ namespace NSDoctRenderer
                     if (js_func_get_file_s->IsFunction())
                     {
                         v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
+                        int nArgument = pParams->m_nSaveToPDFParams;
                         if (pParams->m_bIsOnlyOnePage)
-                            args[0] = v8::Int32::New(isolate, pParams->m_nSaveToPDFParams);
-                        else
-                            args[0] = v8::Int32::New(isolate, 0x0100);
+                            nArgument |= 0x0100;
+                        args[0] = v8::Int32::New(isolate, nArgument);
+
                         v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
 
                         if (try_catch.HasCaught())

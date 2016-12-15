@@ -34,6 +34,7 @@
 #include "OfficeDrawing/RecordFactory.h"
 
 #include "OfficeDrawing/DrawingContainer.h"
+#include "OfficeDrawing/DrawingRecord.h"
 #include "OfficeDrawing/DrawingGroup.h"
 #include "OfficeDrawing/GroupContainer.h"
 #include "OfficeDrawing/Shape.h"
@@ -57,7 +58,7 @@ namespace DocFileFormat
 
 	public:
 
-		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL)
+		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL), m_pBackgroud(NULL)
 		{
 			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_bOlderVersion);
 
@@ -87,15 +88,23 @@ namespace DocFileFormat
 							{
 								// the child is a subgroup
 								GroupContainer* group	=	static_cast<GroupContainer*>(groupChild);
-								group->Index			=	i;
-								drawing.container->Children[i] = group;
+								if (group)
+								{
+									group->Index =	i;
+								}
 							}
 							else if (ShapeContainer::TYPE_CODE_0xF004 == groupChild->TypeCode)
 							{
 								// the child is a shape
 								ShapeContainer* shape	=	static_cast<ShapeContainer*>(groupChild);
-								shape->Index			=	i;
-								drawing.container->Children[i] = shape;
+								if (shape)
+								{
+									shape->Index = i;
+									if (shape->isBackground())
+									{
+										m_pBackgroud = shape;
+									}
+								}
 							}
 						}
 					}
@@ -112,7 +121,10 @@ namespace DocFileFormat
 			for ( std::list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
 				RELEASEOBJECT(iter->container);  
 		}
-
+		inline ShapeContainer* GetShapeBackgound()
+		{
+			return m_pBackgroud;
+		}
 		inline ShapeContainer* GetShapeContainer (int spid)
 		{
 			ShapeContainer* ret = NULL;
@@ -138,7 +150,6 @@ namespace DocFileFormat
 							if (shape->GetShapeID() == spid)
 							{
 								ret = container;
-
 								break;
 							}
 						}
@@ -150,7 +161,7 @@ namespace DocFileFormat
 
 							if (shape->GetShapeID() == spid)
 							{
-								ret						=	container;
+								ret	 =	container;
 								break;
 							}
 						}
@@ -174,7 +185,7 @@ namespace DocFileFormat
 		}
 
 	private:
-
+		ShapeContainer*					m_pBackgroud;
 		DrawingGroup*					m_pDrawingGroupData;
 		std::list<OfficeArtWordDrawing>	m_arrDrawings;
 	};

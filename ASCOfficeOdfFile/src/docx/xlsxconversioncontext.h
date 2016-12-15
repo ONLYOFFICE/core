@@ -177,7 +177,10 @@ public:
     mediaitems & get_mediaitems() { return mediaitems_; }
 
 private:
-    void create_new_sheet(std::wstring const & name);
+    void create_new_sheet	(std::wstring const & name);
+
+	void serialize_bookViews(std::wostream & strm);
+	void serialize_calcPr	(std::wostream & strm);    
 
     package::xlsx_document				*output_document_;
     const odf_reader::office_element	*spreadsheet_;
@@ -201,7 +204,6 @@ private:
 	math_context					math_context_;
     xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
-    
 };
 
 }

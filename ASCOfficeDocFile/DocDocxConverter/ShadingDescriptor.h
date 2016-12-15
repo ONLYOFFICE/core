@@ -112,23 +112,14 @@ namespace DocFileFormat
 		friend class PropertiesMapping;
 
 	private:   
-		/// 24-bit foreground color
-		unsigned int cvFore;
-		bool cvForeAuto;
-		/// Foreground color.
-		/// Only used if cvFore is not set
-		int icoFore;
-		/// 24-bit background color
-		unsigned int cvBack;
-		bool cvBackAuto;
-		/// Background color.
-		/// Only used if cvBack is not set.
-		int icoBack;
-		/// Shading pattern
-		ShadingPattern ipat;
-		/// Shading type
-		ShadingType shadingType;
-		/// Shading special vale
+		unsigned int		cvFore;			// 24-bit foreground color
+		bool				cvForeAuto;
+		int					icoFore;		// Foreground color.
+		unsigned int		cvBack;
+		bool				cvBackAuto;
+		int					icoBack;
+		ShadingPattern		ipat;
+		ShadingType			shadingType;
 		ShadingSpecialValue shadingSpecialValue;
 
 	public:
@@ -236,7 +227,7 @@ namespace DocFileFormat
 						else if (0x0F == icoBack) { cvBack = RGB2 (0x80, 0x80, 0x80); }
 						else if (0x10 == icoBack) { cvBack = RGB2 (0xC0, 0xC0, 0xC0); }
 
-						// TODO : если будут документы с такими цветовыми палитрами
+						// .... если будут документы с такими цветовыми палитрами
 
 						//if ((cvFore == 0) && (icoFore == 0x0) && (cvBack == 0) && (icoBack == 0x0) && (ipat == Automatic))
 						//{
@@ -250,7 +241,6 @@ namespace DocFileFormat
 				}
 				else
 				{
-					//throw new ByteParseException("Cannot parse the struct SHD, the length of the struct doesn't match");
 				}
 			}
 		}

@@ -43,16 +43,13 @@
 int _tmain(int argc, _TCHAR* argv[])
 {
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstFileName	= argv[2];
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstFileName);
-
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
-
 	int n1 = srcFileName.rfind(_T('.'));
-	int n2 = dstFileName.rfind(_T('.'));
+	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T(""); //ext_1.MakeLower();
 
-	std::wstring ext_1 = n1>=0 ? srcFileName.substr(n1+1, srcFileName.length() - n1): _T(""); //ext_1.MakeLower();
-	std::wstring ext_2 = n2>=0 ? dstFileName.substr(n2+1, dstFileName.length() - n2): _T(""); //ext_2.MakeLower();
+	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
+	
+	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstFileName);
+	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
 	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
@@ -61,7 +58,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	rtfConvert.m_sTempFolder = dstTempPath;
 
 	COfficeUtils oCOfficeUtils(NULL);
-	if (ext_1 == _T("rtf"))
+	
+	if (ext_1 == L"rtf")
 	{	
 		// rtf->docx
 		rtfConvert.ConvertRtfToOOX(srcFileName, dstTempPath);
@@ -69,7 +67,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
 			return S_FALSE;
 	}
-	if (ext_2 == _T("rtf"))
+	else
 	{	
 		// docx->rtf
 		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), dstTempPath.c_str(), NULL, 0))

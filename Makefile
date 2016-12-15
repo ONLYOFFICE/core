@@ -212,6 +212,8 @@ ASCDOCUMENTSCORE_DEP += $(LIBXML)
 
 PDFREADER_DEP += $(HTMLRENDERER)
 
+PDFWRITER_DEP += $(UNICODECONVERTER)
+
 #Template for next statment:
 #FOO_MAKE := $(basename $(FOO_PRO)).build/Makefile
 #$(FOO): $(FOO_MAKE)
@@ -255,6 +257,8 @@ $(DJVUFILE): $(DJVUFILE_DEP)
 $(ASCDOCUMENTSCORE): $(ASCDOCUMENTSCORE_DEP)
 
 $(PDFREADER): $(PDFREADER_DEP)
+
+$(PDFWRITER): $(PDFWRITER_DEP)
 
 %.build/Makefile: %.pro
 	mkdir -p $(dir $@) && cd $(dir $@) && qmake -r $<

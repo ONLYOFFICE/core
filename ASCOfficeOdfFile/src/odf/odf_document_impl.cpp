@@ -291,10 +291,60 @@ void odf_document::Impl::parse_settings()
 				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
 				if (!sett)continue;
 
-				context_->Settings().add(sett->config_name_, elm_sett);
+				context_->Settings().add(sett->config_name_, sett->content_);
 			}
 		}
-	}
+		else if (item_set->config_name_ == L"ooo:view-settings")
+		{
+			BOOST_FOREACH(office_element_ptr & elm_sett, item_set->content_)
+			{		
+				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
+				if (sett)
+					context_->Settings().add_view(sett->config_name_, sett->content_);
+				else
+				{
+					settings_config_item_map_indexed *map_sett = dynamic_cast<settings_config_item_map_indexed *>(elm_sett.get());
+					if ((map_sett) && (map_sett->config_name_ == L"Views"))
+					{
+						for (int i = 0; i < map_sett->content_.size(); i++)
+						{
+							settings_config_item_map_entry *entry = dynamic_cast<settings_config_item_map_entry *>(map_sett->content_[i].get());
+							if (!entry) continue;
+							
+							context_->Settings().start_view();
+							for (int j = 0; j < entry->content_.size(); j++)
+							{
+								settings_config_item * sett = dynamic_cast<settings_config_item *>(entry->content_[j].get());
+								if (sett)
+									context_->Settings().add_view(sett->config_name_, sett->content_);
+								
+								settings_config_item_map_named *map_v = dynamic_cast<settings_config_item_map_named *>(entry->content_[j].get());
+								if (map_v)
+								{
+									for (int n = 0; n < map_v->content_.size(); n++)
+									{
+										settings_config_item_map_entry *entry_v = dynamic_cast<settings_config_item_map_entry *>(map_v->content_[n].get());
+										if (!entry_v) continue;
+										
+										context_->Settings().start_table_view(entry_v->config_name_);
+										
+										for (int k = 0; k < entry_v->content_.size(); k++)
+										{
+											sett = dynamic_cast<settings_config_item *>(entry_v->content_[k].get());
+											if (sett)
+												context_->Settings().add_view(sett->config_name_, sett->content_);
+										}
+										context_->Settings().end_table_view();
+									}
+								}
+							}
+							context_->Settings().end_view();
+						}
+					}
+				}
+			}
+		}	
+}
 }
 
 void odf_document::Impl::parse_styles()

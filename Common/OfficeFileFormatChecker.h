@@ -59,6 +59,7 @@ public:
 	
 	std::wstring GetFormatExtension(const std::wstring & fileName);
 	std::wstring GetExtensionByType(int type);
+	static int GetFormatByExtension(const std::wstring& ext);
 
 private:
 

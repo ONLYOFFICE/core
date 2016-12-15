@@ -38,10 +38,10 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	if (argc < 3) return 3;
+	if (argc < 2) return 1;
 
 	std::wstring sSrcPpt	= argv[1];
-    std::wstring sDstPptx	= argv[2];
+    std::wstring sDstPptx	= argc > 2 ? argv[2] : sSrcDoc + L"-my.pptx";
 
 	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(sDstPptx);
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);

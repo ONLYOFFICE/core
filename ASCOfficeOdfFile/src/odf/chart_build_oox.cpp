@@ -40,8 +40,6 @@
 #include "style_chart_properties.h"
 #include "style_text_properties.h"
 
-#include "office_settings.h"
-
 #include "draw_common.h"
 
 #include "number_style.h"
@@ -137,11 +135,12 @@ void object_odf_context::add_grid(std::wstring const & className, std::wstring c
         _CP_LOG << "[warning] unexpected chart:grid" << std::endl;
     }
 }
-void object_odf_context::add_series(std::wstring const & cellRangeAddress,
-        std::wstring const & labelCell,
-        class_type classType,
-        std::wstring const & attachedAxis,
-        std::wstring const & styleName)
+void object_odf_context::add_series(
+		std::wstring const &	cellRangeAddress,
+        std::wstring const &	labelCell,
+        class_type				classType,
+        std::wstring const &	attachedAxis,
+        std::wstring const &	styleName)
 {
 	if (class_ == chart_ring) classType = chart_ring; 
 	//if (class_ == chart_stock) classType = chart_stock; 
@@ -459,13 +458,13 @@ process_build_object::process_build_object(object_odf_context & object_odf, odf_
 						,number_styles_		(context.numberStyles())
 						,num_format_context_(context)
 {
-	office_element_ptr		sett_elm	= settings_.find_by_style_name(L"BaseFontHeight");
-	settings_config_item*	sett		= dynamic_cast<settings_config_item*>(sett_elm.get());
-	if (sett)
+	_CP_OPT(std::wstring) sFontHeight	= settings_.find_by_name(L"BaseFontHeight");
+	
+	if (sFontHeight)
 	{
 		try
 		{
-			object_odf_context_.baseFontHeight_ =  boost::lexical_cast<int>(sett->content_);
+			object_odf_context_.baseFontHeight_ =  boost::lexical_cast<int>(*sFontHeight);
 		}
 		catch(...)
 		{

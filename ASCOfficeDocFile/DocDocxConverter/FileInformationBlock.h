@@ -1162,6 +1162,8 @@ namespace DocFileFormat
 			{
 				//Read the FibRgCswNew
 				m_FibNew.nFibNew = (FibVersion)reader.ReadUInt16();
+				
+				if (m_FibNew.nFibNew == 0) m_FibNew.nFibNew = Fib1997;
 				m_FibNew.cQuickSavesNew = reader.ReadUInt16();
 			}
 		}

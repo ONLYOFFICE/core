@@ -41,6 +41,8 @@
 #include "xlsx_package.h"
 #include "xlsx_utils.h"
 #include "xlsx_cell_format.h"
+
+#include "../odf/odfcontext.h"
 #include "../odf/calcs_styles.h"
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
@@ -136,7 +138,7 @@ void xlsx_conversion_context::end_document()
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
 		
-		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i+1);
+		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       
@@ -222,6 +224,8 @@ void xlsx_conversion_context::end_document()
                 CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
+				serialize_bookViews (CP_XML_STREAM());
+
                 CP_XML_NODE(L"sheets")
                 {
                     CP_XML_STREAM() << workbook_content.str();
@@ -240,10 +244,59 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_drawings(drawings);
 	
         package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
-        output_document_->get_xl_files().set_comments(comments);
-        
+        output_document_->get_xl_files().set_comments(comments);        
 	}
+}
 
+
+void xlsx_conversion_context::serialize_bookViews(std::wostream & strm)
+{
+	odf_reader::settings_container &settings = odf_document_->odf_context().Settings();
+
+	if (settings.get_views_count() < 1) return;
+
+    CP_XML_WRITER(strm)
+    {
+        CP_XML_NODE(L"bookViews")
+        {
+			for (int i = 0; i < settings.get_views_count(); i++)
+			{
+				_CP_OPT(std::wstring) sActiveTable	= settings.find_view_by_name(L"ActiveTable", i);
+				_CP_OPT(std::wstring) sAreaWidth	= settings.find_view_by_name(L"VisibleAreaWidth", i);
+				_CP_OPT(std::wstring) sAreaHeight	= settings.find_view_by_name(L"VisibleAreaHeight", i);
+				_CP_OPT(std::wstring) sAreaTop		= settings.find_view_by_name(L"VisibleAreaTop", i);
+				_CP_OPT(std::wstring) sAreaLeft		= settings.find_view_by_name(L"VisibleAreaLeft", i);
+
+				CP_XML_NODE(L"workbookView")
+				{
+					if (sActiveTable)
+					{
+						for (int i = 0; i < sheets_.size(); i++)
+						{
+							if (sheets_[i]->name() == *sActiveTable)
+							{
+								CP_XML_ATTR(L"activeTab", i);
+							}
+						}		
+					}
+					if (sAreaWidth)		CP_XML_ATTR(L"windowWidth", *sAreaWidth);
+					if (sAreaHeight)	CP_XML_ATTR(L"windowHeight", *sAreaHeight);
+
+					if (sAreaTop)		CP_XML_ATTR(L"yWindow", *sAreaTop);
+					if (sAreaLeft)		CP_XML_ATTR(L"xWindow", *sAreaLeft);
+
+					CP_XML_ATTR(L"showSheetTabs",	true);
+					CP_XML_ATTR(L"showVerticalScroll",	true);
+					CP_XML_ATTR(L"showHorizontalScroll",true);
+
+				}
+			}
+		}
+	}
+}
+
+void xlsx_conversion_context::serialize_calcPr (std::wostream & strm)
+{
 }
 
 void xlsx_conversion_context::start_body()

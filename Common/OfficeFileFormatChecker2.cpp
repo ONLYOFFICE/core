@@ -574,6 +574,59 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     return L"";
 }
 
+int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
+{
+    if (L".docx" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+    if (L".doc" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+    if (L".odt" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+    if (L".rtf" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+    if (L".txt" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+    if (L".html" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+    if (L".mht" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
+    if (L".epub" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;
+    if (L".fb2" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
+    if (L".mobi" == ext)
+        return AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI;
+
+
+    if (L".pptx" == ext)
+        return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+    if (L".ppt" == ext)
+        return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
+    if (L".odp" == ext)
+        return AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+    if (L".ppsx" == ext)
+        return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;
+
+    if (L".xlsx" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+    if (L".xls" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+    if (L".ods" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+    if (L".csv" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+
+
+    if (L".pdf" == ext)
+        return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+    if (L".djvu" == ext)
+        return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
+    if (L".xps" == ext)
+        return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
+
+    return 0;
+}
+
 std::wstring COfficeFileFormatChecker::GetFormatExtension(const std::wstring & fileName)
 {
 	if (isOfficeFile(fileName))

@@ -48,7 +48,6 @@ SOURCES += \
     ../source/OdfFormat/header_footer.cpp \
     ../source/OdfFormat/list.cpp \
     ../source/OdfFormat/mediaitems.cpp \
-    ../source/OdfFormat/mediaitems_utils.cpp \
     ../source/OdfFormat/number_style.cpp \
     ../source/OdfFormat/object_package.cpp \
     ../source/OdfFormat/odf_chart_context.cpp \
@@ -112,7 +111,6 @@ HEADERS += \
     ../source/OdfFormat/header_footer.h \
     ../source/OdfFormat/list.h \
     ../source/OdfFormat/mediaitems.h \
-    ../source/OdfFormat/mediaitems_utils.h \
     ../source/OdfFormat/number_style.h \
     ../source/OdfFormat/object_package.h \
     ../source/OdfFormat/odf_chart_context.h \

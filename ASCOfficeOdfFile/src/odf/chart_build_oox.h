@@ -340,7 +340,7 @@ private:
 
 	styles_container		& styles_;
 	
-	styles_lite_container	& settings_;
+	settings_container		& settings_;
 	styles_lite_container	& draw_styles_;
 	styles_lite_container	& number_styles_;
 

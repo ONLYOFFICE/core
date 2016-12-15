@@ -93,9 +93,9 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fr_EachPage:		sResult += L"ftnrstpg" ;		break;
-		case fr_EachSection:	sResult += L"ftnrestart";	break;
-		case fr_Continuous:		sResult += L"ftnrstcont";	break;
+		case fr_EachPage:		sResult += L"\\ftnrstpg" ;		break;
+		case fr_EachSection:	sResult += L"\\ftnrestart";	break;
+		case fr_Continuous:		sResult += L"\\ftnrstcont";	break;
 		}
 	}
 	
@@ -103,10 +103,10 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fp_EndSection:		sResult += L"endnotes";	break;
-		case fp_EndDocument:	sResult += L"enddoc";	break;
-		case fp_BeneathText:	sResult += L"ftntj";		break;
-		case fp_BottomPage:		sResult += L"ftnbj";		break;
+		case fp_EndSection:		sResult += L"\\endnotes";	break;
+		case fp_EndDocument:	sResult += L"\\enddoc";	break;
+		case fp_BeneathText:	sResult += L"\\ftntj";		break;
+		case fp_BottomPage:		sResult += L"\\ftnbj";		break;
 		}
 	}
 	
@@ -119,18 +119,18 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eEndnoteRestart )
 		{
-		case er_EachSection:	sResult += L"aftnrestart"; break;
-		case er_Continuous:		sResult += L"aftnrstcont"; break;
+		case er_EachSection:	sResult += L"\\aftnrestart"; break;
+		case er_Continuous:		sResult += L"\\aftnrstcont"; break;
 		}
 	}
 	if( PROP_DEF != m_eEndnotePlacement )
 	{
 		switch( m_eEndnotePlacement )
 		{
-		case ep_EndSection:		sResult += L"aendnotes"; break;
-		case ep_EndDocument:	sResult += L"aenddoc";	break;
-		case ep_BeneathText:	sResult += L"aftntj";	break;
-		case ep_BottomPage:		sResult += L"aftnbj";	break;
+		case ep_EndSection:		sResult += L"\\aendnotes"; break;
+		case ep_EndDocument:	sResult += L"\\aenddoc";	break;
+		case ep_BeneathText:	sResult += L"\\aftntj";	break;
+		case ep_BottomPage:		sResult += L"\\aftnbj";	break;
 		}
 	}
 

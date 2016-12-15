@@ -125,9 +125,9 @@ namespace DocFileFormat
 		int searchNextTextMark( std::vector<wchar_t>* chars, int initialCp, wchar_t mark );
 
 	private:
-		Symbol getSymbol( const CharacterPropertyExceptions* chpx );
-		bool							m_bInternalXmlWriter; 
+		Symbol	getSymbol	( const CharacterPropertyExceptions* chpx );
 
+		bool							m_bInternalXmlWriter; 
 	protected:
 
 		WordDocument*					m_document;

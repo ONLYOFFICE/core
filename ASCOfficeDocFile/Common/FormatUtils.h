@@ -766,18 +766,11 @@ namespace DocFormatUtils
 
         static inline std::wstring IntToWideString(int value)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            wchar_t buff[33] ={};
-            _itow(value, buff, 10);
-            return std::wstring(buff);
-#else
             return (std::to_wstring(value));
-#endif
 		}
 		static inline std::wstring DoubleToWideString(double value)
 		{
-			std::wstringstream src;
-			
+			std::wstringstream src;			
 			src << value;
 			
 			return std::wstring(src.str());
@@ -785,8 +778,7 @@ namespace DocFormatUtils
 
 		static inline std::string DoubleToString(double value)
 		{
-			std::stringstream src;
-			
+			std::stringstream src;			
 			src << value;
 			
 			return std::string(src.str());
@@ -813,36 +805,16 @@ namespace DocFormatUtils
 
 		static inline std::wstring IntToFormattedWideString( int value, const wchar_t* format )
 		{
-//			const int size = 33;
-
-//			wchar_t strValue[size] = L"\0";
-
 			if ( format == NULL ) return L"";
-//				swprintf_s( strValue, size, format, value );
-////			}
-//            CString format_str;
-//            format_str.Format(format , value);
-
 			std::wstringstream sstream;
 			sstream << boost::wformat(format) % value;
 			return sstream.str();
-            //return string2std_string( format_str );
 		}
 
 		static inline std::wstring DoubleToFormattedWideString( double value, wchar_t* format )
 		{
 			if ( format == NULL ) return L"";
-			//std::wstring wstr;
 
-			//if ( format != NULL )
-			//{
-   //             CString strValue;
-   //             strValue.Format(format, value);
-
-   //             wstr = string2std_string( strValue );
-			//}
-
-			//return wstr;
 			std::wstringstream sstream;
 			sstream << boost::wformat(format) % value;
 			return sstream.str();

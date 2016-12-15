@@ -81,12 +81,8 @@ namespace DocFileFormat
 			RELEASEOBJECT(m_pXmlWriter);
 		}
 	}
-}
 
-namespace DocFileFormat
-{
 	// Looks into the section table to find out if this CP is the end & current  of a sections 
-	
 	int DocumentMapping::getCurrentSection(int cp)
 	{
 		//if cp is the last char of a section, the next section will start at cp +1
@@ -198,7 +194,7 @@ namespace DocFileFormat
 
 		// start paragraph
 		
-		m_pXmlWriter->WriteNodeBegin(_T("w:p"), TRUE);
+		m_pXmlWriter->WriteNodeBegin(_T("w:p"), true);
 		writeParagraphRsid(papx);
 
 // ----------- check for section properties
@@ -339,7 +335,7 @@ namespace DocFileFormat
 			}    
 		}
 
-		m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
+		m_pXmlWriter->WriteNodeEnd(_T(""), true, false);
 	}
 
 	// Writes a run with the given characters and CHPX
@@ -356,23 +352,23 @@ namespace DocFileFormat
 			if (Deleted == rev.Type)
 			{
 				//If it's a deleted run
-				m_pXmlWriter->WriteNodeBegin(_T("w:del"), TRUE);
+				m_pXmlWriter->WriteNodeBegin(_T("w:del"), true);
 				m_pXmlWriter->WriteAttribute(_T("w:author"), _T("[b2x: could not retrieve author]")); 
 				m_pXmlWriter->WriteAttribute(_T("w:date"), _T("[b2x: could not retrieve date]")); 
-				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
+				m_pXmlWriter->WriteNodeEnd(_T(""), true, false);
 			}
 			else if ( rev.Type == Inserted )
 			{
 				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
 				//if it's a inserted run
-				m_pXmlWriter->WriteNodeBegin(_T("w:ins"), TRUE);
+				m_pXmlWriter->WriteNodeBegin(_T("w:ins"), true);
 				m_pXmlWriter->WriteAttribute(_T("w:author"), FormatUtils::XmlEncode(*author).c_str()); 
-				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
+				m_pXmlWriter->WriteNodeEnd(_T(""), true, false);
 				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}
 
 			//start run
-			m_pXmlWriter->WriteNodeBegin(_T("w:r"), TRUE);
+			m_pXmlWriter->WriteNodeBegin(_T("w:r"), true);
 
 			//append rsids
 			if (0 != rev.Rsid)
@@ -396,7 +392,7 @@ namespace DocFileFormat
 				m_context->AddRsid(rsidProp);
 			}
 
-			m_pXmlWriter->WriteNodeEnd(_T(""), TRUE, FALSE);
+			m_pXmlWriter->WriteNodeEnd(_T(""), true, false);
 
 			/// <w:rPr>
 			CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &rev, _lastValidPapx, false);
@@ -564,9 +560,9 @@ namespace DocFileFormat
 			
 				if ( bFORM )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), true );
 					m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
 
 					int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
 
@@ -589,9 +585,9 @@ namespace DocFileFormat
 						&& 
 						( ( bEMBED || bLINK ) && bChart) )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), true );
 						m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
 
 					int cpPic = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::Picture );
 
@@ -608,9 +604,9 @@ namespace DocFileFormat
 
 					if ((search( f.begin(),	f.end(), TOC.begin(),	TOC.end()) != f.end()) || bPAGE)
 					{
-						m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
+						m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), true );
 							m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) ); 
-						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+						m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 
 						_writeInstrText = true;	
 						_fldCharCounter++;
@@ -638,9 +634,9 @@ namespace DocFileFormat
 
 								//if (_writeInstrText == true)
 								//{
-								//	m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
+								//	m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), true );
 								//		m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "separate" ) ); 
-								//	m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );								
+								//	m_pXmlWriter->WriteNodeEnd( _T( "" ), true );								
 								//}
 								_writeInstrText = false;
 								
@@ -678,10 +674,10 @@ namespace DocFileFormat
 						{
 							OleObject ole ( chpxObj, m_document->GetStorage(), m_document->bOlderVersion);
 							
-							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
+							OleWriter.WriteNodeBegin (_T( "w:object" ), true);
 								OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) ).c_str() ); 
 								OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) ).c_str() ); 
-							OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
+							OleWriter.WriteNodeEnd( _T( "" ), true, false );
 
 							ole.pictureDesciptor.Convert(&oVmlMapper);
 							OleObjectMapping oleObjectMapping( &OleWriter, m_context, &ole.pictureDesciptor, _caller, oVmlMapper.GetShapeId() );
@@ -692,10 +688,10 @@ namespace DocFileFormat
 						{
 							PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 							
-							OleWriter.WriteNodeBegin (_T( "w:object" ), TRUE);
+							OleWriter.WriteNodeBegin (_T( "w:object" ), true);
 								OleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
 								OleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
-							OleWriter.WriteNodeEnd( _T( "" ), TRUE, FALSE );
+							OleWriter.WriteNodeEnd( _T( "" ), true, false );
 							
 							pic.Convert(&oVmlMapper);
 							RELEASEOBJECT(chpxs);
@@ -741,9 +737,9 @@ namespace DocFileFormat
 				}					
 				else
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:fldChar" ), true );
 						m_pXmlWriter->WriteAttribute( _T( "w:fldCharType" ), _T( "begin" ) ); 
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 
 					_writeInstrText = true;
 					_fldCharCounter++;
@@ -787,10 +783,10 @@ namespace DocFileFormat
 			{
 				Symbol s = getSymbol( chpx );
 
-				m_pXmlWriter->WriteNodeBegin(_T("w:sym"), TRUE);
+				m_pXmlWriter->WriteNodeBegin(_T("w:sym"), true);
 				m_pXmlWriter->WriteAttribute(_T("w:font"), FormatUtils::XmlEncode(s.FontName).c_str()); 
 				m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue).c_str()); 
-				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);
+				m_pXmlWriter->WriteNodeEnd(_T(""), true);
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
@@ -807,20 +803,25 @@ namespace DocFileFormat
 
 				if (pSpa)
 				{
+					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->bOlderVersion);
 					ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
 
 					if (pShape)
 					{
-						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
-						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, NULL,  _caller);
+						bool bOLE = pShape->isOLE();
+
+						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
+						
+						m_pXmlWriter->WriteNodeBegin (L"w:pict");
+							
 						pShape->Convert(&oVmlWriter);
-						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
+						m_pXmlWriter->WriteNodeEnd (L"w:pict");
 					}
 					
 					if (!pSpa->primitives.empty())
 					{
 						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
-						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, NULL,  _caller);
+						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						pSpa->primitives.Convert(&oVmlWriter);
 						m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
 					}
@@ -897,40 +898,40 @@ namespace DocFileFormat
 			{
 				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteReference" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteReference" ), true );
 					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_footnoteNr++ ).c_str() ); 
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteRef" ), TRUE );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteRef" ), true );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteReference" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteReference" ), true );
 					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_endnoteNr++ ).c_str() ); 
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else if ((m_document->IndividualEndnotesPlex != NULL) && 
 					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteRef" ), TRUE );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteRef" ), true );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 			}
 			else if (TextMark::AnnotationReference == code)
 			{
 				if (typeid(*this) != typeid(CommentsMapping))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:commentReference" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:commentReference" ), true );
 					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( _commentNr ).c_str() ); 
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:annotationRef" ), TRUE );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( _T( "w:annotationRef" ), true );
+					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 
 				_commentNr++;
@@ -976,12 +977,12 @@ namespace DocFileFormat
 	{
 		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
-		m_pXmlWriter->WriteNodeBegin( str.c_str(), TRUE );
+		m_pXmlWriter->WriteNodeBegin( str.c_str(), true );
         if (preserve_space)
 		{
             m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) );
         }
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
 	}
 
 	void DocumentMapping::writeTextEnd(const std::wstring& textType)

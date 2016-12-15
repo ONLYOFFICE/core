@@ -556,6 +556,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\DocDocxConverter\OleObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\DocDocxConverter\OleObject.h"
 				>
 			</File>

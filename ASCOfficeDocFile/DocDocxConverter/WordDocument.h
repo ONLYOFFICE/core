@@ -187,7 +187,7 @@ namespace DocFileFormat
 		Plex<EmptyStructure>				*HeaderStoriesPlex;					//A plex of the header document
 		Plex<EmptyStructure>				*IndividualCommentsPlex;			// A plex with all ATRDPre10 structs
 		
-		Plex<EmptyStructure>				*TextboxIndividualPlex;	
+		Plex<FTXBXS>						*TextboxIndividualPlex;	
 		Plex<Tbkd>							*TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
 		Plex<Tbkd>							*TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
 		

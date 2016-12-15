@@ -83,6 +83,20 @@ namespace DocFileFormat
 			}
 			return false;
 		}
+		bool isOLE()
+		{
+			int ret = 0;
+
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			{
+				Shape* sh = dynamic_cast<Shape*>( *iter );
+				if (sh)
+				{
+					return sh->fOleShape;
+				}
+			}
+			return false;
+		}
 		virtual ~ShapeContainer()
 		{
 		}

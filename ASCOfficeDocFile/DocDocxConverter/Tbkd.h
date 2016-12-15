@@ -96,6 +96,8 @@ namespace DocFileFormat
 	{
 		friend class TextboxMapping;
 	public:
+		static const int STRUCTURE_SIZE		= 22;
+		
 		struct FTXBXSReusable
 		{
 			int	iNextReuse;
@@ -107,8 +109,6 @@ namespace DocFileFormat
 			int cTxbx;
 			int cTxbxEdit;				//	This value MUST be zero and MUST be ignored.
 		};
-
-		static const int STRUCTURE_SIZE = 22;
 
 		FTXBXS ()
 		{

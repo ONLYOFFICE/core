@@ -268,7 +268,7 @@ namespace DocFileFormat
 		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		bOlderVersion);
 		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		bOlderVersion);
 
-		TextboxIndividualPlex				=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	bOlderVersion);
+		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	bOlderVersion);
 
 		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		bOlderVersion);
 		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		bOlderVersion);

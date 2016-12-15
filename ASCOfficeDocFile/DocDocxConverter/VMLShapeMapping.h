@@ -129,7 +129,7 @@ namespace DocFileFormat
 		BlipStoreContainer*				m_pBlipStore;
 		int								m_nImageId;
 		std::wstring					m_textPathStyle;
-		ConversionContext*				m_ctx;
+		ConversionContext*				m_context;
 		PictureDescriptor*				m_pict;
 
 		XMLTools::XMLElement<wchar_t>	m_fill; 

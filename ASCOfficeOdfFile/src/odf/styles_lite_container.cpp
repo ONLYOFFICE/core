@@ -107,7 +107,7 @@ public:
     Impl() : inViewTable(false), inView(false) {}
 
 	settings_elm				common; 
-	settings_elm				common_view;
+    settings_elm				common_view;
 
 	std::vector<view_elm>		views;
 

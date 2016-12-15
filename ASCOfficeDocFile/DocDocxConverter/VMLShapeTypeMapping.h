@@ -37,6 +37,8 @@
 
 namespace DocFileFormat
 {
+	static int count_vml_objects = 0;
+
 	class VMLShapeTypeMapping: public PropertiesMapping, public IMapping
 	{
 	private: 

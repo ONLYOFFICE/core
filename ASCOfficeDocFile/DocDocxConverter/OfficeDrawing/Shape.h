@@ -67,7 +67,7 @@ namespace DocFileFormat
 
 		virtual ~Shape()
 		{
-			RELEASEOBJECT( this->shapeType );
+			RELEASEOBJECT( shapeType );
 		}
 
 		Shape( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
@@ -107,12 +107,12 @@ namespace DocFileFormat
 
 		inline int GetShapeID() const
 		{
-			return this->spid;
+			return spid;
 		}
 
 		inline ShapeType* GetShapeType() const
 		{
-			return this->shapeType;
+			return shapeType;
 		}
 
 		template<class T> bool is() const

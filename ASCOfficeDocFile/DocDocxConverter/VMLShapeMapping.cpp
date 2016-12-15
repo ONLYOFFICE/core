@@ -146,8 +146,10 @@ namespace DocFileFormat
 			std::list<OptionEntry> options	=	groupShape->ExtractOptions();
 			ChildAnchor* anchor				=	groupShape->FirstChildWithType<ChildAnchor>();
 
+			m_shapeId = GetShapeID(shape);
+
 			m_pXmlWriter->WriteNodeBegin( L"v:group", true );
-			m_pXmlWriter->WriteAttribute( L"id", GetShapeID(shape).c_str());
+			m_pXmlWriter->WriteAttribute( L"id", m_shapeId .c_str());
 			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)).c_str() );
 			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)).c_str() );
 			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)).c_str() );
@@ -230,8 +232,14 @@ namespace DocFileFormat
 
 		WriteBeginShapeNode (pShape);
 
-		sShapeId = GetShapeID(pShape);
-		m_pXmlWriter->WriteAttribute ( L"id", sShapeId );
+		m_shapeId = GetShapeID(pShape);
+
+		count_vml_objects++;
+
+		if (m_shapeId.empty())
+			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		
+		m_pXmlWriter->WriteAttribute ( L"id", m_shapeId );
 
 		if ( !pShape->fBackground )
 		{
@@ -1021,14 +1029,21 @@ namespace DocFileFormat
 				m_context->_doc->Convert(&textboxMapping);
 			}
 		}
+		WriteEndShapeNode(pShape);
 // OLE
-		if (indexOLE >= 0 && pShape->fOleShape)
+		if (indexOLE >= 0 && pShape->fOleShape) //4571833.doc
 		{
-			TextboxMapping textboxMapping(m_context, 0, m_pXmlWriter, m_pCaller);
+			XMLTools::CStringXmlWriter txtBoxWrapper;
+			
+			TextboxMapping textboxMapping(m_context, (indexOLE >> 16) - 1, &txtBoxWrapper, m_pCaller);
+
+			textboxMapping.m_shapeIdOwner = m_shapeId;
+
 			m_context->_doc->Convert(&textboxMapping);
+
+			m_pXmlWriter->WriteString(textboxMapping.getOLEObject());
 		}
 
-		WriteEndShapeNode(pShape);
 //ShapeType 
 		if (NULL != pShape->GetShapeType() /* && !m_isInlineShape*/) //bullete only???
 		{
@@ -1905,7 +1920,6 @@ namespace DocFileFormat
 		return rectangles;
 	}
 //------------------------------------------------------------------------------------------------------
-	static int count_vml_objects = 0;
 	
 	void VMLShapeMapping::ApplyPrimitives(DrawingPrimitives * primitives)
 	{
@@ -1992,7 +2006,9 @@ namespace DocFileFormat
 		TwipsValue w( primitive->dxa );
 		TwipsValue h( primitive->dya );
 
-		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + (count_vml_objects++));
+		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		
+		count_vml_objects++;
 		//m_pXmlWriter->WriteAttribute ( L"id")	, strId.c_str());
 		m_pXmlWriter->WriteAttribute ( L"o:spid", strId.c_str());
 

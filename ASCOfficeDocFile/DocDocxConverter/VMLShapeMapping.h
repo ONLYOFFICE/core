@@ -68,7 +68,8 @@ namespace DocFileFormat
         static std::wstring mapHorizontalPosition		(PositionHorizontal hPos );
         static std::wstring mapHorizontalPositionRelative(int hRel );
 
-		bool m_isBullete;
+		bool			m_isBullete;
+		std::wstring	m_shapeId;
 	private:
 
 		void ApplyPrimitives	(DrawingPrimitives	* primitives );

@@ -67,7 +67,6 @@ namespace DocFileFormat
 				}
 				m_pXmlWriter->WriteNodeBegin( _T( "o:OLEObject" ), TRUE );
 
-				//type
 				if ( ole->bLinked )
 				{
 					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
@@ -88,22 +87,13 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
 
-					//copy the object
 					copyEmbeddedObject( ole );
 				}
 
-				//ProgID
 				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program.c_str() );
-
-				//ShapeId
 				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId.c_str() );
-
-				//DrawAspect
 				m_pXmlWriter->WriteAttribute( _T( "DrawAspect" ), _T( "Content" ) );
-
-				//ObjectID
 				m_pXmlWriter->WriteAttribute( _T( "ObjectID" ), ole->ObjectId.c_str() );
-
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				m_pXmlWriter->WriteNodeEnd( _T( "o:OLEObject" ) );
@@ -165,20 +155,15 @@ namespace DocFileFormat
 		}
 
 	private:
-		// Writes the embedded OLE object from the ObjectPool of the binary file to the OpenXml Package.
-
 		inline void copyEmbeddedObject( const OleObject* ole )
 		{
 			if ( ole != NULL )
 			{
-				//!!!TODO: There is issue with some Office OLE Objects. Word can't open *.xls object (Excel.Chart) with set CLSID and
-				//some Power Point Presentations, and Word Documents. Open Office CAN start this objects!!!
-
 				std::wstring clsid;
 				std::wstring exelChart = _T( "Excel.Chart" );
 
 				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
-				{//??
+				{
 					clsid = ole->ClassId;
 				}
 				OleObjectFileStructure object_descr(OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid); 

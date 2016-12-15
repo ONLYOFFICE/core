@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; };
 		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; };
-		1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; };
-		1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; };
-		173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; };
 		17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0621AC4262700F28F8B /* Hyperlink.cpp */; };
 		17C1FB951ACC4250006B99B3 /* Sdt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A06D1AC4262700F28F8B /* Sdt.cpp */; };
 		17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0801AC4262700F28F8B /* oMathContent.cpp */; };
@@ -264,9 +261,6 @@
 /* Begin PBXFileReference section */
 		173241431BBEC90000E67992 /* pole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pole.cpp; sourceTree = "<group>"; };
 		173241441BBEC90000E67992 /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pole.h; sourceTree = "<group>"; };
-		173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnicodeConverter_Encodings.h; path = ../../../UnicodeConverter/UnicodeConverter_Encodings.h; sourceTree = "<group>"; };
-		1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnicodeConverter.cpp; path = ../../../UnicodeConverter/UnicodeConverter.cpp; sourceTree = "<group>"; };
-		1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnicodeConverter.h; path = ../../../UnicodeConverter/UnicodeConverter.h; sourceTree = "<group>"; };
 		17C1FC9C1ACC4250006B99B3 /* libDocxFormatLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDocxFormatLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E69FED1AC4262700F28F8B /* ASCString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCString.h; sourceTree = "<group>"; };
 		17E69FEE1AC4262700F28F8B /* ASCWinAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASCWinAPI.h; sourceTree = "<group>"; };
@@ -545,16 +539,6 @@
 			path = ../../3dParty/pole;
 			sourceTree = "<group>";
 		};
-		173246361BBEDC2300E67992 /* UnicodeConverter */ = {
-			isa = PBXGroup;
-			children = (
-				173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */,
-				1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */,
-				1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */,
-			);
-			name = UnicodeConverter;
-			sourceTree = "<group>";
-		};
 		17E69FD31AC4259800F28F8B = {
 			isa = PBXGroup;
 			children = (
@@ -583,7 +567,6 @@
 		17E69FEB1AC4262700F28F8B /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				173246361BBEDC2300E67992 /* UnicodeConverter */,
 				173241401BBEC90000E67992 /* pole */,
 				17E69FEC1AC4262700F28F8B /* Base */,
 				17E69FF51AC4262700F28F8B /* Common */,
@@ -1133,7 +1116,6 @@
 				17C1FBFC1ACC4250006B99B3 /* SimpleTypes_Shared.h in Headers */,
 				17C1FBFD1ACC4250006B99B3 /* DefinedNames.h in Headers */,
 				17C1FBFE1ACC4250006B99B3 /* File.h in Headers */,
-				1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */,
 				17C1FBFF1ACC4250006B99B3 /* Pic.h in Headers */,
 				69415F541CB51D9E003E771B /* DrawingGraphic.h in Headers */,
 				17C1FC001ACC4250006B99B3 /* Worksheet.h in Headers */,
@@ -1239,7 +1221,6 @@
 				17C1FC681ACC4250006B99B3 /* Fonts.h in Headers */,
 				17C1FC691ACC4250006B99B3 /* Footnote.h in Headers */,
 				69415F5B1CB51D9E003E771B /* DrawingShared.h in Headers */,
-				173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */,
 				17C1FC6A1ACC4250006B99B3 /* ComplexTypes.h in Headers */,
 				17C1FC6C1ACC4250006B99B3 /* RunContent.h in Headers */,
 				17C1FC6D1ACC4250006B99B3 /* External.h in Headers */,
@@ -1367,7 +1348,6 @@
 				17C1FBAB1ACC4250006B99B3 /* FileFactory_Spreadsheet.cpp in Sources */,
 				17C1FBAC1ACC4250006B99B3 /* AlternateContent.cpp in Sources */,
 				17C1FBAD1ACC4250006B99B3 /* SmartTag.cpp in Sources */,
-				1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */,
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB01ACC4250006B99B3 /* IFileContainer_Spreadsheet.cpp in Sources */,

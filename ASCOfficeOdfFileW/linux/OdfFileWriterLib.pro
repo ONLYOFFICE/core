@@ -98,7 +98,10 @@ SOURCES += \
     ../source/Oox2OdfConverter/ConverterChart.cpp \
     ../source/Oox2OdfConverter/ConvertVml.cpp \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
-    ../source/Oox2OdfConverter/XlsxConverter.cpp
+    ../source/Oox2OdfConverter/XlsxConverter.cpp \
+    ../source/OdfFormat/odf_settings_context.cpp \
+    ../source/OdfFormat/office_settings.cpp \
+    ../source/OdfFormat/mediaitems_utils.cpp
 }
 
 
@@ -183,7 +186,3 @@ HEADERS += \
     ../source/OdfFormat/Shapes/oox_shapeWordArt.h \
     ../source/OdfFormat/odf_settings_context.h \
     ../source/OdfFormat/office_settings.h
-
-SOURCES += \
-    ../source/OdfFormat/odf_settings_context.cpp \
-    ../source/OdfFormat/office_settings.cpp

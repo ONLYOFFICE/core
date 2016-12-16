@@ -40,7 +40,8 @@ SOURCES +=  \
      ../../../Common/3dParty/pole/pole.cpp \
     ../../DocDocxConverter/EncryptionHeader.cpp \
     ../../DocDocxConverter/DrawingPrimitives.cpp \
-    ../../DocDocxConverter/Spa.cpp
+    ../../DocDocxConverter/Spa.cpp \
+    ../../DocDocxConverter/OleObject.cpp
 
 build_fast {
 SOURCES += \

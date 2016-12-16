@@ -189,7 +189,6 @@ namespace DocFileFormat
 		return res;
 	}
 //---------------------------------------------------------------
-	static int count_vml_objects = 0;
 	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
 	{
 		if ( b != NULL )
@@ -215,8 +214,6 @@ namespace DocFileFormat
 		m_isEmbedded		=	false;
 
 		m_imageData			=	new XMLTools::XMLElement<wchar_t>( _T( "v:imagedata" ) );
-
-		m_ShapeId			=	std::wstring(L"_x0000_i") + FormatUtils::IntToWideString(1024 + (count_vml_objects++));
 	}
 
 	VMLPictureMapping::~VMLPictureMapping()
@@ -263,7 +260,12 @@ namespace DocFileFormat
 		
 		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
 
-		m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
+		count_vml_objects++;
+
+		if (m_shapeId.empty())
+			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		
+		m_pXmlWriter->WriteAttribute( _T( "id" ), m_shapeId.c_str() );
 
 		if (m_isOlePreview)
 		{
@@ -424,11 +426,6 @@ namespace DocFileFormat
 		writePictureBorder( _T( "borderright" ),	pict->brcRight );
 
 		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
-	}
-
-	std::wstring VMLPictureMapping::GetShapeId () const
-	{
-		return m_ShapeId;
 	}
 
 	void VMLPictureMapping::writePictureBorder( const std::wstring & name, const BorderCode* brc )

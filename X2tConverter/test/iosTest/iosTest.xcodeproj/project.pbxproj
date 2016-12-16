@@ -17,20 +17,20 @@
 		17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB6881ACC371F005AF479 /* Images.xcassets */; };
 		17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB68A1ACC371F005AF479 /* LaunchScreen.xib */; };
 		17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */; };
-		6965353A1D9E85BB0093C60D /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 696535371D9E85B00093C60D /* libX2tConverter.a */; };
+		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		696535361D9E85B00093C60D /* PBXContainerItemProxy */ = {
+		69920A3F1E016F9700E7E6EE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 696535311D9E85B00093C60D /* X2tConverter.xcodeproj */;
+			containerPortal = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 17C8DED01ACD696100902C85;
 			remoteInfo = x2tconverter;
 		};
-		696535381D9E85B40093C60D /* PBXContainerItemProxy */ = {
+		69920A411E016F9F00E7E6EE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 696535311D9E85B00093C60D /* X2tConverter.xcodeproj */;
+			containerPortal = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 17C8DEC11ACD696100902C85;
 			remoteInfo = x2tconverter;
@@ -53,7 +53,7 @@
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Demo-Hayden-Management-v2.docx"; sourceTree = "<group>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
-		696535311D9E85B00093C60D /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = /Users/amusinov/sources/core/X2tConverter/build/Mac/TestMacX2tConverter/../X2tConverter/X2tConverter.xcodeproj; sourceTree = "<absolute>"; };
+		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6965353A1D9E85BB0093C60D /* libX2tConverter.a in Frameworks */,
+				69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,7 +79,7 @@
 		17DAB66F1ACC371E005AF479 = {
 			isa = PBXGroup;
 			children = (
-				696535311D9E85B00093C60D /* X2tConverter.xcodeproj */,
+				69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */,
 				17DAB67A1ACC371E005AF479 /* iosTest */,
 				17DAB6791ACC371E005AF479 /* Products */,
 			);
@@ -131,10 +131,10 @@
 			name = Files;
 			sourceTree = "<group>";
 		};
-		696535321D9E85B00093C60D /* Products */ = {
+		69920A3B1E016F9700E7E6EE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				696535371D9E85B00093C60D /* libX2tConverter.a */,
+				69920A401E016F9700E7E6EE /* libX2tConverter.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,7 +153,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				696535391D9E85B40093C60D /* PBXTargetDependency */,
+				69920A421E016F9F00E7E6EE /* PBXTargetDependency */,
 			);
 			name = iosTest;
 			productName = TestIOSX2tConverter;
@@ -171,7 +171,8 @@
 				TargetAttributes = {
 					17DAB6771ACC371E005AF479 = {
 						CreatedOnToolsVersion = 6.2;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = 2WH24U26GJ;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -188,8 +189,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 696535321D9E85B00093C60D /* Products */;
-					ProjectRef = 696535311D9E85B00093C60D /* X2tConverter.xcodeproj */;
+					ProductGroup = 69920A3B1E016F9700E7E6EE /* Products */;
+					ProjectRef = 69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -200,11 +201,11 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		696535371D9E85B00093C60D /* libX2tConverter.a */ = {
+		69920A401E016F9700E7E6EE /* libX2tConverter.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libX2tConverter.a;
-			remoteRef = 696535361D9E85B00093C60D /* PBXContainerItemProxy */;
+			remoteRef = 69920A3F1E016F9700E7E6EE /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -240,10 +241,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		696535391D9E85B40093C60D /* PBXTargetDependency */ = {
+		69920A421E016F9F00E7E6EE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = x2tconverter;
-			targetProxy = 696535381D9E85B40093C60D /* PBXContainerItemProxy */;
+			targetProxy = 69920A411E016F9F00E7E6EE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -350,10 +351,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-lstdc++",
@@ -369,10 +371,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestIOSX2tConverter/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-lstdc++",

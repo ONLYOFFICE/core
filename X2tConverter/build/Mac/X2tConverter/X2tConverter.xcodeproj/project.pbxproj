@@ -44,6 +44,7 @@
 		69DA32F71CEE100E00E10AF0 /* libmetafile_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32311CEE08DD00E10AF0 /* libmetafile_ios.a */; };
 		69DA32F81CEE100E00E10AF0 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32611CEE09BB00E10AF0 /* libPPTXFormatLib_ios.a */; };
 		69DA32F91CEE100E00E10AF0 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA32491CEE094A00E10AF0 /* libraster_ios.a */; };
+		69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69EC66D21E01770D003527E2 /* libUnicodeConverter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -341,6 +342,20 @@
 			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
 			remoteInfo = DocxFormatLib;
 		};
+		69EC66D11E01770D003527E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 69EC66C11E0176F2003527E2;
+			remoteInfo = UnicodeConverter;
+		};
+		69EC66D71E01774D003527E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 69EC66C01E0176F2003527E2;
+			remoteInfo = UnicodeConverter;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -368,6 +383,7 @@
 		69DA32501CEE095900E10AF0 /* freetype.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = freetype.xcodeproj; path = ../../../../DesktopEditor/mac_build/freetype/freetype.xcodeproj; sourceTree = "<group>"; };
 		69DA32561CEE099000E10AF0 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
 		69DA325C1CEE09BB00E10AF0 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
+		69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UnicodeConverter.xcodeproj; path = ../../../../UnicodeConverter/build/UnicodeConverter/UnicodeConverter.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +391,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */,
 				69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */,
 				69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */,
 				69DA32F31CEE100E00E10AF0 /* libDocxFormatLib_ios.a in Frameworks */,
@@ -413,6 +430,7 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */,
 				69415FAE1CB5243F003E771B /* mng.xcodeproj */,
 				69415FB11CB5243F003E771B /* png.xcodeproj */,
 				69415FB41CB5243F003E771B /* raw.xcodeproj */,
@@ -617,6 +635,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		69EC66CE1E01770C003527E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				69EC66D21E01770D003527E2 /* libUnicodeConverter.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -642,11 +668,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				69EC66D81E01774D003527E2 /* PBXTargetDependency */,
 				69DA32F01CEE100700E10AF0 /* PBXTargetDependency */,
-				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
+				69DA32E81CEE0FFD00E10AF0 /* PBXTargetDependency */,
 				69DA32EC1CEE100200E10AF0 /* PBXTargetDependency */,
 				69DA32EA1CEE0FFF00E10AF0 /* PBXTargetDependency */,
-				69DA32E81CEE0FFD00E10AF0 /* PBXTargetDependency */,
 				69DA32E61CEE0FFB00E10AF0 /* PBXTargetDependency */,
 				69DA32E41CEE0FF800E10AF0 /* PBXTargetDependency */,
 				69DA32E21CEE0FF600E10AF0 /* PBXTargetDependency */,
@@ -662,6 +688,7 @@
 				69415F261CB51C32003E771B /* PBXTargetDependency */,
 				698AF4C21C0745930080D889 /* PBXTargetDependency */,
 				177C43311AD7C0E400055DD7 /* PBXTargetDependency */,
+				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
 				17C8DEDC1ACD6A3900902C85 /* PBXTargetDependency */,
 			);
 			name = x2tconverter;
@@ -772,6 +799,10 @@
 				{
 					ProductGroup = 69415FB81CB5243F003E771B /* Products */;
 					ProjectRef = 69415FB71CB5243F003E771B /* tiff.xcodeproj */;
+				},
+				{
+					ProductGroup = 69EC66CE1E01770C003527E2 /* Products */;
+					ProjectRef = 69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -930,6 +961,13 @@
 			remoteRef = 69DA32601CEE09BB00E10AF0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		69EC66D21E01770D003527E2 /* libUnicodeConverter.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libUnicodeConverter.a;
+			remoteRef = 69EC66D11E01770D003527E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -1064,6 +1102,11 @@
 			isa = PBXTargetDependency;
 			name = DocxFormatLib;
 			targetProxy = 69DA32EF1CEE100700E10AF0 /* PBXContainerItemProxy */;
+		};
+		69EC66D81E01774D003527E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UnicodeConverter;
+			targetProxy = 69EC66D71E01774D003527E2 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -318,9 +318,12 @@ namespace DocFileFormat
 						iter->Arguments[0] = (iter->Arguments[0] == 0 ? 2 : 0);
 					}
 					RELEASEOBJECT( jc );
-					jc = new XMLTools::XMLElement<wchar_t>( _T( "w:jc" ) );
-					XMLTools::XMLAttribute<wchar_t> jcVal( _T( "w:val" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
-					jc->AppendAttribute( jcVal );
+					jc = new XMLTools::XMLElement<wchar_t>( L"w:jc" );
+					if ( jc )
+					{
+						XMLTools::XMLAttribute<wchar_t> jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
+						jc->AppendAttribute( jcVal );
+					}
 				}
 				break;
 
@@ -485,8 +488,8 @@ namespace DocFileFormat
 				}
 				break;
 
-	//tabs
-				case sprmOldPChgTabs:
+
+				case sprmOldPChgTabs:	//tabs
 				case sprmPChgTabsPapx:
 				case sprmPChgTabs:
 				{
@@ -663,28 +666,24 @@ namespace DocFileFormat
 		{
 			_pPr->AppendChild( ind );
 		}
-
-		//append spacing
-		if ( spacing.GetAttributeCount() > 0 )
+		
+		if ( spacing.GetAttributeCount() > 0 )//append spacing
 		{
 			_pPr->AppendChild( spacing );
 		}
-
-		//append justification
-		if ( jc != NULL )
+		
+		if ( jc )	//append justification
 		{
 			_pPr->AppendChild( *jc );
 			RELEASEOBJECT( jc );
 		}
-
-		//append numPr
-		if ( numPr.GetChildCount() > 0 )
+		
+		if ( numPr.GetChildCount() > 0 )//append numPr
 		{
 			_pPr->AppendChild( numPr );
 		}
-
-		//append borders
-		if ( pBdr.GetChildCount() > 0 )
+		
+		if ( pBdr.GetChildCount() > 0 )	//append borders
 		{
 			_pPr->AppendChild( pBdr );
 		}

@@ -1047,7 +1047,7 @@ namespace DocFileFormat
 //ShapeType 
 		if (NULL != pShape->GetShapeType() /* && !m_isInlineShape*/) //bullete only???
 		{
-			VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
+			VMLShapeTypeMapping oXmlMapper(m_pXmlWriter, m_isInlineShape);
 			pShape->GetShapeType()->Convert(&oXmlMapper);
 		}
 	}

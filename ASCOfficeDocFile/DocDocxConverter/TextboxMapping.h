@@ -50,9 +50,8 @@ namespace DocFileFormat
 		void SetTextboxStyle(const std::wstring & style);
 
 	private:    
+		static int		TextboxCount;
 
-		static int TextboxCount;
-		
 		int				m_nTBIndex;
 		
 		double			m_dxTextLeft;

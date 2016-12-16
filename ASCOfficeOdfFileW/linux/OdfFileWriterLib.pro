@@ -48,7 +48,6 @@ SOURCES += \
     ../source/OdfFormat/header_footer.cpp \
     ../source/OdfFormat/list.cpp \
     ../source/OdfFormat/mediaitems.cpp \
-    ../source/OdfFormat/mediaitems_utils.cpp \
     ../source/OdfFormat/number_style.cpp \
     ../source/OdfFormat/object_package.cpp \
     ../source/OdfFormat/odf_chart_context.cpp \
@@ -99,7 +98,10 @@ SOURCES += \
     ../source/Oox2OdfConverter/ConverterChart.cpp \
     ../source/Oox2OdfConverter/ConvertVml.cpp \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
-    ../source/Oox2OdfConverter/XlsxConverter.cpp
+    ../source/Oox2OdfConverter/XlsxConverter.cpp \
+    ../source/OdfFormat/odf_settings_context.cpp \
+    ../source/OdfFormat/office_settings.cpp \
+    ../source/OdfFormat/mediaitems_utils.cpp
 }
 
 
@@ -112,7 +114,6 @@ HEADERS += \
     ../source/OdfFormat/header_footer.h \
     ../source/OdfFormat/list.h \
     ../source/OdfFormat/mediaitems.h \
-    ../source/OdfFormat/mediaitems_utils.h \
     ../source/OdfFormat/number_style.h \
     ../source/OdfFormat/object_package.h \
     ../source/OdfFormat/odf_chart_context.h \
@@ -185,7 +186,3 @@ HEADERS += \
     ../source/OdfFormat/Shapes/oox_shapeWordArt.h \
     ../source/OdfFormat/odf_settings_context.h \
     ../source/OdfFormat/office_settings.h
-
-SOURCES += \
-    ../source/OdfFormat/odf_settings_context.cpp \
-    ../source/OdfFormat/office_settings.cpp

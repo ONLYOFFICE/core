@@ -1218,7 +1218,7 @@ CString RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_bPersonal )			sResult += L"<w:personal w:val=\"true\" />";
 	if( PROP_DEF != m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
 	if( PROP_DEF != m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
-	if( PROP_DEF == m_nSemiHidden )			sResult += L"<w:semiHidden/>";
+	if( 1		==	m_nSemiHidden )			sResult += L"<w:semiHidden/>";
 	if( PROP_DEF != m_bQFormat )			sResult += L"<w:qformat/>";
 	if( PROP_DEF != m_nPriority )			sResult.AppendFormat(L"<w:uiPriority w:val=\"%d\"/>",m_nPriority);
 	if( PROP_DEF != m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";

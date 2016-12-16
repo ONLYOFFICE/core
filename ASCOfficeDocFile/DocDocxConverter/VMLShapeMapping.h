@@ -68,7 +68,8 @@ namespace DocFileFormat
         static std::wstring mapHorizontalPosition		(PositionHorizontal hPos );
         static std::wstring mapHorizontalPositionRelative(int hRel );
 
-		bool m_isBullete;
+		bool			m_isBullete;
+		std::wstring	m_shapeId;
 	private:
 
 		void ApplyPrimitives	(DrawingPrimitives	* primitives );
@@ -129,7 +130,7 @@ namespace DocFileFormat
 		BlipStoreContainer*				m_pBlipStore;
 		int								m_nImageId;
 		std::wstring					m_textPathStyle;
-		ConversionContext*				m_ctx;
+		ConversionContext*				m_context;
 		PictureDescriptor*				m_pict;
 
 		XMLTools::XMLElement<wchar_t>	m_fill; 

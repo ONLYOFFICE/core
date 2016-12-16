@@ -83,6 +83,7 @@ public:
     v8::Local<v8::Context> m_context;
 
     int m_nFileType;
+    std::string m_sUtf8ArgumentJSON;
 
 public:
 
@@ -210,6 +211,31 @@ public:
             }
         }
         LOGGER_SPEED_LAP("run")
+
+        if (true)
+        {
+            std::string sArg = m_sUtf8ArgumentJSON;
+            if (sArg.empty())
+                sArg = "{}";
+            NSCommon::string_replaceA(sArg, "\\", "\\\\");
+            NSCommon::string_replaceA(sArg, "\"", "\\\"");
+            std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
+
+            v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sArgument.c_str());
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
+            _scriptArg->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"sdk_argument_code", strCode);
+                _LOGGING_ERROR_(L"sdk_argument", strException);
+
+                return false;
+            }
+        }
 
         CNativeControl* pNative = NULL;
         bool bIsBreak = false;
@@ -401,12 +427,14 @@ namespace NSDoctRenderer
             m_bCheckFonts = false;
             m_sWorkDir = L"";
             m_bSaveWithDoctrendererMode = false;
+            m_sArgumentJSON = "";
         }
 
     public:
         bool m_bCheckFonts;
         std::wstring m_sWorkDir;
         bool m_bSaveWithDoctrendererMode;
+        std::string m_sArgumentJSON;
     };
 
     class CDocBuilder_Private
@@ -1095,6 +1123,7 @@ namespace NSDoctRenderer
             {
                 m_pWorker = new CV8RealTimeWorker();
                 m_pWorker->m_nFileType = m_nFileType;
+                m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 
                 bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript());
                 if (!bOpen)
@@ -1419,6 +1448,11 @@ namespace NSDoctRenderer
             m_pInternal->m_oParams.m_bCheckFonts = true;
         else if (sParam == "--work-directory")
             m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
+        else if (sParam == "--argument")
+        {
+            std::wstring sArg(value);
+            m_pInternal->m_oParams.m_sArgumentJSON = U_TO_UTF8(sArg);
+        }
     }
     void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
     {

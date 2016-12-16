@@ -17,6 +17,9 @@ include(../Common/base.pri)
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
 
+#UnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+
 CONFIG += build_all_zlib build_zlib_as_sources
 include(../OfficeUtils/OfficeUtils.pri)
 

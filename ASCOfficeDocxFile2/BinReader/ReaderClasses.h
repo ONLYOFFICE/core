@@ -265,19 +265,64 @@ public:
 		bBeforeAuto = false;
 	}
 };
+class Background
+{
+public:
+    docRGB      Color;
+    CThemeColor ThemeColor;
+
+    CString     sObject;
+
+    bool bColor;
+    bool bThemeColor;
+
+    Background() : bColor (false), bThemeColor(false) {}
+
+    CString Write()
+    {
+        CString sBackground =  L"<w:background";
+
+        if(bColor)
+        {
+           sBackground += L" w:color=\"" + Color.ToString() + L"\"";
+        }
+
+        if(bThemeColor && ThemeColor.IsNoEmpty())
+        {
+            if(ThemeColor.bColor)
+                sBackground += L" w:themeColor=\"" + ThemeColor.ToStringColor() + L"\"";
+            if(ThemeColor.bTint)
+                sBackground += L" w:themeColorTint=\"" + ThemeColor.ToStringTint() + L"\"";
+            if(ThemeColor.bShade)
+                sBackground += L" w:themeColorShade=\"" + ThemeColor.ToStringShade() + L"\"";
+        }
+
+        if (!bColor && !bThemeColor)
+        {
+            sBackground += L" w:color=\"ffffff\"";
+        }
+        sBackground += L">";
+
+        sBackground += sObject;
+
+        sBackground += L"</w:background>";
+        return sBackground;
+    }
+};
+
 class Shd
 {
 public:
-	BYTE Value;
-	docRGB Color;
+    BYTE        Value;
+    docRGB      Color;
 	CThemeColor ThemeColor; 
 
 	bool bColor;
 	bool bThemeColor;
 	Shd()
 	{
-		Value = shd_Nil;
-		bColor = false;
+        Value       = shd_Nil;
+        bColor      = false;
 		bThemeColor = false;
 	}
 	CString ToString()

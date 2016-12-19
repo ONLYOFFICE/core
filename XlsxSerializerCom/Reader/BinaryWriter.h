@@ -1327,7 +1327,7 @@ namespace BinXlsxRW {
 				{
 					OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::Run);
-					WriteRun(*pRun, pIndexedColors, pTheme, oFontProcessor);
+						WriteRun(*pRun, pIndexedColors, pTheme, oFontProcessor);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				else if(OOX::Spreadsheet::et_t == we->getType())
@@ -1344,7 +1344,7 @@ namespace BinXlsxRW {
 		void WriteRun(OOX::Spreadsheet::CRun& run, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			//rPr
+	//rPr
 			if(run.m_oRPr.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::RPr);

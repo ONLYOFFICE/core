@@ -75,14 +75,14 @@ namespace OOX
 			}
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("w:color"),      m_oColor );
 				oNode.ReadAttributeBase( _T("w:themeColor"), m_oThemeColor );
 				oNode.ReadAttributeBase( _T("w:themeShade"), m_oThemeShade );
 				oNode.ReadAttributeBase( _T("w:themeTint"),  m_oThemeTint );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -96,9 +96,11 @@ namespace OOX
 
 					if ( _T("w:drawing") == sName )
 						m_oDrawing = oReader;
+					else if ( _T("v:background") == sName )
+						m_oBackground = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual CString toXML() const
 			{
 				CString sResult = _T("<w:background ");
 
@@ -136,6 +138,11 @@ namespace OOX
 					sResult += m_oDrawing->toXML();
 					sResult += _T("</w:background>");
 				}
+				else if (m_oBackground.IsInit())
+				{//наличие атрибута Color обязательно
+					sResult += m_oBackground->toXML();
+					sResult += _T("</w:background>");
+				}
 				else
 					sResult += _T("/>");
 
@@ -165,13 +172,14 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CHexColor<>        > m_oColor;
-			nullable<SimpleTypes::CThemeColor<>      > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>  > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>  > m_oThemeTint;
+			nullable<SimpleTypes::CHexColor<>        >	m_oColor;
+			nullable<SimpleTypes::CThemeColor<>      >	m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeTint;
 
 			// Childs
-			nullable<OOX::Logic::CDrawing            > m_oDrawing;
+			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
+			nullable<OOX::Vml::CBackground>				m_oBackground; 
 		};
 	}
 }

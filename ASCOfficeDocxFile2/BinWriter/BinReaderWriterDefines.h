@@ -152,7 +152,8 @@ extern int g_nCurFormatVersion;
 		Comments = 8,
 		Settings = 9,
 		Footnotes = 10,
-		Endnotes = 11
+		Endnotes = 11,
+		Background
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -446,20 +447,21 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
-		Par = 0,
-		pPr = 1,
-		Content = 2,
-		Table = 3,
-		sectPr =  4,
-		Run = 5,
-		CommentStart = 6,
-		CommentEnd = 7,
-		OMathPara = 8,
-		OMath = 9,
-		Hyperlink = 10,
-		FldSimple = 11,
-		Del = 12,
-		Ins = 13
+		Par				= 0,
+		pPr				= 1,
+		Content			= 2,
+		Table			= 3,
+		sectPr			=  4,
+		Run				= 5,
+		CommentStart	= 6,
+		CommentEnd		= 7,
+		OMathPara		= 8,
+		OMath			= 9,
+		Hyperlink		= 10,
+		FldSimple		= 11,
+		Del				= 12,
+		Ins				= 13,
+		Background		= 14
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -505,6 +507,12 @@ extern int g_nCurFormatVersion;
 		footnoteReference = 26,
 		endnoteReference = 27,
 		arPr = 28
+	};}
+    namespace c_oSerBackgroundType{enum c_oSerBackgroundType
+	{
+		Color		= 0,
+		ColorTheme	= 1,
+		pptxDrawing = 2
 	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{

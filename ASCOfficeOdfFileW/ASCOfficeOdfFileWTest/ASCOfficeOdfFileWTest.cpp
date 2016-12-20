@@ -47,6 +47,12 @@
 
 #include "../source/Oox2OdfConverter/Oox2OdfConverter.h"
 
+#if defined(_WIN64)
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#elif defined (_WIN32)
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 std::wstring DetectTypeDocument(const std::wstring & pathOOX)
 {
 	std::wstring sRes;

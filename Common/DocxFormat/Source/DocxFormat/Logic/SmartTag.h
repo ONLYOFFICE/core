@@ -103,8 +103,8 @@ namespace OOX
 				std::wstring wsName = oReader.GetName();
 				while( !wsName.empty() )
 				{					
-					if      ( _T("w:element")         == wsName ) m_sElement         = oReader.GetText();
-					else if ( _T("w:uri")          == wsName ) m_sUri          = oReader.GetText();
+					if      ( _T("w:element")	== wsName )	m_sElement	= oReader.GetText();
+					else if ( _T("w:uri")		== wsName )	m_sUri		= oReader.GetText();
 
 					if ( !oReader.MoveToNextAttribute() )
 						break;

@@ -35,12 +35,7 @@
 
 #include "../progressCallback.h"
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-	#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 #include <vector>
 

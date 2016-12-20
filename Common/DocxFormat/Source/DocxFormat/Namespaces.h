@@ -33,8 +33,9 @@
 #ifndef OOX_NAMESPACES_INCLUDE_H_
 #define OOX_NAMESPACES_INCLUDE_H_
 
-#include "..\Base\Base.h"
-#include <atlstr.h>
+#include "../Base/Base.h"
+#include "../Base/ASCString.h"
+
 
 namespace OOX
 {

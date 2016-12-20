@@ -4574,12 +4574,12 @@ struct StdStringEqualsNoCaseA
 #endif	// #ifndef STDSTRING_H
 
 
-#if !defined(_WIN32) && !defined (_WIN64)
+//#if !defined(_WIN32) && !defined (_WIN64)
     typedef CStdStringW CStringW;
     typedef CStdStringA CStringA;
-    #ifdef UNICODE
+    
+	#ifdef UNICODE
         typedef CStringW CString;
-        typedef CStringW BSTR;
         #define __T(x)      L##x
     #else // UNICODE
         typedef CStringA CString;
@@ -4594,7 +4594,7 @@ struct StdStringEqualsNoCaseA
     typedef  wchar_t* LPWSTR;
     typedef const wchar_t* LPCWSTR;
 
-#endif // _WIN32
+//#endif // _WIN32
 
 
 

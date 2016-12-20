@@ -181,8 +181,9 @@ HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 }
 
 
-void CTxtXmlFile::CreateDocxEmpty(CString strDirectory, Writers::FileWriter * pDocxWriter) 
+void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::FileWriter * pDocxWriter)
 {
+    CString strDirectory = std_string2string(_strDirectory);
 	// rels
     OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
     FileSystem::Directory::CreateDirectory(pathRels.GetPath());

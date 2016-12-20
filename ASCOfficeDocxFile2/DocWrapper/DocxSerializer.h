@@ -32,12 +32,7 @@
 #ifndef DOCX_SERIALIZER
 #define DOCX_SERIALIZER
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-	#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 namespace Writers

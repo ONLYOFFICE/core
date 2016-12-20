@@ -35,6 +35,7 @@
 #include "stringcommon.h"
 
 #include "../Base/Base.h"
+#include "../../../Base64.h"
 
 #include <vector>
 
@@ -1267,11 +1268,12 @@ namespace XmlUtils
 			if ((NULL==pData) || (0==lSize))
                                 return false;
 
-			int nStrSize = Base64EncodeGetRequiredLength(lSize);
+			int nStrSize = Base64::Base64EncodeGetRequiredLength(lSize);
 
 			CStringA saTemp;
 			LPSTR pStrData = saTemp.GetBuffer(nStrSize + 1);
-                        bool bSuccess = Base64Encode(pData, lSize, pStrData, &nStrSize);
+			
+			bool bSuccess = Base64::Base64Encode(pData, lSize, pStrData, &nStrSize);
 			
 			pStrData[nStrSize] = '\0';
 			saTemp.ReleaseBuffer();
@@ -1582,7 +1584,7 @@ namespace XmlUtils
                                 return false;
 //			LPSTR pStrData = sData.GetBuffer(nStrSize + 1);
 			CStringA saData; saData = sData;
-			return Base64Decode((LPCSTR)saData/*.GetBuffer()*/, saData.GetLength(), pData, &nSize);
+			return Base64::Base64Decode((LPCSTR)saData/*.GetBuffer()*/, saData.GetLength(), pData, &nSize);
 		}
 	};
 };
@@ -2718,13 +2720,11 @@ namespace XmlUtils
 		int iSize = WideCharToMultiByte (CP_UTF8, 0, sXML, -1, NULL, 0, NULL, NULL);
 		if (iSize <= 0)
 		{
-			ATLTRACE2 ("ConvertToUTF8() error (size detection): 0x%x\n", GetLastError());
 			return CStringA(sXML);	// Conversion to ANSI
 		}
 		CStringA sOutXML;
 		if (0 == WideCharToMultiByte (CP_UTF8, 0, sXML, -1, sOutXML.GetBuffer(iSize + 1), iSize, NULL, NULL))
 		{
-			ATLTRACE2 ("ConvertToUTF8() error (utf-8 conversion): 0x%x\n", GetLastError());
 			return CStringA(sXML);
 		}
 		sOutXML.ReleaseBuffer();

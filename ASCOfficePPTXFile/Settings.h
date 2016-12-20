@@ -34,10 +34,6 @@
 #include <string>
 #include <vector>
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-#endif
 
 namespace FileSystem {
 #ifdef UNICODE

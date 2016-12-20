@@ -29,11 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifdef _MSC_VER
-	#pragma once			// for MSVS
-#endif	// #ifdef _MSC_VER
 
-#ifndef _ASCUTILSDEFINES_H_	// For Borland compiler
+#pragma once
+
+#ifndef _ASCUTILSDEFINES_H_
 #define _ASCUTILSDEFINES_H_
 
 #define ACCURATE_SEEKMODE			0

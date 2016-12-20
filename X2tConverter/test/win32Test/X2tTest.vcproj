@@ -570,6 +570,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>

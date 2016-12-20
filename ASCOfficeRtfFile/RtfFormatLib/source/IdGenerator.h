@@ -33,12 +33,7 @@
 
 #include <map>
 
-#ifdef _WIN32
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 class IdGenerator
 {

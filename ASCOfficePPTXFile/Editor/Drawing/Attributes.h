@@ -31,12 +31,7 @@
  */
 #pragma once
 
-//#if defined(_WIN32) || defined(_WIN64)
-//	#include <atlcoll.h>
-//	#include <gdiplus.h>
-//#else
-    #include "../../PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
-//#endif
+#include "../../PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
 
 #include "Metric.h"
 #include "Effects.h"

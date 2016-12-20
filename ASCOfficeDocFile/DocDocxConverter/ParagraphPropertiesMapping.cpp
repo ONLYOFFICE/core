@@ -73,10 +73,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(_pPr);
 		RELEASEOBJECT(_framePr);
 	}
-}
 
-namespace DocFileFormat
-{
 	int ParagraphPropertiesMapping::get_section_page_break()
 	{
 		return _isSectionPageBreak;
@@ -148,14 +145,12 @@ namespace DocFileFormat
 				case sprmPFAutoSpaceDE:
 				{
 					appendFlagElement(_pPr, *iter, _T( "autoSpaceDE" ), true);
-				}
-				break;
+				}break;				
 
 				case sprmPFAutoSpaceDN:
 				{
 					appendFlagElement( _pPr, *iter, _T( "autoSpaceDN" ), true );
-				}
-				break;
+				}break;				
 
 				case sprmPFBiDi:
 				{
@@ -248,8 +243,7 @@ namespace DocFileFormat
 					}
 
 					appendValueAttribute( &ind, flName.c_str(), flValue );
-				}  
-				break;
+				}break;				
 
 				case sprmPDxcLeft1:
 					appendValueAttribute( &ind, _T( "w:firstLineChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
@@ -305,10 +299,9 @@ namespace DocFileFormat
 
 					//no line rule means auto
 					spacing.AppendAttribute( lineRule );
-				}
-				break;
+				}break;				
 
-					//justification code
+	//justification code
 				case sprmOldPJc:
 				case sprmPJc:
 				case sprmPJc80:
@@ -324,10 +317,8 @@ namespace DocFileFormat
 						XMLTools::XMLAttribute<wchar_t> jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
 						jc->AppendAttribute( jcVal );
 					}
-				}
-				break;
-
-					//borders
+				}break;	
+	//borders
 					//case 0x461C:
 				case sprmOldPBrcTop:
 				case sprmPBrcTop:
@@ -341,8 +332,7 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &topBorder );
 
 					addOrSetBorder( &pBdr, &topBorder );
-				}
-				break;
+				}break;				
 
 					//case 0x461D:
 				case sprmOldPBrcLeft:
@@ -357,8 +347,7 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &leftBorder );
 
 					addOrSetBorder( &pBdr, &leftBorder );
-				}
-				break;
+				}break;				
 
 					//case 0x461E:
 				case sprmOldPBrcBottom:
@@ -373,9 +362,8 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &bottomBorder );
 
 					addOrSetBorder( &pBdr, &bottomBorder );
-				}
-				break;
-
+				}break;
+				
 					//case 0x461F:
 				case sprmOldPBrcRight:
 				case sprmPBrcRight:
@@ -389,8 +377,7 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &rightBorder );
 
 					addOrSetBorder( &pBdr, &rightBorder );
-				}
-				break;
+				}break;				
 
 					//case 0x4620:
 				case sprmOldPBrcBetween:
@@ -405,8 +392,7 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &betweenBorder );
 
 					addOrSetBorder( &pBdr, &betweenBorder );
-				}
-				break;
+				}break;				
 
 					//case 0x4621:
 				case sprmOldPBrcBar:
@@ -421,18 +407,17 @@ namespace DocFileFormat
 					appendBorderAttributes( &bc, &barBorder );
 
 					addOrSetBorder( &pBdr, &barBorder );
-				}
-				break;
+				}break;				
 
-					//shading
+		//shading
 				case sprmPShd80:
 				case sprmPShd:
 				{
 					ShadingDescriptor desc( iter->Arguments, iter->argumentsSize );
 
 					appendShading( _pPr, desc );
-				}
-				break;
+				}break;
+				
 
 		//numbering
 				case sprmOldPAnld:
@@ -470,8 +455,10 @@ namespace DocFileFormat
 				{
 					//Если numbering.xml пустой, то не пищем свойство
 					//Todo разобраться с закоментированным кодом
-					if(NULL != m_document->listTable && false == m_document->listTable->listData.empty())
+					if (NULL != m_document->listTable && false == m_document->listTable->listData.empty())
+					{
 						appendValueElement( &numPr, _T( "numId" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
+					}
 
 					//check if there is a ilvl reference, if not, check the count of LVLs.
 					//if only one LVL exists in the referenced list, create a hard reference to that LVL

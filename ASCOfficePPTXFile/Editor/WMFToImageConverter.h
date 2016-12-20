@@ -32,11 +32,9 @@
 #pragma once
 
 #if defined(_WIN32) || defined (_WIN64)
-	#include <atlwin.h>
-	#include <atltypes.h>
-	#include <atlcoll.h>
 #endif
 
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #include <algorithm>

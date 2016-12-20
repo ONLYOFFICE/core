@@ -34,12 +34,7 @@
 
 #include <stack>
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-	#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../DesktopEditor/common/File.h"

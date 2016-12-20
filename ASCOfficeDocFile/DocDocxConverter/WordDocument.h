@@ -177,6 +177,10 @@ namespace DocFileFormat
 		StringTable<FontFamilyName>			*FontTable;		// A list of all font names, used in the doucument
 		StringTable<WideString>				*BookmarkNames;
 		StringTable<WideString>				*AutoTextNames;
+		StringTable<WideString>				*AssocNames;
+		StringTable<WideString>				*BookmarkAnnotNames;
+		StringTable<WideString>				*Captions;
+		StringTable<WideString>				*AutoCaptions;
 
 		Plex<EmptyStructure>				*IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
 		Plex<FootnoteDescriptor>			*FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
@@ -200,13 +204,14 @@ namespace DocFileFormat
 		Plex<BookmarkFirst>					*BookmarkStartPlex;
 		Plex<EmptyStructure>				*BookmarkEndPlex;		
 
+		Plex<ListNumCache>					*ListPlex;
 		Plex<FieldCharacter>				*FieldsPlex;
 		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
-		Plex<EmptyStructure>				*AutoTextPlex;		// Each character position specifies the beginning of\
-															a range of text that constitutes the contents of an AutoText item
+		Plex<EmptyStructure>				*AutoTextPlex;		
+		// Each character position specifies the beginning of a range of text that constitutes the contents of an AutoText item
 		
 	};
 }

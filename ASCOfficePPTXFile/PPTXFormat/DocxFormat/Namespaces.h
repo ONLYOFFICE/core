@@ -34,11 +34,7 @@
 #define PPTXOOX_NAMESPACES_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlstr.h>
-#else
-	#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 namespace PPTX
 {

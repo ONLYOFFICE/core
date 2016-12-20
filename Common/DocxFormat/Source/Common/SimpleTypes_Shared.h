@@ -293,14 +293,6 @@ namespace SimpleTypes
 			return true;
 		}
 
-#if defined(_WIN32) || defined (_WIN64)
-		bool    FromString(const BSTR bsValue)
-		{
-			CString sTemp( bsValue );
-			return FromString( (CString &)sTemp );
-		}
-#endif
-
 		bool    FromString(const std::wstring& wsStr)
 		{
 			// TO DO: переделать

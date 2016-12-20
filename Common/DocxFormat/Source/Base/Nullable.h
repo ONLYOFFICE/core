@@ -165,15 +165,6 @@ namespace NSCommon
                 this->m_pPointer = new Type( cwsValue );
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		nullable<Type>& operator=(const BSTR &value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			if (NULL != value)
-                this->m_pPointer = new Type( value );
-			return *this;
-		}
-#endif
 
         //nullable<Type>& operator=(std::wstring& cwsValue)
         //{
@@ -304,17 +295,17 @@ namespace NSCommon
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer	= pType;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			if (NULL != value)
-			{
-                this->m_pPointer = new Type();
-                this->m_pPointer->_set((CString)value);
-			}
-		}
-#endif
+//#if defined(_WIN32) || defined (_WIN64)
+//		AVSINLINE void operator=(const BSTR& value)
+//		{
+//            RELEASEOBJECT(this->m_pPointer);
+//			if (NULL != value)
+//			{
+//                this->m_pPointer = new Type();
+//                this->m_pPointer->_set((CString)value);
+//			}
+//		}
+//#endif
 		AVSINLINE void operator=(const BYTE& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -395,15 +386,15 @@ namespace NSCommon
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			
-			if (NULL != value)
-                this->m_pPointer = new int(XmlUtils::GetInteger(value));
-		}
-#endif
+//#if defined(_WIN32) || defined (_WIN64)
+//		AVSINLINE void operator=(const BSTR& value)
+//		{
+//            RELEASEOBJECT(this->m_pPointer);
+//			
+//			if (NULL != value)
+//                this->m_pPointer = new int(XmlUtils::GetInteger(value));
+//		}
+//#endif
 		AVSINLINE void operator=(const CString& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -544,14 +535,14 @@ namespace NSCommon
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new double(XmlUtils::GetDouble(value));
-		}
-#endif
+//#if defined(_WIN32) || defined (_WIN64)
+//		AVSINLINE void operator=(const BSTR& value)
+//		{
+//			RELEASEOBJECT(m_pPointer);
+//			if (NULL != value)
+//				m_pPointer = new double(XmlUtils::GetDouble(value));
+//		}
+//#endif
 		AVSINLINE void operator=(const double& value)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -610,14 +601,14 @@ namespace NSCommon
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new bool(set((CString)value));
-		}
-#endif
+//#if defined(_WIN32) || defined (_WIN64)
+//		AVSINLINE void operator=(const BSTR& value)
+//		{
+//			RELEASEOBJECT(m_pPointer);
+//			if (NULL != value)
+//				m_pPointer = new bool(set((CString)value));
+//		}
+//#endif
 		AVSINLINE void operator=(const bool& value)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -675,14 +666,14 @@ namespace NSCommon
 			else
 				m_pPointer	= new CString( *oOther.m_pPointer );
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new CString(value);
-		}
-#endif
+//#if defined(_WIN32) || defined (_WIN64)
+//		AVSINLINE void operator=(const BSTR& value)
+//		{
+//			RELEASEOBJECT(m_pPointer);
+//			if (NULL != value)
+//				m_pPointer = new CString(value);
+//		}
+//#endif
 		AVSINLINE void operator=(const CString& value)
 		{
 			RELEASEOBJECT(m_pPointer);

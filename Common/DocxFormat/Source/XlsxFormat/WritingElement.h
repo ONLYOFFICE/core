@@ -34,7 +34,6 @@
 //#include "NamespaceOwn.h"
 //#include "../XML/XmlUtils.h"
 
-//#include "atlstr.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX

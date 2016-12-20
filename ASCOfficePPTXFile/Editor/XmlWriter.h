@@ -38,10 +38,7 @@
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-
-#if !defined(_WIN32) && !defined(_WIN64)
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 
 namespace NSBinPptxRW
 {
@@ -362,41 +359,41 @@ namespace NSBinPptxRW
         {
             // можно ускорить (см. как сделано в шейпах)
             CString s = strValue;
-            s.Replace(_T("&"),	_T("&amp;"));
-            s.Replace(_T("'"),	_T("&apos;"));
-            s.Replace(_T("<"),	_T("&lt;"));
-            s.Replace(_T(">"),	_T("&gt;"));
-            s.Replace(_T("\""),	_T("&quot;"));
+            s.Replace(L"&",		L"&amp;");
+            s.Replace(L"'",		L"&apos;");
+            s.Replace(L"<",		L"&lt;");
+            s.Replace(L">",		L"&gt;");
+            s.Replace(L"\"",	L"&quot;");
             m_oWriter.WriteString(s);
         }
         AVSINLINE void WriteDouble(const double& val)
         {
-            CString str = _T("");
-            str.Format(_T("%lf"), val);
+            CString str;
+            str.Format(L"%lf", val);
             m_oWriter.WriteString(str);
         }
         AVSINLINE void WriteLONG(const long& val)
         {
-            CString str = _T("");
-            str.Format(_T("%d"), val);
+            CString str;
+            str.Format(L"%d", val);
             m_oWriter.WriteString(str);
         }
         AVSINLINE void WriteINT(const int& val)
         {
-            CString str = _T("");
-            str.Format(_T("%d"), val);
+            CString str;
+            str.Format(L"%d", val);
             m_oWriter.WriteString(str);
         }
         AVSINLINE void WriteDWORD(const DWORD& val)
         {
-            CString str = _T("");
-            str.Format(_T("%u"), val);
+            CString str;
+            str.Format(L"%u", val);
             m_oWriter.WriteString(str);
         }
         AVSINLINE void WriteDWORD_hex(const DWORD& val)
         {
-            CString str = _T("");
-            str.Format(_T("%x"), val);
+            CString str;
+            str.Format(L"%x", val);
             m_oWriter.WriteString(str);
         }
         AVSINLINE void WriteBool(const bool& val)
@@ -427,8 +424,8 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
-            CString s = _T("");
-            s.Format(_T("%.1lf"), val);
+            CString s;
+			s.Format(L"%.1lf", val);
             m_oWriter.AddCharNoCheck(WCHAR(':'));
             m_oWriter.WriteString(s);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
@@ -447,8 +444,8 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(20);
-            CString s = _T("");
-            s.Format(_T("%.1lf"), val);
+            CString s;
+            s.Format(L"%.1lf", val);
             m_oWriter.AddCharNoCheck(WCHAR(':'));
             m_oWriter.WriteString(s);
             m_oWriter.AddCharNoCheck(WCHAR('p'));
@@ -715,21 +712,6 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(g_bstr_nodeclose);
         }
 
-//#ifdef _WIN32
-//        template<typename T>
-//        AVSINLINE void WriteArray(const CString& strName, const CAtlArray<T>& arr)
-//        {
-//            size_t nCount = arr.GetCount();
-//            if (0 != nCount)
-//            {
-//                StartNode(strName);
-//                m_oWriter.WriteString(g_bstr_nodeclose);
-//                for (size_t i = 0; i < nCount; ++i)
-//                    arr[i].toXmlWriter(this);
-//                EndNode(strName);
-//            }
-//        }
-//#endif //#ifdef _WIN32
         template<typename T>
         AVSINLINE void WriteArray(const CString& strName, const std::vector<T>& arr)
         {
@@ -743,19 +725,6 @@ namespace NSBinPptxRW
                 EndNode(strName);
             }
         }
-
-//#ifdef _WIN32
-//        template<typename T>
-//        AVSINLINE void WriteArray2(const CAtlArray<T>& arr)
-//        {
-//            size_t nCount = arr.GetCount();
-//            if (0 != nCount)
-//            {
-//                for (size_t i = 0; i < nCount; ++i)
-//                    arr[i].toXmlWriter(this);
-//            }
-//        }
-//#endif //#ifdef _WIN32
         template<typename T>
         AVSINLINE void WriteArray2(const std::vector<T>& arr)
         {

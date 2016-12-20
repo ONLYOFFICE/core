@@ -31,8 +31,9 @@
  */
 #include "FileDownloader.h"
 
-#include <atlbase.h>
-#include <atlstr.h>
+#include "../DocxFormat/Source/Base/ASCString.h"
+
+
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
 

@@ -2931,25 +2931,6 @@ namespace BinDocxRW
 				m_oBcw.WriteBytesArray(m_pThemeData, m_nThemeDataSize);
 			}
 		}
-		//void WriteImageMapContent()
-		//{
-		//	CAtlArray<CString> aMediaArr;
-		//	aMediaArr.SetCount(m_aMedia.GetCount());
-
-		//	POSITION pos =  m_aMedia.GetStartPosition();
-		//	while(NULL != pos)
-		//	{
-		//		CAtlMap<CString, int>::CPair* pair = m_aMedia.GetNext(pos);
-		//		if(NULL != pair)
-		//			aMediaArr[pair->m_value] = pair->m_key;
-		//	}
-		//	for(size_t i = 0, length = aMediaArr.GetCount(); i < length; ++i)
-		//	{
-		//		CString& sMedia = aMediaArr[i];
-		//		m_oBcw.m_oStream.WriteBYTE(c_oSerOtherTableTypes::ImageMap_Src);
-		//		m_oBcw.m_oStream.WriteStringW(sMedia);
-		//	}
-		//}
 	};
 	class BinaryDocumentTableWriter
 	{

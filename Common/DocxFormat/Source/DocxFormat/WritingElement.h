@@ -31,10 +31,7 @@
  */
 #pragma once
 
-//#include "NamespaceOwn.h"
 #include "../XML/xmlutils.h"
-//#include "atlstr.h"
-
 #include <vector>
 
 namespace OOX

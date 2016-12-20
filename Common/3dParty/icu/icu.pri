@@ -6,6 +6,7 @@ core_win_64 {
     LIBS        += -L$$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/lib64 -licuuc
 }
 core_win_32 {
+    message($$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/lib)
     LIBS        += -L$$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu/lib -licuuc
 }
 

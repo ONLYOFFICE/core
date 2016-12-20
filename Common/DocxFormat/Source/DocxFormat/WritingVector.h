@@ -41,7 +41,7 @@ namespace OOX
 	class WritingVector : public WritingElement
 	{
 	public:
-		CAtlArray<T> m_items;
+		std::vector<T> m_items;
 
 	public:
 		WritingVector() : m_items()  {}
@@ -63,14 +63,14 @@ namespace OOX
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
-				int nCount = oNodes.GetCount();
+				int nCount = oNodes.size();
 
 				for (int i = 0; i < nCount; ++i)
 				{
 					XmlUtils::CXmlNode nodeTemp;
 					oNodes.GetAt(i, nodeTemp);
 
-					m_items.Add(T(nodeTemp));
+					m_items.push_back(T(nodeTemp));
 				}			
 			}
 		}

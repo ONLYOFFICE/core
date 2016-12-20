@@ -1969,41 +1969,42 @@ public:
 class CDrawingProperty
 {
 public:
-	long DataPos;
-	long DataLength;
-	BYTE Type;
-	bool BehindDoc;
-	double DistL;
-	double DistT;
-	double DistR;
-	double DistB;
-	bool LayoutInCell;
+    long    DataPos;
+    long    DataLength;
+    BYTE    Type;
+    bool    BehindDoc;
+    double  DistL;
+    double  DistT;
+    double  DistR;
+    double  DistB;
+    bool    LayoutInCell;
 	unsigned long RelativeHeight;
-	bool BSimplePos;
-	double EffectExtentL;
-	double EffectExtentT;
-	double EffectExtentR;
-	double EffectExtentB;
-	double Width;
-	double Height;
-	BYTE PositionHRelativeFrom;
-	BYTE PositionHAlign;
-	double PositionHPosOffset;
-	double PositionHPctOffset;
-	BYTE PositionVRelativeFrom;
-	BYTE PositionVAlign;
-	double PositionVPosOffset;
-	double PositionVPctOffset;
-	double SimplePosX;
-	double SimplePosY;
-	CDrawingPropertyWrap DrawingPropertyWrap;
-	CString sChartRels;
-	CString sSizeRelH;
-	CString sSizeRelV;
-	int m_nDocPr;
-	CString sGraphicFramePr;
+    bool    BSimplePos;
+    double  EffectExtentL;
+    double  EffectExtentT;
+    double  EffectExtentR;
+    double  EffectExtentB;
+    double  Width;
+    double  Height;
+    BYTE    PositionHRelativeFrom;
+    BYTE    PositionHAlign;
+    double  PositionHPosOffset;
+    double  PositionHPctOffset;
+    BYTE    PositionVRelativeFrom;
+    BYTE    PositionVAlign;
+    double  PositionVPosOffset;
+    double  PositionVPctOffset;
+    double  SimplePosX;
+    double  SimplePosY;
+    CString sChartRels;
+    CString sSizeRelH;
+    CString sSizeRelV;
+    int     m_nDocPr;
+    CString sGraphicFramePr;
 
-	bool bDataPos;
+    CDrawingPropertyWrap DrawingPropertyWrap;
+
+    bool bDataPos;
 	bool bDataLength;
 	bool bType;
 	bool bBehindDoc;
@@ -2031,36 +2032,37 @@ public:
 	bool bSimplePosX;
 	bool bSimplePosY;
 	bool bDrawingPropertyWrap;
-	CDrawingProperty(int nDocPr)
+
+    CDrawingProperty(int nDocPr)
 	{
-		m_nDocPr = nDocPr;
-		bDataPos = false;
+        m_nDocPr    = nDocPr;
+        bDataPos    = false;
 		bDataLength = false;
-		bType = false;
-		bBehindDoc = false;
-		bDistL = false;
-		bDistT = false;
-		bDistR = false;
-		bDistB = false;
-		bLayoutInCell = false;
+        bType       = false;
+        bBehindDoc  = false;
+        bDistL      = false;
+        bDistT      = false;
+        bDistR      = false;
+        bDistB      = false;
+        bLayoutInCell   = false;
 		bRelativeHeight = false;
-		bBSimplePos = false;
-		bEffectExtentL = false;
-		bEffectExtentT = false;
-		bEffectExtentR = false;
-		bEffectExtentB = false;
-		bWidth = false;
-		bHeight = false;
+        bBSimplePos     = false;
+        bEffectExtentL  = false;
+        bEffectExtentT  = false;
+        bEffectExtentR  = false;
+        bEffectExtentB  = false;
+        bWidth          = false;
+        bHeight         = false;
 		bPositionHRelativeFrom = false;
-		bPositionHAlign = false;
+        bPositionHAlign     = false;
 		bPositionHPosOffset = false;
 		bPositionHPctOffset = false;
 		bPositionVRelativeFrom = false;
-		bPositionVAlign = false;
+        bPositionVAlign     = false;
 		bPositionVPosOffset = false;
 		bPositionVPctOffset = false;
-		bSimplePosX = false;
-		bSimplePosY = false;
+        bSimplePosX         = false;
+        bSimplePosY         = false;
 		bDrawingPropertyWrap = false;
 	}
 	bool IsChart()
@@ -2069,284 +2071,284 @@ public:
 	}
 	CString Write()
 	{
-		CString sXml;
-		if(bType)
-		{
-			bool bChart = IsChart();
-			if(c_oAscWrapStyle::Inline == Type)
-			{
-				if(bWidth && bHeight)
-				{
-					__int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-					__int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-					if(false == bChart)
-						sXml.AppendFormat(_T("<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
-					else
-						sXml.AppendFormat(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
-					if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
-					{
-						__int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
-						__int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
-						__int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
-						__int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-						sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
-					}
+        if(!bType) return L"";
 
-					if(bChart)
-					{
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
-					}
-					else
-					{
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
-					}
-					if(!sGraphicFramePr.IsEmpty())
-					{
-						sXml.Append(sGraphicFramePr);
-					}
-					else
-					{
-						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
-					}
-					if(bChart)
-					{
-						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), (const TCHAR *) sChartRels);
-					}
-					else
-					{
-						sXml.Append(_T("</wp:inline>"));
-					}
-				}
-			}
-			else
-			{
-				if(bWidth && bHeight	&& ((bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset) 
-										&& bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset)) 
-						|| (bBSimplePos && bSimplePosX && bSimplePosY)))
-				{
-					__int64 emuDistL = 0;
-					__int64 emuDistT = 0;
-					__int64 emuDistR = 0;
-					__int64 emuDistB = 0;
+        CString sXml;
 
-					if(bDistL)
-						emuDistL = (__int64)(g_dKoef_mm_to_emu * DistL);
-					if(bDistT)
-						emuDistT = (__int64)(g_dKoef_mm_to_emu * DistT);
-					if(bDistR)
-						emuDistR = (__int64)(g_dKoef_mm_to_emu * DistR);
-					if(bDistB)
-						emuDistB = (__int64)(g_dKoef_mm_to_emu * DistB);
-					int nSimplePos = 0;
-					if(bBSimplePos && BSimplePos)
-						nSimplePos = 1;
-					int nRelativeHeight = 0;
-					if(bRelativeHeight)
-						nRelativeHeight = RelativeHeight;
-					int nBehindDoc = 0;
-					if(bBehindDoc && BehindDoc)
-						nBehindDoc = 1;
-					int nLayoutInCell = 1;
-					if(bLayoutInCell && false == LayoutInCell)
-						nLayoutInCell = 0;
+        bool bChart = IsChart();
+        if(c_oAscWrapStyle::Inline == Type)
+        {
+            if(bWidth && bHeight)
+            {
+                __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
+                __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
+                if(false == bChart)
+                    sXml.AppendFormat(_T("<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+                else
+                    sXml.AppendFormat(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+                if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
+                {
+                    __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
+                    __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
+                    __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
+                    __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
+                    sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
+                }
 
-					if(bChart)
-						sXml.Append(_T("<w:drawing>"));
+                if(bChart)
+                {
+                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+                }
+                else
+                {
+                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+                }
+                if(!sGraphicFramePr.IsEmpty())
+                {
+                    sXml.Append(sGraphicFramePr);
+                }
+                else
+                {
+                    sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+                }
+                if(bChart)
+                {
+                    sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), (const TCHAR *) sChartRels);
+                }
+                else
+                {
+                    sXml.Append(_T("</wp:inline>"));
+                }
+            }
+        }
+        else
+        {
+            if(bWidth && bHeight	&& ((bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset)
+                                         && bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
+                                        || (bBSimplePos && bSimplePosX && bSimplePosY)))
+            {
+                __int64 emuDistL = 0;
+                __int64 emuDistT = 0;
+                __int64 emuDistR = 0;
+                __int64 emuDistB = 0;
 
-					sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lld\" distB=\"%lld\" distL=\"%lld\" distR=\"%lld\" simplePos=\"%d\" relativeHeight=\"%u\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
-					__int64 emuX = 0;
-					if(bSimplePosX)
-						emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);
-					__int64 emuY = 0;
-					if(bSimplePosY)
-						emuY = (__int64)(g_dKoef_mm_to_emu * SimplePosY);
-					sXml.AppendFormat(_T("<wp:simplePos x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                if(bDistL)
+                    emuDistL = (__int64)(g_dKoef_mm_to_emu * DistL);
+                if(bDistT)
+                    emuDistT = (__int64)(g_dKoef_mm_to_emu * DistT);
+                if(bDistR)
+                    emuDistR = (__int64)(g_dKoef_mm_to_emu * DistR);
+                if(bDistB)
+                    emuDistB = (__int64)(g_dKoef_mm_to_emu * DistB);
+                int nSimplePos = 0;
+                if(bBSimplePos && BSimplePos)
+                    nSimplePos = 1;
+                int nRelativeHeight = 0;
+                if(bRelativeHeight)
+                    nRelativeHeight = RelativeHeight;
+                int nBehindDoc = 0;
+                if(bBehindDoc && BehindDoc)
+                    nBehindDoc = 1;
+                int nLayoutInCell = 1;
+                if(bLayoutInCell && false == LayoutInCell)
+                    nLayoutInCell = 0;
 
-					if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
-					{
-						CString sRelativeFrom;
-						switch(PositionHRelativeFrom)
-						{
-						case 0: sRelativeFrom = _T("character");break;
-						case 1: sRelativeFrom = _T("column");break;
-						case 2: sRelativeFrom = _T("insideMargin");break;
-						case 3: sRelativeFrom = _T("leftMargin");break;
-						case 4: sRelativeFrom = _T("margin");break;
-						case 5: sRelativeFrom = _T("outsideMargin");break;
-						case 6: sRelativeFrom = _T("page");break;
-						case 7: sRelativeFrom = _T("rightMargin");break;
-						}
-						CString sContent;
-						if(bPositionHAlign)
-						{
-							switch(PositionHAlign)
-							{
-							case 0: sContent = _T("<wp:align>center</wp:align>");break;
-							case 1: sContent = _T("<wp:align>inside</wp:align>");break;
-							case 2: sContent = _T("<wp:align>left</wp:align>");break;
-							case 3: sContent = _T("<wp:align>outside</wp:align>");break;
-							case 4: sContent = _T("<wp:align>right</wp:align>");break;
-							}
-						}
-						else if(bPositionHPosOffset)
-						{
-							__int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionHPosOffset);
-							sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
-						}
-						else if(bPositionHPctOffset)
-						{
-							long pctOffset = (long)(1000 * PositionHPctOffset);
-							sContent.Format(_T("<wp14:pctPosHOffset>%d</wp14:pctPosHOffset>"), pctOffset);
-						}
-						sXml.AppendFormat(_T("<wp:positionH relativeFrom=\"%ls\">%ls</wp:positionH>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
-					}
-					if(bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
-					{
-						CString sRelativeFrom;
-						switch(PositionVRelativeFrom)
-						{
-						case 0: sRelativeFrom = _T("bottomMargin");break;
-						case 1: sRelativeFrom = _T("insideMargin");break;
-						case 2: sRelativeFrom = _T("line");break;
-						case 3: sRelativeFrom = _T("margin");break;
-						case 4: sRelativeFrom = _T("outsideMargin");break;
-						case 5: sRelativeFrom = _T("page");break;
-						case 6: sRelativeFrom = _T("paragraph");break;
-						case 7: sRelativeFrom = _T("topMargin");break;
-						}
-						CString sContent;
-						if(bPositionVAlign)
-						{
-							switch(PositionVAlign)
-							{
-							case 0: sContent = _T("<wp:align>bottom</wp:align>");break;
-							case 1: sContent = _T("<wp:align>center</wp:align>");break;
-							case 2: sContent = _T("<wp:align>inside</wp:align>");break;
-							case 3: sContent = _T("<wp:align>outside</wp:align>");break;
-							case 4: sContent = _T("<wp:align>top</wp:align>");break;
-							}
-						}
-						else if(bPositionVPosOffset)
-						{
-							__int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionVPosOffset);
-							sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
-						}
-						else if(bPositionVPctOffset)
-						{
-							long pctOffset = (long)(1000 * PositionVPctOffset);
-							sContent.Format(_T("<wp14:pctPosVOffset>%d</wp14:pctPosVOffset>"), pctOffset);
-						}
-						sXml.AppendFormat(_T("<wp:positionV relativeFrom=\"%ls\">%ls</wp:positionV>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
-					}
-					__int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
-					__int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-					sXml.AppendFormat(_T("<wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
-					if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
-					{
-						__int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
-						__int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
-						__int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
-						__int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-						sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
-					}
-					if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
-					{
-						CString sTagName;
-						switch(DrawingPropertyWrap.WrappingType)
-						{
-						case c_oSerImageType2::WrapNone:sTagName = _T("wrapNone");break;
-						case c_oSerImageType2::WrapSquare:sTagName = _T("wrapSquare");break;
-						case c_oSerImageType2::WrapThrough:sTagName = _T("wrapThrough");break;
-						case c_oSerImageType2::WrapTight:sTagName = _T("wrapTight");break;
-						case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");break;
-						}
-						if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
-						{
-							if( c_oSerImageType2::WrapSquare	== DrawingPropertyWrap.WrappingType		|| 
-								c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		|| 
-								c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
-							{
-                                sXml.AppendFormat(_T("<wp:%ls wrapText=\"bothSides\">"), (const TCHAR *) sTagName);
-							}
-							else
-                                sXml.AppendFormat(_T("<wp:%ls>"), (const TCHAR *) sTagName);
+                if(bChart)
+                    sXml.Append(_T("<w:drawing>"));
 
-							int nEdited = 0;
-							if(DrawingPropertyWrap.bEdited && DrawingPropertyWrap.Edited)
-								nEdited = 1;
-							sXml.AppendFormat(_T("<wp:wrapPolygon edited=\"%d\">"), nEdited);
-							if(DrawingPropertyWrap.bStart && DrawingPropertyWrap.Start.bX && DrawingPropertyWrap.Start.bY)
-							{
-								__int64 emuX = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.X);
-								__int64 emuY = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.Y);
-								sXml.AppendFormat(_T("<wp:start x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
-							}
-							for(int i = 0, length = DrawingPropertyWrap.Points.size(); i < length; ++i)
-							{
-								CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
-								if(pWrapPoint->bX && pWrapPoint->bY)
-								{
-									__int64 emuX = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->X);
-									__int64 emuY = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->Y);
-									sXml.AppendFormat(_T("<wp:lineTo x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
-								}
-							}
-							sXml.Append(_T("</wp:wrapPolygon>"));
-                            sXml.AppendFormat(_T("</wp:%ls>"), (const TCHAR *) sTagName);
-						}
-						else
-						{
-							//для wrapThrough и wrapTight wrapPolygon обязательное поле, если его нет - меняем тип.
-							if( c_oSerImageType2::WrapSquare	== DrawingPropertyWrap.WrappingType		|| 
-								c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		|| 
-								c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
-							{
-									sXml.Append(_T("<wp:wrapSquare wrapText=\"bothSides\"/>"));
-							}
-							else
-                                sXml.AppendFormat(_T("<wp:%ls/>"), (const TCHAR *) sTagName);
-						}
-					}
-					else
-						sXml.Append(_T("<wp:wrapNone/>"));
+                sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lld\" distB=\"%lld\" distL=\"%lld\" distR=\"%lld\" simplePos=\"%d\" relativeHeight=\"%u\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
+                __int64 emuX = 0;
+                if(bSimplePosX)
+                    emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);
+                __int64 emuY = 0;
+                if(bSimplePosY)
+                    emuY = (__int64)(g_dKoef_mm_to_emu * SimplePosY);
+                sXml.AppendFormat(_T("<wp:simplePos x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
 
-					if(bChart)
-					{
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
-					}
-					else
-					{
-						sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
-					}
-					if(!sGraphicFramePr.IsEmpty())
-					{
-						sXml.Append(sGraphicFramePr);
-					}
-					else
-					{
-						sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
-					}
-					if(bChart)
-					{
-						sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), (const TCHAR *) sChartRels);
-					}
+                if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
+                {
+                    CString sRelativeFrom;
+                    switch(PositionHRelativeFrom)
+                    {
+                    case 0: sRelativeFrom = _T("character");break;
+                    case 1: sRelativeFrom = _T("column");break;
+                    case 2: sRelativeFrom = _T("insideMargin");break;
+                    case 3: sRelativeFrom = _T("leftMargin");break;
+                    case 4: sRelativeFrom = _T("margin");break;
+                    case 5: sRelativeFrom = _T("outsideMargin");break;
+                    case 6: sRelativeFrom = _T("page");break;
+                    case 7: sRelativeFrom = _T("rightMargin");break;
+                    }
+                    CString sContent;
+                    if(bPositionHAlign)
+                    {
+                        switch(PositionHAlign)
+                        {
+                        case 0: sContent = _T("<wp:align>center</wp:align>");break;
+                        case 1: sContent = _T("<wp:align>inside</wp:align>");break;
+                        case 2: sContent = _T("<wp:align>left</wp:align>");break;
+                        case 3: sContent = _T("<wp:align>outside</wp:align>");break;
+                        case 4: sContent = _T("<wp:align>right</wp:align>");break;
+                        }
+                    }
+                    else if(bPositionHPosOffset)
+                    {
+                        __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionHPosOffset);
+                        sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
+                    }
+                    else if(bPositionHPctOffset)
+                    {
+                        long pctOffset = (long)(1000 * PositionHPctOffset);
+                        sContent.Format(_T("<wp14:pctPosHOffset>%d</wp14:pctPosHOffset>"), pctOffset);
+                    }
+                    sXml.AppendFormat(_T("<wp:positionH relativeFrom=\"%ls\">%ls</wp:positionH>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
+                }
+                if(bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
+                {
+                    CString sRelativeFrom;
+                    switch(PositionVRelativeFrom)
+                    {
+                    case 0: sRelativeFrom = _T("bottomMargin");break;
+                    case 1: sRelativeFrom = _T("insideMargin");break;
+                    case 2: sRelativeFrom = _T("line");break;
+                    case 3: sRelativeFrom = _T("margin");break;
+                    case 4: sRelativeFrom = _T("outsideMargin");break;
+                    case 5: sRelativeFrom = _T("page");break;
+                    case 6: sRelativeFrom = _T("paragraph");break;
+                    case 7: sRelativeFrom = _T("topMargin");break;
+                    }
+                    CString sContent;
+                    if(bPositionVAlign)
+                    {
+                        switch(PositionVAlign)
+                        {
+                        case 0: sContent = _T("<wp:align>bottom</wp:align>");break;
+                        case 1: sContent = _T("<wp:align>center</wp:align>");break;
+                        case 2: sContent = _T("<wp:align>inside</wp:align>");break;
+                        case 3: sContent = _T("<wp:align>outside</wp:align>");break;
+                        case 4: sContent = _T("<wp:align>top</wp:align>");break;
+                        }
+                    }
+                    else if(bPositionVPosOffset)
+                    {
+                        __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionVPosOffset);
+                        sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
+                    }
+                    else if(bPositionVPctOffset)
+                    {
+                        long pctOffset = (long)(1000 * PositionVPctOffset);
+                        sContent.Format(_T("<wp14:pctPosVOffset>%d</wp14:pctPosVOffset>"), pctOffset);
+                    }
+                    sXml.AppendFormat(_T("<wp:positionV relativeFrom=\"%ls\">%ls</wp:positionV>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
+                }
+                __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
+                __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
+                sXml.AppendFormat(_T("<wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+                if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
+                {
+                    __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
+                    __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
+                    __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
+                    __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
+                    sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
+                }
+                if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
+                {
+                    CString sTagName;
+                    switch(DrawingPropertyWrap.WrappingType)
+                    {
+                    case c_oSerImageType2::WrapNone:sTagName = _T("wrapNone");break;
+                    case c_oSerImageType2::WrapSquare:sTagName = _T("wrapSquare");break;
+                    case c_oSerImageType2::WrapThrough:sTagName = _T("wrapThrough");break;
+                    case c_oSerImageType2::WrapTight:sTagName = _T("wrapTight");break;
+                    case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");break;
+                    }
+                    if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
+                    {
+                        if( c_oSerImageType2::WrapSquare	== DrawingPropertyWrap.WrappingType		||
+                                c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		||
+                                c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
+                        {
+                            sXml.AppendFormat(_T("<wp:%ls wrapText=\"bothSides\">"), (const TCHAR *) sTagName);
+                        }
+                        else
+                            sXml.AppendFormat(_T("<wp:%ls>"), (const TCHAR *) sTagName);
 
-					if(!sSizeRelH.IsEmpty())
-					{
-						sXml.Append(sSizeRelH);
-					}
-					if(!sSizeRelV.IsEmpty())
-					{
-						sXml.Append(sSizeRelV);
-					}
+                        int nEdited = 0;
+                        if(DrawingPropertyWrap.bEdited && DrawingPropertyWrap.Edited)
+                            nEdited = 1;
+                        sXml.AppendFormat(_T("<wp:wrapPolygon edited=\"%d\">"), nEdited);
+                        if(DrawingPropertyWrap.bStart && DrawingPropertyWrap.Start.bX && DrawingPropertyWrap.Start.bY)
+                        {
+                            __int64 emuX = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.X);
+                            __int64 emuY = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.Y);
+                            sXml.AppendFormat(_T("<wp:start x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                        }
+                        for(int i = 0, length = DrawingPropertyWrap.Points.size(); i < length; ++i)
+                        {
+                            CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
+                            if(pWrapPoint->bX && pWrapPoint->bY)
+                            {
+                                __int64 emuX = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->X);
+                                __int64 emuY = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->Y);
+                                sXml.AppendFormat(_T("<wp:lineTo x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                            }
+                        }
+                        sXml.Append(_T("</wp:wrapPolygon>"));
+                        sXml.AppendFormat(_T("</wp:%ls>"), (const TCHAR *) sTagName);
+                    }
+                    else
+                    {
+                        //для wrapThrough и wrapTight wrapPolygon обязательное поле, если его нет - меняем тип.
+                        if( c_oSerImageType2::WrapSquare	== DrawingPropertyWrap.WrappingType		||
+                                c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		||
+                                c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
+                        {
+                            sXml.Append(_T("<wp:wrapSquare wrapText=\"bothSides\"/>"));
+                        }
+                        else
+                            sXml.AppendFormat(_T("<wp:%ls/>"), (const TCHAR *) sTagName);
+                    }
+                }
+                else
+                    sXml.Append(_T("<wp:wrapNone/>"));
 
-					sXml.Append(_T("</wp:anchor>"));
+                if(bChart)
+                {
+                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+                }
+                else
+                {
+                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+                }
+                if(!sGraphicFramePr.IsEmpty())
+                {
+                    sXml.Append(sGraphicFramePr);
+                }
+                else
+                {
+                    sXml.Append(_T("<wp:cNvGraphicFramePr/>"));
+                }
+                if(bChart)
+                {
+                    sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), (const TCHAR *) sChartRels);
+                }
 
-					if(bChart)
-						sXml.Append(_T("</w:drawing>"));
-				}
-			}
-		}
+                if(!sSizeRelH.IsEmpty())
+                {
+                    sXml.Append(sSizeRelH);
+                }
+                if(!sSizeRelV.IsEmpty())
+                {
+                    sXml.Append(sSizeRelV);
+                }
+
+                sXml.Append(_T("</wp:anchor>"));
+
+                if(bChart)
+                    sXml.Append(_T("</w:drawing>"));
+            }
+        }
 		return sXml;
 	}
 };

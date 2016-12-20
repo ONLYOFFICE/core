@@ -95,8 +95,8 @@ namespace PPTX
 				{
 					if (TextBoxShape.is_init())
 					{					
-						long lDataSize = 0;
-						ULONG lPos = pWriter->GetPosition();
+                        long lDataSize = 0;
+                        ULONG lPos = pWriter->GetPosition();
 						pWriter->SetPosition(lPos);
 						pWriter->StartRecord(4);
 						pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
@@ -113,8 +113,8 @@ namespace PPTX
 					{
 						CString strContent = txBody->GetDocxTxBoxContent(pWriter, style);
 
-						long lDataSize = 0;
-						ULONG lPos = pWriter->GetPosition();
+                        long lDataSize = 0;
+                        ULONG lPos = pWriter->GetPosition();
 						pWriter->SetPosition(lPos);
 						pWriter->StartRecord(4);
 						pWriter->m_pMainDocument->getBinaryContent(strContent, *pWriter, lDataSize);
@@ -205,7 +205,7 @@ namespace PPTX
 						}
 					}
 
-					if (!bIsWritedBodyPr)
+                    if (!bIsWritedBodyPr)
 					{
 						pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
 					}
@@ -220,8 +220,8 @@ namespace PPTX
 			}
 			
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+            {
+                LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -275,10 +275,10 @@ namespace PPTX
 						{
 							if (NULL != pReader->m_pMainDocument)
 							{
-								LONG lLenRec = pReader->GetLong();
+                                LONG lLenRec = pReader->GetLong();
 
-								LONG lPosition = pReader->GetPos();
-								LONG lSize_Reader = pReader->GetSize();
+                                LONG lPosition = pReader->GetPos();
+                                LONG lSize_Reader = pReader->GetSize();
 								BYTE* pData_Reader = pReader->GetData();
 				
 								CString sXmlContent;

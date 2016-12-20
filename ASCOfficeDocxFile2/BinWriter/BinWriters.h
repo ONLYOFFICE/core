@@ -3086,24 +3086,24 @@ namespace BinDocxRW
 				sXml = pBackground->m_oBackground->toXML();
 			}
 
-			if (!sXml.IsEmpty())
+            if (pBackground->m_oColor.IsInit())
+            {
+                m_oBcw.WriteColor(c_oSerBackgroundType::Color, pBackground->m_oColor.get());
+            }
+
+            if (pBackground->m_oThemeColor.IsInit())
+            {
+                m_oBcw.WriteThemeColor(c_oSerBackgroundType::ColorTheme, pBackground->m_oColor, pBackground->m_oThemeColor, pBackground->m_oThemeTint, pBackground->m_oThemeShade);
+            }
+
+            if (!sXml.IsEmpty())
 			{
-                int nCurPos = m_oBcw.WriteItemStart(c_oSerBackgroundType::pptxDrawing);
-					WriteDrawing(&sXml, NULL, NULL);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerBackgroundType::pptxDrawing);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+                int nCurPos = m_oBcw.WriteItemWithLengthStart();
+                    WriteDrawing(&sXml, NULL, NULL);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			else
-			{
-				if (pBackground->m_oColor.IsInit())
-				{
-                    m_oBcw.WriteColor(c_oSerBackgroundType::Color, pBackground->m_oColor.get());
-				}
-				else if (pBackground->m_oThemeColor.IsInit())
-				{
-                    m_oBcw.WriteThemeColor(c_oSerBackgroundType::ColorTheme, pBackground->m_oColor, pBackground->m_oThemeColor, pBackground->m_oThemeTint, pBackground->m_oThemeShade);
-				}
-			}
-
 		}
 		void WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr)
 		{
@@ -5476,7 +5476,7 @@ namespace BinDocxRW
 				}
 			}
 		}
-		void WriteDrawing(CString* pXml, OOX::Logic::CDrawing* pDrawing, OOX::Spreadsheet::CChartSpace* pChart)
+        void WriteDrawing(CString* pXml, OOX::Logic::CDrawing* pDrawing, OOX::Spreadsheet::CChartSpace* pChart)
 		{
 			int nCurPos = 0;
 			bool bDeleteDrawing = false;
@@ -5486,15 +5486,13 @@ namespace BinDocxRW
 				CString* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				nCurPos = m_oBcw.WriteItemWithLengthStart();
-				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(*pXml, &bstrOutputXml);
+
+                nCurPos = m_oBcw.WriteItemWithLengthStart();
+                    HRESULT hRes = m_pOfficeDrawingConverter->AddObject(*pXml, &bstrOutputXml);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
                 if(S_OK == hRes && NULL != bstrOutputXml)
-                {
-                    //					CString sDrawingXml;
-                    //                    sDrawingXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>%ls</w:drawing></root>"), *bstrOutputXml);
-                    //
-                    
+                {                   
                     CString sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>"));
                     
                     CString sEnd(_T("</w:drawing></root>"));

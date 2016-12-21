@@ -40,6 +40,8 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../Common/DocxFormat/Source/Base/ASCString.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen			= L"<";
@@ -138,60 +140,23 @@ namespace NSBinPptxRW
             m_pDataCur += nLen;
             m_lSizeCur += nLen;
         }
-        AVSINLINE void WriteString(std::wstring& wString)
+        AVSINLINE void WriteString(const std::wstring& wString)
         {
             size_t nLen = wString.length();
             WriteString(wString.c_str(), nLen);
         }
-#ifdef _WIN32
-        AVSINLINE void WriteString(_bstr_t& bsString)
-        {
-            size_t nLen = bsString.length();
-            WriteString(bsString.GetBSTR(), nLen);
-        }
-#endif // #ifdef _WIN32
-        AVSINLINE void WriteString(const CString& sString)
-        {
-            size_t nLen = (size_t)sString.GetLength();
-
-#ifdef _UNICODE
-            CString* pString = const_cast<CString*>(&sString);
-            WriteString(pString->GetBuffer(), nLen);
-            pString->ReleaseBuffer();
-#else
-            CStringW str = (CStringW)sString;
-            WriteString(str.GetBuffer(), nLen);
-            str.ReleaseBuffer();
-#endif
-        }
-        AVSINLINE void WriteStringXML(const CString& strValue)
+        AVSINLINE void WriteStringXML(const std::wstring& _strValue)
         {
             // можно ускорить (см. как сделано в шейпах)
-            CString s = strValue;
-            s.Replace(_T("&"),	_T("&amp;"));
-            s.Replace(_T("'"),	_T("&apos;"));
-            s.Replace(_T("<"),	_T("&lt;"));
-            s.Replace(_T(">"),	_T("&gt;"));
-            s.Replace(_T("\""),	_T("&quot;"));
-            WriteString(s);
-        }
-        AVSINLINE void WriteStringXML(const std::wstring & wString)
-        {
-            std::wstring buffer;
-            buffer.reserve(wString.size());
-            for(size_t pos = 0; pos != wString.size(); ++pos)
-            {
-                switch(wString[pos])
-                {
-                case '&':  buffer.append(_T("&amp;"));          break;
-                case '\"': buffer.append(_T("&quot;"));         break;
-                case '\'': buffer.append(_T("&apos;"));         break;
-                case '<':  buffer.append(_T("&lt;"));           break;
-                case '>':  buffer.append(_T("&gt;"));           break;
-                default:   buffer.append(&wString[pos], 1);	break;
-                }
-            }
-            WriteString(buffer);
+			std::wstring strValue = _strValue;
+
+			boost::algorithm::replace_all(strValue, L"&",	L"&amp;");
+            boost::algorithm::replace_all(strValue, L"'",	L"&apos;");
+            boost::algorithm::replace_all(strValue, L"<",	L"&lt;");
+            boost::algorithm::replace_all(strValue, L">",	L"&gt;");
+            boost::algorithm::replace_all(strValue, L"\"",	L"&quot;");
+            
+			WriteString(strValue);
         }
         AVSINLINE size_t GetCurSize()
         {
@@ -229,10 +194,9 @@ namespace NSBinPptxRW
             m_lSizeCur	= 0;
         }
 
-        CString GetData()
+        std::wstring GetData()
         {
-            CString str(m_pData, (int)m_lSizeCur);
-            return str;
+			return std::wstring(m_pData, (int)m_lSizeCur);
         }
 
         AVSINLINE void AddCharNoCheck(const WCHAR& wc)
@@ -304,10 +268,10 @@ namespace NSBinPptxRW
         LONG m_lObjectIdVML;
         LONG m_lObjectIdOle;
 
-        CString m_strStyleMain;
-        CString m_strAttributesMain;
-        CString m_strNodes;
-        CString m_strOleXlsx;
+        std::wstring m_strStyleMain;
+        std::wstring m_strAttributesMain;
+        std::wstring m_strNodes;
+        std::wstring m_strOleXlsx;
 
         IRenderer* m_pOOXToVMLRenderer;
 
@@ -325,19 +289,15 @@ namespace NSBinPptxRW
             m_lObjectIdOle              = 0;
 
             m_bIsUseOffice2007          = false;
-            m_strStyleMain              = _T("");
-            m_strAttributesMain         = _T("");
-            m_strNodes                  = _T("");
-            m_strOleXlsx                = _T("");
 
-            m_pOOXToVMLRenderer         = NULL;
+			m_pOOXToVMLRenderer         = NULL;
             m_bIsTop                    = false;
          }
         ~CXmlWriter()
         {
         }
 
-        AVSINLINE CString GetXmlString()
+        AVSINLINE std::wstring GetXmlString()
         {
             return m_oWriter.GetData();
         }
@@ -351,44 +311,37 @@ namespace NSBinPptxRW
         }
 
         // write value
-        AVSINLINE void WriteString(const CString& strValue)
+        AVSINLINE void WriteString(const std::wstring& strValue)
         {
             m_oWriter.WriteString(strValue);
         }
-        AVSINLINE void WriteStringXML(CString strValue)
+        AVSINLINE void WriteStringXML(std::wstring strValue)
         {
-            // можно ускорить (см. как сделано в шейпах)
-            CString s = strValue;
-            s.Replace(L"&",		L"&amp;");
-            s.Replace(L"'",		L"&apos;");
-            s.Replace(L"<",		L"&lt;");
-            s.Replace(L">",		L"&gt;");
-            s.Replace(L"\"",	L"&quot;");
+            std::wstring s = strValue;
+            boost::algorithm::replace_all( s, L"&",		L"&amp;");
+            boost::algorithm::replace_all( s, L"'",		L"&apos;");
+            boost::algorithm::replace_all( s, L"<",		L"&lt;");
+			boost::algorithm::replace_all( s, L">",		L"&gt;");
+            boost::algorithm::replace_all( s, L"\"",	L"&quot;");
             m_oWriter.WriteString(s);
         }
         AVSINLINE void WriteDouble(const double& val)
         {
-            CString str;
-            str.Format(L"%lf", val);
-            m_oWriter.WriteString(str);
+			m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteLONG(const long& val)
         {
-            CString str;
-            str.Format(L"%d", val);
-            m_oWriter.WriteString(str);
+			m_oWriter.WriteString(std::to_wstring(val));
+
         }
         AVSINLINE void WriteINT(const int& val)
         {
-            CString str;
-            str.Format(L"%d", val);
-            m_oWriter.WriteString(str);
+			m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteDWORD(const DWORD& val)
         {
-            CString str;
-            str.Format(L"%u", val);
-            m_oWriter.WriteString(str);
+			m_oWriter.WriteString(std::to_wstring(val));
+
         }
         AVSINLINE void WriteDWORD_hex(const DWORD& val)
         {
@@ -404,7 +357,7 @@ namespace NSBinPptxRW
                 m_oWriter.WriteString(g_bstr_boolean_false2);
         }
         // write attribute
-        AVSINLINE void WriteAttributeCSS(const CString& strAttributeName, const CString& val)
+        AVSINLINE void WriteAttributeCSS(const std::wstring& strAttributeName, const std::wstring& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
@@ -412,7 +365,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(val);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
-        AVSINLINE void WriteAttributeCSS_int(const CString& strAttributeName, const int& val)
+        AVSINLINE void WriteAttributeCSS_int(const std::wstring& strAttributeName, const int& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
@@ -420,7 +373,7 @@ namespace NSBinPptxRW
             m_oWriter.AddIntNoCheck(val);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
-        AVSINLINE void WriteAttributeCSS_double1(const CString& strAttributeName, const double& val)
+        AVSINLINE void WriteAttributeCSS_double1(const std::wstring& strAttributeName, const double& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
@@ -430,7 +383,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(s);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
-        AVSINLINE void WriteAttributeCSS_int_pt(const CString& strAttributeName, const int& val)
+        AVSINLINE void WriteAttributeCSS_int_pt(const std::wstring& strAttributeName, const int& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
@@ -440,7 +393,7 @@ namespace NSBinPptxRW
             m_oWriter.AddCharNoCheck(WCHAR('t'));
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
-        AVSINLINE void WriteAttributeCSS_double1_pt(const CString& strAttributeName, const double& val)
+        AVSINLINE void WriteAttributeCSS_double1_pt(const std::wstring& strAttributeName, const double& val)
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(20);
@@ -453,7 +406,7 @@ namespace NSBinPptxRW
             m_oWriter.AddCharNoCheck(WCHAR(';'));
         }
         //
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const CString& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -462,7 +415,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute2(const CString& strAttributeName, const CString& val)
+        AVSINLINE void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -471,7 +424,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteStringXML(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const double& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const double& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -480,7 +433,7 @@ namespace NSBinPptxRW
             WriteDouble(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const int& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const int& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -489,7 +442,7 @@ namespace NSBinPptxRW
             WriteINT(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const bool& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const bool& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -498,7 +451,7 @@ namespace NSBinPptxRW
             WriteBool(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const LONG& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const LONG& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -507,7 +460,7 @@ namespace NSBinPptxRW
             WriteLONG(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttribute(const CString& strAttributeName, const DWORD& val)
+        AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const DWORD& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -516,7 +469,7 @@ namespace NSBinPptxRW
             WriteDWORD(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
-        AVSINLINE void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
+        AVSINLINE void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val)
         {
             m_oWriter.WriteString(g_bstr_node_space);
             m_oWriter.WriteString(strAttributeName);
@@ -526,7 +479,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(g_bstr_node_quote);
         }
         // document methods
-        AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
+        AVSINLINE void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false)
         {
             m_oWriter.WriteString(g_bstr_nodeopen);
             m_oWriter.WriteString(strNodeName);
@@ -534,7 +487,7 @@ namespace NSBinPptxRW
             if (!bAttributed)
                 m_oWriter.WriteString(g_bstr_nodeclose);
         }
-        AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
+        AVSINLINE void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true)
         {
             if (bEmptyNode)
             {
@@ -551,13 +504,13 @@ namespace NSBinPptxRW
             }
         }
         // write node values
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const CString& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const std::wstring& val)
         {
             WriteNodeBegin(strNodeName);
             WriteString(val);
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const bool& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const bool& val)
         {
             WriteNodeBegin(strNodeName);
 
@@ -568,45 +521,45 @@ namespace NSBinPptxRW
 
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const double& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const double& val)
         {
             WriteNodeBegin(strNodeName);
             WriteDouble(val);
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const LONG& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const LONG& val)
         {
             WriteNodeBegin(strNodeName);
             WriteLONG(val);
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const int& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const int& val)
         {
             WriteNodeBegin(strNodeName);
             WriteINT(val);
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValue(const CString& strNodeName, const DWORD& val)
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const DWORD& val)
         {
             WriteNodeBegin(strNodeName);
             WriteDWORD(val);
             WriteNodeEnd(strNodeName);
         }
-        AVSINLINE void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
+        AVSINLINE void WriteNodeValueDWORD_hex(const std::wstring& strNodeName, const DWORD& val)
         {
             WriteNodeBegin(strNodeName);
             WriteDWORD_hex(val);
             WriteNodeEnd(strNodeName);
         }
 
-        bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = true, bool bIsClearNoAttack = true)
+        bool SaveToFile(std::wstring strFilePath, bool bEncodingToUTF8 = true, bool bIsClearNoAttack = true)
         {
-            CString strData = m_oWriter.GetData();
+            std::wstring strData = m_oWriter.GetData();
             if (!bEncodingToUTF8)
             {
                 CFile oFile;
                 oFile.CreateFile(strFilePath);
-                oFile.WriteFile((void*)strData.GetBuffer(), strData.GetLength());
+                oFile.WriteFile((void*)strData.c_str(), strData.length());
                 oFile.CloseFile();
             }
             else
@@ -615,7 +568,7 @@ namespace NSBinPptxRW
 
                 CFile oFile;
                 oFile.CreateFile(strFilePath);
-                CString strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+                std::wstring strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
                 oFile.WriteStringUTF8(strHead);
                 oFile.WriteStringUTF8(strData);
                 oFile.CloseFile();
@@ -631,68 +584,68 @@ namespace NSBinPptxRW
 
     public:
         // ATTRIBUTES --------------------------------------------------------------------------
-        AVSINLINE void WriteAttribute(const CString& strName, const nullable_int& value)
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_int& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
-        AVSINLINE void WriteAttribute(const CString& strName, const nullable_double& value)
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_double& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
-        AVSINLINE void WriteAttribute(const CString& strName, const nullable_string& value)
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_string& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
-        AVSINLINE void WriteAttribute2(const CString& strName, const nullable_string& value)
+        AVSINLINE void WriteAttribute2(const std::wstring& strName, const nullable_string& value)
         {
             if (value.IsInit())
                 WriteAttribute2(strName, *value);
         }
-        AVSINLINE void WriteAttribute(const CString& strName, const nullable_bool& value)
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_bool& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
         template <typename T>
-        AVSINLINE void WriteAttribute(const CString& strName, const nullable_limit<T>& value)
+        AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_limit<T>& value)
         {
             if (value.IsInit())
                 WriteAttribute(strName, (*value).get());
         }
         // -------------------------------------------------------------------------------------
         // NODES -------------------------------------------------------------------------------
-        AVSINLINE void WriteNodeValue(const CString& strName, const nullable_int& value)
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_int& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
-        AVSINLINE void WriteNodeValue(const CString& strName, const nullable_double& value)
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_double& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
-        AVSINLINE void WriteNodeValue(const CString& strName, const nullable_string& value)
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_string& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
-        AVSINLINE void WriteNodeValue(const CString& strName, const nullable_bool& value)
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_bool& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, *value);
         }
         template <typename T>
-        AVSINLINE void WriteNodeValue(const CString& strName, const nullable_limit<T>& value)
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_limit<T>& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, (*value).get);
         }
         // -------------------------------------------------------------------------------------
         // DOCUMENT ----------------------------------------------------------------------------
-        AVSINLINE void StartNode(const CString& name)
+        AVSINLINE void StartNode(const std::wstring& name)
         {
             m_oWriter.WriteString(g_bstr_nodeopen);
             m_oWriter.WriteString(name);
@@ -705,7 +658,7 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(g_bstr_nodeclose);
         }
-        AVSINLINE void EndNode(const CString& name)
+        AVSINLINE void EndNode(const std::wstring& name)
         {
             m_oWriter.WriteString(g_bstr_nodeopen_slash);
             m_oWriter.WriteString(name);
@@ -713,7 +666,7 @@ namespace NSBinPptxRW
         }
 
         template<typename T>
-        AVSINLINE void WriteArray(const CString& strName, const std::vector<T>& arr)
+        AVSINLINE void WriteArray(const std::wstring& strName, const std::vector<T>& arr)
         {
             size_t nCount = arr.size();
             if (0 != nCount)
@@ -744,12 +697,14 @@ namespace NSBinPptxRW
         }
         // -------------------------------------------------------------------------------------
 
-        void ReplaceString(CString str1, CString str2)
+        void ReplaceString(std::wstring str1, std::wstring str2)
         {
-            // ужасная функция. вызывать ее не надо. не для этого класс писался.
-            CString sCur = m_oWriter.GetData();
-            sCur.Replace(str1, str2);
-            ClearNoAttack();
+            // ужасная функция. вызывать ее не надо. не для этого класс писался. .. получше .. но все равно не надо !!!
+
+			std::wstring sCur = m_oWriter.GetData();
+			boost::algorithm::replace_all(sCur, str1, str2);
+
+			ClearNoAttack();
             WriteString(sCur);
         }
     };

@@ -43,6 +43,8 @@
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace OOX
 {
 	namespace Rels
@@ -53,7 +55,7 @@ namespace OOX
 			WritingElement_AdditionConstructors(CRelationShip)
 			CRelationShip(const OOX::RId& rId, const CString& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
-				m_oTarget.m_strFilename.Replace(_T(" "), _T("_"));
+				boost::algorithm::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
 			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
 			{

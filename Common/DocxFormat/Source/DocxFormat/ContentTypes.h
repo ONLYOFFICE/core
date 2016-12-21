@@ -259,7 +259,7 @@ namespace OOX
 
 	public:
 
-                bool Read (const CPath& oDirPath)
+		bool Read (const CPath& oDirPath)
 		{
 			OOX::CPath oFullPath = oDirPath / c_oContentTypeFileName;
 
@@ -268,14 +268,14 @@ namespace OOX
                                 return false;
 			return ReadFromReader(oReader);
 		}
-                bool ReadFromString (CString& sXml)
+		bool ReadFromString (CString& sXml)
 		{
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromString( sXml ) )
                                 return false;
 			return ReadFromReader(oReader);
 		}
-                bool Write(const CPath& oDirPath) const
+		bool Write(const CPath& oDirPath) const
 		{
 			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
@@ -298,20 +298,20 @@ namespace OOX
 			OOX::CPath oFullPath = oDirPath / c_oContentTypeFileName;
 			XmlUtils::SaveToFile( oFullPath.m_strFilename, sXml );
 
-                        return true;
+			return true;
 		}
 
 	public:
 		void Registration(const CString& sType, const CPath& oDirectory, const CPath& oFilename)
 		{
             OOX::CPath oFullPath = oDirectory / oFilename;
-			AddOverride( sType, oFullPath.m_strFilename );
+			AddOverride( sType, oFullPath.m_strFilename.c_str() );
 			AddDefault ( oFullPath );
 		}
 
 		void AddDefault(const OOX::CPath& oPath)
 		{
-			CString sExt = oPath.GetExtention();
+			CString sExt(oPath.GetExtention().c_str());
 			const CString sExtension = sExt.Mid( 1 );
 
 			size_t nCount = m_arrDefault.size();
@@ -330,11 +330,11 @@ namespace OOX
 		}
 
 	private:
-                bool ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
+		bool ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sName;
 			if ( !oReader.ReadNextNode() || _T("Types") != ( sName = oReader.GetName() ) || oReader.IsEmptyNode() )
-                                return false;
+				return false;
 
 			int nTypesDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nTypesDepth ) )
@@ -352,10 +352,9 @@ namespace OOX
                     m_arrOverride [oOverride.filename().GetPath()] = oOverride;
 				}
 			}
-
-                        return true;
+			return true;
 		}
-        void AddOverride(const CString& sType, CString& sPath)
+        void AddOverride(const CString& sType, const CString& sPath)
 		{
 #if !defined(_WIN32) && !defined (_WIN64)
             if (sPath.GetAt(0) ==  FILE_SEPARATOR_CHAR)

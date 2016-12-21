@@ -304,7 +304,7 @@ namespace NSBinPptxRW
 			CString strOleImageOut = pathOutputOle.GetPath();
 			if(!oleData.IsEmpty())
 			{
-				WriteOleData(string2std_string(strOleImageOut), string2std_string(oleData));
+				WriteOleData(strOleImageOut, oleData);
 			}
 			else
 			{
@@ -325,15 +325,15 @@ namespace NSBinPptxRW
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
-			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_PNG);
+		if(oBgraFrame.OpenFile(strFileSrc))
+			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_PNG);
 	}
 
 	void CImageManager2::SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
-			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_JPG);
+		if(oBgraFrame.OpenFile(strFileSrc))
+			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_JPG);
 	}
 
 	bool CImageManager2::IsNeedDownload(const CString& strFile)
@@ -404,11 +404,11 @@ namespace NSBinPptxRW
 	CString CImageManager2::DownloadImageExec(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(string2std_string(strFile), false);
+        CFileDownloader oDownloader(strFile, false);
 
 		if ( oDownloader.DownloadSync() )
 		{
-			return std_string2string(oDownloader.GetFilePath());
+			return oDownloader.GetFilePath();
 		}
 #endif
 		return _T("");
@@ -1085,15 +1085,14 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::StartNote(int nIndexSlide)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
-		CString sNum = _T("");
-		sNum.Format(_T("%d"), nIndexSlide + 1);
-		CString strNoteSlideRels = _T("<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide") + sNum + _T(".xml\"/>");
+		std::wstring sNum = std::to_wstring(nIndexSlide + 1);
+		std::wstring strNoteSlideRels = L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide" + sNum + L".xml\"/>";
 
 		m_pWriter->WriteString(strNoteSlideRels);
-		m_pWriter->WriteString(_T("<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>"));
+		m_pWriter->WriteString(L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>");
 
 		m_lNextRelsID = 3;
 	}

@@ -39,5 +39,4 @@
 
 #include "../Source/XlsxFormat/Common.cpp"
 #include "../Source/XML/libxml2/libxml2.cpp"
-#include "../Source/XML/stringcommon.cpp"
 #include "../Source/SystemUtility/SystemUtility.cpp"

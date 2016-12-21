@@ -95,13 +95,14 @@ namespace DocWrapper {
 				sFontName = pTheme->GetMinorFont();
 		}
 		if(sFontName.IsEmpty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
-			sFontName = std_string2string(oRFont->ToString2());
+			sFontName = oRFont->ToString2();
 		if(sFontName.IsEmpty())
 			sFontName = CString(gc_sNoNameFont);
 		//подбор перенесен в js
 		return  sFontName;
-		oFontSelectFormat.wsName = new std::wstring;
-		*oFontSelectFormat.wsName = string2std_string(sFontName);
+		
+		oFontSelectFormat.wsName = new std::wstring(sFontName);
+
 		if(oCharset.IsInit() && oCharset->m_oCharset.IsInit())
 		{
 			SimpleTypes::Spreadsheet::EFontCharset eCharset = oCharset->m_oCharset->GetValue();
@@ -121,7 +122,7 @@ namespace DocWrapper {
 		CString sRes;
 		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 		if(NULL != pFontInfo)
-			sRes = std_string2string(pFontInfo->m_wsFontName);
+			sRes = pFontInfo->m_wsFontName;
 		else
 			sRes = gc_sDefaultFontName;
 		fontMap[sFontName] = sRes;
@@ -135,12 +136,12 @@ namespace DocWrapper {
 			sFontName = CString(gc_sNoNameFont);
 		else
 			sFontName = font.m_sName;
-		oFontSelectFormat.wsName = new std::wstring;
-		*oFontSelectFormat.wsName = string2std_string(sFontName);
+		
+		oFontSelectFormat.wsName = new std::wstring(sFontName);
+
 		if (font.m_oAltName.IsInit() && font.m_oAltName->GetLength() > 0)
 		{
-			oFontSelectFormat.wsAltName = new std::wstring;
-			*oFontSelectFormat.wsAltName = string2std_string(*font.m_oAltName);
+			oFontSelectFormat.wsAltName = new std::wstring(*font.m_oAltName);
 		}
 		if(font.m_oCharset.IsInit())
 		{
@@ -216,7 +217,7 @@ namespace DocWrapper {
 
 		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 		if(NULL != pFontInfo)
-			fontMap[sFontName] = std_string2string(pFontInfo->m_wsFontName);
+			fontMap[sFontName] = pFontInfo->m_wsFontName;
 		else
 			fontMap[sFontName] = gc_sDefaultFontName;
 	}

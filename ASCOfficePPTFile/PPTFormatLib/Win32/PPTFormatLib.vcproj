@@ -438,6 +438,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\xmlwriter.h"
+				>
+			</File>
 			<Filter
 				Name="pole"
 				>

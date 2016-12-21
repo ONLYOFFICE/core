@@ -47,7 +47,7 @@
 class CFile 
 {
 private:
-	HRESULT _Open(const CString& strFileName, bool bOpen = false, bool bCreate = false, bool bReadWrite = false)
+	HRESULT _Open(const std::wstring& strFileName, bool bOpen = false, bool bCreate = false, bool bReadWrite = false)
 	{
 		HRESULT hRes = S_OK;
 		CloseFile();
@@ -66,9 +66,9 @@ private:
 			pModeCreate = L"wb";
 		}
 		if(NULL == m_pFile && bOpen)
-			m_pFile = _wfopen(strFileName, pModeOpen);
+			m_pFile = _wfopen(strFileName.c_str(), pModeOpen);
 		if(NULL == m_pFile && bCreate)
-			m_pFile = _wfopen(strFileName, pModeCreate);
+			m_pFile = _wfopen(strFileName.c_str(), pModeCreate);
 #else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
@@ -100,9 +100,9 @@ private:
 
 		m_lFilePosition = 0;
 
-		if (0 < strFileName.GetLength())
+		if (0 < strFileName.length())
 		{
-			if (((wchar_t)'/') == strFileName[strFileName.GetLength() - 1])
+			if (((wchar_t)'/') == strFileName[strFileName.length() - 1])
 				m_lFileSize = 0x7FFFFFFF;
 		}
 
@@ -129,16 +129,16 @@ public:
 		CloseFile();
 	}
 	
-	HRESULT OpenOrCreate(CString strFileName, bool bOnlyOpen = false, bool bReadWrite = false)
+	HRESULT OpenOrCreate(std::wstring strFileName, bool bOnlyOpen = false, bool bReadWrite = false)
 	{
 		return _Open(strFileName, true, true, true);
 	}
-	virtual HRESULT OpenFile(CString FileName)
+	virtual HRESULT OpenFile(std::wstring FileName)
 	{	
 		return _Open(FileName, true, false, false);
 	}
 
-	virtual HRESULT OpenFileRW(CString FileName)
+	virtual HRESULT OpenFileRW(std::wstring FileName)
 	{	
 		return _Open(FileName, true, false, true);
 	}
@@ -199,7 +199,7 @@ public:
 		return WriteFile(mem, nBytesToWrite);
 	}
 
-	HRESULT CreateFile(CString strFileName)
+	HRESULT CreateFile(std::wstring strFileName)
 	{
 		return _Open(strFileName, false, true, true);
 	}
@@ -207,7 +207,7 @@ public:
 	{	
 		if (m_pFile && nPos <= (ULONG)m_lFileSize)
 		{
-			m_lFilePosition = nPos;
+			m_lFilePosition = (long)nPos;
 			fseek(m_pFile, m_lFilePosition, SEEK_SET);
 			return S_OK;
 		}
@@ -261,7 +261,7 @@ public:
 	}
 	HRESULT WriteReservedTo(DWORD dwPoint)
 	{
-		if (m_lFilePosition >= dwPoint)
+		if ((DWORD)m_lFilePosition >= dwPoint)
 			return S_OK;
 
 		DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
@@ -273,7 +273,7 @@ public:
 	}
 	HRESULT SkipReservedTo(DWORD dwPoint)
 	{
-		if (m_lFilePosition >= dwPoint)
+		if ((DWORD)m_lFilePosition >= dwPoint)
 			return S_OK;
 
 		DWORD dwCount = dwPoint - (DWORD)m_lFilePosition;
@@ -290,23 +290,12 @@ public:
 		return lProgress;
 	}
 
-    void WriteStringUTF8(const CString& strXml)
-	{
-		BYTE* pData = NULL;
-		LONG lLen = 0;
-
-		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.GetString(), strXml.GetLength(), pData, lLen, false);
-
-		WriteFile(pData, lLen);
-
-		RELEASEARRAYOBJECTS(pData);
-	}
 	void WriteStringUTF8(const std::wstring& strXml)
 	{
 		BYTE* pData = NULL;
 		LONG lLen = 0;
 
-		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.length(), pData, lLen, false);
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, false);
 
 		WriteFile(pData, lLen);
 
@@ -356,7 +345,7 @@ namespace StreamUtils
 		DWORD lDWord = 0;
 		BYTE pMem[4];
 		ULONG lReadByte = 0;
-		lReadByte = pStream->read(pMem, 4);
+		lReadByte = (ULONG)pStream->read(pMem, 4);
 		
 //#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 //		ATLASSERT(4 == lReadByte);
@@ -393,7 +382,7 @@ namespace StreamUtils
 		char* pData = new char[lLen + 1];
 		ULONG lReadByte = 0;
 		
-		lReadByte = pStream->read((unsigned char*)pData, lLen);
+		lReadByte = (ULONG)pStream->read((unsigned char*)pData, lLen);
 
 		pData[lLen] = 0;
 
@@ -410,7 +399,7 @@ namespace StreamUtils
 		memset (pData, 0, 2 * (lLen + 1));
 
 		ULONG lReadByte = 0;		
-		lReadByte = pStream->read(pData, 2 * lLen);
+		lReadByte = (ULONG)pStream->read(pData, 2 * lLen);
 
 		if (sizeof(wchar_t) == 4)
 		{
@@ -444,16 +433,11 @@ namespace StreamUtils
 		}
 
 	}
-	static CStringA ConvertCStringWToCStringA(CStringW& strW)
+	static std::string ConvertCStringWToCStringA(std::wstring& strW)
 	{
-		/*WCHAR* pData = strW.GetBuffer();
-		CString str(pData);*/
-		//strW.ReleaseBuffer();
+		std::string str_a(strW.begin(), strW.end());
 
-		std::wstring	str_w = string2std_string(strW);
-		std::string		str_a(str_w.begin(), str_w.end());
-
-		return std_string2string(str_a);
+		return str_a;
 	}
 	static void StreamSeek(long lOffset, POLE::Stream* pStream)
 	{
@@ -465,7 +449,7 @@ namespace StreamUtils
 	{
 		if (pStream == NULL) return ;
 
-		lPosition = pStream->tell();
+		lPosition = (LONG)pStream->tell();
 	}
 	static void StreamSkip(long lCount, POLE::Stream* pStream)
 	{
@@ -484,102 +468,100 @@ namespace StreamUtils
 #if defined(_WIN32) || defined(_WIN64)
 namespace CDirectory
 {
-	static CString GetFolderName(CString strFolderPath)
+	static std::wstring GetFolderName(std::wstring strFolderPath)
 	{
-		int n1 = strFolderPath.ReverseFind('\\');
+		int n1 = strFolderPath.rfind('\\');
 		if (-1 == n1)
 			return _T("");
 
-		return strFolderPath.Mid(n1 + 1);
+		return strFolderPath.substr(n1 + 1);
 	}
-	static CString GetFolderPath(CString strFolderPath)
+	static std::wstring GetFolderPath(std::wstring strFolderPath)
 	{
-		int n1 = strFolderPath.ReverseFind('\\');
+		int n1 = strFolderPath.rfind('\\');
 		if (-1 == n1)
 			return _T("");
 
-		return strFolderPath.Mid(0, n1);
+		return strFolderPath.substr(0, n1);
 	}
-    static bool OpenFile(CString strFolderPath, CString strFileName, CFile* pFile)
+    static bool OpenFile(std::wstring strFolderPath, std::wstring strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath  + FILE_SEPARATOR_STR + strFileName;
+        std::wstring strFile = strFolderPath  + FILE_SEPARATOR_STR + strFileName;
 		return (S_OK == pFile->OpenFile(strFile));
 	}
-    static bool CreateFile(CString strFolderPath, CString strFileName, CFile* pFile)
+    static bool CreateFile(std::wstring strFolderPath, std::wstring strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath + FILE_SEPARATOR_STR + strFileName;
+        std::wstring strFile = strFolderPath + FILE_SEPARATOR_STR + strFileName;
 		return (S_OK == pFile->CreateFile(strFile));
 	}
-    static bool CreateDirectory(CString strFolderPathRoot, CString strFolderName)
+    static bool CreateDirectory(std::wstring strFolderPathRoot, std::wstring strFolderName)
 	{
-        CString strFolder = strFolderPathRoot + FILE_SEPARATOR_STR + strFolderName;
-		return ::CreateDirectory(strFolder, NULL);
+        std::wstring strFolder = strFolderPathRoot + FILE_SEPARATOR_STR + strFolderName;
+		return (bool)CreateDirectory(strFolder, NULL);
 	}
-    static bool CreateDirectory(CString strFolderPath)
+    static bool CreateDirectory(std::wstring strFolderPath)
 	{
-		return ::CreateDirectory(strFolderPath, NULL);
+		return (bool)CreateDirectory(strFolderPath, NULL);
 	}
-    static bool DeleteFile (CString strFileName)
+    static bool DeleteFile (std::wstring strFileName)
     {
-        ::DeleteFile (strFileName);
+        ::DeleteFile (strFileName.c_str());
         return true;
     }
 
-    static bool MoveFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
+    static bool MoveFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
 	{
 #if (_WIN32_WINNT >= 0x0500) && !defined (_WIN64)
-		return ::MoveFileWithProgress(strExists, strNew, (LPPROGRESS_ROUTINE)lpFunc, lpData, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH); 
+		return (bool)MoveFileWithProgress(strExists.c_str(), strNew.c_str(), (LPPROGRESS_ROUTINE)lpFunc, lpData, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH); 
 #else
-		return ::MoveFileEx(strExists, strNew, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH); 
+		return (bool)MoveFileEx(strExists.c_str(), strNew.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH); 
 #endif
 	}
 
-    static bool CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
+    static bool CopyFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
 	{
 		DeleteFile(strNew);
-#if defined (_WIN64)
-		return ::CopyFile(strExists, strNew, true); 
-#else
-		return ::CopyFileEx(strExists, strNew, (LPPROGRESS_ROUTINE)lpFunc, lpData, FALSE, 0); 
-#endif
+//#if (_WIN32_WINNT >= 0x0500) && !defined (_WIN64)
+//		return (bool)CopyFile(strExists.c_str(), strNew.c_str(), true); 
+//#else
+		return (bool)CopyFileEx(strExists.c_str(), strNew.c_str(), (LPPROGRESS_ROUTINE)lpFunc, lpData, FALSE, 0); 
+//#endif
 	}
 
-	static CString GetUnder(CString strFolderPathRoot, CString strFolderName)
+	static std::wstring GetUnder(std::wstring strFolderPathRoot, std::wstring strFolderName)
 	{
-		CString strFolder = strFolderPathRoot + L"\\" + strFolderName;
+		std::wstring strFolder = strFolderPathRoot + L"\\" + strFolderName;
 		return strFolder;
 	}
 
-	static CString GetFileName(CString strFullName)
+	static std::wstring GetFileName(std::wstring strFullName)
 	{
-		int nStart = strFullName.ReverseFind(L"\\");
-		CString strName = strFullName.Mid(nStart + 1);
+		size_t nStart = strFullName.rfind(L"\\");
+		std::wstring strName = strFullName.substr(nStart + 1);
 		return strName;
 	}
 
-	static CString BYTEArrayToString2(USHORT* arr, size_t nCount)
+	static std::wstring BYTEArrayToString2(USHORT* arr, size_t nCount)
 	{
-		CString str;
+		std::wstring str;
 		for (size_t index = 0; index < nCount; ++index)
 		{
 			if ('\0' != (char)(arr[index]))
 				str += (char)(arr[index]);
 		}
-		if (str.GetLength() == 0)
+		if (str.length() == 0)
 			str = _T("0");
 		return str;
 	}
 
-	static CString ToString(DWORD val)
+	static std::wstring ToString(DWORD val)
 	{
-		CString str = _T("");
-		str.Format(_T("%d"), (LONG)val);
-		return str;
+		return std::to_wstring(val);
 	}
 
-	static CString ToString(UINT64 val, bool bInit)
+	static std::wstring ToString(UINT64 val, bool bInit)
 	{
-		CString strCoarse = ToString((DWORD)(val >> 32));
+		std::wstring strCoarse = ToString((DWORD)(val >> 32));
 		if (_T("0") != strCoarse)
 		{
 			return strCoarse + ToString((DWORD)val);
@@ -588,35 +570,34 @@ namespace CDirectory
 		return ToString((DWORD)val);
 	}
 
-	static UINT64 GetUINT64(CString strVal)
+	static UINT64 GetUINT64(std::wstring strVal)
 	{
 		UINT64 nRet = 0;
-		int nLen = strVal.GetLength();
+		int nLen = (int)strVal.length();
 		while (nLen > 0)
 		{
 			int nDig = XmlUtils::GetDigit(strVal[0]);
 			nRet *= 10;
 			nRet += nDig;
-			strVal.Delete(0);
+			strVal.erase(0);
 			--nLen;
 		}
 		return nRet;
 	}
-	static UINT GetUINT(CString strVal)
+	static UINT GetUINT(std::wstring strVal)
 	{
 		return (UINT)GetUINT64(strVal);
 	}
 
-	static void SaveToFile(CString strFileName, CString strXml)
+	static void SaveToFile(std::wstring strFileName, std::wstring strXml)
 	{
-        int nLength = strXml.GetLength();
+        int nLength = (int)strXml.length();
 
-		CStringA saStr;
+		std::string saStr; saStr.reserve(nLength*3 + 1);
 		
 #ifdef UNICODE
 		// Encoding Unicode to UTF-8
-		WideCharToMultiByte(CP_UTF8, 0, strXml.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-		saStr.ReleaseBuffer();    
+		WideCharToMultiByte(CP_UTF8, 0, strXml.c_str(), nLength + 1, (LPSTR)saStr.c_str(), nLength * 3, NULL, NULL); 
 #else
 		wchar_t* pWStr = new wchar_t[nLength + 1];
 		if (!pWStr)
@@ -639,11 +620,11 @@ namespace CDirectory
 		
 		CFile oFile;
 		oFile.CreateFile(strFileName);
-		oFile.WriteFile((void*)saStr.GetBuffer(), saStr.GetLength());
+		oFile.WriteFile((void*)saStr.c_str(), saStr.length());
 		oFile.CloseFile();
 	}
 
-	static void SaveToFile2(CString strFileName, CStringA strVal)
+	static void SaveToFile2(std::wstring strFileName, std::string strVal)
 	{
 		CFile oFile;
 		HRESULT hr = oFile.OpenFileRW(strFileName);
@@ -652,7 +633,7 @@ namespace CDirectory
 			oFile.CreateFile(strFileName);
 
 		oFile.SkipBytes(oFile.GetFileSize());
-		oFile.WriteFile((void*)strVal.GetBuffer(), strVal.GetLength());
+		oFile.WriteFile((void*)strVal.c_str(), strVal.length());
 		oFile.CloseFile();
 	}
 }
@@ -665,46 +646,11 @@ namespace CDirectory
 
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/common/File.h"
-/*
-class CFile: public NSFile::CFileBinary
-{
-public:
-    CFile()
-        : NSFile::CFileBinary ()
-    {
 
-    }
-    HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
-    {
-        return (WriteFile (static_cast<char *> (pData), nBytesToWrite) ? S_OK : S_FALSE);
-    }
-    HRESULT CreateFile(CString strFileName)
-    {
-        return CreateFileW(strFileName) ? S_OK : S_FALSE;
-    }
-    HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
-    {
-        DWORD dwRead = 0;
-        return NSFile::CFileBinary::ReadFile(pData, nBytesToRead, dwRead) ? S_OK : S_FALSE;
-    }
-    HRESULT SetPosition( ULONG64 nPos )
-    {
-        if ((NULL != m_pFile) && nPos <= (ULONG)m_lFileSize)
-        {
-            int res = fseek(m_pFile, 0, SEEK_SET);
-
-            m_lFilePosition = nPos;
-            return 0 == res ? S_OK : S_FALSE;
-        }
-
-        return S_FALSE;
-    }
-};
-*/
 namespace CDirectory
 {
 
-    static void SaveToFile(CString strFileName, CString strXml)
+    static void SaveToFile(std::wstring strFileName, std::wstring strXml)
     {
         std::string aContentUtf8 = stringWstingToUtf8String (strXml);
         std::string aFileNameUtf8 = stringWstingToUtf8String (strFileName);
@@ -718,19 +664,19 @@ namespace CDirectory
         fwrite (aContentUtf8.c_str() , sizeof(char), aContentUtf8.size(), pFile);
         fclose (pFile);
     }
-    static bool DeleteFile (CString strFileName)
+    static bool DeleteFile (std::wstring strFileName)
     {
         std::string aFileNameUtf8 = stringWstingToUtf8String (strFileName);
         return 0 == unlink (aFileNameUtf8.c_str());
     }
-    static CString ToString(DWORD val)
+    static std::wstring ToString(DWORD val)
     {
-        CString str = _T("");
+        std::wstring str = _T("");
         str.Format(_T("%d"), (LONG)val);
         return str;
     }
 
-    static bool CopyFile (CString strExists, CString strNew, LPVOID lpFunc = NULL, LPVOID lpData = NULL)
+    static bool CopyFile (std::wstring strExists, std::wstring strNew, LPVOID lpFunc = NULL, LPVOID lpData = NULL)
     {
         bool bRes = true;
         try
@@ -753,40 +699,41 @@ namespace CDirectory
 
 namespace CDirectory
 {
-    static void WriteValueToNode(CString strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
+    static void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
         pWriter->WriteString(CDirectory::ToString(value));
         pWriter->WriteNodeEnd(strName);
     }
-    static void WriteValueToNode(CString strName, LONG value, XmlUtils::CXmlWriter* pWriter)
+    static void WriteValueToNode(std::wstring strName, LONG value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
-        CString strLONG = _T("");
-        strLONG.Format(_T("%d"), value);
-        pWriter->WriteString(strLONG);
+
+		std::wstring strLONG = std::to_wstring(value);
+
+		pWriter->WriteString(strLONG);
         pWriter->WriteNodeEnd(strName);
     }
-    static void WriteValueToNode(CString strName, CString value, XmlUtils::CXmlWriter* pWriter)
+    static void WriteValueToNode(std::wstring strName, std::wstring value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
         pWriter->WriteString(value);
         pWriter->WriteNodeEnd(strName);
     }
-    static void WriteValueToNode(CString strName, WCHAR value, XmlUtils::CXmlWriter* pWriter)
+    static void WriteValueToNode(std::wstring strName, WCHAR value, XmlUtils::CXmlWriter* pWriter)
     {
         wchar_t str_arr[2]={};
         str_arr[0] = value;
-        CString str(str_arr);
+        std::wstring str(str_arr);
 
         pWriter->WriteNodeBegin(strName);
         pWriter->WriteString(str);
         pWriter->WriteNodeEnd(strName);
     }
-    static void WriteValueToNode(CString strName, bool value, XmlUtils::CXmlWriter* pWriter)
+    static void WriteValueToNode(std::wstring strName, bool value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
-        CString str = (true == value) ? _T("1") : _T("0");
+        std::wstring str = (true == value) ? _T("1") : _T("0");
         pWriter->WriteString(str);
         pWriter->WriteNodeEnd(strName);
     }
@@ -803,29 +750,29 @@ namespace CDirectory
     }
 
 
-    static CString BYTEArrayToString(BYTE* arr, size_t nCount)
+    static std::wstring BYTEArrayToString(BYTE* arr, size_t nCount)
     {
-        CString str;
+        std::wstring str;
         for (size_t index = 0; index < nCount; ++index)
         {
             if ('\0' != (char)(arr[index]))
                 str += (char)(arr[index]);
         }
-        if (str.GetLength() == 0)
+        if (str.length() == 0)
             str = _T("0");
         return str;
     }
 
-    static CStringW BYTEArrayToStringW(BYTE* arr, size_t nCount)
+    static std::wstring BYTEArrayToStringW(BYTE* arr, size_t nCount)
     {
-        CStringW str;
+        std::wstring str;
         wchar_t* pArr = (wchar_t*)arr;
         size_t nCountNew = nCount / 2;
         for (size_t index = 0; index < nCountNew; ++index)
         {
             str += pArr[index];
         }
-        if (str.GetLength() == 0)
+        if (str.length() == 0)
             str = _T("0");
         return str;
     }

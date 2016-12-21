@@ -49,11 +49,11 @@ namespace SerializeCommon
 	CString DownloadImage(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(string2std_string(strFile), false);
+        CFileDownloader oDownloader(strFile, false);
 		CString strFileName;
 		if ( oDownloader.DownloadSync() )
 		{
-			strFileName = std_string2string(oDownloader.GetFilePath());
+			strFileName = oDownloader.GetFilePath();
 		}
 		return strFileName;
 #else

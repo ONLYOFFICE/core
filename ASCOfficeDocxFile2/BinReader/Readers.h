@@ -2936,11 +2936,11 @@ public:
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
 			}
-			else if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
+			else if(NSFile::CFileBinary::Exists(sFilePath))
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 				if(bDeleteFile)
-					NSFile::CFileBinary::Remove(string2std_string(sFilePath));
+					NSFile::CFileBinary::Remove(sFilePath);
 			}
 		}
 		else
@@ -6653,14 +6653,14 @@ public:
 
 				//save xlsx
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(m_oFileWriter.m_oChartWriter.getChartCount() + 1) + L".xlsx";
-				std::wstring sXlsxPath = string2std_string(pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR) + sXlsxFilename;
+				std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
 
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rIdXlsx;
 				CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, CString(), &rIdXlsx);
 
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -6673,14 +6673,15 @@ public:
 				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
-				CString sFilename;
-				CString sRelsName;
+				std::wstring sFilename;
+				std::wstring sRelsName;
 				int nChartIndex;
                 std::wstring sContent = sw.GetData();
-                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
+                
+				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
+                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rIdChart;

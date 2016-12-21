@@ -57,11 +57,13 @@ using namespace NSFontCutter;
 #include "../../HtmlRenderer/include/ASCSVGWriter.h"
 #include <list>
 
+#include <boost/algorithm/string.hpp>
+
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
 
-    static bool _CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
+    static bool _CopyFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
 	{
         //::DeleteFile(strNew);
         //return ::CopyFileEx(strExists, strNew, lpFunc, lpData, false, 0);
@@ -82,16 +84,16 @@ namespace NSShapeImageGen
 	{
 	public:
 		NSShapeImageGen::ImageType	m_eType;
-		LONG		m_lID;
-		bool		m_bValid;
-		CString		m_sName;
+		LONG						m_lID;
+		bool						m_bValid;
+		std::wstring				m_sName;
 
 		CImageInfo()
 		{
 			m_eType		= itJPG;
 			m_lID		= -1;
 			m_bValid	= true;
-			m_sName		= _T("image");
+			m_sName		= L"image";
 		}
 		CImageInfo(const CImageInfo& oSrc)
 		{
@@ -108,7 +110,7 @@ namespace NSShapeImageGen
 		}
 		void SetNameModificator(NSShapeImageGen::ImageType eType, bool bOle)
 		{
-			CString sPrefix = _T("");
+			std::wstring sPrefix;
 			int nRes = 0;
 			if(itWMF == eType)
 				nRes += 1;
@@ -117,53 +119,47 @@ namespace NSShapeImageGen
 			if(bOle)
 				nRes += 4;
 			if(0 != nRes)
-				m_sName.Format(_T("display%dimage"), nRes);
+				m_sName = L"display" + std::to_wstring(nRes) + L"image";
 		}
 
-		AVSINLINE CString GetPath2()
+		AVSINLINE std::wstring GetPath2()
 		{
-			CString _strExt = _T("png");
+			std::wstring _strExt = L"png";
 			switch (m_eType)
 			{
 			case itJPG:
-				_strExt = _T("jpg");
+				_strExt = L"jpg";
 				break;
 			case itWMF:
-				_strExt = _T("wmf");
+				_strExt = L"wmf";
 				break;
 			case itEMF:
-				_strExt = _T("emf");
+				_strExt = L"emf";
 				break;
 			case itSVG:
-				_strExt = _T("svg");
+				_strExt = L"svg";
 				break;
 			default:
 				break;
 			}
-
-			CString strExt = _T("");
-			strExt.Format(_T("%ls%d."), m_sName, m_lID);
-            strExt += _strExt;
-			return strExt;
+			return m_sName + std::to_wstring(m_lID) + L"." + _strExt;
 		}
-		AVSINLINE CString GetPathWithoutExtension()
+		AVSINLINE std::wstring GetPathWithoutExtension()
 		{
-			CString strFilename = _T("");
-			strFilename.Format(_T("%ls%d"), m_sName, m_lID);
-			return strFilename;
+			return m_sName + std::to_wstring(m_lID);
 		}
 	};
 
 	class CImageManager
 	{
 	public:
-		std::map<CString, CImageInfo>		m_mapImagesFile;
+		std::map<std::wstring, CImageInfo>	m_mapImagesFile;
 		std::map<DWORD, CImageInfo>			m_mapImageData;
 
 		std::vector<void*>					m_listDrawings;
 		std::list<CImageInfo>				m_listImages;
 
-		CString								m_strDstMedia;
+		std::wstring						m_strDstMedia;
 
 		LONG								m_lMaxSizeImage;
 		LONG								m_lNextIDImage;
@@ -187,7 +183,7 @@ namespace NSShapeImageGen
 
 		AVSINLINE void NewDocument()
 		{
-			m_strDstMedia	= _T("");
+			m_strDstMedia	= L"";
 			m_lMaxSizeImage = 1200;
 			m_lNextIDImage	= 0;
 
@@ -208,7 +204,7 @@ namespace NSShapeImageGen
 			int lCount = (int)m_mapImagesFile.size();
 			pWriter->WriteINT(lCount);
 
-			for (std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.begin(); pPair != m_mapImagesFile.end(); ++pPair)
+			for (std::map<std::wstring, CImageInfo>::iterator pPair = m_mapImagesFile.begin(); pPair != m_mapImagesFile.end(); ++pPair)
 			{
 				pWriter->WriteString(pPair->first);
 				pWriter->WriteINT((int)(pPair->second.m_eType));
@@ -242,14 +238,14 @@ namespace NSShapeImageGen
 			LONG lCount = pReader->GetLong();
 			for (LONG i = 0; i < lCount; ++i)
 			{
-				CString sKey = pReader->GetString2();
+				std::wstring sKey = pReader->GetString2();
 
 				CImageInfo oInfo;
 				oInfo.m_eType = (NSShapeImageGen::ImageType)pReader->GetLong();
 				oInfo.m_lID = pReader->GetLong();
 				oInfo.m_bValid = pReader->GetBool();
 
-				m_mapImagesFile.insert(std::pair<CString, CImageInfo>(sKey, oInfo));
+				m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(sKey, oInfo));
 			}
 
 			lCount = pReader->GetLong();
@@ -282,13 +278,13 @@ namespace NSShapeImageGen
 			
             return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
-		CImageInfo WriteImage(const CString& strFile, const CString& strOleFile, double& x, double& y, double& width, double& height)
+		CImageInfo WriteImage(const std::wstring& strFile, const std::wstring& strOleFile, double& x, double& y, double& width, double& height)
 		{
 			bool bIsDownload = false;
-			int n1 = strFile.Find(_T("www"));
-			int n2 = strFile.Find(_T("http"));
-			int n3 = strFile.Find(_T("ftp"));
-			int n4 = strFile.Find(_T("https"));
+			int n1 = strFile.find (L"www");
+			int n2 = strFile.find (L"http");
+			int n3 = strFile.find (L"ftp");
+			int n4 = strFile.find (L"https");
 
             //если nI сранивать не с 0, то будут проблемы
             //потому что в инсталяции мы кладем файлы в /var/www...
@@ -298,27 +294,28 @@ namespace NSShapeImageGen
 			if (bIsDownload)
 			{
 
-				CString strFile1 = strFile;
-				strFile1.Replace(_T("\\"), _T("/"));
-				strFile1.Replace(_T("http:/"), _T("http://"));
-				strFile1.Replace(_T("https:/"), _T("https://"));
-				strFile1.Replace(_T("ftp:/"), _T("ftp://"));
+				std::wstring strFile1 = strFile;
+				
+				boost::algorithm::replace_all(strFile1, L"\\",		L"/");
+				boost::algorithm::replace_all(strFile1, L"http:/",	L"http://");
+				boost::algorithm::replace_all(strFile1, L"https:/",	L"https://");
+				boost::algorithm::replace_all(strFile1, L"ftp:/",	L"ftp://");
 
 
 				CImageInfo oInfo;
-				std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(strFile1);
+				std::map<std::wstring, CImageInfo>::iterator pPair = m_mapImagesFile.find(strFile1);
 				
 				if (pPair != m_mapImagesFile.end())
 					return pPair->second;
 
-				CString strDownload = _T("");
+				std::wstring strDownload;
 
 #ifndef DISABLE_FILE_DOWNLOADER
 
-				CFileDownloader oDownloader(string2std_string(strFile1), true);
+				CFileDownloader oDownloader(strFile1, true);
 				if (oDownloader.DownloadSync())
 				{
-					strDownload = std_string2string(oDownloader.GetFilePath());
+					strDownload = oDownloader.GetFilePath();
 				}
 
 #endif
@@ -336,20 +333,20 @@ namespace NSShapeImageGen
 			oFile.CloseFile();
 
 			if (-1 == width && -1 == height)
-				return GenerateImageID(strFile, CString(L""), strOleFile, width, height);
-			return GenerateImageID(strFile, CString(L""), strOleFile, (std::max)(1.0, width), (std::max)(1.0, height));
+				return GenerateImageID(strFile, L"", strOleFile, width, height);
+			return GenerateImageID(strFile, L"", strOleFile, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
 	protected:
-		inline void CopyFile(CString& strFileSrc, CString& strFileDst)
+		inline void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst)
 		{
 			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
 		}
 
-		bool CheckImageSimpleCopy(const CString& strFileSrc, CImageInfo& oInfo)
+		bool CheckImageSimpleCopy(const std::wstring& strFileSrc, CImageInfo& oInfo)
 		{
 			CFile oFile;
 			HRESULT hr = oFile.OpenFile(strFileSrc);
@@ -392,13 +389,13 @@ namespace NSShapeImageGen
 			return false;
         }
 
-		void SaveImage(const CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
+		void SaveImage(const std::wstring& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
 			if (CheckImageSimpleCopy(strFileSrc, oInfo))
 				return;
 
 			CBgraFrame oBgraFrame;
-			if (oBgraFrame.OpenFile(std::wstring(strFileSrc.GetString())) == true)
+			if (oBgraFrame.OpenFile(strFileSrc) == true)
 			{
 				SaveImage(oBgraFrame, oInfo, __width, __height);
 			}
@@ -407,7 +404,7 @@ namespace NSShapeImageGen
 				//конвертация неудачная - берем оригинальный файл
 				OOX::CPath pathOriginal = strFileSrc;
 
-				CString strSaveItem = oInfo.GetPathWithoutExtension();
+				std::wstring strSaveItem = oInfo.GetPathWithoutExtension();
 
 				strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem + pathOriginal.GetExtention();
 
@@ -421,7 +418,7 @@ namespace NSShapeImageGen
 
 			oInfo.m_eType = GetImageType(oBgraFrame);
 
-			CString strSaveItem = _T("");
+			std::wstring strSaveItem = L"";
 			unsigned int nOutputFormat;
 			if (itJPG == oInfo.m_eType)
 			{
@@ -495,15 +492,15 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(const CString& strFileName, const CString & strUrl, const CString& strOleFile, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(const std::wstring& strFileName, const std::wstring & strUrl, const std::wstring& strOleFile, double dWidth, double dHeight)
 		{
-			CString sMapKey = strFileName;
-			if(!strUrl.IsEmpty())
-				sMapKey = strUrl;
-			if(!strOleFile.IsEmpty())
-				sMapKey += strOleFile;
+			std::wstring sMapKey = strFileName;
+			
+			if(!strUrl.empty())				sMapKey  = strUrl;
+			if(!strOleFile.empty())			sMapKey += strOleFile;
+			
 			CImageInfo oInfo;
-			std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(sMapKey);
+			std::map<std::wstring, CImageInfo>::iterator pPair = m_mapImagesFile.find(sMapKey);
 
 			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
 			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
@@ -515,29 +512,29 @@ namespace NSShapeImageGen
 
 				LONG lImageType = m_oImageExt.GetImageType(strFileName);
 				bool bVector = (1 == lImageType || 2 == lImageType);
-				bool bOle = !strOleFile.IsEmpty();
+				bool bOle = !strOleFile.empty();
 				if(bVector)
 					oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
 				oInfo.SetNameModificator(oInfo.m_eType, bOle);
 
 				std::wstring strSaveDir		= m_strDstMedia + FILE_SEPARATOR_STR;
-				std::wstring strSaveItemWE	= strSaveDir	+ string2std_string(oInfo.GetPathWithoutExtension());
+				std::wstring strSaveItemWE	= strSaveDir	+ std::wstring(oInfo.GetPathWithoutExtension());
 
 				//copy ole bin
 				if(bOle)
 				{
-					CString sCopyOlePath = std_string2string(strSaveItemWE) + _T(".bin");
+					std::wstring sCopyOlePath = strSaveItemWE + L".bin";
 					CDirectory::CopyFile(strOleFile, sCopyOlePath, NULL, NULL);
 				}
 
 				if (bVector)
 				{
 					//copy source vector image
-					OOX::CPath pathSaveItem = std_string2string(strSaveDir) + oInfo.GetPath2();
+					OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
 					CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
 
 					::MetaFile::CMetaFile oMetafile(m_pFontManager->m_pApplication);
-					if (oMetafile.LoadFromFile(strFileName))
+					if (oMetafile.LoadFromFile(strFileName.c_str()))
 					{
 						double x = 0, y = 0, w = 0, h = 0;
 						oMetafile.GetBounds(&x, &y, &w, &h);
@@ -578,7 +575,7 @@ namespace NSShapeImageGen
 								}
 							}
 
-							std::wstring strSaveItem = strSaveItemWE + _T(".png");
+							std::wstring strSaveItem = strSaveItemWE + L".png";
 							oMetafile.ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
 
 							bool bIsSuccess = NSFile::CFileBinary::Exists(strSaveItem);
@@ -586,7 +583,7 @@ namespace NSShapeImageGen
 							{
 								oInfo.m_eType = itPNG;
 
-								m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
+								m_mapImagesFile.insert(std::pair<std::wstring,CImageInfo>(sMapKey, oInfo));
 								m_listImages.push_back(oInfo);
 								return oInfo;
 							}
@@ -595,8 +592,8 @@ namespace NSShapeImageGen
 						{
 							oInfo.m_eType = itSVG;
 
-							oWriterSVG.SaveFile(strSaveItemWE + _T(".svg"));
-							m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
+							oWriterSVG.SaveFile(strSaveItemWE + L".svg");
+							m_mapImagesFile.insert(std::pair<std::wstring,CImageInfo>(sMapKey, oInfo));
 							m_listImages.push_back(oInfo);
 							return oInfo;
 						}
@@ -605,7 +602,7 @@ namespace NSShapeImageGen
 
 				SaveImage(strFileName, oInfo, lWidth, lHeight);
 			
-				m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));
+				m_mapImagesFile.insert(std::pair<std::wstring,CImageInfo>(sMapKey, oInfo));
 				m_listImages.push_back(oInfo);
 			}
 			else

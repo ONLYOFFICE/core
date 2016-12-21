@@ -1948,7 +1948,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
                             NSPresentationEditor::CColor color;
                             if (sColor2->Find(L"fill") != -1)
                             {
-                                std::wstring sColorEffect = string2std_string(*sColor2);
+                                std::wstring sColorEffect = *sColor2;
                                 if (sColorEffect.length() > 5)
                                     sColorEffect = sColorEffect.substr(5);
 
@@ -3596,7 +3596,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
                 if (sColor2->Find(L"fill") != -1)
 				{
-                    std::wstring sColorEffect = string2std_string(*sColor2);
+                    std::wstring sColorEffect = *sColor2;
                     if (sColorEffect.length() > 5)
                         sColorEffect = sColorEffect.substr(5);
 
@@ -5163,9 +5163,11 @@ HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT*
 	}
     else if (name == L"OleXlsx")
 	{
-		ParamValue->vt = VT_BSTR;
+		ParamValue->vt		= VT_BSTR;
 #if defined(_WIN32) || defined (_WIN64)
-		ParamValue->bstrVal = m_pXmlWriter->m_strOleXlsx.AllocSysString();
+		BSTR val = SysAllocString(m_pXmlWriter->m_strOleXlsx.c_str());
+		ParamValue->bstrVal = val;
+		SysFreeString(val);
 #else
 		ParamValue->bstrVal = m_pXmlWriter->m_strOleXlsx;
 #endif

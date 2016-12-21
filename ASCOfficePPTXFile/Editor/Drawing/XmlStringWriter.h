@@ -162,18 +162,6 @@ namespace NSPresentationEditor
 			size_t nLen = wString.length();
 			WriteString(wString.c_str(), nLen);
 		}
-        AVSINLINE void WriteString(const CString & sString)
-		{
-			size_t nLen = (size_t)sString.GetLength();
-			
-			#ifdef _UNICODE
-			CString str = sString;
-			WriteString(str.GetBuffer(), nLen);
-			#else
-			CStringW str = (CStringW)sString;
-			WriteString(str.GetBuffer(), nLen);
-			#endif
-		}
 
         AVSINLINE size_t GetCurSize()
 		{

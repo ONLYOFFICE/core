@@ -103,7 +103,7 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 		
 		if (m_ooxTableRowProps->m_oTrPrChange->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue());
+            std::wstring sVal = m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue();
             oOutputProperty.m_nTrDate = RtfUtility::convertDateTime( sVal);
         }
 		

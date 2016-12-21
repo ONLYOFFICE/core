@@ -44,10 +44,10 @@
 #include "PPTXFormat/PPTXEvent.h"
 
 
-typedef void (*load_from_resource)(void*, int, CString&);
-typedef bool (*extract_to_directory)(void*, CString&, CString&);
-typedef bool (*compress_from_directory)(void*, CString&, CString&);
-typedef bool (*progress_operation)(void*, long, long);
+typedef void (*load_from_resource)		(void*, int, std::wstring&);
+typedef bool (*extract_to_directory)	(void*, std::wstring&, std::wstring&);
+typedef bool (*compress_from_directory)	(void*, std::wstring&, std::wstring&);
+typedef bool (*progress_operation)		(void*, long, long);
 
 namespace PPTX
 {
@@ -57,8 +57,6 @@ namespace PPTX
 class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
-	//todo
-	//OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 	PPTX::Folder*					m_pFolder;
     CString                         m_strTempDir;
 	CString							m_strDirectory;
@@ -82,50 +80,29 @@ public:
 
 	~CPPTXFile();
 
-	HRESULT LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
+	HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
 
-	HRESULT SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
+	HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
 
-#if defined(_WIN32) || defined (_WIN64)
-	STDMETHOD(get_TempDirectory)(BSTR* pVal);
-	STDMETHOD(put_TempDirectory)(BSTR newVal);
+    HRESULT get_TempDirectory(std::wstring* pVal);
+    HRESULT put_TempDirectory(std::wstring newVal);
 
-	STDMETHOD(GetDVDXml)(BSTR* pbstrPTTXml);
-	STDMETHOD(GetBluRayXml)(BSTR* pbstrDVDXml);
+    HRESULT GetDVDXml(std::wstring* pbstrPTTXml);
+    HRESULT GetBluRayXml(std::wstring* pbstrDVDXml);
 
-	STDMETHOD(get_DrawingXml)(BSTR* pVal);
-	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
-	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
-	virtual bool Progress(long ID, long Percent);
-	// to PPTY
-	STDMETHOD(SetMediaDir)(BSTR bsMediaDir);
-	STDMETHOD(SetFontDir)(BSTR bsFontDir);
-	STDMETHOD(SetThemesDir)(BSTR bsDir);
-	STDMETHOD(SetUseSystemFonts)(VARIANT_BOOL useSystemFonts);
-	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput);
-	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput);
-    STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
-#else
-    HRESULT get_TempDirectory(BSTR* pVal);
-    HRESULT put_TempDirectory(BSTR newVal);
-
-    HRESULT GetDVDXml(BSTR* pbstrPTTXml);
-    HRESULT GetBluRayXml(BSTR* pbstrDVDXml);
-
-    HRESULT get_DrawingXml(BSTR* pVal);
-    HRESULT SetAdditionalParam(BSTR ParamName, VARIANT ParamValue);
-    HRESULT GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue);
+    HRESULT get_DrawingXml(std::wstring* pVal);
+    HRESULT SetAdditionalParam(std::wstring ParamName, VARIANT ParamValue);
+    HRESULT GetAdditionalParam(std::wstring ParamName, VARIANT* ParamValue);
 
     virtual bool Progress(long ID, long Percent);
 
     // to PPTY
-    HRESULT SetMediaDir(BSTR bsMediaDir);
-    HRESULT SetFontDir(BSTR bsFontDir);
-    HRESULT SetThemesDir(BSTR bsDir);
-    HRESULT SetUseSystemFonts(VARIANT_BOOL useSystemFonts);
-    HRESULT OpenFileToPPTY(BSTR bsInput, BSTR bsOutput);
-    HRESULT OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput);
-    HRESULT ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
-#endif
+	HRESULT SetMediaDir			(std::wstring bsMediaDir);
+    HRESULT SetFontDir			(std::wstring bsFontDir);
+    HRESULT SetThemesDir		(std::wstring bsDir);
+    HRESULT SetUseSystemFonts	(VARIANT_BOOL useSystemFonts);
+    HRESULT OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
+    HRESULT OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
+    HRESULT ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
 };
 #endif //ASC_OFFICE_PPTX_FILE

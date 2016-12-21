@@ -125,23 +125,25 @@ namespace CSVReader
 		pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
 		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-		std::wstring sSheetRId = _T("rId1");
+		std::wstring sSheetRId = L"rId1";
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 		pWorksheet->m_oSheetData.Init();
+		
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
+		
 		pSheet->m_oName.Init();
-		pSheet->m_oName->append(_T("Sheet1"));
+		pSheet->m_oName->append(L"Sheet1");
 		pSheet->m_oSheetId.Init();
 		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();
-		pSheet->m_oRid->SetValue(std_string2string(sSheetRId));
+		pSheet->m_oRid->SetValue(sSheetRId);
 
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		pWorkbook->m_oSheets.Init();
 		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 		NSFile::CFileBinary oFile;
-		if(oFile.OpenFile(string2std_string(sFileName)))
+		if(oFile.OpenFile(sFileName))
 		{
 			DWORD nFileSize = 0;
 			BYTE* pFileData = new BYTE[oFile.GetFileSize()];

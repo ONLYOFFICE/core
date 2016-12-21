@@ -320,7 +320,7 @@ namespace NSStringExt
 		}
 		static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
 		{
-			unsigned int unTextLen = wsUnicodeText.size();
+			unsigned int unTextLen = (unsigned int)wsUnicodeText.size();
 			if (unTextLen <= 0)
 				return NULL;
 
@@ -394,7 +394,7 @@ namespace NSStringExt
 	}
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, const std::wstring wsDelim, std::vector<std::wstring> &arrElements)
 	{
-		int nDelimLen = wsDelim.length();
+		int nDelimLen = (int)wsDelim.length();
 		int nPrevPos = 0;
 
 		if (nDelimLen > 0)

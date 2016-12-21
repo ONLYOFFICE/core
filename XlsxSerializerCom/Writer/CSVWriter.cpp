@@ -109,7 +109,7 @@ namespace CSVWriter
     void WriteFromXlsxToCsv(const CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(string2std_string(sFileDst));
+		oFile.CreateFileW(sFileDst);
 
 		// Нужно записать шапку
 		if (CP_UTF8 == nCodePage)
@@ -158,7 +158,7 @@ namespace CSVWriter
 				else
 					pSheet = pWorkbook->m_oSheets->m_arrItems[0];
 
-				sSheetRId = bJSON ? string2std_string(pSheet->m_oRid->GetValue()) : pSheet->m_oName.get2();
+				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
 
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();

@@ -145,7 +145,7 @@ namespace PPTX
 				}
 				if(!sFilePath.IsEmpty())
 				{
-					sData = GetOleData(string2std_string(sFilePath));
+					sData = GetOleData(sFilePath);
 				}
 			}
 
@@ -664,10 +664,10 @@ namespace PPTX
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
-				if (pWriter->m_strAttributesMain)
+				if (!pWriter->m_strAttributesMain.empty())
 				{
 					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain = _T("");
+					pWriter->m_strAttributesMain.clear();
 				}
 				if(bOle)
 				{
@@ -764,7 +764,7 @@ namespace PPTX
 				oleObject->m_sObjectId = strObjectid;
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					oleObject->m_sShapeId = std_string2string(std::to_wstring(nShapeId));
+					oleObject->m_sShapeId = std::to_wstring(nShapeId);
 					NSBinPptxRW::CXmlWriter oTempWriter;
 					oleObject->toXmlWriterXlsx(&oTempWriter);
 					pWriter->m_strOleXlsx = oTempWriter.GetXmlString();

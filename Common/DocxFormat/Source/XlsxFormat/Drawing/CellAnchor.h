@@ -186,7 +186,7 @@ namespace OOX
 										{
 											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
 											m_oXml.reset();
-											m_sSpId = string2std_string(pExt->m_oCompatExt->m_sSpId.get());
+											m_sSpId = pExt->m_oCompatExt->m_sSpId.get();
 										}
 									}
 								}

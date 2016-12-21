@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../../../../Common/DocxFormat/Source/XML/stringcommon.h"
 #include "../Common/Encoding.h"
 #include <vector>
 

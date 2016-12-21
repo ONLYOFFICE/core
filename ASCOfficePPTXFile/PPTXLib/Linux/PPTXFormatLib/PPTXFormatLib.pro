@@ -61,7 +61,6 @@ SOURCES += \
 SOURCES += \
     ../../../ASCOfficeDrawingConverter.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
-    ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
@@ -110,9 +109,8 @@ SOURCES += \
 }
 
 HEADERS += pptxformatlib.h \
-../../../ASCOfficeDrawingConverter.h \
-../../../ASCOfficePPTXFile.h \
-../../../../Common/DocxFormat/Source/XML/stringcommon.h \
+    ../../../ASCOfficeDrawingConverter.h \
+    ../../../ASCOfficePPTXFile.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/DefaultTable.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/ExtensionTable.h \

@@ -84,7 +84,7 @@ namespace OOX
 		{
 			XmlUtils::CXmlLiteReader oReader;
 			
-			if ( !oReader.FromString( std_string2string(fileContent)))
+			if ( !oReader.FromString( fileContent))
 				return;
 
 			if ( !oReader.ReadNextNode() )

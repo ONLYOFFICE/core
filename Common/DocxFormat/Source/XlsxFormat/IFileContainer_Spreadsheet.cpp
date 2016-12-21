@@ -92,14 +92,14 @@ namespace OOX
 				{
 					OOX::CPath oDefDir = pFile->DefaultDirectory();
 					OOX::CPath oName   = pFile->DefaultFileName();
-					if(false == pFile->m_sOutputFilename.IsEmpty())
+					if(false == pFile->m_sOutputFilename.empty())
 						oName.SetName(pFile->m_sOutputFilename, false);
 
 					OOX::CSystemUtility::CreateDirectories( oCurrent / oDefDir );
 					pFile->write( oCurrent / oDefDir / oName, oDir / oDefDir, oContent );
 					if(true != pFile->m_bDoNotAddRels)
                     {
-                        if (oDefDir.GetPath().GetLength() > 0)//todooo перенести в CPath
+                        if (oDefDir.GetPath().length() > 0)//todooo перенести в CPath
                             oRels.Registration( pPair->first, pFile->type(), oDefDir / oName );
                         else
                             oRels.Registration( pPair->first, pFile->type(), oName );

@@ -110,7 +110,7 @@ namespace Docx2Txt
 
     void Converter::read(const std::wstring & path)
     {
-        bool res =  converter_->m_inputFile.Read(std_string2string(path));
+        bool res =  converter_->m_inputFile.Read(path);
 		return;
     }
 
@@ -404,7 +404,7 @@ namespace Docx2Txt
 							std::wstring strLevelText;
 							if ((abstractNum->m_arrLvl[ind_level]->m_oLvlText.IsInit()) &&  (abstractNum->m_arrLvl[ind_level]->m_oLvlText->m_sVal.IsInit()))
 							{
-								strLevelText =  string2std_string(abstractNum->m_arrLvl[ind_level]->m_oLvlText->m_sVal.get());
+								strLevelText =  abstractNum->m_arrLvl[ind_level]->m_oLvlText->m_sVal.get();
 							}	
 
 							if (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue() == SimpleTypes::numberformatBullet)
@@ -481,7 +481,7 @@ namespace Docx2Txt
 						else if (run->m_arrItems[j]->getType() == OOX::et_w_t)
 						{
 							OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(run->m_arrItems[j]);
-							wstr = string2std_string(text->m_sText);
+							wstr = text->m_sText;
 							if(caps)
 							{
 								//std::locale loc;

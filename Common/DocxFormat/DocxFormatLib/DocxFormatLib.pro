@@ -22,6 +22,9 @@ INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \
     ../../../DesktopEditor/xml/libxml2/include
 
+#BOOST
+include($$PWD/../../3dParty/boost/boost.pri)
+
 build_fast {
 SOURCES += \
     docxformatlib_logic.cpp \
@@ -51,10 +54,8 @@ SOURCES += \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
-    \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XML/libxml2/libxml2.cpp \
-    ../Source/XML/stringcommon.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
@@ -275,7 +276,6 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
     ../Source/DocxFormat/Drawing/DrawingText.h \
     ../Source/DocxFormat/Drawing/DrawingTextProperties.h \
-    ../Source/XML/stringcommon.h \
     ../Source/MathEquation/LEStream.h \
     ../Source/MathEquation/MathEquation.h \
     ../Source/MathEquation/OutputDev.h \

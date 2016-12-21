@@ -79,8 +79,8 @@ namespace DocFileFormat
                 //rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
                 //rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
 
-                //SixDigitHexCode     = string2std_string( rgbColor6 );
-                //EightDigitHexCode   = string2std_string( rgbColor8 );
+                //SixDigitHexCode     = rgbColor6;
+                //EightDigitHexCode   = rgbColor8;
 				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) %  /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
 				rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
                 
@@ -101,8 +101,8 @@ namespace DocFileFormat
                 //rgbColor6.Format( _T( "%02x%02x%02x" ),     /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue );
                 //rgbColor8.Format( _T( "%02x%02x%02x%02x" ), /*R*/this->Red, /*G*/this->Green, /*B*/this->Blue, /*A*/this->Alpha );
 
-                //SixDigitHexCode     = string2std_string( rgbColor6 );
-                //EightDigitHexCode   = string2std_string( rgbColor8 );
+                //SixDigitHexCode     = rgbColor6;
+                //EightDigitHexCode   = rgbColor8;
 				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
                 rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
  				

@@ -40,9 +40,9 @@ class CRecordOfficeArtBlip  : public CUnknownRecord
 {
 public:
 	CPPTDocumentInfo *	m_oDocumentInfo;
+	
 	std::wstring		m_sFileName;
-
-	CString				m_strMemoryForder;
+	std::wstring		m_strMemoryForder;
 
 	CRecordOfficeArtBlip()
 	{

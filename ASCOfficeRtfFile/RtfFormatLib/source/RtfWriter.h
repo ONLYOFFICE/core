@@ -47,8 +47,8 @@ public:
 
 	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
 	{
-		m_sFilename = std_string2string(sFilename);
-		m_sTempFolder = std_string2string(sFolder);
+		m_sFilename = sFilename;
+		m_sTempFolder = sFolder;
 		m_bFirst = true;
 		m_oCurTempFileWriter = NULL;
 		m_oCurTempFileSectWriter = NULL;

@@ -332,7 +332,7 @@ void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
 		if (oox_canvas->m_oNvGroupSpPr.IsInit() && oox_canvas->m_oNvGroupSpPr->m_oCNvPr.IsInit())
 		{	
 			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName.IsInit())
-				odf_context()->drawing_context()->set_group_name(string2std_string(*oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName));
+				odf_context()->drawing_context()->set_group_name(*oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_sName);
 			if (oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId.IsInit())
 				odf_context()->drawing_context()->set_group_z_order(oox_canvas->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue());
 		}
@@ -427,9 +427,9 @@ void OoxConverter::convert(OOX::Drawing::CFontCollection *style_font, CString *s
 	if (style_font == NULL) return;
 
 	_CP_OPT(std::wstring) font_latin, font_cs, font_ea; 
-	if (style_font->m_oCs.m_oTypeFace.IsInit())		font_cs		= string2std_string(style_font->m_oCs.m_oTypeFace->GetValue());
-	if (style_font->m_oEa.m_oTypeFace.IsInit())		font_ea		= string2std_string(style_font->m_oEa.m_oTypeFace->GetValue());
-	if (style_font->m_oLatin.m_oTypeFace.IsInit())	font_latin	= string2std_string(style_font->m_oLatin.m_oTypeFace->GetValue());
+	if (style_font->m_oCs.m_oTypeFace.IsInit())		font_cs		= style_font->m_oCs.m_oTypeFace->GetValue();
+	if (style_font->m_oEa.m_oTypeFace.IsInit())		font_ea		= style_font->m_oEa.m_oTypeFace->GetValue();
+	if (style_font->m_oLatin.m_oTypeFace.IsInit())	font_latin	= style_font->m_oLatin.m_oTypeFace->GetValue();
 
 	odf_context()->drawing_context()->set_textarea_font(font_latin,font_ea,font_cs);
 
@@ -595,7 +595,7 @@ void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
 
 	if (oox_cnvPr->m_sName.IsInit())
 	{
-		std::wstring name = string2std_string(oox_cnvPr->m_sName.get());
+		std::wstring name = oox_cnvPr->m_sName.get();
 		odf_context()->drawing_context()->set_name(name);
 	}
 
@@ -684,7 +684,7 @@ void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 		for (unsigned int i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
 		{
 			if (oox_prst_geom->m_oAvLst->m_arrGd[i] == NULL) continue;
-			odf_context()->drawing_context()->add_modifier(string2std_string(oox_prst_geom->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue()));
+			odf_context()->drawing_context()->add_modifier(oox_prst_geom->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue());
 		}
 	}
 }
@@ -798,7 +798,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 
 			if (pathImage.GetLength() > 0)
 			{
-				odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
+				odf_context()->drawing_context()->set_bitmap_link(pathImage);
                 _graphics_utils_::GetResolution(pathImage, Width, Height);
 			}
 			else
@@ -1021,7 +1021,7 @@ void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform     *oox_Clr,	s
 	SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
 	if (oRgbColor)
 	{		
-		hexString = string2std_string(oRgbColor->ToString().Right(6));
+		hexString = oRgbColor->ToString().Right(6);
 		delete oRgbColor;
 	}
 	if (ucA !=255)opacity = (ucA/255.)* 100.;
@@ -1076,7 +1076,7 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
 		if (oRgbColor)
 		{		
-			hexString = string2std_string(oRgbColor->ToString().Right(6));
+			hexString = oRgbColor->ToString().Right(6);
 			delete oRgbColor;
 		}
 		if (ucA !=255)opacity = (ucA/255.)* 100.;
@@ -1170,7 +1170,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 		for (unsigned int i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
 		{
 			if (oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i] == NULL) continue;
-			odf_context()->drawing_context()->add_modifier(string2std_string(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue()));
+			odf_context()->drawing_context()->add_modifier(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue());
 		}
 	}
 }
@@ -1220,7 +1220,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 	if (oox_run_pr->m_oLatinFont.IsInit())
 	{
 		if (oox_run_pr->m_oLatinFont->m_oTypeFace.IsInit())	
-			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oLatinFont->m_oTypeFace->GetValue());
+			text_properties->content().fo_font_family_ = oox_run_pr->m_oLatinFont->m_oTypeFace->GetValue();
 		else
 		{
 			text_properties->content().fo_font_family_ = L"Calibri";//default_font; ???? 
@@ -1229,7 +1229,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 	if (oox_run_pr->m_oAsianFont.IsInit())
 	{
 		if (oox_run_pr->m_oAsianFont->m_oTypeFace.IsInit())	
-			text_properties->content().style_font_family_asian_ = string2std_string(oox_run_pr->m_oAsianFont->m_oTypeFace->GetValue());
+			text_properties->content().style_font_family_asian_ = oox_run_pr->m_oAsianFont->m_oTypeFace->GetValue();
 		else
 		{
 		}
@@ -1237,7 +1237,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 	if (oox_run_pr->m_oComplexFont.IsInit())
 	{
 		if (oox_run_pr->m_oComplexFont->m_oTypeFace.IsInit())
-			text_properties->content().style_font_family_complex_ = string2std_string(oox_run_pr->m_oComplexFont->m_oTypeFace->GetValue());
+			text_properties->content().style_font_family_complex_ = oox_run_pr->m_oComplexFont->m_oTypeFace->GetValue();
 		else
 		{
 		}
@@ -1252,9 +1252,9 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 			oox_language = oox_language.Left(res);
 		}
 		
-		text_properties->content().fo_language_ = string2std_string(oox_language);
+		text_properties->content().fo_language_ = oox_language;
 		if (oox_country.GetLength() > 0)
-			text_properties->content().fo_country_ = string2std_string(oox_country);
+			text_properties->content().fo_country_ = oox_country;
 
 	}
 	if (oox_run_pr->m_oSpace.IsInit())
@@ -1320,7 +1320,7 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 	odf_context()->text_context()->start_span(styled);	
 	if (oox_run->m_oText.IsInit())
 	{
-		odf_context()->text_context()->add_text_content( string2std_string(oox_run->m_oText->m_sText));
+		odf_context()->text_context()->add_text_content( oox_run->m_oText->m_sText);
 	}
 	odf_context()->text_context()->end_span();
 }

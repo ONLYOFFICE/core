@@ -37,6 +37,8 @@
 #include "./../RId.h"
 #include "./../External/External.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace PPTX
 {
 	namespace Rels
@@ -46,7 +48,7 @@ namespace PPTX
 		public:
 			RelationShip(const PPTX::RId& rId, const CString& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
 			{
-				m_target.m_strFilename.Replace(_T(" "), _T("_"));
+				boost::algorithm::replace_all(m_target.m_strFilename, L" ", L"_");
 			}
 			RelationShip(const PPTX::RId& rId, const smart_ptr<External> external): m_rId(rId), m_target(external->Uri()), 
 				m_type(external->type().RelationType())

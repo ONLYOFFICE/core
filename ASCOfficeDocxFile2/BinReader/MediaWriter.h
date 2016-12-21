@@ -74,10 +74,10 @@ namespace Writers
 				{
 					CString sNewImagePath = AddImageGetNewPath();
 					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(string2std_string(sNewImagePath));
+					oFile.CreateFileW(sNewImagePath);
 					oFile.WriteFile(pData, dwSizeRead);
 					oFile.CloseFile();
-					CString sFilename = NSSystemPath::GetFileName(string2std_string(sNewImagePath)).c_str();
+					CString sFilename = NSSystemPath::GetFileName(sNewImagePath);
 					m_aImageNames.push_back(sFilename);
 				}
 				RELEASEARRAYOBJECTS(pData);
@@ -87,8 +87,8 @@ namespace Writers
 		{
             OOX::CPath pathNewImg = AddImageGetNewPath();
 
-            NSFile::CFileBinary::Copy(string2std_string(sImg), string2std_string(pathNewImg.GetPath()));
-            CString sFilename = NSSystemPath::GetFileName(string2std_string(pathNewImg.GetPath())).c_str();
+            NSFile::CFileBinary::Copy(sImg, pathNewImg.GetPath());
+            CString sFilename = NSSystemPath::GetFileName(pathNewImg.GetPath()).c_str();
 			m_aImageNames.push_back(sFilename);
 		}
 	};

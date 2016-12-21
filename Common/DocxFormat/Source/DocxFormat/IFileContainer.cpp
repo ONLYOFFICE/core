@@ -96,7 +96,7 @@ namespace OOX
 			{
 				OOX::CPath oDefDir = pFile->DefaultDirectory();
 				OOX::CPath oName   = pFile->DefaultFileName();
-				if(false == pFile->m_sOutputFilename.IsEmpty())
+				if(false == pFile->m_sOutputFilename.empty())
 					oName.SetName(pFile->m_sOutputFilename, false);
 		
 				std::map<CString, size_t>::const_iterator pNamePair = mNamePair.find( oName.m_strFilename );

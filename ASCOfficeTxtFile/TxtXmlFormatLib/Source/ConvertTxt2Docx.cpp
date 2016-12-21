@@ -49,7 +49,7 @@ namespace Txt2Docx
 
 		static  CString PrepareToXML( const std::wstring & sInput)
 		{
-			 CString sResult = std_string2string(sInput);
+			 CString sResult = sInput;
 			 //&amp; («&И), &lt; («<И), &gt; («>И), &apos; («'И), и &quot; («"И)
 			 sResult.Replace(_T("&"), _T("&amp;"));
 			 sResult.Replace(_T("<"), _T("&lt;"));

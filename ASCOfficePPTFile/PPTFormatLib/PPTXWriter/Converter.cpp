@@ -571,9 +571,8 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		
 		for (int i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
 		{
-			CString str;
-			str.Format(_T(" %d"), i + 1);
-			WriteColorScheme(oStringWriter, pTheme->m_sThemeName + string2std_string(str), pTheme->m_arExtraColorScheme[i], true); //extra
+			std::wstring str = L" " + std::to_wstring(i + 1);
+			WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
 		}
 		
 		oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));

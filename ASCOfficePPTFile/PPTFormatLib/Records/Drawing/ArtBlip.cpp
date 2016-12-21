@@ -41,7 +41,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 {
 	CMetaFileBuffer oMetaFile;
 
-	CString sExt = L".jpg";
+	std::wstring sExt = L".jpg";
 
 	int pos = pStream->tell();
 
@@ -179,7 +179,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 		if (oMetaFile.m_bIsValid)
 		{
-			CString strFile = CString(L"Image ") + CDirectory::ToString(nImagesCount + 1) + oMetaFile.m_sExtension;
+			std::wstring strFile = L"Image " +std::to_wstring(nImagesCount + 1) + oMetaFile.m_sExtension;
 
 			CFile fileMeta;
 			HRESULT hr = fileMeta.CreateFile(m_strMemoryForder + FILE_SEPARATOR_STR + strFile);
@@ -189,7 +189,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 				oMetaFile.ToFile(&fileMeta);
 				fileMeta.CloseFile();
 			}
-			m_sFileName = string2std_string(strFile);
+			m_sFileName = strFile;
 		}
 		else
 		{
@@ -197,7 +197,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 
 			pStream->read(pImage, oHeader.RecLen - lOffset); 
 
-			CString strFile = CString(L"Image ") + CDirectory::ToString(nImagesCount + 1) + sExt;
+			std::wstring strFile = L"Image " + std::to_wstring(nImagesCount + 1) + sExt;
 			
 			CFile fileImage;
 			HRESULT hr = fileImage.CreateFile(m_strMemoryForder + FILE_SEPARATOR_STR +  strFile);
@@ -220,7 +220,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 			if (pImage)delete[] pImage;
 			pImage = NULL;	
 
-			m_sFileName = string2std_string(strFile);
+			m_sFileName = strFile;
 		}
 		int dwOffset = pos - 8;
 		

@@ -36,7 +36,6 @@
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
@@ -388,7 +387,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlFile2(std_string2string(sFilename)))
+			if(TRUE == oRoot.FromXmlFile2(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -400,7 +399,7 @@ namespace NExtractTools
 		bool FromXml(const std::wstring& sXml)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlString(std_string2string(sXml)))
+			if(TRUE == oRoot.FromXmlString(sXml))
 			{
 				return FromXmlNode(oRoot);
 			}

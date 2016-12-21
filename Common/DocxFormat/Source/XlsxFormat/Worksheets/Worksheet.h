@@ -198,7 +198,7 @@ namespace OOX
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
 						{
 							int nRow, nCol;
-							if(CCell::parseRef(string2std_string(pComment->m_oRef->GetValue()), nRow, nCol))
+							if(CCell::parseRef(pComment->m_oRef->GetValue(), nRow, nCol))
 							{
 								CCommentItem* pCommentItem = new CCommentItem();
 								pCommentItem->m_nRow = nRow - 1;

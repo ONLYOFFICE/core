@@ -33,17 +33,10 @@
 
 #if defined(_WIN32) || defined (_WIN64)
 	#include <windows.h>
-#else
-	#include "../Base/ASCString.h"
 #endif
-
-
-
 
 #include "FileSystem/FileSystem.h"
 
-//#include "AVSUtils.h"
-//#include "File.h"
 
 namespace OOX
 {
@@ -51,14 +44,17 @@ namespace OOX
     {
 		CheckIsRoot();
     }
-    CPath::CPath(const CString& sName, bool bIsNorm) : m_strFilename(sName)
+
+	CPath::CPath(const std::wstring& sName, bool bIsNorm) : m_strFilename(sName)
     {
 		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
-    CPath::CPath(LPCSTR& sName, bool bIsNorm) : m_strFilename(sName)
+	CPath::CPath(LPCSTR& sName, bool bIsNorm)
     {
+		std::string s(sName);
+		m_strFilename = std::wstring(s.begin(), s.end());
 		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
@@ -85,7 +81,7 @@ namespace OOX
 		//Normalize();
         return *this;
     }
-	CPath& CPath::operator=(const CString& oSrc)
+	CPath& CPath::operator=(const std::wstring& oSrc)
     {
         m_strFilename = oSrc;
 		Normalize();
@@ -93,7 +89,8 @@ namespace OOX
     }
     CPath& CPath::operator=(LPCSTR oSrc)
     {
-        m_strFilename = oSrc;
+		std::string s(oSrc);
+		m_strFilename = std::wstring(s.begin(), s.end());
         Normalize();
         return *this;
     }
@@ -105,7 +102,7 @@ namespace OOX
     }
 
     /*
-	AVSINLINE CString CPath::GetExtention(bool bIsPoint) const
+	AVSINLINE std::wstring CPath::GetExtention(bool bIsPoint) const
     {
         int nFind = m_strFilename.ReverseFind('.');
         if (-1 == nFind)
@@ -118,7 +115,7 @@ namespace OOX
     }
     */
     /*
-    AVSINLINE CString CPath::GetDirectory(bool bIsSlash) const
+    AVSINLINE std::wstring CPath::GetDirectory(bool bIsSlash) const
     {
         int nPos = m_strFilename.ReverseFind('\\');
         if (-1 == nPos)
@@ -134,7 +131,7 @@ namespace OOX
     }
     */
     /*
-    AVSINLINE CString CPath::GetPath() const
+    AVSINLINE std::wstring CPath::GetPath() const
     {
         return m_strFilename;
     }
@@ -143,13 +140,11 @@ namespace OOX
 
 namespace OOX
 {
-    bool CSystemUtility::CreateFile(const CString& strFileName)
+    bool CSystemUtility::CreateFile(const std::wstring& strFileName)
     {
 #if defined(_WIN32) || defined (_WIN64)
-		BSTR strPath = strFileName.AllocSysString();
-        HANDLE hResult = ::CreateFile(strPath, GENERIC_READ, 0, NULL, 
+        HANDLE hResult = ::CreateFile(strFileName.c_str(), GENERIC_READ, 0, NULL, 
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        SysFreeString(strPath);
 
         if (hResult == INVALID_HANDLE_VALUE)
             return false;
@@ -170,7 +165,7 @@ namespace OOX
 #endif
     }
 
-    bool CSystemUtility::IsFileExist(const CString& strFileName)
+    bool CSystemUtility::IsFileExist(const std::wstring& strFileName)
     {
         return FileSystem::File::Exists(strFileName);
     }
@@ -179,18 +174,18 @@ namespace OOX
         return IsFileExist(oPath.GetPath());
     }
 
-    CString CSystemUtility::GetDirectoryName(const CString& strFileName)
+    std::wstring CSystemUtility::GetDirectoryName(const std::wstring& strFileName)
     {
         CPath oPath(strFileName);
         return oPath.GetDirectory();
     }
 
-    int CSystemUtility::GetFilesCount(const CString& strDirPath, const bool& bRecursive)
+    int CSystemUtility::GetFilesCount(const std::wstring& strDirPath, const bool& bRecursive)
     {
         return FileSystem::Directory::GetFilesCount(strDirPath, bRecursive);
     }
 
-    CString CSystemUtility::GetFileExtention(const CString& strFileName)
+    std::wstring CSystemUtility::GetFileExtention(const std::wstring& strFileName)
     {
         CPath oPath(strFileName);
         return oPath.GetExtention();
@@ -201,7 +196,7 @@ namespace OOX
 		return FileSystem::Directory::CreateDirectory(oPath.GetPath());
     }
 
-    void CSystemUtility::ReplaceExtention(CString& strName, CString& str1, CString& str2)
+    void CSystemUtility::ReplaceExtention(std::wstring& strName, std::wstring& str1, std::wstring& str2)
     {
         return;
     }

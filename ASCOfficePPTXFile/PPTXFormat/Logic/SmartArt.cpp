@@ -140,9 +140,10 @@ namespace PPTX
 
 			OOX::CPath pathDiagramData = strDataPath;
 
-			int a1 = pathDiagramData.GetFilename().Find(_T("."));
-			CString strId = pathDiagramData.GetFilename().Mid(4,pathDiagramData.GetFilename().GetLength() - 8);
-			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + _T("drawing") + strId + _T(".xml");
+			int a1 = pathDiagramData.GetFilename().find(L".");
+			std::wstring strId = pathDiagramData.GetFilename().substr(4,pathDiagramData.GetFilename().length() - 8);
+			
+			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
 
 			XmlUtils::CXmlNode oNodeDW;
 			if (oNodeDW.FromXmlFile2(pathDiagramDrawing.GetPath()))//todooo ... сделать отдельно .. повтор

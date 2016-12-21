@@ -137,7 +137,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				
 				if (pIns->m_oDate.IsInit())
                 {
-                    std::wstring sVal = string2std_string(pIns->m_oDate->GetValue());
+                    std::wstring sVal = pIns->m_oDate->GetValue();
                     oSubParReader.m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
                 }
 
@@ -156,7 +156,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				
 				if (pDel->m_oDate.IsInit())
                 {
-                    std::wstring sVal = string2std_string(pDel->m_oDate->GetValue());
+                    std::wstring sVal = pDel->m_oDate->GetValue();
                     oSubParReader.m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
                 }
 				
@@ -1269,7 +1269,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		
 		if (m_ooxParaProps->m_oPPrChange->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxParaProps->m_oPPrChange->m_oDate->GetValue());
+            std::wstring sVal = m_ooxParaProps->m_oPPrChange->m_oDate->GetValue();
             oOutputProperty.m_nPrDate = RtfUtility::convertDateTime( sVal );
         }
 		
@@ -1498,7 +1498,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		
 		if (m_ooxRunProps->m_oIns->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxRunProps->m_oIns->m_oDate->GetValue());
+            std::wstring sVal = m_ooxRunProps->m_oIns->m_oDate->GetValue();
             oOutputProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
         }
 	}
@@ -1511,7 +1511,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 
 		if (m_ooxRunProps->m_oDel->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxRunProps->m_oDel->m_oDate->GetValue());
+            std::wstring sVal = m_ooxRunProps->m_oDel->m_oDate->GetValue();
             oOutputProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
         }
 	}
@@ -1523,7 +1523,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		
 		if (m_ooxRunProps->m_oRPrChange->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxRunProps->m_oRPrChange->m_oDate->GetValue());
+            std::wstring sVal = m_ooxRunProps->m_oRPrChange->m_oDate->GetValue();
             oOutputProperty.m_nCrDate = RtfUtility::convertDateTime( sVal );
         }
 		
@@ -1974,7 +1974,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		
 		if (m_ooxSectionProperty->m_oSectPrChange->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxSectionProperty->m_oSectPrChange->m_oDate->GetValue());
+            std::wstring sVal = m_ooxSectionProperty->m_oSectPrChange->m_oDate->GetValue();
             oOutput.m_nSrDate = RtfUtility::convertDateTime( sVal );
         }
 		

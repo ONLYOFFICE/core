@@ -58,7 +58,7 @@ namespace OOX
 		{
 			OOX::CPath oRelationFilename = oRelation.Filename();
 			CPath oFileName;
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
 				oFileName = oRootPath / oRelationFilename;
 			else
 				oFileName = oPath / oRelationFilename;
@@ -106,7 +106,7 @@ namespace OOX
 			
 			OOX::CPath oRelationFilename = pRelation->Filename();
 			CPath oFileName;
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
 				oFileName = oRootPath / oRelationFilename;
 			else
 				oFileName = oPath / oRelationFilename;

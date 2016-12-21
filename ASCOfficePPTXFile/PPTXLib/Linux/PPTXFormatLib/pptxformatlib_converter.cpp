@@ -29,11 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "../../../../Common/DocxFormat/Source/XML/stringcommon.cpp" // docxformat.lib
 #include "../../../Editor/FontPicker.cpp"
-//#include "../../../Editor/Drawing/Layout.cpp"
-//#include "../../../Editor/Drawing/TextAttributesEx.cpp"
-//#include "../../../Editor/Drawing/Elements.cpp"           // pptformat.lib
 #include "../../../../HtmlRenderer/src/ASCSVGWriter.cpp"
 #include "../../../ASCOfficeDrawingConverter.cpp"
 #include "../../../ASCOfficePPTXFileRealization.cpp"

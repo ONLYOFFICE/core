@@ -5980,13 +5980,17 @@ namespace BinXlsxRW{
 	void BinaryChartWriter::GetRecordBinary(int nType, std::wstring& sXml, int nRecordType)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, std_string2string(sXml));
+		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::GetTxBodyBinary(int nType, std::wstring& sXml)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		CString bstrXml = _T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + std_string2string(sXml) + _T("</c:rich>");
+		
+		std::wstring	bstrXml = L"<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">";
+						bstrXml += sXml;
+						bstrXml += L"</c:rich>";
+
 		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}

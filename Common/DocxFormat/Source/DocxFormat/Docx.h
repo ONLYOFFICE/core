@@ -113,7 +113,7 @@ namespace OOX
 
 			// Создаем папку
 #if defined(_WIN32) || defined (_WIN64)
-			CreateDirectoryW( oFilePath.GetPath(), NULL );
+			CreateDirectoryW( oFilePath.GetPath().c_str(), NULL );
 #else
             std::string sFileParthUtf8 = stringWstingToUtf8String (oFilePath.GetPath());
             mkdir (sFileParthUtf8.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);

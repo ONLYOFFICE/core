@@ -181,7 +181,7 @@ void XlsxConverter::convert_sheets()
 			if(pSheet->m_oRid.IsInit())
 			{
 				CString sSheetRId = pSheet->m_oRid.get2().ToString();
-				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(string2std_string(sSheetRId));
+				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(sSheetRId);
 				
 				if (pItWorksheet->second)
 				{
@@ -656,7 +656,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 
 	if (oox_run_pr->m_oRFont.IsInit())
 	{
-		//text_properties->content().style_font_name_ = string2std_string(oox_run_pr->m_oRFont->m_sVal.get());
+		//text_properties->content().style_font_name_ = oox_run_pr->m_oRFont->m_sVal.get();
 		text_properties->content().fo_font_family_ = oox_run_pr->m_oRFont->m_sVal.get();
 
 	}
@@ -1795,7 +1795,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGroupShape* oox_group_shape)
 		if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr.IsInit())
 		{
 			if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName.IsInit())
-				ods_context->drawing_context()->set_group_name(string2std_string(*oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName));
+				ods_context->drawing_context()->set_group_name(*oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_sName);
 			if (oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_oId.IsInit())
 				ods_context->drawing_context()->set_group_z_order(oox_group_shape->m_oNvGroupSpPr->m_oCNvPr->m_oId->GetValue());
 		}
@@ -2024,7 +2024,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}
         _graphics_utils_::GetResolution(pathImage, Width, Height);
 	}
-	ods_context->start_image(string2std_string(pathImage));
+	ods_context->start_image(pathImage);
 	{
 		if (oox_picture->m_oBlipFill->m_oTile.IsInit()) 
 		{
@@ -2077,7 +2077,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 
 	if (oox_cond_fmt->m_oSqRef.IsInit())	
 	{
-		ods_context->current_table().start_conditional_format(string2std_string(oox_cond_fmt->m_oSqRef->GetValue()));
+		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef->GetValue());
 
 		for (unsigned int i=0; i< oox_cond_fmt->m_arrItems.size(); i++)
 			convert(oox_cond_fmt->m_arrItems[i]);//rule
@@ -2190,12 +2190,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAutofilter *oox_filter)
 	std::wstring ref, sort_ref;	
 	bool sort = false, caseSensitive = false;
 	if (oox_filter->m_oRef.IsInit())
-		ref = string2std_string(oox_filter->m_oRef->GetValue());
+		ref = oox_filter->m_oRef->GetValue();
 	if (oox_filter->m_oSortState.IsInit())
 	{
 		sort = true;
 		if (oox_filter->m_oSortState->m_oRef.IsInit())
-			sort_ref = 	string2std_string(oox_filter->m_oSortState->m_oRef->GetValue());
+			sort_ref = 	oox_filter->m_oSortState->m_oRef->GetValue();
 		if (oox_filter->m_oSortState->m_oCaseSensitive.IsInit() && oox_filter->m_oSortState->m_oCaseSensitive->GetValue()==1)
 			caseSensitive = true;
 	}

@@ -148,7 +148,7 @@ namespace OOX
 
                                 for (std::map<CString, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
                                 {
-                                    m_aWorksheets [string2std_string(it->first)] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
+                                    m_aWorksheets [it->first] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
                                 }
                             }
 
@@ -350,7 +350,7 @@ namespace OOX
 					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
 					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
 					OOX::RId oRId = this->Add(pWorksheetFile);
-					m_aWorksheets [string2std_string(oRId.ToString())] = pWorksheet;
+					m_aWorksheets [oRId.ToString()] = pWorksheet;
 					m_pWorkbook->m_oSheets.Init();
 					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 					pSheet->m_oName.Init();

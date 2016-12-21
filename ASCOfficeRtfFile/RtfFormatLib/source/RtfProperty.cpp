@@ -1240,18 +1240,18 @@ CString RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	if( false == IsValid() ) return L"";
 
 	CString sResult;
-	RENDER_RTF_INT( m_nBasedOn, sResult, L"sbasedon" )
-	RENDER_RTF_INT( m_nNext, sResult, L"snext" )
-	RENDER_RTF_BOOL( m_bHidden, sResult, L"shidden" )
-	RENDER_RTF_INT( m_nLink, sResult, L"slink" )
-	RENDER_RTF_BOOL( m_bLocked, sResult, L"slocked" )
-	RENDER_RTF_BOOL( m_bPersonal, sResult, L"spersonal" )
-	RENDER_RTF_BOOL( m_bCompose, sResult, L"scompose" )
-	RENDER_RTF_BOOL( m_bReply, sResult, L"sreply" )
-	RENDER_RTF_BOOL( m_nSemiHidden, sResult, L"ssemihidden" )
-	RENDER_RTF_BOOL( m_bQFormat, sResult, L"sqformat" )
-	RENDER_RTF_INT( m_nPriority, sResult, L"spriority" )
-	RENDER_RTF_BOOL( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
+	RENDER_RTF_INT	( m_nBasedOn,	sResult, L"sbasedon" )
+	RENDER_RTF_INT	( m_nNext,		sResult, L"snext" )
+	RENDER_RTF_BOOL	( m_bHidden,	sResult, L"shidden" )
+	RENDER_RTF_INT	( m_nLink,		sResult, L"slink" )
+	RENDER_RTF_BOOL	( m_bLocked,	sResult, L"slocked" )
+	RENDER_RTF_BOOL	( m_bPersonal,	sResult, L"spersonal" )
+	RENDER_RTF_BOOL	( m_bCompose,	sResult, L"scompose" )
+	RENDER_RTF_BOOL	( m_bReply,		sResult, L"sreply" )
+	RENDER_RTF_BOOL	( m_nSemiHidden, sResult, L"ssemihidden" )
+	RENDER_RTF_BOOL	( m_bQFormat,	sResult, L"sqformat" )
+	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
+	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
     sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ) + L";}";
 	return sResult;

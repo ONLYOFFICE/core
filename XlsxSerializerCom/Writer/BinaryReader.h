@@ -2011,7 +2011,7 @@ namespace BinXlsxRW {
 							if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
 							{
 								pNewComment->m_oRef.Init();
-								pNewComment->m_oRef->SetValue(std_string2string(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get())));
+								pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
 							}
 
 							if(pCommentItem->m_sAuthor.IsInit())
@@ -2830,7 +2830,7 @@ namespace BinXlsxRW {
 					std::map<OOX::Spreadsheet::CDrawing*, CString>::const_iterator pPair = pair->second->mapDrawings.find(m_pCurDrawing);
 					if(pair->second->mapDrawings.end() == pPair)
 					{
-						std::wstring sNewImageName = NSSystemPath::GetFileName(string2std_string(pair->second->sPath));
+						std::wstring sNewImageName = NSSystemPath::GetFileName(pair->second->sPath);
 
 						long rId;
 						CString sNewImgRel;
@@ -3306,7 +3306,9 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-				CString sThemePath = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
+				CString sThemePath =  m_oSaveParams.sThemePath + FILE_SEPARATOR_STR;
+						sThemePath += OOX::FileTypes::Theme.DefaultFileName().GetPath();
+
 				long nCurPos = m_oBufferedStream.GetPos();
 				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);
@@ -3352,7 +3354,7 @@ namespace BinXlsxRW {
 					//url
 					sImageSrc = SerializeCommon::DownloadImage(sImage);
 					CString sNewTempFile = SerializeCommon::changeExtention(sImageSrc, CString(_T("jpg")));
-					NSFile::CFileBinary::Move(string2std_string(sImageSrc), string2std_string(sNewTempFile));
+					NSFile::CFileBinary::Move(sImageSrc, sNewTempFile);
 					sImageSrc = sNewTempFile;
 					bAddToDelete = true;
 				}
@@ -3375,11 +3377,11 @@ namespace BinXlsxRW {
 				{
 					ReadMediaItemSaveFileFILE(pFileNative);
 				}
-				else if(NSFile::CFileBinary::Exists(string2std_string(sImageSrc)))
+				else if(NSFile::CFileBinary::Exists(sImageSrc))
 				{
 					ReadMediaItemSaveFilePath(sImageSrc);
 					if(bAddToDelete)
-						NSFile::CFileBinary::Remove(string2std_string(sImageSrc));
+						NSFile::CFileBinary::Remove(sImageSrc);
 				}
 			}
 			else if(c_oSer_OtherType::MediaId == type)
@@ -3392,7 +3394,7 @@ namespace BinXlsxRW {
 		};
 		CString ReadMediaItemSaveFileGetNewPath(const CString& sTempPath)
 		{
-			if( !NSDirectory::Exists(string2std_string(m_sMediaDir)) )
+			if( !NSDirectory::Exists(m_sMediaDir) )
 				OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 			CString sNewImageName;
 			sNewImageName.Format(_T("image%d"), m_nCurIndex);
@@ -3413,7 +3415,7 @@ namespace BinXlsxRW {
 				{
 					CString sNewImagePath = ReadMediaItemSaveFileGetNewPath(CString(_T("1.jpg")));
 					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(string2std_string(sNewImagePath));
+					oFile.CreateFileW(sNewImagePath);
 					oFile.WriteFile(pData, dwSizeRead);
 					oFile.CloseFile();
 					m_sCurSrc = sNewImagePath;
@@ -3425,7 +3427,7 @@ namespace BinXlsxRW {
 		{
 			CString sNewImagePath = ReadMediaItemSaveFileGetNewPath(sTempPath);
 
-			NSFile::CFileBinary::Copy(string2std_string(sTempPath), string2std_string(sNewImagePath));
+			NSFile::CFileBinary::Copy(sTempPath, sNewImagePath);
 			m_sCurSrc = sNewImagePath;
 		}
 	};
@@ -3434,11 +3436,12 @@ namespace BinXlsxRW {
 	public: BinaryFileReader()
 			{
 			}
-            int ReadFile(const CString& sSrcFileName, CString sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
+			int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
 			{
 				bool bResultOk = false;
 				NSFile::CFileBinary oFile;
-				if(oFile.OpenFile(string2std_string(sSrcFileName)))
+				
+				if(oFile.OpenFile(sSrcFileName))
 				{
 					DWORD nBase64DataSize = 0;
 					BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
@@ -3512,11 +3515,15 @@ namespace BinXlsxRW {
 							BYTE saveFileType;
 							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
 							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+							
 							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-                                sDstPath = std_string2string(NSSystemPath::GetDirectoryName(string2std_string(sDstPath)));
+                                sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
 
 							OOX::Spreadsheet::CXlsx oXlsx;
-                            SaveParams oSaveParams(sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+							std::wstring params_path = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
+                            
+							SaveParams oSaveParams(params_path.c_str());
+							
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
 							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 							if(NULL != pOfficeDrawingConverter)

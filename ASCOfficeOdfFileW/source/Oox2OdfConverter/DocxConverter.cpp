@@ -472,7 +472,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	{
 		if (oox_paragraph->m_oParagraphProperty->m_oPStyle.IsInit() && oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit())
 		{
-			std::wstring style_name = string2std_string(*oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal);
+			std::wstring style_name = *oox_paragraph->m_oParagraphProperty->m_oPStyle->m_sVal;
 
 			odf_writer::odf_style_state_ptr style_state;
 			if (odt_context->styles_context()->find_odf_style_state(style_name, odf_types::style_family::Paragraph, style_state) && style_state)
@@ -786,10 +786,10 @@ void DocxConverter::convert(OOX::Logic::CSym	*oox_sym)
 	if (oox_sym->m_oChar.IsInit() == false) return;
 	
 	if (oox_sym->m_oFont.IsInit())
-		odt_context->text_context()->set_symbol_font(string2std_string(*oox_sym->m_oFont));
+		odt_context->text_context()->set_symbol_font(*oox_sym->m_oFont);
 		
 	odt_context->text_context()->set_symbol_text(oox_sym->m_oChar->GetValue());
-	//odt_context->text_context()->add_text_content(std::wstring(L"/") + string2std_string(oox_sym->m_oChar->ToString()));
+	//odt_context->text_context()->add_text_content(std::wstring(L"/") + oox_sym->m_oChar->ToString());
 }
 void DocxConverter::convert(OOX::Logic::CFldChar	*oox_fld)
 {
@@ -816,7 +816,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	odt_context->start_field(true);
 	{	
 		if (oox_fld->m_sInstr.IsInit())	
-			odt_context->set_field_instr(string2std_string(oox_fld->m_sInstr.get2()));
+			odt_context->set_field_instr(oox_fld->m_sInstr.get2());
 
 		for (unsigned int i=0; i< oox_fld->m_arrItems.size(); i++)
 		{
@@ -829,7 +829,7 @@ void DocxConverter::convert(OOX::Logic::CInstrText *oox_instrText)
 {
 	if (oox_instrText == NULL) return;
 
-	odt_context->set_field_instr(string2std_string(oox_instrText->m_sText));
+	odt_context->set_field_instr(oox_instrText->m_sText);
 
 }
 void DocxConverter::convert(OOX::Logic::CDelText *oox_delText)
@@ -842,7 +842,7 @@ void DocxConverter::convert(OOX::Logic::CDelText *oox_delText)
 		{
 		}
 	}
-	odt_context->add_text_content(string2std_string(oox_delText->m_sText));
+	odt_context->add_text_content(oox_delText->m_sText);
 }
 void DocxConverter::convert(OOX::Logic::CIns *oox_ins)
 {
@@ -1034,7 +1034,7 @@ int DocxConverter::convert(OOX::Logic::CTblPrChange *oox_table_prop_change)
 		if (oox_table_prop_change->m_pTblPr->m_oTblStyle.IsInit() && oox_table_prop_change->m_pTblPr->m_oTblStyle->m_sVal.IsInit())
 		{//настройка предустановленного стиля
 
-			std::wstring base_style_name = string2std_string(*oox_table_prop_change->m_pTblPr->m_oTblStyle->m_sVal);
+			std::wstring base_style_name = *oox_table_prop_change->m_pTblPr->m_oTblStyle->m_sVal;
 
 			table_styled = odt_context->styles_context()->table_styles().start_table(base_style_name);
 		}
@@ -1093,7 +1093,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	if (oox_paragraph_pr->m_oPStyle.IsInit() && oox_paragraph_pr->m_oPStyle->m_sVal.IsInit())
 	{
-		std::wstring style_name = string2std_string(*oox_paragraph_pr->m_oPStyle->m_sVal);
+		std::wstring style_name = *oox_paragraph_pr->m_oPStyle->m_sVal;
 		odt_context->styles_context()->last_state()->set_parent_style_name(style_name);
 		/////////////////////////find parent properties 
 
@@ -2043,7 +2043,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	
 	if (oox_run_pr->m_oRStyle.IsInit() && oox_run_pr->m_oRStyle->m_sVal.IsInit())
 	{
-		odt_context->styles_context()->last_state()->set_parent_style_name(string2std_string(*oox_run_pr->m_oRStyle->m_sVal));
+		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_run_pr->m_oRStyle->m_sVal);
 	}
 	if (oox_run_pr->m_oBold.IsInit())
 	{
@@ -2157,15 +2157,15 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	if (oox_run_pr->m_oRFonts.IsInit())
 	{
 		if (oox_run_pr->m_oRFonts->m_sAscii.IsInit())
-			text_properties->content().fo_font_family_ = string2std_string(oox_run_pr->m_oRFonts->m_sAscii.get());
+			text_properties->content().fo_font_family_ = oox_run_pr->m_oRFonts->m_sAscii.get();
 		else convert(oox_run_pr->m_oRFonts->m_oAsciiTheme.GetPointer(), text_properties->content().fo_font_family_);
 
 		if (oox_run_pr->m_oRFonts->m_sCs.IsInit())
-			text_properties->content().style_font_family_complex_ = string2std_string(oox_run_pr->m_oRFonts->m_sCs.get());
+			text_properties->content().style_font_family_complex_ = oox_run_pr->m_oRFonts->m_sCs.get();
 		else convert(oox_run_pr->m_oRFonts->m_oCsTheme.GetPointer(), text_properties->content().style_font_family_complex_);
 
 		if (oox_run_pr->m_oRFonts->m_sEastAsia.IsInit())
-			text_properties->content().style_font_family_asian_= string2std_string(oox_run_pr->m_oRFonts->m_sEastAsia.get());
+			text_properties->content().style_font_family_asian_= oox_run_pr->m_oRFonts->m_sEastAsia.get();
 		else convert(oox_run_pr->m_oRFonts->m_oEastAsiaTheme.GetPointer(), text_properties->content().style_font_family_asian_);
 
 			//nullable<CString              > m_sHAnsi;
@@ -2207,11 +2207,13 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G(); 
 		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
 		if (oRgbColor)
-		{		
-			text_properties->content().fo_background_color_ = odf_types::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString().Right(6)));
+		{
+			std::wstring strColor = L"#" + oRgbColor->ToString().Right(6);
+			text_properties->content().fo_background_color_ = odf_types::color(strColor);
 			delete oRgbColor;
 		}
 	}
+	
 	if (oox_run_pr->m_oShd.IsInit())
 	{
 		_CP_OPT(odf_types::color) odf_color;
@@ -2243,21 +2245,21 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 	case SimpleTypes::themeMajorHAnsi :
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
 	case SimpleTypes::themeMajorBidi:
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
 	case SimpleTypes::themeMajorEastAsia:
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
@@ -2265,21 +2267,21 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 	case SimpleTypes::themeMinorHAnsi:
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
 	case SimpleTypes::themeMinorBidi:
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
 	case SimpleTypes::themeMinorEastAsia:
 		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace.IsInit())
 		{
-			font = string2std_string(docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace->GetValue());
+			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace->GetValue();
 			if (font.length() > 0) odf_font_name = font;
 		}
 		break;
@@ -2299,7 +2301,7 @@ void DocxConverter::convert(OOX::Logic::CText *oox_text)
 		}
 			//odt_context->text_context()->add_text_space(26);
 	}
-	odt_context->add_text_content(string2std_string(oox_text->m_sText));
+	odt_context->add_text_content(oox_text->m_sText);
 }
 void DocxConverter::convert(OOX::Logic::CAlternateContent *oox_alt_content)
 {
@@ -2778,7 +2780,7 @@ void DocxConverter::convert(OOX::Drawing::CPicture * oox_picture)
 		}
         _graphics_utils_::GetResolution(pathImage, Width, Height);
 	}
-	odt_context->start_image(string2std_string(pathImage));
+	odt_context->start_image(pathImage);
 	{
 		if (oox_picture->m_oBlipFill.m_oTile.IsInit()) 
 		{
@@ -2928,7 +2930,7 @@ void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
 		if (oox_group_shape->m_oCNvPr.IsInit())
 		{	
 			if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
-				odt_context->drawing_context()->set_group_name(string2std_string(*oox_group_shape->m_oCNvPr->m_sName));
+				odt_context->drawing_context()->set_group_name(*oox_group_shape->m_oCNvPr->m_sName);
 			if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
 				odt_context->drawing_context()->set_group_z_order(oox_group_shape->m_oCNvPr->m_oId->GetValue());
 		}
@@ -3104,8 +3106,10 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 	{
 		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
 		if (oRgbColor)
-		{		
-			odf_color = odf_types::color(std::wstring(L"#") + string2std_string(oRgbColor->ToString().Right(6)));
+		{
+			std::wstring strColor = L"#" + oRgbColor->ToString().Right(6);
+
+			odf_color = odf_types::color(strColor);
 			delete oRgbColor;
 		}
 	}
@@ -3488,9 +3492,9 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 	if (oox_num_lvl->m_oLvlText.IsInit() && oox_num_lvl->m_oLvlText->m_sVal.IsInit())
 	{
 		if (type_list == 2)
-			odt_context->styles_context()->lists_styles().set_bullet_char(string2std_string(oox_num_lvl->m_oLvlText->m_sVal.get()));
+			odt_context->styles_context()->lists_styles().set_bullet_char(oox_num_lvl->m_oLvlText->m_sVal.get());
 		else if (type_list == 1)
-			odt_context->styles_context()->lists_styles().set_numeric_format(string2std_string(oox_num_lvl->m_oLvlText->m_sVal.get()));
+			odt_context->styles_context()->lists_styles().set_numeric_format(oox_num_lvl->m_oLvlText->m_sVal.get());
 	}
 	if (oox_num_lvl->m_oLvlPicBulletId.IsInit() && oox_num_lvl->m_oLvlPicBulletId->m_oVal.IsInit())
 	{
@@ -3532,7 +3536,7 @@ void DocxConverter::convert_table_style(OOX::CStyle *oox_style)
 {
 	if (oox_style == NULL)return;
 
-	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? string2std_string(*oox_style->m_sStyleId) : L"";
+	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
 
 	odt_context->styles_context()->table_styles().start_style(oox_name);
 //общие
@@ -3648,13 +3652,13 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 			return;
 	}
 
-	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? string2std_string(*oox_style->m_sStyleId) : L"";
+	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
 
 	odt_context->styles_context()->create_style(oox_name,family, false, true, -1); 
 
 
 	if (oox_style->m_oName.IsInit() && oox_style->m_oName->m_sVal.IsInit()) 
-		odt_context->styles_context()->last_state()->set_display_name(string2std_string(*oox_style->m_oName->m_sVal));
+		odt_context->styles_context()->last_state()->set_display_name(*oox_style->m_oName->m_sVal);
 
 	if (oox_style->m_oRunPr.IsInit())
 	{
@@ -3708,7 +3712,7 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		}
 	}
 	if (oox_style->m_oBasedOn.IsInit() && oox_style->m_oBasedOn->m_sVal.IsInit())
-		odt_context->styles_context()->last_state()->set_parent_style_name(string2std_string(*oox_style->m_oBasedOn->m_sVal));
+		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_style->m_oBasedOn->m_sVal);
 
 		//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
 		//nullable<ComplexTypes::Word::CString_                       > m_oAliases;
@@ -3788,8 +3792,8 @@ void DocxConverter::convert_comment(int oox_comm_id)
 		{
 			odt_context->start_comment_content();
 			{
-				if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(string2std_string(*oox_comment->m_oAuthor));
-				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(string2std_string(oox_comment->m_oDate->GetValue()));
+				if (oox_comment->m_oAuthor.IsInit())	odt_context->comment_context()->set_author	(*oox_comment->m_oAuthor);
+				if (oox_comment->m_oDate.IsInit())		odt_context->comment_context()->set_date	(oox_comment->m_oDate->GetValue());
 				if (oox_comment->m_oInitials.IsInit())	{}
 
 				for (unsigned int i = 0; i <oox_comment->m_arrItems.size(); i++)
@@ -3895,7 +3899,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
 	{//настройка предустановленного стиля
-		std::wstring base_style_name = string2std_string(*oox_table->m_oTableProperties->m_oTblStyle->m_sVal);
+		std::wstring base_style_name = *oox_table->m_oTableProperties->m_oTblStyle->m_sVal;
 
 		styled_table = odt_context->styles_context()->table_styles().start_table(base_style_name);
 	}

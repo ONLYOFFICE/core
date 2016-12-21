@@ -499,10 +499,10 @@ namespace PPTX
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
-				if (pWriter->m_strAttributesMain)
+				if (!pWriter->m_strAttributesMain.empty())
 				{
 					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain = _T("");
+					pWriter->m_strAttributesMain.clear();
 				}
 
 				pWriter->WriteString(strFillAttr);
@@ -623,10 +623,10 @@ namespace PPTX
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
-				if (pWriter->m_strAttributesMain)
+				if (!pWriter->m_strAttributesMain.empty())
 				{
 					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain = _T("");
+					pWriter->m_strAttributesMain.clear();
 				}
 
 				pWriter->WriteString(strFillAttr);

@@ -1083,7 +1083,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteStringWStd(sFormatCode);
 
 				if(NULL != m_pEmbeddedFontsManager)
-					m_pEmbeddedFontsManager->CheckString(std_string2string(sFormatCode));
+					m_pEmbeddedFontsManager->CheckString(sFormatCode);
 			}
 			//NumFmtId
 			if(numFmt.m_oNumFmtId.IsInit())
@@ -1337,7 +1337,7 @@ namespace BinXlsxRW {
 					m_oBcw.m_oStream.WriteStringWStd(pText->m_sText);
 
 					if(NULL != m_pEmbeddedFontsManager)
-						m_pEmbeddedFontsManager->CheckString(std_string2string(pText->m_sText));
+						m_pEmbeddedFontsManager->CheckString(pText->m_sText);
 				}
 			}
 		};
@@ -1361,7 +1361,7 @@ namespace BinXlsxRW {
 					m_oBcw.m_oStream.WriteStringWStd(pText->m_sText);
 
 					if(NULL != m_pEmbeddedFontsManager)
-						m_pEmbeddedFontsManager->CheckString(std_string2string(pText->m_sText));
+						m_pEmbeddedFontsManager->CheckString(pText->m_sText);
 				}
 			}
 		};
@@ -1647,7 +1647,7 @@ namespace BinXlsxRW {
 					OOX::Spreadsheet::CSheet* pSheet = aWs[i];
 					if(pSheet->m_oRid.IsInit())
 					{
-						std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(string2std_string(pSheet->m_oRid->GetValue()));
+						std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(pSheet->m_oRid->GetValue());
 						if(aWorksheets.end() != pair)
 						{
 							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
@@ -2548,7 +2548,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteStringWStd(oFormula.m_sText);
 
 				if(NULL != m_pEmbeddedFontsManager)
-					m_pEmbeddedFontsManager->CheckString(std_string2string(oFormula.m_sText));
+					m_pEmbeddedFontsManager->CheckString(oFormula.m_sText);
 			}
 		};
 
@@ -2616,7 +2616,7 @@ namespace BinXlsxRW {
 													eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 													OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
 													oCellAnchor.m_sSpId.Init();
-													oCellAnchor.m_sSpId->append(string2std_string(sShapeId));
+													oCellAnchor.m_sSpId->append(sShapeId);
 													oCellAnchor.m_oFrom.Init();
 													oCellAnchor.m_oFrom->m_oCol.Init();
 													oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
@@ -2697,7 +2697,7 @@ namespace BinXlsxRW {
 			}
 			else if (pCellAnchor.m_sSpId.IsInit() && pVmlDrawing)
 			{
-				std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(std_string2string(pCellAnchor.m_sSpId.get2()));
+				std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(pCellAnchor.m_sSpId.get2());
 				if (pFind != pVmlDrawing->m_mapShapesXml.end())
 				{
 					CString* bstrOutputXml = NULL;
@@ -2705,7 +2705,7 @@ namespace BinXlsxRW {
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 
 					std::wstring temp = _T("<v:object>");
-					temp.append(string2std_string(pFind->second));
+					temp.append(pFind->second);
 					if (NULL != pOleObject)
 					{
 						//ищем физический файл, потому что rId относительно sheet.xml, а SetRelsPath(pVmlDrawing
@@ -2725,7 +2725,7 @@ namespace BinXlsxRW {
 					CString keepRels = m_pOfficeDrawingConverter->GetRelsPath();
 					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->GetReadPath().GetPath());
 
-					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(std_string2string(temp), &bstrOutputXml);
+					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(temp, &bstrOutputXml);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					RELEASEOBJECT(bstrOutputXml);
 					m_pOfficeDrawingConverter->SetRelsPath(keepRels);
@@ -2740,7 +2740,7 @@ namespace BinXlsxRW {
 				CString* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 				int nCurPos = m_oBcw.WriteItemWithLengthStart();
-				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(std_string2string(bstrXml), &bstrOutputXml);
+				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				RELEASEOBJECT(bstrOutputXml);
 			}
@@ -3775,7 +3775,7 @@ namespace BinXlsxRW {
 			OOX::CPath path(sFileDst);
 			//создаем папку для media
 			CString mediaDir = path.GetDirectory() + gc_sMediaDirName;
-			NSDirectory::CreateDirectory(string2std_string(mediaDir));
+			NSDirectory::CreateDirectory(mediaDir);
 
 			pOfficeDrawingConverter->SetMediaDstPath(mediaDir);
 

@@ -32,7 +32,6 @@
 
 #pragma once
 #include "Utils.h"
-#include "stringcommon.h"
 
 #include "../Base/Base.h"
 #include "../../../Base64.h"

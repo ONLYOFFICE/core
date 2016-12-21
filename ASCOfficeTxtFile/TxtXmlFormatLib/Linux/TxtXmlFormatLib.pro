@@ -29,6 +29,9 @@ INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \
     ../../../DesktopEditor/xml/libxml2/include
 
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
+
 HEADERS += \
     ../Source/TxtXmlEvent.h \
     ../Source/TxtXmlFile.h \

@@ -321,7 +321,7 @@ void OoxConverter::convert(OOX::Vml::CShape *vml_shape)
 	
 	if (vml_shape->m_oPath.IsInit())
 	{
-		odf_context()->drawing_context()->set_path(string2std_string(vml_shape->m_oPath->GetValue()));
+		odf_context()->drawing_context()->set_path(vml_shape->m_oPath->GetValue());
 	}
 
 	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_shape);
@@ -352,7 +352,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 	odf_context()->drawing_context()->start_area_properties();
 		odf_context()->drawing_context()->start_bitmap_style();
 		
-			odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
+			odf_context()->drawing_context()->set_bitmap_link(pathImage);
 			odf_context()->drawing_context()->set_image_style_repeat(1);//stretch
 
 			double gain = vml_image_data->m_oGain.GetValue();
@@ -405,7 +405,7 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 
 			if (pathImage.GetLength() > 0)
 			{
-				odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
+				odf_context()->drawing_context()->set_bitmap_link(pathImage);
                 _graphics_utils_::GetResolution(pathImage, Width, Height);
 			}
 			odf_context()->drawing_context()->set_image_style_repeat(1);
@@ -429,9 +429,9 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 
 				_CP_OPT(double) no_set;
 				if (vml_fill->m_oColor.IsInit())
-					odf_context()->drawing_context()->set_gradient_start(string2std_string(vml_fill->m_oColor->ToString()),no_set);
+					odf_context()->drawing_context()->set_gradient_start(vml_fill->m_oColor->ToString(), no_set);
 				if (vml_fill->m_oColor2.IsInit())
-					odf_context()->drawing_context()->set_gradient_end(string2std_string(vml_fill->m_oColor2->ToString()),no_set);
+					odf_context()->drawing_context()->set_gradient_end(vml_fill->m_oColor2->ToString(), no_set);
 
 				if (vml_fill->m_oFocusPosition.IsInit())
 					odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition->GetX(), vml_fill->m_oFocusPosition->GetY());
@@ -442,9 +442,9 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		{
 			odf_context()->drawing_context()->start_hatch_style();
 				if (vml_fill->m_oColor2.IsInit())
-					odf_context()->drawing_context()->set_hatch_line_color(string2std_string(vml_fill->m_oColor2->ToString()));
+					odf_context()->drawing_context()->set_hatch_line_color(vml_fill->m_oColor2->ToString());
 				if (vml_fill->m_oColor.IsInit())
-					odf_context()->drawing_context()->set_hatch_area_color(string2std_string(vml_fill->m_oColor->ToString()));
+					odf_context()->drawing_context()->set_hatch_area_color(vml_fill->m_oColor->ToString());
 				else
 					odf_context()->drawing_context()->set_hatch_area_color(L"#ffffff");
 
@@ -454,7 +454,7 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		case SimpleTypes::filltypeSolid:
 		default:
 			if (vml_fill->m_oColor.IsInit())
-				odf_context()->drawing_context()->set_solid_fill(string2std_string(vml_fill->m_oColor->ToString()));
+				odf_context()->drawing_context()->set_solid_fill(vml_fill->m_oColor->ToString());
 			break;
 		}
 	}
@@ -557,7 +557,7 @@ void OoxConverter::convert(OOX::Vml::CShadow *vml_shadow)
 	if (vml_shadow == NULL) return;
 	if (vml_shadow->m_oOn.GetValue() == false) return;
 
-	std::wstring hexColor = string2std_string(vml_shadow->m_oColor.ToString());
+	std::wstring hexColor = vml_shadow->m_oColor.ToString();
 	_CP_OPT(double) opacity;
 	
 	if (vml_shadow->m_oOpacity.IsInit()) opacity = 100 - 100 * vml_shadow->m_oOpacity->GetValue();
@@ -587,7 +587,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 
 	if (vml_stroke->m_oColor.IsInit())
 	{
-		std::wstring hexColor = string2std_string(vml_stroke->m_oColor->ToString());
+		std::wstring hexColor = vml_stroke->m_oColor->ToString();
 		if (hexColor.length() < 1)hexColor = L"000000";
 		odf_context()->drawing_context()->set_solid_fill(hexColor);
 	}
@@ -675,7 +675,7 @@ void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 
 	odf_context()->text_context()->start_paragraph(false);
 		odf_context()->text_context()->start_span(false);
-			odf_context()->text_context()->add_text_content(string2std_string(vml_textpath->m_sString.get()));
+			odf_context()->text_context()->add_text_content(vml_textpath->m_sString.get());
 		odf_context()->text_context()->end_span();
 	odf_context()->text_context()->end_paragraph();
 
@@ -795,7 +795,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 				SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
 				if (oRgbColor)
 				{		
-					odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
+					odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().Right(6));
 					delete oRgbColor;
 				}			
 			}
@@ -812,7 +812,7 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 		if (oRgbColor)
 		{		
 			odf_context()->drawing_context()->start_area_properties();
-				odf_context()->drawing_context()->set_solid_fill(string2std_string(oRgbColor->ToString().Right(6)));
+				odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().Right(6));
 			odf_context()->drawing_context()->end_area_properties();
 			delete oRgbColor;
 		}

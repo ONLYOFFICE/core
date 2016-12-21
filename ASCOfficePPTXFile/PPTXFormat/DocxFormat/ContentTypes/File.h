@@ -42,7 +42,7 @@ namespace PPTX
 {
 	namespace ContentTypes
 	{
-        static const OOX::CPath s_filename (_T("[Content_Types].xml"));
+        static const OOX::CPath s_filename (L"[Content_Types].xml");
 
 		class File
 		{

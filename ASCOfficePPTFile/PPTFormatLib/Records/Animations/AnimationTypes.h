@@ -39,28 +39,7 @@
 
 #define __USE_ANIMATION__
 
-#define CHECK_RECORD_3X(VER,INSTANCE,TYPE) ATLASSERT(m_oHeader.RecVersion==##VER&&m_oHeader.RecInstance==##INSTANCE&&m_oHeader.RecType==##TYPE);
-
 inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
-
-namespace debug
-{
-	inline static void tracearrf (std::vector<double>& arr)
-	{
-#if defined(_WIN32) || defined (_WIN64)
-        for ( int i = 0; i < (int)arr.size(); ++i )
-			ATLTRACE ( _T("%f, "), arr [i] );
-
-        ATLTRACE ( _T("\n") );
-#endif
-	}
-	inline static void trace (CString& str)
-	{
-#if defined(_WIN32) || defined (_WIN64)
-        ATLTRACE (_T("%ls\n"), str);
-#endif
-	}
-};
 
 #if !defined(_WIN32) && !defined (_WIN64)
 
@@ -479,9 +458,6 @@ namespace Animations
 		{
 			m_oHeader			=	thisHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X(0xF,0x0,RT_ParaBuild);
-#endif
 			SRecordHeader oHeader;
 			UINT res = 0;
 			
@@ -552,9 +528,6 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X(0xF,0x0,RT_BuildList);
-#endif
 			LONG lPos		=	0;
 			StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -1014,8 +987,6 @@ namespace Animations
 					break;
 
 				TimeVariant* pRecord = NULL;
-
-				// ATLTRACE ("%x\n",ReadHeader.RecType);
 
 				TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) ReadHeader.RecInstance;
 
@@ -1973,7 +1944,6 @@ namespace Animations
 		virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
 			m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
-			//	ATLTRACE(_T("Time : %d\n"), m_oTimeAnimationValueAtom.m_nTime );
 
 			UINT res = 0;
 			SRecordHeader ReadHeader;
@@ -1981,13 +1951,6 @@ namespace Animations
 			if ( ReadHeader.ReadFromStream(pStream) )	
 			{
 				m_VarValue.ReadFromStream ( ReadHeader, pStream );
-				//if ( m_VarValue.m_Value.GetLength () > 1 )
-				//{
-
-				//	ATLTRACE(_T("VarValue : ") );
-				//	ATLTRACE(CW2A (m_VarValue.m_Value));
-				//	ATLTRACE(_T("\n"));
-				//}
 			}
 
 			CurLen += 8 + ReadHeader.RecLen;
@@ -1995,12 +1958,6 @@ namespace Animations
 			if ( ReadHeader.ReadFromStream(pStream) )	
 			{
 				m_VarFormula.ReadFromStream ( ReadHeader, pStream );
-				//if ( m_VarFormula.m_Value.GetLength () > 1 )
-				//{
-				//	ATLTRACE(_T("Formula : ") );
-				//	ATLTRACE(CW2A (m_VarFormula.m_Value));
-				//	ATLTRACE(_T("\n"));
-				//}
 			}
 
 			CurLen += 8 + ReadHeader.RecLen;
@@ -2491,10 +2448,6 @@ namespace Animations
 						continue;
 					}
 				}
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE ( _T("SlaveContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
-#endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 		}
@@ -2587,9 +2540,6 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X (0xF,0x01,RT_TimeExtTimeNodeContainer);
-#endif
 			LONG lPos = 0;
 			StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2798,13 +2748,9 @@ namespace Animations
 						continue;
 					}
 				}
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE ( _T("ExtTimeNodeContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
-#endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 
-			//ATLTRACE ("ExtTimeNodeContainer : %d\n"), rgExtTimeNodeChildren.size() );
 
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
@@ -3031,17 +2977,10 @@ namespace Animations
 			m_arrEffects.push_back ( m_oTop );
 
             m_nDuration			=	(std::max) ( m_nDuration, m_oTop.dTime + m_oTop.dDuration );
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			ATLTRACE ( _T("Push : %d, begin : %d, duration : %d\n"), nType, (int)m_oTop.dTime, (int)m_oTop.dDuration );
-#endif
 		}
 
 		inline void Pop ()
 		{
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			ATLTRACE ( _T("Pop \n") );	
-#endif
 			if ( (int)m_arrEffects.size() )
 				m_arrEffects.pop_back ();						
 
@@ -3186,10 +3125,6 @@ namespace Animations
 
 				UpdateParagraph ();
 
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE(_T("duration : %f,\n"), GetTime () );
-				ATLTRACE(_T("=======================================================================================\n"));
-#endif
 				return (0 != m_oAnimation.size());
 			}
 
@@ -3294,11 +3229,6 @@ namespace Animations
 
                     m_bSaveEffect	=	true;
 				}
-
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-                // ATLTRACE ( _T("idObj : %d, effect : %ls\t\t"), nID, Helpers::GetEffectNameByID ( m_oTopEffect.m_nEffectType, m_oTopEffect.m_nEffectID ) );
-				// ATLTRACE ( _T("dbg - NodeType : %d, count : %d\n"), nNodeType, (int)pNode->rgExtTimeNodeChildren.size() );
-#endif
 			}				
 
 			for ( int i = 0; i < (int)pContainer->rgExtTimeNodeChildren.size(); ++i )
@@ -3414,12 +3344,6 @@ namespace Animations
             oEffect.m_bRemoveEmptyBlocks	=	true;	//	ALWAYS
 
 			EffectToMap (oEffect);
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
-			//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
-			ATLTRACE (_T("REF : %d, [ %f, %f ]\n"), oEffect.m_nRefID, oEffect.m_nBeginTime, oEffect.m_nDuration);
-#endif
 		}
 		inline void EffectToMap (const Effect& oEffect)
 		{
@@ -3724,10 +3648,6 @@ namespace Animations
 									{
 										oEffect.m_nTextSequence = ind;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-										//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
-										//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
-#endif
 										break;
 									}
 								}

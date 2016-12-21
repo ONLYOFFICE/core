@@ -33,10 +33,7 @@
 
 #include "NamespaceOwn.h"
 #include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
-
-#if defined(_WIN32) || defined (_WIN64)
-#include "atlstr.h"
-#endif
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 namespace PPTX
 {

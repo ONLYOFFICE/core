@@ -46,6 +46,10 @@ const double g_cdMaxWriteOoxPercent = 0.30;
 
 //#define MEMORY_SAFE_CONVERTATION
 
+#if defined (_WIN32) || defined(_WIN64)
+    #pragma comment(lib, "Gdi32.lib")
+#endif
+
 HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
 {
     m_bParseFirstItem = true;

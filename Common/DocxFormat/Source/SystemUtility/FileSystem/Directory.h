@@ -32,19 +32,7 @@
 #pragma once
 
 #include "Settings.h"
-
-#if defined(_WIN32) || defined (_WIN64)
-	#include <windows.h>
-
-	#include <tchar.h>
-	#include <atlstr.h>
-
-	#include <tchar.h>
-	#include <strsafe.h>
-	#include <string>
-#else
-	#include "../../Base/ASCString.h"
-#endif
+#include "../../Base/ASCString.h"
 
 
 namespace FileSystem {

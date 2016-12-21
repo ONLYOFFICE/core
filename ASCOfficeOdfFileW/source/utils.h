@@ -35,7 +35,7 @@
 #include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
-	#include <atlbase.h>
+	#include <windows.h>
 	#include <gdiplus.h>
 	#pragma comment(lib, "gdiplus.lib")
 #endif

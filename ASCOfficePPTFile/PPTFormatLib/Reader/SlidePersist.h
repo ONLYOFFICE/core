@@ -32,12 +32,11 @@
 #pragma once
 
 #if defined(_WIN32) || defined (_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
 #else
     #include "../../../DesktopEditor/common/ASCVariant.h"
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
+
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 #include <vector>
 /**************************************************************

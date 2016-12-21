@@ -33,17 +33,14 @@
 
 #include "../Base/Base.h"
 #include "../Base/SmartPtr.h"
-
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlenc.h>
-	#include <comutil.h>
-#endif
+#include "../Base/ASCString.h"
 
 #include <algorithm>
 
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
 #endif
+
 namespace XmlUtils
 {
 	static CString strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
@@ -170,44 +167,6 @@ namespace XmlUtils
 		_stscanf(string, _T("%f"), &f);
 		return f;
 	}
-#if defined(_WIN32) || defined (_WIN64)
-	AVSINLINE static int     GetInteger (BSTR string)
-	{
-		return _wtoi(string);
-	}
-	AVSINLINE static size_t  GetUInteger(BSTR string)
-	{
-		return (size_t)_wtoi(string);
-	}
-	AVSINLINE static double  GetDouble  (BSTR string)
-	{
-		double d = 0;
-		swscanf(string, _T("%lf"), &d);
-		return d;
-	}
-	AVSINLINE static float   GetFloat   (BSTR string)
-	{
-		float f = 0;
-		swscanf(string, _T("%f"), &f);
-		return f;
-	}
-	AVSINLINE static void    GetDouble  (BSTR string, double* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%lf"), *p);
-	}
-	AVSINLINE static void    GetFloat   (BSTR string, float* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%f"), *p);
-	}
-	AVSINLINE static void    GetInteger (BSTR string, int* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%d"), *p);
-	}
-#endif
-
 	AVSINLINE CString BoolToString  (const bool  & value)
 	{
 		CString sResult = ( value ? _T("true") : _T("false") );

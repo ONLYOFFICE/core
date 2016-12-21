@@ -56,7 +56,6 @@ namespace SimpleTypes
 				m_eValue = eValue;
 			}
 
-			virtual E       FromString(const BSTR &bsValue) = 0;
 			virtual E       FromString(CString &sValue) = 0;
 			virtual std::wstring ToString() const = 0;
 

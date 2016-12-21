@@ -33,10 +33,9 @@
 
 #if !defined(_WIN32) && !defined(_WIN64)
     #include "../../../DesktopEditor/common/ASCVariant.h"
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#else
-	#include <atlbase.h>
 #endif
+	
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 
 #include <math.h>
 

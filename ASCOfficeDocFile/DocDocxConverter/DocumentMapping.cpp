@@ -72,6 +72,8 @@ namespace DocFileFormat
 		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 		_embeddedObject			=	false;
+
+		_cacheListNum			= -1;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -100,6 +102,22 @@ namespace DocFileFormat
 			current = m_document->SectionPlex->CharacterPositions.size() - 2;
 
 		return m_document->SectionPlex->CharacterPositions[current + 1];
+	}
+	int DocumentMapping::getListNumCache(int fc, int fc_end)
+	{
+		if ( !m_document->ListPlex ) return -1;
+
+		for (int i = 1; i < m_document->ListPlex->CharacterPositions.size(); i++)
+		{
+			if ((fc >= m_document->ListPlex->CharacterPositions[i-1]) && (fc_end <= m_document->ListPlex->CharacterPositions[i]))
+			{
+				ListNumCache* listNum = dynamic_cast<ListNumCache*> (m_document->ListPlex->Elements[i-1]);
+
+				return listNum->value;
+			}
+		}
+
+		return -1;
 	}
 	bool DocumentMapping::isSectionEnd(int cp)
 	{
@@ -176,8 +194,8 @@ namespace DocFileFormat
 
 		// get all CHPX between these boundaries to determine the count of runs
 		
-		std::list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fc, fcEnd);
-		std::vector<int>* chpxFcs						=	m_document->GetFileCharacterPositions(fc, fcEnd);
+		std::list<CharacterPropertyExceptions*>* chpxs	= m_document->GetCharacterPropertyExceptions(fc, fcEnd);
+		std::vector<int>* chpxFcs						= m_document->GetFileCharacterPositions(fc, fcEnd);
 
 		CharacterPropertyExceptions* paraEndChpx		=	NULL;
 
@@ -204,8 +222,8 @@ namespace DocFileFormat
 		{
 			isBidi = currentSection->isBidi;
 		}
-
 //-----------------------------------------------------------		
+		//_cacheListNum		= getListNumCache(fc, fcEnd);
 		_isSectionPageBreak = 0;
 		if (sectionEnd)
 		{

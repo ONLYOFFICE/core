@@ -32,9 +32,9 @@
 #ifndef ASC_OFFICE_DRAWING_CONVERTER
 #define ASC_OFFICE_DRAWING_CONVERTER
 
+#include "../Common/DocxFormat/Source/Base/ASCString.h"
+
 #if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
 #else
 	#include "../DesktopEditor/common/ASCVariant.h"
 #endif

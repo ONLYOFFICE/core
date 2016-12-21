@@ -358,9 +358,9 @@ namespace StreamUtils
 		ULONG lReadByte = 0;
 		lReadByte = pStream->read(pMem, 4);
 		
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-		ATLASSERT(4 == lReadByte);
-#endif
+//#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+//		ATLASSERT(4 == lReadByte);
+//#endif
 
 		if (lReadByte == 4)
 		{
@@ -502,17 +502,17 @@ namespace CDirectory
 	}
     static bool OpenFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath  + FILE_SEPARATOR_CHAR + strFileName;
+        CString strFile = strFolderPath  + FILE_SEPARATOR_STR + strFileName;
 		return (S_OK == pFile->OpenFile(strFile));
 	}
     static bool CreateFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath + FILE_SEPARATOR_CHAR + strFileName;
+        CString strFile = strFolderPath + FILE_SEPARATOR_STR + strFileName;
 		return (S_OK == pFile->CreateFile(strFile));
 	}
     static bool CreateDirectory(CString strFolderPathRoot, CString strFolderName)
 	{
-        CString strFolder = strFolderPathRoot + FILE_SEPARATOR_CHAR + strFolderName;
+        CString strFolder = strFolderPathRoot + FILE_SEPARATOR_STR + strFolderName;
 		return ::CreateDirectory(strFolder, NULL);
 	}
     static bool CreateDirectory(CString strFolderPath)
@@ -546,13 +546,13 @@ namespace CDirectory
 
 	static CString GetUnder(CString strFolderPathRoot, CString strFolderName)
 	{
-		CString strFolder = strFolderPathRoot + '\\' + strFolderName;
+		CString strFolder = strFolderPathRoot + L"\\" + strFolderName;
 		return strFolder;
 	}
 
 	static CString GetFileName(CString strFullName)
 	{
-		int nStart = strFullName.ReverseFind('\\');
+		int nStart = strFullName.ReverseFind(L"\\");
 		CString strName = strFullName.Mid(nStart + 1);
 		return strName;
 	}

@@ -41,39 +41,39 @@
 using namespace NExtractTools;
 
 #if !defined(_WIN32) && !defined (_WIN64)
-	static std::wstring utf8_to_unicode(const char *src)
-	{
-		if (src == NULL) return _T("");
-		std::string temp = src;
+static std::wstring utf8_to_unicode(const char *src)
+{
+    if (src == NULL) return _T("");
+    std::string temp = src;
 
-		unsigned int nLength = temp.length();
+    unsigned int nLength = temp.length();
 
-		UTF32 *pStrUtf32 = new UTF32 [nLength+1];
-		memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
+    UTF32 *pStrUtf32 = new UTF32 [nLength+1];
+    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
 
 
-		UTF8 *pStrUtf8 = (UTF8 *) src;
+    UTF8 *pStrUtf8 = (UTF8 *) src;
 
-		// this values will be modificated
-		const UTF8 *pStrUtf8_Conv = pStrUtf8;
-		UTF32 *pStrUtf32_Conv = pStrUtf32;
+    // this values will be modificated
+    const UTF8 *pStrUtf8_Conv = pStrUtf8;
+    UTF32 *pStrUtf32_Conv = pStrUtf32;
 
-		ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv,
-											 &pStrUtf8[nLength]
-						, &pStrUtf32_Conv
-						, &pStrUtf32 [nLength]
-						, strictConversion);
+    ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv,
+                                                                    &pStrUtf8[nLength]
+                                                                    , &pStrUtf32_Conv
+                                                                    , &pStrUtf32 [nLength]
+                                                                    , strictConversion);
 
-				if (conversionOK != eUnicodeConversionResult)
-				{
-					delete [] pStrUtf32;
-					return L"";
-				}
-				std::wstring wsEntryName ((wchar_t *) pStrUtf32);
+    if (conversionOK != eUnicodeConversionResult)
+    {
+        delete [] pStrUtf32;
+        return L"";
+    }
+    std::wstring wsEntryName ((wchar_t *) pStrUtf32);
 
-				delete [] pStrUtf32;
-				return wsEntryName;
-	}
+    delete [] pStrUtf32;
+    return wsEntryName;
+}
 #endif
 int main(int argc, char *argv[])
 {
@@ -100,14 +100,15 @@ int main(int argc, char *argv[])
 
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
-    std::wstring            sArg1, sExePath;
+    std::wstring sArg1, sExePath;
 
 #if !defined(_WIN32) && !defined (_WIN64)
     sExePath    = utf8_to_unicode(argv [0]);
     sArg1       = utf8_to_unicode(argv [1]);
 #else
-    sExePath    = CA2T(argv [0]);
-    sArg1       = CA2T(argv [1]);
+	std::string s;
+	s = std::string(argv [0]); sExePath = std::wstring(s.begin(), s.end());
+    s = std::string(argv [1]); sArg1	= std::wstring(s.begin(), s.end());
 #endif
 
 	int result = 0;
@@ -126,10 +127,10 @@ int main(int argc, char *argv[])
 		if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
 		if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
 #else
-		if (argc >= 3) sArg2 = CA2T(argv [2]);
-		if (argc >= 4) sArg3 = CA2T(argv [3]);
-		if (argc >= 5) sArg4 = CA2T(argv [4]);
-		if (argc >= 6) sArg5 = CA2T(argv [5]);
+		if (argc >= 3) { s = std::string(argv [2]); sArg2 = std::wstring(s.begin(), s.end()); }
+		if (argc >= 4) { s = std::string(argv [3]); sArg3 = std::wstring(s.begin(), s.end()); }
+		if (argc >= 5) { s = std::string(argv [4]); sArg4 = std::wstring(s.begin(), s.end()); }
+		if (argc >= 6) { s = std::string(argv [5]); sArg5 = std::wstring(s.begin(), s.end()); }
 #endif
 		InputParams oInputParams;
 		oInputParams.m_sFileFrom	= new std::wstring(sArg1);

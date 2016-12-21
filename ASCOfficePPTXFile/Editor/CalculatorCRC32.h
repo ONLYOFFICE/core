@@ -86,7 +86,6 @@ public:
 
 		//dwRet = CCalculatorCRC32::Calc(pBuffer, nReaded);
 		//
-		////ATLTRACE("CRC32: 0x%08X\n", dwRet);
 		//delete [] pBuffer;
 		return dwRet;
 	}

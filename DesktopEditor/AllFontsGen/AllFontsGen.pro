@@ -12,7 +12,7 @@ DESTDIR = $$PWD/../../build/bin/AllFontsGen
 TARGET = $$CORE_BUILDS_PLATFORM_PREFIX
 
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lOfficeUtils
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lOfficeUtils -lUnicodeConverter
 
 DEFINES += \
     _QT \

@@ -36,6 +36,7 @@
 #include "Rpc.h"    // 'UuidCreate' functuin, need to link Rpcrt4.lib
 
 #pragma comment(lib,"rpcrt4.lib")
+#pragma comment(lib,"Shlwapi.lib")
 
 #ifndef FILE_SEPARATOR
 	#define FILE_SEPARATOR
@@ -221,19 +222,18 @@ namespace FileSystem
         return created;
     }
 
-    StringArray Directory::GetFilesInDirectory(LPCTSTR path, const bool& andSubdirectories) {
-        size_t pathLength = 0;
-        StringCchLength(path, MAX_PATH, &pathLength);
-        ++pathLength;
-        size_t pathToFilesLength = pathLength + 3;
-        LPTSTR pathToFiles = new TCHAR[pathToFilesLength];
+    StringArray Directory::GetFilesInDirectory(LPCTSTR _path, const bool& andSubdirectories) 
+	{
+		std::wstring path(_path);
+        
+		size_t pathLength			= path.length();
+        size_t pathToFilesLength	= pathLength + 3;
 
-        StringCchCopy(pathToFiles, pathLength, path);
-        StringCchCat(pathToFiles, pathToFilesLength, TEXT("\\*"));
+		std::wstring pathToFiles = path;
+		pathToFiles += L"\\*";
 
         WIN32_FIND_DATA findData;
-        HANDLE findResult = FindFirstFile(pathToFiles, &findData);
-        delete[] pathToFiles;
+        HANDLE findResult = FindFirstFile(pathToFiles.c_str(), &findData);
 
         if (findResult == INVALID_HANDLE_VALUE)
             return StringArray();

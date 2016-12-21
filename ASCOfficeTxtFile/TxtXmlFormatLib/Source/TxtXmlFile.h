@@ -37,7 +37,6 @@
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
-	#include <atlstr.h>
 #else
     #include "../../../DesktopEditor/common/ASCVariant.h"
 #endif
@@ -61,6 +60,6 @@ public:
 	CTxtXmlFile();
 
 private:
-	void CreateDocxEmpty(CString path, Writers::FileWriter * DocxWriter) ;
+    void CreateDocxEmpty(const std::wstring & path, Writers::FileWriter * DocxWriter) ;
 
 };

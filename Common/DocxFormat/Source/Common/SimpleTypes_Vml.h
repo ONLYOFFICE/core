@@ -4702,11 +4702,6 @@ namespace SimpleTypes
 				m_wcDelimiter = 0x20;
 				FromString( oOther.ToString() );
 			}
-			CVml_Polygon2D_Units(const BSTR &bsValue)\
-			{
-				m_wcDelimiter = 0x20;
-				FromString( bsValue );
-			}
 			CVml_Polygon2D_Units(CString &sValue)
 			{
 				m_wcDelimiter = 0x20;

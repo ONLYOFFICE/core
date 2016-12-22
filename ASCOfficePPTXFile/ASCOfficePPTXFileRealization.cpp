@@ -217,24 +217,11 @@ HRESULT CPPTXFile::get_DrawingXml(std::wstring* pVal)
 	return S_OK;
 }
 
-HRESULT CPPTXFile::SetAdditionalParam(std::wstring ParamName, VARIANT ParamValue)
+void CPPTXFile::SetEmbeddedFontsDirectory(std::wstring val)
 {
-	CString sParamName; sParamName = ParamName;
-	if (_T("EmbeddedFontsDirectory") == sParamName && ParamValue.vt == VT_BSTR)
-	{		
-		m_strEmbeddedFontsDirectory = ParamValue.bstrVal;
-		return S_OK;
-	}		
-	return S_OK;
+    m_strEmbeddedFontsDirectory = val;
 }
 
-HRESULT CPPTXFile::GetAdditionalParam(std::wstring ParamName, VARIANT* ParamValue)
-{
-	if (NULL == ParamValue)
-		return S_FALSE;
-
-	return S_OK;
-}
 
 bool CPPTXFile::Progress(long ID, long Percent)
 {
@@ -264,9 +251,9 @@ HRESULT CPPTXFile::SetThemesDir(std::wstring bsDir)
 	m_strFolderThemes = bsDir;
 	return S_OK;
 }
-HRESULT CPPTXFile::SetUseSystemFonts(VARIANT_BOOL useSystemFonts) 
+HRESULT CPPTXFile::SetUseSystemFonts(bool val)
 {
-	m_bIsUseSystemFonts = (VARIANT_TRUE == useSystemFonts);
+    m_bIsUseSystemFonts = val;
 	return S_OK;
 }
 HRESULT CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)

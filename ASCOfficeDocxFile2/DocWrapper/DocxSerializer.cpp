@@ -286,16 +286,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 				CString sFileInDir = strFileInDir.c_str();
 
-				VARIANT var;
-				var.vt = VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-				var.bstrVal = sFileInDir.AllocSysString();
-				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
-				RELEASESYSSTRING(var.bstrVal);
-#else
-				var.bstrVal = sFileInDir.GetString();
-				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
-#endif
+                oDrawingConverter.SetSourceFileDir(sFileInDir);
 	//default theme
 				m_pCurFileWriter->m_oDefaultTheme.Write(sThemePath);
 				
@@ -332,10 +323,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 					delete pCore;
 				} 
 /////////////////////////////////////////////////////////////////////////////////////
-				VARIANT vt;
-				oDrawingConverter.GetAdditionalParam(CString(_T("ContentTypes")), &vt);
-				if(VT_BSTR == vt.vt)
-					m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
+                m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(oDrawingConverter.GetContentTypes());
 
 				m_pCurFileWriter->m_oCommentsWriter.Write();
 				m_pCurFileWriter->m_oChartWriter.Write();

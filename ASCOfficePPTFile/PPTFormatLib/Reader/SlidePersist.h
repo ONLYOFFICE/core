@@ -31,12 +31,7 @@
  */
 #pragma once
 
-#if defined(_WIN32) || defined (_WIN64)
-#else
-    #include "../../../DesktopEditor/common/ASCVariant.h"
-#endif
-
-#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
 /**************************************************************

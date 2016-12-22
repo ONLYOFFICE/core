@@ -1871,10 +1871,8 @@ namespace BinXlsxRW {
 				m_pCurVmlDrawing = new OOX::CVmlDrawing(true);
 
 				m_pCurVmlDrawing->m_lObjectIdVML = 1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1;
-				VARIANT var;
-				var.vt = VT_I4;
-				var.lVal = m_pCurVmlDrawing->m_lObjectIdVML;
-				m_pOfficeDrawingConverter->SetAdditionalParam(CString(_T("ObjectIdVML")), var);
+
+                m_pOfficeDrawingConverter->SetObjectIdVML(m_pCurVmlDrawing->m_lObjectIdVML);
 
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadWorksheet, this, poResult);
 				if(m_pCurSheet->m_oName.IsInit())
@@ -2593,11 +2591,8 @@ namespace BinXlsxRW {
 					CString sOleXlsx;
 					if(NULL != m_pCurDrawing)
 					{
-						VARIANT var;
-						var.vt = VT_I4;
-						var.lVal = m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType());
-						m_pOfficeDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
-					}
+                        m_pOfficeDrawingConverter->SetDocumentChartsCount(m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType()));
+                    }
 
 					long nCurPos = oTransport.m_nPos;
 					CString* bstrXml = NULL;
@@ -2605,16 +2600,11 @@ namespace BinXlsxRW {
 					//m_oBufferedStream.Seek(nCurPos + oTransport.m_nLength);
 					if(NULL != m_pCurDrawing)
 					{
-						VARIANT vt;
-						m_pOfficeDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
-						if (VT_I4 == vt.vt)
-							m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), vt.lVal);
-						m_pOfficeDrawingConverter->GetAdditionalParam(CString(_T("ObjectIdVML")), &vt);
-						if (VT_I4 == vt.vt)
-							m_pCurVmlDrawing->m_lObjectIdVML = vt.lVal;
-						m_pOfficeDrawingConverter->GetAdditionalParam(CString(_T("OleXlsx")), &vt);
-						if (VT_BSTR == vt.vt)
-							sOleXlsx = CString(vt.bstrVal);
+
+                        m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), m_pOfficeDrawingConverter->GetDocumentChartsCount());
+                        m_pCurVmlDrawing->m_lObjectIdVML = m_pOfficeDrawingConverter->GetObjectIdVML();
+
+                        sOleXlsx = m_pOfficeDrawingConverter->GetOleXlsx();
 					}
 					if(S_OK == hRes && NULL != bstrXml)
 					{
@@ -2832,12 +2822,11 @@ namespace BinXlsxRW {
 					{
 						std::wstring sNewImageName = NSSystemPath::GetFileName(pair->second->sPath);
 
-						long rId;
-						CString sNewImgRel;
-                        sNewImgRel.Format(_T("../media/%ls"), sNewImageName.c_str());
-						m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
+                        CString sNewImgRel = L"../media/" + sNewImageName;
+                        long rId;
+                        m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 
-						sRId.Format(_T("rId%d"), rId);
+                        sRId = L"rId" + std::to_wstring(rId);
 						pair->second->mapDrawings[m_pCurDrawing] = sRId;
 					}
 					else
@@ -3507,14 +3496,15 @@ namespace BinXlsxRW {
 									g_nCurFormatVersion = nVersion = nTempVersion;
 								}
 							}
-							// File Type
+                    // File Type
 							CString sDstPathCSV = sDstPath;
 							BYTE fileType;
 							UINT nCodePage;
 							WCHAR wcDelimiter;
 							BYTE saveFileType;
+
 							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
-							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+                    // Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 							
 							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
                                 sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
@@ -3525,13 +3515,12 @@ namespace BinXlsxRW {
 							SaveParams oSaveParams(params_path.c_str());
 							
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
-							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
-							if(NULL != pOfficeDrawingConverter)
+
+                            CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
+
+                            if(NULL != pOfficeDrawingConverter)
 							{
-								VARIANT vt;
-								pOfficeDrawingConverter->GetAdditionalParam(CString(_T("ContentTypes")), &vt);
-								if(VT_BSTR == vt.vt)
-									sAdditionalContentTypes.Append(vt.bstrVal);
+                                sAdditionalContentTypes.Append(pOfficeDrawingConverter->GetContentTypes());
 							}
 							oXlsx.PrepareToWrite();
 

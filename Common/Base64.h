@@ -43,12 +43,12 @@ namespace Base64
 	const int B64_BASE64_FLAG_NONE		= 0;
 	const int B64_BASE64_FLAG_NOPAD		= 1;
 	const int B64_BASE64_FLAG_NOCRLF	= 2;
-//	const int INT_MAX					= 2147483647;    /* maximum (signed) int value */
+    const int B64_BASE64_INT_MAX		= 2147483647;    /* maximum (signed) int value */
 
 	inline int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE)
 	{
 		__int64 nSrcLen4 = static_cast<__int64>(nSrcLen)*4;
-		if (nSrcLen4 > INT_MAX)
+        if (nSrcLen4 > B64_BASE64_INT_MAX)
 			return -1;
 
 		int nRet = static_cast<int>(nSrcLen4/3);

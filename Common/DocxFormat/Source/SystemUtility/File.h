@@ -671,9 +671,7 @@ namespace CDirectory
     }
     static std::wstring ToString(DWORD val)
     {
-        std::wstring str = _T("");
-        str.Format(_T("%d"), (LONG)val);
-        return str;
+        return std::to_wstring(val);
     }
 
     static bool CopyFile (std::wstring strExists, std::wstring strNew, LPVOID lpFunc = NULL, LPVOID lpData = NULL)

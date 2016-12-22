@@ -33,11 +33,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <tchar.h>
-#else
-    #include "../../DesktopEditor/common/ASCVariant.h"
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
-#include <string>
+
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 namespace OpenXmlContentTypes
 {

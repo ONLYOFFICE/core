@@ -66,7 +66,7 @@ namespace NSPresentationEditor
 <cp:revision>1</cp:revision>\
 </cp:coreProperties>");
 	}
-};
+}
 
 
 NSPresentationEditor::CPPTXWriter::CPPTXWriter()
@@ -77,7 +77,7 @@ NSPresentationEditor::CPPTXWriter::CPPTXWriter()
 	m_pDocument			= NULL;
 	m_pUserInfo			= NULL;
 
-	m_pShapeWriter = new CShapeWriter();
+    m_pShapeWriter = new CShapeWriter();
 }
 	
 NSPresentationEditor::CPPTXWriter::~CPPTXWriter()

@@ -32,13 +32,7 @@
 #ifndef ASC_OFFICE_PPTX_FILE
 #define ASC_OFFICE_PPTX_FILE
 
-//todo
-#if defined(_WIN32) || defined (_WIN64)
-#else
-	#include "../DesktopEditor/common/ASCVariant.h"
-#endif
-
-#include "../Common/DocxFormat/Source/Base/ASCString.h"
+#include "../DesktopEditor/common/ASCVariant.h"
 
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "PPTXFormat/PPTXEvent.h"
@@ -70,10 +64,10 @@ private:
 	CString		m_strFolderThemes;
 
 	//load_from_resource m_fCallbackResource;
-	extract_to_directory m_fCallbackExtract;
+    extract_to_directory    m_fCallbackExtract;
 	compress_from_directory m_fCallbackCompress;
-	progress_operation m_fCallbackProgress;
-	void* m_pCallbackArg;
+    progress_operation      m_fCallbackProgress;
+    void*                   m_pCallbackArg;
 public:
 
 	CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg);
@@ -87,20 +81,20 @@ public:
     HRESULT get_TempDirectory(std::wstring* pVal);
     HRESULT put_TempDirectory(std::wstring newVal);
 
-    HRESULT GetDVDXml(std::wstring* pbstrPTTXml);
-    HRESULT GetBluRayXml(std::wstring* pbstrDVDXml);
+    HRESULT GetDVDXml       (std::wstring* pbstrPTTXml);
+    HRESULT GetBluRayXml    (std::wstring* pbstrDVDXml);
 
-    HRESULT get_DrawingXml(std::wstring* pVal);
-    HRESULT SetAdditionalParam(std::wstring ParamName, VARIANT ParamValue);
-    HRESULT GetAdditionalParam(std::wstring ParamName, VARIANT* ParamValue);
+    HRESULT get_DrawingXml  (std::wstring* pVal);
 
-    virtual bool Progress(long ID, long Percent);
+    virtual bool Progress   (long ID, long Percent);
+
+    void SetEmbeddedFontsDirectory(std::wstring val);
 
     // to PPTY
 	HRESULT SetMediaDir			(std::wstring bsMediaDir);
     HRESULT SetFontDir			(std::wstring bsFontDir);
     HRESULT SetThemesDir		(std::wstring bsDir);
-    HRESULT SetUseSystemFonts	(VARIANT_BOOL useSystemFonts);
+    HRESULT SetUseSystemFonts	(bool useSystemFonts);
     HRESULT OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
     HRESULT OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
     HRESULT ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);

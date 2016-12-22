@@ -54,7 +54,7 @@ namespace BinXlsxRW{
 	{
 	}
 
-	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath, CString& sEmbedPath)
+    void CXlsxSerializer::CreateXlsxFolders(const std::wstring& sXmlOptions, const std::wstring& sDstPath,  std::wstring& sMediaPath, std::wstring& sEmbedPath)
 	{
         OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
 		OOX::CPath pathEmbedDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("embeddings");
@@ -83,7 +83,7 @@ namespace BinXlsxRW{
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sMediaDir, const CString& sEmbedDir)
+    bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
@@ -91,24 +91,14 @@ namespace BinXlsxRW{
 
 		//папка с бинарников
 		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
-		CString sFileInDir = strFileInDir.c_str();
 
-		VARIANT var;
-		var.vt = VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-		var.bstrVal = sFileInDir.AllocSysString();
-		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
-		RELEASESYSSTRING(var.bstrVal);
-#else
-		var.bstrVal = sFileInDir.GetString();
-		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
-#endif
+        oOfficeDrawingConverter.SetSourceFileDir(strFileInDir, 2);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
-    bool CXlsxSerializer::saveToFile(const CString& sDstFileName, const CString& sSrcPath, const CString& sXMLOptions)
+    bool CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
@@ -149,7 +139,7 @@ namespace BinXlsxRW{
 		RELEASEOBJECT(pFontPicker);
 		return true;
 	}
-	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
+    bool CXlsxSerializer::loadChart(const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 	{
 		bool bRes = false;
 		//todo передать нормальный oRootPath
@@ -174,7 +164,7 @@ namespace BinXlsxRW{
 		}
 		return bRes;
 	}
-    bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement, const long& lChartNumber)
+    bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, const std::wstring& sFilepath, const std::wstring& sContentTypePath, std::wstring** sContentTypeElement, const long& lChartNumber)
 	{
 		bool bRes = false;
 		*sContentTypeElement = NULL;
@@ -192,7 +182,7 @@ namespace BinXlsxRW{
 			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 			{
-				CString sFilepathLeft = sFilepath.Left(sFilepath.GetLength() - nIndex);
+                CString sFilepathLeft = sFilepath.substr(0, sFilepath.length() - nIndex);
 				sThemePath		= sFilepathLeft + L"theme";
 				sEmbedingPath	= sFilepathLeft + L"embeddings";
 			}
@@ -243,20 +233,21 @@ namespace BinXlsxRW{
 				CString sContentType(sContentTypePath);
 				sContentType.Append(strFilename);
 
-				(*sContentTypeElement) = new CString();
-				(*sContentTypeElement)->Format(_T("<Override PartName=\"%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
-				(*sContentTypeElement)->Append(oSaveParams.sAdditionalContentTypes);
+                std::wstring sContent = L"<Override PartName=\"" + sContentType + L"\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>";
+                sContent += oSaveParams.sAdditionalContentTypes;
+
+                (*sContentTypeElement) = new std::wstring(sContent);
 				
 				bRes = true;
 			}
 		}
 		return bRes;
 	}
-	void CXlsxSerializer::setFontDir(std::wstring& sFontDir)
+    void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
 	{
 		m_sFontDir = sFontDir;
 	}
-	void CXlsxSerializer::setEmbeddedFontsDir(std::wstring& sEmbeddedFontsDir)
+    void CXlsxSerializer::setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir)
 	{
 		m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 	}

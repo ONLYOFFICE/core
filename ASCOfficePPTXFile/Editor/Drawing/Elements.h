@@ -1337,16 +1337,12 @@ namespace NSStrings
 			return 0;
 		}
 
-		AVSINLINE void SetText(BSTR& bsText)
+        AVSINLINE void SetText(const std::wstring& sText)
 		{
 			ClearNoAttack();
-#if defined(_WIN32) || defined (_WIN64)
-			size_t nLen = GetStringLen(bsText);
-            WriteString(bsText, nLen);
-#else
-            size_t nLen = bsText.length();
-            WriteString(bsText.c_str(), nLen);
-#endif
+
+            size_t nLen = sText.length();
+            WriteString(sText.c_str(), nLen);
 
 			for (size_t i = 0; i < nLen; ++i)
 			{

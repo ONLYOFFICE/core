@@ -60,19 +60,19 @@ namespace BinXlsxRW {
 		CXlsxSerializer();
 		~CXlsxSerializer();
 		
-		void CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath, CString& sEmbedPath);
+        void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 
-        bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sMediaDir, const CString& sEmbedPath);
-        bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
+        bool loadFromFile       (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
+        bool saveToFile         (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
-		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-        bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement, const long& lChartNumber);
+        bool loadChart          (const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+        bool saveChart          (NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, const std::wstring& sFilename, const std::wstring& sContentTypePath, std::wstring** sContentTypeElement, const long& lChartNumber);
 		
-		void setFontDir			(std::wstring& sFontDir);
-		void setEmbeddedFontsDir(std::wstring& sEmbeddedFontsDir);
+        void setFontDir			(const std::wstring& sFontDir);
+        void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 
-		void writeChartXlsx(const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
+        void writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
 	};
 }
 #endif	// #ifndef XLSX_SERIALIZER

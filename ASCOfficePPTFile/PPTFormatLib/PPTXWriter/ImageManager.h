@@ -42,7 +42,7 @@ namespace NSPresentationEditor
 	private:
 		std::map<std::wstring, std::wstring>	m_mapImages;
 
-		LONG									m_lIndexNextImage;
+        long									m_lIndexNextImage;
 		std::wstring							m_strDstMedia;
 
 	public:

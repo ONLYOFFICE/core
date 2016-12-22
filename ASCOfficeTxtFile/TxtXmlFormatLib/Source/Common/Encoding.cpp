@@ -39,8 +39,9 @@
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
-//#include <boost/locale.hpp>
-//#include <boost/locale/conversion.hpp>
+#if !defined(_WIN32) && !defined(_WIN64)
+    #include <string.h>
+#endif
 
 #include <locale>
 

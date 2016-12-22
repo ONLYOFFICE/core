@@ -6316,20 +6316,14 @@ public:
 		CString sDrawingProperty = oCDrawingProperty.Write();
 		if(false == sDrawingProperty.IsEmpty())
 		{
-			VARIANT var;
-			var.vt = VT_I4;
-			var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
-			m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
+            m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(m_oFileWriter.m_oChartWriter.getChartCount());
 
 			long nCurPos = m_oBufferedStream.GetPos();
 			CString* bstrDrawingXml = NULL;
 			m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
 			m_oBufferedStream.Seek(nCurPos);
 
-			VARIANT vt;
-			m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
-			if(VT_I4 == vt.vt)
-				m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
+            m_oFileWriter.m_oChartWriter.setChartCount(m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount());
 
 			if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
 			{

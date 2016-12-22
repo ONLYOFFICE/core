@@ -132,90 +132,22 @@ namespace OOX
 			}
 		}
 
-#if defined(_WIN32) || defined (_WIN64)
 		AVSINLINE void Normalize()
 		{
 			if (0 == m_strFilename.length())
 				return;
 
-			const wchar_t* pData = m_strFilename.c_str();
-			int nLen = (int)m_strFilename.length();
+            const wchar_t*  pData   = m_strFilename.c_str();
+            int             nLen    = m_strFilename.length();
 
-			wchar_t* pDataNorm = new wchar_t[nLen + 1];
-			int* pSlashPoints = new int[nLen + 1];
+            wchar_t*    pDataNorm       = new wchar_t   [nLen + 1];
+            int*        pSlashPoints    = new int       [nLen + 1];
 
-			int nStart = 0;
-			int nCurrent = 0;
-			int nCurrentSlash = -1;
-			int nCurrentW = 0;
-			bool bIsUp = false;
-
-			while (nCurrent < nLen)
-			{
-                if (pData[nCurrent] == (wchar_t) '\\' || pData[nCurrent] == (wchar_t)'/')
-				{
-					if (nStart < nCurrent)
-					{
-						bIsUp = false;
-						if ((nCurrent - nStart) == 2)
-						{
-							if (pData[nStart] == (wchar_t)'.' && pData[nStart + 1] == (wchar_t)'.')
-							{
-								if (nCurrentSlash > 0)
-								{
-									--nCurrentSlash;
-									nCurrentW = pSlashPoints[nCurrentSlash];
-									bIsUp = true;
-								}
-							}
-						}
-						if (!bIsUp)
-						{
-                            pDataNorm[nCurrentW++] = (wchar_t) FILE_SEPARATOR_CHAR;
-							++nCurrentSlash;
-							pSlashPoints[nCurrentSlash] = nCurrentW;
-						}
-					}
-					nStart = nCurrent + 1;					
-					++nCurrent;
-					continue;
-				}
-				pDataNorm[nCurrentW++] = pData[nCurrent];
-				++nCurrent;
-			}
-
-			pDataNorm[nCurrentW] = (wchar_t)'\0';
-
-			m_strFilename.clear();
-			m_strFilename = std::wstring(pDataNorm, nCurrentW);
-
-			delete []pSlashPoints;
-			delete []pDataNorm;				
-		}
-		void CheckIsRoot()
-		{
-			if(m_strFilename.length() > 0 && ('/' == m_strFilename[0] || '\\' == m_strFilename[0]))
-				m_bIsRoot = true;
-			else
-				m_bIsRoot = false;
-		}
-#else
-		AVSINLINE void Normalize()
-		{
-			if (0 == m_strFilename.length())
-				return;
-
-			wchar_t* pData = m_strFilename.GetBuffer();
-			int nLen = m_strFilename.length();
-
-			wchar_t* pDataNorm = new wchar_t[nLen + 1];
-			int* pSlashPoints = new int[nLen + 1];
-
-			int nStart = 0;
-			int nCurrent = 0;
-			int nCurrentSlash = -1;
-			int nCurrentW = 0;
-			bool bIsUp = false;
+            int nStart          = 0;
+            int nCurrent        = 0;
+            int nCurrentSlash   = -1;
+            int nCurrentW       = 0;
+            bool bIsUp          = false;
 
 			if (pData[nCurrent] == (wchar_t)'/')
 			   pDataNorm[nCurrentW++] = (wchar_t) FILE_SEPARATOR_CHAR;
@@ -256,7 +188,6 @@ namespace OOX
 
 			pDataNorm[nCurrentW] = (wchar_t)'\0';
 
-			m_strFilename.ReleaseBuffer();
 			m_strFilename = std::wstring(pDataNorm, nCurrentW);
 
 			delete []pSlashPoints;
@@ -270,7 +201,6 @@ namespace OOX
 				m_bIsRoot = false;
 		}
 
-#endif
 		void SetName(std::wstring sName, bool bNormalize)
 		{
 			m_strFilename = sName;

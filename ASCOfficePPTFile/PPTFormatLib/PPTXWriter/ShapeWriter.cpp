@@ -70,7 +70,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 		oWriter.WriteString(L" marL=\"" + strProp + L"\"");
 
 		if (pPF->indent.is_init() == false)
-			pPF->indent = (LONG)0;
+            pPF->indent = (LONG)0;
 	}
 	if (pPF->indent.is_init())
 	{
@@ -84,7 +84,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	}
 	if (pPF->defaultTabSize.is_init())
 	{
-		std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
+        std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
 		oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
 	}
 	oWriter.WriteString(L">");
@@ -150,7 +150,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	double dKoef1 = 3.52777778;
 	if (pPF->lineSpacing.is_init())
 	{
-		LONG val = pPF->lineSpacing.get();
+        LONG val = pPF->lineSpacing.get();
 		if (val > 0)
 		{
 			std::wstring str = std::to_wstring( (int)(val * 0.125 * 100/*/ dKoef1*/));
@@ -164,7 +164,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	}
 	if (pPF->spaceAfter.is_init())
 	{
-		LONG val = pPF->spaceAfter.get();
+        LONG val = pPF->spaceAfter.get();
 		if (val > 0)
 		{
 			std::wstring str = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
@@ -178,7 +178,7 @@ void CStylesWriter::ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLe
 	}
 	if (pPF->spaceBefore.is_init())
 	{
-		LONG val = pPF->spaceBefore.get();
+        LONG val = pPF->spaceBefore.get();
 		if (val > 0)
 		{
 			std::wstring str = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
@@ -1158,8 +1158,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 	oInfo.m_bFlipH	= m_pShapeElement->m_bFlipH;
 	oInfo.m_bFlipV	= m_pShapeElement->m_bFlipV;
 
-	oInfo.m_lOriginalWidth	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetWidth();
-	oInfo.m_lOriginalHeight	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetHeight();
+    oInfo.m_lOriginalWidth	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetWidth();
+    oInfo.m_lOriginalHeight	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetHeight();
 
 	m_oWriter.WriteString(std::wstring(L"<p:spPr>"));
 
@@ -1280,8 +1280,8 @@ CString NSPresentationEditor::CShapeWriter::ConvertImage()
 	oInfo.m_bFlipH	= m_pImageElement->m_bFlipH;
 	oInfo.m_bFlipV	= m_pImageElement->m_bFlipV;
 
-	oInfo.m_lOriginalWidth	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetWidth();
-	oInfo.m_lOriginalHeight	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetHeight();
+    oInfo.m_lOriginalWidth	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetWidth();
+    oInfo.m_lOriginalHeight	= (LONG)m_pImageElement->m_rcBoundsOriginal.GetHeight();
 
 	m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 		
@@ -1432,7 +1432,7 @@ HRESULT NSPresentationEditor::CShapeWriter::get_DpiY(double* dDpiY)
 	return S_OK;
 }
 // pen --------------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetPen(BSTR bsXML)
+HRESULT NSPresentationEditor::CShapeWriter::SetPen(std::wstring bsXML)
 {
 	//m_oPen.FromXmlString((CString)bsXML);
 	return S_OK;
@@ -1550,7 +1550,7 @@ HRESULT NSPresentationEditor::CShapeWriter::PenDashPattern(double* pPattern, LON
 	return S_OK;
 }
 // brush ------------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetBrush(BSTR bsXML)
+HRESULT NSPresentationEditor::CShapeWriter::SetBrush(std::wstring bsXML)
 {
 	//m_oBrush.FromXmlString((CString)bsXML);
 	return S_OK;
@@ -1670,7 +1670,7 @@ HRESULT NSPresentationEditor::CShapeWriter::put_BrushGradientColors(LONG* lColor
 	return S_OK;
 }
 // font -------------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetFont(BSTR bsXML)
+HRESULT NSPresentationEditor::CShapeWriter::SetFont(std::wstring bsXML)
 {
 	//m_oFont.FromXmlString((CString)bsXML);
 	return S_OK;
@@ -1747,7 +1747,7 @@ HRESULT NSPresentationEditor::CShapeWriter::put_FontFaceIndex(const int& lFaceIn
 	return S_OK;
 }
 // shadow -----------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetShadow(BSTR bsXML)
+HRESULT NSPresentationEditor::CShapeWriter::SetShadow(std::wstring bsXML)
 {
 	//m_oShadow.FromXmlString((CString)bsXML);
 	return S_OK;
@@ -1813,7 +1813,7 @@ HRESULT NSPresentationEditor::CShapeWriter::put_ShadowVisible(bool val)
 	return S_OK;
 }
 // edge -------------------------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetEdgeText(BSTR bsXML)
+HRESULT NSPresentationEditor::CShapeWriter::SetEdgeText(std::wstring bsXML)
 {
 	//m_oEdge.FromXmlString((CString)bsXML);
 	return S_OK;
@@ -2171,15 +2171,6 @@ HRESULT NSPresentationEditor::CShapeWriter::get_ClipMode(LONG* plMode)
 HRESULT NSPresentationEditor::CShapeWriter::put_ClipMode(const LONG& lMode)
 {
 	m_lClipMode = lMode;
-	return S_OK;
-}
-// additiaonal params ----------------------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
-{
-	return S_OK;
-}
-HRESULT NSPresentationEditor::CShapeWriter::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
-{
 	return S_OK;
 }
 // --------------------------------------------------------------------------------------------

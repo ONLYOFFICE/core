@@ -85,6 +85,7 @@ bool COfficePPTFile::CloseFile()
 	m_pReader = NULL;
 	return S_OK;
 }
+
 HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath)
 {
     if (m_strTempDirectory.length() < 1)
@@ -112,13 +113,7 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	return S_OK;
 }
 
-HRESULT COfficePPTFile::GetAdditionalParam (CString sParamName, VARIANT* ParamValue)
-{
-	if (NULL == ParamValue)
-		return S_FALSE;
 
-	return S_OK;
-}
 
 CString COfficePPTFile::GetDirectory(CString strFileName)
 {

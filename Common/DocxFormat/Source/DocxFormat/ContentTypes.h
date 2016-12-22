@@ -305,7 +305,8 @@ namespace OOX
 		void Registration(const CString& sType, const CPath& oDirectory, const CPath& oFilename)
 		{
             OOX::CPath oFullPath = oDirectory / oFilename;
-			AddOverride( sType, oFullPath.m_strFilename.c_str() );
+
+            AddOverride( sType, oFullPath.m_strFilename );
 			AddDefault ( oFullPath );
 		}
 
@@ -354,12 +355,12 @@ namespace OOX
 			}
 			return true;
 		}
-        void AddOverride(const CString& sType, const CString& sPath)
+        void AddOverride(const CString& sType, CString sPath)
 		{
 #if !defined(_WIN32) && !defined (_WIN64)
-            if (sPath.GetAt(0) ==  FILE_SEPARATOR_CHAR)
+            if (sPath[0] ==  FILE_SEPARATOR_CHAR)
             {
-                sPath.Delete(0,1);
+                sPath.Delete(0);
             }
 #endif
 			ContentTypes::COverride oOverride( sType, sPath );

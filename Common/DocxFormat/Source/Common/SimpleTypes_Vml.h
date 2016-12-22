@@ -4722,11 +4722,6 @@ namespace SimpleTypes
 				FromString( sValue );
 				return *this;
 			}
-			const CVml_Polygon2D_Units &operator =(const BSTR &bsValue)
-			{
-				FromString( bsValue );
-				return *this;
-			}
 			const CVml_Polygon2D_Units &operator =(const wchar_t* cwsString)
 			{
 				FromString( cwsString );
@@ -4928,11 +4923,6 @@ namespace SimpleTypes
 				ResetMatrix();
 				FromString( oOther.ToString() );
 			}
-			CVml_Matrix(const BSTR &bsValue)\
-			{
-				ResetMatrix();
-				FromString( bsValue );
-			}
 			CVml_Matrix(CString &sValue)
 			{
 				ResetMatrix();
@@ -4951,11 +4941,6 @@ namespace SimpleTypes
 			const CVml_Matrix &operator =(CString &sValue)
 			{
 				FromString( sValue );
-				return *this;
-			}
-			const CVml_Matrix &operator =(const BSTR &bsValue)
-			{
-				FromString( bsValue );
 				return *this;
 			}
 			const CVml_Matrix &operator =(const wchar_t* cwsString)

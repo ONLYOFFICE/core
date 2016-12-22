@@ -190,9 +190,10 @@ namespace OOX
                             if(!sAdditionalContentTypes.IsEmpty())
                             {
                                 CString sAdditionalContentTypesWrapped;
-                                sAdditionalContentTypesWrapped.Append(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"));
-                                sAdditionalContentTypesWrapped.Append(sAdditionalContentTypes);
-                                sAdditionalContentTypesWrapped.Append(_T("</Types>"));
+
+                                sAdditionalContentTypesWrapped += L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+                                sAdditionalContentTypesWrapped += sAdditionalContentTypes;
+                                sAdditionalContentTypesWrapped += L"</Types>";
                                 OOX::CContentTypes oTempContentTypes;
 
                                 oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);

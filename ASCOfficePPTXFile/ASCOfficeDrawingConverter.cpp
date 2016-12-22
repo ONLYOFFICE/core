@@ -798,21 +798,14 @@ CElementProps::~CElementProps()
 }
 void CElementProps::FinalRelease()
 {
-#if defined(_WIN32) || defined (_WIN64) // linux: BSTR = CString
-	for (std::map<LONG, VARIANT>::iterator pPair = m_Properties.begin(); pPair != m_Properties.end(); ++pPair)
-	{
-		if (pPair->second.vt == VT_BSTR)
-			SysFreeString(pPair->second.bstrVal);
-	}
-#endif
 	m_Properties.clear();
 }
-HRESULT CElementProps::GetProperty(LONG lId, VARIANT* pProp)
+HRESULT CElementProps::GetProperty(LONG lId, ASC_VARIANT* pProp)
 {
 	if (NULL == pProp)
 		return S_FALSE;
 
-	std::map<LONG, VARIANT>::iterator pPair = m_Properties.find(lId);
+    std::map<LONG, ASC_VARIANT>::iterator pPair = m_Properties.find(lId);
 	if (m_Properties.end() == pPair)
 		return S_FALSE;
 
@@ -825,26 +818,18 @@ HRESULT CElementProps::GetProperty(LONG lId, VARIANT* pProp)
 
 	return S_OK;
 }
-HRESULT CElementProps::SetProperty(LONG lId, VARIANT prop)
+HRESULT CElementProps::SetProperty(LONG lId, ASC_VARIANT prop)
 {
-	VARIANT var;
+    ASC_VARIANT var;
 	bool bIsSupportProp = CopyProperty(var, prop);
-	if (!bIsSupportProp)
+
+    if (!bIsSupportProp)
 		return S_FALSE;
 
-#if defined(_WIN32) || defined (_WIN64)
-	std::map<LONG, VARIANT>::iterator pPair = m_Properties.find(lId);
-	if (m_Properties.end() != pPair)
-	{
-		if (pPair->second.vt == VT_BSTR)
-			SysFreeString(pPair->second.bstrVal);
-	}
-#endif
-
-	m_Properties.insert(std::pair<LONG, VARIANT>(lId, var));
+    m_Properties.insert(std::pair<LONG, ASC_VARIANT>(lId, var));
 	return S_OK;
 }
-bool CElementProps::CopyProperty(VARIANT& oDst, const VARIANT& oSrc)
+bool CElementProps::CopyProperty(ASC_VARIANT& oDst, const ASC_VARIANT& oSrc)
 {
 	oDst.vt = oSrc.vt;
 	switch (oDst.vt)
@@ -861,11 +846,8 @@ bool CElementProps::CopyProperty(VARIANT& oDst, const VARIANT& oSrc)
 		}
 	case VT_BSTR:
 		{
-#if defined(_WIN32) || defined (_WIN64)
-			oDst.bstrVal = SysAllocString(oSrc.bstrVal);
-#else
-            oDst.bstrVal = oSrc.bstrVal;
-#endif
+
+            oDst.strVal = oSrc.strVal;
 			break;
 		}
 	default:
@@ -5043,6 +5025,7 @@ HRESULT CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
 	m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
 	return S_OK;
 }
+
 HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE *pArray, size_t szCount)
 {
     CString name = (CString)ParamName;
@@ -5058,55 +5041,12 @@ HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE *pA
     }
     if (name == L"xfrm_override" && pArray)
     {
-		PPTX::Logic::Xfrm *pXfrm = (PPTX::Logic::Xfrm*)pArray;
+        PPTX::Logic::Xfrm *pXfrm = (PPTX::Logic::Xfrm*)pArray;
 		
-		m_oxfrm_override = new PPTX::Logic::Xfrm(*pXfrm);
-	}
+        m_oxfrm_override = new PPTX::Logic::Xfrm(*pXfrm);
+    }
     return S_OK;
 
-}
-HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, VARIANT ParamValue)
-{
-	CString name = (CString)ParamName;
-    if (name == L"SourceFileDir")
-	{
-		m_pReader->m_pRels->m_pManager = m_pImageManager;
-        m_pImageManager->m_bIsWord = true;
-		m_pReader->m_strFolder = CString(ParamValue.bstrVal);
-	}
-    else if (name == L"SourceFileDir2")
-	{
-		m_pReader->m_pRels->m_pManager = m_pImageManager;
-        m_pImageManager->m_bIsWord = false;
-		m_pReader->m_strFolder = CString(ParamValue.bstrVal);
-	}
-    else if (name == L"UseConvertion2007")
-	{
-		m_bIsUseConvertion2007 = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;
-	}
-    else if (name == L"SerializeImageManager")
-	{
-        // moved to CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
-        return S_FALSE;
-        //NSBinPptxRW::CBinaryFileReader oReader;
-        //oReader.Deserialize(m_pBinaryWriter->m_pCommon->m_pImageManager, ParamValue.parray);
-	}
-    else if (name == L"SerializeImageManager2")
-	{
-        // moved to CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
-        return S_FALSE;
-        //NSBinPptxRW::CBinaryFileReader oReader;
-        //oReader.Deserialize(m_pImageManager, ParamValue.parray);
-    }
-    else if (name == L"DocumentChartsCount" && ParamValue.vt == VT_I4)
-	{
-		m_pReader->m_lChartNumber = ParamValue.lVal + 1;
-	}
-    else if (name == L"ObjectIdVML" && ParamValue.vt == VT_I4)
-	{
-		m_pXmlWriter->m_lObjectIdVML = ParamValue.lVal;
-	}
-	return S_OK;
 }
 HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
 {
@@ -5125,64 +5065,50 @@ HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, BYTE **p
     }
     return S_OK;
 }
-HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT* ParamValue)
+void CDrawingConverter::SetObjectIdVML(int val)
 {
-	CString name = (CString)ParamName;
-
-    if (name == L"SerializeImageManager")
-	{
-        // moved to GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
-        return S_FALSE;
-        /*
-		NSBinPptxRW::CBinaryFileWriter oWriter;
-
-		ParamValue->vt = VT_ARRAY;
-		ParamValue->parray = oWriter.Serialize(m_pBinaryWriter->m_pCommon->m_pImageManager);
-        */
-	}
-    else if (name == L"SerializeImageManager2")
-	{
-        // moved to GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
-        return S_FALSE;
-        /*
-		NSBinPptxRW::CBinaryFileWriter oWriter;
-
-		ParamValue->vt = VT_ARRAY;
-		ParamValue->parray = oWriter.Serialize(m_pImageManager);
-        */
-	}
-    else if (name == L"DocumentChartsCount")
-	{
-		ParamValue->vt = VT_I4;
-		ParamValue->lVal = m_pReader->m_lChartNumber - 1;
-	}
-    else if (name == L"ObjectIdVML")
-	{
-		ParamValue->vt = VT_I4;
-		ParamValue->lVal = m_pXmlWriter->m_lObjectIdVML;
-	}
-    else if (name == L"OleXlsx")
-	{
-		ParamValue->vt		= VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-		BSTR val = SysAllocString(m_pXmlWriter->m_strOleXlsx.c_str());
-		ParamValue->bstrVal = val;
-		SysFreeString(val);
-#else
-		ParamValue->bstrVal = m_pXmlWriter->m_strOleXlsx;
-#endif
-	}
-    else if (name == L"ContentTypes")
-	{
-		ParamValue->vt = VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-		ParamValue->bstrVal = m_pReader->m_strContentTypes.AllocSysString();
-#else
-        ParamValue->bstrVal = m_pReader->m_strContentTypes;
-#endif
-	}
-	return S_OK;
+    m_pXmlWriter->m_lObjectIdVML = val;
 }
+
+int CDrawingConverter::GetObjectIdVML()
+{
+    return m_pXmlWriter->m_lObjectIdVML;
+}
+
+void CDrawingConverter::SetDocumentChartsCount (int val)
+{
+    m_pReader->m_lChartNumber = val + 1;
+}
+int CDrawingConverter::GetDocumentChartsCount ()
+{
+    return m_pReader->m_lChartNumber - 1;
+}
+
+std::wstring CDrawingConverter::GetContentTypes()
+{
+    return m_pReader->m_strContentTypes;
+}
+
+std::wstring CDrawingConverter::GetOleXlsx()
+{
+    return m_pXmlWriter->m_strOleXlsx;
+}
+
+void CDrawingConverter::SetSourceFileDir(std::wstring path, int type)
+{
+    m_pReader->m_pRels->m_pManager  = m_pImageManager;
+    m_pReader->m_strFolder          = path;
+
+    if (type == 1)
+    {
+        m_pImageManager->m_bIsWord = true;
+    }
+    else if (type ==2)
+    {
+        m_pImageManager->m_bIsWord = false;
+    }
+}
+
 void CDrawingConverter::Clear()
 {
 	for (std::map<CString, CShape*>::iterator pPair = m_mapShapeTypes.begin(); pPair != m_mapShapeTypes.end(); ++pPair)

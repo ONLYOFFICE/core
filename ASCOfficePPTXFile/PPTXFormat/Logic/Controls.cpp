@@ -114,7 +114,6 @@ namespace PPTX
 				CString *main_props = NULL;
 
 				oDrawingConverter.SetRelsPath(rels);
-				//oDrawingConverter.SetAdditionalParam(_T("xfrm_override"), (BYTE*)&xfrm, sizeof(xfrm));
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
 				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)

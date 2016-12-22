@@ -33,30 +33,24 @@
 #define _ASCVARIANT_H_
 
 #include "Types.h"
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"  // TODO: move ASCString to DecktopEditor/commmon directory
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 
-// VARIANT
-#if !defined(_WIN32) && !defined(_WIN64)
+typedef short ASC_VARIANT_BOOL;
 
-// 0 == FALSE, -1 == TRUE
-typedef short VARIANT_BOOL;
-
-#define VARIANT_TRUE ((VARIANT_BOOL)-1)
-#define VARIANT_FALSE ((VARIANT_BOOL)0)
-
-enum VARENUM
-    {	VT_EMPTY	= 0,
-    VT_NULL	= 1,
-    VT_I2	= 2,
-    VT_I4	= 3,
-    VT_R4	= 4,
-    VT_R8	= 5,
-    VT_CY	= 6,
-    VT_DATE	= 7,
-    VT_BSTR	= 8,
+enum ASC_VARENUM
+    {
+    VT_EMPTY	= 0,
+    VT_NULL     = 1,
+    VT_I2       = 2,
+    VT_I4       = 3,
+    VT_R4       = 4,
+    VT_R8       = 5,
+    VT_CY       = 6,
+    VT_DATE     = 7,
+    VT_BSTR     = 8,
     VT_DISPATCH	= 9,
     VT_ERROR	= 10,
-    VT_BOOL	= 11,
+    VT_BOOL     = 11,
     VT_VARIANT	= 12,
     VT_UNKNOWN	= 13,
     VT_DECIMAL	= 14,
@@ -99,21 +93,21 @@ enum VARENUM
     VT_TYPEMASK	= 0xfff
     } ;
 
-typedef VARIANT_BOOL _VARIANT_BOOL;
 
-typedef unsigned short VARTYPE;
+typedef unsigned short ASC_VARTYPE;
 
-struct VARIANT
+struct ASC_VARIANT
 {
-    VARTYPE vt;
-    LONG64 llVal;//LONGLONG llVal;
-    LONG lVal;
-    BYTE bVal;
-    SHORT iVal;
-    FLOAT fltVal;
-    BSTR bstrVal;
-    VARIANT_BOOL boolVal;
-    double dblVal;
+    ASC_VARTYPE     vt;
+
+    LONG64          llVal;
+    LONG            lVal;
+    BYTE            bVal;
+    SHORT           iVal;
+    FLOAT           fltVal;
+    std::wstring    strVal;
+    bool            boolVal;
+    double          dblVal;
 };
 /*
 struct tagVARIANT
@@ -184,13 +178,11 @@ struct tagVARIANT
         } 	__VARIANT_NAME_1;
     } ;
     */
-typedef VARIANT *LPVARIANT;
+typedef ASC_VARIANT *ASC_LPVARIANT;
 
-typedef VARIANT VARIANTARG;
+typedef ASC_VARIANT ASC_VARIANTARG;
 
-typedef VARIANT *LPVARIANTARG;
+typedef ASC_VARIANT *ASC_LPVARIANTARG;
 
-
-#endif // #ifndef _WIN32
 
 #endif //_ASCVARIANT_H_

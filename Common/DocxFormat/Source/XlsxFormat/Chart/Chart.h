@@ -83,13 +83,12 @@ namespace OOX
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
-			virtual void write2(CString& sFilename) const
+            virtual void write2(const std::wstring& sFilename) const
 			{
 				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				toXML(sXml);
-				NSFile::CFileBinary::SaveToFile(sFilename.GetBuffer(), sXml.GetData());
-				sFilename.ReleaseBuffer();
+                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{

@@ -66,8 +66,8 @@ namespace NSPresentationEditor
 	class CInteractiveInfo
 	{
 	private:
-		long	m_lType;
-        VARIANT m_varParameter;
+        long        m_lType;
+        ASC_VARIANT m_varParameter;
 		
 	public:
 		bool	m_bPresent;

@@ -9,7 +9,7 @@ win32 {
 }
 
 mac {
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.11
 }
 
 CORE_ROOT_DIR = $$PWD/..

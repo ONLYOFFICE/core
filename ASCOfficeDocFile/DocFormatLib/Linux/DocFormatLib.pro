@@ -32,7 +32,7 @@ INCLUDEPATH += \
 	../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.11
 }
 
 SOURCES +=  \

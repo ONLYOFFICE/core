@@ -52,7 +52,7 @@ namespace XmlUtils
 {
 	AVSINLINE std::wstring GetNamespace(std::wstring & strNodeName)
 	{
-		int nFind = strNodeName.find(_T(':'));
+		int nFind = (int)strNodeName.find(_T(':'));
 		if (-1 == nFind)
 			return _T("");
 		return strNodeName.substr(0, nFind);
@@ -73,14 +73,14 @@ namespace XmlUtils
 	}
 	AVSINLINE std::wstring GetNameNoNS(const std::wstring & strNodeName)
 	{
-		int nFind = strNodeName.find(_T(':'));
+		int nFind = (int)strNodeName.find(_T(':'));
 		if (-1 == nFind)
 			return strNodeName;
 		return strNodeName.substr(nFind + 1);
 	}
 	AVSINLINE CString GetNameNoNS(const CString& strNodeName)
 	{
-		int nFind = strNodeName.Find(TCHAR(':'));
+		int nFind = (int)strNodeName.Find(TCHAR(':'));
 		if (-1 == nFind)
 			return strNodeName;
 		return strNodeName.Mid(nFind + 1);

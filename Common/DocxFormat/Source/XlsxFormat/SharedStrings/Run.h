@@ -64,8 +64,11 @@ namespace OOX
 				writer.WriteString(_T("<r>"));
 				if(m_oRPr.IsInit())
 					m_oRPr->toXML(writer);
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
+				{
 					m_arrItems[i]->toXML(writer);
+				}
 				writer.WriteString(_T("</r>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

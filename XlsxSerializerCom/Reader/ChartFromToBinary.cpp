@@ -38,8 +38,9 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Theme/ThemeOverride.h"
 
 using namespace OOX::Spreadsheet;
-namespace BinXlsxRW{
-	SaveParams::SaveParams(const CString& _sThemePath)
+namespace BinXlsxRW
+{
+	SaveParams::SaveParams(const std::wstring& _sThemePath)
 	{
         sThemePath          = _sThemePath;
 		nThemeOverrideCount = 1;
@@ -998,7 +999,7 @@ namespace BinXlsxRW{
                 nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 			{
-                std::wstring sContentTypesPath = m_oSaveParams.sThemePath.Right(nIndex);
+                std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex);
                 boost::algorithm::replace_all(sContentTypesPath, L"\\", L"/");
 
                 std::wstring strType = L"<Override PartName=\"/";

@@ -2122,8 +2122,7 @@ namespace NSGuidesVML
 			std::vector<CString> oArray;
 			NSStringUtils::ParseString(_T("e"), strPath, &oArray);
 
-			int nSizeArr = oArray.size();
-			for (int nIndex = 0; nIndex < nSizeArr; ++nIndex)
+			for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				const CPartPath& oPart = oPath.m_arParts[nIndex];
 				m_lWidth = oPart.width;
@@ -2132,8 +2131,7 @@ namespace NSGuidesVML
 				bool bStroke = false;
 				CString strValue;
 				FromXML(oArray[nIndex], bFill, bStroke);
-				LONG nCountSlices = m_arSlicesPath.size();
-
+				
 				m_oPathRes.StartNode(_T("a:path"));
 				m_oPathRes.StartAttributes();
 				m_oPathRes.WriteAttribute(_T("w"), m_lWidth);
@@ -2145,7 +2143,7 @@ namespace NSGuidesVML
 					m_oPathRes.WriteAttribute(_T("fill"), (CString)_T("none"));
 				m_oPathRes.EndAttributes();
 				
-				for (int i = 0; i < nCountSlices; ++i)
+				for (size_t i = 0; i < m_arSlicesPath.size(); ++i)
 				{
 					CSlicePath& oSlice = m_arSlicesPath[i];
 					
@@ -2235,10 +2233,10 @@ namespace NSGuidesVML
 
 		void ConvertHandle(const std::vector<CHandle_>& arHandles, std::vector<long>& arAdj, PPTShapes::ShapeType oSType)
 		{
-			LONG nHandlesCount = arHandles.size();
+			size_t nHandlesCount = arHandles.size();
 			if (oSType == 19) // в пптх не реализована функция изменения размера шейпа при изменении handle
 				nHandlesCount = 0;
-			for (int i = 0; i < nHandlesCount; ++i)
+			for (size_t i = 0; i < nHandlesCount; ++i)
 			{
 				const CHandle_& pHnPoint = arHandles[i];
 				std::vector<CString> arPos;
@@ -2303,8 +2301,7 @@ namespace NSGuidesVML
 							{
 								double dScale = (double)pow3_16 / m_oParam.m_lCoef;
 
-								LONG nCountAdj = arAdj.size();
-								if (oHandle.gdRef.y >= nCountAdj)
+								if (oHandle.gdRef.y >= arAdj.size())
 								{
 									// дурацкий код. надо память перевыделить, а старую скопировать
 									// пока сделаю так, чтобы наверняка
@@ -2952,8 +2949,7 @@ namespace NSGuidesVML
 
 		void ConvertSlice_MoveTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; ++j)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); ++j)
 			{
 				pCurPoint		= oSlice.m_arPoints[j];
 				pCurPointType	= oSlice.m_arPointsType[j];
@@ -2974,8 +2970,7 @@ namespace NSGuidesVML
 
 		void ConvertSlice_RMoveTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j++)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j++)
 			{
 				pCurPoint		= oSlice.m_arPoints[j];
 				pCurPointType	= oSlice.m_arPointsType[j];
@@ -2996,8 +2991,7 @@ namespace NSGuidesVML
 
 		void ConvertSlice_LineTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j++)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j++)
 			{
 				pCurPoint = oSlice.m_arPoints[j];
 				pCurPointType = oSlice.m_arPointsType[j];
@@ -3018,8 +3012,7 @@ namespace NSGuidesVML
 
 		void ConvertSlice_RLineTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j++)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j++)
 			{
 				pCurPoint = oSlice.m_arPoints[j];
 				pCurPointType = oSlice.m_arPointsType[j];
@@ -3040,16 +3033,16 @@ namespace NSGuidesVML
 
 		void ConvertSlice_ArcTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
 			LONG nIndex = 0;
 			LONG nIndex1 = 0;
 			LONG nIndex2 = 0;
-			for (int j = 0; j < nCountPoints; j+=4)
+			
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j+=4)
 			{
-				pCurPoint = oSlice.m_arPoints[j];
-				pCurPointType = oSlice.m_arPointsType[j];
-				pCurPoint1 = oSlice.m_arPoints[j+1];
-				pCurPointType1 = oSlice.m_arPointsType[j+1];
+				pCurPoint		= oSlice.m_arPoints[j];
+				pCurPointType	= oSlice.m_arPointsType[j];
+				pCurPoint1		= oSlice.m_arPoints[j+1];
+				pCurPointType1	= oSlice.m_arPointsType[j+1];
 
 				//длина сторон
 				m_lIndexSrc++;
@@ -3301,16 +3294,16 @@ namespace NSGuidesVML
 
 		void ConvertSlice_ClockwiseTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
 			LONG nIndex = 0;
 			LONG nIndex1 = 0;
 			LONG nIndex2 = 0;
-			for (int j = 0; j < nCountPoints; j += 4)
+		
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 4)
 			{
-				pCurPoint = oSlice.m_arPoints[j];
-				pCurPointType = oSlice.m_arPointsType[j];
-				pCurPoint1 = oSlice.m_arPoints[j+1];
-				pCurPointType1 = oSlice.m_arPointsType[j+1];
+				pCurPoint		= oSlice.m_arPoints[j];
+				pCurPointType	= oSlice.m_arPointsType[j];
+				pCurPoint1		= oSlice.m_arPoints[j+1];
+				pCurPointType1	= oSlice.m_arPointsType[j+1];
 
 				//длина сторон
 				m_lIndexSrc++;
@@ -3546,10 +3539,9 @@ namespace NSGuidesVML
 
 		void ConvertSlice_QuadrBesier(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j += 2)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 2)
 			{
-				int l = nCountPoints - j - 3;
+				int l = (int)oSlice.m_arPoints.size() - j - 3;
 				if (l >= 0)
 				{
 					m_oPathRes.WriteString(_T("<a:quadBezTo>"));
@@ -3568,7 +3560,7 @@ namespace NSGuidesVML
 				}
 				else 
 				{									
-					for (int k = 0; k < nCountPoints - j; ++k)
+					for (size_t k = 0; k < oSlice.m_arPoints.size() - j; ++k)
 					{
 						pCurPoint = oSlice.m_arPoints[j+k];
 						pCurPointType = oSlice.m_arPointsType[j+k];
@@ -3590,12 +3582,11 @@ namespace NSGuidesVML
 
 		void ConvertSlice_CurveTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
 			LONG nIndex = 0;
-			for (int j = 0; j < nCountPoints; j += 3)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
 			{
-				int l = nCountPoints - j - 3;
-				if ( l>=0 )
+				int l = (int)oSlice.m_arPoints.size() - j - 3;
+				if ( l >= 0 )
 				{
 					m_oPathRes.WriteString(_T("<a:cubicBezTo>"));
 					for (int k = 0; k < 3; ++k)
@@ -3613,7 +3604,7 @@ namespace NSGuidesVML
 				}
 				else 
 				{									
-					for (int k=0; k<nCountPoints-j; ++k)
+					for (size_t k = 0; k < oSlice.m_arPoints.size() - j; ++k)
 					{
 						m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
@@ -3632,13 +3623,12 @@ namespace NSGuidesVML
 
 		void ConvertSlice_RCurveTo(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
 			LONG nIndex = 0;
-			for (int j = 0; j < nCountPoints; j += 3)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
 			{
 				nIndex = m_arIndexDst[m_lIndexSrc];
 
-				int l = nCountPoints - j - 3;
+				int l = (int)oSlice.m_arPoints.size() - j - 3;
 				if (l >= 0)
 				{
 					m_oPathRes.WriteString(_T("<a:cubicBezTo>"));						
@@ -3662,10 +3652,10 @@ namespace NSGuidesVML
 				}
 				else 
 				{									
-					for (int k=0; k<nCountPoints-j; ++k)
+					for (size_t k=0; k < oSlice.m_arPoints.size() - j; ++k)
 					{
-						pCurPoint = oSlice.m_arPoints[j+k];
-						pCurPointType = oSlice.m_arPointsType[j+k];
+						pCurPoint		= oSlice.m_arPoints[j+k];
+						pCurPointType	= oSlice.m_arPointsType[j+k];
 
 						m_lIndexSrc++;
 						ConvertSum(nIndex-1, ptFormula, pCurPoint.x, pCurPointType.x, 0, ptValue, true, false, true, m_oGuidsRes);
@@ -3691,16 +3681,16 @@ namespace NSGuidesVML
 
 		void ConvertSlice_AngleEllipse(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
 			LONG nIndex = 0;
 			LONG nIndex1 = 0;
 			LONG nIndex2 = 0;
-			for (int j = 0; j < nCountPoints; j += 3)
+			
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
 			{
-				pCurPoint = oSlice.m_arPoints[j+1];
-				pCurPointType = oSlice.m_arPointsType[j+1];
-				pCurPoint1 = oSlice.m_arPoints[j+2];
-				pCurPointType1 = oSlice.m_arPointsType[j+2];
+				pCurPoint		= oSlice.m_arPoints[j+1];
+				pCurPointType	= oSlice.m_arPointsType[j+1];
+				pCurPoint1		= oSlice.m_arPoints[j+2];
+				pCurPointType1	= oSlice.m_arPointsType[j+2];
 
 				//конвертация углов в pptx формат
 				m_lIndexSrc++;
@@ -3820,14 +3810,14 @@ namespace NSGuidesVML
 
 		void ConvertSlice_EllipticalQuadrX(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j += 2)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 2)
 			{
-				pCurPoint = oSlice.m_arPoints[j];
-				pCurPointType = oSlice.m_arPointsType[j];
+				pCurPoint		= oSlice.m_arPoints[j];
+				pCurPointType	= oSlice.m_arPointsType[j];
+				
 				ConvertQuadrX(pCurPoint, pCurPointType);
 				
-				if (j+1 < nCountPoints)
+				if (j + 1 < oSlice.m_arPoints.size())
 				{
 					pCurPoint1 = oSlice.m_arPoints[j+1];
 					pCurPointType1 = oSlice.m_arPointsType[j+1];
@@ -3838,14 +3828,13 @@ namespace NSGuidesVML
 
 		void ConvertSlice_EllipticalQuadrY(const CSlicePath& oSlice)
 		{
-			int nCountPoints = oSlice.m_arPoints.size();
-			for (int j = 0; j < nCountPoints; j += 2)
+			for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 2)
 			{
 				pCurPoint = oSlice.m_arPoints[j];
 				pCurPointType = oSlice.m_arPointsType[j];
 				ConvertQuadrY(pCurPoint, pCurPointType);
 
-				if (j+1 < nCountPoints)
+				if (j + 1 < oSlice.m_arPoints.size())
 				{
 					pCurPoint1 = oSlice.m_arPoints[j+1];
 					pCurPointType1 = oSlice.m_arPointsType[j+1];

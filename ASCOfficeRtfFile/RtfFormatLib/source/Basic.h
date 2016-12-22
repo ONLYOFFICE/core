@@ -203,9 +203,11 @@ template<class T> class ItemSingleContainer: public ItemContainer<T>
 public: 
     int AddItem( T piRend)
 	{
-        for( int i = 0; i < ItemContainer<T>::m_aArray.size(); i++ )
+        for( size_t i = 0; i < ItemContainer<T>::m_aArray.size(); i++ )
+		{
             if( ItemContainer<T>::m_aArray[i] == piRend )
 				return i;
+		}
         ItemContainer<T>::m_aArray.push_back(piRend);
         return (int)ItemContainer<T>::m_aArray.size() - 1;
 	}

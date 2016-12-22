@@ -316,7 +316,7 @@ namespace StreamUtils
 		BYTE lMem = 0;
 		ULONG lReadByte = 0;
 		
-		lReadByte = pStream->read(&lMem, 1);
+		lReadByte = (ULONG)pStream->read(&lMem, 1);
 		if (lReadByte < 1)
 		{
 			lMem = 0;
@@ -331,7 +331,7 @@ namespace StreamUtils
 		BYTE pMem[2];
 		ULONG lReadByte = 0;
 	
-		lReadByte = pStream->read(pMem, 2);
+		lReadByte = (ULONG)pStream->read(pMem, 2);
 		if (lReadByte == 2)
 		{
 			lWord = ((pMem[1] << 8) | pMem[0]);
@@ -470,7 +470,7 @@ namespace CDirectory
 {
 	static std::wstring GetFolderName(std::wstring strFolderPath)
 	{
-		int n1 = strFolderPath.rfind('\\');
+		int n1 = (int)strFolderPath.rfind('\\');
 		if (-1 == n1)
 			return _T("");
 
@@ -478,7 +478,7 @@ namespace CDirectory
 	}
 	static std::wstring GetFolderPath(std::wstring strFolderPath)
 	{
-		int n1 = strFolderPath.rfind('\\');
+		int n1 = (int)strFolderPath.rfind('\\');
 		if (-1 == n1)
 			return _T("");
 
@@ -620,7 +620,7 @@ namespace CDirectory
 		
 		CFile oFile;
 		oFile.CreateFile(strFileName);
-		oFile.WriteFile((void*)saStr.c_str(), saStr.length());
+		oFile.WriteFile((void*)saStr.c_str(), (DWORD)saStr.length());
 		oFile.CloseFile();
 	}
 
@@ -633,7 +633,7 @@ namespace CDirectory
 			oFile.CreateFile(strFileName);
 
 		oFile.SkipBytes(oFile.GetFileSize());
-		oFile.WriteFile((void*)strVal.c_str(), strVal.length());
+		oFile.WriteFile((void*)strVal.c_str(), (DWORD)strVal.length());
 		oFile.CloseFile();
 	}
 }

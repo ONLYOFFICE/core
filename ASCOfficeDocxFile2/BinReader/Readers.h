@@ -33,13 +33,14 @@
 #define READERS
 
 #include "FileWriter.h"
-#include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
+
+#include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
-#include "../../DesktopEditor/common/ASCVariant.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 namespace BinDocxRW {
 

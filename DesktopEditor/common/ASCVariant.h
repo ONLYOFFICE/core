@@ -29,13 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _ASCVARIANT_H_
-#define _ASCVARIANT_H_
+#pragma once
 
 #include "Types.h"
 #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-
-typedef short ASC_VARIANT_BOOL;
 
 enum ASC_VARENUM
     {
@@ -46,15 +43,12 @@ enum ASC_VARENUM
         ASC_VT_R8       = 5,
         ASC_VT_STR      = 8,
         ASC_VT_BOOL     = 11,
-        ASC_VT_DECIMAL	= 14,
         ASC_VT_I1       = 16,
         ASC_VT_UI1      = 17,
         ASC_VT_UI2      = 18,
         ASC_VT_UI4      = 19,
         ASC_VT_I8       = 20,
-        ASC_VT_UI8      = 21,
-        ASC_VT_INT      = 22,
-        ASC_VT_UINT     = 23,
+        ASC_VT_UI8      = 21
     } ;
 
 
@@ -62,6 +56,7 @@ typedef unsigned short ASC_VARTYPE;
 
 struct ASC_VARIANT
 {
+	ASC_VARIANT() : vt(ASC_VT_EMPTY), llVal(0), lVal(0), bVal(0), iVal(0), fltVal(0), dblVal(0), boolVal(false) {}
     ASC_VARTYPE     vt;
 
     LONG64          llVal;
@@ -73,80 +68,3 @@ struct ASC_VARIANT
     bool            boolVal;
     double          dblVal;
 };
-/*
-struct tagVARIANT
-    {
-    union
-        {
-        struct __tagVARIANT
-            {
-            VARTYPE vt;
-            WORD wReserved1;
-            WORD wReserved2;
-            WORD wReserved3;
-            union
-                {
-                LONGLONG llVal;
-                LONG lVal;
-                BYTE bVal;
-                SHORT iVal;
-                FLOAT fltVal;
-                DOUBLE dblVal;
-                VARIANT_BOOL boolVal;
-                _VARIANT_BOOL bool;
-                SCODE scode;
-                CY cyVal;
-                DATE date;
-                BSTR bstrVal;
-                IUnknown *punkVal;
-                IDispatch *pdispVal;
-                SAFEARRAY *parray;
-                BYTE *pbVal;
-                SHORT *piVal;
-                LONG *plVal;
-                LONGLONG *pllVal;
-                FLOAT *pfltVal;
-                DOUBLE *pdblVal;
-                VARIANT_BOOL *pboolVal;
-                _VARIANT_BOOL *pbool;
-                SCODE *pscode;
-                CY *pcyVal;
-                DATE *pdate;
-                BSTR *pbstrVal;
-                IUnknown **ppunkVal;
-                IDispatch **ppdispVal;
-                SAFEARRAY **pparray;
-                VARIANT *pvarVal;
-                PVOID byref;
-                CHAR cVal;
-                USHORT uiVal;
-                ULONG ulVal;
-                ULONGLONG ullVal;
-                INT intVal;
-                UINT uintVal;
-                DECIMAL *pdecVal;
-                CHAR *pcVal;
-                USHORT *puiVal;
-                ULONG *pulVal;
-                ULONGLONG *pullVal;
-                INT *pintVal;
-                UINT *puintVal;
-                struct __tagBRECORD
-                    {
-                    PVOID pvRecord;
-                    IRecordInfo *pRecInfo;
-                    } 	__VARIANT_NAME_4;
-                } 	__VARIANT_NAME_3;
-            } 	__VARIANT_NAME_2;
-        DECIMAL decVal;
-        } 	__VARIANT_NAME_1;
-    } ;
-    */
-typedef ASC_VARIANT *ASC_LPVARIANT;
-
-typedef ASC_VARIANT ASC_VARIANTARG;
-
-typedef ASC_VARIANT *ASC_LPVARIANTARG;
-
-
-#endif //_ASCVARIANT_H_

@@ -489,7 +489,7 @@ public:
 
             file.ReadFile(byteBuffer ,BUF_SIZE);
 
-            dwBytesRead = file.GetPosition();
+            dwBytesRead = (DWORD)file.GetPosition();
             while( 0 != dwBytesRead )
             {
                 for( int i = 0; i < (int)dwBytesRead; i++ )
@@ -500,9 +500,9 @@ public:
                     oFileWriter.Write( &byteFirst, 1 );
                     oFileWriter.Write( &byteSecond, 1 );
                 }
-                dwBytesRead = file.GetPosition();
+                dwBytesRead = (DWORD)file.GetPosition();
                 file.ReadFile(byteBuffer ,BUF_SIZE);
-                dwBytesRead = file.GetPosition() - dwBytesRead;
+                dwBytesRead = (DWORD)file.GetPosition() - dwBytesRead;
             }
             file.CloseFile();
          }

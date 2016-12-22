@@ -138,7 +138,7 @@ namespace OOX
 				return;
 
             const wchar_t*  pData   = m_strFilename.c_str();
-            int             nLen    = m_strFilename.length();
+            int             nLen    = (int) m_strFilename.length();
 
             wchar_t*    pDataNorm       = new wchar_t   [nLen + 1];
             int*        pSlashPoints    = new int       [nLen + 1];

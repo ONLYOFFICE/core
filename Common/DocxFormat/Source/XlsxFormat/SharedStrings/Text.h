@@ -86,9 +86,10 @@ namespace OOX
 				if(!(m_oSpace.IsInit() && SimpleTypes::xmlspacePreserve == m_oSpace->GetValue()))
 				{
 					//trim ' ', '\r', '\n'
-					int nLength = m_sText.length();
+					int nLength		= (int)m_sText.length();
 					int nStartIndex = 0;
-					int nEndIndex = nLength - 1;
+					int nEndIndex	= nLength - 1;
+					
 					for(int i = nStartIndex; i < nLength; ++i)
 					{
 						TCHAR cElem = m_sText[i];

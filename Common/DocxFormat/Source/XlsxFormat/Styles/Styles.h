@@ -181,7 +181,7 @@ namespace OOX
 				if(false == m_oFonts->m_oCount.IsInit())
 				{
 					m_oFonts->m_oCount.Init();
-					m_oFonts->m_oCount->SetValue(m_oFonts->m_arrItems.size());
+					m_oFonts->m_oCount->SetValue((unsigned int)m_oFonts->m_arrItems.size());
 				}
 				//fills
 				if(false == m_oFills.IsInit())

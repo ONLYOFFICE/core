@@ -133,7 +133,7 @@ namespace XmlUtils
 		{
 			Clear();
 
-			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), m_pStream, m_lStreamLen, false);
+			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), (long)sXml.length(), m_pStream, m_lStreamLen, false);
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
             return true;
@@ -142,7 +142,7 @@ namespace XmlUtils
 		{
 			Clear();
 
-			reader = xmlReaderForMemory((char*)sXml.c_str(), sXml.length(), NULL, NULL, 0);
+			reader = xmlReaderForMemory((char*)sXml.c_str(), (int)sXml.length(), NULL, NULL, 0);
 
             return true;
 		}

@@ -78,9 +78,9 @@ public:
 		m_aBuffer = new unsigned char[m_nSizeAbs];
 		DWORD dwBytesRead = 0;
 
-		srcFile.ReadFile(m_aBuffer, m_nSizeAbs);
+		srcFile.ReadFile(m_aBuffer, (DWORD)m_nSizeAbs);
 
-		dwBytesRead = srcFile.GetPosition();
+		dwBytesRead = (DWORD)srcFile.GetPosition();
 		srcFile.CloseFile();
 	}
     void getBytes( int nCount, BYTE** pbData )
@@ -121,7 +121,7 @@ public:
 		RELEASEARRAYOBJECTS( m_aBuffer );
 		m_aBuffer = new unsigned char[ m_nSizeAbs + nExtBufSize ];
 		//копируем все в новый буфер
-		unsigned long nDelimiter = m_nPosAbs + 1;
+		unsigned long nDelimiter = (unsigned long)m_nPosAbs + 1;
 		memcpy( m_aBuffer, aTempBuf, nDelimiter );
 		char* bf = sText.GetBuffer();
 		memcpy( m_aBuffer + nDelimiter , bf, nExtBufSize );
@@ -173,7 +173,7 @@ public:
 
 		if (m_oStream.getSize() > m_nReadBufSize)
 		{
-			m_nReadBufSize = m_oStream.getSize() ;
+			m_nReadBufSize = (int)m_oStream.getSize() ;
 			if (m_caReadBuffer) delete []m_caReadBuffer;
 			m_caReadBuffer = new char[m_nReadBufSize];
 		}
@@ -349,7 +349,7 @@ private:
             {
                 try
                 {
-                    parametroInt = _wtoi64(parametroStr.GetBuffer());
+                    parametroInt = (int)_wtoi64(parametroStr.GetBuffer());
                 }catch(...)
                 {
                 }

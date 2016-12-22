@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include <string>
-
 #if defined(_WIN32) || defined (_WIN64)
     #include <windows.h>
 #endif
@@ -40,7 +38,8 @@
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
 typedef BYTE BOOL1;
-#define		PSFLAG_CONTAINER		0xFF
+
+#define		PSFLAG_CONTAINER							0xFF
 
 #define		PPT_DEFAULT_SLIDE_DURATION						5000
 /////////////////////////////////////////////////////////////////////////

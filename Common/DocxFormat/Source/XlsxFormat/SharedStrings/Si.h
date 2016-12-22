@@ -63,25 +63,25 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<si>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</si>"));
 			}
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer) const
 			{
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 			}
 			std::wstring ToString()
 			{
 				std::wstring sRes;
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					WritingElement* we = m_arrItems[i];
 					if(OOX::Spreadsheet::et_r == we->getType())
 					{
 						CRun* pRun = static_cast<CRun*>(we);
-						for(unsigned int j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
+						for(size_t j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
 						{
 							CText* pText = pRun->m_arrItems[j];
 							sRes.append(pText->ToString());

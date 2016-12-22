@@ -604,7 +604,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount /*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount /*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -617,7 +617,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo (pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandCurvesTo (pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -645,7 +645,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						break;
@@ -658,7 +658,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandCurvesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 						break;
 					}
@@ -806,7 +806,7 @@ namespace NSPresentationEditor
 						bool bIsX = true;
 						CheckLastPoint(pRenderer, pointCur);
 
-                        int nCount = this->m_arPoints.size();
+                        int nCount = (int)m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
@@ -831,7 +831,7 @@ namespace NSPresentationEditor
 						bool bIsX = false;
 						CheckLastPoint(pRenderer, pointCur);
 
-                        int nCount = this->m_arPoints.size();
+                        int nCount = (int)m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
@@ -859,7 +859,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo(pArray, nCount/*this->m_arPoints.size()*/);
+                            pRenderer->PathCommandLinesTo(pArray, (int)nCount/*this->m_arPoints.size()*/);
 						}
 
 						CheckLastPoint(pRenderer, pointCur);
@@ -899,7 +899,7 @@ namespace NSPresentationEditor
 
 		void AddRuler(const RulesType& eType)
 		{
-            int lCount = m_arParts.size();
+            int lCount = (int)m_arParts.size();
 			
 			CPart oPart;
 			oPart.m_eType = eType;
@@ -908,7 +908,7 @@ namespace NSPresentationEditor
 		}
 		void AddPoint(const double& x, const double& y)
 		{
-            int lCount = m_arParts.size();
+            int lCount = (int)m_arParts.size();
 			if (0 != lCount)
 			{
 				CDoublePoint point;

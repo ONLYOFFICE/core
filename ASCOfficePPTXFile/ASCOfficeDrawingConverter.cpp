@@ -1733,18 +1733,18 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			{
 				LONG lChildsCount = oChilds.GetCount();
 				
-				std::vector<CString>	wordArtString;
-				EFilltype				eFillType		= etNoFill;;
-                CString					sTxbxContent	= L"<w:txbxContent>";
-                CString					sFont			= L"Arial Black";
-				int						nFontSize		= 36;
+				std::vector<std::wstring>	wordArtString;
+				EFilltype					eFillType		= etNoFill;;
+				std::wstring				sTxbxContent	= L"<w:txbxContent>";
+				std::wstring				sFont			= L"Arial Black";
+				int							nFontSize		= 36;
 				
-				BYTE					lAlpha;
-				bool					bOpacity		= false;
-				bool					bOpacity2		= false;
-				double					nFocus			= 0;
-				int						nAngle			= 90;
-				bool					bColors			= false;	
+				BYTE						lAlpha;
+				bool						bOpacity		= false;
+				bool						bOpacity2		= false;
+				double						nFocus			= 0;
+				int							nAngle			= 90;
+				bool						bColors			= false;	
 				
 				PPTX::Logic::ColorModifier				oMod;				
 				PPTX::Logic::ColorModifier				oMod2;
@@ -1802,9 +1802,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					CString strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
                     if (L"textpath" == strNameP)
 					{
-						CString tmpString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
+						std::wstring tmpString = oNodeP.GetText();	//для обхода &#xA пишется дубль в контент
 
-						if (tmpString.IsEmpty())
+						if (tmpString.empty())
 						{
                             tmpString = oNodeP.GetAttribute(L"string");
 							CorrectXmlString(tmpString );
@@ -1816,17 +1816,17 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 							int pos1 = 0, pos2 = 0;
 
-							while(pos1 < tmpString.GetLength() && pos2 < tmpString.GetLength())
+							while(pos1 < tmpString.length() && pos2 < tmpString.length())
 							{
-                                pos2 = tmpString.Find(L"\n", pos1);
+                                pos2 = tmpString.find(L"\n", pos1);
 								if (pos2 > 0)
 								{
-									wordArtString.push_back(tmpString.Mid(pos1, pos2 - pos1));
+									wordArtString.push_back(tmpString.substr(pos1, pos2 - pos1));
 									pos1 = pos2 + 1;
 								}
 								else break;
 							}
-							wordArtString.push_back(tmpString.Mid(pos1, tmpString.GetLength() - pos1));
+							wordArtString.push_back(tmpString.substr(pos1, tmpString.length() - pos1));
 						}
 
                         CString		strStyle = oNodeP.GetAttribute(L"style");
@@ -1836,7 +1836,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						if (pPair != oCSSParser.m_mapSettings.end())
 						{
 							sFont = pPair->second;
-                            sFont.Replace(L"\"", L"");
+							boost::algorithm::replace_all(sFont, L"\"", L"");
 						}
                         pPair = oCSSParser.m_mapSettings.find(L"font-size");
 						if (pPair != oCSSParser.m_mapSettings.end())
@@ -2042,17 +2042,19 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						}
 					}*/
 				}
-                CString strRPr, strPPr;
+				std::wstring strRPr, strPPr;
+				std::wstring sSize = std::to_wstring(nFontSize);
 				
                 strPPr = L"<w:jc w:val=\"center\"/>";
 
                 strRPr += L"<w:rFonts w:ascii=\"" + sFont + L"\" w:hAnsi=\"" + sFont + L"\"/>";
-                strRPr += L"<w:sz w:val=\"" + strSize + L"\"/><w:szCs w:val=\"" + std::to_wstring(nFontSize) + L"\"/>";
+                strRPr += L"<w:sz w:val=\"" + sSize + L"\"/><w:szCs w:val=\"" + sSize+ L"\"/>";
 
 				nullable_string sStrokeColor;
 				nullable_string sStrokeWeight;
 				nullable_string sStroked;				
-                oNodeShape.ReadAttributeBase(L"strokecolor",    sStrokeColor);
+               
+				oNodeShape.ReadAttributeBase(L"strokecolor",    sStrokeColor);
                 oNodeShape.ReadAttributeBase(L"strokeweight",   sStrokeWeight);
                 oNodeShape.ReadAttributeBase(L"stroked",        sStroked);
 
@@ -2217,9 +2219,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
                 strRPr += L"</w14:textOutline>";
 
-				for (int i = 0; i < wordArtString.size(); i++)
+				for (size_t i = 0; i < wordArtString.size(); i++)
 				{
-                    CString sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + wordArtString[i] + L"</w:t></w:r>";
+					std::wstring sParaRun = L"<w:r><w:rPr>" + strRPr + L"</w:rPr>" + L"<w:t>" + wordArtString[i] + L"</w:t></w:r>";
 				
                     sTxbxContent += L"<w:p><w:pPr>" + strPPr + L"<w:rPr>" + strRPr + L"</w:rPr></w:pPr>" + sParaRun + L"</w:p>";
 				}

@@ -68,10 +68,19 @@ typedef unsigned char BYTE;
 	#endif
 #endif
 
-#define MWT_IDENTITY	  0x01
-#define MWT_LEFTMULTIPLY  0x02
-#define MWT_RIGHTMULTIPLY 0x03
-#define MWT_SET           0x04
+#ifndef MWT_IDENTITY
+	#define MWT_IDENTITY	  0x01
+#endif
+#ifndef MWT_LEFTMULTIPLY
+	#define MWT_LEFTMULTIPLY  0x02
+#endif
+#ifndef MWT_RIGHTMULTIPLY
+	#define MWT_RIGHTMULTIPLY 0x03
+#endif
+#ifndef MWT_SET
+	#define MWT_SET           0x04
+#endif
+
 
 //---------------------------------------------------------------------------------------------------
 // Modes for CWmfFile.SetMapMode

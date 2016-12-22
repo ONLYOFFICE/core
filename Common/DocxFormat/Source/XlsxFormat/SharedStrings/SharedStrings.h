@@ -108,7 +108,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
 				writer.WriteString(_T(">"));
 
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 
 				writer.WriteString(_T("</sst>"));
@@ -135,15 +135,16 @@ namespace OOX
 			}
 			const int AddSi(CSi* pSi)
 			{
-				int nIndex = m_arrItems.size();
+				int nIndex = (int)m_arrItems.size();
 				m_arrItems.push_back( pSi );
 				return nIndex;
 			}
 		private:
-			CPath									m_oReadPath;
+			CPath m_oReadPath;
+
 			void ClearItems()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for (size_t nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 

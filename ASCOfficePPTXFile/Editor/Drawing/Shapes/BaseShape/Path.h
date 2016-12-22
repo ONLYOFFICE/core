@@ -347,8 +347,7 @@ namespace NSPresentationEditor
 					case rtOOXMLLineTo:
 					case rtOOXMLCubicBezTo:
 						{
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -369,8 +368,7 @@ namespace NSPresentationEditor
 							std::vector<CGeomShapeInfo::CPointD> arPoints;
 							arPoints.push_back(pGeomInfo.m_oCurPoint);
 							
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								CGeomShapeInfo::CPointD oPoint;
 								
@@ -485,8 +483,7 @@ namespace NSPresentationEditor
 								pGeomInfo.m_oCurPoint.dX = 0;
 								pGeomInfo.m_oCurPoint.dY = 0;
 							}
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -510,8 +507,7 @@ namespace NSPresentationEditor
 							std::vector<CGeomShapeInfo::CPointD> arPoints;
 							arPoints.push_back(pGeomInfo.m_oCurPoint);
 							
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								CGeomShapeInfo::CPointD oPoint;
 								
@@ -543,8 +539,7 @@ namespace NSPresentationEditor
 					case rtArcTo:
 					case rtClockwiseArcTo:
 						{
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -569,8 +564,7 @@ namespace NSPresentationEditor
 					case rtArc:
 					case rtClockwiseArc:
 						{
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -596,8 +590,7 @@ namespace NSPresentationEditor
 					case rtRLineTo:
 					case rtRCurveTo:
 						{
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{
 								double lX = pGeomInfo.m_oCurPoint.dX + (dKoefX * m_arPoints[nIndex].x);
 								double lY = pGeomInfo.m_oCurPoint.dY + (dKoefY * m_arPoints[nIndex].y);
@@ -622,8 +615,7 @@ namespace NSPresentationEditor
 					case rtAngleEllipseTo:
 					case rtAngleEllipse:
 						{
-							int nCount = m_arPoints.size();
-							for (int nIndex = 0; nIndex < nCount; ++nIndex)
+							for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 							{			
 								double lX = 0;
 								double lY = 0;
@@ -745,8 +737,7 @@ namespace NSPresentationEditor
 						else if (rtOOXMLCubicBezTo == m_eRuler)
 							pRenderer->AddRuler(rtCurveTo);
 
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -763,8 +754,7 @@ namespace NSPresentationEditor
 						std::vector<CGeomShapeInfo::CPointD> arPoints;
 						arPoints.push_back(pGeomInfo.m_oCurPoint);
 						
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							CGeomShapeInfo::CPointD oPoint;
 							
@@ -858,8 +848,7 @@ namespace NSPresentationEditor
 							pGeomInfo.m_oCurPoint.dX = 0;
 							pGeomInfo.m_oCurPoint.dY = 0;
 						}
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -876,8 +865,7 @@ namespace NSPresentationEditor
 						std::vector<CGeomShapeInfo::CPointD> arPoints;
 						arPoints.push_back(pGeomInfo.m_oCurPoint);
 						
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							CGeomShapeInfo::CPointD oPoint;
 							
@@ -908,8 +896,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -929,8 +916,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							double lY = dTop  + (dKoefY * m_arPoints[nIndex].y);
@@ -951,8 +937,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{
 							double lX = pGeomInfo.m_oCurPoint.dX + (dKoefX * m_arPoints[nIndex].x);
 							double lY = pGeomInfo.m_oCurPoint.dY + (dKoefY * m_arPoints[nIndex].y);
@@ -973,8 +958,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.size();
-						for (int nIndex = 0; nIndex < nCount; ++nIndex)
+						for (size_t nIndex = 0; nIndex < m_arPoints.size(); ++nIndex)
 						{			
 							double lX = 0;
 							double lY = 0;

@@ -309,7 +309,7 @@ namespace OOX
 		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
 		{
 			(*ppRelationShip) = NULL;
-			for( unsigned int i = 0, length = m_arrRelations.size(); i < length; ++i)
+			for( size_t i = 0, length = m_arrRelations.size(); i < length; ++i)
 			{
 				if ((m_arrRelations[i]) && (m_arrRelations[i]->rId() == rId))
 				{

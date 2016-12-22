@@ -834,17 +834,17 @@ bool CElementProps::CopyProperty(ASC_VARIANT& oDst, const ASC_VARIANT& oSrc)
 	oDst.vt = oSrc.vt;
 	switch (oDst.vt)
 	{
-	case VT_I4:
+    case ASC_VT_I4:
 		{
 			oDst.lVal = oSrc.lVal;
 			break;
 		}
-	case VT_R8:
+    case ASC_VT_R8:
 		{
 			oDst.dblVal = oSrc.dblVal;
 			break;
 		}
-	case VT_BSTR:
+    case ASC_VT_STR:
 		{
 
             oDst.strVal = oSrc.strVal;
@@ -2042,14 +2042,12 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						}
 					}*/
 				}
-				CString strRPr, strPPr, strSize;
+                CString strRPr, strPPr;
 				
-                strSize.Format(L"%d", nFontSize);
-
                 strPPr = L"<w:jc w:val=\"center\"/>";
 
                 strRPr += L"<w:rFonts w:ascii=\"" + sFont + L"\" w:hAnsi=\"" + sFont + L"\"/>";
-                strRPr += L"<w:sz w:val=\"" + strSize + L"\"/><w:szCs w:val=\"" + strSize + L"\"/>";
+                strRPr += L"<w:sz w:val=\"" + strSize + L"\"/><w:szCs w:val=\"" + std::to_wstring(nFontSize) + L"\"/>";
 
 				nullable_string sStrokeColor;
 				nullable_string sStrokeWeight;

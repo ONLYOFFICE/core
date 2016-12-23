@@ -733,6 +733,7 @@
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.cpp"
 
 #include "../XlsFormat/Logic/AnyObject.cpp"

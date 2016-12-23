@@ -89,7 +89,7 @@ namespace NSPresentationEditor
 			// теперь нужно скопировать картинку
 			if (strOutput != strInput)
 			{
-				if (CDirectory::CopyFile(strInput, strOutput, NULL, NULL) == false)
+                if (CDirectory::CopyFile(strInput, strOutput) == false)
 				{
 					return L"";
 				}

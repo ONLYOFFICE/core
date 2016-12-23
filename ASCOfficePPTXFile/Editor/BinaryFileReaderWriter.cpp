@@ -281,7 +281,7 @@ namespace NSBinPptxRW
 			pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 			// теперь нужно скопировать картинку
             if (pathOutput.GetPath() != strInput)
-                CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
+                CDirectory::CopyFile(strInput, pathOutput.GetPath());
 		}
 		else
 		{
@@ -308,7 +308,7 @@ namespace NSBinPptxRW
 			}
 			else
 			{
-				CDirectory::CopyFile(strOleImage, strOleImageOut, NULL, NULL);
+                CDirectory::CopyFile(strOleImage, strOleImageOut);
 			}
 
 			if (!m_bIsWord)

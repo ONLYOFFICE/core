@@ -38,20 +38,6 @@ namespace cpdoccore {
 
 namespace oox {
 
-static const int _odf_to_docx_ShapeType[]=
-{ 4,4,4,34,};
-
-static const std::wstring _docxShapeType[]=
-{
-	L"rect", 
-	L"rect", 
-	L"rect", 
-	L"ellipse", 
-	L"ellipse", 
-	L"line", 
-	L"custGeom"
-};
-
 void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 {
 	_CP_OPT(std::wstring) strTextContent;

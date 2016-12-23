@@ -46,7 +46,7 @@ public:
 			return 1;
 
 		//копируем
-		CDirectory::CopyFile(sSource, sDestination, NULL, NULL);
+        CDirectory::CopyFile(sSource, sDestination);
 
 		return 0;
 	}

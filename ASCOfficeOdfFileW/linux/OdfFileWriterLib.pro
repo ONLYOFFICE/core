@@ -35,10 +35,12 @@ CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
-build_fast {
+core_release {
 SOURCES += \
-    odffilewriterlib_all.cpp
-} else {
+    odffilewriterlib_odf.cpp
+}
+
+core_debug {
 SOURCES += \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
@@ -93,17 +95,18 @@ SOURCES += \
     ../source/OdfFormat/table_database_ranges.cpp \
     ../source/OdfFormat/table_named_expressions.cpp \
     ../source/OdfFormat/text_elements.cpp \
-    ../source/Oox2OdfConverter/ConvertDiagram.cpp \
-    ../source/Oox2OdfConverter/Converter.cpp \
-    ../source/Oox2OdfConverter/ConverterChart.cpp \
-    ../source/Oox2OdfConverter/ConvertVml.cpp \
-    ../source/Oox2OdfConverter/DocxConverter.cpp \
-    ../source/Oox2OdfConverter/XlsxConverter.cpp \
     ../source/OdfFormat/odf_settings_context.cpp \
     ../source/OdfFormat/office_settings.cpp \
     ../source/OdfFormat/mediaitems_utils.cpp
 }
 
+SOURCES += \
+    ../source/Oox2OdfConverter/ConvertDiagram.cpp \
+    ../source/Oox2OdfConverter/Converter.cpp \
+    ../source/Oox2OdfConverter/ConverterChart.cpp \
+    ../source/Oox2OdfConverter/ConvertVml.cpp \
+    ../source/Oox2OdfConverter/DocxConverter.cpp \
+    ../source/Oox2OdfConverter/XlsxConverter.cpp
 
 HEADERS += \
     ../source/OdfFormat/abstract_xml.h \

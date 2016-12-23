@@ -85,6 +85,7 @@
 #include "documentcontext.h"
 
 #include "../progressCallback.h"
+
 #define PROGRESSEVENT_ID 0
 
 namespace cpdoccore { 
@@ -146,6 +147,7 @@ odf_document::Impl::Impl(const std::wstring & folderPath, const ProgressCallback
 
 	UpdateProgress(400000);
 }
+
 bool odf_document::Impl::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
@@ -160,6 +162,7 @@ bool odf_document::Impl::UpdateProgress(long nComplete)
 
 	return false;
 }
+
 void odf_document::Impl::parse_fonts()
 {
     do 

@@ -51,12 +51,6 @@ BaseObjectPtr IFmtRecord::clone()
 }
 
 
-void IFmtRecord::writeFields(CFRecord& record)
-{
-	record << ifmt;
-}
-
-
 void IFmtRecord::readFields(CFRecord& record)
 {
 	record >> ifmt;

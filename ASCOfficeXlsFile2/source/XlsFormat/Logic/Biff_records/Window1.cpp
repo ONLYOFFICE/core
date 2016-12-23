@@ -51,21 +51,6 @@ BaseObjectPtr Window1::clone()
 }
 
 
-void Window1::writeFields(CFRecord& record)
-{
-	record << xWn << yWn << dxWn << dyWn;
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fHidden);
-	SETBIT(flags, 1, fIconic);
-	SETBIT(flags, 2, fVeryHidden);
-	SETBIT(flags, 3, fDspHScroll);
-	SETBIT(flags, 4, fDspVScroll);
-	SETBIT(flags, 5, fBotAdornment);
-	SETBIT(flags, 6, fNoAFDateGroup);
-	record << flags << itabCur << itabFirst << ctabSel << wTabRatio;
-}
-
-
 void Window1::readFields(CFRecord& record)
 {
 	unsigned short flags;

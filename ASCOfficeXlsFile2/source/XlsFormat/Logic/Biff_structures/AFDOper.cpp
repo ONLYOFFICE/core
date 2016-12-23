@@ -59,10 +59,6 @@ AFDOper::~AFDOper()
 {
 }
 
-void AFDOper::store(CFRecord& record)
-{	
-}
-
 
 void AFDOper::load(CFRecord& record)
 {

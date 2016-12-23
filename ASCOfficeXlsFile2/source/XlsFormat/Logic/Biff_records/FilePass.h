@@ -52,14 +52,13 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFilePass;
+	static const ElementType type = typeFilePass;
 
-	Boolean<unsigned short> wEncryptionType;
-	XORObfuscation			key;
-	_UINT16					majorVer;
+	unsigned short						wEncryptionType;
+	XORObfuscation						key;
+	_UINT16								majorVer;
 	
 	CRYPTO::RC4EncryptionHeaderPtr			rc4HeaderPtr;
 	CRYPTO::RC4CryptoAPIEncryptionHeader	rc4CryptoAPIHeader;

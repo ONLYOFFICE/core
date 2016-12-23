@@ -53,15 +53,6 @@ BiffStructurePtr EnhancedProtection::clone()
 	return BiffStructurePtr(new EnhancedProtection(*this));
 }
 
-
-void EnhancedProtection::store(CFRecord& record)
-{
-#pragma message("####################### EnhancedProtection record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! EnhancedProtection record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void EnhancedProtection::load(CFRecord& record)
 {
 	unsigned short flags;

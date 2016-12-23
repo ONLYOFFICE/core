@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeMOper;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ColunByteU colLast;
 	RwU rowLast;

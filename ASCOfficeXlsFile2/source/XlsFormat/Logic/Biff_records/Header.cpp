@@ -50,16 +50,6 @@ BaseObjectPtr Header::clone()
 	return BaseObjectPtr(new Header(*this));
 }
 
-
-void Header::writeFields(CFRecord& record)
-{
-	if(ast.getSize())
-	{
-		record << ast;
-	}
-}
-
-
 void Header::readFields(CFRecord& record)
 {
 	if(!record.isEOF())

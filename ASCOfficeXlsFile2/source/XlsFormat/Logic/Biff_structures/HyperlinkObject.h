@@ -57,7 +57,7 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	_UINT32 streamVersion;
 

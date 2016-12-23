@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeDXFN12List;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	DXFN dxfn;
 	XFExtNoFRT xfext;

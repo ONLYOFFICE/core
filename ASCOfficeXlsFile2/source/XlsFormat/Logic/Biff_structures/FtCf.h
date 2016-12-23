@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeFtCf;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short cf;
 };

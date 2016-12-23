@@ -42,12 +42,6 @@ BiffStructurePtr XTI::clone()
 	return BiffStructurePtr(new XTI(*this));
 }
 
-void XTI::store(CFRecord& record)
-{
-	record << iSupBook << itabFirst << itabLast;
-}
-
-
 void XTI::load(CFRecord& record)
 {
 	if (record.checkFitReadSafe(6) == false) //Version < 0x0600

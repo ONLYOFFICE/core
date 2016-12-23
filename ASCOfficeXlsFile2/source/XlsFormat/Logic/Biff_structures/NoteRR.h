@@ -52,7 +52,7 @@ public:
 	static const ElementType	type = typeNoteRR;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	RRD				rrd;
 	bool			bitfDelNote;

@@ -42,11 +42,6 @@ BiffStructurePtr PtgMemFunc::clone()
 	return BiffStructurePtr(new PtgMemFunc(*this));
 }
 
-void PtgMemFunc::storeFields(CFRecord& record)
-{
-	record << cce;
-}
-
 
 void PtgMemFunc::loadFields(CFRecord& record)
 {

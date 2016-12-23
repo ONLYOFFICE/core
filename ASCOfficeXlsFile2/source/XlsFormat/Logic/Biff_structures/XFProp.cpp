@@ -51,15 +51,6 @@ BiffStructurePtr XFProp::clone()
 	return BiffStructurePtr(new XFProp(*this));
 }
 
-
-void XFProp::store(CFRecord& record)
-{
-#pragma message("####################### XFProp record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFProp record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFProp::load(CFRecord& record)
 {
 	record >> xfPropType >> cb;

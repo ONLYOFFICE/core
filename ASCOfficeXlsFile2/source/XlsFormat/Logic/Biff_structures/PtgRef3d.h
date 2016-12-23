@@ -50,7 +50,7 @@ public:
 	void fromString(const std::wstring& str);
 
 	virtual void loadFields(CFRecord& record);
-	virtual void storeFields(CFRecord& record);
+	
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 

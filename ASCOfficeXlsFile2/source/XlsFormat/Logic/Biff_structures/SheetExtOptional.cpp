@@ -57,15 +57,6 @@ BiffStructurePtr SheetExtOptional::clone()
 	return BiffStructurePtr(new SheetExtOptional(*this));
 }
 
-
-void SheetExtOptional::store(CFRecord& record)
-{
-#pragma message("####################### SheetExtOptional record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! SheetExtOptional record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void SheetExtOptional::load(CFRecord& record)
 {
 	bEnabled = true;

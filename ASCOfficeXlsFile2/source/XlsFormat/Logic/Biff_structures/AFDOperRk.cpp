@@ -42,11 +42,6 @@ BiffStructurePtr AFDOperRk::clone()
 	return BiffStructurePtr(new AFDOperRk(*this));
 }
 
-void AFDOperRk::store(CFRecord& record)
-{	
-}
-
-
 void AFDOperRk::load(CFRecord& record)
 {
 	// rk (4 unsigned chars): An RkNumber that specifies a numeric value.

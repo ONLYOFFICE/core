@@ -52,17 +52,6 @@ BaseObjectPtr Bar::clone()
 }
 
 
-void Bar::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fTranspose);
-	SETBIT(flags, 1, fStacked);
-	SETBIT(flags, 2, f100);
-	SETBIT(flags, 3, fHasShadow);
-	record >> pcOverlap >> pcGap >> flags;
-}
-
-
 void Bar::readFields(CFRecord& record)
 {
 	unsigned short flags;

@@ -50,15 +50,6 @@ BaseObjectPtr FileSharing::clone()
 	return BaseObjectPtr(new FileSharing(*this));
 }
 
-
-void FileSharing::writeFields(CFRecord& record)
-{
-#pragma message("####################### FileSharing record is not implemented")
-	Log::error("FileSharing record is not implemented.");
-	//record << some_value;
-}
-
-
 void FileSharing::readFields(CFRecord& record)
 {
 	record >> fReadOnlyRec >> wResPassNum;

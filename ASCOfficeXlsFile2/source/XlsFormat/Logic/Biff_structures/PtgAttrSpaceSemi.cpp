@@ -43,12 +43,6 @@ BiffStructurePtr PtgAttrSpaceSemi::clone()
 }
 
 
-void PtgAttrSpaceSemi::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(2); // I do not use it, but the data present
-}
-
-
 void PtgAttrSpaceSemi::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // I do not use it, but the data present

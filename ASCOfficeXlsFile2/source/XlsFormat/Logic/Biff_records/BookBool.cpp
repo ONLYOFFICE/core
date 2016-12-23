@@ -51,39 +51,6 @@ BaseObjectPtr BookBool::clone()
 	return BaseObjectPtr(new BookBool(*this));
 }
 
-
-void BookBool::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fNoSaveSup);
-	SETBIT(flags, 2, fHasEnvelope);
-	SETBIT(flags, 3, fEnvelopeVisible);
-	SETBIT(flags, 4, fEnvelopeInitDone);
-	
-	unsigned char grUpdateLinks_num;
-
-	if(grUpdateLinks == std::wstring (L"userSet"))
-	{
-		grUpdateLinks_num = 0;
-	}
-	else if(grUpdateLinks == std::wstring (L"never"))
-	{
-		grUpdateLinks_num = 1;
-	}
-	else if(grUpdateLinks == std::wstring (L"always"))
-	{
-		grUpdateLinks_num = 2;
-	}
-	else
-	{
-		// EXCEPT::LE::AttributeDataWrong(L"grUpdateLinks", record.getTypeString().c_str(), grUpdateLinks);
-	}
-	SETBITS(flags, 5, 6, grUpdateLinks_num);
-	SETBIT(flags, 8, fHideBorderUnselLists);
-	record << flags;
-}
-
-
 void BookBool::readFields(CFRecord& record)
 {
 	unsigned short flags;

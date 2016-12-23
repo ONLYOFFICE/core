@@ -42,11 +42,6 @@ BiffStructurePtr PtgAttrGoto::clone()
 	return BiffStructurePtr(new PtgAttrGoto(*this));
 }
 
-void PtgAttrGoto::storeFields(CFRecord& record)
-{
-	record << offset;
-}
-
 
 void PtgAttrGoto::loadFields(CFRecord& record)
 {

@@ -52,11 +52,6 @@ List12TableStyleClientInfo::~List12TableStyleClientInfo()
 }
 
 
-void List12TableStyleClientInfo::store(CFRecord& record)
-{	
-}
-
-
 void List12TableStyleClientInfo::load(CFRecord& record)
 {	
 	unsigned short flags;

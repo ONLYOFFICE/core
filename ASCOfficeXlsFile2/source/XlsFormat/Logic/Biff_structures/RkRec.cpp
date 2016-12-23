@@ -41,11 +41,6 @@ BiffStructurePtr RkRec::clone()
 	return BiffStructurePtr(new RkRec(*this));
 }
 
-void RkRec::store(CFRecord& record)
-{
-	record << ixfe << RK_;
-}
-
 
 void RkRec::load(CFRecord& record)
 {

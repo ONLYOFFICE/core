@@ -51,18 +51,6 @@ BaseObjectPtr SheetExt::clone()
 	return BaseObjectPtr(new SheetExt(*this));
 }
 
-
-void SheetExt::writeFields(CFRecord& record)
-{
-// 	FrtHeader frtHeader(rt_SheetExt);
-// 	record << frtHeader;
-
-#pragma message("####################### SheetExt record is not implemented")
-	Log::error("SheetExt record is not implemented.");
-	//record << some_value;
-}
-
-
 void SheetExt::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_SheetExt);

@@ -51,16 +51,6 @@ BaseObjectPtr MergeCells::clone()
 }
 
 
-void MergeCells::writeFields(CFRecord& record)
-{
-	record << cmcs;
-	for(BiffStructurePtrVector::const_iterator it = rgref.begin(), itEnd = rgref.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void MergeCells::readFields(CFRecord& record)
 {
 	record >> cmcs;

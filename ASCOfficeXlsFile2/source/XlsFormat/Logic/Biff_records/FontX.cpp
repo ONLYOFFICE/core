@@ -51,12 +51,6 @@ BaseObjectPtr FontX::clone()
 }
 
 
-void FontX::writeFields(CFRecord& record)
-{
-	record << iFont;
-}
-
-
 void FontX::readFields(CFRecord& record)
 {
 	record >> iFont;

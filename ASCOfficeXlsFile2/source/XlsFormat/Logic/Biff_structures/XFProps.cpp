@@ -45,14 +45,6 @@ BiffStructurePtr XFProps::clone()
 
 
 
-void XFProps::store(CFRecord& record)
-{
-#pragma message("####################### XFProps record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFProps record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFProps::load(CFRecord& record)
 {
 	arXFPropBorder.is_present = false;

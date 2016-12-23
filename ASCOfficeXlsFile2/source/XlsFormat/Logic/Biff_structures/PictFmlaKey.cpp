@@ -47,14 +47,6 @@ BiffStructurePtr PictFmlaKey::clone()
 	return BiffStructurePtr(new PictFmlaKey(*this));
 }
 
-
-void PictFmlaKey::store(CFRecord& record)
-{
-#pragma message("####################### PictFmlaKey record has no BiffStructure::fromXML() implemented")
-	Log::error(" Error!!! PictFmlaKey record has no BiffStructure::fromXML() implemented.");
-}
-
-
 void PictFmlaKey::load(CFRecord& record)
 {
 	_UINT32 cbKey;

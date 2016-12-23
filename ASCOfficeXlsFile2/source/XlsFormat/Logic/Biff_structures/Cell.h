@@ -50,7 +50,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	const CellRef getLocation() const;
 

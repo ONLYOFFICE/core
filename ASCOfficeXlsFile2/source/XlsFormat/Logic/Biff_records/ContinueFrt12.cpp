@@ -51,11 +51,6 @@ BaseObjectPtr ContinueFrt12::clone()
 }
 
 
-void ContinueFrt12::writeFields(CFRecord& record)
-{
-}
-
-
 void ContinueFrt12::readFields(CFRecord& record)
 {		
 }

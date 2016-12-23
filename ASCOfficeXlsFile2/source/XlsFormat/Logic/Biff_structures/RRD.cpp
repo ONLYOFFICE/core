@@ -53,16 +53,6 @@ BiffStructurePtr RRD::clone()
 	return BiffStructurePtr(new RRD(*this));
 }
 
-
-
-void RRD::store(CFRecord& record)
-{
-#pragma message("####################### RRD record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RRD record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RRD::load(CFRecord& record)
 {
 	unsigned short flags;

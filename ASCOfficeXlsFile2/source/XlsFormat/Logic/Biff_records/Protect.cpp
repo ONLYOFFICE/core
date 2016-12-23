@@ -50,13 +50,6 @@ BaseObjectPtr Protect::clone()
 	return BaseObjectPtr(new Protect(*this));
 }
 
-
-void Protect::writeFields(CFRecord& record)
-{
-	record << fLock;
-}
-
-
 void Protect::readFields(CFRecord& record)
 {
 	record >> fLock;

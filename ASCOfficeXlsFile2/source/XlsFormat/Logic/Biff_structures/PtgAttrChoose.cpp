@@ -42,13 +42,6 @@ BiffStructurePtr PtgAttrChoose::clone()
 	return BiffStructurePtr(new PtgAttrChoose(*this));
 }
 
-void PtgAttrChoose::storeFields(CFRecord& record)
-{
-#pragma message("####################### PtgAttrChoose record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgAttrChoose record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void PtgAttrChoose::loadFields(CFRecord& record)
 {

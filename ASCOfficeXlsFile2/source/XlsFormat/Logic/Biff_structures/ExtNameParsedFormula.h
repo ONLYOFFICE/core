@@ -48,7 +48,7 @@ public:
 	void load(CFRecord& record);
 private:
 	// stub to make the class non-abstract
-	virtual void store(CFRecord& record);
+
 
 private:
 	PtgPtr val;

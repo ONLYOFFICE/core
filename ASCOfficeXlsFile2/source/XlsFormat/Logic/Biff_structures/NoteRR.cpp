@@ -54,14 +54,6 @@ BiffStructurePtr NoteRR::clone()
 }
 
 
-void NoteRR::store(CFRecord& record)
-{
-#pragma message("####################### NoteRR record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! NoteRR record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void NoteRR::load(CFRecord& record)
 {
 	record >> rrd;

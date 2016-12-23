@@ -56,11 +56,6 @@ BiffStructurePtr PtgStr::clone()
 }
 
 
-void PtgStr::storeFields(CFRecord& record)
-{
-	record << string_;
-}
-
 
 void PtgStr::loadFields(CFRecord& record)
 {

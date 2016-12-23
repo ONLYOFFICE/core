@@ -44,13 +44,6 @@ BiffStructurePtr PtgAreaErr3d::clone()
 }
 
 
-void PtgAreaErr3d::storeFields(CFRecord& record)
-{
-	record << ixti;
-	record.reserveNunBytes(8); // unused
-}
-
-
 void PtgAreaErr3d::loadFields(CFRecord& record)
 {
 	record >> ixti;

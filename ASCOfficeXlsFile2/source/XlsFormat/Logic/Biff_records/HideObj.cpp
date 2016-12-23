@@ -51,12 +51,6 @@ BaseObjectPtr HideObj::clone()
 }
 
 
-void HideObj::writeFields(CFRecord& record)
-{
-	record << hideObj;
-}
-
-
 void HideObj::readFields(CFRecord& record)
 {
 	record >> hideObj;

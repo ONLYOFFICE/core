@@ -44,21 +44,6 @@ BiffStructurePtr SqRefU::clone()
 }
 
 
-void SqRefU::store(CFRecord& record)
-{
-	std::vector<CellRangeRef> refs;
-	AUX::str2refs(sqref, refs);
-
-	unsigned short cref = refs.size();
-	record << cref;
-	for(std::vector<CellRangeRef>::const_iterator it = refs.begin(), itEnd = refs.end(); it != itEnd ; ++it)
-	{
-		Ref8U ref8u(*it);
-		record << ref8u;
-	}
-}
-
-
 void SqRefU::load(CFRecord& record)
 {
 	unsigned short cref;

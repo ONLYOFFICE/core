@@ -52,22 +52,13 @@ BaseObjectPtr FilePass::clone()
 	return BaseObjectPtr(new FilePass(*this));
 }
 
-
-void FilePass::writeFields(CFRecord& record)
-{
-#pragma message("####################### FilePass record is not implemented")
-	Log::error("FilePass record is not implemented.");
-	//record << some_value;
-}
-
-
 void FilePass::readFields(CFRecord& record)
 {
 	bool bEnabled = false;
 	
 	record >> wEncryptionType;
 	
-	if(!wEncryptionType)
+	if(wEncryptionType == 0)
 	{
 		record >> key;
 		Log::info("FilePass: Encryption type: XOR");
@@ -79,21 +70,27 @@ void FilePass::readFields(CFRecord& record)
 
 		majorVer = *record.getCurData<unsigned short>();
 		
-		if(0x0001 == majorVer) // RC4 encryption header structure
+		rc4HeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
+
+		rc4HeaderPtr->bStandard = 0x0001 == majorVer ? true : false; // _S2dvT1xU_R3bOPwre4_.xls
+		rc4HeaderPtr->load (record);
+
+		if (rc4HeaderPtr->bStandard)
 		{
-			rc4HeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
-
-			rc4HeaderPtr->load (record);
-
 			record.getGlobalWorkbookInfo()->decryptor = 
-				CRYPT::RC4DecryptorPtr(new CRYPT::RC4Decryptor(rc4HeaderPtr->RC4Data, record.getGlobalWorkbookInfo()->password, 2));
-			
-			Log::info("Encryption type: RC4 Standard");
+				CRYPT::RC4DecryptorPtr(new CRYPT::RC4Decryptor(rc4HeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
 		}
-		else // RC4 CryptoAPI encryption header structuren
+		else
 		{
-			record >> rc4CryptoAPIHeader;
-			Log::info("FilePass: Encryption type: RC4 Non-Standard");
+			//CRYPT::ECMADecryptor Decryptor;
+
+			//Decryptor.SetCryptData(rc4HeaderPtr->crypt_data_aes);
+
+			//if (Decryptor.SetPassword(L"VelvetSweatshop") == false)
+			//{
+			//}
+			//	//record.getGlobalWorkbookInfo()->decryptor = 
+			//	//CRYPT::ECMADecryptor(new CRYPT::RC4Decryptor(rc4HeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
 		}
 	}
 

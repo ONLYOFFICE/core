@@ -44,20 +44,10 @@ SortData::~SortData()
 {
 }
 
-
 BaseObjectPtr SortData::clone()
 {
 	return BaseObjectPtr(new SortData(*this));
 }
-
-
-void SortData::writeFields(CFRecord& record)
-{
-#pragma message("####################### SortData record is not implemented")
-	Log::error("SortData record is not implemented.");
-	//record << some_value;
-}
-
 
 void SortData::readFields(CFRecord& record)
 {

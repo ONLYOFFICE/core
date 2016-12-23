@@ -51,12 +51,6 @@ TableFeatureType::~TableFeatureType()
 {
 }
 
-
-void TableFeatureType::store(CFRecord& record)
-{	
-}
-
-
 void TableFeatureType::load(CFRecord& record)
 {	
 	record >> lt;				// SourceType

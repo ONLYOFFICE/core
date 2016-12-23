@@ -64,7 +64,6 @@ public:
 			data.push_back(element);
 		}
 	}
-	virtual void store(XLS::CFRecord& record){}
 
 	std::vector<Type>	data;
 	unsigned int		op;

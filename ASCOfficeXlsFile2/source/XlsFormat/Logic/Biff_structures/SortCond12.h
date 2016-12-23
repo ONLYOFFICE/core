@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeSortCond12;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	bool					fSortDes;
 	unsigned short			sortOn;

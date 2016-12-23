@@ -51,12 +51,6 @@ BaseObjectPtr End::clone()
 }
 
 
-void End::writeFields(CFRecord& record)
-{
-
-}
-
-
 void End::readFields(CFRecord& record)
 {
 	// no data

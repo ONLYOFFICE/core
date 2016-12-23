@@ -51,14 +51,6 @@ BaseObjectPtr SXViewEx9::clone()
 }
 
 
-void SXViewEx9::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXViewEx9 record is not implemented")
-	Log::error("SXViewEx9 record is not implemented.");
-	//record << some_value;
-}
-
-
 void SXViewEx9::readFields(CFRecord& record)
 {
 #pragma message("####################### SXViewEx9 record is not implemented")

@@ -385,6 +385,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;
+	if (charts->m_arAXISPARENT.empty()) return;
 
 	int ind_AXIS = 0;
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[ind_AXIS].get());

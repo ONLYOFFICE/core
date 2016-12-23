@@ -44,12 +44,6 @@ BiffStructurePtr PtgElfCol::clone()
 }
 
 
-void PtgElfCol::storeFields(CFRecord& record)
-{
-	record << loc;
-}
-
-
 void PtgElfCol::loadFields(CFRecord& record)
 {
 	record >> loc;

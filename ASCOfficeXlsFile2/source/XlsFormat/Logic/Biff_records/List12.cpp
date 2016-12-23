@@ -50,12 +50,6 @@ BaseObjectPtr List12::clone()
 	return BaseObjectPtr(new List12(*this));
 }
 
-
-void List12::writeFields(CFRecord& record)
-{
-}
-
-
 void List12::readFields(CFRecord& record)
 {
 	record >> frtHeader;

@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeRevItab;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char type1;
 	unsigned short tabid;

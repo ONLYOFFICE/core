@@ -52,12 +52,6 @@ BaseObjectPtr EOF_T::clone()
 }
 
 
-void EOF_T::writeFields(CFRecord& record)
-{
-	// No data in this record
-}
-
-
 void EOF_T::readFields(CFRecord& record)
 {
 	// No data in this record

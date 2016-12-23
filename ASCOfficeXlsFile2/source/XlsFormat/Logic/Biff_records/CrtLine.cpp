@@ -51,13 +51,6 @@ BaseObjectPtr CrtLine::clone()
 	return BaseObjectPtr(new CrtLine(*this));
 }
 
-
-void CrtLine::writeFields(CFRecord& record)
-{
-	record << id;
-}
-
-
 void CrtLine::readFields(CFRecord& record)
 {
 	record >> id;

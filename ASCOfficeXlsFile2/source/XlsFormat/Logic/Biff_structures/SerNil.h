@@ -43,7 +43,7 @@ public:
     SerNil();
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 	virtual const std::wstring toString() const;
 
 };

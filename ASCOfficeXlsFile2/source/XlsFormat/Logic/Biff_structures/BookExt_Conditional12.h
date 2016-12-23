@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeBookExt_Conditional12;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	bool fPublishedBookItems;
 	bool fShowPivotChartFilter;

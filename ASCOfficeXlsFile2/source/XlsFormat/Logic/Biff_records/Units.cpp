@@ -50,14 +50,6 @@ BaseObjectPtr Units::clone()
 	return BaseObjectPtr(new Units(*this));
 }
 
-
-void Units::writeFields(CFRecord& record)
-{
-	unsigned short reserved = 0;
-	record << reserved;
-}
-
-
 void Units::readFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // reserved

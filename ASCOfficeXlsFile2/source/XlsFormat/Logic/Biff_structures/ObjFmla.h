@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeObjFmla;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ObjectParsedFormula fmla;
 

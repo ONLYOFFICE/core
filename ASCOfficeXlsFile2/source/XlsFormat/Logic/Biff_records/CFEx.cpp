@@ -50,13 +50,6 @@ BaseObjectPtr CFEx::clone()
 	return BaseObjectPtr(new CFEx(*this));
 }
 
-
-void CFEx::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CFEx::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;

@@ -49,14 +49,6 @@ XLS::BiffStructurePtr OfficeArtFDGGBlock::clone()
 }
 
 
-void OfficeArtFDGGBlock::storeFields(XLS::CFRecord& record)
-{
-	_UINT32 cidcl = Rgidcl.size();
-	record << spidMax << cidcl << cspSaved << cdgSaved;
-	record << Rgidcl;
-}
-
-
 void OfficeArtFDGGBlock::loadFields(XLS::CFRecord& record)
 {
 	_UINT32 cidcl;

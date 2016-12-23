@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeFileOffset;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short offset;
 };

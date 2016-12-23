@@ -42,13 +42,6 @@ XLS::BiffStructurePtr OfficeArtRGFOPTE::clone()
 	return XLS::BiffStructurePtr(new OfficeArtRGFOPTE(*this));
 }
 
-
-void OfficeArtRGFOPTE::store(XLS::CFRecord& record)
-{
-	// We don't support xlsx to xls conversion
-}
-
-
 void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 {
 	std::vector<OfficeArtFOPTEPtr> rgfopte; // temp ... for complex load

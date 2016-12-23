@@ -52,10 +52,8 @@ public:
 	static const ElementType	type = typeFtLbsData;
 
 	virtual void load(CFRecord& record, const unsigned short ot);
-	virtual void store(CFRecord& record, const unsigned short ot);
 
 	virtual void load(CFRecord& record){}
-	virtual void store(CFRecord& record){}
 
 	ObjFmla fmla;
 	unsigned short cLines;

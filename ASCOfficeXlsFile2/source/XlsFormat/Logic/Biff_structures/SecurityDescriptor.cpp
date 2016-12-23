@@ -54,14 +54,6 @@ BiffStructurePtr SecurityDescriptor::clone()
 }
 
 
-void SecurityDescriptor::store(CFRecord& record)
-{
-#pragma message("####################### SecurityDescriptor record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! SecurityDescriptor record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void SecurityDescriptor::load(CFRecord& record)
 {
 	record.loadAnyData(sd);

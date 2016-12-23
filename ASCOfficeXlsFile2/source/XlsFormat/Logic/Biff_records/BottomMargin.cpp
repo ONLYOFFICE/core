@@ -50,13 +50,6 @@ BaseObjectPtr BottomMargin::clone()
 	return BaseObjectPtr(new BottomMargin(*this));
 }
 
-
-void BottomMargin::writeFields(CFRecord& record)
-{
-	record << num;
-}
-
-
 void BottomMargin::readFields(CFRecord& record)
 {
 	record >> num;

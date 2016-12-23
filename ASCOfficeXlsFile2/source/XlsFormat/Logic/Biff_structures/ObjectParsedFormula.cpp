@@ -49,15 +49,6 @@ BiffStructurePtr ObjectParsedFormula::clone()
 }
 
 
-void ObjectParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	record.reserveNunBytes(4); // unused
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Obj);
-}
-
-
 void ObjectParsedFormula::load(CFRecord& record)
 {
 	unsigned short cce;

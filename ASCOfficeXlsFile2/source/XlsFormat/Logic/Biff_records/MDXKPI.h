@@ -48,7 +48,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 //-----------------------------
 	_INT32			istrConnName;

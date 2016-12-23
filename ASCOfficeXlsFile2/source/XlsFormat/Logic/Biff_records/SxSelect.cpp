@@ -51,14 +51,6 @@ BaseObjectPtr SxSelect::clone()
 }
 
 
-void SxSelect::writeFields(CFRecord& record)
-{
-#pragma message("####################### SxSelect record is not implemented")
-	Log::error("SxSelect record is not implemented.");
-	//record << some_value;
-}
-
-
 void SxSelect::readFields(CFRecord& record)
 {
 #pragma message("####################### SxSelect record is not implemented")

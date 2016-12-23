@@ -50,15 +50,6 @@ BaseObjectPtr MDTInfo::clone()
 	return BaseObjectPtr(new MDTInfo(*this));
 }
 
-
-void MDTInfo::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDTInfo record is not implemented")
-	Log::error("MDTInfo record is not implemented.");
-	//record << some_value;
-}
-
-
 void MDTInfo::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

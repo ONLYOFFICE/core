@@ -51,14 +51,6 @@ BaseObjectPtr DConBin::clone()
 }
 
 
-void DConBin::writeFields(CFRecord& record)
-{
-#pragma message("####################### DConBin record is not implemented")
-	Log::error("DConBin record is not implemented.");
-	//record << some_value;
-}
-
-
 void DConBin::readFields(CFRecord& record)
 {
 #pragma message("####################### DConBin record is not implemented")

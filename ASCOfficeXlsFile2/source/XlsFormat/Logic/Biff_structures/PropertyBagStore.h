@@ -49,7 +49,7 @@ public:
 	static const XLS::ElementType	type = XLS::typePropertyBagStore;
 	
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	std::vector<FactoidType> factoidTypes;
 	unsigned short cbHdr;

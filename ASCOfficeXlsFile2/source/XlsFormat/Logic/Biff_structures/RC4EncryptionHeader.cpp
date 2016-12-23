@@ -43,21 +43,135 @@ XLS::BiffStructurePtr RC4EncryptionHeader::clone()
 }
 
 
-void RC4EncryptionHeader::store(XLS::CFRecord& record)
-{
-#pragma message("####################### RC4EncryptionHeader record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RC4EncryptionHeader record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RC4EncryptionHeader::load(XLS::CFRecord& record)
 {
 	record >> EncryptionVersionInfo;
 	
-	record.loadAnyData(RC4Data.Salt);
-	record.loadAnyData(RC4Data.EncryptedVerifier);
-	record.loadAnyData(RC4Data.EncryptedVerifierHash);
+	if (bStandard)
+	{
+		record.loadAnyData(crypt_data_rc4.Salt);
+		record.loadAnyData(crypt_data_rc4.EncryptedVerifier);
+		record.loadAnyData(crypt_data_rc4.EncryptedVerifierHash);
+	}
+	else
+	{
+		crypt_data_aes.bAgile	= false;
+
+		unsigned short flags;
+		record >> flags;
+		
+		bool fCryptoAPI	= GETBIT(flags, 1);
+		bool fDocProps	= GETBIT(flags, 2);
+		bool fExternal	= GETBIT(flags, 3);
+		bool fAES		= GETBIT(flags, 4);
+
+		record >> flags;
+	//EncryptionHeader
+		_UINT32 HeaderSize;		record >> HeaderSize;
+		_UINT32 Flags;			record >> Flags;
+		_UINT32 SizeExtra;		record >> SizeExtra;
+		_UINT32 AlgID;			record >> AlgID;
+		_UINT32 AlgIDHash;		record >> AlgIDHash;
+		_UINT32 KeySize;		record >> KeySize;
+		_UINT32 ProviderType;	record >> ProviderType;
+		_UINT32 Reserved1;		record >> Reserved1;
+		_UINT32 Reserved2;		record >> Reserved2;
+
+		int pos		= record.getRdPtr();
+		int size	= record.getDataSize();
+
+		std::vector<char> dataCSPName;
+		while(pos  < size - 1)
+		{
+			char s;
+			record >> s; dataCSPName.push_back(s);
+			record >> s; dataCSPName.push_back(s);
+			
+			if (dataCSPName[dataCSPName.size() - 1] == 0 && dataCSPName[dataCSPName.size() - 2] == 0)
+			{
+				break;
+			}
+			pos+=2;//unicode null-terminate string
+		}
+	//EncryptionVerifier
+
+		record >> crypt_data_aes.saltSize;
+		
+		unsigned char *pDataRead = new unsigned char[crypt_data_aes.saltSize];		
+		memcpy(pDataRead, record.getCurData<unsigned char>(), crypt_data_aes.saltSize);
+		record.skipNunBytes(crypt_data_aes.saltSize);
+
+		if (pDataRead)
+		{
+			crypt_data_aes.saltValue = std::string((char*)pDataRead, crypt_data_aes.saltSize);	
+			delete pDataRead;
+		}
+		
+		pDataRead = new unsigned char[0x10];
+		memcpy(pDataRead, record.getCurData<unsigned char>(), 0x10);
+		record.skipNunBytes(0x10);
+
+		if (pDataRead)
+		{
+			crypt_data_aes.encryptedVerifierInput = std::string((char*)pDataRead, 0x10);
+			delete pDataRead;
+		}
+
+		record >> crypt_data_aes.hashSize;
+				
+		int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20;
+		
+		pDataRead = new unsigned char[szEncryptedVerifierHash];
+		memcpy(pDataRead, record.getCurData<unsigned char>(), szEncryptedVerifierHash);
+		record.skipNunBytes(szEncryptedVerifierHash);
+
+		if (pDataRead)
+		{
+			crypt_data_aes.encryptedVerifierValue = std::string((char*)pDataRead, szEncryptedVerifierHash);
+			delete pDataRead;
+		}
+
+		pos = record.getRdPtr();
+		
+	//------------------------------------------------------------------------------------------
+		crypt_data_aes.hashAlgorithm	= CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000 || 0x8004
+		crypt_data_aes.spinCount		= 50000;
+
+		switch(AlgID)
+		{
+		case 0x6801:	
+			crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		
+			crypt_data_aes.keySize = KeySize / 8;
+			break;
+		case 0x660E:	
+			crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+			crypt_data_aes.keySize	= 128 /8;	
+			break;
+		case 0x660F:	
+			crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+			crypt_data_aes.keySize	= 192 /8;	
+			break;
+		case 0x6610:	
+			crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB;
+			crypt_data_aes.keySize	= 256 /8;	
+			break;
+		}
+
+		switch(ProviderType)
+		{
+		case 0x0001:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		break;
+		case 0x0018:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB; break;
+		}
+
+		if (crypt_data_aes.cipherAlgorithm == CRYPT_METHOD::RC4)
+		{
+			bStandard = true;
+		
+			memcpy(&crypt_data_rc4.Salt,					crypt_data_aes.saltValue.c_str(),				16);
+			memcpy(&crypt_data_rc4.EncryptedVerifier,		crypt_data_aes.encryptedVerifierValue.c_str(),	16);
+			memcpy(&crypt_data_rc4.EncryptedVerifierHash,	crypt_data_aes.encryptedVerifierInput.c_str(),	16);
+		}
+	}
 }
 
 

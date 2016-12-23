@@ -46,7 +46,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	static const ElementType	type = typeXFProps;
 

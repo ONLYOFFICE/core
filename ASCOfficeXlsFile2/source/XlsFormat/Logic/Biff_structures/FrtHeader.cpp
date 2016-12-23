@@ -52,13 +52,6 @@ BiffStructurePtr FrtHeader::clone()
 	return BiffStructurePtr(new FrtHeader(*this));
 }
 
-void FrtHeader::store(CFRecord& record)
-{
-	record << rt << grbitFrt;
-	record.reserveNunBytes(8); // reserved
-}
-
-
 void FrtHeader::load(CFRecord& record)
 {
 	record >> rt >> grbitFrt;

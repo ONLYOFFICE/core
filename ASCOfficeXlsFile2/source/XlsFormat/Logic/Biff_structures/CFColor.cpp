@@ -52,11 +52,6 @@ BiffStructurePtr CFColor::clone()
 	return BiffStructurePtr(new CFColor(*this));
 }
 
-
-void CFColor::store(CFRecord& record)
-{
-}
-
 void CFColor::load(CFRecord& record)
 {
 	record >> xclrType;

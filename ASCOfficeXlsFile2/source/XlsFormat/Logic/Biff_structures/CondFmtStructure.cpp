@@ -43,17 +43,6 @@ BiffStructurePtr CondFmtStructure::clone()
 }
 
 
-void CondFmtStructure::store(CFRecord& record)
-{
-	record << ccf;
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fToughRecalc);
-	SETBITS(flags, 1, 15, nID);
-	record << flags;
-	record << refBound << sqref;
-}
-
-
 void CondFmtStructure::load(CFRecord& record)
 {
 	record >> ccf;

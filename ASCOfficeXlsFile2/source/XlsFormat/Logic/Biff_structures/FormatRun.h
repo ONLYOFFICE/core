@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeFormatRun;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short	ich;
 	FontIndex		ifnt;

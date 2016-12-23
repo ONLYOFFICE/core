@@ -53,15 +53,6 @@ BiffStructurePtr XFExtNoFRT::clone()
 	return BiffStructurePtr(new XFExtNoFRT(*this));
 }
 
-
-void XFExtNoFRT::store(CFRecord& record)
-{
-#pragma message("####################### XFExtNoFRT record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFExtNoFRT record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFExtNoFRT::load(CFRecord& record)
 {
 	record.skipNunBytes(6); // reserved

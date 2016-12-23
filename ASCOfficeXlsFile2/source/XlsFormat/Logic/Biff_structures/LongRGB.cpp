@@ -66,20 +66,6 @@ BiffStructurePtr LongRGB::clone()
 	return BiffStructurePtr(new LongRGB(*this));
 }
 
-void LongRGBA::store(CFRecord& record)
-{
-	record << red << green << blue;
-	if(is_alpha)
-	{
-		record << alpha;
-	}
-	else
-	{
-		record.reserveNunBytes(1); // reserved
-	}
-}
-
-
 void LongRGBA::load(CFRecord& record)
 {
 	record >> red >> green >> blue;

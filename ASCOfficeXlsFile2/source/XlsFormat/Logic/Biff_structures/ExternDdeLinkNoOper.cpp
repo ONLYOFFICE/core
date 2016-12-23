@@ -43,14 +43,6 @@ BiffStructurePtr ExternDdeLinkNoOper::clone()
 }
 
 
-void ExternDdeLinkNoOper::store(CFRecord& record)
-{
-#pragma message("####################### ExternDdeLinkNoOper record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExternDdeLinkNoOper record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ExternDdeLinkNoOper::load(CFRecord& record)
 {
 	record.skipNunBytes(4); // reserved

@@ -56,13 +56,6 @@ BiffStructurePtr PtgArea::clone()
 	return BiffStructurePtr(new PtgArea(*this));
 }
 
-
-void PtgArea::storeFields(CFRecord& record)
-{
-	record << area;
-}
-
-
 void PtgArea::loadFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x600)

@@ -50,15 +50,6 @@ BaseObjectPtr DVal::clone()
 	return BaseObjectPtr(new DVal(*this));
 }
 
-
-void DVal::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fWnClosed);
-	record << flags << xLeft << yTop << idObj << idvMac;
-}
-
-
 void DVal::readFields(CFRecord& record)
 {
 	unsigned short flags;

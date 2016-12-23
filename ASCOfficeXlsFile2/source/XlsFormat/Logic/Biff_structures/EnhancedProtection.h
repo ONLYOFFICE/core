@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeEnhancedProtection;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	bool iprotObjects;
 	bool iprotScenarios;

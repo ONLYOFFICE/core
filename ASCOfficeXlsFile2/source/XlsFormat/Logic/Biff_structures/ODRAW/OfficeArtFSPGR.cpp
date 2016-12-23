@@ -48,13 +48,6 @@ XLS::BiffStructurePtr OfficeArtFSPGR::clone()
 	return XLS::BiffStructurePtr(new OfficeArtFSPGR(*this));
 }
 
-
-void OfficeArtFSPGR::storeFields(XLS::CFRecord& record)
-{
-	record << xLeft << yTop << xRight << yBottom;
-}
-
-
 void OfficeArtFSPGR::loadFields(XLS::CFRecord& record)
 {
 	record >> xLeft >> yTop >> xRight >> yBottom;

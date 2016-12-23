@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeCFExNonCF12;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short	icf;
 	unsigned char	cp;

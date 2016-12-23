@@ -50,28 +50,6 @@ BaseObjectPtr Selection::clone()
 	return BaseObjectPtr(new Selection(*this));
 }
 
-
-void Selection::writeFields(CFRecord& record)
-{
-	CellRef activeCellRef(activeCell);
-	rwAct = static_cast<unsigned short>(activeCellRef.getRow());
-	colAct = static_cast<unsigned short>(activeCellRef.getColumn());
-	
-	record << pnn << rwAct << colAct << irefAct;
-	
-	std::vector<CellRangeRef> refs;
-	AUX::str2refs(sqref, refs);
-
-	unsigned short cref = refs.size();
-	record << cref;
-	for(std::vector<CellRangeRef>::const_iterator it = refs.begin(), itEnd = refs.end(); it != itEnd ; ++it)
-	{
-		RefU refu(*it);
-		record << refu;
-	}
-}
-
-
 void Selection::readFields(CFRecord& record)
 {
 	unsigned short cref;

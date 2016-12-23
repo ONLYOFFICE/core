@@ -50,17 +50,6 @@ BaseObjectPtr HorizontalPageBreaks::clone()
 	return BaseObjectPtr(new HorizontalPageBreaks(*this));
 }
 
-
-void HorizontalPageBreaks::writeFields(CFRecord& record)
-{
-	record << cbrk;
-	for(BiffStructurePtrVector::const_iterator it = rgbrk.begin(), itEnd = rgbrk.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void HorizontalPageBreaks::readFields(CFRecord& record)
 {
 	record >> cbrk;

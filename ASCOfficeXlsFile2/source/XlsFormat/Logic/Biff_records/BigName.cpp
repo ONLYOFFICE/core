@@ -50,13 +50,6 @@ BaseObjectPtr BigName::clone()
 	return BaseObjectPtr(new BigName(*this));
 }
 
-
-void BigName::writeFields(CFRecord& record)
-{
-
-}
-
-
 void BigName::readFields(CFRecord& record)
 {
 #pragma message("####################### BigName record is not implemented")

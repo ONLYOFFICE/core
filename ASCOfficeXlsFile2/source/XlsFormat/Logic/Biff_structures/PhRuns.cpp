@@ -42,11 +42,6 @@ BiffStructurePtr PhRuns::clone()
 	return BiffStructurePtr(new PhRuns(*this));
 }
 
-void PhRuns::store(CFRecord& record)
-{
-	record << ichFirst << ichMom << cchMom;
-}
-
 
 void PhRuns::load(CFRecord& record)
 {

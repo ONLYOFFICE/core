@@ -44,7 +44,7 @@ public:
 	SerBool(const std::wstring& word); // Accepts only "TRUE" or "FALSE"
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 	virtual const std::wstring toString() const;
 
 private:

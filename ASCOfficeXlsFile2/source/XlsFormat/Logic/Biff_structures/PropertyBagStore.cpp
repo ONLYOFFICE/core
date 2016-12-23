@@ -42,16 +42,6 @@ XLS::BiffStructurePtr PropertyBagStore::clone()
 	return XLS::BiffStructurePtr(new PropertyBagStore(*this));
 }
 
-
-
-void PropertyBagStore::store(XLS::CFRecord& record)
-{
-#pragma message("####################### PropertyBagStore record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PropertyBagStore record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void PropertyBagStore::load(XLS::CFRecord& record)
 {
 	_UINT32 cFactoidType;

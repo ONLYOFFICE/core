@@ -52,15 +52,6 @@ BaseObjectPtr FeatHdr::clone()
 	return BaseObjectPtr(new FeatHdr(*this));
 }
 
-
-void FeatHdr::writeFields(CFRecord& record)
-{
-#pragma message("####################### FeatHdr record is not implemented")
-	Log::error("FeatHdr record is not implemented.");
-	//record << some_value;
-}
-
-
 void FeatHdr::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_FeatHdr);

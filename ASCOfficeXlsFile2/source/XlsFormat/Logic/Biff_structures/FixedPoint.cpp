@@ -55,12 +55,6 @@ XLS::BiffStructurePtr FixedPoint::clone()
 	return XLS::BiffStructurePtr(new FixedPoint(*this));
 }
 
-void FixedPoint::store(XLS::CFRecord& record)
-{
-	record << Fractional << Integral;
-}
-
-
 void FixedPoint::load(XLS::CFRecord& record)
 {
 	record >> Fractional >> Integral;

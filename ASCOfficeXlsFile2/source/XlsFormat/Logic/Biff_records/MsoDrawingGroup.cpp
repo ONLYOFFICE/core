@@ -52,12 +52,6 @@ BaseObjectPtr MsoDrawingGroup::clone()
 }
 
 
-void MsoDrawingGroup::writeFields(CFRecord& record)
-{
-	record << rgChildRec;
-}
-
-
 void MsoDrawingGroup::readFields(CFRecord& record)
 {
 	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];

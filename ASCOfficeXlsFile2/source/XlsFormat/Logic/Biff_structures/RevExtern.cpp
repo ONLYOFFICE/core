@@ -53,14 +53,6 @@ BiffStructurePtr RevExtern::clone()
 	return BiffStructurePtr(new RevExtern(*this));
 }
 
-void RevExtern::store(CFRecord& record)
-{
-#pragma message("####################### RevExtern record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RevExtern record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RevExtern::load(CFRecord& record)
 {
 	unsigned char book_type = *record.getCurData<unsigned char>();

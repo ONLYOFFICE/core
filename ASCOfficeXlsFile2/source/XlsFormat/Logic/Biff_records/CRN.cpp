@@ -52,12 +52,6 @@ BaseObjectPtr CRN::clone()
 }
 
 
-void CRN::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CRN::readFields(CFRecord& record)
 {
 	record >> colLast >> colFirst >> row;

@@ -48,11 +48,6 @@ XLS::BiffStructurePtr OfficeArtClientAnchorHF::clone()
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorHF(*this));
 }
 
-void OfficeArtClientAnchorHF::storeFields(XLS::CFRecord& record)
-{
-}
-
-
 void OfficeArtClientAnchorHF::loadFields(XLS::CFRecord& record)
 {
 	record >> _cx >> _cy;

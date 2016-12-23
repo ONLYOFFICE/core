@@ -114,13 +114,6 @@ XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 	return XLS::BiffStructurePtr(new OfficeArtFOPTE(*this));
 }
 
-
-void OfficeArtFOPTE::store(XLS::CFRecord& record)
-{
-	// We don't support xlsx to xls conversion
-}
-
-
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {
 	unsigned short flags;

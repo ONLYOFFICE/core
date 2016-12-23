@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeVertBrk;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ColU col;
 	RwU rowStart;

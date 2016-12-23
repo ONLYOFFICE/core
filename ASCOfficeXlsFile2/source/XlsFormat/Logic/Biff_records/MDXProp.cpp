@@ -51,14 +51,6 @@ BaseObjectPtr MDXProp::clone()
 }
 
 
-void MDXProp::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDXProp record is not implemented")
-	Log::error("MDXProp record is not implemented.");
-	//record << some_value;
-}
-
-
 void MDXProp::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

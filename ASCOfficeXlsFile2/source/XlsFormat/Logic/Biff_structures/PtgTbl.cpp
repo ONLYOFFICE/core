@@ -48,11 +48,6 @@ BiffStructurePtr PtgTbl::clone()
 	return BiffStructurePtr(new PtgTbl(*this));
 }
 
-void PtgTbl::storeFields(CFRecord& record)
-{
-	record << row << col;
-}
-
 
 void PtgTbl::loadFields(CFRecord& record)
 {

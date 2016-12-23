@@ -49,9 +49,6 @@ public:
 	static const ElementType	type = typeObjLinkFmla;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record, const unsigned short ot);
-
-	virtual void store(CFRecord& record){}
 
 	ObjFmla fmla;
 };

@@ -50,15 +50,6 @@ BaseObjectPtr MDB::clone()
 	return BaseObjectPtr(new MDB(*this));
 }
 
-
-void MDB::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDB record is not implemented")
-	Log::error("MDB record is not implemented.");
-	//record << some_value;
-}
-
-
 void MDB::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

@@ -49,15 +49,6 @@ BaseObjectPtr MulRk::clone()
 	return BaseObjectPtr(new MulRk(*this));
 }
 
-
-void MulRk::writeFields(CFRecord& record)
-{
-#pragma message("####################### MulRk record is not implemented")
-	Log::error("MulRk record is not implemented.");
-	//record << some_value;
-}
-
-
 void MulRk::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

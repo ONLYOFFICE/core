@@ -49,7 +49,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeFileMoniker;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	_UINT16			cAnti;
 	std::string		ansiPath;

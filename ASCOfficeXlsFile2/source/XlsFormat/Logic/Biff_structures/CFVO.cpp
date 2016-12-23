@@ -43,17 +43,6 @@ BiffStructurePtr CFVO::clone()
 }
 
 
-void CFVO::store(CFRecord& record)
-{
-	record << cfvoType;
-	fmla.store(record);
-	if(!fmla.getCCE())
-	{
-		record << numValue;
-	}
-}
-
-
 void CFVO::load(CFRecord& record)
 {
 	record >> cfvoType;

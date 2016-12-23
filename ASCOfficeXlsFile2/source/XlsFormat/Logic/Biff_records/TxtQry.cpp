@@ -51,14 +51,6 @@ BaseObjectPtr TxtQry::clone()
 }
 
 
-void TxtQry::writeFields(CFRecord& record)
-{
-#pragma message("####################### TxtQry record is not implemented")
-	Log::error("TxtQry record is not implemented.");
-	//record << some_value;
-}
-
-
 void TxtQry::readFields(CFRecord& record)
 {
 #pragma message("####################### TxtQry record is not implemented")

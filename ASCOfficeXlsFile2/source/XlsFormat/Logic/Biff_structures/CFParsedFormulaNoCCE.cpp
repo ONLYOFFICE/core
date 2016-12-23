@@ -49,13 +49,6 @@ BiffStructurePtr CFParsedFormulaNoCCE::clone()
 	return BiffStructurePtr(new CFParsedFormulaNoCCE(*this));
 }
 
-
-void CFParsedFormulaNoCCE::store(CFRecord& record)
-{
-	rgce.store(record);
-}
-
-
 void CFParsedFormulaNoCCE::load(CFRecord& record)
 {
 	// EXCEPT::LE::WhatIsTheFuck("Unexpected stub function call.", __FUNCTION__);

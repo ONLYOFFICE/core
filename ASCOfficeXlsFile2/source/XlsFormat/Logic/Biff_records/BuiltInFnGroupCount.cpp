@@ -50,13 +50,6 @@ BaseObjectPtr BuiltInFnGroupCount::clone()
 	return BaseObjectPtr(new BuiltInFnGroupCount(*this));
 }
 
-
-void BuiltInFnGroupCount::writeFields(CFRecord& record)
-{
-	record << count;
-}
-
-
 void BuiltInFnGroupCount::readFields(CFRecord& record)
 {
 	record >> count;

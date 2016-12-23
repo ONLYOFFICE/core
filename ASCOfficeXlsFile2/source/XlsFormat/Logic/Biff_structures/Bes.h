@@ -47,7 +47,7 @@ public:
 	
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	const std::wstring toString();
 	void fromString(const std::wstring str);

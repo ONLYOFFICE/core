@@ -51,14 +51,6 @@ BaseObjectPtr SXTH::clone()
 }
 
 
-void SXTH::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXTH record is not implemented")
-	Log::error("SXTH record is not implemented.");
-	//record << some_value;
-}
-
-
 void SXTH::readFields(CFRecord& record)
 {
 #pragma message("####################### SXTH record is not implemented")

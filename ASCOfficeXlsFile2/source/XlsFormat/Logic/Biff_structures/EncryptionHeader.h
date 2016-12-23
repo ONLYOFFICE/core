@@ -48,7 +48,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeEncryptionHeader;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	EncryptionHeaderFlags Flags;
     _INT32			AlgID;

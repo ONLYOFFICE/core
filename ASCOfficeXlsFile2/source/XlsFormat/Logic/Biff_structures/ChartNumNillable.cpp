@@ -48,12 +48,6 @@ BiffStructurePtr ChartNumNillable::clone()
 	return BiffStructurePtr(new ChartNumNillable(*this));
 }
 
-void ChartNumNillable::store(CFRecord& record)
-{
-	record << data.xnum;
-}
-
-
 void ChartNumNillable::load(CFRecord& record)
 {
 	record >> data.xnum;

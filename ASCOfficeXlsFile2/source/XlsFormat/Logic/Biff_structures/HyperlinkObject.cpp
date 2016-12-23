@@ -43,60 +43,6 @@ XLS::BiffStructurePtr HyperlinkObject::clone()
 	return XLS::BiffStructurePtr(new HyperlinkObject(*this));
 }
 
-
-void HyperlinkObject::store(XLS::CFRecord& record)
-{
-	_UINT32 flags = 0;
-	
-	SETBIT(flags, 0, hlstmfHasMoniker);
-	SETBIT(flags, 1, hlstmfIsAbsolute);
-	SETBIT(flags, 2, hlstmfSiteGaveDisplayName);
-	SETBIT(flags, 3, hlstmfHasLocationStr);
-	SETBIT(flags, 4, hlstmfHasDisplayName);
-	SETBIT(flags, 5, hlstmfHasGUID);
-	SETBIT(flags, 6, hlstmfHasCreationTime);
-	SETBIT(flags, 7, hlstmfHasFrameName);
-	SETBIT(flags, 8, hlstmfMonikerSavedAsStr);
-	SETBIT(flags, 9, hlstmfAbsFromGetdataRel);
-
-	record << streamVersion << flags;
-
-	if(hlstmfHasDisplayName)
-	{
-		record << displayName;
-	}
-	if(hlstmfHasFrameName)
-	{
-		record << targetFrameName;
-	}
-	if(hlstmfHasMoniker && hlstmfMonikerSavedAsStr)
-	{
-		record << moniker;
-	}
-	if(hlstmfHasMoniker && !hlstmfMonikerSavedAsStr)
-	{
-		record << oleMoniker;
-	}
-	if(hlstmfHasLocationStr)
-	{
-		record << location;
-	}
-	if(hlstmfHasGUID)
-	{
-		_GUID_ guid_num;
-		if(!STR::bstr2guid(guid, guid_num))
-		{
-			// EXCEPT::LE::AttributeDataWrong(L"guid", L"HyperlinkObject", guid);
-		}
-		record << guid_num;
-	}
-	if(hlstmfHasCreationTime)
-	{
-		record.storeAnyData(fileTime);
-	}
-}
-
-
 void HyperlinkObject::load(XLS::CFRecord& record)
 {
 	_UINT32 flags;

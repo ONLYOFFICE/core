@@ -49,16 +49,6 @@ BiffStructurePtr CellParsedFormula::clone()
 	return BiffStructurePtr(new CellParsedFormula(*this));
 }
 
-
-void CellParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Formula);
-	rgcb.store(record);
-}
-
-
 void CellParsedFormula::load(CFRecord& record)
 {
 	unsigned short cce;

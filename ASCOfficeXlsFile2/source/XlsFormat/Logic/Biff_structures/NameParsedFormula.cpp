@@ -49,14 +49,6 @@ BiffStructurePtr NameParsedFormula::clone()
 	return BiffStructurePtr(new NameParsedFormula(*this));
 }
 
-
-void NameParsedFormula::store(CFRecord& record)
-{
-	rgce.store(record);
-	rgcb.store(record);
-}
-
-
 void NameParsedFormula::load(CFRecord& record, const size_t cce)
 {
 	rgce.load(record, cce);

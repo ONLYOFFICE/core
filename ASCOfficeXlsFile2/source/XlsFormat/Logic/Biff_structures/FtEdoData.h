@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeFtEdoData;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short ivtEdit;
 	Boolean<unsigned short> fMultiLine;

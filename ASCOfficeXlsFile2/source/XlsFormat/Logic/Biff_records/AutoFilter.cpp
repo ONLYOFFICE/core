@@ -79,12 +79,6 @@ BaseObjectPtr AutoFilter::clone()
 	return BaseObjectPtr(new AutoFilter(*this));
 }
 
-
-void AutoFilter::writeFields(CFRecord& record)
-{
-}
-
-
 void AutoFilter::readFields(CFRecord& record)
 {
 	m_bAutoFilter12 = false;

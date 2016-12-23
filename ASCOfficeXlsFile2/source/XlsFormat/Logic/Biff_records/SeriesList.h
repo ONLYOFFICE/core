@@ -43,7 +43,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	static const ElementType	type = typeRGISeriesListSpecial;
 
@@ -65,7 +65,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeSeriesList;

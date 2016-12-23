@@ -43,18 +43,6 @@ BiffStructurePtr DXFPat::clone()
 	return BiffStructurePtr(new DXFPat(*this));
 }
 
-void DXFPat::store(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBITS(flags, 10, 15, fls);
-	record << flags;
-	unsigned short flags2 = 0;
-	SETBITS(flags2, 0, 6, icvForeground);
-	SETBITS(flags2, 7, 13, icvBackground);
-	record << flags2;
-}
-
-
 void DXFPat::load(CFRecord& record)
 {
 	unsigned short flags;

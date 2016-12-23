@@ -50,13 +50,6 @@ BaseObjectPtr VCenter::clone()
 	return BaseObjectPtr(new VCenter(*this));
 }
 
-
-void VCenter::writeFields(CFRecord& record)
-{
-	record << vcenter;
-}
-
-
 void VCenter::readFields(CFRecord& record)
 {
 	record >> vcenter;

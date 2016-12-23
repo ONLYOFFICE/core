@@ -51,12 +51,6 @@ BaseObjectPtr IMDATA::clone()
 }
 
 
-void IMDATA::writeFields(CFRecord& record)
-{
-
-}
-
-
 void IMDATA::readFields(CFRecord& record)
 {
 	record >> cf;

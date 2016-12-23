@@ -53,12 +53,6 @@ XLS::BiffStructurePtr URLMoniker::clone()
 	return XLS::BiffStructurePtr(new URLMoniker(*this));
 }
 
-void URLMoniker::store(XLS::CFRecord& record)
-{
-	_UINT32 length = (url.length() + 1) * 2;
-	record << length << url;
-}
-
 
 void URLMoniker::load(XLS::CFRecord& record)
 {

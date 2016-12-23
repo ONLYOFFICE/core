@@ -51,14 +51,6 @@ BaseObjectPtr TableStyleElement::clone()
 }
 
 
-void TableStyleElement::writeFields(CFRecord& record)
-{
-#pragma message("####################### TableStyleElement record is not implemented")
-	Log::error("TableStyleElement record is not implemented.");
-	//record << some_value;
-}
-
-
 void TableStyleElement::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

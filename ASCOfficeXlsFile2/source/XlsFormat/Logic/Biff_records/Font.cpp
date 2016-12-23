@@ -52,25 +52,6 @@ BaseObjectPtr Font::clone()
 	return BaseObjectPtr(new Font(*this));
 }
 
-
-void Font::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 1, fItalic);
-	SETBIT(flags, 3, fStrikeOut);
-	SETBIT(flags, 4, fOutline);
-	SETBIT(flags, 5, fShadow);
-	SETBIT(flags, 6, fCondense);
-	SETBIT(flags, 7, fExtend);
-
-	record << dyHeight << flags;
-	record << icv << bls << sss << uls << bFamily << bCharSet;
-	record.reserveNunBytes(1, static_cast<unsigned char>(0x5E));
-	
-	record << fontName;
-}
-
-
 void Font::readFields(CFRecord& record)
 {
 	correct = false;

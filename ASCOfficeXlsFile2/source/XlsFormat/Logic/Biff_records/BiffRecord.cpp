@@ -33,7 +33,6 @@
 #include "BiffRecord.h"
 #include <Binary/CFStream.h>
 #include "Binary/CFStreamCacheReader.h"
-#include "Binary/CFStreamCacheWriter.h"
 
 
 namespace XLS

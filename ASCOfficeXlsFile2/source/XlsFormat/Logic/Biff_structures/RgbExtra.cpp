@@ -50,16 +50,6 @@ BiffStructurePtr RgbExtra::clone()
 	return BiffStructurePtr(new RgbExtra(*this));
 }
 
-void RgbExtra::store(CFRecord& record)
-{
-	while(ptg_records.size())
-	{
-		record << *ptg_records.front();
-		ptg_records.pop();
-	}
-}
-
-
 // This is just a stub for the virtual 'load' realization
 void RgbExtra::load(CFRecord& record)
 {

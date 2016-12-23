@@ -50,17 +50,6 @@ BaseObjectPtr Pie::clone()
 	return BaseObjectPtr(new Pie(*this));
 }
 
-
-void Pie::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fHasShadow);
-	SETBIT(flags, 1, fShowLdrLines);
-	
-	record >> anStart >> pcDonut >> flags;
-}
-
-
 void Pie::readFields(CFRecord& record)
 {
 	unsigned short flags;

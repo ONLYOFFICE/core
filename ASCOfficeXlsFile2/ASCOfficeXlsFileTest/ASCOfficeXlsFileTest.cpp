@@ -42,6 +42,9 @@
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#pragma comment(lib,"Shell32.lib")	
+#pragma comment(lib,"Advapi32.lib")
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	HRESULT hr = S_OK;

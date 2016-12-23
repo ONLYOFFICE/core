@@ -69,14 +69,6 @@ BaseObjectPtr Continue::clone()
 	return BaseObjectPtr(n);
 }
 
-
-void Continue::writeFields(CFRecord& record)
-{
-#pragma message("####################### Continue record is not implemented")
-	Log::error("Continue record is not implemented.");
-}
-
-
 void Continue::readFields(CFRecord& record)
 {
 	m_iDataSize = record.getDataSize();

@@ -49,7 +49,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 //-----------------------------
 	_UINT16 cachName;

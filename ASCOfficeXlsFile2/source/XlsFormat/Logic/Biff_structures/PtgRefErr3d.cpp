@@ -55,14 +55,6 @@ BiffStructurePtr PtgRefErr3d::clone()
 	return BiffStructurePtr(new PtgRefErr3d(*this));
 }
 
-
-void PtgRefErr3d::storeFields(CFRecord& record)
-{
-	record << ixti;
-	record.reserveNunBytes(4); // unused
-}
-
-
 void PtgRefErr3d::loadFields(CFRecord& record)
 {
 	record >> ixti;

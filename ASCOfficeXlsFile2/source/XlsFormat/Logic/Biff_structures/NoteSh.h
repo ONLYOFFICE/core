@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeNoteSh;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	Rw				row;
 	Col				col;

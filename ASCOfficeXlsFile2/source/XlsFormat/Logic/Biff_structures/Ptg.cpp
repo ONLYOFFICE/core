@@ -71,24 +71,6 @@ void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_re
 
 }
 
-void Ptg::store(CFRecord& record)
-{
-	offset_in_record = record.getDataSize();
-	unsigned short full_type = getPtgId();
-	unsigned char low_part = static_cast<unsigned char>(full_type);
-	if(0x18 == low_part || 0x19 == low_part)
-	{
-		record << full_type;
-	}
-	else
-	{
-		record << low_part;
-	}
-	storeFields(record);
-	size_of_struct = record.getDataSize() - offset_in_record.get_value_or(0);
-}
-
-
 void Ptg::load(CFRecord& record)
 {
 	offset_in_record = record.getRdPtr();

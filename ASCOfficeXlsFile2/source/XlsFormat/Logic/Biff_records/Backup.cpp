@@ -50,13 +50,6 @@ BaseObjectPtr Backup::clone()
 	return BaseObjectPtr(new Backup(*this));
 }
 
-
-void Backup::writeFields(CFRecord& record)
-{
-	record << fBackup;
-}
-
-
 void Backup::readFields(CFRecord& record)
 {
 	record >> fBackup;

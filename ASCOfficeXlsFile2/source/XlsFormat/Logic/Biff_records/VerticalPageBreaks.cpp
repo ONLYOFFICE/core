@@ -50,17 +50,6 @@ BaseObjectPtr VerticalPageBreaks::clone()
 	return BaseObjectPtr(new VerticalPageBreaks(*this));
 }
 
-
-void VerticalPageBreaks::writeFields(CFRecord& record)
-{
-	record << cbrk;
-	for(BiffStructurePtrVector::const_iterator it = rgbrk.begin(), itEnd = rgbrk.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void VerticalPageBreaks::readFields(CFRecord& record)
 {
 	record >> cbrk;

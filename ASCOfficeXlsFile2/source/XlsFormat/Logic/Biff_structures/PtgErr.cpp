@@ -55,12 +55,6 @@ BiffStructurePtr PtgErr::clone()
 }
 
 
-void PtgErr::storeFields(CFRecord& record)
-{
-	record << err;
-}
-
-
 void PtgErr::loadFields(CFRecord& record)
 {
 	record >> err;

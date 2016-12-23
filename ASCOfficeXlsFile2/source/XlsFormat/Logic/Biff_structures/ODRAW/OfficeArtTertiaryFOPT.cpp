@@ -48,12 +48,6 @@ XLS::BiffStructurePtr OfficeArtTertiaryFOPT::clone()
 	return XLS::BiffStructurePtr(new OfficeArtTertiaryFOPT(*this));
 }
 
-void OfficeArtTertiaryFOPT::storeFields(XLS::CFRecord& record)
-{
-	record << fopt;
-}
-
-
 void OfficeArtTertiaryFOPT::loadFields(XLS::CFRecord& record)
 {
 	fopt.SetOptionsCount(rh_own.recInstance);

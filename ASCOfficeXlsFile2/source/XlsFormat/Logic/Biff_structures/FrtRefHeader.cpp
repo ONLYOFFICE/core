@@ -43,14 +43,6 @@ BiffStructurePtr FrtRefHeader::clone()
 }
 
 
-
-void FrtRefHeader::store(CFRecord& record)
-{
-	record << rt << grbitFrt;
-	record << ref8;
-}
-
-
 void FrtRefHeader::load(CFRecord& record)
 {
 	record >> rt >> grbitFrt;

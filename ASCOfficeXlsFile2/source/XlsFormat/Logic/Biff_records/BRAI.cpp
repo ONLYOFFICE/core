@@ -51,15 +51,6 @@ BaseObjectPtr BRAI::clone()
 }
 
 
-void BRAI::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fUnlinkedIfmt);
-	record << id << rt << flags << ifmt;
-	formula.store(record);
-}
-
-
 void BRAI::readFields(CFRecord& record)
 {
 	unsigned short flags;

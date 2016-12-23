@@ -33,7 +33,6 @@
 #include "BinProcessor.h"
 #include <Binary/CFStream.h>
 #include <Binary/CFStreamCacheReader.h>
-#include <Binary/CFStreamCacheWriter.h>
 #include <Logic/Biff_structures/BiffString.h>
 
 

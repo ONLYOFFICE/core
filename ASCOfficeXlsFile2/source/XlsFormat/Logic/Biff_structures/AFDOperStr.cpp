@@ -57,11 +57,6 @@ AFDOperStr::~AFDOperStr()
 {
 }
 
-void AFDOperStr::store(CFRecord& record)
-{	
-}
-
-
 void AFDOperStr::load(CFRecord& record)
 {	
 	if (m_bAutoFilter)		// AutoFilter

@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeAFDOperStr;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char	cch;
 	unsigned char	fCompare;	

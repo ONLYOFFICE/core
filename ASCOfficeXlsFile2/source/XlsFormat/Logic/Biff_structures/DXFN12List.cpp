@@ -51,12 +51,6 @@ DXFN12List::~DXFN12List()
 {
 }
 
-
-void DXFN12List::store(CFRecord& record)
-{	
-}
-
-
 void DXFN12List::load(CFRecord& record)
 {
 	record >> dxfn;

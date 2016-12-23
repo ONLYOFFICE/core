@@ -50,14 +50,6 @@ BaseObjectPtr Number::clone()
 	return BaseObjectPtr(new Number(*this));
 }
 
-
-void Number::writeFields(CFRecord& record)
-{
-	resender.store(record);
-	record << cell << num;
-}
-
-
 void Number::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

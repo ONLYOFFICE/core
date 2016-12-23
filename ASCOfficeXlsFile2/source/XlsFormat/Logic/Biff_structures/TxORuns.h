@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeTxORuns;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	int m_runCount;
 	std::vector<RunPtr> rgTxoRuns;

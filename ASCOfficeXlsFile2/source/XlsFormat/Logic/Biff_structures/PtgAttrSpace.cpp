@@ -43,12 +43,6 @@ BiffStructurePtr PtgAttrSpace::clone()
 }
 
 
-void PtgAttrSpace::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(2); // I do not use it, but the data present
-}
-
-
 void PtgAttrSpace::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // I do not use it, but the data present

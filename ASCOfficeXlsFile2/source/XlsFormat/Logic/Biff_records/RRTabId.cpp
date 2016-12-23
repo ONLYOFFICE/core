@@ -50,16 +50,6 @@ BaseObjectPtr RRTabId::clone()
 	return BaseObjectPtr(new RRTabId(*this));
 }
 
-
-void RRTabId::writeFields(CFRecord& record)
-{
-	for(BiffStructurePtrVector::iterator it = sheet_ids.begin(), itEnd = sheet_ids.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void RRTabId::readFields(CFRecord& record)
 {
 	while(!record.isEOF())

@@ -79,7 +79,7 @@ public:
 	static const ElementType	type = typeSecurityDescriptor;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	SECURITY_DESCRIPTOR sd;
 };

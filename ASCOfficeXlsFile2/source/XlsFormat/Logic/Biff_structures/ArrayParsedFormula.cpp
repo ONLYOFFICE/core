@@ -59,15 +59,5 @@ void ArrayParsedFormula::load(CFRecord& record)
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }
 
-
-void ArrayParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Array);
-	rgcb.store(record);
-}
-
-
 } // namespace XLS
 

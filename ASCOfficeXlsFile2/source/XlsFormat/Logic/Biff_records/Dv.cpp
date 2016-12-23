@@ -40,13 +40,6 @@ BaseObjectPtr Dv::clone()
 	return BaseObjectPtr(new Dv(*this));
 }
 
-
-void Dv::writeFields(CFRecord& record)
-{
-
-}
-
-
 void Dv::readFields(CFRecord& record)
 {
 	_UINT32 flags;

@@ -42,6 +42,7 @@
 #include <Logic/Biff_records/End.h>
 #include <Logic/Biff_records/SeriesText.h>
 #include <Logic/Biff_records/Font.h>
+#include <Logic/Biff_records/FrtWrapper.h>
 
 #include <Logic/Biff_unions/AI.h>
 #include <Logic/Biff_unions/FRAME.h>
@@ -146,6 +147,7 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	}
 	
 	proc.optional<CRTMLFRT>();
+	proc.optional<FrtWrapper>();
 	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;

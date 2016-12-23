@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeLbsDropData;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char wStyle;
 	bool fFiltered;

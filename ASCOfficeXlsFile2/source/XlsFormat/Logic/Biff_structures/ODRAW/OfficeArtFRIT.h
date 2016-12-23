@@ -50,7 +50,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtFRIT;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 public:
 	unsigned short fridNew;

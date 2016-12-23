@@ -48,33 +48,6 @@ BiffStructurePtr FtPictFmla::clone()
 }
 
 
-
-void FtPictFmla::store(CFRecord& record, FtPioGrbit& pictFlags)
-{
-	unsigned short ft = 0x0009; // reserved
-	record << ft;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
-	size_t start_ptr = record.getDataSize();
-
-	fmla.store(record);
-
-	if(fmla.fmla.HasPtgTbl())
-	{
-		record << lPosInCtlStm;
-	}
-	if(pictFlags.fPrstm)
-	{
-		record << cbBufInCtlStm;
-	}
-	if(pictFlags.fPrstm)
-	{
-		key.store(record);
-	}
-
-	size_t data_size = record.getDataSize() - start_ptr;
-	record.registerDelayedDataSource(data_size, rt_Obj);
-}
-
 void FtPictFmla::load(CFRecord& record, int linkSize)
 {
 	bool  bLinked	= false;

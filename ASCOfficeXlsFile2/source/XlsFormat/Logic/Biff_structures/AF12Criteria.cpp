@@ -51,12 +51,6 @@ AF12Criteria::~AF12Criteria()
 {
 }
 
-
-void AF12Criteria::store(CFRecord& record)
-{	
-}
-
-
 void AF12Criteria::load(CFRecord& record)
 {	
 	doper.m_bAutoFilter = false;

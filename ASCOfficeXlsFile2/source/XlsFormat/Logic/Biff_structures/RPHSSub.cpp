@@ -43,13 +43,6 @@ BiffStructurePtr RPHSSub::clone()
 }
 
 
-void RPHSSub::store(CFRecord& record)
-{
-	unsigned short cch = st.getSize();
-	record << crun << cch << st;
-}
-
-
 void RPHSSub::load(CFRecord& record)
 {
 	unsigned short cch;

@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeCFMultistate;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 private:
 	unsigned char cStates;

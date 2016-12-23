@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeRPHSSub;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	const size_t getSize() const;
 	const unsigned short getRunsNumber() const;

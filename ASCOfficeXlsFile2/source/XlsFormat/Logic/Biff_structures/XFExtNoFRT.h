@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeXFExtNoFRT;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 private:
 	std::vector<ExtProp> rgExt;

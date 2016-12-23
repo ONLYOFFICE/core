@@ -52,24 +52,6 @@ BaseObjectPtr WsBool::clone()
 }
 
 
-void WsBool::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fShowAutoBreaks);
-	SETBIT(flags, 4, fDialog);
-	SETBIT(flags, 5, fApplyStyles);
-	SETBIT(flags, 6, fRowSumsBelow);
-	SETBIT(flags, 7, fColSumsRight);
-	SETBIT(flags, 8, fFitToPage);
-	SETBIT(flags, 10, fDspGuts);
-	SETBIT(flags, 12, fSyncHoriz);
-	SETBIT(flags, 13, fSyncVert);
-	SETBIT(flags, 14, fAltExprEval);
-	SETBIT(flags, 15, fAltFormulaEntry);
-	record << flags;
-}
-
-
 void WsBool::readFields(CFRecord& record)
 {
 	unsigned short flags;

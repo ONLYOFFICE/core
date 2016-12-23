@@ -51,12 +51,6 @@ BaseObjectPtr CalcIter::clone()
 }
 
 
-void CalcIter::writeFields(CFRecord& record)
-{
-	record << vfIter;
-}
-
-
 void CalcIter::readFields(CFRecord& record)
 {
 	record >> vfIter;

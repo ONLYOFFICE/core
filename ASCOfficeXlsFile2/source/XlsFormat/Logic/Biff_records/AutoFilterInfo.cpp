@@ -51,12 +51,6 @@ BaseObjectPtr AutoFilterInfo::clone()
 }
 
 
-void AutoFilterInfo::writeFields(CFRecord& record)
-{
-	record << cEntries;
-}
-
-
 void AutoFilterInfo::readFields(CFRecord& record)
 {
 	record >> cEntries;

@@ -50,13 +50,6 @@ BaseObjectPtr DXF::clone()
 	return BaseObjectPtr(new DXF(*this));
 }
 
-
-void DXF::writeFields(CFRecord& record)
-{
-
-}
-
-
 void DXF::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;

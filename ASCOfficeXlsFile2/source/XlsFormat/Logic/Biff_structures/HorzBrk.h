@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeHorzBrk;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	RwU row;
 	unsigned short colStart;

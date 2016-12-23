@@ -50,12 +50,6 @@ BaseObjectPtr Feature11::clone()
 	return BaseObjectPtr(new Feature11(*this));
 }
 
-
-void Feature11::writeFields(CFRecord& record)
-{
-}
-
-
 void Feature11::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;

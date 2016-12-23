@@ -49,9 +49,6 @@ Run::Run()
 Run::~Run()
 {
 }
-void Run::store(CFRecord& record)
-{	
-}
 
 void Run::load(CFRecord& record)
 {

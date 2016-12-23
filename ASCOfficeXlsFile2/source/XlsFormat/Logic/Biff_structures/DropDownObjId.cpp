@@ -43,12 +43,6 @@ BiffStructurePtr DropDownObjId::clone()
 }
 
 
-void DropDownObjId::store(CFRecord& record)
-{
-	record << id;
-}
-
-
 void DropDownObjId::load(CFRecord& record)
 {
 	record >> id;

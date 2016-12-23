@@ -53,13 +53,6 @@ BiffStructurePtr RevNamePly::clone()
 	return BiffStructurePtr(new RevNamePly(*this));
 }
 
-
-void RevNamePly::store(CFRecord& record)
-{
-	record << sheet << name;
-}
-
-
 void RevNamePly::load(CFRecord& record)
 {
 	record >> sheet >> name;

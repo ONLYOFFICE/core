@@ -42,11 +42,6 @@ BiffStructurePtr CFDatabar::clone()
 	return BiffStructurePtr(new CFDatabar(*this));
 }
 
-void CFDatabar::store(CFRecord& record)
-{
-
-}
-
 void CFDatabar::load(CFRecord& record)
 {
 	record.skipNunBytes(3); // unused

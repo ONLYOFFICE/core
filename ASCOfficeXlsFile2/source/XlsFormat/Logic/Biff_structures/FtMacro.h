@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeFtMacro;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ObjFmla fmla;
 };

@@ -47,7 +47,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeEncryptionVerifier;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	_UINT32 SaltSize;
 	struct SALT_TAG 

@@ -70,18 +70,13 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
 	
 	void load(CFRecord& record, const size_t cch, const bool is_wide);
-	void store(CFRecord& record, const bool is_wide);
 
-	void setSize(const size_t size);		// Set cch for string that don't have own cch field
-	const size_t getStructSize() const;		// Number of unsigned chars read while loading
-	void setStructSize(const size_t size);	// Set number of unsigned chars read while loading. Must be used by >> operator only
-	const size_t getSize() const;			// String length in characters
-
-	const bool isConformToOleLink() const;
-	const bool isConformToVirtPath() const;
+	void			setSize(const size_t size);		// Set cch for string that don't have own cch field
+	const size_t	getStructSize() const;		// Number of unsigned chars read while loading
+	void			setStructSize(const size_t size);	// Set number of unsigned chars read while loading. Must be used by >> operator only
+	const size_t	getSize() const;			// String length in characters
 
 	const std::wstring  getEscaped_ST_Xstring() const;
 	void Escape_ST_Xstring();
@@ -216,61 +211,60 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 	return record;
 }
 
-
-
-template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
-CFRecord& operator<<(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
-{
-	size_t struct_size = 0;
-	bool is_wide = val.getWideRecommendation();
-
-
-	switch(cch_where)
-	{
-		case cch_READ_FROM_RECORD:
-		{
-			cchType cch_l = static_cast<cchType>(val.getSize()); // Just to conform size write.
-			if(aw_READ_FROM_CCH == det_id)
-			{
-				SETBIT(cch_l, ((sizeof(cchType) * 8) - 1), is_wide); 
-			}
-			record << cch_l;
-			struct_size += sizeof(cchType);
-			break;
-		}
-		case cch_PASSED_AS_AN_ARGUMENT:
-			// Means cch already stored outside
-			break;
-	}
-
-	switch(det_id)
-	{
-		case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
-			if(0 == val.getSize()) break;
-		case aw_READ_FROM_RECORD:
-		{
-			unsigned char fHighByte = is_wide ? 1 : 0;
-			record << fHighByte;
-			struct_size += sizeof(fHighByte);
-			break;
-		}
-		case aw_WIDE:
-			is_wide = true;
-			break;
-		case aw_ANSI:
-			is_wide = false;
-			break;
-		case aw_READ_FROM_CCH:
-			// See cch_READ_FROM_RECORD case in the previous switch
-			break;
-	}
-	struct_size += (val.getSize() << (is_wide ? 1 : 0));
-	val.store(record, is_wide);
-	val.setStructSize(struct_size); // The only usage is DXFFntD::load
-	return record;
-}
-
-
+//
+//
+//template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
+//CFRecord& operator<<(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_where>& val)
+//{
+//	size_t struct_size = 0;
+//	bool is_wide = val.getWideRecommendation();
+//
+//	switch(cch_where)
+//	{
+//		case cch_READ_FROM_RECORD:
+//		{
+//			cchType cch_l = static_cast<cchType>(val.getSize()); // Just to conform size write.
+//			if(aw_READ_FROM_CCH == det_id)
+//			{
+//				SETBIT(cch_l, ((sizeof(cchType) * 8) - 1), is_wide); 
+//			}
+//			record << cch_l;
+//			struct_size += sizeof(cchType);
+//			break;
+//		}
+//		case cch_PASSED_AS_AN_ARGUMENT:
+//			// Means cch already stored outside
+//			break;
+//	}
+//
+//	switch(det_id)
+//	{
+//		case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
+//			if(0 == val.getSize()) break;
+//		case aw_READ_FROM_RECORD:
+//		{
+//			unsigned char fHighByte = is_wide ? 1 : 0;
+//			record << fHighByte;
+//			struct_size += sizeof(fHighByte);
+//			break;
+//		}
+//		case aw_WIDE:
+//			is_wide = true;
+//			break;
+//		case aw_ANSI:
+//			is_wide = false;
+//			break;
+//		case aw_READ_FROM_CCH:
+//			// See cch_READ_FROM_RECORD case in the previous switch
+//			break;
+//	}
+//	struct_size += (val.getSize() << (is_wide ? 1 : 0));
+//	val.store(record, is_wide);
+//	val.setStructSize(struct_size); // The only usage is DXFFntD::load
+//	return record;
+//}
+//
+//
 
 } // namespace XLS
 

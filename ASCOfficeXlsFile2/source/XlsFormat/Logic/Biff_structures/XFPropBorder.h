@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeXFPropBorder;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	XFPropColor		color;
 	unsigned short	dgBorder;

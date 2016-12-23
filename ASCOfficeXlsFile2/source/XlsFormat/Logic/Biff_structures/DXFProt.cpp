@@ -42,15 +42,6 @@ BiffStructurePtr DXFProt::clone()
 }
 
 
-void DXFProt::store(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fLocked);
-	SETBIT(flags, 1, fHidden);
-	record << flags;
-}
-
-
 void DXFProt::load(CFRecord& record)
 {
 	unsigned short flags;

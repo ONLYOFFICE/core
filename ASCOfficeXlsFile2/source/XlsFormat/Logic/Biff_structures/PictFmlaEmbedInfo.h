@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typePictFmlaEmbedInfo;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	XLUnicodeStringNoCch strClass;
 };

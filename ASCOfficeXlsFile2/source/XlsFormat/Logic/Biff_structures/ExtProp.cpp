@@ -43,14 +43,6 @@ BiffStructurePtr ExtProp::clone()
 	return BiffStructurePtr(new ExtProp(*this));
 }
 
-void ExtProp::store(CFRecord& record)
-{
-#pragma message("####################### ExtProp record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtProp record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ExtProp::load(CFRecord& record)
 {
 	record >> extType >> cb;

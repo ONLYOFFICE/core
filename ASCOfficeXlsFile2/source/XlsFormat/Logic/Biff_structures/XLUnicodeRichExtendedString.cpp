@@ -168,74 +168,6 @@ int XLUnicodeRichExtendedString::serialize_rPr	(std::wostream & _stream, int iFm
 	return 0;
 }
 
-void XLUnicodeRichExtendedString::store(CFRecord& record)
-{
-	if(mark_set_start)
-	{
-		record.registerDelayedFilePointerAndOffsetSource(record.getDataSize(), rt_ExtSST);
-		record.registerDelayedDataSource(record.getDataSize(), rt_ExtSST);
-	}
-
-	unsigned short cch = str_.length();
-	record << cch;
-	unsigned char flags = 0;
-	fHighByte = true; // We'll save always in UNICODE
-	SETBIT(flags, 0, fHighByte);
-	SETBIT(flags, 2, fExtSt);
-	SETBIT(flags, 3, fRichSt);
-	record << flags;
-	unsigned short cRun = rgRun.size();
-	if(fRichSt)
-	{
-		record << cRun;
-	}
-	if(fExtSt)
-	{
-        int cbExtRst = extRst.getSize();
-		record << cbExtRst;
-	}
-
-	if(!record.checkFitWriteSafe(static_cast<size_t>(cch) << (fHighByte ? 1 : 0)))
-	{
-		size_t space_left = (record.getMaxRecordSize() - record.getDataSize()) >> (fHighByte ? 1 : 0);
-		storeSymbols(record, 0, space_left, fHighByte);
-
-		size_t pos1 = space_left;
-		do
-		{
-			CFRecord& current_record = cont_recs_.size() ? *cont_recs_.back() : record; // Points to the original 'record' or the last created 'Continue'
-			current_record.commitData();
-			CFRecordPtr cont(new CFRecord(rt_Continue, record.getGlobalWorkbookInfo()));
-			cont_recs_.push_back(cont);
-			unsigned char flags = 0;
-			SETBIT(flags, 0, fHighByte);
-			*cont << flags;
-			size_t cch_to_write = cont->checkFitWriteSafe((static_cast<size_t>(cch) - pos1) << (fHighByte ? 1 : 0)) ? 
-									(static_cast<size_t>(cch) - pos1) :
-									(cont->getMaxRecordSize() - cont->getDataSize()) >> (fHighByte ? 1 : 0);
-			storeSymbols(*cont, pos1, cch_to_write, fHighByte);
-			pos1 += cch_to_write;
-			
-		} while(pos1 < static_cast<size_t>(cch));
-
-	}
-	else
-	{
-		storeSymbols(record, 0, cch, fHighByte);
-	}
-
-	for(std::vector<FormatRun>::iterator it = rgRun.begin(), itEnd = rgRun.end(); it != itEnd; ++it)
-	{
-		record << *it;
-	}
-
-	if(fExtSt)
-	{
-		extRst.store(record);
-	}
-}
-
-
 void XLUnicodeRichExtendedString::load(CFRecord& record)
 {
 	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
@@ -370,35 +302,6 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 		record.skipNunBytes(raw_length);
 	}
 }
-
-
-void XLUnicodeRichExtendedString::storeSymbols(CFRecord& record, const size_t start_pos, const size_t cch, const bool is_wide)
-{
-	size_t raw_length = cch << (is_wide ? 1 : 0);
-	record.checkFitWrite(raw_length);
-
-	if(is_wide)
-	{
-		std::wstring int_str = str_.substr(start_pos, cch);
-		for(std::wstring::iterator it = int_str.begin(), itEnd = int_str.end(); it != itEnd; ++it)
-		{
-			record << *it;
-		}
-		// no trailing zero - it is OK
-	}
-	else
-	{
-		std::string int_str = STR::toStdString(str_, record.getGlobalWorkbookInfo()->CodePage).substr(start_pos, cch);
-		for(std::string::iterator it = int_str.begin(), itEnd = int_str.end(); it != itEnd; ++it)
-		{
-			record << *it;
-		}
-		// no trailing zero - it is OK
-	}
-}
-
-
-
 
 CFRecord& operator>>(CFRecord& record, XLUnicodeRichExtendedString& val)
 {

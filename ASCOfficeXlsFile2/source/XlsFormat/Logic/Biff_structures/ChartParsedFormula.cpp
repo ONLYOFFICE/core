@@ -50,15 +50,6 @@ BiffStructurePtr ChartParsedFormula::clone()
 	return BiffStructurePtr(new ChartParsedFormula(*this));
 }
 
-
-void ChartParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Formula);
-}
-
-
 void ChartParsedFormula::load(CFRecord& record)
 {
 	unsigned short cce;

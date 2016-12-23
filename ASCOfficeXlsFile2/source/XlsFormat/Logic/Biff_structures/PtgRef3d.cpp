@@ -61,12 +61,6 @@ BiffStructurePtr PtgRef3d::clone()
 	return BiffStructurePtr(new PtgRef3d(*this));
 }
 
-void PtgRef3d::storeFields(CFRecord& record)
-{
-	rgce_loc_rel = rgce_loc;
-	record << ixti << rgce_loc;
-}
-
 
 void PtgRef3d::loadFields(CFRecord& record)
 {

@@ -42,15 +42,6 @@ BiffStructurePtr GradStop::clone()
 	return BiffStructurePtr(new GradStop(*this));
 }
 
-
-void GradStop::store(CFRecord& record)
-{
-#pragma message("####################### GradStop record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! GradStop record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void GradStop::load(CFRecord& record)
 {
 	record >> xclrType;

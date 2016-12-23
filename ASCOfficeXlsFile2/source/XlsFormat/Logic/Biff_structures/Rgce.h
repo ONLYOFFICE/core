@@ -50,7 +50,6 @@ public:
 	
 	void			load(CFRecord& record, const size_t cce_val);
 	virtual void	load(CFRecord& record);
-	virtual void	store(CFRecord& record);
 
 	const size_t	getCCE() const;
 	void			setCCE(const size_t cce_val); // mandatory to call before any use of "cce"

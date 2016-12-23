@@ -51,12 +51,6 @@ BaseObjectPtr FnGroupName::clone()
 }
 
 
-void FnGroupName::writeFields(CFRecord& record)
-{
-	record << rgch;
-}
-
-
 void FnGroupName::readFields(CFRecord& record)
 {
 	record >> rgch;

@@ -42,12 +42,6 @@ BiffStructurePtr Feat11FdaAutoFilter::clone()
 	return BiffStructurePtr(new Feat11FdaAutoFilter(*this));
 }
 
-
-void Feat11FdaAutoFilter::store(CFRecord& record)
-{	
-}
-
-
 void Feat11FdaAutoFilter::load(CFRecord& record)
 {	
 	record >> cbAutoFilter;	

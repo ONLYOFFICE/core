@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeFtNts;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	std::wstring  guid;
 	Boolean<unsigned short> fSharedNote;

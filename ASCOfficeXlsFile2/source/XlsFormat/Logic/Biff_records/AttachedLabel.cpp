@@ -52,19 +52,6 @@ BaseObjectPtr AttachedLabel::clone()
 }
 
 
-void AttachedLabel::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fShowValue);
-	SETBIT(flags, 1, fShowPercent);
-	SETBIT(flags, 2, fShowLabelAndPerc);
-	SETBIT(flags, 4, fShowLabel);
-	SETBIT(flags, 5, fShowBubbleSizes);
-	SETBIT(flags, 6, fShowSeriesName);
-	record << flags;
-}
-
-
 void AttachedLabel::readFields(CFRecord& record)
 {
 	unsigned short flags;

@@ -52,12 +52,6 @@ BaseObjectPtr DropDownObjIds::clone()
 }
 
 
-void DropDownObjIds::writeFields(CFRecord& record)
-{
-
-}
-
-
 void DropDownObjIds::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_DropDownObjIds);

@@ -42,27 +42,6 @@ BiffStructurePtr DXFN12::clone()
 	return BiffStructurePtr(new DXFN12(*this));
 }
 
-void DXFN12::store(CFRecord& record)
-{
-	if(dxfn)
-	{
-		record.registerDelayedDataReceiver(NULL, sizeof(unsigned int)/*cbDxf*/, rt_STRUCT_DXFN12);
-		size_t offset_dxfn = record.getDataSize();
-		record << *dxfn;
-		if(xfext)
-		{
-			record << *xfext;
-		}
-		record.registerDelayedDataSource(record.getDataSize() - offset_dxfn, rt_STRUCT_DXFN12);
-	}
-	else
-	{
-		record.reserveNunBytes(4); // cbDxf
-		record.reserveNunBytes(2); // reserved
-	}
-}
-
-
 void DXFN12::load(CFRecord& record)
 {
 	record >> cbDxf;

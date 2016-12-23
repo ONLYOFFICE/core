@@ -55,14 +55,6 @@ BiffStructurePtr SerBool::clone()
 }
 
 
-void SerBool::store(CFRecord& record)
-{
-    record.storeAnyData(fixed_type);
-	record << f;
-	record.reserveNunBytes(7); // reserved/unused
-}
-
-
 void SerBool::load(CFRecord& record)
 {
 	record >> f;

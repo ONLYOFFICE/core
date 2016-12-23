@@ -50,7 +50,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields	(CFRecord& record);
 
 	void concatinate(GelFrame * addit);

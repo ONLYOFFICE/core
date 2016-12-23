@@ -42,13 +42,6 @@ BiffStructurePtr PtgSxName::clone()
 	return BiffStructurePtr(new PtgSxName(*this));
 }
 
-
-void PtgSxName::storeFields(CFRecord& record)
-{
-	record << sxIndex;
-}
-
-
 void PtgSxName::loadFields(CFRecord& record)
 {
 	record >> sxIndex;

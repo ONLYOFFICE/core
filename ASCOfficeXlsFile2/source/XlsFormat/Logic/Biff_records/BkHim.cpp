@@ -50,13 +50,6 @@ BaseObjectPtr BkHim::clone()
 	return BaseObjectPtr(new BkHim(*this));
 }
 
-
-void BkHim::writeFields(CFRecord& record)
-{
-
-}
-
-
 void BkHim::readFields(CFRecord& record)
 {
 	record >> cf;

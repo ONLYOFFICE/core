@@ -52,14 +52,6 @@ BaseObjectPtr Template::clone()
 }
 
 
-void Template::writeFields(CFRecord& record)
-{
-#pragma message("####################### Template record is not implemented")
-	Log::error("Template record is not implemented.");
-	//record << some_value;
-}
-
-
 void Template::readFields(CFRecord& record)
 {
 	// No data in this record

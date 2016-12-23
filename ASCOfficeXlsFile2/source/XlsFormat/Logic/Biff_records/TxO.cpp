@@ -54,11 +54,6 @@ BaseObjectPtr TxO::clone()
 }
 
 
-void TxO::writeFields(CFRecord& record)
-{
-}
-
-
 void TxO::readFields(CFRecord& record)
 {
 	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();

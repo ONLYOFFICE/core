@@ -51,30 +51,6 @@ BaseObjectPtr CalcMode::clone()
 	return BaseObjectPtr(new CalcMode(*this));
 }
 
-
-void CalcMode::writeFields(CFRecord& record)
-{
-	short fAutoRecalc_num;
-	if(fAutoRecalc == std::wstring (L"manual"))
-	{
-		fAutoRecalc_num = 0;
-	}
-	else if(fAutoRecalc == std::wstring (L"auto"))
-	{
-		fAutoRecalc_num = 1;
-	}
-	else if( fAutoRecalc == std::wstring (L"autoNoTable"))
-	{
-		fAutoRecalc_num = 2;
-	}
-	else 
-	{
-		// EXCEPT::LE::AttributeDataWrong(L"fAutoRecalc", record.getTypeString().c_str(), fAutoRecalc);
-	}
-	record << fAutoRecalc_num;
-}
-
-
 void CalcMode::readFields(CFRecord& record)
 {
 	short fAutoRecalc_num;

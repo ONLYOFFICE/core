@@ -51,16 +51,6 @@ BaseObjectPtr RadarArea::clone()
 }
 
 
-void RadarArea::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fRdrAxLab);
-	SETBIT(flags, 1, fHasShadow);
-	record << flags;
-	record.reserveNunBytes(2); // unused
-}
-
-
 void RadarArea::readFields(CFRecord& record)
 {
 	unsigned short flags;

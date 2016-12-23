@@ -52,14 +52,6 @@ BiffStructurePtr FrtHeaderOld::clone()
 }
 
 
-void FrtHeaderOld::store(CFRecord& record)
-{
-	grbitFrt.fFrtRef = 0;
-	grbitFrt.fFrtAlert = 0;
-	record << rt << grbitFrt;
-}
-
-
 void FrtHeaderOld::load(CFRecord& record)
 {
 	record >> rt >> grbitFrt;

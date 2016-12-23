@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	CFVO	cfvo;
 	double	numDomain;
@@ -66,7 +66,7 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	double	numGrange;
 	CFColor	color;
@@ -82,7 +82,7 @@ public:
 	static const ElementType	type = typeCFGradient;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char						cInterpCurve;		//MUST be 0x2 or 0x3.
 	unsigned char						cGradientCurve;		// == cInterpCurve

@@ -52,7 +52,7 @@ public:
 	static const ElementType	type = typeExtRst;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	const size_t getSize() const;
 

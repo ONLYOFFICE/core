@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeTableFeatureType;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	_UINT32	lt;		// SourceType
 	_UINT32	idList;

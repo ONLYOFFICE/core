@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeSqRef;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	std::vector<Ref8U> rgrefs;
 };

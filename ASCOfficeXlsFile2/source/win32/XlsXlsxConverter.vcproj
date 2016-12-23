@@ -1066,6 +1066,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\XlsXlsxConverter\XlsConverter.cpp"
 			>
 		</File>

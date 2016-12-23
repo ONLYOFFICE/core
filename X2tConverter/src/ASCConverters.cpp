@@ -1766,7 +1766,7 @@ namespace NExtractTools
 						pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
 						double dKoef1 = nRasterWCur / dWidth;
-						double dKoef2 = nRasterWCur / dHeight;
+						double dKoef2 = nRasterHCur / dHeight;
 						if (dKoef1 > dKoef2)
 							dKoef1 = dKoef2;
 

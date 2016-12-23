@@ -93,12 +93,12 @@ namespace PPTX
 							XmlUtils::CXmlNode oNode2 = oNodeData.ReadNodeNoNS(_T("oleObj"));
 							if (oNode2.IsValid())
 							{
-								fromXMLOle(oNode2);
 								oNode2.ReadAttributeBase(L"spid", spid);
 								pic = oNode2.ReadNode(_T("p:pic"));
 
 								if (pic.is_init())
 								{
+									pic->fromXMLOle(oNode2);
 									xfrm.Merge(pic->spPr.xfrm);
 								}
 							}
@@ -121,11 +121,11 @@ namespace PPTX
 									XmlUtils::CXmlNode oNodeO;
 									if (oNodeFallback.GetNode(_T("p:oleObj"), oNodeO))
 									{
-										fromXMLOle(oNodeO);
 										pic = oNodeO.ReadNode(_T("p:pic"));
 
 										if (pic.is_init())
 										{
+											pic->fromXMLOle(oNode2);
 											xfrm.Merge(pic->spPr.xfrm);
 										}
 									}
@@ -150,29 +150,8 @@ namespace PPTX
 					}
 				}
 			}
-			if(pic.IsInit() && oleObject.IsInit())
-			{
-				pic->oleObject = oleObject;
-				pic->blipFill.blip->oleRid = oleObject->m_oId.get().ToString();
-			}
 			
 			FillParentPointersForChilds();
-		}
-		void GraphicFrame::fromXMLOle(XmlUtils::CXmlNode& node)
-		{
-			oleObject.Init();
-			node.ReadAttributeBase(L"progId", oleObject->m_sProgId);
-			node.ReadAttributeBase(L"r:id", oleObject->m_oId);
-			int imgW = node.GetAttributeInt(CString(L"imgW"), 0);
-			if(imgW > 0)
-			{
-				oleObject->m_oDxaOrig = Emu_To_Twips(imgW);
-			}
-			int imgH = node.GetAttributeInt(CString(L"imgH"), 0);
-			if(imgH > 0)
-			{
-				oleObject->m_oDyaOrig = Emu_To_Twips(imgH);
-			}
 		}
 
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

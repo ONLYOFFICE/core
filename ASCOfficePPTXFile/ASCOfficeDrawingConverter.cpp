@@ -1366,7 +1366,18 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 
 				break;
 			}
-            else if (strName == L"AlternateContent")
+			else if (strName == L"oleObj")
+			{
+				nullable<PPTX::Logic::Pic> pic = oParseNode.ReadNode(_T("p:pic"));
+				if (pic.is_init())
+				{
+					pic->fromXMLOle(oParseNode);
+
+					m_pBinaryWriter->WriteRecord2(1, pic);
+				}
+				break;
+			}
+			else if (strName == L"AlternateContent")
 			{
 				XmlUtils::CXmlNode oNodeDr;
                 if (oParseNode.GetNode(L"w:drawing", oNodeDr))
@@ -4304,7 +4315,26 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 	m_pReader->Seek(_e);
 	return S_OK;
 }
+void CDrawingConverter::SaveObjectExWriterInit(NSBinPptxRW::CXmlWriter& oXmlWriter, LONG lDocType)
+{
+	oXmlWriter.m_lObjectIdVML       = m_pXmlWriter->m_lObjectIdVML;
+	oXmlWriter.m_lObjectIdOle       = m_pXmlWriter->m_lObjectIdOle;
+	oXmlWriter.m_lDocType           = (BYTE)lDocType;
+	oXmlWriter.m_bIsUseOffice2007   = false;
 
+	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
+
+#if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
+	if (NULL == m_pOOXToVMLRenderer)
+		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
+	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
+#endif
+}
+void CDrawingConverter::SaveObjectExWriterRelease(NSBinPptxRW::CXmlWriter& oXmlWriter)
+{
+	m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
+	m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
+}
 HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString& bsMainProps, LONG lDocType, CString** bsXml)
 {
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
@@ -4353,18 +4383,7 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 	m_pReader->m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
 
 	NSBinPptxRW::CXmlWriter oXmlWriter;
-    oXmlWriter.m_lObjectIdVML       = m_pXmlWriter->m_lObjectIdVML;
-    oXmlWriter.m_lObjectIdOle       = m_pXmlWriter->m_lObjectIdOle;
-    oXmlWriter.m_lDocType           = (BYTE)lDocType;
-    oXmlWriter.m_bIsUseOffice2007   = false;
-
-	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
-
-#if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
-	if (NULL == m_pOOXToVMLRenderer)
-		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
-	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
-#endif
+	SaveObjectExWriterInit(oXmlWriter, lDocType);
 
 	if(bOle)
 	{
@@ -4377,11 +4396,15 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 
 	--m_nCurrentIndexObject;
 
-	m_pXmlWriter->m_lObjectIdVML = oXmlWriter.m_lObjectIdVML;
-	m_pXmlWriter->m_lObjectIdOle = oXmlWriter.m_lObjectIdOle;
+	SaveObjectExWriterRelease(oXmlWriter);
 	if (XMLWRITER_DOC_TYPE_XLSX == lDocType)
 	{
 		m_pXmlWriter->m_strOleXlsx = oXmlWriter.m_strOleXlsx;
+		NSBinPptxRW::CXmlWriter oXmlWriterXlsx;
+		SaveObjectExWriterInit(oXmlWriterXlsx, lDocType);
+		oElem.toXmlWriter(&oXmlWriterXlsx);
+		m_pXmlWriter->m_strOleDrawing = oXmlWriterXlsx.GetXmlString();
+		SaveObjectExWriterRelease(oXmlWriterXlsx);
 	}
 
 	CString ret = oXmlWriter.GetXmlString();
@@ -5092,6 +5115,10 @@ std::wstring CDrawingConverter::GetContentTypes()
 std::wstring CDrawingConverter::GetOleXlsx()
 {
     return m_pXmlWriter->m_strOleXlsx;
+}
+std::wstring CDrawingConverter::GetOleDrawing()
+{
+	return m_pXmlWriter->m_strOleDrawing;
 }
 
 void CDrawingConverter::SetSourceFileDir(std::wstring path, int type)

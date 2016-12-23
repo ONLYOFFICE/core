@@ -43,6 +43,8 @@
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
 
+#include "../../../../DesktopEditor/common/File.h"
+
 #include <boost/algorithm/string.hpp>
 
 namespace OOX
@@ -269,7 +271,7 @@ namespace OOX
 
 				oWriter.WriteNodeEnd(_T("Relationships") );
 
-				CDirectory::SaveToFile( oFile.GetPath(), oWriter.GetXmlString() );
+				NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 			}
 		}
 

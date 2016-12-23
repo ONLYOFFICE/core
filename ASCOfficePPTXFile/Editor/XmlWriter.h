@@ -272,6 +272,7 @@ namespace NSBinPptxRW
         std::wstring m_strAttributesMain;
         std::wstring m_strNodes;
         std::wstring m_strOleXlsx;
+		std::wstring m_strOleDrawing;
 
         IRenderer* m_pOOXToVMLRenderer;
 

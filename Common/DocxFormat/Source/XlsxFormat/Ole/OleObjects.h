@@ -34,11 +34,194 @@
 #define OOX_OLEOBJECTS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
+#include "../Drawing/FromTo.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class COleObjectAnchor : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(COleObjectAnchor)
+			COleObjectAnchor()
+			{
+			}
+			virtual ~COleObjectAnchor()
+			{
+			}
+
+		public:
+			virtual CString	  toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<anchor");
+				WritingStringNullableAttrBool(L"moveWithCells", m_oMoveWithCells);
+				WritingStringNullableAttrBool(L"sizeWithCells", m_oSizeWithCells);
+				WritingStringNullableAttrInt(L"z-order", m_oZOrder, m_oZOrder->GetValue());
+				writer.WriteString(L">");
+				if (m_oFrom.IsInit())
+				{
+					m_oFrom->toXML2(writer, L"from");
+				}
+				if (m_oTo.IsInit())
+				{
+					m_oTo->toXML2(writer, L"to");
+				}
+				writer.WriteString(L"</anchor>");
+			}
+			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( _T("from") == sName )
+					{
+						m_oFrom = oReader;
+					}
+					else if ( _T("to") == sName )
+					{
+						m_oTo = oReader;
+					}
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_OleObjectAnchor;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("moveWithCells"),	  m_oMoveWithCells )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("sizeWithCells"),	  m_oSizeWithCells )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("z-order"),	  m_oZOrder )
+
+					WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<SimpleTypes::COnOff<> > m_oMoveWithCells;
+			nullable<SimpleTypes::COnOff<> > m_oSizeWithCells;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oZOrder;
+
+			nullable<CFromTo > m_oFrom;
+			nullable<CFromTo > m_oTo;
+		};
+
+		class COleObjectPr : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(COleObjectPr)
+			COleObjectPr()
+			{
+			}
+			virtual ~COleObjectPr()
+			{
+			}
+
+		public:
+			virtual CString	  toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<objectPr");
+				WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
+				WritingStringNullableAttrBool(L"autoFill", m_oAutoFill);
+				WritingStringNullableAttrBool(L"autoLine", m_oAutoLine);
+				WritingStringNullableAttrBool(L"autoPict", m_oAutoPict);
+				WritingStringNullableAttrBool(L"dde", m_oDde);
+				WritingStringNullableAttrBool(L"defaultSize", m_oDefaultSize);
+				WritingStringNullableAttrBool(L"disabled", m_oDisabled);
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrBool(L"locked", m_oLocked);
+				WritingStringNullableAttrEncodeXmlString(L"macro", m_oMacro, m_oMacro.get());
+				WritingStringNullableAttrBool(L"print", m_oPrint);
+				WritingStringNullableAttrBool(L"uiObject", m_oUiObject);
+				writer.WriteString(L">");
+				if (m_oAnchor.IsInit())
+				{
+					m_oAnchor->toXML(writer);
+				}
+				writer.WriteString(L"</objectPr>");
+			}
+			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( _T("anchor") == sName )
+					{
+						m_oAnchor = oReader;
+					}
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_OleObjectPr;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+					WritingElement_ReadAttributes_Read_if	 ( oReader, _T("altText"),	  m_oAltText )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoFill"),	  m_oAutoFill )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoLine"),	  m_oAutoLine )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("autoPict"),	  m_oAutoPict )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("dde"),	  m_oDde )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("defaultSize"),	  m_oDefaultSize )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("disabled"),	  m_oDisabled )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("r:id"),	  m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("locked"),	  m_oLocked )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("macro"),	  m_oMacro )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("print"),	  m_oPrint )
+					WritingElement_ReadAttributes_Read_else_if	 ( oReader, _T("uiObject"),	  m_oUiObject )
+
+					WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring > m_oAltText;
+			nullable<SimpleTypes::COnOff<> > m_oAutoFill;
+			nullable<SimpleTypes::COnOff<> > m_oAutoLine;
+			nullable<SimpleTypes::COnOff<> > m_oAutoPict;
+			nullable<SimpleTypes::COnOff<> > m_oDde;
+			nullable<SimpleTypes::COnOff<> > m_oDefaultSize;
+			nullable<SimpleTypes::COnOff<> > m_oDisabled;
+			nullable<SimpleTypes::CRelationshipId > m_oRid;
+			nullable<SimpleTypes::COnOff<> > m_oLocked;
+			nullable<std::wstring > m_oMacro;
+			nullable<SimpleTypes::COnOff<> > m_oPrint;
+			nullable<SimpleTypes::COnOff<> > m_oUiObject;
+
+			nullable<COleObjectAnchor > m_oAnchor;
+		};
+
 		class COleObject : public WritingElement
 		{
 		public:
@@ -57,7 +240,22 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				CString sRoot;
+				bool bAlternateContent = m_oObjectPr.IsInit();
+				if (bAlternateContent)
+				{
+					writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice Requires=\"x14\">");
+					toXML2(writer, true);
+					writer.WriteString(L"</mc:Choice><mc:Fallback>");
+					toXML2(writer, false);
+					writer.WriteString(L"</mc:Fallback></mc:AlternateContent>");
+				}
+				else
+				{
+					toXML2(writer, true);
+				}
+			}
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool ObjectPr) const
+			{
 				writer.WriteString(L"<oleObject");
 				WritingStringNullableAttrEncodeXmlString(L"progId", m_oProgId, m_oProgId.get());
 				WritingStringNullableAttrString(L"dvAspect", m_oDvAspect, m_oDvAspect->ToString());
@@ -66,7 +264,16 @@ namespace OOX
 				WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
 				WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
-				writer.WriteString(L"/>");
+				if (ObjectPr && m_oObjectPr.IsInit())
+				{
+					writer.WriteString(L">");
+					m_oObjectPr->toXML(writer);
+					writer.WriteString(L"</oleObject>");
+				}
+				else
+				{
+					writer.WriteString(L"/>");
+				}
 			}
 			void toXMLPptx(NSStringUtils::CStringBuilder& writer, CString qqq) const
 			{
@@ -107,8 +314,16 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				//todo objectPr
-				oReader.ReadTillEnd();
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( _T("objectPr") == sName )
+					{
+						m_oObjectPr = oReader;
+					}
+				}
 			}
 
 			virtual EElementType getType () const
@@ -143,6 +358,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<> > m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId > m_oRid;
+			nullable<COleObjectPr > m_oObjectPr;
 			//internal
 			nullable<std::wstring > m_oFilepathBin;
 			nullable<std::wstring > m_oFilepathImg;
@@ -214,6 +430,7 @@ namespace OOX
 							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 							if ( _T("Fallback") == sSubName || _T("Choice") == sSubName )
 							{
+								bool bFound = false;
 								int nSubSubDepth = oReader.GetDepth();
 								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
 								{
@@ -224,12 +441,18 @@ namespace OOX
 										if(pOleObject->m_oShapeId.IsInit())
 										{
 											m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+											bFound = true;
+											break;
 										}
 										else
 										{
 											delete pOleObject;
 										}
 									}
+								}
+								if (bFound)
+								{
+									break;
 								}
 							}
 						}

@@ -2588,7 +2588,8 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadDrawing, this, &oTransport);
 				if(oTransport.m_nPos > 0 && oTransport.m_nLength > 0)
 				{
-					CString sOleXlsx;
+					std::wstring sOleXlsx;
+					std::wstring sOleDrawing;
 					if(NULL != m_pCurDrawing)
 					{
                         m_pOfficeDrawingConverter->SetDocumentChartsCount(m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType()));
@@ -2605,14 +2606,14 @@ namespace BinXlsxRW {
                         m_pCurVmlDrawing->m_lObjectIdVML = m_pOfficeDrawingConverter->GetObjectIdVML();
 
                         sOleXlsx = m_pOfficeDrawingConverter->GetOleXlsx();
+						sOleDrawing = m_pOfficeDrawingConverter->GetOleDrawing();
 					}
 					if(S_OK == hRes && NULL != bstrXml)
 					{
-						if(!sOleXlsx.IsEmpty() &&  pCellAnchor->m_oFrom.IsInit() && pCellAnchor->m_oTo.IsInit())
+						if(!sOleXlsx.empty() &&  pCellAnchor->m_oFrom.IsInit() && pCellAnchor->m_oTo.IsInit())
 						{
 							XmlUtils::CXmlLiteReader oXmlReader;
-							oXmlReader.FromString(sOleXlsx.GetBuffer());
-							sOleXlsx.ReleaseBuffer();
+							oXmlReader.FromString(sOleXlsx);
 							oXmlReader.ReadNextNode();
 							OOX::Spreadsheet::COleObject* pOleObject = new OOX::Spreadsheet::COleObject(oXmlReader);
 							if(pOleObject->m_oShapeId.IsInit() && pOleObject->m_oFilepathBin.IsInit() && pOleObject->m_oFilepathImg.IsInit() && pOleObject->m_oRidImg.IsInit())
@@ -2646,11 +2647,17 @@ namespace BinXlsxRW {
 								bstrXml->Insert(nIndex, oClientData.toXML());
 								m_pCurVmlDrawing->m_aXml.push_back(*bstrXml);
 
-								//add image rels
-								NSCommon::smart_ptr<OOX::File> pImageFile(new OOX::Spreadsheet::Image());
-								m_pCurVmlDrawing->Add(OOX::RId(pOleObject->m_oRidImg->GetValue()), pImageFile);
+								//add image rels to VmlDrawing
+								NSCommon::smart_ptr<OOX::File> pImageFileVml(new OOX::Spreadsheet::Image());
+								m_pCurVmlDrawing->Add(OOX::RId(pOleObject->m_oRidImg->GetValue()), pImageFileVml);
 								//меняем имя на полученное из pptx
-								pImageFile->m_sOutputFilename = pImageFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathImg->c_str()).GetFilename();
+								pImageFileVml->m_sOutputFilename = OOX::CPath(pOleObject->m_oFilepathImg->c_str()).GetFilename();
+
+								//add image rels to Worksheet
+								NSCommon::smart_ptr<OOX::File> pImageFileWorksheet(new OOX::Spreadsheet::Image());
+								const OOX::RId oRIdImg = m_pCurWorksheet->Add(pImageFileWorksheet);
+								//меняем имя на полученное из pptx
+								pImageFileWorksheet->m_sOutputFilename = OOX::CPath(pOleObject->m_oFilepathImg->c_str()).GetFilename();
 
 								//add oleObject rels
 								if(!m_pCurWorksheet->m_oOleObjects.IsInit())
@@ -2658,14 +2665,46 @@ namespace BinXlsxRW {
 									m_pCurWorksheet->m_oOleObjects.Init();
 								}
 								NSCommon::smart_ptr<OOX::File> pOleObjectFile(new OOX::OleObject(true));
-								const OOX::RId oRId = m_pCurWorksheet->Add(pOleObjectFile);
+								const OOX::RId oRIdBin = m_pCurWorksheet->Add(pOleObjectFile);
 								//меняем имя на полученное из pptx
-								pOleObjectFile->m_sOutputFilename = pOleObjectFile->DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::CPath(pOleObject->m_oFilepathBin->c_str()).GetFilename();
+								pOleObjectFile->m_sOutputFilename = OOX::CPath(pOleObject->m_oFilepathBin->c_str()).GetFilename();
 								if(!pOleObject->m_oRid.IsInit())
 								{
 									pOleObject->m_oRid.Init();
 								}
-								pOleObject->m_oRid->SetValue(oRId.get());
+								pOleObject->m_oRid->SetValue(oRIdBin.get());
+
+								//ObjectPr
+								pOleObject->m_oObjectPr.Init();
+								pOleObject->m_oObjectPr->m_oDefaultSize.Init();
+								pOleObject->m_oObjectPr->m_oDefaultSize->FromBool(false);
+								pOleObject->m_oObjectPr->m_oRid.Init();
+								pOleObject->m_oObjectPr->m_oRid->SetValue(oRIdImg.get());
+								pOleObject->m_oObjectPr->m_oAnchor.Init();
+								SimpleTypes::Spreadsheet::ECellAnchorType eAnchorType = pCellAnchor->m_oAnchorType.GetValue();
+								if(SimpleTypes::Spreadsheet::cellanchorOneCell == eAnchorType)
+								{
+									pOleObject->m_oObjectPr->m_oAnchor->m_oMoveWithCells.Init();
+									pOleObject->m_oObjectPr->m_oAnchor->m_oMoveWithCells->FromBool(true);
+								}
+								else if(SimpleTypes::Spreadsheet::cellanchorTwoCell == eAnchorType)
+								{
+									pOleObject->m_oObjectPr->m_oAnchor->m_oSizeWithCells.Init();
+									pOleObject->m_oObjectPr->m_oAnchor->m_oSizeWithCells->FromBool(true);
+								}
+								pOleObject->m_oObjectPr->m_oAnchor->m_oFrom = pCellAnchor->m_oFrom;
+								pOleObject->m_oObjectPr->m_oAnchor->m_oTo = pCellAnchor->m_oTo;
+
+								//AlternateContent Drawing
+								if (!sOleDrawing.empty())
+								{
+									pCellAnchor->m_oXml.Init();
+									pCellAnchor->m_oXml->append(sOleDrawing);
+									pCellAnchor->m_oXml->append(_T("<xdr:clientData/>"));
+									pCellAnchor->m_oAlternateContent.Init();
+									pCellAnchor->m_oAlternateContent->FromBool(true);
+									pDrawing->m_arrItems.push_back(pCellAnchor);
+								}
 
 								m_pCurWorksheet->m_oOleObjects->m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
 							}
@@ -2674,7 +2713,7 @@ namespace BinXlsxRW {
 								delete pOleObject;
 							}
 						}
-						else if(sOleXlsx.IsEmpty())//если sOleXlsx не пустой, то в bstrXml старый shape
+						else if(sOleXlsx.empty())//если sOleXlsx не пустой, то в bstrXml старый shape
 						{
 							pCellAnchor->m_oXml.Init();
 							pCellAnchor->m_oXml->append(*bstrXml);

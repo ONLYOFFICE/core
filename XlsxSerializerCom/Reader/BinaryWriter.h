@@ -2558,7 +2558,7 @@ namespace BinXlsxRW {
 			for(int i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
 			{
 				OOX::Spreadsheet::CCellAnchor& pCellAnchor = *pDrawing->m_arrItems[i];
-				//OleObject пишутся в новом drawing и старом legacyDrawing, мы используем legacyDrawing, поэтому пропускаем shape из drawing
+				//we use legacyDrawing or objectPr in OleObject so skip shape in drawing
 				bool bShapeOle = false;
 				if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor.m_oShape.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr.IsInit() &&
 						pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr->m_oId.IsInit() )
@@ -2579,12 +2579,63 @@ namespace BinXlsxRW {
 				}
 			}
 			//OleObjects
-			if(NULL != pVmlDrawing && oWorksheet.m_oOleObjects.IsInit())
+			if(oWorksheet.m_oOleObjects.IsInit())
 			{
 				for (std::map<int, COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
 				{
 					OOX::Spreadsheet::COleObject* pOleObject = it->second;
-					if(pOleObject->m_oShapeId.IsInit())
+					if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
+					{
+						const OOX::Spreadsheet::COleObjectAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
+						if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
+						{
+							SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+							if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+							{
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
+							}
+							else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+							{
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+							}
+							else
+							{
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
+							}
+							OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+
+							oCellAnchor.m_oFrom = oAnchor.m_oFrom.get();
+							oCellAnchor.m_oTo = oAnchor.m_oTo.get();
+							oCellAnchor.m_oXml.Init();
+							oCellAnchor.m_oXml->append(L"<p:oleObj");
+
+							if (pOleObject->m_oRid.IsInit())
+							{
+								oCellAnchor.m_oXml->append(L" r:id=\"");
+								oCellAnchor.m_oXml->append(pOleObject->m_oRid->ToString2());
+								oCellAnchor.m_oXml->append(L"\"");
+							}
+							if (pOleObject->m_oProgId.IsInit())
+							{
+								oCellAnchor.m_oXml->append(L" progId=\"");
+								oCellAnchor.m_oXml->append(pOleObject->m_oProgId.get());
+								oCellAnchor.m_oXml->append(L"\"");
+							}
+							oCellAnchor.m_oXml->append(L"><p:embed/><p:pic><p:nvPicPr><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed=\"");
+							oCellAnchor.m_oXml->append(pOleObject->m_oObjectPr->m_oRid->ToString2());
+							oCellAnchor.m_oXml->append(L"\"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:oleObj>");
+
+							CString keepRels = m_pOfficeDrawingConverter->GetRelsPath();
+							m_pOfficeDrawingConverter->SetRelsPath(oWorksheet.GetReadPath().GetPath());
+
+							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+							WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+							m_oBcw.WriteItemEnd(nCurPos);
+
+							m_pOfficeDrawingConverter->SetRelsPath(keepRels);
+						}
+					}
+					else if (NULL != pVmlDrawing && pOleObject->m_oShapeId.IsInit())
 					{
 						CString sShapeId = _T("");
 						sShapeId.Format(_T("_x0000_s%04d"), pOleObject->m_oShapeId->GetValue());
@@ -2647,10 +2698,8 @@ namespace BinXlsxRW {
 									}
 								}
 							}
-
 						}
 					}
-
 				}
 			}
 		};

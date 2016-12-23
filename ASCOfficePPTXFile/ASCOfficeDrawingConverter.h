@@ -219,6 +219,8 @@ namespace NSBinPptxRW
         HRESULT SaveThemeXml        (long lStart, long lLength, const CString& bsThemePath);
         HRESULT SaveObject          (long lStart, long lLength, const CString& bsMainProps, CString** bsXml);
         HRESULT SaveObjectEx        (long lStart, long lLength, const CString& bsMainProps, long lDocType, CString** bsXml);
+		void SaveObjectExWriterInit(NSBinPptxRW::CXmlWriter& oXmlWriter, LONG lDocType);
+		void SaveObjectExWriterRelease(NSBinPptxRW::CXmlWriter& oXmlWriter);
 
         HRESULT GetRecordBinary     (long lRecordType, const CString& bsXml);
         HRESULT GetRecordXml        (long lStart, long lLength, long lRecType, long lDocType, CString** bsXml);
@@ -249,6 +251,7 @@ namespace NSBinPptxRW
 
         std::wstring GetContentTypes();
         std::wstring GetOleXlsx();
+		std::wstring GetOleDrawing();
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 

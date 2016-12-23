@@ -65,9 +65,7 @@ namespace NSShapeImageGen
 
     static bool _CopyFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
 	{
-        //::DeleteFile(strNew);
-        //return ::CopyFileEx(strExists, strNew, lpFunc, lpData, false, 0);
-        return CDirectory::CopyFile (strExists, strNew, lpFunc, lpData);
+        return CDirectory::CopyFile (strExists, strNew);
 	}
 
 	enum ImageType
@@ -369,7 +367,7 @@ namespace NSShapeImageGen
 				oInfo.m_eType = itJPG;
 
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath(), NULL, NULL);
+                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
 				return true;
 			}
 
@@ -382,7 +380,7 @@ namespace NSShapeImageGen
                 oInfo.m_eType = itPNG;
 
                 OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath(), NULL, NULL);
+                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
 
 				return true;
 			}
@@ -408,7 +406,7 @@ namespace NSShapeImageGen
 
 				strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem + pathOriginal.GetExtention();
 
-				CDirectory::CopyFile(strFileSrc, strSaveItem, NULL, NULL);
+                CDirectory::CopyFile(strFileSrc, strSaveItem);
 			}
 		}
 		void SaveImage(CBgraFrame& oBgraFrame, CImageInfo& oInfo, LONG __width, LONG __height)
@@ -524,14 +522,14 @@ namespace NSShapeImageGen
 				if(bOle)
 				{
 					std::wstring sCopyOlePath = strSaveItemWE + L".bin";
-					CDirectory::CopyFile(strOleFile, sCopyOlePath, NULL, NULL);
+                    CDirectory::CopyFile(strOleFile, sCopyOlePath);
 				}
 
 				if (bVector)
 				{
 					//copy source vector image
 					OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
-					CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
+                    CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
 					::MetaFile::CMetaFile oMetafile(m_pFontManager->m_pApplication);
 					if (oMetafile.LoadFromFile(strFileName.c_str()))

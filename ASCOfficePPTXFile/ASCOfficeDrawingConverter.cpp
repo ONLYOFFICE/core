@@ -1233,10 +1233,8 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 			}
             else if (strName == L"background")
             {
-                m_pBinaryWriter->StartRecord(1);
-                    PPTX::Logic::SpTreeElem oElem  = doc_LoadShape(oParseNode, pMainProps, false);
-                    m_pBinaryWriter->WriteRecord1(1, oElem);
-                m_pBinaryWriter->EndRecord();
+				PPTX::Logic::SpTreeElem oElem  = doc_LoadShape(oParseNode, pMainProps, false);
+				m_pBinaryWriter->WriteRecord1(1, oElem);
                 break;
              }
             else if (strName == L"pict" || strName == L"object")
@@ -4413,6 +4411,39 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 
 	m_pReader->Seek(_e);
 	return S_OK;
+}
+std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
+{
+	m_pReader->Seek(lStart);
+
+	++m_nCurrentIndexObject;
+
+	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
+	LONG _e = m_pReader->GetPos() + m_pReader->GetLong() + 4;
+
+	m_pReader->Skip(5); // type record (must be 1) + 4 byte - len record
+	PPTX::Logic::SpTreeElem oElem;
+
+	m_pReader->m_lDocumentType = XMLWRITER_DOC_TYPE_DOCX;
+
+	oElem.fromPPTY(m_pReader);
+
+	m_pReader->m_lDocumentType = XMLWRITER_DOC_TYPE_PPTX;
+
+
+	NSBinPptxRW::CXmlWriter oXmlWriter;
+	SaveObjectExWriterInit(oXmlWriter, XMLWRITER_DOC_TYPE_DOCX);
+
+	oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
+	PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
+	oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap);
+
+	--m_nCurrentIndexObject;
+
+	SaveObjectExWriterRelease(oXmlWriter);
+
+	m_pReader->Seek(_e);
+	return oXmlWriter.GetXmlString();
 }
 
 void CDrawingConverter::ConvertPicVML(PPTX::Logic::SpTreeElem& oElem, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter)

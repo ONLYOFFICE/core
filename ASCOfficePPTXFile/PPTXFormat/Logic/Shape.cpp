@@ -654,5 +654,31 @@ namespace PPTX
 				pWriter->EndNode(_T("v:shape"));
 			}
 		}
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
+		{
+			CString strFillAttr = _T("");
+			CString strFillNode = _T("");
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
+
+			pWriter->StartNode(_T("v:background"));
+
+			pWriter->StartAttributes();
+
+			pWriter->WriteString(L" id=\"_x0000_s1025\"");
+
+			if (!pWriter->m_strAttributesMain.empty())
+			{
+				pWriter->WriteString(pWriter->m_strAttributesMain);
+				pWriter->m_strAttributesMain.clear();
+			}
+
+			pWriter->WriteString(strFillAttr);
+
+			pWriter->EndAttributes();
+
+			pWriter->WriteString(strFillNode);
+
+			pWriter->EndNode(_T("v:background"));
+		}
 	} // namespace Logic
 } // namespace PPTX

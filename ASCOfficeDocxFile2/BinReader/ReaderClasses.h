@@ -292,9 +292,9 @@ public:
             if(ThemeColor.bColor)
                 sBackground += L" w:themeColor=\"" + ThemeColor.ToStringColor() + L"\"";
             if(ThemeColor.bTint)
-                sBackground += L" w:themeColorTint=\"" + ThemeColor.ToStringTint() + L"\"";
+                sBackground += L" w:themeTint=\"" + ThemeColor.ToStringTint() + L"\"";
             if(ThemeColor.bShade)
-                sBackground += L" w:themeColorShade=\"" + ThemeColor.ToStringShade() + L"\"";
+                sBackground += L" w:themeShade=\"" + ThemeColor.ToStringShade() + L"\"";
         }
 
         if (!bColor && !bThemeColor)

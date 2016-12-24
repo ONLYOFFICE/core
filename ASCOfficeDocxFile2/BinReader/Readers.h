@@ -6572,30 +6572,15 @@ public:
         }
         else if( c_oSerBackgroundType::pptxDrawing == type )
         {
-            CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
-            oCDrawingProperty.bType = oCDrawingProperty.bHeight = oCDrawingProperty.bWidth = true;
-            oCDrawingProperty.Type  = c_oAscWrapStyle::Inline;
+			CDrawingProperty oCDrawingProperty(0);
+			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
 
-            CString sDrawingProperty = oCDrawingProperty.Write();
-
-            BYTE    type        = m_oBufferedStream.GetUChar();
-            long    lenType     = m_oBufferedStream.GetUChar();
-            int     nRealLen    = m_oBufferedStream.GetLong();
-
-            CString* bstrDrawingXml = NULL;
-
-            long nCurPos = m_oBufferedStream.GetPos();
-
-
-            m_oFileWriter.m_pDrawingConverter->SaveObjectEx(nCurPos, nRealLen, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
-
-            if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
-            {
-                pBackground->sObject = *bstrDrawingXml;
-            }
-            RELEASEOBJECT(bstrDrawingXml);
-
-            m_oBufferedStream.Seek(nCurPos + nRealLen);
+			if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				pBackground->sObject = m_oFileWriter.m_pDrawingConverter->SaveObjectBackground(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength);
+				m_oBufferedStream.Seek(nCurPos);
+			}
         }
         else
             res = c_oSerConstants::ReadUnknown;

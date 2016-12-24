@@ -6572,7 +6572,7 @@ public:
         }
         else if( c_oSerBackgroundType::pptxDrawing == type )
         {
-			CDrawingProperty oCDrawingProperty(0);
+			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
 
 			if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
@@ -6799,6 +6799,13 @@ public:
 			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
 			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
 		}
+		else if ( c_oSerImageType2::DocPr == type )
+		{
+			OOX::Drawing::CNonVisualDrawingProps pNonVisualDrawingProps;
+			pNonVisualDrawingProps.m_eType = OOX::et_wp_docPr;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6836,6 +6843,39 @@ public:
 		{
 			pLocking->m_oNoSelect.Init();
 			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDocPr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CNonVisualDrawingProps* pNonVisualDrawingProps = static_cast<OOX::Drawing::CNonVisualDrawingProps*>(poResult);
+		if ( c_oSerDocPr::Id == type )
+		{
+			pNonVisualDrawingProps->m_oId.Init();
+			pNonVisualDrawingProps->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerDocPr::Name == type )
+		{
+			pNonVisualDrawingProps->m_sName.Init();
+			pNonVisualDrawingProps->m_sName->Append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Hidden == type )
+		{
+			pNonVisualDrawingProps->m_oHidden.Init();
+			pNonVisualDrawingProps->m_oHidden->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerDocPr::Title == type )
+		{
+			pNonVisualDrawingProps->m_sTitle.Init();
+			pNonVisualDrawingProps->m_sTitle->Append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Descr == type )
+		{
+			pNonVisualDrawingProps->m_sDescr.Init();
+			pNonVisualDrawingProps->m_sDescr->Append(m_oBufferedStream.GetString3(length));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

@@ -557,7 +557,8 @@ extern int g_nCurFormatVersion;
 		SizeRelH = 27,
 		SizeRelV = 28,
 		Embedded = 29,
-		GraphicFramePr = 30
+		GraphicFramePr = 30,
+		DocPr = 31
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -985,6 +986,14 @@ extern int g_nCurFormatVersion;
 		PrFntPos = 9,
 		PrEndPos = 10,
 		PrRef = 11
+	};}
+	namespace c_oSerDocPr{enum c_oSerDocPr
+	{
+		Id = 0,
+		Name = 1,
+		Hidden = 2,
+		Title	= 3,
+		Descr = 4
 	};}
 }
 

@@ -1921,6 +1921,7 @@ public:
     CString sSizeRelV;
     int     m_nDocPr;
     CString sGraphicFramePr;
+	CString sDocPr;
 
     CDrawingPropertyWrap DrawingPropertyWrap;
 
@@ -2015,9 +2016,9 @@ public:
                     sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
                 }
 
-                if(bChart)
+				if(!sDocPr.IsEmpty())
                 {
-                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
+					sXml.Append(sDocPr);
                 }
                 else
                 {
@@ -2233,10 +2234,10 @@ public:
                 else
                     sXml.Append(_T("<wp:wrapNone/>"));
 
-                if(bChart)
-                {
-                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"Chart %d\"/>"), m_nDocPr, m_nDocPr);
-                }
+				if(!sDocPr.IsEmpty())
+				{
+					sXml.Append(sDocPr);
+				}
                 else
                 {
                     sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);

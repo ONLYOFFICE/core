@@ -852,13 +852,11 @@ namespace PdfWriter
 	}
 	void         CImageFileStream::Write(const BYTE* pBuffer, unsigned int unSize)
 	{
-		if (!OpenFile())
-			return;
-		m_oFile.WriteFile((BYTE*)pBuffer, unSize);
-		CloseFile();
+        // not used
 	}
 	void         CImageFileStream::Read(BYTE *pBuffer, unsigned int* punSize)
 	{
+        *punSize = 0;
 		if (!OpenFile())
 			return;
 		DWORD dwBytesToRead = *punSize;
@@ -912,8 +910,8 @@ namespace PdfWriter
 	}
 	bool         CImageFileStream::OpenFile()
 	{
-		if (!m_oFile.OpenFile(m_wsFilePath, true))
-			return false;
+        if (!m_oFile.OpenFile(m_wsFilePath))
+            return false;
 
 		m_oFile.SeekFile(m_nFilePos);
 		return true;

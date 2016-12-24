@@ -58,6 +58,9 @@ LIBS += -L$$DESTINATION_SDK_PATH -lPdfReader
 LIBS += -L$$DESTINATION_SDK_PATH -lDjVuFile
 LIBS += -L$$DESTINATION_SDK_PATH -lXpsFile
 LIBS += -L$$DESTINATION_SDK_PATH -lPdfWriter
+LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
+
+LIBS += -L$$PWD/../../build/bin/icu/win_64
 
 win32 {
 LIBS += -lgdi32 \

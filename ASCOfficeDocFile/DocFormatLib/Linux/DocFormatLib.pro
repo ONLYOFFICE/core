@@ -43,10 +43,12 @@ SOURCES +=  \
     ../../DocDocxConverter/Spa.cpp \
     ../../DocDocxConverter/OleObject.cpp
 
-build_fast {
+core_release {
 SOURCES += \
     docformatlib_converter.cpp
-} else {
+}
+
+core_debug {
 SOURCES += \
     ../../DocDocxConverter/AnnotationReferenceDescriptor.cpp \
     ../../DocDocxConverter/CharacterPropertiesMapping.cpp \

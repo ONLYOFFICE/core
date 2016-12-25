@@ -31,16 +31,17 @@ INCLUDEPATH += \
     ../../DesktopEditor/xml/libxml2/include \
 
 
-SOURCES += ../DocWrapper/DocxSerializer.cpp \
+SOURCES += \
+    ../DocWrapper/DocxSerializer.cpp \
     ../DocWrapper/FontProcessor.cpp \
     ../DocWrapper/XlsxSerializer.cpp \
-	../BinWriter/BinWriters.cpp \
+    ../DocWrapper/ChartWriter.cpp \
+    ../BinWriter/BinWriters.cpp \
     ../../XlsxSerializerCom/Common/Common.cpp \
     ../../XlsxSerializerCom/Reader/ChartFromToBinary.cpp \
     ../../XlsxSerializerCom/Reader/CommonWriter.cpp \
     ../../XlsxSerializerCom/Reader/CSVReader.cpp \
     ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
-    ../DocWrapper/ChartWriter.cpp \
     ../../OfficeCryptReader/source/ECMACryptReader.cpp \
     ../../OfficeCryptReader/source/CryptTransform.cpp
 

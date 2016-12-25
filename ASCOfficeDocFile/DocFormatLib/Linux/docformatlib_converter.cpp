@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "../../DocDocxConverter/AnnotationReferenceDescriptor.cpp"
 #include "../../DocDocxConverter/CharacterPropertiesMapping.cpp"
 #include "../../DocDocxConverter/Converter.cpp"

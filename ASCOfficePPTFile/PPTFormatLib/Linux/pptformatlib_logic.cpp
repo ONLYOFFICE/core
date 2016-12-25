@@ -29,15 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../PPTFormatLib.cpp"
+
 #include "../Reader/ReadStructures.cpp"
 #include "../Reader/PPTDocumentInfoOneUser.cpp"
 #include "../Reader/Records.cpp"
 #include "../Reader/SlidePersist.cpp"
 #include "../Records/Animations/AnimationTypes.cpp"
 #include "../Records/Drawing/ArtBlip.cpp"
+
 #include "../PPTXWriter/Converter.cpp"
 #include "../PPTXWriter/ShapeWriter.cpp"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp"

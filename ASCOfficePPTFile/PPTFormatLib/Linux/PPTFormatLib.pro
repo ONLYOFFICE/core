@@ -170,12 +170,13 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
     ../../../Common/3dParty/pole/pole.h 
 
-build_fast {
+core_release {
 SOURCES += \
     pptformatlib_logic.cpp
-} else {
+}
+
+core_debug {
 SOURCES += \
-    ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
@@ -183,13 +184,14 @@ SOURCES += \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \
     ../PPTXWriter/Converter.cpp \
-    ../PPTXWriter/ShapeWriter.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp
+    ../PPTXWriter/ShapeWriter.cpp
 }
 
 SOURCES += \
+    ../PPTFormatLib.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp
 
 core_windows {

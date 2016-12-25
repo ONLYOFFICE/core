@@ -25,11 +25,12 @@ INCLUDEPATH += \
 #BOOST
 include($$PWD/../../3dParty/boost/boost.pri)
 
-build_fast {
+core_release {
 SOURCES += \
-    docxformatlib_logic.cpp \
-    docxformatlib_file.cpp
-} else {
+    docxformatlib_logic.cpp
+}
+
+core_debug {
 SOURCES += \
     ../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp \
     ../Source/DocxFormat/Drawing/DrawingEffects.cpp \
@@ -55,12 +56,21 @@ SOURCES += \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Common.cpp \
-    ../Source/XML/libxml2/libxml2.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
-    ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
+    ../Source/DocxFormat/Drawing/DrawingExt.cpp \
+    ../Source/Common/Align.cpp \
+    ../Source/Common/Color.cpp \
+    ../Source/Common/Index.cpp \
+    ../Source/Common/NumFormat.cpp \
+    ../Source/Common/Position.cpp \
+    ../Source/Common/Utils.cpp \
+    ../Source/Common/Wrap.cpp \
+    ../Source/Common/ZIndex.cpp \
+    ../Source/Common/SimpleTypes_Word.cpp
+}
 
 core_windows {
     SOURCES += \
@@ -71,24 +81,16 @@ core_windows {
         ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
         ../Source/SystemUtility/FileSystem/FilePosix.cpp \
 }
-}
+
 
 SOURCES += docxformatlib.cpp \
-    ../Source/Common/Align.cpp \
-    ../Source/Common/Color.cpp \
-    ../Source/Common/Index.cpp \
-    ../Source/Common/NumFormat.cpp \
-    ../Source/Common/Position.cpp \
-    ../Source/Common/Utils.cpp \
-    ../Source/Common/Wrap.cpp \
-    ../Source/Common/ZIndex.cpp \
-    ../Source/Common/SimpleTypes_Word.cpp \
+    ../Source/XML/libxml2/libxml2.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp \
-    ../Source/DocxFormat/Drawing/DrawingExt.cpp
+    ../Source/SystemUtility/SystemUtility.cpp \
+    ../../3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

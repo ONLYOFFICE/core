@@ -53,14 +53,13 @@ INCLUDEPATH += \
 
 SOURCES += pptxformatlib.cpp
 
-build_fast {
+core_release {
 SOURCES += \
-    pptxformatlib_logic.cpp \
-    pptxformatlib_converter.cpp
-} else {
+    pptxformatlib_logic.cpp
+}
+
+core_debug {
 SOURCES += \
-    ../../../ASCOfficeDrawingConverter.cpp \
-    ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
@@ -94,19 +93,23 @@ SOURCES += \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
-	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
+    ../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
+    ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \
-    ../../../PPTXFormat/Folder.cpp \
+    ../../../PPTXFormat/Folder.cpp
+}
+
+SOURCES += \
+    ../../../ASCOfficeDrawingConverter.cpp \
+    ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
     ../../../Editor/Drawing/Layout.cpp \
     ../../../Editor/Drawing/TextAttributesEx.cpp \
     ../../../Editor/Drawing/Elements.cpp \
-    ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
-}
 
 HEADERS += pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \

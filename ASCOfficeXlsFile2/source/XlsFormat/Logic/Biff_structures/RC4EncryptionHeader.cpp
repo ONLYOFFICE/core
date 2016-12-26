@@ -65,8 +65,9 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		bool fExternal	= GETBIT(flags, 3);
 		bool fAES		= GETBIT(flags, 4);
 
-		record >> flags;
-	//EncryptionHeader
+		unsigned short Reserved3;
+		record >> Reserved3;
+
 		_UINT32 HeaderSize;		record >> HeaderSize;
 		_UINT32 Flags;			record >> Flags;
 		_UINT32 SizeExtra;		record >> SizeExtra;
@@ -80,19 +81,9 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		int pos		= record.getRdPtr();
 		int size	= record.getDataSize();
 
-		std::vector<char> dataCSPName;
-		while(pos  < size - 1)
-		{
-			char s;
-			record >> s; dataCSPName.push_back(s);
-			record >> s; dataCSPName.push_back(s);
-			
-			if (dataCSPName[dataCSPName.size() - 1] == 0 && dataCSPName[dataCSPName.size() - 2] == 0)
-			{
-				break;
-			}
-			pos+=2;//unicode null-terminate string
-		}
+		std::wstring providerName;
+		record >> providerName;
+
 	//EncryptionVerifier
 
 		record >> crypt_data_aes.saltSize;
@@ -134,7 +125,7 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		pos = record.getRdPtr();
 		
 	//------------------------------------------------------------------------------------------
-		crypt_data_aes.hashAlgorithm	= CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000 || 0x8004
+		crypt_data_aes.hashAlgorithm	= CRYPT_METHOD::SHA1; //by AlgIDHash -> 0x0000(reserved ??) || 0x8004(sha1)
 		crypt_data_aes.spinCount		= 50000;
 
 		switch(AlgID)
@@ -161,15 +152,6 @@ void RC4EncryptionHeader::load(XLS::CFRecord& record)
 		{
 		case 0x0001:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::RC4;		break;
 		case 0x0018:	crypt_data_aes.cipherAlgorithm = CRYPT_METHOD::AES_ECB; break;
-		}
-
-		if (crypt_data_aes.cipherAlgorithm == CRYPT_METHOD::RC4)
-		{
-			bStandard = true;
-		
-			memcpy(&crypt_data_rc4.Salt,					crypt_data_aes.saltValue.c_str(),				16);
-			memcpy(&crypt_data_rc4.EncryptedVerifier,		crypt_data_aes.encryptedVerifierValue.c_str(),	16);
-			memcpy(&crypt_data_rc4.EncryptedVerifierHash,	crypt_data_aes.encryptedVerifierInput.c_str(),	16);
 		}
 	}
 }

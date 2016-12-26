@@ -289,10 +289,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\common\utils.cpp"
 				>
 			</File>

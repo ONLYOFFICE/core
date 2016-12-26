@@ -69,28 +69,27 @@ void FilePass::readFields(CFRecord& record)
 		bEnabled = true;
 
 		majorVer = *record.getCurData<unsigned short>();
+
+		cryptHeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
+
+		cryptHeaderPtr->bStandard = 0x0001 == majorVer ? true : false; // _S2dvT1xU_R3bOPwre4_.xls
+
+		cryptHeaderPtr->load (record);
 		
-		rc4HeaderPtr = CRYPTO::RC4EncryptionHeaderPtr(new CRYPTO::RC4EncryptionHeader());
-
-		rc4HeaderPtr->bStandard = 0x0001 == majorVer ? true : false; // _S2dvT1xU_R3bOPwre4_.xls
-		rc4HeaderPtr->load (record);
-
-		if (rc4HeaderPtr->bStandard)
+		if (cryptHeaderPtr->bStandard)
 		{
 			record.getGlobalWorkbookInfo()->decryptor = 
-				CRYPT::RC4DecryptorPtr(new CRYPT::RC4Decryptor(rc4HeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
+						CRYPT::DecryptorPtr(new CRYPT::RC4Decryptor(cryptHeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
 		}
 		else
 		{
-			//CRYPT::ECMADecryptor Decryptor;
+			record.getGlobalWorkbookInfo()->decryptor = 
+						CRYPT::DecryptorPtr(new CRYPT::ECMADecryptor());
+			
+			CRYPT::ECMADecryptor *crypter = dynamic_cast<CRYPT::ECMADecryptor *>(record.getGlobalWorkbookInfo()->decryptor.get());
 
-			//Decryptor.SetCryptData(rc4HeaderPtr->crypt_data_aes);
-
-			//if (Decryptor.SetPassword(L"VelvetSweatshop") == false)
-			//{
-			//}
-			//	//record.getGlobalWorkbookInfo()->decryptor = 
-			//	//CRYPT::ECMADecryptor(new CRYPT::RC4Decryptor(rc4HeaderPtr->crypt_data_rc4, record.getGlobalWorkbookInfo()->password, 2));
+			crypter->SetCryptData(cryptHeaderPtr->crypt_data_aes);
+			crypter->SetPassword(record.getGlobalWorkbookInfo()->password);
 		}
 	}
 

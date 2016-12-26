@@ -38,8 +38,14 @@
 #include "../../Common/3dParty/cryptopp/aes.h"
 #include "../../Common/3dParty/cryptopp/sha.h"
 #include "../../Common/3dParty/cryptopp/md5.h"
+#include "../../Common/3dParty/cryptopp/rsa.h"
+#include "../../Common/3dParty/cryptopp/rc2.h"
+#include "../../Common/3dParty/cryptopp/arc4.h"
+#include "../../Common/3dParty/cryptopp/rc5.h"
 #include "../../Common/3dParty/cryptopp/pwdbased.h"
 #include "../../Common/3dParty/cryptopp/filters.h"
+#include "../../Common/3dParty/cryptopp/osrng.h"
+#include "../../Common/3dParty/cryptopp/hex.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
 
@@ -263,14 +269,50 @@ _buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int spin, CRYPT
 }
 
 bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYPT_METHOD::_cipherAlgorithm algorithm)
-{
+{	
 	if (algorithm == CRYPT_METHOD::RC4)
 	{
+		//CryptoPP::ARC4 rc4(key.ptr, key.size);
+		//data_out.ptr = new unsigned char[data_inp.size];
+		//data_out.size = data_inp.size;
+		//rc4.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
+
+		//CryptoPP::RC2::Decryption rc2Decryption(key.ptr, key.size);
+		//modeDecryption = new CryptoPP::ECB_Mode_ExternalCipher::Decryption(rc2Decryption, iv.ptr ); 
+
+		//CryptoPP::RC5::Decryption rc5Decryption(key.ptr, key.size);
+		//modeDecryption = new CryptoPPp::ECB_Mode_ExternalCipher::Decryption(rc5Decryption, iv.ptr ); 
+		
+		//rsa aes
+		//CryptoPP::HexDecoder buffer;
+		//buffer.Put(key.ptr, key.size);	
+		//
+		////CryptoPP::StringSource buffer(key.ptr, key.size, true);
+
+		//CryptoPP::RSA::PrivateKey priv;
+		//priv.Load(buffer);
+
+		//CryptoPP::AutoSeededRandomPool rng;
+		//if(!priv.Validate(rng, 3))
+		//	throw std::runtime_error("Rsa private key validation failed");
+		//if(!priv.Validate(rng, 3))
+		//	throw std::runtime_error("Dsa private key validation failed");
+
+		//CryptoPP::RSAES_PKCS1v15_Decryptor rsaDecryption(priv);
+
+		//std::string data((char*)data_inp.ptr, data_inp.size);
+		//std::string decrypted;
+		//	CryptoPP::StringSource ss(data, true,
+		//		new CryptoPP::PK_DecryptorFilter(rng, rsaDecryption,
+		//			new CryptoPP::StringSink(decrypted)) );
+  //  	data_out = decrypted;
+		//return true;
+		return false;
 	}
 	else
 	{
-		CryptoPP::AES::Decryption aesDecryption(key.ptr, key.size);
 		CryptoPP::StreamTransformation *modeDecryption = NULL;
+		CryptoPP::AES::Decryption aesDecryption(key.ptr, key.size);
 
 		switch(algorithm)
 		{
@@ -281,8 +323,9 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out, CRYP
 			 modeDecryption = new CryptoPP::CBC_Mode_ExternalCipher::Decryption(aesDecryption, iv.ptr ); 
 			 break;
 		}
+	
 		if (!modeDecryption) return false;
-	    
+		    
 		if (!data_out.ptr)
 		{
 			data_out = _buf(data_inp.size);
@@ -303,12 +346,16 @@ namespace CRYPT
 
 ECMADecryptor::ECMADecryptor()
 {
+	bVerify = false;
 }
 
-bool ECMADecryptor::SetPassword(std::wstring password_)
+bool ECMADecryptor::SetPassword(std::wstring _password)
 {
-	password = password_;
+	bVerify		= false;
+	password	= _password;
 
+	if (password.empty()) return false;
+	
 	if (cryptData.bAgile)
 	{	
 		_buf pPassword		(password);
@@ -334,7 +381,7 @@ bool ECMADecryptor::SetPassword(std::wstring password_)
 		_buf verifierHashKey = GenerateAgileKey(pSalt, pPassword, pValueBlockKey, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
 		DecryptCipher(verifierHashKey, pSalt, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
 
-		return (decryptedVerifierHashBytes==hashBuf);
+		bVerify	= (decryptedVerifierHashBytes==hashBuf);
 	}
 	else
 	{
@@ -359,8 +406,14 @@ bool ECMADecryptor::SetPassword(std::wstring password_)
 		
 		DecryptCipher(hashKey, empty, pEncVerValue, decryptedVerifierHashBytes, cryptData.cipherAlgorithm);
 
-		return (decryptedVerifierHashBytes==hashBuf);
+		bVerify	= (decryptedVerifierHashBytes==hashBuf);
 	}
+	return bVerify;
+}
+
+bool ECMADecryptor::IsVerify()
+{
+	return bVerify;
 }
 
 void ECMADecryptor::SetCryptData(_cryptData	&data)
@@ -369,13 +422,16 @@ void ECMADecryptor::SetCryptData(_cryptData	&data)
 }
 void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long stream_pos)
 {
-	unsigned char* data_out = NULL;
-	Decrypt((unsigned char*)data, size, data_out);
-	
-	if (data_out)
+	if (bVerify)
 	{
-		delete []data;
-		data = (char*)data_out;
+		unsigned char* data_out = NULL;
+		Decrypt((unsigned char*)data, size, data_out);
+		
+		if (data_out)
+		{
+			delete []data;
+			data = (char*)data_out;
+		}
 	}
 }
 void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& data_out)

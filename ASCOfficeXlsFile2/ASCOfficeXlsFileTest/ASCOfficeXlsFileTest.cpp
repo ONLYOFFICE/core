@@ -55,7 +55,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);	
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"", L"C:\\Windows\\Fonts", NULL);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL);
 
 	if (hr == S_OK) 
 	{

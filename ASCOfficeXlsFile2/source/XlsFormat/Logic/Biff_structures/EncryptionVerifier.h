@@ -48,7 +48,6 @@ public:
 
 	virtual void load(XLS::CFRecord& record);
 
-
 	_UINT32 SaltSize;
 	struct SALT_TAG 
 	{

@@ -49,13 +49,12 @@ public:
 
 	virtual void load(XLS::CFRecord& record);
 
-
-	EncryptionHeaderFlags Flags;
-    _INT32			AlgID;
-    _INT32			AlgIDHash;
-	_UINT32			KeySize;
-	_UINT32			ProviderType;
-	std::wstring	CSPName;
+	EncryptionHeaderFlags	Flags;
+    _INT32					AlgID;
+    _INT32					AlgIDHash;
+	_UINT32					KeySize;
+	_UINT32					ProviderType;
+	std::wstring			CSPName;
 };
 
 } // namespace CRYPTO

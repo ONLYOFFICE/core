@@ -120,9 +120,9 @@ typedef struct tagBITMAPCOREHEADER {
 
 XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const std::wstring & password, const std::wstring & fontsPath, const ProgressCallback* CallBack) 
 {
-	xlsx_path		= _xlsx_path;
-	output_document = NULL;
-	xlsx_context	= NULL;
+	xlsx_path			= _xlsx_path;
+	output_document		= NULL;
+	xlsx_context		= NULL;
 	
 	pCallBack			= CallBack;
 	bUserStopConvert	= false;
@@ -202,8 +202,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
-
-		
+	
 		XLS::BinReaderProcessor proc(stream_reader , xls_document.get() , true);
 		proc.mandatory(*xls_document.get());
 
@@ -211,7 +210,6 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		{
 			is_encrypted = true;
 			if (xls_global_info->decryptor->IsVerify() == false) return;
-
 		}	
 	}
 	catch(...)
@@ -225,10 +223,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 		std::wstring sVer = STR::int2hex_wstr(xls_global_info->Version);
 		Log::error("Version xls is old !!! - " + std::string(sVer.begin(), sVer.end()));
 		is_older_version = true;
-		//return;
-	}
-
-	
+	}	
 	output_document		= new oox::package::xlsx_document();
     xlsx_context		= new oox::xlsx_conversion_context(output_document);
 }

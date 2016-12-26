@@ -43,18 +43,16 @@ namespace CRYPT
 		RC4Decryptor(CryptRC4Data & header, std::wstring password, int type);
 
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
+		virtual bool SetPassword(std::wstring password);
 
-		bool IsVerify();
-
-		bool SetPassword(std::wstring password, int type = 1);
+		virtual bool IsVerify();
 
 	private:
+		int						type;
 		CryptPtr				crypt;
-		Crypt::crypt_type		type;
 		CryptRC4Data			crypt_data;
 	};
 
 	typedef boost::shared_ptr<RC4Decryptor> RC4DecryptorPtr;
-
 
 } // namespace CRYPT

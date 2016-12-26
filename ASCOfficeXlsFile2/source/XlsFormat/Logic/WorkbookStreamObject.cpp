@@ -105,6 +105,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					m_GlobalsSubstream = elements_.back();
 					elements_.pop_back();
 				}
+				if (!GlobalsSubstream_found) return false;
 			}
 			break;
 			case BOF::st_Worksheet:

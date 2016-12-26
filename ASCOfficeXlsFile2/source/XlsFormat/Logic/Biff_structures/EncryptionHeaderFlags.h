@@ -50,7 +50,6 @@ public:
 
 	virtual void load(XLS::CFRecord& record);
 
-
 	bool fCryptoAPI;
 	bool fDocProps;
 	bool fExternal;

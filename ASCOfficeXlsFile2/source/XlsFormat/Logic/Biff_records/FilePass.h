@@ -60,8 +60,7 @@ public:
 	XORObfuscation						key;
 	_UINT16								majorVer;
 	
-	CRYPTO::RC4EncryptionHeaderPtr			rc4HeaderPtr;
-	CRYPTO::RC4CryptoAPIEncryptionHeader	rc4CryptoAPIHeader;
+	CRYPTO::RC4EncryptionHeaderPtr		cryptHeaderPtr;
 };
 
 } // namespace XLS

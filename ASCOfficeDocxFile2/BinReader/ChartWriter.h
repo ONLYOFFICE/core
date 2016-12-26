@@ -42,16 +42,16 @@ namespace Writers
 		{
 		public:
 			std::wstring content;
-			CString filename;
+            std::wstring filename;
 			int index;
 		};
 		std::vector<ChartElem*> m_aCharts;
-		ContentTypesWriter& m_oContentTypesWriter;
+        ContentTypesWriter&     m_oContentTypesWriter;
 		int nChartCount;
 	public:
-		CString m_sDir;
+        std::wstring m_sDir;
 	public:
-		ChartWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+        ChartWriter(std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
 			nChartCount = 0;
 		}
@@ -86,8 +86,8 @@ namespace Writers
 					oFile.CloseFile();
 
 					//Content_Types
-                    CString sRelPath = _T("/word/charts/") + elem->filename;
-                    m_oContentTypesWriter.AddOverride(sRelPath, CString(_T("application/vnd.openxmlformats-officedocument.drawingml.chart+xml")));
+                    std::wstring sRelPath = L"/word/charts/" + elem->filename;
+                    m_oContentTypesWriter.AddOverride(sRelPath, L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml");
 				}
 			}
 		}
@@ -97,7 +97,7 @@ namespace Writers
 			pChartElem->content = content;
 			pChartElem->index = nChartCount + 1;
 			nChartCount++;
-			pChartElem->filename.Format(L"chart%d.xml", pChartElem->index);
+            pChartElem->filename = L"chart" + std::to_wstring(pChartElem->index) + L".xml";
 			
 			sRelsName = L"charts/" + pChartElem->filename;
 			sFileName = pChartElem->filename;

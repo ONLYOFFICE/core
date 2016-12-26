@@ -73,12 +73,12 @@ namespace DocFileFormat
 		m_pict				=	pPicture;
 		m_nImageId			=	0;
 
-		m_imagedata			=	XMLTools::XMLElement<wchar_t>(L"v:imagedata");
-		m_fill				=	XMLTools::XMLElement<wchar_t>(L"v:fill");
-		m_stroke			=	XMLTools::XMLElement<wchar_t>(L"v:stroke");
-		m_shadow			=	XMLTools::XMLElement<wchar_t>(L"v:shadow");
-		m_3dstyle			=	XMLTools::XMLElement<wchar_t>(L"o:extrusion");
-		m_textpath			=	XMLTools::XMLElement<wchar_t>(L"v:textpath");
+        m_imagedata			=	XMLTools::XMLElement(L"v:imagedata");
+        m_fill				=	XMLTools::XMLElement(L"v:fill");
+        m_stroke			=	XMLTools::XMLElement(L"v:stroke");
+        m_shadow			=	XMLTools::XMLElement(L"v:shadow");
+        m_3dstyle			=	XMLTools::XMLElement(L"o:extrusion");
+        m_textpath			=	XMLTools::XMLElement(L"v:textpath");
 
 		Record* recBs		=	NULL;
 		if ((m_context) && (m_context->_doc))

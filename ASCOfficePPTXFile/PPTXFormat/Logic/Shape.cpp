@@ -412,27 +412,26 @@ namespace PPTX
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 #endif
 
-			CString strId = _T("");
-			strId.Format(_T("shape %d"), pWriter->m_lObjectIdVML);
-			CString strSpid = _T("");
-			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
+            std::wstring strId  = L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
+            std::wstring strSpid = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
-			CString strFillAttr = _T("");
-			CString strStrokeAttr = _T("");
-			CString strFillNode = _T("");
-			CString strStrokeNode = _T("");
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
+            std::wstring strFillAttr;
+            std::wstring strStrokeAttr;
+            std::wstring strFillNode;
+            std::wstring strStrokeNode;;
+
+            CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
 			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle);
 
-			if (pWriter->m_strStyleMain != _T(""))
+            if (!pWriter->m_strStyleMain.empty())
 			{
-				pWriter->StartNode(_T("v:shape"));
+                pWriter->StartNode(L"v:shape");
 
 				pWriter->StartAttributes();
 
-				pWriter->WriteAttribute(_T("id"), strId);
-				pWriter->WriteAttribute(_T("o:spid"), strSpid);
+                pWriter->WriteAttribute(L"id", strId);
+                pWriter->WriteAttribute(L"o:spid", strSpid);
 
 				NSBinPptxRW::CXmlWriter oStylesWriter;
 				if (spPr.xfrm.is_init())

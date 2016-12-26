@@ -43,10 +43,10 @@
 
 namespace SerializeCommon
 {
-	CString DownloadImage(const CString& strFile);
-	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64);
+    std::wstring DownloadImage(const std::wstring& strFile);
+    VOID convertBase64ToImage (NSFile::CFileBinary& oFile, std::wstring &pBase64);
 	long Round(double val);
-	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt);
+    std::wstring changeExtention(const std::wstring& sSourcePath, const std::wstring& sTargetExt);
 	class CommentData
 	{
 	public :
@@ -73,7 +73,7 @@ namespace SerializeCommon
 			aReplies.clear();
 		}
 	};
-    void ReadFileType(const CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
+    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
 }
 
 #endif //SERIALIZER_COMMON

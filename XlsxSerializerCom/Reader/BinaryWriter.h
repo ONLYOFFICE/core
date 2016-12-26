@@ -2637,9 +2637,8 @@ namespace BinXlsxRW {
 					}
 					else if (NULL != pVmlDrawing && pOleObject->m_oShapeId.IsInit())
 					{
-						CString sShapeId = _T("");
-						sShapeId.Format(_T("_x0000_s%04d"), pOleObject->m_oShapeId->GetValue());
-						std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
+                        std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pOleObject->m_oShapeId->GetValue());
+                        std::map<std::wstring, std::wstring>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
 						if (pFind != pVmlDrawing->m_mapShapesXml.end())
 						{
 							//ищем shape как обьект, чтобы обработать ClientData
@@ -2746,7 +2745,7 @@ namespace BinXlsxRW {
 			}
 			else if (pCellAnchor.m_sSpId.IsInit() && pVmlDrawing)
 			{
-				std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(pCellAnchor.m_sSpId.get2());
+                std::map<std::wstring, std::wstring>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(pCellAnchor.m_sSpId.get2());
 				if (pFind != pVmlDrawing->m_mapShapesXml.end())
 				{
 					CString* bstrOutputXml = NULL;

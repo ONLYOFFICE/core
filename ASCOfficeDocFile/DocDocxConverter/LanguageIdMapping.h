@@ -49,14 +49,14 @@ namespace DocFileFormat
 	{
 	public: 
 		LanguageIdMapping( XMLTools::CStringXmlWriter* writer, LanguageType type );
-		LanguageIdMapping( XMLTools::XMLElement<wchar_t>* parentElement, LanguageType type );
+        LanguageIdMapping( XMLTools::XMLElement* parentElement, LanguageType type );
 		virtual ~LanguageIdMapping();
 		void Apply( IVisitable* lid );
 
 		static std::wstring getLanguageCode( LanguageId* lid );
 	
 	private: 
-		LanguageType _type;
-		XMLTools::XMLElement<wchar_t>* _parent;
+        LanguageType            _type;
+        XMLTools::XMLElement*   _parent;
 	}; 
 }

@@ -293,12 +293,12 @@ namespace OOX
 					}
 				}
 
-				CString sPath = pFile->DefaultFileName().GetPath();
-				int nDotIndex = sPath.ReverseFind('.');
+                std::wstring sPath = pFile->DefaultFileName().GetPath();
+                int nDotIndex = sPath.rfind('.');
 				if(-1 != nDotIndex && nDotIndex > 0)
 				{
-					CString sDigit;sDigit.Format(_T("%d"), nIndex);
-					sPath.Insert(nDotIndex, sDigit);
+                    std::wstring sDigit = std::to_wstring( nIndex);
+                    sPath.insert(sPath.begin() + nDotIndex, sDigit.begin(), sDigit.end());
 				}
 				pFile->m_sOutputFilename = sPath;
 				if(true == bEnumeratedGlobal)

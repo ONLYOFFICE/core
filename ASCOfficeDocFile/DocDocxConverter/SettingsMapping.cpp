@@ -95,7 +95,7 @@ namespace DocFileFormat
 		}
 
 		//proof state
-		XMLTools::XMLElement<wchar_t> proofState( L"w:proofState" );
+        XMLTools::XMLElement proofState( L"w:proofState" );
 
 		if ( dop->fGramAllClean )
 		{
@@ -149,7 +149,7 @@ namespace DocFileFormat
 		}
 
 		//footnote properties
-		XMLTools::XMLElement<wchar_t> footnotePr( L"w:footnotePr" );
+        XMLTools::XMLElement footnotePr( L"w:footnotePr" );
 
 		if ( dop->nFtn != 0 )
 		{

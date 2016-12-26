@@ -133,11 +133,11 @@ namespace DocFileFormat
 		ConversionContext*				m_context;
 		PictureDescriptor*				m_pict;
 
-		XMLTools::XMLElement<wchar_t>	m_fill; 
-		XMLTools::XMLElement<wchar_t>	m_stroke;
-		XMLTools::XMLElement<wchar_t>	m_shadow; 
-		XMLTools::XMLElement<wchar_t>	m_imagedata;
-		XMLTools::XMLElement<wchar_t>	m_3dstyle; 
-		XMLTools::XMLElement<wchar_t>	m_textpath;
+        XMLTools::XMLElement        m_fill;
+        XMLTools::XMLElement        m_stroke;
+        XMLTools::XMLElement        m_shadow;
+        XMLTools::XMLElement        m_imagedata;
+        XMLTools::XMLElement        m_3dstyle;
+        XMLTools::XMLElement        m_textpath;
 	};
 }

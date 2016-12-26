@@ -44,9 +44,9 @@ namespace DocFileFormat
   class TableRowPropertiesMapping: public PropertiesMapping, public IMapping
   {
     private: 
-      XMLTools::XMLElement<wchar_t>* _trPr;
-      XMLTools::XMLElement<wchar_t>* _tblPrEx;
-      //XMLTools::XMLElement<wchar_t>* _tblBorders;
+      XMLTools::XMLElement* _trPr;
+      XMLTools::XMLElement* _tblPrEx;
+      //XMLTools::XMLElement* _tblBorders;
       //BorderCode brcLeft, brcTop, brcBottom, brcRight, brcHorz, brcVert;
       CharacterPropertyExceptions* _rowEndChpx;
 

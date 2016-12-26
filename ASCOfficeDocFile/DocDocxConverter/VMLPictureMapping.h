@@ -84,7 +84,7 @@ namespace DocFileFormat
 		bool							m_isOlePreview;		
 		bool							m_isInlinePicture;
 
-		XMLTools::XMLElement<wchar_t>*	m_imageData;
+        XMLTools::XMLElement*           m_imageData;
 		
 	};
 }

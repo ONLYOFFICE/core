@@ -52,9 +52,9 @@ public: bool GetByType(CString  sType, std::vector<CString>& aOutArray)
 			{
 				if(oParam.oReader->ReadNodeAttribute(i,"Type") == sType)
 				{
-					CString sResult = oParam.oReader->ReadNodeAttribute(i,"Target");
+                    CString sResult = oParam.oReader->ReadNodeAttribute(i, "Target");
 					sResult = sResult.Replace('/','\\');
-					aOutArray.Append( sResult );
+                    aOutArray += sResult;
 				}
 			}
 			return aOutArray.size() > 0;

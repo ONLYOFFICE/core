@@ -113,7 +113,7 @@ public:
 					oPersist.m_nPsrRef = pAtom->m_arSlides[index]->m_nPsrRef;
 					oPersist.m_nSlideID = pAtom->m_arSlides[index]->m_nSlideID;
 
-					oPersist.m_arTextAttrs.Append(pAtom->m_arTextPlaceHolders[index]);
+                    oPersist.m_arTextAttrs += pAtom->m_arTextPlaceHolders[index];
 
 					pArray->Add(oPersist);
 				}

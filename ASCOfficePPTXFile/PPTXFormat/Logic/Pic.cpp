@@ -565,17 +565,14 @@ namespace PPTX
 			int dH = 0;
 
 			int nShapeId = pWriter->m_lObjectIdVML;
-			CString strId = _T("");
-			strId.Format(_T("_x0000_i%04d"), nShapeId);
-			CString strSpid = _T("");
-			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
-			CString strObjectid = _T("");
-			strObjectid.Format(_T("_152504%04d"), pWriter->m_lObjectIdVML);
+            std::wstring strId      = L"_x0000_i" + std::to_wstring(nShapeId);
+            std::wstring strSpid    = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
+            CString strObjectid     = L"_152504" + std::to_wstring(pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 
-			if(_T("") == pWriter->m_strStyleMain)
+            if(pWriter->m_strStyleMain.empty())
 			{
 				if (spPr.xfrm.is_init())
 				{
@@ -589,11 +586,11 @@ namespace PPTX
 						dH = (*spPr.xfrm->extY);
 				}
 
-				oStylesWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
-				oStylesWriter.WriteAttributeCSS_int(_T("left"), dL);
-				oStylesWriter.WriteAttributeCSS_int(_T("top"), dT);
-				oStylesWriter.WriteAttributeCSS_int(_T("width"), dW);
-				oStylesWriter.WriteAttributeCSS_int(_T("height"), dH);
+                oStylesWriter.WriteAttributeCSS     (_T("position"), _T("absolute"));
+                oStylesWriter.WriteAttributeCSS_int (_T("left"), dL);
+                oStylesWriter.WriteAttributeCSS_int (_T("top"), dT);
+                oStylesWriter.WriteAttributeCSS_int (_T("width"), dW);
+                oStylesWriter.WriteAttributeCSS_int (_T("height"), dH);
 			}
 
 			if (spPr.xfrm.is_init())
@@ -621,8 +618,8 @@ namespace PPTX
 
 			if (spPr.Geometry.is_init())
 			{
-				CString strPath = _T("");
-				CString strTextRect = _T("");
+                CString strPath;
+                CString strTextRect;
 
 				LONG lW = 43200;
 				LONG lH = 43200;

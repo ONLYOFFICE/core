@@ -792,9 +792,9 @@ public:
 				CString sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
 				CString sStyle;
-				sStyle.Append(_T("<w:pStyle w:val=\""));
-				sStyle.Append(sStyleName);
-				sStyle.Append(_T("\" />"));
+                sStyle += L"<w:pStyle w:val=\"";
+                sStyle += sStyleName;
+                sStyle += L"\" />";
 				pCStringWriter->WriteString(sStyle);				
             }break;
 		case c_oSerProp_pPrType::numPr:
@@ -1678,9 +1678,9 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				pWiterTblPr->TableCellMar.Append(CString(_T("<w:tblCellMar>")));
-				pWiterTblPr->TableCellMar.Append(oTempWriter.GetData());
-				pWiterTblPr->TableCellMar.Append(CString(_T("</w:tblCellMar>")));
+                pWiterTblPr->TableCellMar += L"<w:tblCellMar>";
+                pWiterTblPr->TableCellMar += oTempWriter.GetData();
+                pWiterTblPr->TableCellMar += L"</w:tblCellMar>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::TableBorders == type )
@@ -1691,9 +1691,9 @@ public:
 			{
 				XmlUtils::CStringWriter oTempWriter; 
 				odocBorders.Write(&oTempWriter, false);
-				pWiterTblPr->TableBorders.Append(CString(_T("<w:tblBorders>")));
-				pWiterTblPr->TableBorders.Append(oTempWriter.GetData());
-				pWiterTblPr->TableBorders.Append(CString(_T("</w:tblBorders>")));
+                pWiterTblPr->TableBorders += L"<w:tblBorders>";
+                pWiterTblPr->TableBorders += oTempWriter.GetData();
+                pWiterTblPr->TableBorders += L"</w:tblBorders>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::Shd == type )
@@ -1710,17 +1710,17 @@ public:
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr2, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
@@ -1888,10 +1888,10 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:horzAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:horzAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
+            case 0:sXml += (_T(" w:horzAnchor=\"margin\""));break;
+            case 1:sXml += (_T(" w:horzAnchor=\"page\""));break;
+            case 2:sXml += (_T(" w:horzAnchor=\"text\""));break;
+            default:sXml += (_T(" w:horzAnchor=\"text\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1907,12 +1907,12 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpXSpec=\"center\""));break;
-			case 1:sXml.Append(_T(" w:tblpXSpec=\"inside\""));break;
-			case 2:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
-			case 3:sXml.Append(_T(" w:tblpXSpec=\"outside\""));break;
-			case 4:sXml.Append(_T(" w:tblpXSpec=\"right\""));break;
-			default:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
+            case 0:sXml += (_T(" w:tblpXSpec=\"center\""));break;
+            case 1:sXml += (_T(" w:tblpXSpec=\"inside\""));break;
+            case 2:sXml += (_T(" w:tblpXSpec=\"left\""));break;
+            case 3:sXml += (_T(" w:tblpXSpec=\"outside\""));break;
+            case 4:sXml += (_T(" w:tblpXSpec=\"right\""));break;
+            default:sXml += (_T(" w:tblpXSpec=\"left\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1921,10 +1921,10 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:vertAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:vertAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
+            case 0:sXml += (_T(" w:vertAnchor=\"margin\""));break;
+            case 1:sXml += (_T(" w:vertAnchor=\"page\""));break;
+            case 2:sXml += (_T(" w:vertAnchor=\"text\""));break;
+            default:sXml += (_T(" w:vertAnchor=\"text\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1940,13 +1940,13 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpYSpec=\"bottom\""));break;
-			case 1:sXml.Append(_T(" w:tblpYSpec=\"center\""));break;
-			case 2:sXml.Append(_T(" w:tblpYSpec=\"inline\""));break;
-			case 3:sXml.Append(_T(" w:tblpYSpec=\"inside\""));break;
-			case 4:sXml.Append(_T(" w:tblpYSpec=\"outside\""));break;
-			case 5:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
-			default:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
+            case 0:sXml += (_T(" w:tblpYSpec=\"bottom\""));break;
+            case 1:sXml += (_T(" w:tblpYSpec=\"center\""));break;
+            case 2:sXml += (_T(" w:tblpYSpec=\"inline\""));break;
+            case 3:sXml += (_T(" w:tblpYSpec=\"inside\""));break;
+            case 4:sXml += (_T(" w:tblpYSpec=\"outside\""));break;
+            case 5:sXml += (_T(" w:tblpYSpec=\"top\""));break;
+            default:sXml += (_T(" w:tblpYSpec=\"top\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -3058,36 +3058,36 @@ public:
 			{
 				switch(i)
 				{
-				case 0: sSchemeMapping.Append(_T(" w:accent1"));break;
-				case 1: sSchemeMapping.Append(_T(" w:accent2"));break;
-				case 2: sSchemeMapping.Append(_T(" w:accent3"));break;
-				case 3: sSchemeMapping.Append(_T(" w:accent4"));break;
-				case 4: sSchemeMapping.Append(_T(" w:accent5"));break;
-				case 5: sSchemeMapping.Append(_T(" w:accent6"));break;
-				case 6: sSchemeMapping.Append(_T(" w:bg1"));break;
-				case 7: sSchemeMapping.Append(_T(" w:bg2"));break;
-				case 8: sSchemeMapping.Append(_T(" w:followedHyperlink"));break;
-				case 9: sSchemeMapping.Append(_T(" w:hyperlink"));break;
-				case 10: sSchemeMapping.Append(_T(" w:t1"));break;
-				case 11: sSchemeMapping.Append(_T(" w:t2"));break;
+                case 0: sSchemeMapping += (_T(" w:accent1"));break;
+                case 1: sSchemeMapping += (_T(" w:accent2"));break;
+                case 2: sSchemeMapping += (_T(" w:accent3"));break;
+                case 3: sSchemeMapping += (_T(" w:accent4"));break;
+                case 4: sSchemeMapping += (_T(" w:accent5"));break;
+                case 5: sSchemeMapping += (_T(" w:accent6"));break;
+                case 6: sSchemeMapping += (_T(" w:bg1"));break;
+                case 7: sSchemeMapping += (_T(" w:bg2"));break;
+                case 8: sSchemeMapping += (_T(" w:followedHyperlink"));break;
+                case 9: sSchemeMapping += (_T(" w:hyperlink"));break;
+                case 10: sSchemeMapping += (_T(" w:t1"));break;
+                case 11: sSchemeMapping += (_T(" w:t2"));break;
 				}
 				switch(aSchemeMapping[i])
 				{
-				case 0: sSchemeMapping.Append(_T("=\"accent1\""));break;
-				case 1: sSchemeMapping.Append(_T("=\"accent2\""));break;
-				case 2: sSchemeMapping.Append(_T("=\"accent3\""));break;
-				case 3: sSchemeMapping.Append(_T("=\"accent4\""));break;
-				case 4: sSchemeMapping.Append(_T("=\"accent5\""));break;
-				case 5: sSchemeMapping.Append(_T("=\"accent6\""));break;
-				case 6: sSchemeMapping.Append(_T("=\"dark1\""));break;
-				case 7: sSchemeMapping.Append(_T("=\"dark2\""));break;
-				case 8: sSchemeMapping.Append(_T("=\"followedHyperlink\""));break;
-				case 9: sSchemeMapping.Append(_T("=\"hyperlink\""));break;
-				case 10: sSchemeMapping.Append(_T("=\"light1\""));break;
-				case 11: sSchemeMapping.Append(_T("=\"light2\""));break;
+                case 0: sSchemeMapping += (_T("=\"accent1\""));break;
+                case 1: sSchemeMapping += (_T("=\"accent2\""));break;
+                case 2: sSchemeMapping += (_T("=\"accent3\""));break;
+                case 3: sSchemeMapping += (_T("=\"accent4\""));break;
+                case 4: sSchemeMapping += (_T("=\"accent5\""));break;
+                case 5: sSchemeMapping += (_T("=\"accent6\""));break;
+                case 6: sSchemeMapping += (_T("=\"dark1\""));break;
+                case 7: sSchemeMapping += (_T("=\"dark2\""));break;
+                case 8: sSchemeMapping += (_T("=\"followedHyperlink\""));break;
+                case 9: sSchemeMapping += (_T("=\"hyperlink\""));break;
+                case 10: sSchemeMapping += (_T("=\"light1\""));break;
+                case 11: sSchemeMapping += (_T("=\"light2\""));break;
 				}
 			}
-			sSchemeMapping.Append(_T("/>"));
+            sSchemeMapping += (_T("/>"));
 			m_oSettingWriter.AddSetting(sSchemeMapping);
 			m_oFileWriter.m_pDrawingConverter->LoadClrMap(sSchemeMapping);
 		}
@@ -3436,9 +3436,9 @@ public:
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
 				CString sVal;
-				sVal.Append(_T("<m:mathFont m:val=\""));
-				sVal.Append(sFontName);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:mathFont m:val=\""));
+                sVal += (sFontName);
+                sVal += (_T("\" />"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -4081,9 +4081,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4157,9 +4157,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:begChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:begChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 
 				GetRunStringWriter().WriteString(sVal);
 		}
@@ -4294,9 +4294,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:alnAt=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else if ( c_oSer_OMathBottomNodesValType::Val == type )
@@ -4320,9 +4320,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4341,9 +4341,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4358,9 +4358,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:chr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:chr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4378,9 +4378,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4398,9 +4398,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4546,9 +4546,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:endChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:endChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5566,9 +5566,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5586,9 +5586,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5626,9 +5626,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:sepChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:sepChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else

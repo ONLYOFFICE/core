@@ -77,9 +77,9 @@ namespace DocFileFormat
 
 	private: 
 
-		XMLTools::XMLElement<wchar_t>* _tblPr;
-		XMLTools::XMLElement<wchar_t>* _tblGrid;
-		XMLTools::XMLElement<wchar_t>* _tblBorders;
+        XMLTools::XMLElement* _tblPr;
+        XMLTools::XMLElement* _tblGrid;
+        XMLTools::XMLElement* _tblBorders;
 		
 		StyleSheet* _styles;
 		std::vector<short>* _grid;

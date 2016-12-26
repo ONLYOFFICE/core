@@ -270,8 +270,9 @@ namespace PPTX
 			if (!table.is_init() && !chartRec.is_init() && xml_object_vml.IsEmpty() == false)
 			{
 				CString temp = _T("<v:object>");
-				temp.Append(xml_object_vml);
-				temp.Append(_T("</v:object>"));
+                temp += xml_object_vml;
+                temp += L"</v:object>";
+
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				//oDrawingConverter.SetFontManager(pFontManager);
 

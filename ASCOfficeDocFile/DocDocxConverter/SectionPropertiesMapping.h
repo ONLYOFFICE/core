@@ -158,7 +158,7 @@ namespace DocFileFormat
 		// Creates a new SectionPropertiesMapping which writes the properties to the given writer
 		SectionPropertiesMapping (XMLTools::CStringXmlWriter* writer, ConversionContext* ctx, int nSelectProperties);
 		// Creates a new SectionPropertiesMapping which appends the properties to a given node.
-		SectionPropertiesMapping (XMLTools::XMLElement<wchar_t>* sectPr, ConversionContext* ctx, int nSelectProperties);
+        SectionPropertiesMapping (XMLTools::XMLElement* sectPr, ConversionContext* ctx, int nSelectProperties);
 		virtual ~SectionPropertiesMapping();
 
 		// Converts the given SectionPropertyExceptions
@@ -167,11 +167,11 @@ namespace DocFileFormat
 		const std::wstring	& get_section_type();
 	private:
 		
-		void AppendRef (XMLTools::XMLElement<wchar_t>* pBaseNode, const wchar_t* element, const wchar_t* refType, const wchar_t* refId);
+        void AppendRef (XMLTools::XMLElement* pBaseNode, const wchar_t* element, const wchar_t* refType, const wchar_t* refId);
 
 		bool WriteSectionStory (CharacterRange* pRange, const std::wstring& StoryType, const std::wstring& Story);
 
-		XMLTools::XMLElement<wchar_t>*	m_pXmlNode;
+        XMLTools::XMLElement*           m_pXmlNode;
 		bool							m_bDeleteNode;
 
 		int								m_nColumns;

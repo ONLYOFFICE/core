@@ -455,8 +455,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-			sResult.Format( _T("%f"), m_dValue);
+            CString sResult = std::to_wstring(m_dValue);
 			return sResult;
 		}
 		virtual std::wstring ToString2() const

@@ -2742,8 +2742,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f"), m_dValue );
+                CString sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}
@@ -4449,8 +4448,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-					sResult.Format( _T("%d"), this->m_eValue);
+                CString sResult = std::to_wstring( this->m_eValue);
 
 				return sResult;
 			}
@@ -4557,7 +4555,7 @@ namespace SimpleTypes
 
 				switch ( m_eTypeX )
 				{
-				case vmlvector2dposConstant    : sResult.Format( _T("%f"), m_dX ); break;
+                case vmlvector2dposConstant    : sResult = std::to_wstring( m_dX ); break;
 				case vmlvector2dposFormula     : sResult = _T("@") + m_sIdX; break;
 				case vmlvector2dposAdjValue    : sResult = _T("#") + m_sIdX; break;
 				case vmlvector2dposCenter      : sResult = _T("center"); break;
@@ -4571,8 +4569,7 @@ namespace SimpleTypes
 				{
 				case vmlvector2dposConstant    : 
 					{
-						CString sTemp;
-						sTemp.Format( _T("%f"), m_dY ); 
+                        CString sTemp = std::to_wstring( m_dY );
 						sResult += sTemp;
 						break;
 					}
@@ -4888,8 +4885,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f"), m_dValue );
+                CString sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}

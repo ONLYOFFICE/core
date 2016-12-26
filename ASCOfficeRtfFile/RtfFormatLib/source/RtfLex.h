@@ -281,7 +281,7 @@ private:
 			{
 				token.Type = RtfToken::Control;
 
-				CStringA s; s.Format("%i", c);
+                CStringA s = std::to_string( c);
 
 				token.Key = s.GetBuffer();
 

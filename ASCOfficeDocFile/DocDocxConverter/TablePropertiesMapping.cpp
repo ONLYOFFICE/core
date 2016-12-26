@@ -40,8 +40,8 @@ namespace DocFileFormat
 			_isTableStyleNeeded(isTableStyleNeeded)
 {
 	_styles		= styles;
-	_tblPr		= new XMLTools::XMLElement<wchar_t>( _T( "w:tblPr" ) );
-	_tblBorders = new XMLTools::XMLElement<wchar_t>( _T( "w:tblBorders" ) );
+    _tblPr		= new XMLTools::XMLElement( _T( "w:tblPr" ) );
+    _tblBorders = new XMLTools::XMLElement( _T( "w:tblBorders" ) );
 	_grid		= grid;
 }
 TablePropertiesMapping::~TablePropertiesMapping()
@@ -63,10 +63,10 @@ namespace DocFileFormat
 	{
 		TablePropertyExceptions* tapx = static_cast<TablePropertyExceptions*>( visited );
 
-		XMLTools::XMLElement<wchar_t>	tblCellMar	( _T( "w:tblCellMar" ) );
-		XMLTools::XMLElement<wchar_t>	tblLayout	( _T( "w:tblLayout" ) );
-		XMLTools::XMLElement<wchar_t>	tblpPr		( _T( "w:tblpPr" ) );
-		XMLTools::XMLAttribute<wchar_t> layoutType	( _T( "w:type" ), _T( "fixed" ) );
+        XMLTools::XMLElement	tblCellMar	( _T( "w:tblCellMar" ) );
+        XMLTools::XMLElement	tblLayout	( _T( "w:tblLayout" ) );
+        XMLTools::XMLElement	tblpPr		( _T( "w:tblpPr" ) );
+        XMLTools::XMLAttribute layoutType	( _T( "w:type" ), _T( "fixed" ) );
 		bool bLayoutFixed = true;
 
 		short tblIndent		= 0;
@@ -109,10 +109,10 @@ namespace DocFileFormat
 					unsigned char fts = iter->Arguments[0];
 					short width = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
-					XMLTools::XMLElement<wchar_t> tblW( _T( "w:tblW" ) );
+                    XMLTools::XMLElement tblW( _T( "w:tblW" ) );
 
-					XMLTools::XMLAttribute<wchar_t> w( _T( "w:w" ), FormatUtils::IntToWideString( width ).c_str() );
-					XMLTools::XMLAttribute<wchar_t> type( _T( "w:type" ), FormatUtils::MapValueToWideString( fts, &WidthType[0][0], 4, 5 ).c_str() );
+                    XMLTools::XMLAttribute w( _T( "w:w" ), FormatUtils::IntToWideString( width ).c_str() );
+                    XMLTools::XMLAttribute type( _T( "w:type" ), FormatUtils::MapValueToWideString( fts, &WidthType[0][0], 4, 5 ).c_str() );
 
 					tblW.AppendAttribute( type );
 					tblW.AppendAttribute( w );
@@ -381,12 +381,12 @@ namespace DocFileFormat
 		//indent
 		if ( tblIndent != 0 )
 		{
-			XMLTools::XMLElement<wchar_t> tblInd( _T( "w:tblInd" ) );
+            XMLTools::XMLElement tblInd( _T( "w:tblInd" ) );
 
-			XMLTools::XMLAttribute<wchar_t> tblIndW( _T( "w:w" ),FormatUtils::IntToWideString( tblIndent ).c_str() );
+            XMLTools::XMLAttribute tblIndW( _T( "w:w" ),FormatUtils::IntToWideString( tblIndent ).c_str() );
 			tblInd.AppendAttribute( tblIndW );
 
-			XMLTools::XMLAttribute<wchar_t> tblIndType( _T( "w:type" ), _T( "dxa" ) );
+            XMLTools::XMLAttribute tblIndType( _T( "w:type" ), _T( "dxa" ) );
 			tblInd.AppendAttribute( tblIndType );
 
 			_tblPr->AppendChild( tblInd );
@@ -401,42 +401,42 @@ namespace DocFileFormat
 		//set borders
 		if ( brcTop != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> topBorder( _T( "w:top" ) );
+            XMLTools::XMLElement topBorder( _T( "w:top" ) );
 			appendBorderAttributes( brcTop, &topBorder );
 			addOrSetBorder( _tblBorders, &topBorder );
 		}
 
 		if ( brcLeft != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> leftBorder( _T( "w:left" ) );
+            XMLTools::XMLElement leftBorder( _T( "w:left" ) );
 			appendBorderAttributes( brcLeft, &leftBorder );
 			addOrSetBorder( _tblBorders, &leftBorder );
 		}
 
 		if ( brcBottom != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> bottomBorder( _T( "w:bottom" ) );
+            XMLTools::XMLElement bottomBorder( _T( "w:bottom" ) );
 			appendBorderAttributes( brcBottom, &bottomBorder );
 			addOrSetBorder( _tblBorders, &bottomBorder );
 		}
 
 		if ( brcRight != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> rightBorder( _T( "w:right" ) );
+            XMLTools::XMLElement rightBorder( _T( "w:right" ) );
 			appendBorderAttributes( brcRight, &rightBorder );
 			addOrSetBorder( _tblBorders, &rightBorder );
 		}
 
 		if ( brcHorz != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> insideHBorder( _T( "w:insideH" ) );
+            XMLTools::XMLElement insideHBorder( _T( "w:insideH" ) );
 			appendBorderAttributes( brcHorz, &insideHBorder );
 			addOrSetBorder( _tblBorders, &insideHBorder );
 		}
 
 		if ( brcVert != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> insideVBorder( _T( "w:insideV" ) );
+            XMLTools::XMLElement insideVBorder( _T( "w:insideV" ) );
 			appendBorderAttributes( brcVert, &insideVBorder );
 			addOrSetBorder( _tblBorders, &insideVBorder );
 		}
@@ -478,7 +478,7 @@ namespace DocFileFormat
 		}
 
 		//append the grid
-		_tblGrid = new XMLTools::XMLElement<wchar_t>( _T( "w:tblGrid" ) );
+        _tblGrid = new XMLTools::XMLElement( _T( "w:tblGrid" ) );
 
 		//Если _grid состоит из одних DocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
 		bool bWriteGridCol = false;
@@ -499,8 +499,8 @@ namespace DocFileFormat
 		{
 			for ( unsigned int i = 0; i < _grid->size(); i++ )		
 			{
-				XMLTools::XMLElement<wchar_t> gridCol( _T( "w:gridCol" ) );
-				XMLTools::XMLAttribute<wchar_t> gridColW( _T( "w:w" ), FormatUtils::IntToWideString( _grid->at( i ) ).c_str() );
+                XMLTools::XMLElement gridCol( _T( "w:gridCol" ) );
+                XMLTools::XMLAttribute gridColW( _T( "w:w" ), FormatUtils::IntToWideString( _grid->at( i ) ).c_str() );
 				gridCol.AppendAttribute( gridColW );
 				_tblGrid->AppendChild( gridCol );
 			}

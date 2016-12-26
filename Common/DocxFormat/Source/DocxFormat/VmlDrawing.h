@@ -95,7 +95,7 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
-				CString elementContent;
+                                std::wstring elementContent;
 				bool bReadyElement = false;//собираем все до нахождения собственно элемента
 
 				if ( !oReader.IsEmptyNode() )
@@ -103,12 +103,12 @@ namespace OOX
 					int nStylesDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nStylesDepth ) )//
 					{
-						CString NodeContent = oReader.GetOuterXml();
+                                                std::wstring NodeContent = oReader.GetOuterXml();
 
-						CString strXml = _T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
- xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">");
-								strXml.Append(NodeContent);
-								strXml.Append(_T("</xml>"));
+                                                std::wstring strXml = L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+ xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">";
+                                                            strXml += NodeContent;
+                                                            strXml += L"</xml>";
 								
 						XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml и сами объекты 
 						
@@ -212,7 +212,7 @@ namespace OOX
 							m_arrItems.push_back( pItem );
 
 							OOX::Vml::CVmlCommonElements* common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pItem);
-							CString sSpid;
+                                                        std::wstring sSpid;
 							
 							if (common)
 							{
@@ -230,13 +230,13 @@ namespace OOX
 							}
 							if (bReadyElement)
 							{		
-								if (sSpid.GetLength() > 0)
+                                                                if (!sSpid.empty())
 								{
-									m_mapShapes.insert(std::pair<CString,int>(sSpid, m_arrItems.size()-1));		
+                                                                    m_mapShapes.insert(std::pair<std::wstring,int>(sSpid, m_arrItems.size()-1));
 								
-									m_mapShapesXml.insert(std::pair<CString,CString>(sSpid,elementContent));
+                                                                    m_mapShapesXml.insert(std::pair<std::wstring,std::wstring>(sSpid, elementContent));
 								}
-								elementContent = _T("");
+                                                                elementContent.clear();
 								bReadyElement = false;
 							}
 						}						
@@ -304,10 +304,10 @@ namespace OOX
 			if((NULL != m_mapComments && m_mapComments->size() > 0) || m_aXml.size() > 0)
 			{
 				XmlUtils::CStringWriter sXml;
-				sXml.WriteString(_T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>"));
+                                sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
 				for (size_t i = 0; i < m_aXml.size(); ++i)
 				{
-					sXml.WriteString(m_aXml[i]);
+                                    sXml.WriteString(m_aXml[i]);
 				}
 				long nIndex = m_lObjectIdVML;
 				if(NULL != m_mapComments && m_mapComments->size() > 0)
@@ -315,70 +315,77 @@ namespace OOX
 					for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 					{
 						OOX::Spreadsheet::CCommentItem* comment = it->second;
-						CString sStyle;
+                                                std::wstring sStyle;
 						if(comment->m_dLeftMM.IsInit())
 						{
-							SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dLeftMM.get());
-                            sStyle.AppendFormat(_T("margin-left:%lspt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
+                                                    sStyle += L"margin-left:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dTopMM.IsInit())
 						{
-							SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dTopMM.get());
-                            sStyle.AppendFormat(_T("margin-top:%lspt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
+                                                    sStyle += L"margin-top:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dWidthMM.IsInit())
 						{
-							SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dWidthMM.get());
-                            sStyle.AppendFormat(_T("width:%lspt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
+                                                    sStyle += L"width:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dHeightMM.IsInit())
 						{
-							SimpleTypes::CPoint oPoint;oPoint.FromMm(comment->m_dHeightMM.get());
-                            sStyle.AppendFormat(_T("height:%lspt;"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()));
+                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
+                                                    sStyle += L"height:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
-						CString sClientData;
-						sClientData.Append(_T("<x:ClientData ObjectType=\"Note\">"));
+                                                std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
 
 						if(comment->m_bMove.IsInit() && true == comment->m_bMove.get())
-							sClientData.Append(_T("<x:MoveWithCells/>"));
+                                                    sClientData += L"<x:MoveWithCells/>";
 
 						if(comment->m_bSize.IsInit() && true == comment->m_bSize.get())
-							sClientData.Append(_T("<x:SizeWithCells/>"));
+                                                    sClientData += L"<x:SizeWithCells/>";
 
-						if(comment->m_nLeft.IsInit() && comment->m_nLeftOffset.IsInit() &&
-							comment->m_nTop.IsInit() && comment->m_nTopOffset.IsInit() &&
-							comment->m_nRight.IsInit() && comment->m_nRightOffset.IsInit() && 
-							comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
+                                                if( comment->m_nLeft.IsInit()   && comment->m_nLeftOffset.IsInit()  &&
+                                                    comment->m_nTop.IsInit()    && comment->m_nTopOffset.IsInit()   &&
+                                                    comment->m_nRight.IsInit()  && comment->m_nRightOffset.IsInit() &&
+                                                    comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
 						{
-								sClientData.AppendFormat(_T("<x:Anchor>%d, %d, %d, %d, %d, %d, %d, %d</x:Anchor>"), 
-								comment->m_nLeft.get(), comment->m_nLeftOffset.get(), comment->m_nTop.get(), comment->m_nTopOffset.get(),
-								comment->m_nRight.get(), comment->m_nRightOffset.get(), comment->m_nBottom.get(), comment->m_nBottomOffset.get());
+                                                    sClientData += L"<x:Anchor>";
+                                                    sClientData += std::to_wstring(comment->m_nLeft.get())          + L",";
+                                                    sClientData += std::to_wstring(comment->m_nLeftOffset.get())    + L",";
+                                                    sClientData += std::to_wstring(comment->m_nTop.get())           + L",";
+                                                    sClientData += std::to_wstring(comment->m_nTopOffset.get())     + L",";
+                                                    sClientData += std::to_wstring(comment->m_nRight.get())         + L",";
+                                                    sClientData += std::to_wstring(comment->m_nRightOffset.get())   + L",";
+                                                    sClientData += std::to_wstring(comment->m_nBottom.get())        + L",";
+                                                    sClientData += std::to_wstring(comment->m_nBottomOffset.get())  + L",";
+                                                    sClientData += L"</x:Anchor>";
 						}
-						sClientData.Append(_T("<x:AutoFill>False</x:AutoFill>"));
+                                                sClientData += L"<x:AutoFill>False</x:AutoFill>";
 
 						if(comment->m_nRow.IsInit())
-							sClientData.AppendFormat(_T("<x:Row>%d</x:Row>"), comment->m_nRow.get());
+                                                    sClientData += L"<x:Row>" + std::to_wstring(comment->m_nRow.get()) + L"</x:Row>";
 
 						if(comment->m_nCol.IsInit())
-							sClientData.AppendFormat(_T("<x:Column>%d</x:Column>"), comment->m_nCol.get());
+                                                    sClientData += L"<x:Column>" + std::to_wstring(comment->m_nCol.get()) + L"</x:Column>";
 
-						sClientData.Append(_T("</x:ClientData>"));
+                                                sClientData += L"</x:ClientData>";
 
-						CString sGfxdata;
+                                                std::wstring sGfxdata;
 						if(comment->m_sGfxdata.IsInit())
-							sGfxdata.Format(_T("o:gfxdata=\"%ls\""), comment->m_sGfxdata.get2());
-						CString sShape; 
-						sShape.Format(_T("<v:shape id=\"_x0000_s%04d\" type=\"#_x0000_t202\" style='position:absolute;"), nIndex++);
-						sShape.Append(sStyle);
-						sShape.Append(_T("z-index:4;visibility:hidden' "));
-						sShape.Append(sGfxdata);
-						sShape.AppendFormat(_T(" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>"));
-						sShape.Append(sClientData);
-						sShape.Append(_T("</v:shape>"));
+                                                    sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
+
+                                                std::wstring sShape;
+                                                sShape += L"<v:shape id=\"_x0000_s" + std::to_wstring(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
+                                                sShape += sStyle;
+                                                sShape += L"z-index:4;visibility:hidden' ";
+                                                sShape += sGfxdata;
+                                                sShape += L" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>";
+                                                sShape += sClientData;
+                                                sShape += L"</v:shape>";
 						sXml.WriteString(sShape);
 					}
 				}
-				sXml.WriteString(_T("</xml>"));
+                                sXml.WriteString(L"</xml>");
 
 				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.AddDefault( oPath.GetFilename() );
@@ -388,7 +395,7 @@ namespace OOX
 		virtual const OOX::FileType type() const
 		{
 			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::VmlDrawing;
-			else				return OOX::FileTypes::VmlDrawing;
+                        else			return OOX::FileTypes::VmlDrawing;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -413,11 +420,11 @@ namespace OOX
 	public:
 		CPath m_oReadPath;
 
-		std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*		m_mapComments;
-		std::map<CString, int>									m_mapShapes; //связь id (_x0000_s1025) с номером объекта  для комментов
-		std::map<CString,CString>								m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
-		std::vector<CString>									m_aXml;
-		long													m_lObjectIdVML;
+                std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
+                std::map<std::wstring, int>                                 m_mapShapes;    //связь id (_x0000_s1025) с номером объекта  для комментов
+                std::map<std::wstring,std::wstring>                         m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
+                std::vector<std::wstring>                                   m_aXml;
+                long                                                        m_lObjectIdVML;
 	};
 } // namespace OOX
 

@@ -198,7 +198,7 @@ namespace MathEquation
 					//	nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
 
 					CString sFontName;
-                    //sFontName.Format(_T("%lS"), pFont->sName.c_str());
+
 					sFontName.Insert(0, _T("Cambria Math"));
 					if (sFontName)
 					{

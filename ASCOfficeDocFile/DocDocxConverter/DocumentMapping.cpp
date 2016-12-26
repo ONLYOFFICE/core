@@ -491,7 +491,7 @@ namespace DocFileFormat
 
                 text.clear();
 
-				XMLTools::XMLElement<wchar_t> elem(_T("w:tab"));
+                XMLTools::XMLElement elem(_T("w:tab"));
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
 			}
@@ -501,7 +501,7 @@ namespace DocFileFormat
 
                 text.clear();
 
-                XMLTools::XMLElement<wchar_t> elem(_T("w:br"));
+                XMLTools::XMLElement elem(_T("w:br"));
 				elem.AppendAttribute(_T("w:type"), _T("textWrapping"));
 				elem.AppendAttribute(_T("w:clear"), _T("all"));
 
@@ -520,7 +520,7 @@ namespace DocFileFormat
 
                     text.clear();
 
-					XMLTools::XMLElement<wchar_t> elem(_T("w:br"));
+                    XMLTools::XMLElement elem(_T("w:br"));
 					elem.AppendAttribute(_T("w:type"), _T("page"));
 
 					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
@@ -532,7 +532,7 @@ namespace DocFileFormat
 
                 text.clear();
 
-				XMLTools::XMLElement<wchar_t> elem(_T("w:br"));
+                XMLTools::XMLElement elem(_T("w:br"));
 				elem.AppendAttribute(_T("w:type"), _T("column"));
 
 				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
@@ -777,7 +777,7 @@ namespace DocFileFormat
 			{
 				if (_fldCharCounter > 0)
 				{
-					XMLTools::XMLElement<wchar_t> elem( _T( "w:fldChar" ) );
+                    XMLTools::XMLElement elem( _T( "w:fldChar" ) );
 					elem.AppendAttribute( _T( "w:fldCharType" ), _T( "separate" ) );
 
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
@@ -788,7 +788,7 @@ namespace DocFileFormat
 			{
 				if (_fldCharCounter > 0)
 				{
-					XMLTools::XMLElement<wchar_t> elem( _T( "w:fldChar" ) );
+                    XMLTools::XMLElement elem( _T( "w:fldChar" ) );
 					elem.AppendAttribute( _T( "w:fldCharType" ), _T( "end" ) );
 
 					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
@@ -1570,7 +1570,7 @@ namespace DocFileFormat
 
 		if ((bookmarkName != NULL) && (*bookmarkName != _T("_PictureBullets")))
 		{
-			XMLTools::XMLElement<wchar_t> bookmarkElem(_T("w:bookmarkStart"));
+            XMLTools::XMLElement bookmarkElem(_T("w:bookmarkStart"));
 
 			bookmarkElem.AppendAttribute(_T("w:id"), FormatUtils::IntToWideString(id).c_str());
 			bookmarkElem.AppendAttribute(_T("w:name"), bookmarkName->c_str());
@@ -1591,7 +1591,7 @@ namespace DocFileFormat
 
 		if ( ( bookmarkName != NULL ) && ( *bookmarkName != _T( "_PictureBullets" ) ) )
 		{
-			XMLTools::XMLElement<wchar_t> bookmarkElem( _T( "w:bookmarkEnd" ) );
+            XMLTools::XMLElement bookmarkElem( _T( "w:bookmarkEnd" ) );
 
 			bookmarkElem.AppendAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ).c_str() );
 

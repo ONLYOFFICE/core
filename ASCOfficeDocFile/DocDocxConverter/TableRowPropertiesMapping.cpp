@@ -37,9 +37,9 @@ namespace DocFileFormat
 {
 	TableRowPropertiesMapping::TableRowPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, CharacterPropertyExceptions* rowEndChpx) : PropertiesMapping(pWriter), _trPr(NULL), _tblPrEx(NULL), _rowEndChpx(NULL)
 	{
-        _trPr			=	new XMLTools::XMLElement<wchar_t>(L"w:trPr");
-        _tblPrEx		=	new XMLTools::XMLElement<wchar_t>(L"w:tblPrEx");
-        //_tblBorders	=	new XMLTools::XMLElement<wchar_t>(L"w:tblBorders");
+        _trPr			=	new XMLTools::XMLElement(L"w:trPr");
+        _tblPrEx		=	new XMLTools::XMLElement(L"w:tblPrEx");
+        //_tblBorders	=	new XMLTools::XMLElement(L"w:tblBorders");
 		_rowEndChpx		=	rowEndChpx;
 	}
 
@@ -58,7 +58,7 @@ namespace DocFileFormat
 
 		if ( ( _rowEndChpx != NULL ) && ( rev.Type == Deleted ) )
 		{
-            XMLTools::XMLElement<wchar_t> del( L"w:del" );
+            XMLTools::XMLElement del( L"w:del" );
 			_trPr->AppendChild( del );
 		}
 
@@ -81,7 +81,7 @@ namespace DocFileFormat
 
 					if ( fHeader )
 					{
-                        XMLTools::XMLElement<wchar_t> header( L"w:tblHeader" );
+                        XMLTools::XMLElement header( L"w:tblHeader" );
 						_trPr->AppendChild( header );
 					}
 				}
@@ -89,11 +89,11 @@ namespace DocFileFormat
 
 				case sprmTWidthAfter:
 				{						//width after
-                    XMLTools::XMLElement<wchar_t> wAfter( L"w:wAfter" );
-                    XMLTools::XMLAttribute<wchar_t> wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ).c_str() );
+                    XMLTools::XMLElement wAfter( L"w:wAfter" );
+                    XMLTools::XMLAttribute wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ).c_str() );
 					wAfter.AppendAttribute( wAfterValue );
 
-                    XMLTools::XMLAttribute<wchar_t> wAfterType( L"w:type", L"dxa" );
+                    XMLTools::XMLAttribute wAfterType( L"w:type", L"dxa" );
 					wAfter.AppendAttribute( wAfterType );
 					_trPr->AppendChild( wAfter, true );
 				}
@@ -105,11 +105,11 @@ namespace DocFileFormat
 
 					if ( before != 0 )
 					{
-                        XMLTools::XMLElement<wchar_t> wBefore( L"w:wBefore" );
-                        XMLTools::XMLAttribute<wchar_t> wBeforeValue( L"w:w", FormatUtils::IntToWideString( before ).c_str() );
+                        XMLTools::XMLElement wBefore( L"w:wBefore" );
+                        XMLTools::XMLAttribute wBeforeValue( L"w:w", FormatUtils::IntToWideString( before ).c_str() );
 						wBefore.AppendAttribute( wBeforeValue );
 
-                        XMLTools::XMLAttribute<wchar_t> wBeforeType( L"w:type", L"dxa" );
+                        XMLTools::XMLAttribute wBeforeType( L"w:type", L"dxa" );
 						wBefore.AppendAttribute( wBeforeType );
 						_trPr->AppendChild( wBefore, true );
 					}
@@ -119,9 +119,9 @@ namespace DocFileFormat
 				case sprmOldTDyaRowHeight:
 				case sprmTDyaRowHeight:
 				{						//row height
-                    XMLTools::XMLElement<wchar_t> rowHeight( L"w:trHeight" );
-                    XMLTools::XMLAttribute<wchar_t> rowHeightVal( L"w:val" );
-                    XMLTools::XMLAttribute<wchar_t> rowHeightRule( L"w:hRule" );
+                    XMLTools::XMLElement rowHeight( L"w:trHeight" );
+                    XMLTools::XMLAttribute rowHeightVal( L"w:val" );
+                    XMLTools::XMLAttribute rowHeightRule( L"w:hRule" );
 
 					short rH = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 

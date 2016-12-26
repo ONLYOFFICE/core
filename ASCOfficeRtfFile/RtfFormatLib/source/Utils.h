@@ -141,17 +141,13 @@ namespace Strings
 	
 	static CString FromInteger(int Value, int Base = 10)
 	{
-		CString str;
-		
-		str.Format(L"%d", Value);
+        CString str = std::to_wstring(Value);
 
 		return str;
 	}
 	static CString FromDouble(double Value)
 	{
-		CString str;
-		
-		str.Format(L"%lf", Value);
+        CString str = std::to_wstring(Value);
 
 		return str;
 	}
@@ -170,8 +166,7 @@ class Convert
 public:	
 	static  CString ToString(int i)
 	{
-		CString result;
-		result.Format( L"%i", i);
+        CString result = std::to_wstring( i);
 		return result;
 	}
 	static  CString ToStringHex( int i, int nLen )

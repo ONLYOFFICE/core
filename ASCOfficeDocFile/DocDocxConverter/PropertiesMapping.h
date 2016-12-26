@@ -51,23 +51,23 @@ namespace DocFileFormat
 
 	protected:
 		static void init();
-		void appendFlagAttribute( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* attributeName );
-		virtual void appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, const wchar_t* attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, int attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, short attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned short attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned char attributeValue );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, short elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned short elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned char elementValue, bool unique );
-		void appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement<wchar_t>* border );
-		void appendShading( XMLTools::XMLElement<wchar_t>* parent, const ShadingDescriptor& desc );
+        void appendFlagAttribute( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* attributeName );
+        virtual void appendFlagElement( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
+        void appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, const wchar_t* attributeValue );
+        void appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, int attributeValue );
+        void appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, short attributeValue );
+        void appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, unsigned short attributeValue );
+        void appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, unsigned char attributeValue );
+        void appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
+        void appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, short elementValue, bool unique );
+        void appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, unsigned short elementValue, bool unique );
+        void appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, unsigned char elementValue, bool unique );
+        void appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement* border );
+        void appendShading( XMLTools::XMLElement* parent, const ShadingDescriptor& desc );
 		std::wstring getBorderType( unsigned char type );
 		std::wstring getShadingPattern( const ShadingDescriptor& shd );
-		void appendDxaElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
-		void addOrSetBorder( XMLTools::XMLElement<wchar_t>* pBdr, const XMLTools::XMLElement<wchar_t>* border );
+        void appendDxaElement( XMLTools::XMLElement* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
+        void addOrSetBorder( XMLTools::XMLElement* pBdr, const XMLTools::XMLElement* border );
 
 	protected:
 

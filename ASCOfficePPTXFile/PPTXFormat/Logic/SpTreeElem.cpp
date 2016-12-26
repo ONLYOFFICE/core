@@ -54,7 +54,8 @@ namespace PPTX
 			return sC;
 		}
 
-		void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
+        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
+                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -173,14 +174,14 @@ namespace PPTX
 			BYTE alpha = (BYTE)((ARGB >> 24) & 0xFF);
 			if (alpha < 255)
 			{
-				CString strA = _T("");
-				strA.Format(_T("%d"), alpha);
+                CString strA =  = std::to_string( alpha);
 				strAttr += _T(" opacity=\"") + strA + _T("\"");
 			}
 			*/
 		}
 
-		void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
+        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
+                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();

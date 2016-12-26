@@ -691,11 +691,11 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Page Information
 	CString sPageSize;
 	if( PROP_DEF != m_nPageWidth )
-		sPageSize.AppendFormat(L" w:w=\"%d\"",m_nPageWidth);
+        sPageSize += L" w:w=\"" + std::to_wstring(m_nPageWidth) + L"\"";
 	if( PROP_DEF != m_nPageHeight )
-		sPageSize.AppendFormat(L" w:h=\"%d\"",m_nPageHeight);
+        sPageSize += L" w:h=\"" + std::to_wstring(m_nPageHeight) + L"\"";
 	if( 1 == m_bLandscapeFormat )
-		sPageSize.Append(L" w:orient=\"landscape\"");
+        sPageSize += L" w:orient=\"landscape\"";
 	if( false == sPageSize.IsEmpty() )
         sResult += L"<w:pgSz " + sPageSize + L"/>";
 

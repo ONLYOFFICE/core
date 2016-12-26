@@ -231,7 +231,7 @@ namespace BinXlsxRW{
                 m_pExternalDrawingConverter->SaveDstContentRels(pathRelsFile.GetPath());
 
 				CString sContentType(sContentTypePath);
-				sContentType.Append(strFilename);
+                sContentType += strFilename;
 
                 std::wstring sContent = L"<Override PartName=\"" + sContentType + L"\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>";
                 sContent += oSaveParams.sAdditionalContentTypes;

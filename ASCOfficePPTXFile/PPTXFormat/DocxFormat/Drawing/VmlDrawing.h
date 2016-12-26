@@ -169,8 +169,8 @@ namespace PPTX
 
 						CString strXml = _T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
  xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">");
-								strXml.Append(NodeContent);
-								strXml.Append(_T("</xml>"));
+                                strXml += NodeContent;
+                                strXml += L"</xml>";
 								
 						XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml //и сами объекты 
 						

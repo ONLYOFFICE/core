@@ -212,9 +212,7 @@ namespace XmlUtils
 		}
 		void WriteDouble(double Value)
 		{
-			CString str;
-			
-			str.Format(_T("%lf"), Value);
+            CString str = std::to_wstring(Value);
 
 			m_str += str;
 		}
@@ -1292,19 +1290,19 @@ namespace XmlUtils
 				sVal = _T("");
 				break;
 			case VT_I2:
-				sVal.Format(_T("%d"), val.iVal);
+                sVal = std::to_wstring( val.iVal);
 				break;
 			case VT_I4:
-				sVal.Format(_T("%d"), val.lVal);
+                sVal = std::to_wstring(val.lVal);
 				break;
 			case VT_R4:
-				sVal.Format(_T("%f"), val.fltVal);
+                sVal = std::to_wstring(val.fltVal);
 				break;
 			case VT_R8:
-				sVal.Format(_T("%f"), val.dblVal);
+                sVal = std::to_wstring(val.dblVal);
 				break;
 			case VT_DATE:
-				sVal.Format(_T("%f"), val.date);
+                sVal = std::to_wstring(val.date);
 				break;
 			case VT_BSTR:
 				sVal = val.bstrVal;
@@ -1320,28 +1318,28 @@ namespace XmlUtils
 				//можно сохранять пытаясь получить IDispatch интерфейс, но вроде нам он не надо
 				break;
 			case VT_I1:
-				sVal.Format(_T("%d"), val.cVal);
+                sVal = std::to_wstring(val.cVal);
 				break;
 			case VT_UI1:
-				sVal.Format(_T("%d"), val.bVal);
+                sVal = std::to_wstring(val.bVal);
 				break;
 			case VT_UI2:
-				sVal.Format(_T("%d"), val.uiVal);
+                sVal = std::to_wstring(val.uiVal);
 				break;
 			case VT_UI4:
-				sVal.Format(_T("%d"), val.ulVal);
+                sVal = std::to_wstring(val.ulVal);
 				break;
 			case VT_I8:
-				sVal.Format(_T("%d"), val.llVal);
+                sVal = std::to_wstring(val.llVal);
 				break;
 			case VT_UI8:
-				sVal.Format(_T("%d"), val.ullVal);
+                sVal = std::to_wstring(val.ullVal);
 				break;
 			case VT_INT:
-				sVal.Format(_T("%d"), val.intVal);
+                sVal = std::to_wstring(val.intVal);
 				break;
 			case VT_UINT:
-				sVal.Format(_T("%d"), val.uintVal);
+                sVal = std::to_wstring(val.uintVal);
 				break;
 			case VT_DECIMAL:
 			case VT_CY:

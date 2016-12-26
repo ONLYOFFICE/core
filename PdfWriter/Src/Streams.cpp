@@ -856,9 +856,11 @@ namespace PdfWriter
 	}
 	void         CImageFileStream::Read(BYTE *pBuffer, unsigned int* punSize)
 	{
-        *punSize = 0;
-		if (!OpenFile())
-			return;
+        if (!OpenFile())
+        {
+            *punSize = 0;
+            return;
+        }
 		DWORD dwBytesToRead = *punSize;
 		DWORD dwSizeRead = 0;
 		m_oFile.ReadFile(pBuffer, dwBytesToRead, dwSizeRead);

@@ -61,9 +61,43 @@ const bool DVAL::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.repeated<Dv>(0, 65534);
+	m_DVal = elements_.back();			elements_.pop_back();
+	
+	int count = proc.repeated<Dv>(0, 65534);
+	
+	while (count > 0)
+	{
+		m_arDv.insert(m_arDv.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
 	return true;
+}
+
+int DVAL::serialize(std::wostream & stream)
+{
+	if (!m_DVal)		return 0;
+	if (m_arDv.empty()) return 0;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"dataValidations")
+		{
+			CP_XML_ATTR(L"count", m_arDv.size());
+			
+			DVal * dval	= dynamic_cast<DVal*>(m_DVal.get());
+
+			for (int i = 0 ; i < m_arDv.size(); i++)
+			{
+				if (!m_arDv[i]) continue;
+				
+				m_arDv[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+
+	return 0;
 }
 
 } // namespace XLS

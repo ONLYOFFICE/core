@@ -40,7 +40,8 @@ namespace XLS
 
 Pos::Pos()
 {
-	m_iLinkObject = -1;
+	m_iLinkObject	= -1;
+	m_iLayoutTarget	= 0; //not set, 1 - outer, 2 -inner
 }
 
 
@@ -98,6 +99,10 @@ int Pos::serialize(std::wostream & _stream)
 			{
 				CP_XML_NODE(L"c:manualLayout")
 				{
+					if (m_iLayoutTarget > 0)
+					{
+						CP_XML_NODE(L"c:layoutTarget"){CP_XML_ATTR(L"val", m_iLayoutTarget == 1 ? L"outer" : L"inner");}
+					}
 					//if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
 					//if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
 					if (m_iLinkObject == 3) y += 0		+ (h > 0 ? h : 0);

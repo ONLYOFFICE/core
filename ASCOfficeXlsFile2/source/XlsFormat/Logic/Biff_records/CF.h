@@ -69,6 +69,8 @@ public:
 	CFParsedFormulaNoCCE rgce2;
 
 	BaseObjectPtr	m_CFEx;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 typedef boost::shared_ptr<CF> CFPtr;

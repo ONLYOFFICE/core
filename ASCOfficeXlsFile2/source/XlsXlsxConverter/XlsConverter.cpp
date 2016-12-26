@@ -428,6 +428,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		sheet->m_CONDFMTS->serialize(xlsx_context->current_sheet().conditionalFormatting());
 	}
 
+	if (sheet->m_DVAL)
+	{
+		sheet->m_DVAL->serialize(xlsx_context->current_sheet().dataValidations());
+	}
+
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
 
 	if (sheet->m_arNote.size() > 0 && xls_global_info->Version < 0x0600)

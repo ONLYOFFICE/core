@@ -32,8 +32,33 @@
 
 #include "Dv.h"
 
+#include <utils.h>
+#include <boost/algorithm/string.hpp>
+
 namespace XLS
 {
+static std::wstring replace_zero (const std::wstring &str, const std::wstring &delimetr)
+{
+	if (str.empty()) return L"";
+
+	std::wstring out;
+	int pos = 0;
+	while(true)
+	{
+		if (pos >= str.size()) break;
+
+		if (str[pos] == '\0')
+		{
+			out += delimetr;
+		}
+		else
+		{
+			out += str[pos];
+		}
+		pos++;
+	}
+	return out;
+}
 
 BaseObjectPtr Dv::clone()
 {
@@ -45,22 +70,51 @@ void Dv::readFields(CFRecord& record)
 	_UINT32 flags;
 	record >> flags;
 
-	valType = static_cast<unsigned char>(GETBITS(flags, 0, 3));
-	errStyle = static_cast<unsigned char>(GETBITS(flags, 4, 6));
+	valType		= static_cast<unsigned char>(GETBITS(flags, 0, 3));
+	errStyle	= static_cast<unsigned char>(GETBITS(flags, 4, 6));
 	
-	fStrLookup	= GETBIT(flags, 7);
-	fAllowBlank = GETBIT(flags, 8);
-	fSuppressCombo = GETBIT(flags, 9);
-	mdImeMode = static_cast<unsigned char>(GETBITS(flags, 10, 17));
-	fShowInputMsg = GETBIT(flags, 18);
-	fShowErrorMsg = GETBIT(flags, 19);
-	typOperator = static_cast<unsigned char>(GETBITS(flags, 20, 23));
+	fStrLookup		= GETBIT(flags, 7);
+	fAllowBlank		= GETBIT(flags, 8);
+	fSuppressCombo	= GETBIT(flags, 9);
+	mdImeMode		= static_cast<unsigned char>(GETBITS(flags, 10, 17));
+	fShowInputMsg	= GETBIT(flags, 18);
+	fShowErrorMsg	= GETBIT(flags, 19);
+	typOperator		= static_cast<unsigned char>(GETBITS(flags, 20, 23));
 
 	record >> PromptTitle >> ErrorTitle >> Prompt >> Error;
+	
 	formula1.load(record);
 	formula2.load(record);
+	
 	record >> sqref;
 }
 
+int Dv::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"dataValidation")
+		{
+			CP_XML_ATTR(L"sqref", sqref.strValue);
+			CP_XML_ATTR(L"type", L"list");
+
+			std::wstring sFormula1 = replace_zero(formula1.getAssembledFormula(), L",");
+			std::wstring sFormula2 = replace_zero(formula2.getAssembledFormula(), L",");
+
+			if (!sFormula1.empty())
+			{
+				//boost::algorithm::replace_all(sFormula1 , "\0", L",");
+				CP_XML_NODE(L"formula1") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula1);}
+			}
+			if (!sFormula2.empty())
+			{
+				//boost::algorithm::replace_all(sFormula2 , "\0", L",");
+				CP_XML_NODE(L"formula2") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula2);}
+			}
+		}
+	}
+
+	return 0;
+}
 } // namespace XLS
 

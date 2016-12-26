@@ -70,6 +70,7 @@ public:
 	BaseObjectPtr					m_CodeName;
 	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_DxGCol;
+	BaseObjectPtr					m_DVAL;
 	
 	std::vector<BaseObjectPtr>		m_arMergeCells;
 	std::vector<BaseObjectPtr>		m_arWINDOW;

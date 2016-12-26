@@ -50,6 +50,11 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeDVAL;
+
+	int serialize(std::wostream & stream);
+
+	BaseObjectPtr				m_DVal;
+	std::vector<BaseObjectPtr>	m_arDv;
 };
 
 } // namespace XLS

@@ -162,7 +162,6 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 	return res;
 }
 
-
 int CONDFMTS::serialize(std::wostream & stream)
 {
 	if (m_arCONDFMT.empty()) return 0;

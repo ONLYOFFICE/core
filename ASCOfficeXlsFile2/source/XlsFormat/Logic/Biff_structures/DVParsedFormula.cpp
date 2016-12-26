@@ -37,8 +37,7 @@ namespace XLS
 {
 
 
-DVParsedFormula::DVParsedFormula()
-:	ParsedFormula(CellRef())
+DVParsedFormula::DVParsedFormula() : ParsedFormula(CellRef())
 {
 }
 

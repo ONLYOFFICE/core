@@ -61,7 +61,7 @@ BaseObjectPtr CF::clone()
 
 void CF::readFields(CFRecord& record)
 {
-	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	global_info_ = record.getGlobalWorkbookInfo();
 
 	unsigned short cce1;
 	unsigned short cce2;
@@ -72,10 +72,11 @@ void CF::readFields(CFRecord& record)
 	rgce1.load(record, cce1);
 	rgce2.load(record, cce2);
 	
-	ipriority_	= ++record.getGlobalWorkbookInfo()->cmt_rules;
-
-	rgbdxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream);
-	dxfId_ = global_info->cellStyleDxfs_count++;
+	ipriority_	= ++global_info_->cmt_rules;
+	
+	rgbdxf.serialize(global_info_->users_Dxfs_stream);
+	
+	dxfId_ = global_info_->cellStyleDxfs_count++;
 }
 
 int CF::serialize(std::wostream & stream)
@@ -84,9 +85,6 @@ int CF::serialize(std::wostream & stream)
 		return 0;
 	
 	CFEx * cfEx = dynamic_cast<CFEx *>(m_CFEx.get());
-	if (cfEx)
-	{
-	}
 
 	CP_XML_WRITER(stream)    
     {
@@ -120,22 +118,31 @@ int CF::serialize(std::wostream & stream)
 
 			if ((cfEx) && (cfEx->content.fHasDXF))
 			{
-				cfEx->content.dxf.serialize(CP_XML_STREAM());
+				//cfEx->content.dxf.serialize(CP_XML_STREAM()); - вложенный формат низя?
+				
+				if (cfEx->dxfId_ >= 0 )
+					dxfId_ = cfEx->dxfId_;
 			}
-			else
-			{
+
+			if (dxfId_ >= 0)
 				CP_XML_ATTR(L"dxfId", dxfId_);	
-			}
 
 			std::wstring s1 = rgce1.getAssembledFormula();
 			std::wstring s2 = rgce2.getAssembledFormula();
 			
-			CP_XML_NODE(L"formula")
+			if (!s1.empty()) 
 			{
-				if (!s1.empty()) 
+				CP_XML_NODE(L"formula")
+				{
 					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s1);
-				else if(!s2.empty()) 
+				}
+			}
+			if(!s2.empty()) 
+			{
+				CP_XML_NODE(L"formula")
+				{
 					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s2);
+				}
 			}
 		}
 	}

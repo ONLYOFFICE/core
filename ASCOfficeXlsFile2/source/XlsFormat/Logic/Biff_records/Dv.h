@@ -47,30 +47,34 @@ class Dv: public BiffRecord
 	BASE_OBJECT_DEFINE_CLASS_NAME(Dv)
 public:
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeDv;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	unsigned char	valType;
 	unsigned char	errStyle;
-	bool fStrLookup;
-	bool fAllowBlank;
-	bool fSuppressCombo;
+	
+	bool			fStrLookup;
+	bool			fAllowBlank;
+	bool			fSuppressCombo;
 	unsigned char	mdImeMode;
-	bool fShowInputMsg;
-	bool fShowErrorMsg;
+	bool			fShowInputMsg;
+	bool			fShowErrorMsg;
 	unsigned char	typOperator;
 
 	XLUnicodeString PromptTitle;
 	XLUnicodeString ErrorTitle;
 	XLUnicodeString Prompt;
 	XLUnicodeString Error;
+	
 	DVParsedFormula formula1;
 	DVParsedFormula formula2;
-	SqRefU sqref;
+	
+	SqRefU			sqref;
 
 };
 

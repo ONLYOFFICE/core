@@ -49,10 +49,9 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	const CellRef getLocationFirstCell() const;
 
-	std::wstring  sqref;
+	std::wstring  strValue;
 };
 
 } // namespace XLS

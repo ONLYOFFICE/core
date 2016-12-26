@@ -53,7 +53,9 @@ BaseObjectPtr DVal::clone()
 void DVal::readFields(CFRecord& record)
 {
 	unsigned short flags;
+	
 	record >> flags >> xLeft >> yTop >> idObj >> idvMac;
+	
 	fWnClosed = GETBIT(flags, 0);
 }
 

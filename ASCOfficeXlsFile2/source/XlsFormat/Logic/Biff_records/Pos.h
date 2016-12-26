@@ -67,6 +67,7 @@ public:
 
 //-----------------------------
 
+	int				m_iLayoutTarget;
 	short			m_iLinkObject;
 	BaseObjectPtr	m_Frame;
 

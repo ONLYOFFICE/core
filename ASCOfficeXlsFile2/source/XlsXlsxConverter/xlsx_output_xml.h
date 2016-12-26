@@ -69,6 +69,7 @@ public:
 	std::wostream & customViews();
 	std::wostream & conditionalFormatting();
 	std::wostream & picture_background();
+	std::wostream & dataValidations();
 	
 	rels & sheet_rels();//hyperlink, background image, external, media ...
 

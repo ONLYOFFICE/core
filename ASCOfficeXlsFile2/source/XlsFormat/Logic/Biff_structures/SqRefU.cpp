@@ -48,21 +48,22 @@ void SqRefU::load(CFRecord& record)
 {
 	unsigned short cref;
 	record >> cref;
-	std::wstring  sqref_str;
+	
 	for (size_t i = 0; i < cref ; ++i)
 	{
 		Ref8U ref8;
 		record >> ref8;
-		sqref_str += std::wstring (ref8.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
+		strValue += std::wstring (ref8.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
 	}
-	sqref = sqref_str;
 }
 
 
 const CellRef SqRefU::getLocationFirstCell() const
 {
 	std::vector<CellRangeRef> refs;
-	AUX::str2refs(sqref, refs);
+	
+	AUX::str2refs(strValue, refs);
+	
 	if(!refs.size())
 	{
 		return CellRef();

@@ -107,7 +107,7 @@ int CONDFMT12::serialize(std::wostream & stream)
 		{
 			CondFmt12 * condFmt	= dynamic_cast<CondFmt12*>(m_CondFmt12.get());
 
-			CP_XML_ATTR(L"sqref", condFmt->mainCF.sqref.sqref);
+			CP_XML_ATTR(L"sqref", condFmt->mainCF.sqref.strValue);
 			//condition_id
 			//condition_pos
 			for (int i = 0; i < m_arCF12.size(); i++)

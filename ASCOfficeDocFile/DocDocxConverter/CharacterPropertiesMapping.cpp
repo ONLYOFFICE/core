@@ -85,7 +85,7 @@ namespace DocFileFormat
 			
 			if (author_str)
 			{
-                XMLTools::XMLAttribute author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
+                XMLTools::XMLAttribute author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str));
 				rPrChange.AppendAttribute( author );
 			}
 
@@ -98,7 +98,7 @@ namespace DocFileFormat
 		//write properties
 		if ( ( m_pXmlWriter != NULL ) && ( ( _rPr->GetChildCount() > 0 ) || ( _rPr->GetAttributeCount() > 0 ) ) )
 		{
-			m_pXmlWriter->WriteString( _rPr->GetXMLString().c_str() );
+			m_pXmlWriter->WriteString( _rPr->GetXMLString());
 		}
 	}
 
@@ -144,7 +144,7 @@ namespace DocFileFormat
 						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 						if (_currentIstd < _doc->Styles->Styles->size())
 						{
-							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ).c_str(), true );
+							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ), true );
 						}
 					}
 				}break;	
@@ -232,7 +232,7 @@ namespace DocFileFormat
 
 			case sprmOldCIss:
 			case sprmCIss:
-				appendValueElement( parent, _T( "vertAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ).c_str(), true );
+				appendValueElement( parent, _T( "vertAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
 				break;	
 
 			case sprmCRgLid0_80:
@@ -292,7 +292,7 @@ namespace DocFileFormat
 			case sprmCIco:
 			case sprmCIcoBi:
 				{//color
-					colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str() );
+					colorVal->SetValue( FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ));
 				}break;
 
 			case sprmCCv:
@@ -305,17 +305,17 @@ namespace DocFileFormat
 
 			case sprmCOldHighlight:
 				{
-					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
+					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ), true );
 				}break;	
 			case sprmCHighlight:
 				{
-					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ).c_str(), true );
+					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ), true );
 				}break;	
 
 			case sprmOldCDxaSpace:
 			case sprmCDxaSpace:
 				{
-					appendValueElement( parent, _T( "spacing" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+					appendValueElement( parent, _T( "spacing" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;
 
 			case sprmCFtcBi :
@@ -332,20 +332,20 @@ namespace DocFileFormat
 			case sprmCHpsBi :
 				{
 					appendValueElement( parent, _T( "szCs" ), 
-						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );						
+						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );						
 				}
 				break;
 // Font Size in points (2~3276) default 20-half-points
 			case sprmOldCHps :
 				{
 					appendValueElement (parent, _T( "sz" ), 
-						FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ).c_str(),
+						FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ),
 						true );
 				}break;
 			case sprmCHps : 
 				{  
 					appendValueElement (parent, _T( "sz" ), 
-						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ).c_str(), true );						
+						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ), true );						
 				}break;
 
 			case sprmCMajority :
@@ -366,7 +366,7 @@ namespace DocFileFormat
 			case sprmOldCHpsKern:
 			case sprmCHpsKern:
 				{
-					appendValueElement( parent, _T( "kern" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+					appendValueElement( parent, _T( "kern" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;
 
 			case sprmOldCFtc:
@@ -379,7 +379,7 @@ namespace DocFileFormat
                         XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sAsciiFont = ffn->xszFtn;
-						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont).c_str() );
+						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont, true));
 						rFonts->AppendAttribute( *ascii );
 						RELEASEOBJECT( ascii );
 					}
@@ -393,7 +393,7 @@ namespace DocFileFormat
                         XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( _T( "w:eastAsia" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sEastAsiaFont = ffn->xszFtn;
-						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont).c_str() );
+						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont));
 						rFonts->AppendAttribute( *eastAsia );
 						RELEASEOBJECT( eastAsia );
 					}
@@ -408,7 +408,7 @@ namespace DocFileFormat
                         XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( _T( "w:hAnsi" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_shAnsiFont = ffn->xszFtn;
-						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont).c_str() );
+						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont));
 						rFonts->AppendAttribute( *ansi );
 						RELEASEOBJECT( ansi );
 					}
@@ -417,18 +417,18 @@ namespace DocFileFormat
 			case sprmOldCKul:
 			case sprmCKul:
 				{	//Underlining
-					appendValueElement( parent, _T( "u" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ).c_str(), true );
+					appendValueElement( parent, _T( "u" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ), true );
 				}
 				break;		
 
 			case sprmCCharScale:
 				{	//char width
-					appendValueElement( parent, _T( "w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+					appendValueElement( parent, _T( "w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;	
 							
 			case sprmCSfxText:
 				{	//animation
-					appendValueElement( parent, _T( "effect" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ).c_str(), true );
+					appendValueElement( parent, _T( "effect" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ), true );
 				}break;	
 
 			case sprmCIdctHint:
@@ -483,7 +483,7 @@ namespace DocFileFormat
 		if (!m_sDefaultFont.empty() && m_sAsciiFont.empty() && m_sEastAsiaFont.empty() && m_shAnsiFont.empty())
 		{//????
             XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
-			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont).c_str() );
+			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont));
 			//rFonts->AppendAttribute( *ascii );
 			RELEASEOBJECT( ascii );
 		}

@@ -70,7 +70,7 @@ namespace DocFileFormat
 				while ( cp <= ( m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr + m_document->FIB->m_RgLw97.ccpAtn + m_document->FIB->m_RgLw97.ccpEdn - 2 ) )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:endnote" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpAtn ) < (*m_document->IndividualEndnotesPlex)[id + 1] )

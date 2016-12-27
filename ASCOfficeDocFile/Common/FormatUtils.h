@@ -125,7 +125,7 @@ namespace DocFormatUtils
 			
 			if(bDeleteNoUnicode)
 			{
-				for(size_t pos = 0; pos != data.size(); ++pos)
+				for(size_t pos = 0; pos < data.size(); ++pos)
 				{
 					switch(data[pos])
 					{
@@ -157,7 +157,7 @@ namespace DocFormatUtils
 			}
 			else
 			{
-				for(size_t pos = 0; pos != data.size(); ++pos)
+				for(size_t pos = 0; pos < data.size(); ++pos)
 				{
 					switch(data[pos])
 					{
@@ -166,6 +166,8 @@ namespace DocFormatUtils
                         case '\'': buffer.append(L"&apos;");     break;
                         case '<':  buffer.append(L"&lt;");       break;
                         case '>':  buffer.append(L"&gt;");       break;
+						case '\0':  
+							return buffer;
 						default:   buffer.append(&data[pos], 1);	break;
 					}
 				}

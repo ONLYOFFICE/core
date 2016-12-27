@@ -71,9 +71,9 @@ namespace DocFileFormat
 				{
 					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ));
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
-					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode.c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode);
 				}
 				else
 				{
@@ -84,16 +84,16 @@ namespace DocFileFormat
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ));
 					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
 
 					copyEmbeddedObject( ole );
 				}
 
-				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program.c_str() );
-				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId.c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program);
+				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId);
 				m_pXmlWriter->WriteAttribute( _T( "DrawAspect" ), _T( "Content" ) );
-				m_pXmlWriter->WriteAttribute( _T( "ObjectID" ), ole->ObjectId.c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "ObjectID" ), ole->ObjectId);
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				m_pXmlWriter->WriteNodeEnd( _T( "o:OLEObject" ) );

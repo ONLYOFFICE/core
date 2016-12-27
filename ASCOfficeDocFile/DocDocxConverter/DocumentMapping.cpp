@@ -346,7 +346,7 @@ namespace DocFileFormat
 				{
 					std::wstring id = FormatUtils::IntToFormattedWideString(FormatUtils::BytesToInt32(iter->Arguments, 0, iter->argumentsSize), _T("%08x"));
 					m_context->AddRsid(id);
-					m_pXmlWriter->WriteAttribute(_T("w:rsidP"), id.c_str());
+					m_pXmlWriter->WriteAttribute(_T("w:rsidP"), id);
 
 					break;
 				}
@@ -380,7 +380,7 @@ namespace DocFileFormat
 				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
 				//if it's a inserted run
 				m_pXmlWriter->WriteNodeBegin(_T("w:ins"), true);
-				m_pXmlWriter->WriteAttribute(_T("w:author"), FormatUtils::XmlEncode(*author).c_str()); 
+				m_pXmlWriter->WriteAttribute(_T("w:author"), FormatUtils::XmlEncode(*author)); 
 				m_pXmlWriter->WriteNodeEnd(_T(""), true, false);
 				//rev.Dttm.Convert(new DateMapping(m_pXmlWriter));
 			}
@@ -392,21 +392,21 @@ namespace DocFileFormat
 			if (0 != rev.Rsid)
 			{
 				std::wstring rsid = FormatUtils::IntToFormattedWideString(rev.Rsid, _T("%08x"));
-				m_pXmlWriter->WriteAttribute(_T("w:rsidR"), rsid.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:rsidR"), rsid);
 				m_context->AddRsid(rsid);
 			}
 
 			if (0 != rev.RsidDel)
 			{
 				std::wstring rsidDel = FormatUtils::IntToFormattedWideString(rev.RsidDel, _T("%08x"));
-				m_pXmlWriter->WriteAttribute(_T("w:rsidDel"), rsidDel.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:rsidDel"), rsidDel);
 				m_context->AddRsid(rsidDel);
 			}
 
 			if (0 != rev.RsidProp)
 			{
 				std::wstring rsidProp = FormatUtils::IntToFormattedWideString(rev.RsidProp, _T("%08x")); 
-				m_pXmlWriter->WriteAttribute(_T("w:rsidRPr"), rsidProp.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:rsidRPr"), rsidProp);
 				m_context->AddRsid(rsidProp);
 			}
 
@@ -447,7 +447,7 @@ namespace DocFileFormat
 
 			if (!_writeAfterRun.empty())
 			{
-				m_pXmlWriter->WriteString(_writeAfterRun.c_str());
+				m_pXmlWriter->WriteString(_writeAfterRun);
 				_writeAfterRun.clear();
 			}
 		}
@@ -493,7 +493,7 @@ namespace DocFileFormat
 
                 XMLTools::XMLElement elem(_T("w:tab"));
 
-				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
+				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
 			else if (TextMark::HardLineBreak == code)
 			{
@@ -505,7 +505,7 @@ namespace DocFileFormat
 				elem.AppendAttribute(_T("w:type"), _T("textWrapping"));
 				elem.AppendAttribute(_T("w:clear"), _T("all"));
 
-				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
+				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
 			else if (TextMark::ParagraphEnd == code)
 			{
@@ -523,7 +523,7 @@ namespace DocFileFormat
                     XMLTools::XMLElement elem(_T("w:br"));
 					elem.AppendAttribute(_T("w:type"), _T("page"));
 
-					m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
+					m_pXmlWriter->WriteString(elem.GetXMLString());
 				}
 			}
 			else if (TextMark::ColumnBreak == code)
@@ -535,7 +535,7 @@ namespace DocFileFormat
                 XMLTools::XMLElement elem(_T("w:br"));
 				elem.AppendAttribute(_T("w:type"), _T("column"));
 
-				m_pXmlWriter->WriteString(elem.GetXMLString().c_str());
+				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
 			else if (TextMark::FieldBeginMark == code)
 			{
@@ -698,8 +698,8 @@ namespace DocFileFormat
 							OleObject ole ( chpxObj, m_document->GetStorage(), m_document->bOlderVersion);
 							
 							oleWriter.WriteNodeBegin (_T( "w:object" ), true);
-								oleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) ).c_str() ); 
-								oleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) ).c_str() ); 
+								oleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dxaGoal + ole.pictureDesciptor.dxaOrigin ) )); 
+								oleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( ole.pictureDesciptor.dyaGoal + ole.pictureDesciptor.dyaOrigin ) )); 
 							oleWriter.WriteNodeEnd( _T( "" ), true, false );
 
 							ole.pictureDesciptor.Convert(&oVmlMapper);
@@ -714,8 +714,8 @@ namespace DocFileFormat
 							PictureDescriptor pic(chpxObj, m_document->DataStream, 0x7fffffff, m_document->bOlderVersion);
 							
 							oleWriter.WriteNodeBegin (_T( "w:object" ), true);
-								oleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ).c_str() ); 
-								oleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ).c_str() ); 
+								oleWriter.WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( ( pic.dxaGoal + pic.dxaOrigin ) ) ); 
+								oleWriter.WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( ( pic.dyaGoal + pic.dyaOrigin ) ) ); 
 							oleWriter.WriteNodeEnd( _T( "" ), true, false );
 							
 							pic.Convert(&oVmlMapper);
@@ -751,7 +751,7 @@ namespace DocFileFormat
 						if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
 						{
 							//нельзя в Run писать oMath
-							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
 							_writeAfterRun = oVmlMapper.m_equationXml;
 						}
 						else
@@ -780,7 +780,7 @@ namespace DocFileFormat
                     XMLTools::XMLElement elem( _T( "w:fldChar" ) );
 					elem.AppendAttribute( _T( "w:fldCharType" ), _T( "separate" ) );
 
-					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString( elem.GetXMLString() );
 				}
 				if (_embeddedObject)	_skipRuns += 2;
 			}
@@ -791,7 +791,7 @@ namespace DocFileFormat
                     XMLTools::XMLElement elem( _T( "w:fldChar" ) );
 					elem.AppendAttribute( _T( "w:fldCharType" ), _T( "end" ) );
 
-					m_pXmlWriter->WriteString( elem.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString( elem.GetXMLString());
 
 					_fldCharCounter--;
 				}
@@ -812,8 +812,8 @@ namespace DocFileFormat
 				Symbol s = getSymbol( chpx );
 
 				m_pXmlWriter->WriteNodeBegin(_T("w:sym"), true);
-				m_pXmlWriter->WriteAttribute(_T("w:font"), FormatUtils::XmlEncode(s.FontName).c_str()); 
-				m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue).c_str()); 
+				m_pXmlWriter->WriteAttribute(_T("w:font"), FormatUtils::XmlEncode(s.FontName)); 
+				m_pXmlWriter->WriteAttribute(_T("w:char"), FormatUtils::XmlEncode(s.HexValue)); 
 				m_pXmlWriter->WriteNodeEnd(_T(""), true);
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
@@ -903,7 +903,7 @@ namespace DocFileFormat
 						else if (oVmlMapper.m_isEquation)
 						{
 							//нельзя в Run писать oMath
-							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml.c_str());
+							//m_pXmlWriter->WriteString(oVmlMapper.m_equationXml);
 							_writeAfterRun = oVmlMapper.m_equationXml;
 							bFormula = true;
 						}
@@ -925,7 +925,7 @@ namespace DocFileFormat
 				if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:footnoteReference" ), true );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_footnoteNr++ ).c_str() ); 
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_footnoteNr++ ) ); 
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
@@ -936,7 +936,7 @@ namespace DocFileFormat
 				else if ((m_document->EndnoteReferenceCharactersPlex != NULL) && (m_document->EndnoteReferenceCharactersPlex->IsCpExists(cp)))
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:endnoteReference" ), true );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_endnoteNr++ ).c_str() ); 
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString(_endnoteNr++ )); 
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else if ((m_document->IndividualEndnotesPlex != NULL) && 
@@ -951,7 +951,7 @@ namespace DocFileFormat
 				if (typeid(*this) != typeid(CommentsMapping))
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:commentReference" ), true );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( _commentNr ).c_str() ); 
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( _commentNr )); 
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
 				}
 				else
@@ -976,7 +976,7 @@ namespace DocFileFormat
 
 			writeTextStart(textType, true/*preserve_space*/);
 
-            m_pXmlWriter->WriteString(text.c_str());
+            m_pXmlWriter->WriteString(text);
 
             writeTextEnd(textType);
 		}
@@ -993,7 +993,7 @@ namespace DocFileFormat
 			
 			writeTextStart( textType, preserve_space );
 
-			m_pXmlWriter->WriteString( text.c_str() );
+			m_pXmlWriter->WriteString( text);
 
 			writeTextEnd( textType );
 		}
@@ -1003,7 +1003,7 @@ namespace DocFileFormat
 	{
 		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
-		m_pXmlWriter->WriteNodeBegin( str.c_str(), true );
+		m_pXmlWriter->WriteNodeBegin( str, true );
         if (preserve_space)
 		{
             m_pXmlWriter->WriteAttribute( _T( "xml:space" ), _T( "preserve" ) );
@@ -1015,7 +1015,7 @@ namespace DocFileFormat
 	{
 		std::wstring str = ( std::wstring( _T( "w:" ) ) + textType );
 
-		m_pXmlWriter->WriteNodeEnd( str.c_str() );
+		m_pXmlWriter->WriteNodeEnd( str );
 	}
 
 	// Searches for bookmarks in the list of characters.
@@ -1572,10 +1572,10 @@ namespace DocFileFormat
 		{
             XMLTools::XMLElement bookmarkElem(_T("w:bookmarkStart"));
 
-			bookmarkElem.AppendAttribute(_T("w:id"), FormatUtils::IntToWideString(id).c_str());
-			bookmarkElem.AppendAttribute(_T("w:name"), bookmarkName->c_str());
+			bookmarkElem.AppendAttribute(_T("w:id"), FormatUtils::IntToWideString(id));
+			bookmarkElem.AppendAttribute(_T("w:name"), *bookmarkName);
 
-			m_pXmlWriter->WriteString(bookmarkElem.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
 
 			return true;
 		}
@@ -1593,9 +1593,9 @@ namespace DocFileFormat
 		{
             XMLTools::XMLElement bookmarkElem( _T( "w:bookmarkEnd" ) );
 
-			bookmarkElem.AppendAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ).c_str() );
+			bookmarkElem.AppendAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ));
 
-			m_pXmlWriter->WriteString( bookmarkElem.GetXMLString().c_str() ); 
+			m_pXmlWriter->WriteString( bookmarkElem.GetXMLString()); 
 
 			return true;
 		}

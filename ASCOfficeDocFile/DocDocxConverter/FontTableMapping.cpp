@@ -59,34 +59,39 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-		int sz_fonts = table->Data.size();
+		int sz_fonts	= table->Data.size();
+		int users_fonts = 0;
 
 		for ( std::vector<ByteStructure*>::iterator iter = table->Data.begin(); iter != table->Data.end(); iter++ )
 		{
 			FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
 
 			m_pXmlWriter->WriteNodeBegin( _T( "w:font" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:name" ), FormatUtils::XmlEncode(font->xszFtn, true).c_str());
+
+			std::wstring name_ = FormatUtils::XmlEncode(font->xszFtn, true);
+			if (name_.empty()) 
+				name_ = L"UserFont_" + std::to_wstring(++users_fonts);
+			m_pXmlWriter->WriteAttribute( _T( "w:name" ), name_);
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 			//alternative name
 			if ( ( font->xszAlt != std::wstring( _T( "" ) ) ) && ( font->xszAlt.length() > 0 ) )
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "w:altName" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt, true).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt, true));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 				m_pXmlWriter->WriteNodeEnd( _T( "w:altName" ) );
 			}
 
 			//charset
 			m_pXmlWriter->WriteNodeBegin( _T("w:charset" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( font->chs, _T( "%02x" ) ).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( font->chs, _T( "%02x" ) ));
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( _T( "w:charset" ) );
 
 			//font family
 			m_pXmlWriter->WriteNodeBegin( _T("w:family"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->ff, &FontFamily[0][0], 6, 11 ).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->ff, &FontFamily[0][0], 6, 11 ));
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( _T( "w:family" ) );
 
@@ -100,13 +105,13 @@ namespace DocFileFormat
 				wstr += FormatUtils::IntToFormattedWideString( font->panose[i], _T( "%02x" ) );
 			}
 
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), wstr.c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), wstr);
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( _T( "w:panose1" ) );
 
 			//pitch
 			m_pXmlWriter->WriteNodeBegin( _T("w:pitch"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->prq, &FontPitch[0][0], 3, 9 ).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->prq, &FontPitch[0][0], 3, 9 ));
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( _T( "w:pitch" ) );
 
@@ -121,12 +126,12 @@ namespace DocFileFormat
 
 			//font signature
 			m_pXmlWriter->WriteNodeBegin( _T("w:sig"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:usb0" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, _T( "%08x" ) ).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "w:usb1" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, _T( "%08x" ) ).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "w:usb2" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, _T( "%08x" ) ).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "w:usb3" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, _T( "%08x" ) ).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "w:csb0" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, _T( "%08x" ) ).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "w:csb1" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, _T( "%08x" ) ).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:usb0" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, _T( "%08x" ) ));
+			m_pXmlWriter->WriteAttribute( _T( "w:usb1" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, _T( "%08x" ) ));
+			m_pXmlWriter->WriteAttribute( _T( "w:usb2" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, _T( "%08x" ) ));
+			m_pXmlWriter->WriteAttribute( _T( "w:usb3" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, _T( "%08x" ) ));
+			m_pXmlWriter->WriteAttribute( _T( "w:csb0" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, _T( "%08x" ) ));
+			m_pXmlWriter->WriteAttribute( _T( "w:csb1" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, _T( "%08x" ) ));
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 			m_pXmlWriter->WriteNodeEnd( _T( "w:sig" ) );
 

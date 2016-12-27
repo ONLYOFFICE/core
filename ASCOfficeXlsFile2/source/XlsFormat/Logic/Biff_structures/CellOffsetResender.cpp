@@ -64,16 +64,6 @@ void CellOffsetResender::resend(CFStream& stream, const unsigned int data_place,
 	stream.appendDelayedItems(CFStream::ReceiverItems(), source_items);
 }
 
-
-void CellOffsetResender::store(CFRecord& record)
-{
-	if(row_starts)
-	{
-		record.registerDelayedDataReceiver(&resend, 0, rt_Blank);
-	}
-}
-
-
 void CellOffsetResender::load(CFRecord& record)
 {
 	// do nothing

@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeXTI;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short iSupBook;
 	short itabFirst;

@@ -43,12 +43,6 @@ BiffStructurePtr FileOffset::clone()
 }
 
 
-void FileOffset::store(CFRecord& record)
-{
-	record << offset;
-}
-
-
 void FileOffset::load(CFRecord& record)
 {
 	record >> offset;

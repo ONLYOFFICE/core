@@ -53,15 +53,6 @@ BiffStructurePtr RevItab::clone()
 	return BiffStructurePtr(new RevItab(*this));
 }
 
-
-void RevItab::store(CFRecord& record)
-{
-#pragma message("####################### RevItab record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RevItab record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RevItab::load(CFRecord& record)
 {
 	record >> type1;

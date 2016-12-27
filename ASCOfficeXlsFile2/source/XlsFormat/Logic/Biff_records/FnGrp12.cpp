@@ -50,15 +50,6 @@ BaseObjectPtr FnGrp12::clone()
 	return BaseObjectPtr(new FnGrp12(*this));
 }
 
-
-void FnGrp12::writeFields(CFRecord& record)
-{
-#pragma message("####################### FnGrp12 record is not implemented")
-	Log::error("FnGrp12 record is not implemented.");
-	//record << some_value;
-}
-
-
 void FnGrp12::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

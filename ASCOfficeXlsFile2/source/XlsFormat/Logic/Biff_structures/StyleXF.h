@@ -49,7 +49,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 

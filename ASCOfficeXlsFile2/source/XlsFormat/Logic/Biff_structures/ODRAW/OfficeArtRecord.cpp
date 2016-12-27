@@ -43,17 +43,6 @@ OfficeArtRecord::OfficeArtRecord(const unsigned char recVer, const unsigned shor
 	rh_own.recType = recType;
 }
 
-void OfficeArtRecord::store(XLS::CFRecord& record)
-{
-	rh_own.recInstance = GetInstanceToStore();
-
-	record << rh_own;
-	size_t data_start_ptr = record.getDataSize();
-	storeFields(record);
-	record.registerDelayedDataSource(record.getDataSize() - data_start_ptr, XLS::rt_MsoDrawing);
-}
-
-
 void OfficeArtRecord::load(XLS::CFRecord& record)
 {
 	m_pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();

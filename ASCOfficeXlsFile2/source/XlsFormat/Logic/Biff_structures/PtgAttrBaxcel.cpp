@@ -42,11 +42,6 @@ BiffStructurePtr PtgAttrBaxcel::clone()
 	return BiffStructurePtr(new PtgAttrBaxcel(*this));
 }
 
-void PtgAttrBaxcel::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(2); // unused
-}
-
 
 void PtgAttrBaxcel::loadFields(CFRecord& record)
 {

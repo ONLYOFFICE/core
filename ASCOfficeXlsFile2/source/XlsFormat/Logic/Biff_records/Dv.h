@@ -38,39 +38,62 @@
 
 namespace XLS
 {
-
-
-// Logical representation of Dv record in BIFF8
+enum _typOperatorDv
+{
+	operatorDvBetween = 0,
+	operatorDvNotBetween,
+	operatorDvEquals,
+	operatorDvNotEquals,
+	operatorDvGreaterThan,
+	operatorDvLessThan,
+	operatorDvGreaterThanOrEqual,
+	operatorDvLessThanOrEqual
+};
+enum _valTypeDv
+{
+	typeDvCustom = 0,
+	typeDvDate,
+	typeDvDecimal,
+	typeDvList,
+	typeDvNone,
+	typeDvTextLength,
+	typeDvTime,
+	typeDvWhole
+};
 class Dv: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Dv)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Dv)
 public:
 	BaseObjectPtr clone();
-
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeDv;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
-	unsigned char	valType;
+	_valTypeDv		valType;
 	unsigned char	errStyle;
-	bool fStrLookup;
-	bool fAllowBlank;
-	bool fSuppressCombo;
+	
+	bool			fStrLookup;
+	bool			fAllowBlank;
+	bool			fSuppressCombo;
 	unsigned char	mdImeMode;
-	bool fShowInputMsg;
-	bool fShowErrorMsg;
-	unsigned char	typOperator;
+	bool			fShowInputMsg;
+	bool			fShowErrorMsg;
+	_typOperatorDv	typOperator;
 
 	XLUnicodeString PromptTitle;
 	XLUnicodeString ErrorTitle;
 	XLUnicodeString Prompt;
 	XLUnicodeString Error;
+	
 	DVParsedFormula formula1;
 	DVParsedFormula formula2;
-	SqRefU sqref;
+	
+	SqRefU			sqref;
 
 };
 

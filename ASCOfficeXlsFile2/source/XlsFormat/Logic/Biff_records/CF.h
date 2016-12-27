@@ -50,7 +50,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCF;
@@ -69,6 +69,8 @@ public:
 	CFParsedFormulaNoCCE rgce2;
 
 	BaseObjectPtr	m_CFEx;
+
+	GlobalWorkbookInfoPtr global_info_;
 };
 
 typedef boost::shared_ptr<CF> CFPtr;

@@ -56,20 +56,6 @@ BiffStructurePtr DXFNum::clone()
 	return BiffStructurePtr(new DXFNum(*this));
 }
 
-
-void DXFNum::store(CFRecord& record)
-{
-	if(is_user_defined_)
-	{
-		record << user_defined;
-	}
-	else
-	{
-		record << fmt_id;
-	}
-}
-
-
 void DXFNum::load(CFRecord& record)
 {
 	if ((is_user_defined_) && (*is_user_defined_))

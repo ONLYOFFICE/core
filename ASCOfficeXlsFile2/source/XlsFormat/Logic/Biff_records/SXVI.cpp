@@ -50,15 +50,6 @@ BaseObjectPtr SXVI::clone()
 	return BaseObjectPtr(new SXVI(*this));
 }
 
-
-void SXVI::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXVI record is not implemented")
-	Log::error("SXVI record is not implemented.");
-	//record << some_value;
-}
-
-
 void SXVI::readFields(CFRecord& record)
 {
 #pragma message("####################### SXVI record is not implemented")

@@ -36,18 +36,18 @@
 
 namespace Writers
 {
-	static CString g_string_ct_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
-	static CString g_string_ct_Ext = _T("<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"emf\" ContentType=\"image/x-emf\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>");
-	static CString g_string_ct_Override = _T("<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>");
-	static CString g_string_ct_End = _T("</Types>");
+    static std::wstring g_string_ct_Start   = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+    static std::wstring g_string_ct_Ext     = L"<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"emf\" ContentType=\"image/x-emf\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>";
+    static std::wstring g_string_ct_Override = L"<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>";
+    static std::wstring g_string_ct_End     = L"</Types>";
 
 	class ContentTypesWriter
 	{
 		XmlUtils::CStringWriter	m_oWriter;
-		CString	m_sDir;
+        std::wstring            m_sDir;
 		XmlUtils::CStringWriter	m_oAdditional;
 	public:
-		ContentTypesWriter(CString sDir):m_sDir(sDir)
+        ContentTypesWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
 		void Write()
@@ -58,7 +58,7 @@ namespace Writers
 			m_oWriter.Write(m_oAdditional);
 			m_oWriter.WriteString(g_string_ct_End);
 
-			OOX::CPath filePath = m_sDir + _T("/[Content_Types].xml");
+            OOX::CPath filePath = m_sDir + L"/[Content_Types].xml";
 
 			CFile oFile;
 			oFile.CreateFile(filePath.GetPath());
@@ -66,12 +66,12 @@ namespace Writers
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}
-		void AddOverride(const CString& PartName, const CString& ContentType)
+        void AddOverride(const std::wstring& PartName, const std::wstring& ContentType)
 		{
-            CString sOverride;sOverride.Format(_T("<Override PartName=\"%ls\" ContentType=\"%ls\"/>"),PartName , ContentType);
+            std::wstring sOverride = L"<Override PartName=\"" + PartName+ L"\ ContentType=\"" + ContentType + L"\"/>";
 			m_oAdditional.WriteString(sOverride);
 		}
-		void AddOverrideRaw(const CString& sXml)
+        void AddOverrideRaw(const std::wstring& sXml)
 		{
 			m_oAdditional.WriteString(sXml);
 		}

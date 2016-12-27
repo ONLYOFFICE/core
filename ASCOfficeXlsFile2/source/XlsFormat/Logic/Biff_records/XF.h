@@ -50,8 +50,7 @@ public:
 	~XF();
 
 	BaseObjectPtr clone();
-
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	int serialize(std::wostream & stream);

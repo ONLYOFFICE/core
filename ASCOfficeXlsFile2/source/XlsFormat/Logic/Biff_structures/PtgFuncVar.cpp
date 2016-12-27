@@ -55,13 +55,6 @@ BiffStructurePtr PtgFuncVar::clone()
 }
 
 
-void PtgFuncVar::storeFields(CFRecord& record)
-{
-	record << cparams;
-	record.storeAnyData(tab);
-}
-
-
 void PtgFuncVar::loadFields(CFRecord& record)
 {
 	record >> cparams;

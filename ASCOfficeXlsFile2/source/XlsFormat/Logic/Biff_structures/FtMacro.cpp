@@ -48,14 +48,6 @@ BiffStructurePtr FtMacro::clone()
 }
 
 
-void FtMacro::store(CFRecord& record)
-{
-	unsigned short ft = 0x0004; // reserved
-	record << ft;
-
-	fmla.store(record);
-}
-
 
 void FtMacro::load(CFRecord& record)
 {

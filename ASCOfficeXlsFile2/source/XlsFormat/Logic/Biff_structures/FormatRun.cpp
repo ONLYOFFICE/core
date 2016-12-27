@@ -42,12 +42,6 @@ BiffStructurePtr FormatRun::clone()
 	return BiffStructurePtr(new FormatRun(*this));
 }
 
-void FormatRun::store(CFRecord& record)
-{
-	record << ich << ifnt;
-}
-
-
 void FormatRun::load(CFRecord& record)
 {
 	record >> ich >> ifnt;

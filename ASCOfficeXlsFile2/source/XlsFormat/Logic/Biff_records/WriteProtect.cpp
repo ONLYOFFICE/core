@@ -52,13 +52,6 @@ BaseObjectPtr WriteProtect::clone()
 	return BaseObjectPtr(new WriteProtect(*this));
 }
 
-
-void WriteProtect::writeFields(CFRecord& record)
-{
-	// No data in this record
-}
-
-
 void WriteProtect::readFields(CFRecord& record)
 {
 	// No data in this record

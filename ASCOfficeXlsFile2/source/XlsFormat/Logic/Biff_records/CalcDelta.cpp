@@ -51,12 +51,6 @@ BaseObjectPtr CalcDelta::clone()
 }
 
 
-void CalcDelta::writeFields(CFRecord& record)
-{
-	record << numDelta;
-}
-
-
 void CalcDelta::readFields(CFRecord& record)
 {
 	record >> numDelta;

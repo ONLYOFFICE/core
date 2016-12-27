@@ -45,14 +45,6 @@ BiffStructurePtr XFPropGradientStop::clone()
 }
 
 
-void XFPropGradientStop::store(CFRecord& record)
-{
-#pragma message("####################### XFPropGradientStop record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFPropGradientStop record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFPropGradientStop::load(CFRecord& record)
 {
 	record.skipNunBytes(2); // unused

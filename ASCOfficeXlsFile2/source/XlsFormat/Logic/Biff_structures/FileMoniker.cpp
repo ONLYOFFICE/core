@@ -53,15 +53,6 @@ XLS::BiffStructurePtr FileMoniker::clone()
 	return XLS::BiffStructurePtr(new FileMoniker(*this));
 }
 
-
-void FileMoniker::store(XLS::CFRecord& record)
-{
-#pragma message("####################### FileMoniker record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FileMoniker record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void FileMoniker::load(XLS::CFRecord& record)
 {
 	_UINT32 ansiLength;

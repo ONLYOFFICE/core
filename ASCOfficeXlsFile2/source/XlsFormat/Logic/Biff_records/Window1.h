@@ -47,8 +47,7 @@ public:
 	~Window1();
 
 	BaseObjectPtr clone();
-
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeWindow1;

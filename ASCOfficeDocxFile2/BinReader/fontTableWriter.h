@@ -57,7 +57,7 @@ namespace Writers
 				if(sFontDir.IsEmpty())
 					m_oApplicationFonts.Initialize();
 				else
-					m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
+					m_oApplicationFonts.InitializeFromFolder(sFontDir);
 				CFontList* pFontList = m_oApplicationFonts.GetList();
 				if(NULL != pFontList)
 				{

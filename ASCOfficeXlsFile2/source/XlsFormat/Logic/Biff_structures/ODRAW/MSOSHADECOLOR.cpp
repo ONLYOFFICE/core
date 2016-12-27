@@ -52,13 +52,6 @@ XLS::BiffStructurePtr MSOSHADECOLOR::clone()
 	return XLS::BiffStructurePtr(new MSOSHADECOLOR(*this));
 }
 
-
-void MSOSHADECOLOR::store(XLS::CFRecord& record)
-{
-	// We don't support xlsx to xls conversion
-}
-
-
 void MSOSHADECOLOR::load(XLS::CFRecord& record)
 {
     int raw_color;

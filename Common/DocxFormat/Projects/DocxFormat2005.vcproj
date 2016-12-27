@@ -1331,6 +1331,10 @@
 		<Filter
 			Name="Utility"
 			>
+			<File
+				RelativePath="..\Source\SystemUtility\File.h"
+				>
+			</File>
 			<Filter
 				Name="FileSys"
 				>
@@ -1907,14 +1911,6 @@
 		<Filter
 			Name="XML"
 			>
-			<File
-				RelativePath="..\Source\XML\stringcommon.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\stringcommon.h"
-				>
-			</File>
 			<File
 				RelativePath="..\Source\XML\StringWriter.h"
 				>

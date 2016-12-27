@@ -43,12 +43,6 @@ BiffStructurePtr PtgAttrIf::clone()
 }
 
 
-void PtgAttrIf::storeFields(CFRecord& record)
-{
-	record << offset;
-}
-
-
 void PtgAttrIf::loadFields(CFRecord& record)
 {
 	record >> offset;

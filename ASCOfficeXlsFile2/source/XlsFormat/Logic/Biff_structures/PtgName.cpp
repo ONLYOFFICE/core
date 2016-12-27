@@ -55,13 +55,6 @@ BiffStructurePtr PtgName::clone()
 	return BiffStructurePtr(new PtgName(*this));
 }
 
-
-void PtgName::storeFields(CFRecord& record)
-{
-	record << nameindex;
-}
-
-
 void PtgName::loadFields(CFRecord& record)
 {
 	record >> nameindex;

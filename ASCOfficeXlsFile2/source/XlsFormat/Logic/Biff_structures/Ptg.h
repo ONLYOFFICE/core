@@ -59,10 +59,8 @@ public:
 	Ptg(const unsigned short ptg_id_init);
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
 
 	virtual void loadFields(CFRecord& record) {};
-	virtual void storeFields(CFRecord& record) {};
 
 	static const ElementType	type = typePtg;
 

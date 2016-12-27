@@ -90,8 +90,8 @@ namespace NSBinPptxRW
 			m_strDstFolder = strFolder;
             OOX::CPath pathPPT = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
 
-            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder));
-            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder), _T("docProps"));
+            FileSystem::Directory::CreateDirectory(m_strDstFolder);
+            FileSystem::Directory::CreateDirectory(m_strDstFolder, _T("docProps"));
             FileSystem::Directory::CreateDirectory(pathPPT.GetPath());
 
 			m_oImageManager.Clear();
@@ -755,7 +755,7 @@ namespace NSBinPptxRW
 
 			// content types
 			CStringWriter oContentTypes;
-			oContentTypes.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+			oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 				<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
 				<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/>\
 				<Default Extension=\"png\" ContentType=\"image/png\" />\
@@ -773,7 +773,7 @@ namespace NSBinPptxRW
 				<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
 				<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
 				<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />"));
+				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
 
 			// themes
 			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)

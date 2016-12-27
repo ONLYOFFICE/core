@@ -53,14 +53,6 @@ BiffStructurePtr FilePointer::clone()
 	return BiffStructurePtr(new FilePointer(*this));
 }
 
-
-
-void FilePointer::store(CFRecord& record)
-{
-	record << offset;
-}
-
-
 void FilePointer::load(CFRecord& record)
 {
 	record >> offset;

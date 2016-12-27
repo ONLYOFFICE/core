@@ -52,7 +52,7 @@ public:
 	static const ElementType	type = typeFrtHeaderOld;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;

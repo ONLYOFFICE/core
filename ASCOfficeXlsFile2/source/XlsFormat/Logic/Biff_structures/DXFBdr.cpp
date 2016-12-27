@@ -42,32 +42,6 @@ BiffStructurePtr DXFBdr::clone()
 	return BiffStructurePtr(new DXFBdr(*this));
 }
 
-void DXFBdr::store(CFRecord& record)
-{
-	_UINT32 flags = 0;
-	
-	SETBITS(flags, 0, 3, dgLeft);
-	SETBITS(flags, 4, 7, dgRight);
-	SETBITS(flags, 8, 11, dgTop);
-	SETBITS(flags, 12, 15, dgBottom);
-	SETBITS(flags, 16, 22, icvLeft);
-	SETBITS(flags, 23, 29, icvRight);
-	SETBIT(flags, 30, bitDiagDown);
-	SETBIT(flags, 31, bitDiagUp);
-
-	record << flags;
-
-	_UINT32 flags2 = 0;
-	
-	SETBITS(flags2, 0, 6, icvTop);
-	SETBITS(flags2, 7, 13, icvBottom);
-	SETBITS(flags2, 14, 20, icvDiag);
-	SETBITS(flags2, 21, 24, dgDiag);
-
-	record << flags2;
-}
-
-
 void DXFBdr::load(CFRecord& record)
 {
 	_UINT32 flags;

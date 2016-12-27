@@ -438,7 +438,7 @@ namespace NSCommon
 		{
 			CString result;
 			//if (IsInit())
-			//	result.Format(_T("%d"), get());
+            //	result = std::to_wstring( get());
 
 			return result;
 		}

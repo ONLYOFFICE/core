@@ -82,15 +82,6 @@ BaseObjectPtr MulBlank::clone()
 	return BaseObjectPtr(new MulBlank(*this));
 }
 
-
-void MulBlank::writeFields(CFRecord& record)
-{
-#pragma message("####################### MulBlank record is not implemented")
-	Log::error("MulBlank record is not implemented.");
-	//record << some_value;
-}
-
-
 void MulBlank::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

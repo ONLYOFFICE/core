@@ -61,13 +61,6 @@ BaseObjectPtr CF12::clone()
 	return BaseObjectPtr(new CF12(*this));
 }
 
-
-void CF12::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CF12::readFields(CFRecord& record)
 {
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();

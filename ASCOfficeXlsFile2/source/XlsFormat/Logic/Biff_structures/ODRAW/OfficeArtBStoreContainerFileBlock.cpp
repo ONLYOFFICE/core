@@ -43,11 +43,6 @@ XLS::BiffStructurePtr OfficeArtBStoreContainerFileBlock::clone()
 	return XLS::BiffStructurePtr(new OfficeArtBStoreContainerFileBlock(*this));
 }
 
-
-void OfficeArtBStoreContainerFileBlock::store(XLS::CFRecord& record)
-{	
-}
-
 void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader & metafileHeader)
 {
 	if (metafileHeader.cbSave > record.getDataSize() - record.getRdPtr())

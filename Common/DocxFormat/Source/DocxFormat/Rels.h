@@ -43,6 +43,10 @@
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
 
+#include "../../../../DesktopEditor/common/File.h"
+
+#include <boost/algorithm/string.hpp>
+
 namespace OOX
 {
 	namespace Rels
@@ -53,7 +57,7 @@ namespace OOX
 			WritingElement_AdditionConstructors(CRelationShip)
 			CRelationShip(const OOX::RId& rId, const CString& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
-				m_oTarget.m_strFilename.Replace(_T(" "), _T("_"));
+				boost::algorithm::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
 			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
 			{
@@ -267,7 +271,7 @@ namespace OOX
 
 				oWriter.WriteNodeEnd(_T("Relationships") );
 
-				CDirectory::SaveToFile( oFile.GetPath(), oWriter.GetXmlString() );
+				NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 			}
 		}
 
@@ -307,7 +311,7 @@ namespace OOX
 		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
 		{
 			(*ppRelationShip) = NULL;
-			for( unsigned int i = 0, length = m_arrRelations.size(); i < length; ++i)
+			for( size_t i = 0, length = m_arrRelations.size(); i < length; ++i)
 			{
 				if ((m_arrRelations[i]) && (m_arrRelations[i]->rId() == rId))
 				{

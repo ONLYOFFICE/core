@@ -53,17 +53,6 @@ BaseObjectPtr HLinkTooltip::clone()
 }
 
 
-void HLinkTooltip::writeFields(CFRecord& record)
-{
-	Ref8U ref8(ref_);
-	FrtRefHeaderNoGrbit frtRefHeaderNoGrbit(rt_HLinkTooltip, ref8);
-	record << frtRefHeaderNoGrbit;
-
-	std::wstring wzTooltip_prep = wzTooltip;//(static_cast<wchar_t*>(static_cast<std::wstring >(wzTooltip)));
-	record << wzTooltip_prep;
-}
-
-
 void HLinkTooltip::readFields(CFRecord& record)
 {
 	FrtRefHeaderNoGrbit frtRefHeaderNoGrbit(rt_HLinkTooltip);

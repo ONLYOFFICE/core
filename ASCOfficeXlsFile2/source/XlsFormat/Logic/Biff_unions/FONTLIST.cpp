@@ -89,6 +89,8 @@ const bool FONTLIST::loadContent(BinProcessor& proc)
 	}
 	proc.mandatory<StartObject>();					elements_.pop_back();
 	proc.repeated<Parenthesis_FONTLIST_1>(0, 0);
+
+	proc.optional<FrtWrapper>();
 	proc.mandatory<EndObject>();					elements_.pop_back();
 
 	return true;

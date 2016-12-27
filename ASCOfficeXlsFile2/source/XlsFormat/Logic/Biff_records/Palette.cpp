@@ -54,15 +54,6 @@ BaseObjectPtr Palette::clone()
 }
 
 
-void Palette::writeFields(CFRecord& record)
-{
-	record << ccv;
-	for(BiffStructurePtrVector::const_iterator it = rgColor.begin(), itEnd = rgColor.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
 const std::wstring standart_color[8] = {
 										L"00000000",
 										L"00FFFFFF",

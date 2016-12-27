@@ -400,7 +400,7 @@ namespace PPTX
 			}
 
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap);
-
+			void fromXMLOle(XmlUtils::CXmlNode& node);
 		public:
 
 			NvPicPr					nvPicPr;

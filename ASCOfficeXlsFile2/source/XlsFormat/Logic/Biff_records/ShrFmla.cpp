@@ -52,15 +52,6 @@ BaseObjectPtr ShrFmla::clone()
 }
 
 
-void ShrFmla::writeFields(CFRecord& record)
-{
-	record << ref_;
-	record.reserveNunBytes(1); // reserved
-	record << cUse;
-	formula.store(record);
-}
-
-
 void ShrFmla::readFields(CFRecord& record)
 {
 	record >> ref_;

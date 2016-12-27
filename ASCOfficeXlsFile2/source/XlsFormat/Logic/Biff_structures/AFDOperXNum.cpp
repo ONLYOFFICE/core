@@ -41,11 +41,6 @@ BiffStructurePtr AFDOperXNum::clone()
 	return BiffStructurePtr(new AFDOperXNum(*this));
 }
 
-void AFDOperXNum::store(CFRecord& record)
-{	
-}
-
-
 void AFDOperXNum::load(CFRecord& record)
 {
 	_UINT32 v1, v2;

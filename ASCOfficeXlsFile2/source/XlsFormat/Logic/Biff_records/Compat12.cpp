@@ -52,14 +52,6 @@ BaseObjectPtr Compat12::clone()
 }
 
 
-void Compat12::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_Compat12);
-	record << frtHeader;
-	record << fNoCompatChk;
-}
-
-
 void Compat12::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_Compat12);

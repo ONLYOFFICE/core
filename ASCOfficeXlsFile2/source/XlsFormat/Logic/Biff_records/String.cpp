@@ -51,12 +51,6 @@ BaseObjectPtr String::clone()
 }
 
 
-void String::writeFields(CFRecord& record)
-{
-	record << string;
-}
-
-
 void String::readFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)

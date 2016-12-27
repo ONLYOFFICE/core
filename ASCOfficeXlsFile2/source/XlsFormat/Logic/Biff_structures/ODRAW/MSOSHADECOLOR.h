@@ -56,7 +56,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeMSOSHADECOLOR;
 	
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
 
 	unsigned short		cbElement;
 	

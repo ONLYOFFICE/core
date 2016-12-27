@@ -54,16 +54,6 @@ BiffStructurePtr RevLblName::clone()
 	return BiffStructurePtr(new RevLblName(*this));
 }
 
-
-
-void RevLblName::store(CFRecord& record)
-{
-#pragma message("####################### RevLblName record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RevLblName record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RevLblName::load(CFRecord& record)
 {
 	XLUnicodeString st_raw;

@@ -43,13 +43,6 @@ BiffStructurePtr PtgElfRwV::clone()
 	return BiffStructurePtr(new PtgElfRwV(*this));
 }
 
-
-void PtgElfRwV::storeFields(CFRecord& record)
-{
-	record << loc;
-}
-
-
 void PtgElfRwV::loadFields(CFRecord& record)
 {
 	record >> loc;

@@ -33,13 +33,14 @@
 #define READERS
 
 #include "FileWriter.h"
-#include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
+
+#include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
-#include "../../DesktopEditor/common/ASCVariant.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 namespace BinDocxRW {
 
@@ -791,9 +792,9 @@ public:
 				CString sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
 				CString sStyle;
-				sStyle.Append(_T("<w:pStyle w:val=\""));
-				sStyle.Append(sStyleName);
-				sStyle.Append(_T("\" />"));
+                sStyle += L"<w:pStyle w:val=\"";
+                sStyle += sStyleName;
+                sStyle += L"\" />";
 				pCStringWriter->WriteString(sStyle);				
             }break;
 		case c_oSerProp_pPrType::numPr:
@@ -1677,9 +1678,9 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				pWiterTblPr->TableCellMar.Append(CString(_T("<w:tblCellMar>")));
-				pWiterTblPr->TableCellMar.Append(oTempWriter.GetData());
-				pWiterTblPr->TableCellMar.Append(CString(_T("</w:tblCellMar>")));
+                pWiterTblPr->TableCellMar += L"<w:tblCellMar>";
+                pWiterTblPr->TableCellMar += oTempWriter.GetData();
+                pWiterTblPr->TableCellMar += L"</w:tblCellMar>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::TableBorders == type )
@@ -1690,9 +1691,9 @@ public:
 			{
 				XmlUtils::CStringWriter oTempWriter; 
 				odocBorders.Write(&oTempWriter, false);
-				pWiterTblPr->TableBorders.Append(CString(_T("<w:tblBorders>")));
-				pWiterTblPr->TableBorders.Append(oTempWriter.GetData());
-				pWiterTblPr->TableBorders.Append(CString(_T("</w:tblBorders>")));
+                pWiterTblPr->TableBorders += L"<w:tblBorders>";
+                pWiterTblPr->TableBorders += oTempWriter.GetData();
+                pWiterTblPr->TableBorders += L"</w:tblBorders>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::Shd == type )
@@ -1709,17 +1710,17 @@ public:
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr2, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
@@ -1887,10 +1888,10 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:horzAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:horzAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
+            case 0:sXml += (_T(" w:horzAnchor=\"margin\""));break;
+            case 1:sXml += (_T(" w:horzAnchor=\"page\""));break;
+            case 2:sXml += (_T(" w:horzAnchor=\"text\""));break;
+            default:sXml += (_T(" w:horzAnchor=\"text\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1906,12 +1907,12 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpXSpec=\"center\""));break;
-			case 1:sXml.Append(_T(" w:tblpXSpec=\"inside\""));break;
-			case 2:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
-			case 3:sXml.Append(_T(" w:tblpXSpec=\"outside\""));break;
-			case 4:sXml.Append(_T(" w:tblpXSpec=\"right\""));break;
-			default:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
+            case 0:sXml += (_T(" w:tblpXSpec=\"center\""));break;
+            case 1:sXml += (_T(" w:tblpXSpec=\"inside\""));break;
+            case 2:sXml += (_T(" w:tblpXSpec=\"left\""));break;
+            case 3:sXml += (_T(" w:tblpXSpec=\"outside\""));break;
+            case 4:sXml += (_T(" w:tblpXSpec=\"right\""));break;
+            default:sXml += (_T(" w:tblpXSpec=\"left\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1920,10 +1921,10 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:vertAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:vertAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
+            case 0:sXml += (_T(" w:vertAnchor=\"margin\""));break;
+            case 1:sXml += (_T(" w:vertAnchor=\"page\""));break;
+            case 2:sXml += (_T(" w:vertAnchor=\"text\""));break;
+            default:sXml += (_T(" w:vertAnchor=\"text\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1939,13 +1940,13 @@ public:
 			CString sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpYSpec=\"bottom\""));break;
-			case 1:sXml.Append(_T(" w:tblpYSpec=\"center\""));break;
-			case 2:sXml.Append(_T(" w:tblpYSpec=\"inline\""));break;
-			case 3:sXml.Append(_T(" w:tblpYSpec=\"inside\""));break;
-			case 4:sXml.Append(_T(" w:tblpYSpec=\"outside\""));break;
-			case 5:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
-			default:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
+            case 0:sXml += (_T(" w:tblpYSpec=\"bottom\""));break;
+            case 1:sXml += (_T(" w:tblpYSpec=\"center\""));break;
+            case 2:sXml += (_T(" w:tblpYSpec=\"inline\""));break;
+            case 3:sXml += (_T(" w:tblpYSpec=\"inside\""));break;
+            case 4:sXml += (_T(" w:tblpYSpec=\"outside\""));break;
+            case 5:sXml += (_T(" w:tblpYSpec=\"top\""));break;
+            default:sXml += (_T(" w:tblpYSpec=\"top\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -2936,11 +2937,11 @@ public:
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
 			}
-			else if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
+			else if(NSFile::CFileBinary::Exists(sFilePath))
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 				if(bDeleteFile)
-					NSFile::CFileBinary::Remove(string2std_string(sFilePath));
+					NSFile::CFileBinary::Remove(sFilePath);
 			}
 		}
 		else
@@ -3057,36 +3058,36 @@ public:
 			{
 				switch(i)
 				{
-				case 0: sSchemeMapping.Append(_T(" w:accent1"));break;
-				case 1: sSchemeMapping.Append(_T(" w:accent2"));break;
-				case 2: sSchemeMapping.Append(_T(" w:accent3"));break;
-				case 3: sSchemeMapping.Append(_T(" w:accent4"));break;
-				case 4: sSchemeMapping.Append(_T(" w:accent5"));break;
-				case 5: sSchemeMapping.Append(_T(" w:accent6"));break;
-				case 6: sSchemeMapping.Append(_T(" w:bg1"));break;
-				case 7: sSchemeMapping.Append(_T(" w:bg2"));break;
-				case 8: sSchemeMapping.Append(_T(" w:followedHyperlink"));break;
-				case 9: sSchemeMapping.Append(_T(" w:hyperlink"));break;
-				case 10: sSchemeMapping.Append(_T(" w:t1"));break;
-				case 11: sSchemeMapping.Append(_T(" w:t2"));break;
+                case 0: sSchemeMapping += (_T(" w:accent1"));break;
+                case 1: sSchemeMapping += (_T(" w:accent2"));break;
+                case 2: sSchemeMapping += (_T(" w:accent3"));break;
+                case 3: sSchemeMapping += (_T(" w:accent4"));break;
+                case 4: sSchemeMapping += (_T(" w:accent5"));break;
+                case 5: sSchemeMapping += (_T(" w:accent6"));break;
+                case 6: sSchemeMapping += (_T(" w:bg1"));break;
+                case 7: sSchemeMapping += (_T(" w:bg2"));break;
+                case 8: sSchemeMapping += (_T(" w:followedHyperlink"));break;
+                case 9: sSchemeMapping += (_T(" w:hyperlink"));break;
+                case 10: sSchemeMapping += (_T(" w:t1"));break;
+                case 11: sSchemeMapping += (_T(" w:t2"));break;
 				}
 				switch(aSchemeMapping[i])
 				{
-				case 0: sSchemeMapping.Append(_T("=\"accent1\""));break;
-				case 1: sSchemeMapping.Append(_T("=\"accent2\""));break;
-				case 2: sSchemeMapping.Append(_T("=\"accent3\""));break;
-				case 3: sSchemeMapping.Append(_T("=\"accent4\""));break;
-				case 4: sSchemeMapping.Append(_T("=\"accent5\""));break;
-				case 5: sSchemeMapping.Append(_T("=\"accent6\""));break;
-				case 6: sSchemeMapping.Append(_T("=\"dark1\""));break;
-				case 7: sSchemeMapping.Append(_T("=\"dark2\""));break;
-				case 8: sSchemeMapping.Append(_T("=\"followedHyperlink\""));break;
-				case 9: sSchemeMapping.Append(_T("=\"hyperlink\""));break;
-				case 10: sSchemeMapping.Append(_T("=\"light1\""));break;
-				case 11: sSchemeMapping.Append(_T("=\"light2\""));break;
+                case 0: sSchemeMapping += (_T("=\"accent1\""));break;
+                case 1: sSchemeMapping += (_T("=\"accent2\""));break;
+                case 2: sSchemeMapping += (_T("=\"accent3\""));break;
+                case 3: sSchemeMapping += (_T("=\"accent4\""));break;
+                case 4: sSchemeMapping += (_T("=\"accent5\""));break;
+                case 5: sSchemeMapping += (_T("=\"accent6\""));break;
+                case 6: sSchemeMapping += (_T("=\"dark1\""));break;
+                case 7: sSchemeMapping += (_T("=\"dark2\""));break;
+                case 8: sSchemeMapping += (_T("=\"followedHyperlink\""));break;
+                case 9: sSchemeMapping += (_T("=\"hyperlink\""));break;
+                case 10: sSchemeMapping += (_T("=\"light1\""));break;
+                case 11: sSchemeMapping += (_T("=\"light2\""));break;
 				}
 			}
-			sSchemeMapping.Append(_T("/>"));
+            sSchemeMapping += (_T("/>"));
 			m_oSettingWriter.AddSetting(sSchemeMapping);
 			m_oFileWriter.m_pDrawingConverter->LoadClrMap(sSchemeMapping);
 		}
@@ -3435,9 +3436,9 @@ public:
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
 				CString sVal;
-				sVal.Append(_T("<m:mathFont m:val=\""));
-				sVal.Append(sFontName);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:mathFont m:val=\""));
+                sVal += (sFontName);
+                sVal += (_T("\" />"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -4080,9 +4081,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4156,9 +4157,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:begChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:begChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 
 				GetRunStringWriter().WriteString(sVal);
 		}
@@ -4293,9 +4294,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:alnAt=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else if ( c_oSer_OMathBottomNodesValType::Val == type )
@@ -4319,9 +4320,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4340,9 +4341,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4357,9 +4358,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:chr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:chr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4377,9 +4378,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4397,9 +4398,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4545,9 +4546,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:endChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:endChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5565,9 +5566,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5585,9 +5586,9 @@ public:
 			if (lVal)
 			{
 				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += (sXml);
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5625,9 +5626,9 @@ public:
 		{
 				CString sChr = GetMathText (length);
 				CString sVal;
-				sVal.Append(_T("<m:sepChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                sVal += (_T("<m:sepChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -6316,20 +6317,14 @@ public:
 		CString sDrawingProperty = oCDrawingProperty.Write();
 		if(false == sDrawingProperty.IsEmpty())
 		{
-			VARIANT var;
-			var.vt = VT_I4;
-			var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
-			m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
+            m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(m_oFileWriter.m_oChartWriter.getChartCount());
 
 			long nCurPos = m_oBufferedStream.GetPos();
 			CString* bstrDrawingXml = NULL;
 			m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
 			m_oBufferedStream.Seek(nCurPos);
 
-			VARIANT vt;
-			m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
-			if(VT_I4 == vt.vt)
-				m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
+            m_oFileWriter.m_oChartWriter.setChartCount(m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount());
 
 			if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
 			{
@@ -6577,30 +6572,15 @@ public:
         }
         else if( c_oSerBackgroundType::pptxDrawing == type )
         {
-            CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
-            oCDrawingProperty.bType = oCDrawingProperty.bHeight = oCDrawingProperty.bWidth = true;
-            oCDrawingProperty.Type  = c_oAscWrapStyle::Inline;
+			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
+			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
 
-            CString sDrawingProperty = oCDrawingProperty.Write();
-
-            BYTE    type        = m_oBufferedStream.GetUChar();
-            long    lenType     = m_oBufferedStream.GetUChar();
-            int     nRealLen    = m_oBufferedStream.GetLong();
-
-            CString* bstrDrawingXml = NULL;
-
-            long nCurPos = m_oBufferedStream.GetPos();
-
-
-            m_oFileWriter.m_pDrawingConverter->SaveObjectEx(nCurPos, nRealLen, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
-
-            if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
-            {
-                pBackground->sObject = *bstrDrawingXml;
-            }
-            RELEASEOBJECT(bstrDrawingXml);
-
-            m_oBufferedStream.Seek(nCurPos + nRealLen);
+			if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				pBackground->sObject = m_oFileWriter.m_pDrawingConverter->SaveObjectBackground(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength);
+				m_oBufferedStream.Seek(nCurPos);
+			}
         }
         else
             res = c_oSerConstants::ReadUnknown;
@@ -6653,14 +6633,14 @@ public:
 
 				//save xlsx
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(m_oFileWriter.m_oChartWriter.getChartCount() + 1) + L".xlsx";
-				std::wstring sXlsxPath = string2std_string(pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR) + sXlsxFilename;
+				std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
 
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rIdXlsx;
 				CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, CString(), &rIdXlsx);
 
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -6673,14 +6653,15 @@ public:
 				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
-				CString sFilename;
-				CString sRelsName;
+				std::wstring sFilename;
+				std::wstring sRelsName;
 				int nChartIndex;
                 std::wstring sContent = sw.GetData();
-                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
+                
+				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
+                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rIdChart;
@@ -6818,6 +6799,13 @@ public:
 			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
 			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
 		}
+		else if ( c_oSerImageType2::DocPr == type )
+		{
+			OOX::Drawing::CNonVisualDrawingProps pNonVisualDrawingProps;
+			pNonVisualDrawingProps.m_eType = OOX::et_wp_docPr;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6855,6 +6843,39 @@ public:
 		{
 			pLocking->m_oNoSelect.Init();
 			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDocPr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CNonVisualDrawingProps* pNonVisualDrawingProps = static_cast<OOX::Drawing::CNonVisualDrawingProps*>(poResult);
+		if ( c_oSerDocPr::Id == type )
+		{
+			pNonVisualDrawingProps->m_oId.Init();
+			pNonVisualDrawingProps->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerDocPr::Name == type )
+		{
+			pNonVisualDrawingProps->m_sName.Init();
+			pNonVisualDrawingProps->m_sName->Append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Hidden == type )
+		{
+			pNonVisualDrawingProps->m_oHidden.Init();
+			pNonVisualDrawingProps->m_oHidden->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerDocPr::Title == type )
+		{
+			pNonVisualDrawingProps->m_sTitle.Init();
+			pNonVisualDrawingProps->m_sTitle->Append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Descr == type )
+		{
+			pNonVisualDrawingProps->m_sDescr.Init();
+			pNonVisualDrawingProps->m_sDescr->Append(m_oBufferedStream.GetString3(length));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

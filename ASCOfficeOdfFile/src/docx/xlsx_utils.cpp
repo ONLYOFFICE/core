@@ -188,9 +188,7 @@ std::wstring cellType2Str(XlsxCellType::type type)
 
 boost::int64_t convertDate(int Year, int Month, int Day)
 {
-    using namespace boost::gregorian;
-
-    boost::int64_t daysFrom1900  =  date_duration(date(Year, Month, Day) - date(1900, 1, 1)).days() + 1;
+    boost::int64_t daysFrom1900  =  boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
 
     if (Year <= 1900 && 
         Month <= 2 &&
@@ -225,9 +223,9 @@ bool parseDate(const std::wstring & Date, int & Year, int & Month, int & Day)
         boost::match_results<std::wstring::const_iterator> res;
         if (boost::regex_match(Date, res, r))
         {
-            Year = boost::lexical_cast<int>(res[1].str());
-            Month = boost::lexical_cast<int>(res[2].str());
-            Day = boost::lexical_cast<int>(res[3].str());
+            Year    = boost::lexical_cast<int>(res[1].str());
+            Month   = boost::lexical_cast<int>(res[2].str());
+            Day     = boost::lexical_cast<int>(res[3].str());
 
             int Hours, Minutes, Sec, FSec;
             if (res[4].matched)
@@ -259,7 +257,7 @@ bool parseTime(const std::wstring & Time, int & Hours, int & Minutes, double & s
         boost::match_results<std::wstring::const_iterator> res;
         if (boost::regex_match(Time, res, r))
         {
-            Hours = boost::lexical_cast<int>(res[1].str());
+            Hours   = boost::lexical_cast<int>(res[1].str());
             Minutes = boost::lexical_cast<int>(res[2].str());
             seconds = boost::lexical_cast<int>(res[3].str());
 

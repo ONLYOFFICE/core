@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeCFDatabar;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char iPercentMin;
 	unsigned char iPercentMax;

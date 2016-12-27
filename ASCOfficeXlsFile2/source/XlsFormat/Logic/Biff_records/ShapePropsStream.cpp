@@ -50,14 +50,6 @@ BaseObjectPtr ShapePropsStream::clone()
 	return BaseObjectPtr(new ShapePropsStream(*this));
 }
 
-
-void ShapePropsStream::writeFields(CFRecord& record)
-{
-#pragma message("####################### ShapePropsStream record is not implemented")
-	Log::error("ShapePropsStream record is not implemented.");
-}
-
-
 void ShapePropsStream::readFields(CFRecord& record)
 {
 	record >> frtHeader;

@@ -43,14 +43,6 @@ BiffStructurePtr CFExTemplateParams::clone()
 }
 
 
-void CFExTemplateParams::store(CFRecord& record)
-{
-#pragma message("####################### CFExTemplateParams record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CFExTemplateParams record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void CFExTemplateParams::load(CFRecord& record)
 {
 	record.loadAnyData(data);

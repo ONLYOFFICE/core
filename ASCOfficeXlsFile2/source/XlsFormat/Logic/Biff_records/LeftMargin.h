@@ -50,7 +50,7 @@ public:
 
 	static const ElementType	type = typeLeftMargin;
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 //-----------------------------
 	BIFF_DOUBLE num;

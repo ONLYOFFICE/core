@@ -51,12 +51,6 @@ BaseObjectPtr PlotGrowth::clone()
 }
 
 
-void PlotGrowth::writeFields(CFRecord& record)
-{
-	record << dxPlotGrowth << dyPlotGrowth;
-}
-
-
 void PlotGrowth::readFields(CFRecord& record)
 {
 	record >> dxPlotGrowth >> dyPlotGrowth;

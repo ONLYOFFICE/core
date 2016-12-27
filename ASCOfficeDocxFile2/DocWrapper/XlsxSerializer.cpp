@@ -54,7 +54,7 @@ namespace BinXlsxRW{
 	{
 	}
 
-	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath, CString& sEmbedPath)
+    void CXlsxSerializer::CreateXlsxFolders(const std::wstring& sXmlOptions, const std::wstring& sDstPath,  std::wstring& sMediaPath, std::wstring& sEmbedPath)
 	{
         OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
 		OOX::CPath pathEmbedDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("embeddings");
@@ -68,11 +68,11 @@ namespace BinXlsxRW{
 
         OOX::CPath pathThemeThemeRelsDir = pathThemeDir + FILE_SEPARATOR_STR + _T("_rels");
 
-        NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
-        NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
-        NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
-        NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
-        NSDirectory::CreateDirectory(string2std_string(pathEmbedDir.GetPath()));
+        NSDirectory::CreateDirectory(pathXlDir.GetPath());
+        NSDirectory::CreateDirectory(pathThemeDir.GetPath());
+        NSDirectory::CreateDirectory(pathThemeThemeRelsDir.GetPath());
+        NSDirectory::CreateDirectory(pathMediaDir.GetPath());
+        NSDirectory::CreateDirectory(pathEmbedDir.GetPath());
 
         //Create Default Theme
         {
@@ -83,32 +83,22 @@ namespace BinXlsxRW{
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sMediaDir, const CString& sEmbedDir)
+    bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
 		oOfficeDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
 		//папка с бинарников
-		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
-		CString sFileInDir = strFileInDir.c_str();
+		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 
-		VARIANT var;
-		var.vt = VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-		var.bstrVal = sFileInDir.AllocSysString();
-		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
-		RELEASESYSSTRING(var.bstrVal);
-#else
-		var.bstrVal = sFileInDir.GetString();
-		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
-#endif
+        oOfficeDrawingConverter.SetSourceFileDir(strFileInDir, 2);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
-    bool CXlsxSerializer::saveToFile(const CString& sDstFileName, const CString& sSrcPath, const CString& sXMLOptions)
+    bool CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
@@ -119,7 +109,7 @@ namespace BinXlsxRW{
 		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
 		if(false == m_sEmbeddedFontsDir.IsEmpty())
 		{
-			NSDirectory::CreateDirectory(string2std_string(m_sEmbeddedFontsDir));
+			NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 
 			pFontPicker->SetEmbeddedFontsDirectory(m_sEmbeddedFontsDir);
 			pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
@@ -149,7 +139,7 @@ namespace BinXlsxRW{
 		RELEASEOBJECT(pFontPicker);
 		return true;
 	}
-	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
+    bool CXlsxSerializer::loadChart(const std::wstring& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 	{
 		bool bRes = false;
 		//todo передать нормальный oRootPath
@@ -174,7 +164,7 @@ namespace BinXlsxRW{
 		}
 		return bRes;
 	}
-    bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilepath, CString& sContentTypePath, CString** sContentTypeElement, const long& lChartNumber)
+    bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, const std::wstring& sFilepath, const std::wstring& sContentTypePath, std::wstring** sContentTypeElement, const long& lChartNumber)
 	{
 		bool bRes = false;
 		*sContentTypeElement = NULL;
@@ -182,40 +172,42 @@ namespace BinXlsxRW{
 		{
 			m_pExternalDrawingConverter->SetDstContentRels();
 
-			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
-			CString sThemePath;
-			CString sEmbedingPath;
-			CString sFilenameReverse = sFilepath;sFilenameReverse.MakeReverse();
+		//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
+			std::wstring sThemePath;
+			std::wstring sEmbedingPath;
+			
+			CString sFilenameReverse = sFilepath;	sFilenameReverse.MakeReverse();
 			
 			int nIndex	= sFilenameReverse.Find(FILE_SEPARATOR_CHAR);
 			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 			{
-				CString sFilepathLeft = sFilepath.Left(sFilepath.GetLength() - nIndex);
-				sThemePath = sFilepathLeft + _T("theme");
-				sEmbedingPath = sFilepathLeft + _T("embeddings");
+                CString sFilepathLeft = sFilepath.substr(0, sFilepath.length() - nIndex);
+				sThemePath		= sFilepathLeft + L"theme";
+				sEmbedingPath	= sFilepathLeft + L"embeddings";
 			}
 
-			//todo theme path
-			BinXlsxRW::SaveParams oSaveParams(sThemePath);
-			OOX::Spreadsheet::CChartSpace oChartSpace;
-			BinXlsxRW::BinaryChartReader oBinaryChartReader(oBufferedStream, oSaveParams, m_pExternalDrawingConverter);
+	//todo theme path
+			BinXlsxRW::SaveParams			oSaveParams(sThemePath);
+			OOX::Spreadsheet::CChartSpace	oChartSpace;
+			BinXlsxRW::BinaryChartReader	oBinaryChartReader(oBufferedStream, oSaveParams, m_pExternalDrawingConverter);
+			
 			oBinaryChartReader.ReadCT_ChartSpace(lLength, &oChartSpace.m_oChartSpace);
 
 			if(oChartSpace.isValid())
 			{
 				//todo не делать embeddings, если пишем xlsx
 				//save xlsx
-				if(!sEmbedingPath.IsEmpty())
+				if(!sEmbedingPath.empty())
 				{
 					std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(lChartNumber) + L".xlsx";
-					std::wstring sXlsxPath = string2std_string(sEmbedingPath + FILE_SEPARATOR_STR) + sXlsxFilename;
+					std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
 					writeChartXlsx(sXlsxPath, oChartSpace);
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 					long rId;
 					CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rId);
+					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, CString(), &rId);
 
 					oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 					oChartSpace.m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -225,9 +217,9 @@ namespace BinXlsxRW{
 					oChartSpace.m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
 				}
 
-				std::wstring strFilepath	= string2std_string(sFilepath);
-                CString strDir              = std_string2string(NSSystemPath::GetDirectoryName(strFilepath));
-                CString strFilename         = std_string2string(NSSystemPath::GetFileName(strFilepath));
+				std::wstring strFilepath	= sFilepath;
+                CString strDir              = NSSystemPath::GetDirectoryName(strFilepath);
+                CString strFilename         = NSSystemPath::GetFileName(strFilepath);
 
                 OOX::CPath pathRelsDir = strDir + FILE_SEPARATOR_STR + _T("_rels");
 
@@ -239,22 +231,23 @@ namespace BinXlsxRW{
                 m_pExternalDrawingConverter->SaveDstContentRels(pathRelsFile.GetPath());
 
 				CString sContentType(sContentTypePath);
-				sContentType.Append(strFilename);
+                sContentType += strFilename;
 
-				(*sContentTypeElement) = new CString();
-				(*sContentTypeElement)->Format(_T("<Override PartName=\"%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
-				(*sContentTypeElement)->Append(oSaveParams.sAdditionalContentTypes);
+                std::wstring sContent = L"<Override PartName=\"" + sContentType + L"\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>";
+                sContent += oSaveParams.sAdditionalContentTypes;
+
+                (*sContentTypeElement) = new std::wstring(sContent);
 				
 				bRes = true;
 			}
 		}
 		return bRes;
 	}
-	void CXlsxSerializer::setFontDir(CString& sFontDir)
+    void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
 	{
 		m_sFontDir = sFontDir;
 	}
-	void CXlsxSerializer::setEmbeddedFontsDir(CString& sEmbeddedFontsDir)
+    void CXlsxSerializer::setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir)
 	{
 		m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 	}
@@ -275,7 +268,7 @@ namespace BinXlsxRW{
 		CString sXmlOptions = _T("");
 		CString sMediaPath;// will be filled by 'CreateXlsxFolders' method
 		CString sEmbedPath; // will be filled by 'CreateXlsxFolders' method
-		CreateXlsxFolders (sXmlOptions, std_string2string(sTempDir), sMediaPath, sEmbedPath);
+		CreateXlsxFolders (sXmlOptions, sTempDir, sMediaPath, sEmbedPath);
 		//заполняем Xlsx
 		OOX::Spreadsheet::CXlsx oXlsx;
 		helper.toXlsx(oXlsx);

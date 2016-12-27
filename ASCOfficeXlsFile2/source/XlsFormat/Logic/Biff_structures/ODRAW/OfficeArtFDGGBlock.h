@@ -52,9 +52,7 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFDGGBlock;
 	
-	
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
 	_UINT32 spidMax;
 	_UINT32 cspSaved;

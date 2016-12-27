@@ -412,27 +412,26 @@ namespace PPTX
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 #endif
 
-			CString strId = _T("");
-			strId.Format(_T("shape %d"), pWriter->m_lObjectIdVML);
-			CString strSpid = _T("");
-			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
+            std::wstring strId  = L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
+            std::wstring strSpid = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
-			CString strFillAttr = _T("");
-			CString strStrokeAttr = _T("");
-			CString strFillNode = _T("");
-			CString strStrokeNode = _T("");
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
+            std::wstring strFillAttr;
+            std::wstring strStrokeAttr;
+            std::wstring strFillNode;
+            std::wstring strStrokeNode;;
+
+            CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
 			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle);
 
-			if (pWriter->m_strStyleMain != _T(""))
+            if (!pWriter->m_strStyleMain.empty())
 			{
-				pWriter->StartNode(_T("v:shape"));
+                pWriter->StartNode(L"v:shape");
 
 				pWriter->StartAttributes();
 
-				pWriter->WriteAttribute(_T("id"), strId);
-				pWriter->WriteAttribute(_T("o:spid"), strSpid);
+                pWriter->WriteAttribute(L"id", strId);
+                pWriter->WriteAttribute(L"o:spid", strSpid);
 
 				NSBinPptxRW::CXmlWriter oStylesWriter;
 				if (spPr.xfrm.is_init())
@@ -499,10 +498,10 @@ namespace PPTX
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
-				if (pWriter->m_strAttributesMain)
+				if (!pWriter->m_strAttributesMain.empty())
 				{
 					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain = _T("");
+					pWriter->m_strAttributesMain.clear();
 				}
 
 				pWriter->WriteString(strFillAttr);
@@ -623,10 +622,10 @@ namespace PPTX
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
-				if (pWriter->m_strAttributesMain)
+				if (!pWriter->m_strAttributesMain.empty())
 				{
 					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain = _T("");
+					pWriter->m_strAttributesMain.clear();
 				}
 
 				pWriter->WriteString(strFillAttr);
@@ -653,6 +652,32 @@ namespace PPTX
 
 				pWriter->EndNode(_T("v:shape"));
 			}
+		}
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
+		{
+			CString strFillAttr = _T("");
+			CString strFillNode = _T("");
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
+
+			pWriter->StartNode(_T("v:background"));
+
+			pWriter->StartAttributes();
+
+			pWriter->WriteString(L" id=\"_x0000_s1025\"");
+
+			if (!pWriter->m_strAttributesMain.empty())
+			{
+				pWriter->WriteString(pWriter->m_strAttributesMain);
+				pWriter->m_strAttributesMain.clear();
+			}
+
+			pWriter->WriteString(strFillAttr);
+
+			pWriter->EndAttributes();
+
+			pWriter->WriteString(strFillNode);
+
+			pWriter->EndNode(_T("v:background"));
 		}
 	} // namespace Logic
 } // namespace PPTX

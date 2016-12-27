@@ -34,12 +34,12 @@ core_mac {
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 
-build_fast {
+core_release {
 SOURCES += \
     rtfformatlib_source.cpp
-} else {
+}
+core_debug {
 SOURCES += \
-    ../source/DestinationCommand.cpp \
     ../source/RtfBookmark.cpp \
     ../source/RtfChar.cpp \
     ../source/RtfDocument.cpp \
@@ -63,9 +63,12 @@ SOURCES += \
     ../source/Reader/OOXShapeReader.cpp \
     ../source/Reader/OOXTableReader.cpp \
     ../source/Writer/OOXDocumentWriter.cpp \
-    ../source/Writer/OOXWriter.cpp \
-    ../source/ConvertationManager.cpp
+    ../source/Writer/OOXWriter.cpp
 }
+
+SOURCES += \
+    ../source/DestinationCommand.cpp \
+    ../source/ConvertationManager.cpp
 
 HEADERS += \
     ../source/Basic.h \

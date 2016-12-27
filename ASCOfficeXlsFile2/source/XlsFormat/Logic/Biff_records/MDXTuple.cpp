@@ -51,14 +51,6 @@ BaseObjectPtr MDXTuple::clone()
 }
 
 
-void MDXTuple::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDXTuple record is not implemented")
-	Log::error("MDXTuple record is not implemented.");
-	//record << some_value;
-}
-
-
 void MDXTuple::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

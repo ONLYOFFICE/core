@@ -1186,8 +1186,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -1260,7 +1259,7 @@ namespace SimpleTypes
 			CString sResult;
 
 			if ( !m_bTrailingPercentSign )
-				sResult.Format( _T("%d"), (int)m_dValue);
+                sResult = std::to_wstring( (int)m_dValue);
 			else
 				sResult.Format( _T("%f%%"), m_dValue);
 
@@ -1912,9 +1911,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -4439,8 +4436,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -4468,8 +4464,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -5170,7 +5165,7 @@ namespace SimpleTypes
 			if ( m_bUnit )
 				sResult.Format( _T("%fpt"), m_dValue);
 			else
-				sResult.Format( _T("%d"), (int)(m_dValue * 20) );
+                sResult = std::to_wstring( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -5916,8 +5911,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}

@@ -49,14 +49,12 @@ namespace PPTX
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
 
-			CString strId = _T("");
-			strId.Format(_T("group %d"), pWriter->m_lObjectIdVML);
-			CString strSpid = _T("");
-			strSpid.Format(_T("_x%04d_s%04d"), 0xFFFF & (pWriter->m_lObjectIdVML >> 16), 0xFFFF & pWriter->m_lObjectIdVML);
+            std::wstring strId   = L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
+            std::wstring strSpid = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
-			pWriter->WriteAttribute(_T("id"), strId);
-			pWriter->WriteAttribute(_T("o:spid"), strSpid);
+            pWriter->WriteAttribute(L"id", strId);
+            pWriter->WriteAttribute(L"o:spid", strSpid);
 		
 			NSBinPptxRW::CXmlWriter oStylesWriter;
 			if (_T("") != pWriter->m_strStyleMain)
@@ -145,10 +143,10 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
 			}
 
-			if (pWriter->m_strAttributesMain)
+			if (!pWriter->m_strAttributesMain.empty())
 			{
 				pWriter->WriteString(pWriter->m_strAttributesMain);
-				pWriter->m_strAttributesMain = _T("");
+				pWriter->m_strAttributesMain.clear();
 			}
 
 			int dL = 0;

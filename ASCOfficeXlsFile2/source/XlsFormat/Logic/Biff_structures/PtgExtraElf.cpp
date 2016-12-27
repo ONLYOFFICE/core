@@ -54,15 +54,6 @@ BiffStructurePtr PtgExtraElf::clone()
 	return BiffStructurePtr(new PtgExtraElf(*this));
 }
 
-
-void PtgExtraElf::store(CFRecord& record)
-{
-#pragma message("####################### PtgExtraElf record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgExtraElf record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void PtgExtraElf::load(CFRecord& record)
 {
 	_UINT32 flags;

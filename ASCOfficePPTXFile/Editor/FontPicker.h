@@ -73,7 +73,7 @@ namespace NSFontCutter
 			if(strDir.IsEmpty())
 				m_oApplicationFonts.Initialize();
 			else
-				m_oApplicationFonts.InitializeFromFolder(string2std_string(strDir));
+				m_oApplicationFonts.InitializeFromFolder(strDir);
 			CFontList* pFontList = m_oApplicationFonts.GetList();
 			if(NULL != pFontList)
 			{

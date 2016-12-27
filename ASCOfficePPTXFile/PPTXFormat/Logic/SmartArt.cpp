@@ -45,7 +45,7 @@ namespace PPTX
 	{
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
 		{
-			CString strDataPath = _T("");
+            std::wstring strDataPath;
 
 			FileContainer* pRels = NULL;
 			if (pWriter->m_pCommonRels->is_init())
@@ -69,7 +69,7 @@ namespace PPTX
 				}
 			}
 
-			if (_T("") == strDataPath)
+            if (strDataPath.empty())
 				return;
 
 			nullable<PPTX::RId> id_drawing;
@@ -77,14 +77,14 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			if (oNode.FromXmlFile2(strDataPath) == false) return;
 
-			XmlUtils::CXmlNode oNode2 = oNode.ReadNode(_T("dgm:extLst"));
+            XmlUtils::CXmlNode oNode2 = oNode.ReadNode(L"dgm:extLst");
 			if (oNode2.IsValid())
 			{
-				XmlUtils::CXmlNode oNode3 = oNode2.ReadNode(_T("a:ext"));
+                XmlUtils::CXmlNode oNode3 = oNode2.ReadNode(L"a:ext");
 				if (oNode3.IsValid())
 				{
 					//https://msdn.microsoft.com/library/documentformat.openxml.office.drawing.datamodelextensionblock.aspx
-					XmlUtils::CXmlNode oNode4 = oNode3.ReadNode(_T("dsp:dataModelExt"));
+                    XmlUtils::CXmlNode oNode4 = oNode3.ReadNode(L"dsp:dataModelExt");
 					if (oNode4.IsValid())
 					{
 						oNode4.ReadAttributeBase(L"relId", id_drawing);
@@ -94,8 +94,9 @@ namespace PPTX
 
 			if (id_drawing.is_init())
 			{
-				CString strDWPath = _T("");
-				if(parentFileIs<Slide>())
+                std::wstring strDWPath;
+
+                if(parentFileIs<Slide>())
 					strDWPath = parentFileAs<Slide>().GetMediaFullPathNameFromRId(*id_drawing);
 				else if(parentFileIs<SlideLayout>())
 					strDWPath = parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*id_drawing);
@@ -111,12 +112,12 @@ namespace PPTX
 				}
 
 
-				if (_T("") != strDWPath)
+                if (!strDWPath.empty())
 				{
 					XmlUtils::CXmlNode oNodeDW;
 					if (oNodeDW.FromXmlFile2(strDWPath))
 					{
-						XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(_T("spTree"));
+                        XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
 
 						if (oNodeS.IsValid())
 						{
@@ -140,14 +141,15 @@ namespace PPTX
 
 			OOX::CPath pathDiagramData = strDataPath;
 
-			int a1 = pathDiagramData.GetFilename().Find(_T("."));
-			CString strId = pathDiagramData.GetFilename().Mid(4,pathDiagramData.GetFilename().GetLength() - 8);
-			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + _T("drawing") + strId + _T(".xml");
+			int a1 = pathDiagramData.GetFilename().find(L".");
+			std::wstring strId = pathDiagramData.GetFilename().substr(4,pathDiagramData.GetFilename().length() - 8);
+			
+			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
 
 			XmlUtils::CXmlNode oNodeDW;
 			if (oNodeDW.FromXmlFile2(pathDiagramDrawing.GetPath()))//todooo ... сделать отдельно .. повтор
 			{
-				XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(_T("spTree"));
+                XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
 
 				if (oNodeS.IsValid())
 				{
@@ -189,7 +191,7 @@ namespace PPTX
 				}
 			}
 
-			if (_T("") == strDataPath)
+            if (strDataPath.empty())
 				return;
 
 			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
@@ -211,8 +213,8 @@ namespace PPTX
 			if (!id_data.is_init() || NULL == m_bData)
 				return;
 			
-			CString strData = _T("<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"") + id_data->ToString() + _T("\"/>");
+            std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
 
 			pWriter->WriteString(strData);
 		}
@@ -232,28 +234,25 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			NSBinPptxRW::CImageManager2* pOldImageManager = oDrawingConverter.m_pImageManager;
 			oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
 			NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pReader;
-			oDrawingConverter.m_pReader = pReader;
+            oDrawingConverter.m_pReader = pReader;
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			CString strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-			int nPos = strDstChart.ReverseFind(TCHAR('m'));
+            std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
+            int nPos = strDstChart.rfind(TCHAR('m'));
 			if (-1 != nPos)
-				strDstChart = strDstChart.Mid(0, nPos);
+                strDstChart = strDstChart.substr(0, nPos);
 
-			strDstChart += _T("charts");
-			//на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
-			FileSystem::Directory::CreateDirectory(strDstChart);
-			CString strChart = _T("");
-			strChart.Format(_T("chart%d.xml"), m_lChartNumber);
+            strDstChart += L"charts";
+        //на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
+			FileSystem::Directory::CreateDirectory(strDstChart);			
 
-            strChart = strDstChart + FILE_SEPARATOR_STR + strChart;
+            std::wstring* sContentTypes = NULL;
 
-			CString* sContentTypes = NULL;
-
-            CString strWordChartFolder  = _T("/word/charts/");
-            CString strXlChartFolder    = _T("/xl/charts/");
-            CString strPptChartFolder   = _T("/ppt/charts/");
+            std::wstring strChart           = strDstChart + FILE_SEPARATOR_STR + L"chart" + std::to_wstring(m_lChartNumber) + L".xml";
+            std::wstring strWordChartFolder = L"/word/charts/";
+            std::wstring strXlChartFolder   = L"/xl/charts/";
+            std::wstring strPptChartFolder  = L"/ppt/charts/";
 
             if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
                 oXlsxSerializer.saveChart(*pReader, lLen, strChart, strWordChartFolder, &sContentTypes, m_lChartNumber);
@@ -262,9 +261,11 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			else
                 oXlsxSerializer.saveChart(*pReader, lLen, strChart, strPptChartFolder, &sContentTypes, m_lChartNumber);
 
-			pReader->m_strContentTypes += (*sContentTypes);
-			RELEASEOBJECT(sContentTypes);
-
+            if (sContentTypes)
+            {
+                pReader->m_strContentTypes += (*sContentTypes);
+                RELEASEOBJECT(sContentTypes);
+            }
 			oDrawingConverter.m_pReader = pOldReader;
 			oDrawingConverter.m_pImageManager = pOldImageManager;
 

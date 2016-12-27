@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeMDir;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
     _INT32		imdt;
 	_UINT16		mdd;

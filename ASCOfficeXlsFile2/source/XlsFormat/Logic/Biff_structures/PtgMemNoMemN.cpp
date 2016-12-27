@@ -43,15 +43,6 @@ BiffStructurePtr PtgMemNoMemN::clone()
 }
 
 
-
-void PtgMemNoMemN::store(CFRecord& record)
-{
-#pragma message("####################### PtgMemNoMemN record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgMemNoMemN record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void PtgMemNoMemN::load(CFRecord& record)
 {
 	unsigned char rec_type;

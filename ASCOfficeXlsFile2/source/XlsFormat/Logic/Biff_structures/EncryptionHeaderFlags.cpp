@@ -43,13 +43,6 @@ XLS::BiffStructurePtr EncryptionHeaderFlags::clone()
 }
 
 
-void EncryptionHeaderFlags::store(XLS::CFRecord& record)
-{
-#pragma message("####################### EncryptionHeaderFlags record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! EncryptionHeaderFlags record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void EncryptionHeaderFlags::load(XLS::CFRecord& record)
 {

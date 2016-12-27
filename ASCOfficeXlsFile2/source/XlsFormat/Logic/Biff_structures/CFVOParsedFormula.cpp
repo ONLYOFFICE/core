@@ -48,15 +48,6 @@ BiffStructurePtr CFVOParsedFormula::clone()
 	return BiffStructurePtr(new CFVOParsedFormula(*this));
 }
 
-
-void CFVOParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/, rt_STRUCT_CFVOParsedFormula);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_STRUCT_CFVOParsedFormula);
-}
-
-
 void CFVOParsedFormula::load(CFRecord& record)
 {
 	unsigned short cce;

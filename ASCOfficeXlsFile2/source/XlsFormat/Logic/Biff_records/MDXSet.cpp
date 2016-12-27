@@ -51,14 +51,6 @@ BaseObjectPtr MDXSet::clone()
 }
 
 
-void MDXSet::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDXSet record is not implemented")
-	Log::error("MDXSet record is not implemented.");
-	//record << some_value;
-}
-
-
 void MDXSet::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

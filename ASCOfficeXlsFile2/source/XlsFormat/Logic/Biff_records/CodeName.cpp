@@ -51,12 +51,6 @@ BaseObjectPtr CodeName::clone()
 }
 
 
-void CodeName::writeFields(CFRecord& record)
-{
-	record << codeName;
-}
-
-
 void CodeName::readFields(CFRecord& record)
 {
 	record >> codeName;

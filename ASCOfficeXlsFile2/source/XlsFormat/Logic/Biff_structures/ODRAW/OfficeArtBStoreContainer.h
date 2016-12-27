@@ -61,7 +61,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtBStoreContainer;
 
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
 	// overriden
 	const unsigned short GetInstanceToStore();

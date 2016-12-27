@@ -245,7 +245,7 @@ namespace OOX
 				writer.WriteString(_T("<fonts"));
 				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 				writer.WriteString(_T(">"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</fonts>"));
 			}
@@ -275,7 +275,7 @@ namespace OOX
 				m_arrItems.push_back(pFont);
 				if(false == m_oCount.IsInit())
 					m_oCount.Init();
-				m_oCount->SetValue(m_arrItems.size());
+				m_oCount->SetValue((unsigned int)m_arrItems.size());
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

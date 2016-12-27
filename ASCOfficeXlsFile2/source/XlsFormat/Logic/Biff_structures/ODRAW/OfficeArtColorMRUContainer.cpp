@@ -48,11 +48,6 @@ XLS::BiffStructurePtr OfficeArtSplitMenuColorContainer::clone()
 	return XLS::BiffStructurePtr(new OfficeArtSplitMenuColorContainer(*this));
 }
 
-void OfficeArtSplitMenuColorContainer::storeFields(XLS::CFRecord& record)
-{
-//	record << smca;
-}
-
 
 void OfficeArtSplitMenuColorContainer::loadFields(XLS::CFRecord& record)
 {

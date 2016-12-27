@@ -63,7 +63,7 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFOPTE;
 	
-	virtual void store(XLS::CFRecord& record);
+
 
 protected:
 	virtual void load(XLS::CFRecord& record);
@@ -565,7 +565,6 @@ class MSOPOINT : public XLS::BiffStructure
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record){}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
@@ -585,7 +584,6 @@ class MSOPATHINFO : public XLS::BiffStructure
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record){}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
@@ -604,7 +602,6 @@ class MSOSG : public XLS::BiffStructure
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record){}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
@@ -630,7 +627,6 @@ class ADJH : public XLS::BiffStructure
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record){}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
@@ -745,7 +741,6 @@ class IHlink : public XLS::BiffStructure
 	XLS::BiffStructurePtr clone();
 
 	void load(XLS::CFRecord& record);
-	void store(XLS::CFRecord& record){}
 	
 	static const XLS::ElementType	type = XLS::typeIHLink;
 

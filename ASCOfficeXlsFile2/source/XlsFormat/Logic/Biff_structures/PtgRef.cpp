@@ -55,13 +55,6 @@ BiffStructurePtr PtgRef::clone()
 	return BiffStructurePtr(new PtgRef(*this));
 }
 
-
-void PtgRef::storeFields(CFRecord& record)
-{
-	record << loc;
-}
-
-
 void PtgRef::loadFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)

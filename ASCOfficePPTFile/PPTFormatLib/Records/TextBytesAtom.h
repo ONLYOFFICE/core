@@ -71,7 +71,7 @@ public:
 		RELEASEARRAYOBJECTS(pUTF16_low);
 		RELEASEARRAYOBJECTS(pUTF16);
 
-        //std::string tmpStrTextA = string2std_string(StreamUtils::ReadCStringA(pStream, m_oHeader.RecLen));
+        //std::string tmpStrTextA = StreamUtils::ReadCStringA(pStream, m_oHeader.RecLen);
 
         //std::wstring tmpStrTextW (tmpStrTextA.begin(), tmpStrTextA.end());
 

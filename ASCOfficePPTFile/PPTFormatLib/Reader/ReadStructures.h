@@ -183,7 +183,7 @@ public:
     bool			m_bIsCompressed;
 
     bool			m_bIsValid;
-	CString			m_sExtension;
+	std::wstring	m_sExtension;
 private:
 	BYTE* m_pMetaHeader;
 	BYTE* m_pMetaFile;

@@ -326,13 +326,6 @@ CFRecord& CFRecord::operator>>(bool& val)
 
 
 
-
-CFRecord& CFRecord::operator<<(bool& val)
-{
-	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
-}
-
-
 void CFRecord::registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, const size_t n, const CFRecordType::TypeId receiver_id)
 {
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary

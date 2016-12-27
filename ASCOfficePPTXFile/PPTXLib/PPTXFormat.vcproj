@@ -351,10 +351,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

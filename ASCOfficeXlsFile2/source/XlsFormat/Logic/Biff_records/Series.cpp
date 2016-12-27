@@ -51,12 +51,6 @@ BaseObjectPtr Series::clone()
 }
 
 
-void Series::writeFields(CFRecord& record)
-{
-	record << sdtX << sdtY << cValx << cValy << sdtBSize << cValBSize;
-}
-
-
 void Series::readFields(CFRecord& record)
 {
 	record >> sdtX >> sdtY >> cValx >> cValy >> sdtBSize >> cValBSize;

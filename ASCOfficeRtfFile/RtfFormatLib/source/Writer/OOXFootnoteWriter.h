@@ -92,7 +92,7 @@ public:
 		
          std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
-         file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 		 file.CloseFile();
 		 return true;
@@ -170,7 +170,7 @@ public:
 
         std::string sXml = CreateXml();
 
-        file.WriteFile((void*)sXml.c_str(), sXml.length());
+        file.WriteFile((void*)sXml.c_str(), (DWORD)sXml.length());
 		file.CloseFile();
 		return true;
 	}

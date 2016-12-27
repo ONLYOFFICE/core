@@ -46,7 +46,7 @@ public:
 	NameParsedFormula(const bool is_part_of_a_revision);
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record, const size_t cce);
-	virtual void store(CFRecord& record);
+
 
 	virtual void load(CFRecord& record) {};
 

@@ -49,13 +49,6 @@ BiffStructurePtr ExtPtgArea3D::clone()
 	return BiffStructurePtr(new ExtPtgArea3D(*this));
 }
 
-
-void ExtPtgArea3D::store(CFRecord& record)
-{
-	record << iTabs << area;
-}
-
-
 void ExtPtgArea3D::load(CFRecord& record)
 {
 	record >> iTabs >> area;

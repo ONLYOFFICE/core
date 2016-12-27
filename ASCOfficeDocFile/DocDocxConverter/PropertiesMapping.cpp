@@ -244,22 +244,22 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendFlagAttribute( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* attributeName )
+    void PropertiesMapping::appendFlagAttribute( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* attributeName )
 	{
-        XMLTools::XMLAttribute<wchar_t> att( attributeName, FormatUtils::IntToWideString( sprm.Arguments[0] ).c_str());
+        XMLTools::XMLAttribute att( attributeName, FormatUtils::IntToWideString( sprm.Arguments[0] ).c_str());
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique )
+    void PropertiesMapping::appendFlagElement( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t> ele( L"w", elementName );
+        XMLTools::XMLElement ele( L"w", elementName );
 
 		if ( sprm.Arguments[0] == 0 )
 		{
-            XMLTools::XMLAttribute<wchar_t> val( L"w:val" , L"off" );
+            XMLTools::XMLAttribute val( L"w:val" , L"off" );
 			ele.AppendAttribute( val );
 		}
 
@@ -274,58 +274,58 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, const wchar_t* attributeValue )
+    void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, const wchar_t* attributeValue )
 	{
-		XMLTools::XMLAttribute<wchar_t> att( attributeName, attributeValue );
+        XMLTools::XMLAttribute att( attributeName, attributeValue );
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, int attributeValue )
+    void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, int attributeValue )
 	{
-        XMLTools::XMLAttribute<wchar_t> att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
+        XMLTools::XMLAttribute att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, short attributeValue )
+    void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, short attributeValue )
 	{
-        XMLTools::XMLAttribute<wchar_t> att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
+        XMLTools::XMLAttribute att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned short attributeValue )
+    void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, unsigned short attributeValue )
 	{
-        XMLTools::XMLAttribute<wchar_t> att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
+        XMLTools::XMLAttribute att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned char attributeValue )
+    void PropertiesMapping::appendValueAttribute( XMLTools::XMLElement* node, const wchar_t* attributeName, unsigned char attributeValue )
 	{
-        XMLTools::XMLAttribute<wchar_t> att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
+        XMLTools::XMLAttribute att( attributeName, FormatUtils::IntToWideString( attributeValue ).c_str());
 
 		node->AppendAttribute( att );
 	}
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique )
+    void PropertiesMapping::appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t>* ele = new XMLTools::XMLElement<wchar_t>( L"w" , elementName );
+        XMLTools::XMLElement* ele = new XMLTools::XMLElement( L"w" , elementName );
 
         if( ( elementValue != NULL ) && ( wcscmp( elementValue, L"" ) != 0 ))
 		{
-            XMLTools::XMLAttribute<wchar_t>* val = new XMLTools::XMLAttribute<wchar_t>( L"w:val" );
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( L"w:val" );
 
 			val->SetValue( elementValue );
 
@@ -347,15 +347,15 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, short elementValue, bool unique )
+    void PropertiesMapping::appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, short elementValue, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t>* ele = new XMLTools::XMLElement<wchar_t>( L"w" , elementName );
+        XMLTools::XMLElement* ele = new XMLTools::XMLElement( L"w" , elementName );
 
 		std::wstring strValue = FormatUtils::IntToWideString( elementValue );
 
         if ( strValue != std::wstring( L""))
 		{
-            XMLTools::XMLAttribute<wchar_t>* val = new XMLTools::XMLAttribute<wchar_t>( L"w:val", strValue.c_str());
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( L"w:val", strValue.c_str());
 			ele->AppendAttribute( *val );
 			RELEASEOBJECT( val );
 		}
@@ -373,15 +373,15 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned short elementValue, bool unique )
+    void PropertiesMapping::appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, unsigned short elementValue, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t>* ele = new XMLTools::XMLElement<wchar_t>( L"w" , elementName );
+        XMLTools::XMLElement* ele = new XMLTools::XMLElement( L"w" , elementName );
 
 		std::wstring strValue = FormatUtils::IntToWideString( elementValue );
 
         if ( strValue != std::wstring( L"" ))
 		{
-            XMLTools::XMLAttribute<wchar_t>* val = new XMLTools::XMLAttribute<wchar_t>( L"w:val", strValue.c_str());
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( L"w:val", strValue.c_str());
 			ele->AppendAttribute( *val );
 			RELEASEOBJECT( val );
 		}
@@ -399,15 +399,15 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned char elementValue, bool unique )
+    void PropertiesMapping::appendValueElement( XMLTools::XMLElement* node, const wchar_t* elementName, unsigned char elementValue, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t>* ele = new XMLTools::XMLElement<wchar_t>( L"w", elementName );
+        XMLTools::XMLElement* ele = new XMLTools::XMLElement( L"w", elementName );
 
 		std::wstring strValue = FormatUtils::IntToWideString( elementValue );
 
         if ( strValue != std::wstring( L"" ))
 		{
-            XMLTools::XMLAttribute<wchar_t>* val = new XMLTools::XMLAttribute<wchar_t>( L"w:val", strValue.c_str());
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( L"w:val", strValue.c_str());
 			ele->AppendAttribute( *val );
 			RELEASEOBJECT( val );
 		}
@@ -425,9 +425,9 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement<wchar_t>* border )
+    void PropertiesMapping::appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement* border )
 	{
-        XMLTools::XMLAttribute<wchar_t> val( L"w:val" );
+        XMLTools::XMLAttribute val( L"w:val" );
 
 		if ( brc->fNil )
 		{
@@ -439,19 +439,19 @@ namespace DocFileFormat
             val.SetValue( getBorderType( brc->brcType ).c_str());
 			border->AppendAttribute( val );
 
-            XMLTools::XMLAttribute<wchar_t> color( L"w:color" );
+            XMLTools::XMLAttribute color( L"w:color" );
             color.SetValue( RGBColor( brc->cv, RedFirst ).SixDigitHexCode.c_str());
 			border->AppendAttribute( color );
 
-            XMLTools::XMLAttribute<wchar_t> space( L"w:space" , FormatUtils::IntToWideString( brc->dptSpace ).c_str());
+            XMLTools::XMLAttribute space( L"w:space" , FormatUtils::IntToWideString( brc->dptSpace ).c_str());
 			border->AppendAttribute( space );
 
-            XMLTools::XMLAttribute<wchar_t> sz( L"w:sz", FormatUtils::IntToWideString( brc->dptLineWidth ).c_str());
+            XMLTools::XMLAttribute sz( L"w:sz", FormatUtils::IntToWideString( brc->dptLineWidth ).c_str());
 			border->AppendAttribute( sz );
 
 			if ( brc->fShadow )
 			{
-                XMLTools::XMLAttribute<wchar_t> shadow( L"w:shadow" );
+                XMLTools::XMLAttribute shadow( L"w:shadow" );
                 shadow.SetValue( L"1" );
 				border->AppendAttribute( shadow );
 			}
@@ -460,14 +460,14 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendShading( XMLTools::XMLElement<wchar_t>* parent, const ShadingDescriptor& desc )
+    void PropertiesMapping::appendShading( XMLTools::XMLElement* parent, const ShadingDescriptor& desc )
 	{
         if ( ( parent != NULL ) && ( desc.shadingSpecialValue == shadingSpecialValueNormal ))
 		{
-            XMLTools::XMLElement<wchar_t> shd( L"w:shd" );
+            XMLTools::XMLElement shd( L"w:shd" );
 
 			//fill color
-            XMLTools::XMLAttribute<wchar_t> fill( L"w:fill" );
+            XMLTools::XMLAttribute fill( L"w:fill" );
 
 			if ( desc.shadingType == shadingTypeShd )
 			{
@@ -488,7 +488,7 @@ namespace DocFileFormat
 			shd.AppendAttribute( fill );
 
 			//foreground color
-            XMLTools::XMLAttribute<wchar_t> color( L"w:color" );
+            XMLTools::XMLAttribute color( L"w:color" );
 
 			if ( desc.shadingType == shadingTypeShd )
 			{
@@ -509,7 +509,7 @@ namespace DocFileFormat
 			shd.AppendAttribute( color );
 
 			//pattern
-            XMLTools::XMLAttribute<wchar_t> val( L"w:val" );
+            XMLTools::XMLAttribute val( L"w:val" );
             val.SetValue( getShadingPattern( desc ).c_str());
 			shd.AppendAttribute( val );
 
@@ -759,12 +759,12 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::appendDxaElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique )
+    void PropertiesMapping::appendDxaElement( XMLTools::XMLElement* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique )
 	{
-        XMLTools::XMLElement<wchar_t> ele( L"w", elementName );
-        XMLTools::XMLAttribute<wchar_t> val( L"w:w", elementValue );
+        XMLTools::XMLElement ele( L"w", elementName );
+        XMLTools::XMLAttribute val( L"w:w", elementValue );
 		ele.AppendAttribute( val );
-        XMLTools::XMLAttribute<wchar_t> type( L"w:type", L"dxa" );
+        XMLTools::XMLAttribute type( L"w:type", L"dxa" );
 		ele.AppendAttribute( type );
 
 		if ( unique )
@@ -777,7 +777,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void PropertiesMapping::addOrSetBorder( XMLTools::XMLElement<wchar_t>* pBdr, const XMLTools::XMLElement<wchar_t>* border )
+    void PropertiesMapping::addOrSetBorder( XMLTools::XMLElement* pBdr, const XMLTools::XMLElement* border )
 	{
         if ( ( pBdr != NULL ) && ( border != NULL ))
 		{

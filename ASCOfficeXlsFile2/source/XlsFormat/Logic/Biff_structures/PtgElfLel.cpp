@@ -42,15 +42,6 @@ BiffStructurePtr PtgElfLel::clone()
 	return BiffStructurePtr(new PtgElfLel(*this));
 }
 
-
-void PtgElfLel::storeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fQuoted);
-	record << ilel << flags;
-}
-
-
 void PtgElfLel::loadFields(CFRecord& record)
 {
 	unsigned short flags;

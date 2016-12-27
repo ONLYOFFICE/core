@@ -93,7 +93,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 					if (sName1 == _T("Encoding"))
 					{
 						CString strValue = xmlReader.GetText2();
-						encoding = StlUtils::ToInteger(string2std_string(strValue));
+						encoding = StlUtils::ToInteger(strValue);
 					}
 				}
 			}
@@ -112,10 +112,10 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 	//As Text
 
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(std_string2string(sDstPath), _T(""), true, 1, false, NULL, _T(""));
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, false, NULL, L"");
 	if (pDocxWriter == NULL) return S_FALSE;
 
-    CreateDocxEmpty(std_string2string(sDstPath), pDocxWriter);
+    CreateDocxEmpty(sDstPath, pDocxWriter);
 
 	try
 	{
@@ -183,13 +183,13 @@ HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 
 void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::FileWriter * pDocxWriter)
 {
-    CString strDirectory = std_string2string(_strDirectory);
+    CString strDirectory = _strDirectory;
 	// rels
-    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
+    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR +L"_rels";
     FileSystem::Directory::CreateDirectory(pathRels.GetPath());
 
 	// word
-    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
+    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
     FileSystem::Directory::CreateDirectory(pathWord.GetPath());
 
 	// documentRels

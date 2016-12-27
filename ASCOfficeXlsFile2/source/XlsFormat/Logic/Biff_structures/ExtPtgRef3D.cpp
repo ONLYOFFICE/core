@@ -48,11 +48,6 @@ BiffStructurePtr ExtPtgRef3D::clone()
 	return BiffStructurePtr(new ExtPtgRef3D(*this));
 }
 
-void ExtPtgRef3D::store(CFRecord& record)
-{
-	record << iTabs << loc;
-}
-
 
 void ExtPtgRef3D::load(CFRecord& record)
 {

@@ -71,12 +71,6 @@ BiffStructurePtr PtgBool::clone()
 }
 
 
-void PtgBool::storeFields(CFRecord& record)
-{
-	record << boolean_;
-}
-
-
 void PtgBool::loadFields(CFRecord& record)
 {
 	record >> boolean_;

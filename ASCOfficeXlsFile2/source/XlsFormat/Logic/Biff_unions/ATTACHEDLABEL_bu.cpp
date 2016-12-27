@@ -42,6 +42,7 @@
 #include <Logic/Biff_records/End.h>
 #include <Logic/Biff_records/SeriesText.h>
 #include <Logic/Biff_records/Font.h>
+#include <Logic/Biff_records/FrtWrapper.h>
 
 #include <Logic/Biff_unions/AI.h>
 #include <Logic/Biff_unions/FRAME.h>
@@ -56,7 +57,9 @@ namespace XLS
 
 ATTACHEDLABEL::ATTACHEDLABEL()
 {
-	m_iLinkObject = -1;
+	m_iLinkObject	= -1;
+	m_bUsed			=  false;
+
 }
 
 
@@ -146,6 +149,7 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	}
 	
 	proc.optional<CRTMLFRT>();
+	proc.optional<FrtWrapper>();
 	proc.mandatory<End>();			elements_.pop_back();
 
 	return true;
@@ -346,19 +350,26 @@ int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, b
 		color		= font->icv;
 		color_ext	= font->color_ext;	
 		
-		if ((text_props) && (!text_props->fAutoColor))
+		if (text_props)
 		{
-
-			if (text_props->icvText != 0xff)
+			if (text_props->fAutoColor)
 			{
-				font->icv = text_props->icvText; //biff8
+				font->color_ext.enabled = false;
+				font->icv  = 0xff;
 			}
 			else
 			{
-				font->color_ext.enabled		= true;
-				font->color_ext.xclrType	= 2;
-				font->color_ext.xclrValue	= (text_props->rgbText.red << 16) + 
-							(text_props->rgbText.green << 8) + (text_props->rgbText.blue);
+				if (text_props->icvText != 0xff)
+				{
+					font->icv = text_props->icvText; //biff8
+				}
+				else
+				{
+					font->color_ext.enabled		= true;
+					font->color_ext.xclrType	= 2;
+					font->color_ext.xclrValue	= (text_props->rgbText.red << 16) + 
+								(text_props->rgbText.green << 8) + (text_props->rgbText.blue);
+				}
 			}
 		}
 

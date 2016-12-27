@@ -51,14 +51,6 @@ BaseObjectPtr SxIvd::clone()
 }
 
 
-void SxIvd::writeFields(CFRecord& record)
-{
-#pragma message("####################### SxIvd record is not implemented")
-	Log::error("SxIvd record is not implemented.");
-	//record << some_value;
-}
-
-
 void SxIvd::readFields(CFRecord& record)
 {
 #pragma message("####################### SxIvd record is not implemented")

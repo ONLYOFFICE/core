@@ -56,13 +56,6 @@ BiffStructurePtr Cell::clone()
 	return BiffStructurePtr(new Cell(*this));
 }
 
-
-void Cell::store(CFRecord& record)
-{
-	record << rw << col << ixfe;
-}
-
-
 void Cell::load(CFRecord& record)
 {
 	record >> rw >> col >> ixfe;

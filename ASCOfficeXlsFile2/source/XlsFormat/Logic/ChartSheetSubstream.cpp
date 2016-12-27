@@ -385,6 +385,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;
+	if (charts->m_arAXISPARENT.empty()) return;
 
 	int ind_AXIS = 0;
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[ind_AXIS].get());
@@ -714,8 +715,18 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	{
 		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
 		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get());
+
+		if (PlotAreaPos && !parent0->m_arCRT.empty())
+		{
+			CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[0].get());
+			if ((crt) && (	crt->m_iChartType == CHART_TYPE_Radar || 
+							crt->m_iChartType == CHART_TYPE_RadarArea))//еще?
+			{
+				PlotAreaPos->m_iLayoutTarget = 2; //inner
+			}
+		}
 		
-		if (PlotAreaFRAME && PlotAreaPos)
+		if (PlotAreaPos && PlotAreaFRAME)
 		{
 			PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
 		}
@@ -749,7 +760,6 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 			if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
 			{
-
 				PlotAreaPos->serialize(CP_XML_STREAM());
 			}
 

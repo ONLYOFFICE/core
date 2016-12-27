@@ -54,11 +54,12 @@ namespace OOX
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const = 0;
 
 	public:
-		virtual const OOX::FileType type() const                                                        = 0;
-		virtual const CPath DefaultDirectory() const                                                    = 0;
-		virtual const CPath DefaultFileName() const                                                     = 0;
-		CString m_sOutputFilename;
-		bool m_bDoNotAddRels;
+		virtual const OOX::FileType type()				const	= 0;
+		virtual const CPath			DefaultDirectory()	const	= 0;
+		virtual const CPath			DefaultFileName()	const	= 0;
+		
+		std::wstring	m_sOutputFilename;
+		bool			m_bDoNotAddRels;
 	};
 	class FileGlobalEnumerated : public File
 	{

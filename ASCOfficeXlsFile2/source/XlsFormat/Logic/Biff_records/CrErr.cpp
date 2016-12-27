@@ -50,13 +50,6 @@ BaseObjectPtr CrErr::clone()
 	return BaseObjectPtr(new CrErr(*this));
 }
 
-
-void CrErr::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CrErr::readFields(CFRecord& record)
 {
 #pragma message("####################### CrErr record is not implemented")

@@ -43,12 +43,6 @@ BiffStructurePtr Feat11FieldDataItem::clone()
 }
 
 
-
-void Feat11FieldDataItem::store(CFRecord& record)
-{	
-}
-
-
 void Feat11FieldDataItem::load(CFRecord& record)
 {	
 

@@ -49,7 +49,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeEncryptionHeaderFlags;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
 
 	bool fCryptoAPI;
 	bool fDocProps;

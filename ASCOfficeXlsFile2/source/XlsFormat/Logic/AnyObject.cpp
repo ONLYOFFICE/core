@@ -51,15 +51,6 @@ BaseObjectPtr AnyObject::clone()
 	return BaseObjectPtr(new AnyObject(*this));
 }
 
-
-void AnyObject::writeFields(CFRecord& record)
-{
-#pragma message("####################### AnyObject record is not implemented")
-	Log::info("AnyObject record is not implemented.");
-	//record << some_value;
-}
-
-
 void AnyObject::readFields(CFRecord& record)
 {
 	tag_name = record.getTypeString();

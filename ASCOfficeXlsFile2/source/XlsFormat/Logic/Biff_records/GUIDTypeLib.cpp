@@ -50,15 +50,6 @@ BaseObjectPtr GUIDTypeLib::clone()
 	return BaseObjectPtr(new GUIDTypeLib(*this));
 }
 
-
-void GUIDTypeLib::writeFields(CFRecord& record)
-{
-#pragma message("####################### GUIDTypeLib record is not implemented")
-	Log::error("GUIDTypeLib record is not implemented.");
-	//record << some_value;
-}
-
-
 void GUIDTypeLib::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

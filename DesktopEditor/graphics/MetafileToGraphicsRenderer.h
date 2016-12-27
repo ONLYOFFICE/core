@@ -218,7 +218,7 @@ namespace NSOnlineOfficeBinToPdf
                     double h = oInfo.arSizes[nPageIndex].height;
 
                     double dKoef1 = nRasterW / w;
-                    double dKoef2 = nRasterW / h;
+                    double dKoef2 = nRasterH / h;
                     if (dKoef1 > dKoef2)
                         dKoef1 = dKoef2;
 

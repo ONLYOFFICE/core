@@ -41,11 +41,11 @@ INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
 
-build_fast {
+core_release {
 SOURCES += \
-    xlsformatlib_logic.cpp \
-    xlsformatlib_converter.cpp
-} else {
+    xlsformatlib_logic.cpp
+}
+core_debug {
 SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/AlRuns.cpp \
     ../XlsFormat/Logic/Biff_records/Area.cpp \
@@ -357,20 +357,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/XFCRC.cpp \
     ../XlsFormat/Logic/Biff_records/XFExt.cpp \
     ../XlsFormat/Logic/Biff_records/YMult.cpp \
-    ../XlsFormat/Binary/CFRecord.cpp \
-    ../XlsFormat/Binary/CFRecordType.cpp \
-    ../XlsFormat/Binary/CFStream.cpp \
-    ../XlsFormat/Binary/CFStreamCacheReader.cpp \
-    ../XlsFormat/Binary/CFStreamCacheWriter.cpp \
-    ../XlsFormat/Binary/CompoundFile.cpp \
-    ../XlsFormat/Crypt/rtl/cipher.cpp \
-    ../XlsFormat/Crypt/rtl/digest.cpp \
-    ../XlsFormat/Crypt/BiffDecoder_RCF.cpp \
-    ../XlsFormat/Crypt/BinaryCodec_RCF.cpp \
-    ../XlsFormat/Crypt/Decryptor.cpp \
-    ../XlsFormat/Crypt/RC4Crypt.cpp \
-    ../XlsFormat/Logging/Log.cpp \
-    ../XlsFormat/Logging/Logger.cpp \
     ../XlsFormat/Logic/Biff_structures/AddinUdf.cpp \
     ../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOper.cpp \
@@ -759,7 +745,46 @@ SOURCES +=  \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.cpp \
+    ../XlsFormat/Logic/AnyObject.cpp \
+    ../XlsFormat/Logic/AnySubstream.cpp \
+    ../XlsFormat/Logic/BinProcessor.cpp \
+    ../XlsFormat/Logic/ChartSheetSubstream.cpp \
+    ../XlsFormat/Logic/CompositeObject.cpp \
+    ../XlsFormat/Logic/GlobalsSubstream.cpp \
+    ../XlsFormat/Logic/GlobalWorkbookInfo.cpp \
+    ../XlsFormat/Logic/MacroSheetSubstream.cpp \
+    ../XlsFormat/Logic/WorkbookStreamObject.cpp \
+    ../XlsFormat/Logic/WorksheetSubstream.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
+    ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp \
+    ../XlsFormat/Logic/Biff_records/FrtWrapper.cpp \
+    ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp \
+    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp \
+    ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
+    ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
+    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
+    ../XlsFormat/Logic/Biff_structures/CFGradient.cpp
+}
+SOURCES +=  \
+    ../XlsFormat/Auxiliary/HelpFunc.cpp \
+    ../XlsFormat/Binary/CFRecord.cpp \
+    ../XlsFormat/Binary/CFRecordType.cpp \
+    ../XlsFormat/Binary/CFStream.cpp \
+    ../XlsFormat/Binary/CFStreamCacheReader.cpp \
+    ../XlsFormat/Binary/CFStreamCacheWriter.cpp \
+    ../XlsFormat/Binary/CompoundFile.cpp \
+    ../XlsFormat/Crypt/rtl/cipher.cpp \
+    ../XlsFormat/Crypt/rtl/digest.cpp \
+    ../XlsFormat/Crypt/BiffDecoder_RCF.cpp \
+    ../XlsFormat/Crypt/BinaryCodec_RCF.cpp \
+    ../XlsFormat/Crypt/Decryptor.cpp \
+    ../XlsFormat/Crypt/RC4Crypt.cpp \
+    ../XlsFormat/Logging/Log.cpp \
+    ../XlsFormat/Logging/Logger.cpp \
     ../Common/utils.cpp \
+    ../XlsXlsxConverter/ConvertShapes/FormulaShape.cpp \
+    ../XlsXlsxConverter/ConvertShapes/CustomShape.cpp \
+    ../XlsXlsxConverter/ConvertShapes/BaseShape_1.cpp \
     ../XlsXlsxConverter/ConvertXls2Xlsx.cpp \
     ../XlsXlsxConverter/external_items.cpp \
     ../XlsXlsxConverter/mediaitems_utils.cpp \
@@ -780,26 +805,6 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_chart_context.cpp \
     ../XlsXlsxConverter/xlsx_comments.cpp \
     ../XlsXlsxConverter/xlsx_comments_context.cpp \
-    ../XlsFormat/Logic/AnyObject.cpp \
-    ../XlsFormat/Logic/AnySubstream.cpp \
-    ../XlsFormat/Logic/BinProcessor.cpp \
-    ../XlsFormat/Logic/ChartSheetSubstream.cpp \
-    ../XlsFormat/Logic/CompositeObject.cpp \
-    ../XlsFormat/Logic/GlobalsSubstream.cpp \
-    ../XlsFormat/Logic/GlobalWorkbookInfo.cpp \
-    ../XlsFormat/Logic/MacroSheetSubstream.cpp \
-    ../XlsFormat/Logic/WorkbookStreamObject.cpp \
-    ../XlsFormat/Logic/WorksheetSubstream.cpp \
-    ../XlsFormat/Auxiliary/HelpFunc.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
-    ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp \
-    ../XlsFormat/Logic/Biff_records/FrtWrapper.cpp \
-    ../XlsXlsxConverter/ConvertShapes/FormulaShape.cpp \
-    ../XlsXlsxConverter/ConvertShapes/CustomShape.cpp \
-    ../XlsXlsxConverter/ConvertShapes/BaseShape_1.cpp \
-    ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp \
-    ../XlsFormat/Logic/Biff_structures/AFDOperXNum.cpp
-}
 
 HEADERS +=  \
     ../XlsFormat/Logic/Biff_records/AlRuns.h \
@@ -1724,9 +1729,3 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_records/IMDATA.h \
     ../XlsFormat/Logic/Biff_structures/CFDatabar.h \
     ../XlsFormat/Logic/Biff_structures/CFGradient.h
-
-SOURCES += \
-    ../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp \
-    ../XlsFormat/Logic/Biff_records/IMDATA.cpp \
-    ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
-    ../XlsFormat/Logic/Biff_structures/CFGradient.cpp

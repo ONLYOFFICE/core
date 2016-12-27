@@ -51,12 +51,6 @@ BaseObjectPtr BopPopCustom::clone()
 }
 
 
-void BopPopCustom::writeFields(CFRecord& record)
-{
-	// We don't support xlsx to xls conversion
-}
-
-
 void BopPopCustom::readFields(CFRecord& record)
 {
 	record >> rggrbit;

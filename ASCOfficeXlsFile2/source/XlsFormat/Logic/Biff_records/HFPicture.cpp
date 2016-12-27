@@ -51,12 +51,6 @@ BaseObjectPtr HFPicture::clone()
 	return BaseObjectPtr(new HFPicture(*this));
 }
 
-
-void HFPicture::writeFields(CFRecord& record)
-{
-}
-
-
 void HFPicture::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_HFPicture);

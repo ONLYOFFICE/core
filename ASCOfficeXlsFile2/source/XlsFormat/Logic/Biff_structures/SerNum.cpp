@@ -60,13 +60,6 @@ BiffStructurePtr SerNum::clone()
 }
 
 
-void SerNum::store(CFRecord& record)
-{
-    record.storeAnyData(fixed_type);
-	record << xnum;
-}
-
-
 void SerNum::load(CFRecord& record)
 {
 	record >> xnum;

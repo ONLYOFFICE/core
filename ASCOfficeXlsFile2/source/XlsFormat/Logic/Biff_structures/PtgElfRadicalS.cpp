@@ -43,12 +43,6 @@ BiffStructurePtr PtgElfRadicalS::clone()
 }
 
 
-void PtgElfRadicalS::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(4); // unused
-}
-
-
 void PtgElfRadicalS::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // unused

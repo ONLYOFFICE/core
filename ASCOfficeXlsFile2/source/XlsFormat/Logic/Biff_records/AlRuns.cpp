@@ -51,17 +51,6 @@ BaseObjectPtr AlRuns::clone()
 }
 
 
-void AlRuns::writeFields(CFRecord& record)
-{
-	unsigned short cRuns = rgRuns.size();
-	record << cRuns;
-	for(BiffStructurePtrVector::iterator it = rgRuns.begin(), itEnd = rgRuns.end(); it != itEnd; ++it)
-	{
-		(*it)->store(record);
-	}
-}
-
-
 void AlRuns::readFields(CFRecord& record)
 {
 	unsigned short cRuns;

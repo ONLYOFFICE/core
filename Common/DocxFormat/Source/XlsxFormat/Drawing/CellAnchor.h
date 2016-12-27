@@ -65,6 +65,10 @@ namespace OOX
 			{
 				if(isValid())
 				{
+					if(m_oAlternateContent.IsInit() && m_oAlternateContent->ToBool())
+					{
+						writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\">");
+					}
 					std::wstring sStart;
 					std::wstring sEnd;
 					if(m_oFrom.IsInit() && m_oTo.IsInit())
@@ -88,7 +92,7 @@ namespace OOX
 						if(m_oExt.IsInit())
 							m_oExt->toXML(writer);
 					}
-					else if(m_oPos.IsInit() && m_oExt.IsInit())
+					else
 					{
 						sStart.append(_T("<xdr:absoluteAnchor>"));
 						sEnd = _T("</xdr:absoluteAnchor>");
@@ -98,13 +102,16 @@ namespace OOX
 						if(m_oExt.IsInit())
 							m_oExt->toXML(writer);
 					}
-					else
-						return;
 					if(m_oXml.IsInit())
 						writer.WriteString(m_oXml.get());	
 					if(m_oGraphicFrame.IsInit())
 						m_oGraphicFrame->toXML(writer);
-					writer.WriteString(sEnd);	
+					writer.WriteString(sEnd);
+
+					if(m_oAlternateContent.IsInit() && m_oAlternateContent->ToBool())
+					{
+						writer.WriteString(L"</mc:Choice><mc:Fallback/></mc:AlternateContent>");
+					}
 				}
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -186,7 +193,7 @@ namespace OOX
 										{
 											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
 											m_oXml.reset();
-											m_sSpId = string2std_string(pExt->m_oCompatExt->m_sSpId.get());
+											m_sSpId = pExt->m_oCompatExt->m_sSpId.get();
 										}
 									}
 								}
@@ -292,6 +299,7 @@ namespace OOX
 
 			// для pptx:ObjectDrawingConverter
 			nullable<std::wstring>								m_oXml;
+			nullable<SimpleTypes::COnOff<>>						m_oAlternateContent;
 
 			//для удобства
 			nullable<std::wstring>								m_sSpId;

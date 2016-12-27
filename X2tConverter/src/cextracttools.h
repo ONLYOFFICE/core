@@ -36,7 +36,6 @@
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
@@ -388,7 +387,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlFile2(std_string2string(sFilename)))
+			if(TRUE == oRoot.FromXmlFile2(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -400,7 +399,7 @@ namespace NExtractTools
 		bool FromXml(const std::wstring& sXml)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlString(std_string2string(sXml)))
+			if(TRUE == oRoot.FromXmlString(sXml))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -484,26 +483,28 @@ namespace NExtractTools
         }
         std::wstring getXmlOptions()
 		{
-			CString sRes;
+            std::wstring sRes;
 			int nCsvEncoding = 65001; //utf8
-			char cDelimiter = ',';
-			if(NULL != m_nCsvTxtEncoding)
+            std::string cDelimiter = ",";
+
+            if(NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
 			if(NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)
 				{
-				case TCSVD_TAB: cDelimiter = '\t'; break;
-				case TCSVD_SEMICOLON: cDelimiter = ';'; break;
-				case TCSVD_COLON: cDelimiter = ':'; break;
-				case TCSVD_COMMA: cDelimiter = ','; break;
-				case TCSVD_SPACE: cDelimiter = ' '; break;
+                case TCSVD_TAB:         cDelimiter = "\t";  break;
+                case TCSVD_SEMICOLON:   cDelimiter = ";";   break;
+                case TCSVD_COLON:       cDelimiter = ":";   break;
+                case TCSVD_COMMA:       cDelimiter = ",";   break;
+                case TCSVD_SPACE:       cDelimiter = " ";   break;
 				}
 			}
             int nFileType = 1;
             if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
-            CString sSaveType;
+
+            std::wstring sSaveType;
             if(NULL != m_nFormatTo)
             {
                 if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
@@ -511,8 +512,12 @@ namespace NExtractTools
                 else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
                     nFileType = 2;
             }
-            sRes.Format(_T("<xmlOptions><fileOptions fileType='%d' codePage='%d' delimiter='%c' %ls /><TXTOptions><Encoding>%d</Encoding></TXTOptions></xmlOptions>"), nFileType, nCsvEncoding, cDelimiter, sSaveType, nCsvEncoding);
-            return sRes.GetBuffer();
+            sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
+            sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+            sRes += L"' delimiter='" + std::wstring(cDelimiter.begin(), cDelimiter.end()) + L"' " + sSaveType;
+            sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
+
+            return sRes;
 		}
 		TConversionDirection getConversionDirection()
 		{

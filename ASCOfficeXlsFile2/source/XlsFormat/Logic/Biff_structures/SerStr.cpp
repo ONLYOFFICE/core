@@ -56,14 +56,6 @@ BiffStructurePtr SerStr::clone()
 	return BiffStructurePtr(new SerStr(*this));
 }
 
-
-void SerStr::store(CFRecord& record)
-{
-    record.storeAnyData(fixed_type);
-	record << string_;
-}
-
-
 void SerStr::load(CFRecord& record)
 {
 	record >> string_;

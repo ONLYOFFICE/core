@@ -50,48 +50,45 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 }
 bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
 {
-    std::wstring strDirSrc      = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
-    std::wstring strDirDst      = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
-    std::wstring strEditorBin   = NSSystemPath::Combine(strDirDst, _T("Editor.bin"));
+    std::wstring strDirSrc      = NSSystemPath::Combine(sTmpDir,	L"from");
+    std::wstring strDirDst      = NSSystemPath::Combine(sTmpDir,	L"to");
+    std::wstring strEditorBin   = NSSystemPath::Combine(strDirDst,	L"Editor.bin");
 
     NSDirectory::CreateDirectory(strDirSrc);
 	NSDirectory::CreateDirectory(strDirDst);
 
-    CString sDirSrc = std_string2string(strDirSrc);
-	CString sEditorBin = std_string2string(strEditorBin);
-
     COfficeUtils oCOfficeUtils(NULL);
 
-    if(S_OK == oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
-		if(saveToFile(sEditorBin, sDirSrc, sXMLOptions))
-            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+    if(S_OK == oCOfficeUtils.ExtractToDirectory(sSrcFileName, strDirSrc, NULL, 0))
+		if(saveToFile(strEditorBin, strDirSrc, sXMLOptions))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName, -1))
 				return true;
 	return false;
 }
 bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
 {
-	std::wstring strDirSrc		= NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
-	std::wstring strEditorBin	= NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
-	std::wstring strDirDst		= NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+	std::wstring strDirSrc		= NSSystemPath::Combine(sTmpDir,	L"from");
+	std::wstring strEditorBin	= NSSystemPath::Combine(strDirSrc,	L"Editor.bin");
+	std::wstring strDirDst		= NSSystemPath::Combine(sTmpDir,	L"to");
 	
 	NSDirectory::CreateDirectory(strDirSrc);
 	NSDirectory::CreateDirectory(strDirDst);
 	
-	CString sEditorBin = std_string2string(strEditorBin);
+	CString sEditorBin = strEditorBin;
 
     COfficeUtils oCOfficeUtils(NULL);
 
-    if(S_OK == oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
+    if(S_OK == oCOfficeUtils.ExtractToDirectory(sSrcFileName, strDirSrc, NULL, 0))
     {
         CString sMediaPath;
         CString sThemePath;
 		CString sEmbedPath;
 
-        CreateDocxFolders(std_string2string(strDirDst), sThemePath, sMediaPath, sEmbedPath);
+        CreateDocxFolders(strDirDst, sThemePath, sMediaPath, sEmbedPath);
 
-        if(loadFromFile(sEditorBin, std_string2string(strDirDst), sXMLOptions, sThemePath, sMediaPath, sEmbedPath))
+        if(loadFromFile(sEditorBin, strDirDst, sXMLOptions, sThemePath, sMediaPath, sEmbedPath))
         {
-            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName, -1))
 				return true;
         }
     }
@@ -102,7 +99,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	OOX::CPath pathMain(sSrcFileName);
     
 	OOX::CPath pathMedia = pathMain.GetDirectory() + FILE_SEPARATOR_STR + _T("media");
-	NSDirectory::CreateDirectory(string2std_string(pathMedia.GetPath()));
+	NSDirectory::CreateDirectory(pathMedia.GetPath());
 
 	COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 	pFontPicker->Init(m_sFontDir);
@@ -116,7 +113,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
 	if(false == m_sEmbeddedFontsDir.IsEmpty())
 	{
-		NSDirectory::CreateDirectory(string2std_string(m_sEmbeddedFontsDir));
+		NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 
 		pFontPicker->SetEmbeddedFontsDirectory(m_sEmbeddedFontsDir);
 
@@ -146,7 +143,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
     if (m_bIsNoBase64Save)
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(string2std_string(sSrcFileName));
+		oFile.CreateFileW(sSrcFileName);
 		oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 		oFile.CloseFile();
 	}
@@ -158,8 +155,8 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
         if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
 		{
 			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(string2std_string(sSrcFileName));
-			oFile.WriteStringUTF8(string2std_string(oBinaryFileWriter.WriteFileHeader(nBinBufferLen)));
+			oFile.CreateFileW(sSrcFileName);
+			oFile.WriteStringUTF8(oBinaryFileWriter.WriteFileHeader(nBinBufferLen));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}
@@ -175,32 +172,32 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString
 	bool res = true;
 	// rels
     OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
-	if (!NSDirectory::CreateDirectory(pathRels.GetPath().GetBuffer()))	res = false;
+	if (!NSDirectory::CreateDirectory(pathRels.GetPath()))	res = false;
 
 	// word
     OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
-    if (!NSDirectory::CreateDirectory(pathWord.GetPath().GetBuffer()))	res = false;
+    if (!NSDirectory::CreateDirectory(pathWord.GetPath()))	res = false;
 
 	// documentRels
     OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
-    if (!NSDirectory::CreateDirectory(pathWordRels.GetPath().GetBuffer()))res = false;
+    if (!NSDirectory::CreateDirectory(pathWordRels.GetPath()))res = false;
 
 	//media
     OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
-	if (!NSDirectory::CreateDirectory(pathMedia.GetPath().GetBuffer()))		res = false;
+	if (!NSDirectory::CreateDirectory(pathMedia.GetPath()))		res = false;
 	sMediaPath = pathMedia.GetPath();
 
 	//embeddings
     OOX::CPath pathEmbeddings = pathWord + FILE_SEPARATOR_STR + _T("embeddings");
-	if (!NSDirectory::CreateDirectory(pathEmbeddings.GetPath().GetBuffer()))res = false;
+	if (!NSDirectory::CreateDirectory(pathEmbeddings.GetPath()))res = false;
 	sEmbedPath = pathEmbeddings.GetPath();
 
 	// theme
     OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-	if (!NSDirectory::CreateDirectory(pathTheme.GetPath().GetBuffer()))		res = false;
+	if (!NSDirectory::CreateDirectory(pathTheme.GetPath()))		res = false;
 
     OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
-	if (!NSDirectory::CreateDirectory(pathThemeRels.GetPath().GetBuffer())) res = false;
+	if (!NSDirectory::CreateDirectory(pathThemeRels.GetPath())) res = false;
 	
     pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 	sThemePath = pathTheme.GetPath();
@@ -212,7 +209,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 	bool bResultOk = false;
 	
 	NSFile::CFileBinary oFile;
-	if(oFile.OpenFile(string2std_string(sSrcFileName)))
+	if(oFile.OpenFile(sSrcFileName))
 	{
 		DWORD nBase64DataSize = 0;
 		BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
@@ -286,19 +283,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками
-				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
+				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
 				CString sFileInDir = strFileInDir.c_str();
 
-				VARIANT var;
-				var.vt = VT_BSTR;
-#if defined(_WIN32) || defined (_WIN64)
-				var.bstrVal = sFileInDir.AllocSysString();
-				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
-				RELEASESYSSTRING(var.bstrVal);
-#else
-				var.bstrVal = sFileInDir.GetString();
-				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
-#endif
+                oDrawingConverter.SetSourceFileDir(sFileInDir);
 	//default theme
 				m_pCurFileWriter->m_oDefaultTheme.Write(sThemePath);
 				
@@ -335,10 +323,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 					delete pCore;
 				} 
 /////////////////////////////////////////////////////////////////////////////////////
-				VARIANT vt;
-				oDrawingConverter.GetAdditionalParam(CString(_T("ContentTypes")), &vt);
-				if(VT_BSTR == vt.vt)
-					m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(CString(vt.bstrVal));
+                m_pCurFileWriter->m_oContentTypesWriter.AddOverrideRaw(oDrawingConverter.GetContentTypes());
 
 				m_pCurFileWriter->m_oCommentsWriter.Write();
 				m_pCurFileWriter->m_oChartWriter.Write();

@@ -49,7 +49,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeItemMoniker;
 	
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	std::string delimiterAnsi;
 	std::wstring delimiterUnicode;

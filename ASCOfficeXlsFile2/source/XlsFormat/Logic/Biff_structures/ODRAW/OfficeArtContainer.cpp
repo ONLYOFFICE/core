@@ -225,13 +225,4 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 
 }
 
-void OfficeArtContainer::storeFields(XLS::CFRecord& record)
-{
-	for(std::vector<OfficeArtRecordPtr>::const_iterator it = child_records.begin(), itEnd = child_records.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 } // namespace ODRAW

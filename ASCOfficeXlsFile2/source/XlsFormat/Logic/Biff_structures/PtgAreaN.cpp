@@ -58,11 +58,6 @@ BiffStructurePtr PtgAreaN::clone()
 	return BiffStructurePtr(new PtgAreaN(*this));
 }
 
-void PtgAreaN::storeFields(CFRecord& record)
-{
-	record << area;
-}
-
 
 void PtgAreaN::loadFields(CFRecord& record)
 {

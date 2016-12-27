@@ -753,7 +753,7 @@ void CEquationReader::HandleFont()
 	do
 	{
 		*pS >> nChar8;
-		sName.Append(nChar8);
+        sName += nChar8;
 	}
 	while(nChar8);
 

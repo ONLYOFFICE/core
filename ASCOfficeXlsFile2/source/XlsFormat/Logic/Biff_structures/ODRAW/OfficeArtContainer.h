@@ -50,9 +50,7 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtContainer;
 
-	// overridden:
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
 	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
 

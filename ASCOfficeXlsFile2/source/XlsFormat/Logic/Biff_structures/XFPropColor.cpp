@@ -45,14 +45,6 @@ BiffStructurePtr XFPropColor::clone()
 }
 
 
-void XFPropColor::store(CFRecord& record)
-{
-#pragma message("####################### XFPropColor record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFPropColor record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFPropColor::load(CFRecord& record)
 {
 	node_name = L"color";

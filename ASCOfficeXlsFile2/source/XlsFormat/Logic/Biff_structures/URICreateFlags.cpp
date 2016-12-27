@@ -54,14 +54,6 @@ XLS::BiffStructurePtr URICreateFlags::clone()
 }
 
 
-void URICreateFlags::store(XLS::CFRecord& record)
-{
-#pragma message("####################### URICreateFlags record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! URICreateFlags record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void URICreateFlags::load(XLS::CFRecord& record)
 {
 	unsigned int flags;

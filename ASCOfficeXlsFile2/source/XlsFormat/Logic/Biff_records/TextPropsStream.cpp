@@ -50,15 +50,6 @@ BaseObjectPtr TextPropsStream::clone()
 	return BaseObjectPtr(new TextPropsStream(*this));
 }
 
-
-void TextPropsStream::writeFields(CFRecord& record)
-{
-#pragma message("####################### TextPropsStream record is not implemented")
-	Log::error("TextPropsStream record is not implemented.");
-	//record << some_value;
-}
-
-
 void TextPropsStream::readFields(CFRecord& record)
 {	
 	record >> frtHeader;

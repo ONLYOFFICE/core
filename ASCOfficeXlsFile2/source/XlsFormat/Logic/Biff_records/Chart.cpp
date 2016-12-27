@@ -51,12 +51,6 @@ BaseObjectPtr Chart::clone()
 }
 
 
-void Chart::writeFields(CFRecord& record)
-{
-	record << x << y << dx << dy;
-}
-
-
 void Chart::readFields(CFRecord& record)
 {
 	record >> x >> y >> dx >> dy;

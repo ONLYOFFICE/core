@@ -49,13 +49,6 @@ BaseObjectPtr Blank::clone()
 }
 
 
-void Blank::writeFields(CFRecord& record)
-{
-	resender.store(record);
-	record << cell;
-}
-
-
 void Blank::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

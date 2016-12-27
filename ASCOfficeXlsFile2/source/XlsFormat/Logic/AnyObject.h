@@ -48,7 +48,7 @@ public:
 	~AnyObject();
 
 	BaseObjectPtr clone();
-	virtual void writeFields(CFRecord& record);
+
 	virtual void readFields(CFRecord& record);
 
 	std::string tag_name;

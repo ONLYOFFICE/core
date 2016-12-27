@@ -54,14 +54,6 @@ BiffStructurePtr PtgExtraMem::clone()
 }
 
 
-void PtgExtraMem::store(CFRecord& record)
-{
-#pragma message("####################### PtgExtraMem record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgExtraMem record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void PtgExtraMem::load(CFRecord& record)
 {
 	unsigned short count;

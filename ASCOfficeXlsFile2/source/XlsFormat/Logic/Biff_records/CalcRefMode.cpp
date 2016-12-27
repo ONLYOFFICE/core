@@ -52,24 +52,6 @@ BaseObjectPtr CalcRefMode::clone()
 }
 
 
-void CalcRefMode::writeFields(CFRecord& record)
-{
-	Boolean<unsigned short> fRef;
-	if(fRefA1 == std::wstring (L"A1"))
-	{
-		fRef = true;
-	}
-	else if(fRefA1 == std::wstring (L"R1C1"))
-	{
-		fRef = false;
-	}
-	else
-	{
-		// EXCEPT::LE::AttributeDataWrong(L"fRefA1", record.getTypeString().c_str(), fRefA1);
-	}
-	record << fRef;
-}
-
 
 void CalcRefMode::readFields(CFRecord& record)
 {

@@ -213,7 +213,7 @@ namespace DocFileFormat
 		m_isEquation		=	false;
 		m_isEmbedded		=	false;
 
-		m_imageData			=	new XMLTools::XMLElement<wchar_t>( _T( "v:imagedata" ) );
+        m_imageData			=	new XMLTools::XMLElement( _T( "v:imagedata" ) );
 	}
 
 	VMLPictureMapping::~VMLPictureMapping()

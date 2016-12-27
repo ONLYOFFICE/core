@@ -51,14 +51,6 @@ BaseObjectPtr SXStreamID::clone()
 }
 
 
-void SXStreamID::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXStreamID record is not implemented")
-	Log::error("SXStreamID record is not implemented.");
-	//record << some_value;
-}
-
-
 void SXStreamID::readFields(CFRecord& record)
 {
 #pragma message("####################### SXStreamID record is not implemented")

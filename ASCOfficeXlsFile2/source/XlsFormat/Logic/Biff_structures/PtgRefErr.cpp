@@ -54,12 +54,6 @@ BiffStructurePtr PtgRefErr::clone()
 }
 
 
-void PtgRefErr::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(4); // unused
-}
-
-
 void PtgRefErr::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // unused

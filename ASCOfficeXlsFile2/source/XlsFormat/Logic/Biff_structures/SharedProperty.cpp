@@ -52,14 +52,6 @@ XLS::BiffStructurePtr SharedProperty::clone()
 }
 
 
-void SharedProperty::store(XLS::CFRecord& record)
-{
-#pragma message("####################### Property record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! Property record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void SharedProperty::load(XLS::CFRecord& record)
 {
 	record >> keyIndex >> valueIndex;

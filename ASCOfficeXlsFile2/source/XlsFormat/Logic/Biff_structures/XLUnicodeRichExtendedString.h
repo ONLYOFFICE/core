@@ -60,12 +60,10 @@ public:
 	void set_code_page(short cp) ;
 	
 	virtual void load	(CFRecord& record);
-	virtual void store	(CFRecord& record);
 
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr;
 
 	void loadSymbols(CFRecord& record, const size_t cch, const bool is_wide);
-	void storeSymbols(CFRecord& record, const size_t start_pos, const size_t cch, const bool is_wide);
 
 	const size_t getNonVariablePartSize() const;
 	const size_t getFullSize() const;

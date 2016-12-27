@@ -46,41 +46,41 @@
 
 namespace SerializeCommon
 {
-	CString DownloadImage(const CString& strFile)
+    std::wstring DownloadImage(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(string2std_string(strFile), false);
-		CString strFileName;
+        CFileDownloader oDownloader(strFile, false);
+        std::wstring strFileName;
 		if ( oDownloader.DownloadSync() )
 		{
-			strFileName = std_string2string(oDownloader.GetFilePath());
+			strFileName = oDownloader.GetFilePath();
 		}
 		return strFileName;
 #else
 		return L"";
 #endif
 	}
-	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64)
+    VOID convertBase64ToImage (NSFile::CFileBinary& oFile, std::wstring &pBase64)
 	{
 		BYTE* pUtf8 = NULL;
 		long nUtf8Size;
-		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pBase64.GetString(), pBase64.GetLength(), pUtf8, nUtf8Size);
-		CStringA sUnicode((char*)pUtf8, nUtf8Size);
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pBase64.c_str(), pBase64.length(), pUtf8, nUtf8Size);
+        std::string sUnicode((char*)pUtf8, nUtf8Size);
 		RELEASEARRAYOBJECTS(pUtf8);
 
 		//Убираем "data:image/jpg;base64,"
 		int nShift = 0;
-		int nIndex = sUnicode.Find("base64,");
+        int nIndex = sUnicode.find("base64,");
 		if(-1 != nIndex)
 		{
 			nShift = nIndex + 7;
 		}
 		// Получаем размер файла
-		LONG lFileSize = sUnicode.GetLength () - nShift;
+        LONG lFileSize = sUnicode.length () - nShift;
 		INT nDstLength = lFileSize;
 		BYTE *pBuffer = new BYTE [lFileSize];
 		memset(pBuffer, 0, lFileSize);
-		Base64::Base64Decode ((LPCSTR)sUnicode.GetBuffer () + nShift, lFileSize, pBuffer, &nDstLength);
+        Base64::Base64Decode ((LPCSTR)sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
 
 		// Пишем в файл
 		oFile.WriteFile(pBuffer, nDstLength);
@@ -92,14 +92,14 @@ namespace SerializeCommon
 	{
 		return (long)(val+ 0.5);
 	}
-	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt)
+    std::wstring changeExtention(const std::wstring& sSourcePath, const std::wstring& sTargetExt)
 	{
-		int nIndex = sSourcePath.ReverseFind('.');
+        int nIndex = sSourcePath.rfind('.');
 		if(-1 != nIndex)
-			return sSourcePath.Left(nIndex + 1) + sTargetExt;
+            return sSourcePath.substr(0, nIndex + 1) + sTargetExt;
 		return sSourcePath;
 	}
-    void ReadFileType(const CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
+    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = CP_UTF8;
@@ -109,7 +109,7 @@ namespace SerializeCommon
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> codePage;
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> saveFileType;
-		nullable<CString> delimiter;
+        nullable<std::wstring> delimiter;
 
 		// Read options
 		XmlUtils::CXmlLiteReader oReader;
@@ -142,9 +142,9 @@ namespace SerializeCommon
 					cSaveFileType = (BYTE)saveFileType->GetValue();
 				if (delimiter.IsInit())
 				{
-					const CString& sDelimiter = delimiter.get();
-					if (0 < sDelimiter.GetLength())
-						wcDelimiter = sDelimiter.GetAt(0);
+                    const std::wstring& sDelimiter = delimiter.get();
+                    if (0 < sDelimiter.length())
+                        wcDelimiter = sDelimiter[0];
 				}
 				break;
 			}

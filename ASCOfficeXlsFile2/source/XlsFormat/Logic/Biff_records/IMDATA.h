@@ -46,7 +46,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeIMDATA;

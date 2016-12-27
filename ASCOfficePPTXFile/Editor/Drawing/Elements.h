@@ -973,7 +973,7 @@ namespace NSPresentationEditor
 				//m_strFileName.Replace(L"%20", L" ");
 			}
 
-			CString strFileName = std_string2string(m_strAudioFileName);
+			std::wstring strFileName = m_strAudioFileName;
 			CorrectXmlString(strFileName);
 
 			CString source;
@@ -1111,13 +1111,12 @@ namespace NSPresentationEditor
 				/*m_strFileName.Replace('/', '\\');*/
 			}
 			
-			CString strFileName = std_string2string(m_strVideoFileName);
+			std::wstring strFileName = m_strVideoFileName;
 			CorrectXmlString(strFileName);
 
 			CString element;
-			element.Format ( _T("<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' ")
-				_T(" widthmetric='%d' heightmetric='%d' ")
-                _T(" file='%ls' begin='%f' end='%f' >"),
+			element.Format ( L"<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' \
+widthmetric='%d' heightmetric='%d' file='%ls' begin='%f' end='%f' >",
 				(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom, m_dRotate, m_bLoop,
 				m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
 				strFileName, m_dClipStartTime, m_dClipEndTime );
@@ -1127,24 +1126,24 @@ namespace NSPresentationEditor
 			{
                                 m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
 				element		+=	animations;
 			}
 
 			CString timeLine;
-			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
+			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
 
 			element			+=	timeLine;		
-			element			+=	_T("</VideoStream>");
+			element			+=	L"</VideoStream>";
 
 			return element;
 		}
 
 		inline CString GetAudioStream ()
 		{
-			CString element = _T("");
-			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >"), m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
+			CString element;
+			element.Format(L"<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >", m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
 
 			int lIndex = m_strVideoFileName.find(L"file:///");
 			if (0 == lIndex)
@@ -1154,11 +1153,11 @@ namespace NSPresentationEditor
 				//m_strFileName.Replace(L"%20", L" ");
 			}
 
-			CString strFileName = std_string2string(m_strVideoFileName);
+			std::wstring strFileName = m_strVideoFileName;
 			CorrectXmlString(strFileName);
 
 			CString source;
-            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>"), m_dClipStartTime, m_dClipEndTime, strFileName);
+            source.Format(L"<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>", m_dClipStartTime, m_dClipEndTime, strFileName);
 			element	+=	source;		
 
 			CString animations;
@@ -1166,16 +1165,16 @@ namespace NSPresentationEditor
 			{
                                 m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
 				element		+=	animations;
 			}
 			
 			CString timeLine;
-			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
+			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
 			
 			element			+=	timeLine;		
-			element			+=	_T("</AudioSource>");
+			element			+=	L"</AudioSource>";
 
 			return element;
 		}
@@ -1338,16 +1337,12 @@ namespace NSStrings
 			return 0;
 		}
 
-		AVSINLINE void SetText(BSTR& bsText)
+        AVSINLINE void SetText(const std::wstring& sText)
 		{
 			ClearNoAttack();
-#if defined(_WIN32) || defined (_WIN64)
-			size_t nLen = GetStringLen(bsText);
-            WriteString(bsText, nLen);
-#else
-            size_t nLen = bsText.length();
-            WriteString(bsText.c_str(), nLen);
-#endif
+
+            size_t nLen = sText.length();
+            WriteString(sText.c_str(), nLen);
 
 			for (size_t i = 0; i < nLen; ++i)
 			{

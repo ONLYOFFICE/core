@@ -50,13 +50,6 @@ BaseObjectPtr PieFormat::clone()
 	return BaseObjectPtr(new PieFormat(*this));
 }
 
-
-void PieFormat::writeFields(CFRecord& record)
-{
-	record << pcExplode;
-}
-
-
 void PieFormat::readFields(CFRecord& record)
 {
 	record >> pcExplode;

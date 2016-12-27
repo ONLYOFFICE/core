@@ -84,11 +84,9 @@ namespace PPTX
 
 			NSPresentationEditor::CPath& oPath = lpShapeElement->m_oShape.m_pShape->m_oPath;
 			
-			VARIANT var;
-			var.vt = VT_I4;
-			var.lVal = 0;
 			COOXToVMLGeometry* pOOXToVMLGeometry = dynamic_cast<COOXToVMLGeometry*>(pOOXToVMLRenderer);
-			if(NULL != pOOXToVMLGeometry)
+
+            if(NULL != pOOXToVMLGeometry)
 				pOOXToVMLGeometry->NewShape();
 
 			NSPresentationEditor::CGraphicPath oGrPath;			

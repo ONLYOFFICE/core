@@ -51,11 +51,6 @@ BaseObjectPtr Lel::clone()
 }
 
 
-void Lel::writeFields(CFRecord& record)
-{
-	record << stFormulaName;
-}
-
 
 void Lel::readFields(CFRecord& record)
 {

@@ -48,7 +48,7 @@ public:
 	
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	bool fBuggedUserAboutSolution;
 	bool fShowInkAnnotation;

@@ -50,13 +50,6 @@ BaseObjectPtr CrtMlFrt::clone()
 	return BaseObjectPtr(new CrtMlFrt(*this));
 }
 
-
-void CrtMlFrt::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CrtMlFrt::readFields(CFRecord& record)
 {
 #pragma message("####################### CrtMlFrt record is not implemented")

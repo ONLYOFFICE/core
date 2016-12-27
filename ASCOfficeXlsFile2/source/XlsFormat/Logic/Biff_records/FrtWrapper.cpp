@@ -50,13 +50,6 @@ BaseObjectPtr FrtWrapper::clone()
 	return BaseObjectPtr(new FrtWrapper(*this));
 }
 
-
-void FrtWrapper::writeFields(CFRecord& record)
-{
-
-}
-
-
 void FrtWrapper::readFields(CFRecord& record)
 {
 #pragma message("####################### FrtWrapper record is not implemented")

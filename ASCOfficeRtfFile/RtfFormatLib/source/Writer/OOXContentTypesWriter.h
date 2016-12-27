@@ -64,7 +64,7 @@ public:
 
          std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
-         file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		 
 		 file.CloseFile();
 		 return true;

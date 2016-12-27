@@ -54,14 +54,6 @@ BiffStructurePtr SDContainer::clone()
 }
 
 
-void SDContainer::store(CFRecord& record)
-{
-#pragma message("####################### SDContainer record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! SDContainer record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void SDContainer::load(CFRecord& record)
 {
 	_UINT32 cbSD;

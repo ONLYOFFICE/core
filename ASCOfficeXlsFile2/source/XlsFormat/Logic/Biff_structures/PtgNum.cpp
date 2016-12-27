@@ -59,12 +59,6 @@ BiffStructurePtr PtgNum::clone()
 	return BiffStructurePtr(new PtgNum(*this));
 }
 
-void PtgNum::storeFields(CFRecord& record)
-{
-	record << value_;
-}
-
-
 void PtgNum::loadFields(CFRecord& record)
 {
 	record >> value_;

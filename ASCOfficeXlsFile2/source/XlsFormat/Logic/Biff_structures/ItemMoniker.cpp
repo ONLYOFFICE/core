@@ -53,16 +53,6 @@ XLS::BiffStructurePtr ItemMoniker::clone()
 	return XLS::BiffStructurePtr(new ItemMoniker(*this));
 }
 
-
-
-void ItemMoniker::store(XLS::CFRecord& record)
-{
-#pragma message("####################### ItemMoniker record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ItemMoniker record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ItemMoniker::load(XLS::CFRecord& record)
 {
 	_UINT32 delimiterLength;

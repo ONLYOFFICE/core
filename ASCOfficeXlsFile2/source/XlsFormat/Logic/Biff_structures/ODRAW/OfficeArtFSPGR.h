@@ -52,7 +52,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtFSPGR;
 	
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
     _INT32 xLeft;
     _INT32 yTop;

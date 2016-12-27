@@ -52,12 +52,6 @@ BaseObjectPtr ChartFrtInfo::clone()
 }
 
 
-void ChartFrtInfo::writeFields(CFRecord& record)
-{
-
-}
-
-
 void ChartFrtInfo::readFields(CFRecord& record)
 {
 	FrtHeaderOld frtHeaderOld;

@@ -131,7 +131,7 @@ namespace NSGuidesOOXML
 		{
 			std::vector<CString> oArrayParams;
 			NSStringUtils::ParseString(_T(" "), strFormula, &oArrayParams);
-			int nCount = oArrayParams.size();
+			int nCount = (int)oArrayParams.size();
 			if (0 >= nCount)
 				return;
 
@@ -309,7 +309,7 @@ namespace NSGuidesOOXML
 				
 				return;
 			}
-			CFormula formula( strAdjustments.size() + 1);
+			CFormula formula( (int)strAdjustments.size() + 1);
 			formula.m_sName = name;
 			formula.FromString(fmla);
 			

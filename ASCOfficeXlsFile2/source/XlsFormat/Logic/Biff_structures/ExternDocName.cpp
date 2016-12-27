@@ -43,15 +43,6 @@ BiffStructurePtr ExternDocName::clone()
 }
 
 
-
-void ExternDocName::store(CFRecord& record)
-{
-#pragma message("####################### ExternDocName record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExternDocName record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ExternDocName::load(CFRecord& record)
 {
 	record >> ixals;

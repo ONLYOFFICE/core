@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeLongRGBA;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char red;
 	unsigned char green;

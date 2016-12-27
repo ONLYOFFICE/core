@@ -71,8 +71,7 @@ namespace SimpleTypes
 		{
             if ( adjangleAngle == this->m_eValue )
 			{
-				CString sResult;
-				sResult.Format( _T("%d"), m_nAngle );
+                CString sResult = std::to_wstring( m_nAngle );
 				return sResult;
 			}
 			else
@@ -168,8 +167,7 @@ namespace SimpleTypes
 				}
 				else
 				{
-					CString sResult;
-					sResult.Format( _T("%d"), (int)Pt_To_Emu( m_dValue ) );
+                    CString sResult = std::to_wstring( (int)Pt_To_Emu( m_dValue ) );
 					return sResult;
 				}
 			}
@@ -264,8 +262,7 @@ namespace SimpleTypes
 
 		virtual CString ToString() const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue );
+            CString sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -910,7 +907,7 @@ namespace SimpleTypes
             if ( m_bUnit )
                 sResult.Format( _T("%fpt"), m_dValue);
             else
-                sResult.Format( _T("%d"), (__int64)m_dValue );
+                sResult = std::to_wstring( (__int64)m_dValue );
 
             return sResult;
         }
@@ -949,8 +946,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -1034,8 +1030,7 @@ namespace SimpleTypes
 
 		virtual CString ToString() const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue );
+            CString sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -1184,8 +1179,7 @@ namespace SimpleTypes
 
 		virtual CString ToString() const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue );
+            CString sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -1751,8 +1745,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -2009,8 +2002,7 @@ namespace SimpleTypes
         }
 		virtual CString ToStringDecimalNumber  () const
 		{
-			CString sResult;
-			sResult.Format( _T("%d"), int(m_dValue * 1000.0) );
+            CString sResult = std::to_wstring( int(m_dValue * 1000.0) );
 
 			return sResult;
 		}
@@ -2045,8 +2037,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -2105,8 +2096,7 @@ namespace SimpleTypes
 
 		virtual CString ToString() const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue );
+            CString sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -4930,8 +4920,7 @@ namespace SimpleTypes
 
         virtual CString       ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring(this->m_eValue);
 
             return sResult;
         }
@@ -5133,8 +5122,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5178,8 +5166,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5225,8 +5212,7 @@ namespace SimpleTypes
 //
 //        virtual CString ToString  () const 
 //        {
-//            CString sResult;
-//            sResult.Format( _T("%d"), this->m_eValue);
+//            CString sResult = std::to_wstring( this->m_eValue);
 //
 //            return sResult;
 //        }
@@ -5534,8 +5520,7 @@ namespace SimpleTypes
 
         virtual CString ToString  () const 
         {
-            CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5946,8 +5931,7 @@ namespace SimpleTypes
 
 		virtual CString ToString  () const 
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            CString sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}

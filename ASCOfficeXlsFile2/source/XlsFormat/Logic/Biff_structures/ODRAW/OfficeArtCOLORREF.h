@@ -52,7 +52,6 @@ public:
 	static const XLS::ElementType	type = XLS::typeOfficeArtCOLORREF;
 
     virtual void load(XLS::CFRecord& record) {}
-    virtual void store(XLS::CFRecord& record) {}
 
 	unsigned char red;
 	unsigned char green;

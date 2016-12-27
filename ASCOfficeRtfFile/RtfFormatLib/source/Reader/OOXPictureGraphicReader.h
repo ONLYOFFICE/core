@@ -68,15 +68,15 @@ public:
 		{
 			//в туже папку что и исходная картинка
 			CBgraFrame image;
-			if (image.OpenFile(string2std_string(sPath)) == FALSE ) return false;
+			if (image.OpenFile(sPath) == FALSE ) return false;
 			
 			//правильно выставляем размеры
 			oOutput.m_nWidthGoal = image.get_Width(); 
 			oOutput.m_nHeightGoal = image.get_Height();
 		
-			CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
+			std::wstring sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 			
-			if (image.SaveFile(string2std_string(sTargetFile), 4 /*_CXIMAGE_FORMAT_PNG*/) )
+			if (image.SaveFile(sTargetFile, 4 /*_CXIMAGE_FORMAT_PNG*/) )
 			{
 				oOutput.eDataType = RtfPicture::dt_png;
 				//Запоминаем имя
@@ -142,7 +142,7 @@ public:
 				int cxFormats [6] = {0, 4, 3, 10, 10, 10};
 				CBgraFrame image;
 				
-				if (image.OpenFile(string2std_string(sPath), cxFormats[oOutput.eDataType]) == FALSE ) return false;
+				if (image.OpenFile(sPath, cxFormats[oOutput.eDataType]) == FALSE ) return false;
 				//правильно выставляем размеры
 				oOutput.m_nWidthGoal = image.get_Width(); 
 				oOutput.m_nHeightGoal = image.get_Height();

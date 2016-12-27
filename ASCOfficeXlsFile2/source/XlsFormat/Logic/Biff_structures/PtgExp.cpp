@@ -50,12 +50,6 @@ BiffStructurePtr PtgExp::clone()
 }
 
 
-void PtgExp::storeFields(CFRecord& record)
-{
-	record << row << col;
-}
-
-
 void PtgExp::loadFields(CFRecord& record)
 {
 	record >> row >> col;

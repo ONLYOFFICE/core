@@ -75,9 +75,13 @@ static std::wstring utf8_to_unicode(const char *src)
     return wsEntryName;
 }
 #endif
-int main(int argc, char *argv[])
-{
 
+#if !defined(_WIN32) && !defined (_WIN64)
+	int main(int argc, char *argv[])
+#else
+	int wmain(int argc, wchar_t *argv[])
+#endif
+{
    // check arguments
     if (argc < 2)
     {
@@ -106,9 +110,8 @@ int main(int argc, char *argv[])
     sExePath    = utf8_to_unicode(argv [0]);
     sArg1       = utf8_to_unicode(argv [1]);
 #else
-	std::string s;
-	s = std::string(argv [0]); sExePath = std::wstring(s.begin(), s.end());
-    s = std::string(argv [1]); sArg1	= std::wstring(s.begin(), s.end());
+	sExePath	= std::wstring(argv [0]);
+    sArg1		= std::wstring(argv [1]);
 #endif
 
 	int result = 0;
@@ -127,10 +130,10 @@ int main(int argc, char *argv[])
 		if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
 		if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
 #else
-		if (argc >= 3) { s = std::string(argv [2]); sArg2 = std::wstring(s.begin(), s.end()); }
-		if (argc >= 4) { s = std::string(argv [3]); sArg3 = std::wstring(s.begin(), s.end()); }
-		if (argc >= 5) { s = std::string(argv [4]); sArg4 = std::wstring(s.begin(), s.end()); }
-		if (argc >= 6) { s = std::string(argv [5]); sArg5 = std::wstring(s.begin(), s.end()); }
+		if (argc >= 3) sArg2 = std::wstring(argv [2]);
+		if (argc >= 4) sArg3 = std::wstring(argv [3]);
+		if (argc >= 5) sArg4 = std::wstring(argv [4]);
+		if (argc >= 6) sArg5 = std::wstring(argv [5]);
 #endif
 		InputParams oInputParams;
 		oInputParams.m_sFileFrom	= new std::wstring(sArg1);

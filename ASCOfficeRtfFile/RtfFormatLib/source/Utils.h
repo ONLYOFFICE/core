@@ -141,17 +141,13 @@ namespace Strings
 	
 	static CString FromInteger(int Value, int Base = 10)
 	{
-		CString str;
-		
-		str.Format(L"%d", Value);
+        CString str = std::to_wstring(Value);
 
 		return str;
 	}
 	static CString FromDouble(double Value)
 	{
-		CString str;
-		
-		str.Format(L"%lf", Value);
+        CString str = std::to_wstring(Value);
 
 		return str;
 	}
@@ -170,8 +166,7 @@ class Convert
 public:	
 	static  CString ToString(int i)
 	{
-		CString result;
-		result.Format( L"%i", i);
+        CString result = std::to_wstring( i);
 		return result;
 	}
 	static  CString ToStringHex( int i, int nLen )
@@ -489,7 +484,7 @@ public:
 
             file.ReadFile(byteBuffer ,BUF_SIZE);
 
-            dwBytesRead = file.GetPosition();
+            dwBytesRead = (DWORD)file.GetPosition();
             while( 0 != dwBytesRead )
             {
                 for( int i = 0; i < (int)dwBytesRead; i++ )
@@ -500,9 +495,9 @@ public:
                     oFileWriter.Write( &byteFirst, 1 );
                     oFileWriter.Write( &byteSecond, 1 );
                 }
-                dwBytesRead = file.GetPosition();
+                dwBytesRead = (DWORD)file.GetPosition();
                 file.ReadFile(byteBuffer ,BUF_SIZE);
-                dwBytesRead = file.GetPosition() - dwBytesRead;
+                dwBytesRead = (DWORD)file.GetPosition() - dwBytesRead;
             }
             file.CloseFile();
          }

@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeSheetExtOptional;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char	icvPlain12;
 	bool			fCondFmtCalc;

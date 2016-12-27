@@ -42,15 +42,6 @@ BiffStructurePtr MOper::clone()
 	return BiffStructurePtr(new MOper(*this));
 }
 
-
-void MOper::store(CFRecord& record)
-{
-#pragma message("####################### MOper record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! MOper record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void MOper::load(CFRecord& record)
 {
 	record >> colLast >> rowLast;

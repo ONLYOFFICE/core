@@ -50,12 +50,6 @@ BaseObjectPtr FeatHdr11::clone()
 	return BaseObjectPtr(new FeatHdr11(*this));
 }
 
-
-void FeatHdr11::writeFields(CFRecord& record)
-{
-}
-
-
 void FeatHdr11::readFields(CFRecord& record)
 {
 	record >> frt;

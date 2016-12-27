@@ -49,15 +49,6 @@ BaseObjectPtr RK::clone()
 	return BaseObjectPtr(new RK(*this));
 }
 
-
-void RK::writeFields(CFRecord& record)
-{
-#pragma message("####################### RK record is not implemented")
-	Log::error("RK record is not implemented.");
-	//record << some_value;
-}
-
-
 void RK::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

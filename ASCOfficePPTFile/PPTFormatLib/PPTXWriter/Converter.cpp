@@ -66,7 +66,7 @@ namespace NSPresentationEditor
 <cp:revision>1</cp:revision>\
 </cp:coreProperties>");
 	}
-};
+}
 
 
 NSPresentationEditor::CPPTXWriter::CPPTXWriter()
@@ -77,7 +77,7 @@ NSPresentationEditor::CPPTXWriter::CPPTXWriter()
 	m_pDocument			= NULL;
 	m_pUserInfo			= NULL;
 
-	m_pShapeWriter = new CShapeWriter();
+    m_pShapeWriter = new CShapeWriter();
 }
 	
 NSPresentationEditor::CPPTXWriter::~CPPTXWriter()
@@ -571,9 +571,8 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 		
 		for (int i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
 		{
-			CString str;
-			str.Format(_T(" %d"), i + 1);
-			WriteColorScheme(oStringWriter, pTheme->m_sThemeName + string2std_string(str), pTheme->m_arExtraColorScheme[i], true); //extra
+			std::wstring str = L" " + std::to_wstring(i + 1);
+			WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
 		}
 		
 		oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));

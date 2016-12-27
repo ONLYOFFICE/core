@@ -51,14 +51,6 @@ BaseObjectPtr Sort::clone()
 }
 
 
-void Sort::writeFields(CFRecord& record)
-{
-#pragma message("####################### Sort record is not implemented")
-	Log::error("Sort record is not implemented.");
-	//record << some_value;
-}
-
-
 void Sort::readFields(CFRecord& record)
 {
 	unsigned short flags;

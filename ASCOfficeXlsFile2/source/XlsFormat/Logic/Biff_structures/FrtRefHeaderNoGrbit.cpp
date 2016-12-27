@@ -57,16 +57,6 @@ BiffStructurePtr FrtRefHeaderNoGrbit::clone()
 	return BiffStructurePtr(new FrtRefHeaderNoGrbit(*this));
 }
 
-
-
-
-void FrtRefHeaderNoGrbit::store(CFRecord& record)
-{
-	record << rt;
-	record << ref8;
-}
-
-
 void FrtRefHeaderNoGrbit::load(CFRecord& record)
 {
 	record >> rt;

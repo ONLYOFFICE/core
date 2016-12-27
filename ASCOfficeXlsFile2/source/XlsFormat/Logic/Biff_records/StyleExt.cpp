@@ -50,14 +50,6 @@ BaseObjectPtr StyleExt::clone()
 }
 
 
-void StyleExt::writeFields(CFRecord& record)
-{
-#pragma message("####################### StyleExt record is not implemented")
-	Log::error("StyleExt record is not implemented.");
-	//record << some_value;
-}
-
-
 void StyleExt::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

@@ -455,7 +455,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Bar3DChart *chart)
 		odf_context()->chart_context()->set_chart_bar_gap_width(*chart->m_gapWidth->m_val);
 	
 	//if (chart->m_overlap && chart->m_overlap->m_val)
-	//	odf_context()->chart_context()->set_chart_bar_overlap(string2std_string(*chart->m_overlap->m_val));
+	//	odf_context()->chart_context()->set_chart_bar_overlap(*chart->m_overlap->m_val);
 
 	odf_context()->chart_context()->start_group_series();
 		convert(chart->m_dLbls);
@@ -1043,7 +1043,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_SerTx* ser_tx)
 		
 		convert(ser_tx->m_strRef->m_strCache, false, true);
 	}
-	//if (ser_tx->m_v)odf_context()->chart_context()->set_series_name(string2std_string(*ser_tx->m_v));
+	//if (ser_tx->m_v)odf_context()->chart_context()->set_series_name(*ser_tx->m_v);
 
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_AxDataSource* cat, int type)

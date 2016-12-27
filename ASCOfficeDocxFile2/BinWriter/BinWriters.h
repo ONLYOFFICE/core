@@ -5538,6 +5538,14 @@ namespace BinDocxRW
 							WriteNvGraphicFramePr(pInline.m_oCNvGraphicFramePr.get());
 							m_oBcw.WriteItemWithLengthEnd(nCurPos);
 						}
+						if(pInline.m_oDocPr.IsInit())
+						{
+							m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DocPr);
+							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+							nCurPos = m_oBcw.WriteItemWithLengthStart();
+							WriteDocPr(pInline.m_oDocPr.get());
+							m_oBcw.WriteItemWithLengthEnd(nCurPos);
+						}
 					}
 				}
 				else if(img.m_oAnchor.IsInit() )
@@ -5713,6 +5721,14 @@ namespace BinDocxRW
 						WriteNvGraphicFramePr(pAnchor.m_oCNvGraphicFramePr.get());
 						m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					}
+					if(pAnchor.m_oDocPr.IsInit())
+					{
+						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::DocPr);
+						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+						nCurPos = m_oBcw.WriteItemWithLengthStart();
+						WriteDocPr(pAnchor.m_oDocPr.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
 				}
 			}
 			if(bDeleteDrawing)
@@ -5759,6 +5775,40 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 					m_oBcw.m_oStream.WriteBOOL(oLocks.m_oNoSelect->ToBool());
 				}
+			}
+		}
+		void WriteDocPr(const OOX::Drawing::CNonVisualDrawingProps& oDocPr)
+		{
+			int nCurPos;
+			if(oDocPr.m_oId.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Id);
+				m_oBcw.m_oStream.WriteLONG(oDocPr.m_oId->GetValue());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oDocPr.m_sName.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Name);
+				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sName.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oDocPr.m_oHidden.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Hidden);
+				m_oBcw.m_oStream.WriteBOOL(oDocPr.m_oHidden->ToBool());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oDocPr.m_sTitle.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Title);
+				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sTitle.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			if(oDocPr.m_sDescr.IsInit())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Descr);
+				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sDescr.get());
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
 		void WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
@@ -6350,6 +6400,7 @@ namespace BinDocxRW
 			for(int i = 0, length = Content.size(); i < length; i++)
 			{
 				OOX::WritingElement* item = Content[i];
+				
 				if(OOX::et_w_tc == item->getType())
 				{
 					OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);

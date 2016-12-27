@@ -42,12 +42,6 @@ BiffStructurePtr AFDOperBoolErr::clone()
 	return BiffStructurePtr(new AFDOperBoolErr(*this));
 }
 
-
-void AFDOperBoolErr::store(CFRecord& record)
-{	
-}
-
-
 void AFDOperBoolErr::load(CFRecord& record)
 {
 	record >> bes;

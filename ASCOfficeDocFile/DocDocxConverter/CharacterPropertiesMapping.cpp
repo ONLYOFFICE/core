@@ -38,7 +38,7 @@ namespace DocFileFormat
 		: PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true), _isRTL(false)
 	{
 		_doc			= doc;
-		_rPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:rPr" ) );
+        _rPr			= new XMLTools::XMLElement( _T( "w:rPr" ) );
 		_revisionData	= rev;
 		_currentPapx	= currentPapx;
 		_styleChpx		= styleChpx;
@@ -46,7 +46,7 @@ namespace DocFileFormat
 		_webHidden		= false;
 	}
 
-	CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded )
+    CharacterPropertiesMapping::CharacterPropertiesMapping( XMLTools::XMLElement* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded )
 		: PropertiesMapping( NULL ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(false), _isRTL(false)   
 	{
 		_doc			= doc;
@@ -77,7 +77,7 @@ namespace DocFileFormat
 		// apend revision changes
 		if (_revisionData->Type == Changed)
 		{
-			XMLTools::XMLElement<wchar_t> rPrChange( _T( "w:rPrChange" ) );
+            XMLTools::XMLElement rPrChange( _T( "w:rPrChange" ) );
 
 			//todooo date - _revisionData->Dttm.Convert( new DateMapping( rPrChange ) );
 
@@ -85,7 +85,7 @@ namespace DocFileFormat
 			
 			if (author_str)
 			{
-				XMLTools::XMLAttribute<wchar_t> author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
+                XMLTools::XMLAttribute author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str).c_str());
 				rPrChange.AppendAttribute( author );
 			}
 
@@ -116,16 +116,16 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent )
+    void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
 	{
-		XMLTools::XMLElement<wchar_t>	* rFonts	= new XMLTools::XMLElement<wchar_t>		( _T( "w:rFonts" ) );
-		XMLTools::XMLElement<wchar_t>	* color		= new XMLTools::XMLElement<wchar_t>		( _T( "w:color" ) );
-		XMLTools::XMLAttribute<wchar_t>	* colorVal	= new XMLTools::XMLAttribute<wchar_t>	( _T( "w:val" ) );
-		XMLTools::XMLElement<wchar_t>	* lang		= new XMLTools::XMLElement<wchar_t>		( _T( "w:lang" ) );
+        XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( _T( "w:rFonts" ) );
+        XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( _T( "w:color" ) );
+        XMLTools::XMLAttribute	* colorVal	= new XMLTools::XMLAttribute	( _T( "w:val" ) );
+        XMLTools::XMLElement	* lang		= new XMLTools::XMLElement		( _T( "w:lang" ) );
 
 		if (_webHidden)
 		{
-			XMLTools::XMLElement<wchar_t>	* webHidden		= new XMLTools::XMLElement<wchar_t>	( _T( "w:webHidden" ) );
+            XMLTools::XMLElement	* webHidden		= new XMLTools::XMLElement	( _T( "w:webHidden" ) );
 			parent->AppendChild( *webHidden );
 			RELEASEOBJECT( webHidden );
 		}
@@ -274,7 +274,7 @@ namespace DocFileFormat
 			case sprmCBrc80:
 			case sprmCBrc:
 				{  //borders
-					XMLTools::XMLElement<wchar_t> bdr( _T( "w:bdr" ) );
+                    XMLTools::XMLElement bdr( _T( "w:bdr" ) );
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 					appendBorderAttributes( &bc, &bdr );
 					parent->AppendChild( bdr );
@@ -300,10 +300,7 @@ namespace DocFileFormat
 					std::wstringstream sstream;
 
 					sstream << boost::wformat(L"%02x%02x%02x") % iter->Arguments[0] % /*G*/iter->Arguments[1] % /*B*/iter->Arguments[2];
-					colorVal->SetValue(sstream.str().c_str());
-                    //CString rgbColor;
-                    //rgbColor.Format( _T( "%02x%02x%02x" ), /*R*/iter->Arguments[0], /*G*/iter->Arguments[1], /*B*/iter->Arguments[2] );
-                    //colorVal->SetValue( rgbColor.GetString() );
+                    colorVal->SetValue(sstream.str());
 				}break;	
 
 			case sprmCOldHighlight:
@@ -379,7 +376,7 @@ namespace DocFileFormat
 					
 					if( nIndex < _doc->FontTable->Data.size() )
 					{
-						XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
+                        XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sAsciiFont = ffn->xszFtn;
 						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont).c_str() );
@@ -393,7 +390,7 @@ namespace DocFileFormat
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
 					{
-						XMLTools::XMLAttribute<wchar_t>* eastAsia = new XMLTools::XMLAttribute<wchar_t>( _T( "w:eastAsia" ) );
+                        XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( _T( "w:eastAsia" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sEastAsiaFont = ffn->xszFtn;
 						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont).c_str() );
@@ -408,7 +405,7 @@ namespace DocFileFormat
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
-						XMLTools::XMLAttribute<wchar_t>* ansi = new XMLTools::XMLAttribute<wchar_t>( _T( "w:hAnsi" ) );
+                        XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( _T( "w:hAnsi" ) );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_shAnsiFont = ffn->xszFtn;
 						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont).c_str() );
@@ -485,7 +482,7 @@ namespace DocFileFormat
 
 		if (!m_sDefaultFont.empty() && m_sAsciiFont.empty() && m_sEastAsiaFont.empty() && m_shAnsiFont.empty())
 		{//????
-			XMLTools::XMLAttribute<wchar_t>* ascii = new XMLTools::XMLAttribute<wchar_t>( _T( "w:ascii" ) );
+            XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
 			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont).c_str() );
 			//rFonts->AppendAttribute( *ascii );
 			RELEASEOBJECT( ascii );
@@ -520,14 +517,14 @@ namespace DocFileFormat
 
 	/// CHPX flags are special flags because the can be 0,1,128 and 129,
 	/// so this method overrides the appendFlagElement method.
-	void CharacterPropertiesMapping::appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique )
+    void CharacterPropertiesMapping::appendFlagElement( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique )
 	{
 		unsigned char flag = sprm.Arguments[0];
 
 		if( flag != 128 )
 		{
-			XMLTools::XMLElement<wchar_t>* ele = new XMLTools::XMLElement<wchar_t>( _T( "w" ), elementName );
-			XMLTools::XMLAttribute<wchar_t>* val = new XMLTools::XMLAttribute<wchar_t>( _T( "w:val" ) );
+            XMLTools::XMLElement* ele = new XMLTools::XMLElement( _T( "w" ), elementName );
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( _T( "w:val" ) );
 
 			if ( unique )
 			{

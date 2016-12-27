@@ -51,12 +51,6 @@ List12DisplayName::~List12DisplayName()
 {
 }
 
-
-void List12DisplayName::store(CFRecord& record)
-{	
-}
-
-
 void List12DisplayName::load(CFRecord& record)
 {	
 	record >> stListName;

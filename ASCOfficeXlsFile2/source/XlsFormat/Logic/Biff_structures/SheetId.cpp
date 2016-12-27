@@ -42,11 +42,6 @@ BiffStructurePtr SheetId::clone()
 	return BiffStructurePtr(new SheetId(*this));
 }
 
-void SheetId::store(CFRecord& record)
-{
-	record << id;
-}
-
 
 void SheetId::load(CFRecord& record)
 {

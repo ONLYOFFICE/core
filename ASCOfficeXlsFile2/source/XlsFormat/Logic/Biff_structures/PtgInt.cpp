@@ -59,11 +59,6 @@ BiffStructurePtr PtgInt::clone()
 	return BiffStructurePtr(new PtgInt(*this));
 }
 
-void PtgInt::storeFields(CFRecord& record)
-{
-	record << integer;
-}
-
 
 void PtgInt::loadFields(CFRecord& record)
 {

@@ -63,7 +63,7 @@ HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     if (m_sTempFolder.length()< 1)
         m_sTempFolder = FileSystem::Directory::GetTempPath();
 
-	CString sTempFolder = std_string2string(m_sTempFolder);
+	CString sTempFolder = m_sTempFolder;
 
     oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
     oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
@@ -106,7 +106,7 @@ HRESULT RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
     if (m_sTempFolder.length() < 1)
         m_sTempFolder = FileSystem::Directory::GetTempPath();
 
-	CString sTempFolder = std_string2string(m_sTempFolder);
+	CString sTempFolder = m_sTempFolder;
 
     oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
     oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);

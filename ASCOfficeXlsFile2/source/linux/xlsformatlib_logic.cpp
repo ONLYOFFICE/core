@@ -341,23 +341,6 @@
 #include "../XlsFormat/Logic/Biff_records/YMult.cpp"
 #include "../XlsFormat/Logic/Biff_records/FrtWrapper.cpp"
 
-#include "../XlsFormat/Binary/CFRecord.cpp"
-#include "../XlsFormat/Binary/CFRecordType.cpp"
-#include "../XlsFormat/Binary/CFStream.cpp"
-#include "../XlsFormat/Binary/CFStreamCacheReader.cpp"
-#include "../XlsFormat/Binary/CFStreamCacheWriter.cpp"
-#include "../XlsFormat/Binary/CompoundFile.cpp"
-
-#include "../XlsFormat/Crypt/rtl/cipher.cpp"
-#include "../XlsFormat/Crypt/rtl/digest.cpp"
-#include "../XlsFormat/Crypt/BiffDecoder_RCF.cpp"
-#include "../XlsFormat/Crypt/BinaryCodec_RCF.cpp"
-#include "../XlsFormat/Crypt/Decryptor.cpp"
-#include "../XlsFormat/Crypt/RC4Crypt.cpp"
-
-#include "../XlsFormat/Logging/Log.cpp"
-#include "../XlsFormat/Logging/Logger.cpp"
-
 #include "../XlsFormat/Logic/Biff_structures/AddinUdf.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AF12Criteria.cpp"
 #include "../XlsFormat/Logic/Biff_structures/AFDOper.cpp"
@@ -750,6 +733,7 @@
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.cpp"
 
 #include "../XlsFormat/Logic/AnyObject.cpp"
@@ -762,6 +746,8 @@
 #include "../XlsFormat/Logic/MacroSheetSubstream.cpp"
 #include "../XlsFormat/Logic/WorkbookStreamObject.cpp"
 #include "../XlsFormat/Logic/WorksheetSubstream.cpp"
-#include "../XlsFormat/Auxiliary/HelpersTagsGenerator.cpp"
-#include "../XlsFormat/Auxiliary/HelpFunc.cpp"
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp"
+
+#include "../XlsFormat/Logic/Biff_unions/IMDATAOBJECT.cpp"
+#include "../XlsFormat/Logic/Biff_records/IMDATA.cpp"
+#include "../XlsFormat/Logic/Biff_structures/CFDatabar.cpp"
+#include "../XlsFormat/Logic/Biff_structures/CFGradient.cpp"

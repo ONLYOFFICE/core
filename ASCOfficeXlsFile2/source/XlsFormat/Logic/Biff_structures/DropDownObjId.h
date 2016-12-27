@@ -48,7 +48,7 @@ public:
 	static const ElementType	type = typeDropDownObjId;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ObjId id;
 };

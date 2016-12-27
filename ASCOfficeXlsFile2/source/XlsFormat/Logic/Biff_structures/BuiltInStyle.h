@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeBuiltInStyle;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char istyBuiltIn;
 	unsigned char iLevel;

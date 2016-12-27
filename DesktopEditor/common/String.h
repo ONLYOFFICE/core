@@ -320,7 +320,7 @@ namespace NSStringExt
 		}
 		static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
 		{
-			unsigned int unTextLen = wsUnicodeText.size();
+			unsigned int unTextLen = (unsigned int)wsUnicodeText.size();
 			if (unTextLen <= 0)
 				return NULL;
 
@@ -394,7 +394,7 @@ namespace NSStringExt
 	}
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, const std::wstring wsDelim, std::vector<std::wstring> &arrElements)
 	{
-		int nDelimLen = wsDelim.length();
+		int nDelimLen = (int)wsDelim.length();
 		int nPrevPos = 0;
 
 		if (nDelimLen > 0)
@@ -421,7 +421,7 @@ namespace NSStringExt
 
 		if (bWholeString)
 		{
-			int nDelimLen = wsDelim.length();
+			int nDelimLen = (int)wsDelim.length();
 			if (0 == nDelimLen)
 				arrElements.push_back(wsString);
 			else if (1 == nDelimLen)
@@ -435,14 +435,14 @@ namespace NSStringExt
 			arrCurrent.push_back(wsString);
 			arrElements.push_back(wsString);
 			int nPos = 0;
-			int nLen = wsDelim.length();
+			int nLen = (int)wsDelim.length();
 			while (nPos < nLen)
 			{
 				wchar_t wChar = wsDelim.at(nPos++);
 				arrElements.clear();
-				for (int nIndex = 0, nCount = arrCurrent.size(); nIndex < nCount; nIndex++)
+				for (size_t nIndex = 0, nCount = arrCurrent.size(); nIndex < nCount; nIndex++)
 				{
-                                        std::vector<std::wstring> arrTemp = Split(arrCurrent.at(nIndex), wChar);
+					std::vector<std::wstring> arrTemp = Split(arrCurrent.at(nIndex), wChar);
 					arrElements.insert(arrElements.end(), arrTemp.begin(), arrTemp.end());
 				}
 				arrCurrent = arrElements;
@@ -461,9 +461,10 @@ namespace NSStringExt
 	}
 	static inline void Replace(std::wstring& wsString, const std::wstring& wsFrom, const std::wstring& wsTo)
 	{
-		int nFromLen = wsFrom.length();
-		int nToLen = wsTo.length();
-		int nPos = -nToLen;
+		int nFromLen	= (int)wsFrom.length();
+		int nToLen		= (int)wsTo.length();
+		int nPos		= -nToLen;
+		
 		while (std::wstring::npos != (nPos = wsString.find(wsFrom, nPos + nToLen)))
 		{
 			wsString.replace(nPos, nFromLen, wsTo);

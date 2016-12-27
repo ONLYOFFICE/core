@@ -52,12 +52,6 @@ BaseObjectPtr MsoDrawing::clone()
 	return BaseObjectPtr(new MsoDrawing(*this));
 }
 
-
-void MsoDrawing::writeFields(CFRecord& record)
-{
-	record << rgChildRec;
-}
-
 void MsoDrawing::resetToBegin()
 {
 	if (stored_record)

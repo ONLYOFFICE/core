@@ -50,21 +50,6 @@ BaseObjectPtr CondFmt::clone()
 	return BaseObjectPtr(new CondFmt(*this));
 }
 
-
-void CondFmt::writeFields(CFRecord& record)
-{
-	unsigned short flags;
-	record << ccf;
-	SETBIT(flags, 0, fToughRecalc);
-	SETBITS(flags, 1, 15, nID);
-	record << flags;
-
-	Ref8U refBound_ref(refBound);
-	record << refBound_ref << sqref;
-
-}
-
-
 void CondFmt::readFields(CFRecord& record)
 {
 	unsigned short flags;

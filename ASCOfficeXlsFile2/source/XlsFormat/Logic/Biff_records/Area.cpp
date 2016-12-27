@@ -50,17 +50,6 @@ BaseObjectPtr Area::clone()
 	return BaseObjectPtr(new Area(*this));
 }
 
-
-void Area::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fStacked);
-	SETBIT(flags, 1, f100);
-	SETBIT(flags, 2, fHasShadow);
-	record << flags;
-}
-
-
 void Area::readFields(CFRecord& record)
 {
 	unsigned short flags;

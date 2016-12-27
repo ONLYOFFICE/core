@@ -48,17 +48,6 @@ XLS::BiffStructurePtr OfficeArtClientAnchorChart::clone()
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorChart(*this));
 }
 
-
-
-void OfficeArtClientAnchorChart::storeFields(XLS::CFRecord& record)
-{
-	unsigned short flags = 0;
-// 	SETBIT(flags, 0, fMove);
-	SETBIT(flags, 1, fSize);
-	record << flags << lx1 << ly1 << lx2 << ly2;
-}
-
-
 void OfficeArtClientAnchorChart::loadFields(XLS::CFRecord& record)
 {
 	unsigned short flags;

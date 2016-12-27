@@ -53,12 +53,6 @@ BiffStructurePtr RevNameTabid::clone()
 	return BiffStructurePtr(new RevNameTabid(*this));
 }
 
-void RevNameTabid::store(CFRecord& record)
-{
-	record << tabid << name;
-}
-
-
 void RevNameTabid::load(CFRecord& record)
 {
 	record >> tabid >> name;

@@ -77,9 +77,14 @@ namespace DocFileFormat
 			{
 				//this PAPX is for a table
 				//cp = writeTable( cp, tai.iTap );
+				int start_table_cp = cp;
+				
 				Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );
 				table.Convert( this );
 				cp = table.GetCPEnd();
+
+				if (cp == start_table_cp)
+					cp++;
 			}
 			else
 			{

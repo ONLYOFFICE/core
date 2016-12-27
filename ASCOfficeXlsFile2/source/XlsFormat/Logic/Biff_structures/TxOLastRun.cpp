@@ -50,9 +50,6 @@ TxOLastRun::~TxOLastRun()
 {
 }
 
-void TxOLastRun::store(CFRecord& record)
-{	
-}
 
 void TxOLastRun::load(CFRecord& record)
 {

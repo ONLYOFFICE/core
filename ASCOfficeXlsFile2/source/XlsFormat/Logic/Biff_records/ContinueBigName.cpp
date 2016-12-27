@@ -50,13 +50,6 @@ BaseObjectPtr ContinueBigName::clone()
 	return BaseObjectPtr(new ContinueBigName(*this));
 }
 
-
-void ContinueBigName::writeFields(CFRecord& record)
-{
-
-}
-
-
 void ContinueBigName::readFields(CFRecord& record)
 {
 #pragma message("####################### ContinueBigName record is not implemented")

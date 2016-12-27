@@ -2742,8 +2742,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f"), m_dValue );
+                CString sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}
@@ -3150,14 +3149,10 @@ namespace SimpleTypes
 			{
 				CString sResult;
 
-				int nLen = m_arrPoints.size();
-				for ( int nIndex = 0; nIndex < nLen; nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					CString sTemp;
-					if ( nIndex < nLen - 1 )
-						sTemp.Format( _T("%d,%d,"), m_arrPoints[nIndex].nX, m_arrPoints[nIndex].nY );
-					else
-						sTemp.Format( _T("%d,%d"), m_arrPoints[nIndex].nX, m_arrPoints[nIndex].nY );
+					CString sTemp = std::to_wstring(m_arrPoints[nIndex].nX) + L"," + std::to_wstring(m_arrPoints[nIndex].nY);
+					if ( nIndex < m_arrPoints.size() - 1 ) sTemp += L",";
 					sResult += sTemp;
 				}
 
@@ -4369,7 +4364,7 @@ namespace SimpleTypes
 
 			unsigned int GetSize() const
 			{
-				return m_arrLimits.size();
+				return (unsigned int)m_arrLimits.size();
 			}
 			double GetAt(int nIndex) const
 			{
@@ -4453,8 +4448,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-					sResult.Format( _T("%d"), this->m_eValue);
+                CString sResult = std::to_wstring( this->m_eValue);
 
 				return sResult;
 			}
@@ -4561,7 +4555,7 @@ namespace SimpleTypes
 
 				switch ( m_eTypeX )
 				{
-				case vmlvector2dposConstant    : sResult.Format( _T("%f"), m_dX ); break;
+                case vmlvector2dposConstant    : sResult = std::to_wstring( m_dX ); break;
 				case vmlvector2dposFormula     : sResult = _T("@") + m_sIdX; break;
 				case vmlvector2dposAdjValue    : sResult = _T("#") + m_sIdX; break;
 				case vmlvector2dposCenter      : sResult = _T("center"); break;
@@ -4575,8 +4569,7 @@ namespace SimpleTypes
 				{
 				case vmlvector2dposConstant    : 
 					{
-						CString sTemp;
-						sTemp.Format( _T("%f"), m_dY ); 
+                        CString sTemp = std::to_wstring( m_dY );
 						sResult += sTemp;
 						break;
 					}
@@ -4722,11 +4715,6 @@ namespace SimpleTypes
 				FromString( sValue );
 				return *this;
 			}
-			const CVml_Polygon2D_Units &operator =(const BSTR &bsValue)
-			{
-				FromString( bsValue );
-				return *this;
-			}
 			const CVml_Polygon2D_Units &operator =(const wchar_t* cwsString)
 			{
 				FromString( cwsString );
@@ -4805,13 +4793,10 @@ namespace SimpleTypes
 			{
 				CString sResult;
 
-				int nLen = m_arrPoints.size();
-				for ( int nIndex = 0; nIndex < nLen; nIndex++ )
+				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					CString sTemp;
-					sTemp.Format( _T("%f,%f"), m_arrPoints[nIndex].dX, m_arrPoints[nIndex].dY );
-					sResult += sTemp;
-					if ( nIndex < nLen - 1 )
+					sResult += std::to_wstring((float)m_arrPoints[nIndex].dX) + L"," + std::to_wstring((float)m_arrPoints[nIndex].dY);
+					if ( nIndex < m_arrPoints.size() - 1 )
 						sResult += m_wcDelimiter;
 				}
 
@@ -4900,8 +4885,7 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f"), m_dValue );
+                CString sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}
@@ -4928,11 +4912,6 @@ namespace SimpleTypes
 				ResetMatrix();
 				FromString( oOther.ToString() );
 			}
-			CVml_Matrix(const BSTR &bsValue)\
-			{
-				ResetMatrix();
-				FromString( bsValue );
-			}
 			CVml_Matrix(CString &sValue)
 			{
 				ResetMatrix();
@@ -4951,11 +4930,6 @@ namespace SimpleTypes
 			const CVml_Matrix &operator =(CString &sValue)
 			{
 				FromString( sValue );
-				return *this;
-			}
-			const CVml_Matrix &operator =(const BSTR &bsValue)
-			{
-				FromString( bsValue );
 				return *this;
 			}
 			const CVml_Matrix &operator =(const wchar_t* cwsString)
@@ -5158,16 +5132,16 @@ namespace SimpleTypes
 				m_bUnitsX = true;
 				m_bUnitsY = true;
 
-				int nLen = sValue.GetLength();
-				if ( nLen <= 0 )
+				int nLen = (int)sValue.length();
+				if ( nLen < 1)
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+				int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
 				CString sTemp = sValue.Mid( 0, nPos );
-				if ( -1 != sTemp.Find( '%' ) )
+				if ( -1 != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
 					m_dX = oPerc.GetValue();
@@ -5181,7 +5155,7 @@ namespace SimpleTypes
 				}
 
 				sTemp = sValue.Mid( nPos + 1, nLen - nPos - 1 );
-				if ( -1 != sTemp.Find( '%' ) )
+				if ( -1 != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
 					m_dY = oPerc.GetValue();
@@ -5199,27 +5173,15 @@ namespace SimpleTypes
 
 			virtual CString ToString  () const 
 			{
-				CString sResult;
+				CString sResult = std::to_wstring((float)m_dX);
 
-				if ( m_bUnitsX )
-					sResult.Format( _T("%fpt,"), m_dX );
-				else
-					sResult.Format( _T("%f%%,"), m_dX );
+				if ( m_bUnitsX )	sResult += L"pt,";
+				else				sResult += L"%,";
 
+				sResult += std::to_wstring((float)m_dY);
 
-				if ( m_bUnitsY )
-				{
-					CString sTemp;
-					sTemp.Format( _T("%fpt"), m_dY );
-					sResult += sTemp;
-				}
-				else
-				{
-					CString sTemp;
-					sTemp.Format( _T("%f%%"), m_dY );
-					sResult += sTemp;
-				}
-
+				if ( m_bUnitsY )	sResult += L"pt";
+				else				sResult += L"%";
 
 				return sResult;
 			}
@@ -5280,16 +5242,16 @@ namespace SimpleTypes
 					return 0;
 
 				// Разделителями могут быть запятые и пробелы
-				sValue.Replace( _T(","), _T(" ") );
-				while ( -1 != sValue.Find( _T("  ") ) )
-					sValue.Replace( _T("  "), _T(" ") );
+				sValue.Replace( L",", L" " );
+				while ( -1 != sValue.find( L"  " ) )
+					sValue.Replace( L"  ", L" " );
 
 				int nStartPos = 0;
 				if ( ' ' == sValue[0] )
 					nStartPos++;
 
 				// Left
-				int nEndPos = sValue.Find( _T(" "), nStartPos );
+				int nEndPos = sValue.find( _T(" "), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5298,7 +5260,7 @@ namespace SimpleTypes
 
 				// Top
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(" "), nStartPos );
+				nEndPos = sValue.find( _T(" "), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5307,7 +5269,7 @@ namespace SimpleTypes
 
 				// Right
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(" "), nStartPos );
+				nEndPos = sValue.find( L" ", nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5316,7 +5278,7 @@ namespace SimpleTypes
 
 				// Bottom
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(" "), nStartPos );
+				nEndPos = sValue.find( L" ", nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5328,9 +5290,7 @@ namespace SimpleTypes
 
 			CString ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%fpt,%fpt,%fpt,%fpt"), m_dLeft, m_dTop, m_dRight, m_dBottom );
-				return sResult;
+				return std::to_wstring((float)m_dLeft) + L"pt," + std::to_wstring((float)m_dTop) + L"pt," + std::to_wstring((float)m_dRight) + L"pt,"+ std::to_wstring((float)m_dBottom) + L"pt";
 			}
 
 			SimpleType_FromString2    (double)

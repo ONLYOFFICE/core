@@ -53,13 +53,6 @@ BiffStructurePtr FeatFormulaErr2::clone()
 	return BiffStructurePtr(new FeatFormulaErr2(*this));
 }
 
-
-void FeatFormulaErr2::store(CFRecord& record)
-{
-	record << grffecIgnore;
-}
-
-
 void FeatFormulaErr2::load(CFRecord& record)
 {
 	record >> grffecIgnore;

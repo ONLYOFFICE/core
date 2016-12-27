@@ -51,12 +51,6 @@ BaseObjectPtr LeftMargin::clone()
 }
 
 
-void LeftMargin::writeFields(CFRecord& record)
-{
-	record << num;
-}
-
-
 void LeftMargin::readFields(CFRecord& record)
 {
 	record >> num;

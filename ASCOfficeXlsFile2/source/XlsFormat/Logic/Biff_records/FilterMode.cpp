@@ -51,14 +51,6 @@ BaseObjectPtr FilterMode::clone()
 }
 
 
-void FilterMode::writeFields(CFRecord& record)
-{
-#pragma message("####################### FilterMode record is not implemented")
-	Log::error("FilterMode record is not implemented.");
-	//record << some_value;
-}
-
-
 void FilterMode::readFields(CFRecord& record)
 {
 	// No data

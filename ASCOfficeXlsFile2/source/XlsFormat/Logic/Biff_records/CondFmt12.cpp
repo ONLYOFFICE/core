@@ -51,12 +51,6 @@ BaseObjectPtr CondFmt12::clone()
 }
 
 
-void CondFmt12::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CondFmt12::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;

@@ -179,7 +179,7 @@ namespace NFileWriter
 
 			if (dwFrom == 1/*FILE_CURRENT*/)
 			{
-				dwFrom += m_oFile.GetPosition();
+				dwFrom += (DWORD)m_oFile.GetPosition();
 			}
 
 			if (m_oFile.SetPosition(lPosition) != S_OK)

@@ -57,8 +57,8 @@ namespace DocFileFormat
 		WordDocument*					m_document;
 		ConversionContext*				m_context;
 	
-		XMLTools::XMLElement<wchar_t>*	_pPr;
-		XMLTools::XMLElement<wchar_t>*	_framePr;
+        XMLTools::XMLElement*           _pPr;
+        XMLTools::XMLElement*           _framePr;
 		SectionPropertyExceptions*		_sepx;
 		CharacterPropertyExceptions*	_paraEndChpx;
 		int								_sectionNr;

@@ -53,15 +53,6 @@ XLS::BiffStructurePtr CompositeMoniker::clone()
 	return XLS::BiffStructurePtr(new CompositeMoniker(*this));
 }
 
-
-void CompositeMoniker::store(XLS::CFRecord& record)
-{
-#pragma message("####################### CompositeMoniker record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CompositeMoniker record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void CompositeMoniker::load(XLS::CFRecord& record)
 {
 	unsigned int cMonikers;

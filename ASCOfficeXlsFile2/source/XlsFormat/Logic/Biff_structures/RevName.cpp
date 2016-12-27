@@ -54,14 +54,6 @@ BiffStructurePtr RevName::clone()
 }
 
 
-void RevName::store(CFRecord& record)
-{
-#pragma message("####################### RevName record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RevName record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void RevName::load(CFRecord& record)
 {
 	unsigned char book_type = *record.getCurData<unsigned char>();

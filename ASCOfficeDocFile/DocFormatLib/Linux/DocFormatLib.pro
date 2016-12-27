@@ -32,7 +32,7 @@ INCLUDEPATH += \
 	../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.11
 }
 
 SOURCES +=  \
@@ -43,10 +43,12 @@ SOURCES +=  \
     ../../DocDocxConverter/Spa.cpp \
     ../../DocDocxConverter/OleObject.cpp
 
-build_fast {
+core_release {
 SOURCES += \
     docformatlib_converter.cpp
-} else {
+}
+
+core_debug {
 SOURCES += \
     ../../DocDocxConverter/AnnotationReferenceDescriptor.cpp \
     ../../DocDocxConverter/CharacterPropertiesMapping.cpp \

@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeRevLblName;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	const std::wstring toString() const;
 

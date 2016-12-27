@@ -49,7 +49,7 @@ public:
 
 	
 	virtual void load(CFRecord& record); // No type info
-	virtual void store(CFRecord& record); // No type info
+ // No type info
 
 	const std::wstring toString() const;
 	const std::wstring toColumnsSet() const;

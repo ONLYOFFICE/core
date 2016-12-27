@@ -50,13 +50,6 @@ BaseObjectPtr UsesELFs::clone()
 	return BaseObjectPtr(new UsesELFs(*this));
 }
 
-
-void UsesELFs::writeFields(CFRecord& record)
-{
-	record << useselfs;
-}
-
-
 void UsesELFs::readFields(CFRecord& record)
 {
 	record >> useselfs;

@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeList12BlockLevel;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	_UINT32	cbdxfHeader;
 	_UINT32	istnHeader;

@@ -49,14 +49,6 @@ BaseObjectPtr BoolErr::clone()
 	return BaseObjectPtr(new BoolErr(*this));
 }
 
-
-void BoolErr::writeFields(CFRecord& record)
-{
-	resender.store(record);
-	record << cell << bes;
-}
-
-
 void BoolErr::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();

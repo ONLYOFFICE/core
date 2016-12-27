@@ -1081,7 +1081,7 @@ public:
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
 					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
-					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
+					pParentShape->m_oText.m_oAttributes.m_oFont.Name = str;
 				}				
 			}break;
 		case NSOfficeDrawing::gtextSize:

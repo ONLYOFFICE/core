@@ -283,7 +283,7 @@ namespace NSPresentationEditor
 					//pPart->m_strFile.Replace(L"%20", L" ");
 				}
 
-				CString strFile_ = std_string2string(pPart->m_strFile);
+				CString strFile_ = pPart->m_strFile;
 				CorrectXmlString(strFile_);
 
 				strOverlay2.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%s'/></AudioSource>"), 

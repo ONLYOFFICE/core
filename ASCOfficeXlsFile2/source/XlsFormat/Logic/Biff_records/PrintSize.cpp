@@ -50,13 +50,6 @@ BaseObjectPtr PrintSize::clone()
 	return BaseObjectPtr(new PrintSize(*this));
 }
 
-
-void PrintSize::writeFields(CFRecord& record)
-{
-	record << printSize;
-}
-
-
 void PrintSize::readFields(CFRecord& record)
 {
 	record >> printSize;

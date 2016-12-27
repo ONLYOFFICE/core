@@ -42,8 +42,8 @@ namespace DocFileFormat
 		m_document		=	document;
 		m_context		=	context;
 	
-		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
-		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
+        _pPr			= new XMLTools::XMLElement( _T( "w:pPr" ) );
+        _framePr		= new XMLTools::XMLElement( _T( "w:framePr" ) );
 
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
@@ -57,8 +57,8 @@ namespace DocFileFormat
 		m_document		=	document;
 		m_context		=	context;
 		
-		_pPr			= new XMLTools::XMLElement<wchar_t>( _T( "w:pPr" ) );
-		_framePr		= new XMLTools::XMLElement<wchar_t>( _T( "w:framePr" ) );
+        _pPr			= new XMLTools::XMLElement( _T( "w:pPr" ) );
+        _framePr		= new XMLTools::XMLElement( _T( "w:framePr" ) );
 		
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
@@ -82,17 +82,17 @@ namespace DocFileFormat
 	{
 		ParagraphPropertyExceptions* papx = static_cast<ParagraphPropertyExceptions*>( visited );
 
-		XMLTools::XMLElement<wchar_t> ind		( _T( "w:ind" ) );
-		XMLTools::XMLElement<wchar_t> numPr		( _T( "w:numPr" ) );
-		XMLTools::XMLElement<wchar_t> pBdr		( _T( "w:pBdr" ) );
-		XMLTools::XMLElement<wchar_t> spacing	( _T( "w:spacing" ) );
-		XMLTools::XMLElement<wchar_t>* jc = NULL;
+        XMLTools::XMLElement ind		( _T( "w:ind" ) );
+        XMLTools::XMLElement numPr		( _T( "w:numPr" ) );
+        XMLTools::XMLElement pBdr		( _T( "w:pBdr" ) );
+        XMLTools::XMLElement spacing	( _T( "w:spacing" ) );
+        XMLTools::XMLElement* jc = NULL;
 
 		if ( _isParagraphStyleNeeded )
 		{
 			//append style id , do not append "Normal" style (istd 0)
-			XMLTools::XMLElement<wchar_t>  pStyle( _T( "w:pStyle" ) );
-			XMLTools::XMLAttribute<wchar_t> styleId( _T( "w:val" ), StyleIdentifierMap[0] );
+            XMLTools::XMLElement  pStyle( _T( "w:pStyle" ) );
+            XMLTools::XMLAttribute styleId( _T( "w:val" ), StyleIdentifierMap[0] );
 
 			if ( papx->istd < m_document->Styles->Styles->size() )
 			{
@@ -106,7 +106,7 @@ namespace DocFileFormat
 		//append formatting of paragraph end mark
 		if ( _paraEndChpx != NULL )
 		{
-			XMLTools::XMLElement<wchar_t>* rPr = new XMLTools::XMLElement<wchar_t>( _T( "w:rPr" ) );
+            XMLTools::XMLElement* rPr = new XMLTools::XMLElement( _T( "w:rPr" ) );
 
 			//append properties
 			RevisionData* rev = new RevisionData( _paraEndChpx );
@@ -116,7 +116,7 @@ namespace DocFileFormat
 			//append delete infos
 			if ( rev->Type == Deleted )
 			{
-				XMLTools::XMLElement<wchar_t> del( _T( "w:del" ) );
+                XMLTools::XMLElement del( _T( "w:del" ) );
 				rPr->AppendChild( del );
 			}
 
@@ -283,10 +283,10 @@ namespace DocFileFormat
 				{
 					LineSpacingDescriptor lspd( iter->Arguments, iter->argumentsSize );
 
-					XMLTools::XMLAttribute<wchar_t> line( _T( "w:line" ), FormatUtils::IntToWideString( abs( lspd.dyaLine ) ).c_str() );
+                    XMLTools::XMLAttribute line( _T( "w:line" ), FormatUtils::IntToWideString( abs( lspd.dyaLine ) ).c_str() );
 					spacing.AppendAttribute( line );
 
-					XMLTools::XMLAttribute<wchar_t> lineRule( _T( "w:lineRule" ), _T( "auto" ) );
+                    XMLTools::XMLAttribute lineRule( _T( "w:lineRule" ), _T( "auto" ) );
 
 					if( ( !lspd.fMultLinespace ) && ( lspd.dyaLine < 0 ) )
 					{
@@ -311,10 +311,10 @@ namespace DocFileFormat
 						iter->Arguments[0] = (iter->Arguments[0] == 0 ? 2 : 0);
 					}
 					RELEASEOBJECT( jc );
-					jc = new XMLTools::XMLElement<wchar_t>( L"w:jc" );
+                    jc = new XMLTools::XMLElement( L"w:jc" );
 					if ( jc )
 					{
-						XMLTools::XMLAttribute<wchar_t> jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
+                        XMLTools::XMLAttribute jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
 						jc->AppendAttribute( jcVal );
 					}
 				}break;	
@@ -325,7 +325,7 @@ namespace DocFileFormat
 					//case 0x4424:
 				case sprmPBrcTop80:
 				{
-					XMLTools::XMLElement<wchar_t> topBorder( _T( "w:top" ) );
+                    XMLTools::XMLElement topBorder( _T( "w:top" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -340,7 +340,7 @@ namespace DocFileFormat
 					//case 0x4425:
 				case sprmPBrcLeft80:
 				{
-					XMLTools::XMLElement<wchar_t> leftBorder( _T( "w:left" ) );
+                    XMLTools::XMLElement leftBorder( _T( "w:left" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -355,7 +355,7 @@ namespace DocFileFormat
 					//case 0x4426:
 				case sprmPBrcBottom80:
 				{
-					XMLTools::XMLElement<wchar_t> bottomBorder( _T( "w:bottom" ) );
+                    XMLTools::XMLElement bottomBorder( _T( "w:bottom" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -370,7 +370,7 @@ namespace DocFileFormat
 					//case 0x4427:
 				case sprmPBrcRight80:
 				{
-					XMLTools::XMLElement<wchar_t> rightBorder( _T( "w:right" ) );
+                    XMLTools::XMLElement rightBorder( _T( "w:right" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -385,7 +385,7 @@ namespace DocFileFormat
 					//case 0x4428:
 				case sprmPBrcBetween80:
 				{
-					XMLTools::XMLElement<wchar_t> betweenBorder( _T( "w:between" ) );
+                    XMLTools::XMLElement betweenBorder( _T( "w:between" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -400,7 +400,7 @@ namespace DocFileFormat
 					//case 0x4629:
 				case sprmPBrcBar80:
 				{
-					XMLTools::XMLElement<wchar_t> barBorder( _T( "w:bar" ) );
+                    XMLTools::XMLElement barBorder( _T( "w:bar" ) );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -438,10 +438,10 @@ namespace DocFileFormat
 				}break;
 
 				case sprmOldPNLvlAnm:
-				{					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
+				{					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
 					if (level > 0 && level < 10) 					
 						appendValueElement( _pPr, _T( "outlineLvl" ), level, false );		
-				}break;				case sprmOldPFNoLineNumb:
+				}break;				case sprmOldPFNoLineNumb:
 				{
 				}break;
 
@@ -480,7 +480,7 @@ namespace DocFileFormat
 				case sprmPChgTabsPapx:
 				case sprmPChgTabs:
 				{
-					XMLTools::XMLElement<wchar_t> tabs( _T( "w:tabs" ) );
+                    XMLTools::XMLElement tabs( _T( "w:tabs" ) );
 
 					int pos = 0;
 
@@ -491,14 +491,14 @@ namespace DocFileFormat
 
 					for( int i=0; i < itbdDelMax; i++ )
 					{
-						XMLTools::XMLElement<wchar_t> tab( _T( "w:tab" ) );
+                        XMLTools::XMLElement tab( _T( "w:tab" ) );
 
 						//clear
-						XMLTools::XMLAttribute<wchar_t> tabsVal( _T( "w:val" ), _T( "clear" ) );
+                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), _T( "clear" ) );
 						tab.AppendAttribute( tabsVal );
 
 						//position
-						XMLTools::XMLAttribute<wchar_t> tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ).c_str() );
+                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ).c_str() );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -523,18 +523,18 @@ namespace DocFileFormat
 					{
 						TabDescriptor tbd( iter->Arguments[pos + ( itbdAddMax * 2 ) + i] );
 
-						XMLTools::XMLElement<wchar_t> tab( _T( "w:tab" ) );
+                        XMLTools::XMLElement tab( _T( "w:tab" ) );
 
 						//justification
-						XMLTools::XMLAttribute<wchar_t> tabsVal( _T( "w:val" ), FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ).c_str() );
+                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ).c_str() );
 						tab.AppendAttribute( tabsVal );
 
 						//tab leader type
-						XMLTools::XMLAttribute<wchar_t> leader( _T( "w:leader" ), FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ).c_str() );
+                        XMLTools::XMLAttribute leader( _T( "w:leader" ), FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ).c_str() );
 						tab.AppendAttribute( leader );
 
 						//position
-						XMLTools::XMLAttribute<wchar_t> tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ).c_str() );
+                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ).c_str() );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -632,7 +632,7 @@ namespace DocFileFormat
 		//append section properties
 		if ( _sepx != NULL )
 		{
-			XMLTools::XMLElement<wchar_t> sectPr( _T( "w:sectPr" ) );
+            XMLTools::XMLElement sectPr( _T( "w:sectPr" ) );
 			SectionPropertiesMapping* sectionPropertiesMapping = new SectionPropertiesMapping( &sectPr, m_context, _sectionNr );
 			_sepx->Convert( sectionPropertiesMapping );
 

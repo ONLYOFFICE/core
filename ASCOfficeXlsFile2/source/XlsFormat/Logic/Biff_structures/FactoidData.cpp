@@ -53,14 +53,6 @@ BiffStructurePtr FactoidData::clone()
 	return BiffStructurePtr(new FactoidData(*this));
 }
 
-void FactoidData::store(CFRecord& record)
-{
-#pragma message("####################### FactoidData record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FactoidData record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void FactoidData::load(CFRecord& record)
 {
 	unsigned short flags;

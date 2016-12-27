@@ -49,7 +49,7 @@ public:
 	
 	void load(CFRecord& record, const PtgVector& records_from_rgce, bool is_part_of_a_revision);
 	void load(CFRecord& record, unsigned short rgce_record_type, bool is_part_of_a_revision);
-	virtual void store(CFRecord& record);
+
 
 	const PtgQueue& getPtgs() const;
 	const bool isEmpty() const;

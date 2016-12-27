@@ -51,13 +51,6 @@ BaseObjectPtr Note::clone()
 }
 
 
-void Note::writeFields(CFRecord& record)
-{
-#pragma message("####################### Note record is not implemented")
-	Log::error("Note record is not implemented.");
-	//record << some_value;
-}
-
 
 void Note::readFields(CFRecord& record)
 {

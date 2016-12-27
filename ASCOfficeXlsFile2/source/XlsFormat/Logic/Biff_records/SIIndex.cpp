@@ -57,12 +57,6 @@ BaseObjectPtr SIIndex::clone()
 }
 
 
-void SIIndex::writeFields(CFRecord& record)
-{
-	record << numIndex;
-}
-
-
 void SIIndex::readFields(CFRecord& record)
 {
 	record >> numIndex;

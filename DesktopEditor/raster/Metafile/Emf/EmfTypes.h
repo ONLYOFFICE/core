@@ -190,18 +190,39 @@
 #define EMR_SMALLTEXTOUT EMR_RESERVED_108
 #endif
 
-#define ETO_OPAQUE             0x00000002
-#define ETO_CLIPPED            0x00000004
-#define ETO_GLYPH_INDEX        0x00000010
-#define ETO_RTLREADING         0x00000080
-#define ETO_NO_RECT            0x00000100
-#define ETO_SMALL_CHARS        0x00000200
-#define ETO_NUMERICSLOCAL      0x00000400
-#define ETO_NUMERICSLATIN      0x00000800
-#define ETO_IGNORELANGUAGE     0x00001000
-#define ETO_PDY                0x00002000
-#define ETO_REVERSE_INDEX_MAP  0x00010000
-
+#ifndef ETO_OPAQUE
+	#define ETO_OPAQUE             0x00000002
+#endif
+#ifndef ETO_CLIPPED
+	#define ETO_CLIPPED            0x00000004
+#endif
+#ifndef ETO_GLYPH_INDEX
+	#define ETO_GLYPH_INDEX        0x00000010
+#endif
+#ifndef ETO_RTLREADING
+	#define ETO_RTLREADING         0x00000080
+#endif
+#ifndef ETO_NO_RECT
+	#define ETO_NO_RECT            0x00000100
+#endif
+#ifndef ETO_SMALL_CHARS
+	#define ETO_SMALL_CHARS        0x00000200
+#endif
+#ifndef ETO_NUMERICSLOCAL 
+	#define ETO_NUMERICSLOCAL      0x00000400
+#endif
+#ifndef ETO_NUMERICSLATIN
+	#define ETO_NUMERICSLATIN      0x00000800
+#endif
+#ifndef ETO_IGNORELANGUAGE
+	#define ETO_IGNORELANGUAGE     0x00001000
+#endif
+#ifndef ETO_PDY
+	#define ETO_PDY                0x00002000
+#endif
+#ifndef ETO_REVERSE_INDEX_MAP
+	#define ETO_REVERSE_INDEX_MAP  0x00010000
+#endif
 
 namespace MetaFile
 {

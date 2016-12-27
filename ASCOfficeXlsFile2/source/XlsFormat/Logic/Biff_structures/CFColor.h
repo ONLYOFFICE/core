@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeCFColor;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	XColorType	xclrType;
 	ColorICV	icv;

@@ -66,7 +66,10 @@ public:
 	BaseObjectPtr m_DataLabExtContents;
 	BaseObjectPtr m_TEXTPROPS;
 
-	short m_iLinkObject;
+	short	m_iLinkObject;
+	bool	m_bUsed;
+
+
 };
 
 } // namespace XLS

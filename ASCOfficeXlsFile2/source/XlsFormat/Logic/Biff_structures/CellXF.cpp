@@ -49,53 +49,6 @@ BiffStructurePtr CellXF::clone()
 	return BiffStructurePtr(new CellXF(*this));
 }
 
-void CellXF::store(CFRecord& record)
-{
-	_UINT32 flags = 0;
-
-	SETBITS(flags, 0, 2, alc);
-	SETBIT(flags, 3, fWrap);
-	SETBITS(flags, 4, 6, alcV);
-	SETBIT(flags, 7, fJustLast);
-	SETBITS(flags, 8, 15, trot);
-	SETBITS(flags, 16, 19, cIndent);
-	SETBIT(flags, 20, fShrinkToFit);
-	SETBITS(flags, 22, 23, iReadOrder);
-	SETBIT(flags, 26, fAtrNum);
-	SETBIT(flags, 27, fAtrFnt);
-	SETBIT(flags, 28, fAtrAlc);
-	SETBIT(flags, 29, fAtrBdr);
-	SETBIT(flags, 30, fAtrPat);
-	SETBIT(flags, 31, fAtrProt);
-	record << flags;
-
-	flags = 0;
-	SETBITS(flags, 0, 3, border.dgLeft);
-	SETBITS(flags, 4, 7, border.dgRight);
-	SETBITS(flags, 8, 11, border.dgTop);
-	SETBITS(flags, 12, 15, border.dgBottom);
-	SETBITS(flags, 16, 22, border.icvLeft);
-	SETBITS(flags, 23, 29, border.icvRight);
-	SETBITS(flags, 30, 31, border.grbitDiag);
-	record << flags;
-
-	flags = 0;
-	SETBITS(flags, 0, 6, border.icvTop);
-	SETBITS(flags, 7, 13, border.icvBottom);
-	SETBITS(flags, 14, 20, border.icvDiag);
-	SETBITS(flags, 21, 24, border.dgDiag);
-	SETBIT(flags, 25, fHasXFExt);
-	SETBITS(flags, 26, 31, fill.fls);
-	record << flags;
-
-	unsigned short flags2 = 0;
-	SETBITS(flags2, 0, 6, fill.icvFore);
-	SETBITS(flags2, 7, 13, fill.icvBack);
-	SETBIT(flags2, 14, fsxButton);
-	record << flags2;
-}
-
-
 void CellXF::load(CFRecord& record)
 {
 	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();

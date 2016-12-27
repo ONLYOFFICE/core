@@ -69,19 +69,6 @@ void Rgce::load(CFRecord& record, const size_t cce_val)
 	}
 }
 
-
-void Rgce::store(CFRecord& record)
-{
-	size_t rgce_start_offset = record.getDataSize();
-
-	for(PtgVector::const_iterator it = sequence.begin(), itEnd = sequence.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-	cce = record.getDataSize() - rgce_start_offset;
-}
-
-
 void Rgce::load(CFRecord& record)
 {
 	size_t where_to_stop = record.getRdPtr() + cce.get_value_or(0);

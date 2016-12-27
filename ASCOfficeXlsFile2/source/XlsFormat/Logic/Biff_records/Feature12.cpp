@@ -51,12 +51,6 @@ BaseObjectPtr Feature12::clone()
 }
 
 
-void Feature12::writeFields(CFRecord& record)
-{
-
-}
-
-
 void Feature12::readFields(CFRecord& record)
 {
 

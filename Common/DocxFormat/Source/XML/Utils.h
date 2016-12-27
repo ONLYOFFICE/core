@@ -174,26 +174,22 @@ namespace XmlUtils
 	}
 	AVSINLINE CString IntToString   (const int   & value)
 	{
-		CString str = _T("");
-		str.Format(_T("%d"), value);
+        CString str = std::to_wstring( value);
 		return str;
 	}
 	AVSINLINE CString UIntToString  (const size_t   & value)
 	{
-		CString str = _T("");
-		str.Format(_T("%u"), value);
+        CString str = std::to_wstring( value);
 		return str;
 	}
 	AVSINLINE CString FloatToString (const float & value)
 	{
-		CString str = _T("");
-		str.Format(_T("%f"), value);
+        CString str = std::to_wstring(value);
 		return str;
 	}
 	AVSINLINE CString DoubleToString(const double& value)
 	{
-		CString str = _T("");
-		str.Format(_T("%lf"), value);
+        CString str = std::to_wstring(value);
 		return str;
 	}
 	AVSINLINE static CString GetLower(const CString& string)

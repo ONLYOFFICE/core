@@ -51,13 +51,6 @@ BaseObjectPtr SeriesText::clone()
 }
 
 
-void SeriesText::writeFields(CFRecord& record)
-{
-	record.reserveNunBytes(2);
-	record << stText;
-}
-
-
 void SeriesText::readFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // reserved

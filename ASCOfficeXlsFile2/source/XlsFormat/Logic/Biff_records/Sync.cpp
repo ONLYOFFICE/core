@@ -51,16 +51,6 @@ BaseObjectPtr Sync::clone()
 	return BaseObjectPtr(new Sync(*this));
 }
 
-
-void Sync::writeFields(CFRecord& record)
-{
-	CellRef ref_temp(ref_);
-	rw = static_cast<unsigned short>(ref_temp.getRow());
-	col = static_cast<unsigned short>(ref_temp.getColumn());
-	record << rw << col;
-}
-
-
 void Sync::readFields(CFRecord& record)
 {
 	record >> rw >> col;

@@ -60,18 +60,6 @@ BiffStructurePtr PtgExtraArray::clone()
 	return BiffStructurePtr(new PtgExtraArray(*this));
 }
 
-
-
-void PtgExtraArray::store(CFRecord& record)
-{
-	record << cols << rows;
-	for(std::vector<SerArPtr>::const_iterator it = array_.begin(), itEnd = array_.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void PtgExtraArray::load(CFRecord& record)
 {
 	record >> cols >> rows;

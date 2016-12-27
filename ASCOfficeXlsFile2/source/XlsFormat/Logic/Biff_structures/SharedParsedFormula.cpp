@@ -60,14 +60,6 @@ void SharedParsedFormula::load(CFRecord& record)
 }
 
 
-void SharedParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_ShrFmla);
-	rgcb.store(record);
-}
-
 
 } // namespace XLS
 

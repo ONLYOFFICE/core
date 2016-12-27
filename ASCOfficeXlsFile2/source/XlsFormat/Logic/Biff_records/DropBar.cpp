@@ -51,12 +51,6 @@ BaseObjectPtr DropBar::clone()
 }
 
 
-void DropBar::writeFields(CFRecord& record)
-{
-	record << pcGap;
-}
-
-
 void DropBar::readFields(CFRecord& record)
 {
 	record >> pcGap;

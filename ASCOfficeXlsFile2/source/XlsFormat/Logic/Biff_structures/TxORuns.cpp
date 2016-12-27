@@ -54,10 +54,6 @@ TxORuns::~TxORuns()
 }
 
 
-void TxORuns::store(CFRecord& record)
-{	
-}
-
 void TxORuns::load(CFRecord& record)
 {
 	for (int i = 0; i < m_runCount; i++)

@@ -50,13 +50,6 @@ BaseObjectPtr SerParent::clone()
 	return BaseObjectPtr(new SerParent(*this));
 }
 
-
-void SerParent::writeFields(CFRecord& record)
-{
-	record << series;
-}
-
-
 void SerParent::readFields(CFRecord& record)
 {
 	record >> series;

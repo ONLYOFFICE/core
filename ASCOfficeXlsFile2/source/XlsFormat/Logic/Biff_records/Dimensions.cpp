@@ -52,27 +52,6 @@ BaseObjectPtr Dimensions::clone()
 }
 
 
-void Dimensions::writeFields(CFRecord& record)
-{
-	if(!(ref_ == std::wstring (L"") || ref_ == std::wstring (L"A1")))
-	{
-		CellRangeRef ref_ref(ref_);
-		rwMic = ref_ref.getRowFirst();
-		rwMac = ref_ref.getRowLast() + 1;// zero-based index of the row after the last row in the sheet that contains a used cell
-		colMic = static_cast<unsigned short>(ref_ref.getColumnFirst());
-		colMac = static_cast<unsigned short>(ref_ref.getColumnLast()) + 1; // zero-based index of the column after the last column in the sheet that contains a used cell
-	}
-	else
-	{
-		rwMic = 0;
-		rwMac = 0;
-		colMic = 0;
-		colMac = 0;
-	}
-	record << rwMic << rwMac << colMic << colMac;
-	record.reserveNunBytes(2); // reserved
-}
-
 
 void Dimensions::readFields(CFRecord& record)
 {

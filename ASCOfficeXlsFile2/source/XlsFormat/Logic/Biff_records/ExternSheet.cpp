@@ -53,17 +53,6 @@ BaseObjectPtr ExternSheet::clone()
 }
 
 
-void ExternSheet::writeFields(CFRecord& record)
-{
-	cXTI = rgXTI.size();
-	record << cXTI;
-	for(BiffStructurePtrVector::const_iterator it = rgXTI.begin(), itEnd = rgXTI.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
-
 void ExternSheet::readFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0600)

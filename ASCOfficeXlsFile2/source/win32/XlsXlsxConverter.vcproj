@@ -289,10 +289,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\common\utils.cpp"
 				>
 			</File>
@@ -1063,6 +1059,10 @@
 		</File>
 		<File
 			RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\Common\DocxFormat\Source\Base\unicode_util.cpp"
 			>
 		</File>
 		<File

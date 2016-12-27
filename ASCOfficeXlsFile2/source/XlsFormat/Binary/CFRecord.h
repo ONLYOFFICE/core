@@ -72,21 +72,20 @@ static std::wstring convertUtf16ToWString(const UTF16 * Data, int nLength)
     return wstr;
 }
 
-// Binary representation of a record in BIFF8
 class CFRecord
 {
 public:
 	CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the stream
 	CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info); // Create an empty record
 	~CFRecord();
+
 	void save(CFStreamPtr stream);
 	void commitData();
-/* ID */
-	const CFRecordType::TypeId getTypeId() const;
+
+	const CFRecordType::TypeId		getTypeId()		const;
 	const CFRecordType::TypeString& getTypeString() const;
-	// File Pointer to the start of the record in file
+
 	const unsigned int getStreamPointer() const;
-/* Data */
 	// Pointer to the beginning of the cached data
 	const char* getData() const ;
 	const size_t getDataSize() const;
@@ -95,7 +94,6 @@ public:
 	void appendRawData(const char* raw_data, const size_t size);
 	void insertDataFromRecordToBeginning(CFRecordPtr where_from);
 
-/* Pointers */
 	const bool isEOF() const; // whether all the data have bean read
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Doesn't generate an exception
@@ -129,20 +127,11 @@ public:
 		size_ += n;
 
 	}
-
-/* Markup delayed data */
-
-	// Registers data receiver place and reserves n unsigned chars for it
 	void registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, const size_t n, const CFRecordType::TypeId receiver_id = rt_NONE);
-	// Registers delayed source data as any user-defined unsigned int
 	void registerDelayedDataSource(const unsigned int data,  const CFRecordType::TypeId receiver_id);
-	// Registers delayed source data as file pointer of the start of the record
 	void registerDelayedFilePointerSource(const CFRecordType::TypeId receiver_id);
-	// Registers delayed source data as file pointer of the start of the record and the specified offset added
 	void registerDelayedFilePointerAndOffsetSource(const unsigned int offset,  const CFRecordType::TypeId receiver_id);
 
-
-	// Extract the specified type of data without moving rdPtr
 	template<class T>
 	const T* getCurData() const
 	{
@@ -187,25 +176,12 @@ public:
     CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; }
 	CFRecord& operator>>(bool& val);
 
-    CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(unsigned int& val)		{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(int& val)				{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(double& val)			{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(_GUID_& val)			{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(short& val)			{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(char& val)				{ storeAnyData(val);	return *this; }
-    CFRecord& operator<<(wchar_t& val)			{ storeAnyData(val);	return *this; }
-	CFRecord& operator<<(bool& val);
-
 private:
 	static const size_t MAX_RECORD_SIZE = 8224;
 
-private:
 	CFStream::ReceiverItems receiver_items;
 	CFStream::SourceItems source_items;
 
-private: // parts of the record
 	unsigned int file_ptr;
 	CFRecordType::TypeId type_id_;
 	size_t size_;
@@ -213,7 +189,6 @@ private: // parts of the record
 	size_t rdPtr;
 	static char intData[MAX_RECORD_SIZE];
 
-private:
 	GlobalWorkbookInfoPtr global_info_;
 };
 
@@ -262,16 +237,6 @@ CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
     CFRecord& operator>>(CFRecord & record, std::wstring & str);
 #endif
 
-template<class T>
-CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
-{
-    for(typename std::basic_string<T, std::char_traits<T>, std::allocator<T> >::iterator it = str.begin(), itEnd = str.end(); it != itEnd; ++it)
-    {
-        record << *it;
-    }
-    record.storeAnyData(static_cast<T>(0));
-    return record;
-}
 
 template<class T>
 CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)

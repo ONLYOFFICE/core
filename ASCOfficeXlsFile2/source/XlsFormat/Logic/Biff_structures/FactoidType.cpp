@@ -43,14 +43,6 @@ XLS::BiffStructurePtr FactoidType::clone()
 }
 
 
-void FactoidType::store(XLS::CFRecord& record)
-{
-#pragma message("####################### FactoidType record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FactoidType record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void FactoidType::load(XLS::CFRecord& record)
 {
 	_UINT32 cbFactoid;

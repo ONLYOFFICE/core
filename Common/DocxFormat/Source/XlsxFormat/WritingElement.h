@@ -377,6 +377,8 @@ namespace Spreadsheet
 		et_xdr_GraphicData,
 		et_OleObjects,
 		et_OleObject,
+		et_OleObjectPr,
+		et_OleObjectAnchor,
 		et_TableParts,
 		et_TablePart,
 		et_Table,

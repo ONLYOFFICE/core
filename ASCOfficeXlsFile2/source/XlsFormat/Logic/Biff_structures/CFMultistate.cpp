@@ -42,25 +42,6 @@ BiffStructurePtr CFMultistate::clone()
 	return BiffStructurePtr(new CFMultistate(*this));
 }
 
-
-
-void CFMultistate::store(CFRecord& record)
-{
-	record.reserveNunBytes(2); // unused
-	record.reserveNunBytes(1); // reserved
-	record << cStates << iIconSet;
-	unsigned char flags = 0;
-	SETBIT(flags, 0, fIconOnly);
-	SETBIT(flags, 2, fReverse);
-	record << flags;
-
-	for(std::vector<CFMStateItemPtr>::iterator it = rgStates.begin(), itEnd = rgStates.end(); it != itEnd; ++it)
-	{
-		(*it)->store(record);
-	}
-}
-
-
 void CFMultistate::load(CFRecord& record)
 {
 	record.skipNunBytes(2); // unused

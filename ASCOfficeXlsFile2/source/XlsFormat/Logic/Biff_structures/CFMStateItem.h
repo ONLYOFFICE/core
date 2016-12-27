@@ -50,7 +50,7 @@ public:
 
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	CFVO cfvo;
 	Boolean<unsigned char> fEqual;

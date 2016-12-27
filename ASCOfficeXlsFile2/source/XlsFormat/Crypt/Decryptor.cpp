@@ -37,11 +37,11 @@
 
 namespace CRYPT
 {
-	RC4Decryptor::RC4Decryptor(CryptRC4Data & header, std::wstring password, int type) :
-							crypt	(new RC4Crypt(header, password, type)),
-							type	(Crypt::RC4)
+	RC4Decryptor::RC4Decryptor(CryptRC4Data & header, std::wstring _password, int _type) :
+													crypt(new RC4Crypt(header, _password, _type))
 	{
-		crypt_data = header;
+		crypt_data	= header;
+		type		= _type;
 	}
 
 	void RC4Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
@@ -54,7 +54,7 @@ namespace CRYPT
 		return crypt->IsVerify();
 	}
 
-	bool RC4Decryptor::SetPassword(std::wstring password, int type)
+	bool RC4Decryptor::SetPassword(std::wstring password)
 	{
 		crypt.reset();
 		crypt = CryptPtr(new RC4Crypt(crypt_data, password, type));

@@ -66,14 +66,6 @@ XLS::BiffStructurePtr HyperlinkMoniker::clone()
 	return XLS::BiffStructurePtr(new HyperlinkMoniker(*this));
 }
 
-void HyperlinkMoniker::store(XLS::CFRecord& record)
-{
-	_GUID_ clsid = URLMoniker_CLSID;
-	record << clsid;
-	record << *data;
-}
-
-
 void HyperlinkMoniker::load(XLS::CFRecord& record)
 {
     _GUID_ clsid={};

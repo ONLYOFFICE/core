@@ -50,13 +50,6 @@ BaseObjectPtr ContinueFrt::clone()
 	return BaseObjectPtr(new ContinueFrt(*this));
 }
 
-
-void ContinueFrt::writeFields(CFRecord& record)
-{
-
-}
-
-
 void ContinueFrt::readFields(CFRecord& record)
 {
 #pragma message("####################### ContinueFrt record is not implemented")

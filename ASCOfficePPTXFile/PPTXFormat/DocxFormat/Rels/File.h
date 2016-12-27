@@ -100,7 +100,7 @@ namespace PPTX
 
 					oWriter.WriteNodeEnd(_T("Relationship"));
 
-					CDirectory::SaveToFile(file.GetPath(), oWriter.GetXmlString());
+					NSFile::CFileBinary::SaveToFile(file.GetPath(), oWriter.GetXmlString());
 				}
 			}
 			const bool isValid() const

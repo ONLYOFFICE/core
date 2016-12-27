@@ -37,6 +37,7 @@ namespace XLS
 
 CFEx::CFEx()
 {
+	dxfId_ = -1;
 }
 
 
@@ -50,13 +51,6 @@ BaseObjectPtr CFEx::clone()
 	return BaseObjectPtr(new CFEx(*this));
 }
 
-
-void CFEx::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CFEx::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;
@@ -64,6 +58,11 @@ void CFEx::readFields(CFRecord& record)
 	if(!fIsCF12)
 	{
 		record >> content;
+		
+		if (content.dxf.serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream) >= 0)
+		{
+			dxfId_ = record.getGlobalWorkbookInfo()->cellStyleDxfs_count++;
+		}
 	}
 }
 

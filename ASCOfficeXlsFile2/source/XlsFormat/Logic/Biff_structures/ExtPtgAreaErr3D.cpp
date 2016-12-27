@@ -43,14 +43,6 @@ BiffStructurePtr ExtPtgAreaErr3D::clone()
 }
 
 
-void ExtPtgAreaErr3D::store(CFRecord& record)
-{
-#pragma message("####################### ExtPtgAreaErr3D record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtPtgAreaErr3D record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ExtPtgAreaErr3D::load(CFRecord& record)
 {
 	record >> iTabs;

@@ -49,7 +49,6 @@ protected:
 
 //-----------------------------
 	virtual void readFollowingContinue(CFStreamCacheReader& reader);
-	virtual void writeCreatedContinueRecords(CFStreamCacheWriter& writer);
 
 };
 

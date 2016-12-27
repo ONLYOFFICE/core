@@ -126,8 +126,10 @@ namespace OOX
 						writer.WriteString(_T(" pivot=\"0\""));
 					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(_T("</tableStyle>"));
 				}
 
@@ -200,7 +202,7 @@ namespace OOX
 				if(m_arrItems.size() >  0)
 				{
 					writer.WriteString(_T(">"));
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 					writer.WriteString(_T("</tableStyles>"));
 				}

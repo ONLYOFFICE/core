@@ -39,26 +39,26 @@ namespace Writers
 	class MediaWriter
 	{
 		XmlUtils::CStringWriter	m_oWriter;
-		CString	m_sDir;
-		CString	m_sMediaDir;
+        std::wstring            m_sDir;
+        std::wstring            m_sMediaDir;
 	public:
-		std::vector<CString> m_aImageNames;
+        std::vector<std::wstring> m_aImageNames;
 		long nImageCount;
-	public:
-		MediaWriter(CString sDir):m_sDir(sDir)
+
+        MediaWriter(std::wstring sDir):m_sDir(sDir)
 		{
 			nImageCount = 0;
 
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("media");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"media";
 
             m_sMediaDir = filePath.GetPath();
 		}
-		CString AddImageGetNewPath()
+        std::wstring AddImageGetNewPath()
 		{
 			OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 
-			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
-            CString sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;
+            std::wstring sNewImgName = L"image" + std::to_wstring(nImageCount + 1) + L".jpg";
+            std::wstring sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;
 			nImageCount++;
 			return sNewImg;
 		}
@@ -72,23 +72,23 @@ namespace Writers
 				DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, size, pFile);
 				if(dwSizeRead > 0)
 				{
-					CString sNewImagePath = AddImageGetNewPath();
+                    std::wstring sNewImagePath = AddImageGetNewPath();
 					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(string2std_string(sNewImagePath));
+					oFile.CreateFileW(sNewImagePath);
 					oFile.WriteFile(pData, dwSizeRead);
 					oFile.CloseFile();
-					CString sFilename = NSSystemPath::GetFileName(string2std_string(sNewImagePath)).c_str();
+                    std::wstring sFilename = NSSystemPath::GetFileName(sNewImagePath);
 					m_aImageNames.push_back(sFilename);
 				}
 				RELEASEARRAYOBJECTS(pData);
 			}
 		}
-		void AddImage(const CString& sImg)
+        void AddImage(const std::wstring& sImg)
 		{
             OOX::CPath pathNewImg = AddImageGetNewPath();
 
-            NSFile::CFileBinary::Copy(string2std_string(sImg), string2std_string(pathNewImg.GetPath()));
-            CString sFilename = NSSystemPath::GetFileName(string2std_string(pathNewImg.GetPath())).c_str();
+            NSFile::CFileBinary::Copy(sImg, pathNewImg.GetPath());
+            std::wstring sFilename = NSSystemPath::GetFileName(pathNewImg.GetPath()).c_str();
 			m_aImageNames.push_back(sFilename);
 		}
 	};

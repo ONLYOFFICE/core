@@ -38,11 +38,11 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Theme/ThemeOverride.h"
 
 using namespace OOX::Spreadsheet;
-namespace BinXlsxRW{
-	SaveParams::SaveParams(const CString& _sThemePath)
+namespace BinXlsxRW
+{
+	SaveParams::SaveParams(const std::wstring& _sThemePath)
 	{
-		sThemePath = _sThemePath;
-		sAdditionalContentTypes = _T("");
+        sThemePath          = _sThemePath;
 		nThemeOverrideCount = 1;
 	}
 
@@ -981,9 +981,8 @@ namespace BinXlsxRW{
 		}
 		else if(c_oserct_chartspaceTHEMEOVERRIDE == type)
 		{
-            CString sThemeOverrideName;     sThemeOverrideName.Format(_T("themeOverride%d.xml"), m_oSaveParams.nThemeOverrideCount++);
-
-            CString sThemeOverrideRelsPath; sThemeOverrideRelsPath.Format(_T("../theme/%ls"), sThemeOverrideName);
+            std::wstring sThemeOverrideName      = L"themeOverride" + std::to_wstring(m_oSaveParams.nThemeOverrideCount++) + L".xml";
+            std::wstring sThemeOverrideRelsPath  = L"../theme/" + sThemeOverrideName;
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
 
@@ -995,14 +994,19 @@ namespace BinXlsxRW{
 			m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, CString(), &rId);
 
 			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
-			CString sContentTypesPath;
-			int nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR);
-			nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
+
+            int nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR);
+                nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 			{
-				CString sContentTypesPath = m_oSaveParams.sThemePath.Right(nIndex);
-				sContentTypesPath.Replace('\\', '/');
-                m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/%ls/%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), (const TCHAR *) sContentTypesPath, (const TCHAR *) sThemeOverrideName);
+                std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex);
+                boost::algorithm::replace_all(sContentTypesPath, L"\\", L"/");
+
+                std::wstring strType = L"<Override PartName=\"/";
+                strType += sContentTypesPath + L"/" + sThemeOverrideName;
+                strType += L"\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>";
+
+                m_oSaveParams.sAdditionalContentTypes += strType;
 			}
 		}
 		else
@@ -5980,13 +5984,17 @@ namespace BinXlsxRW{
 	void BinaryChartWriter::GetRecordBinary(int nType, std::wstring& sXml, int nRecordType)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, std_string2string(sXml));
+		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::GetTxBodyBinary(int nType, std::wstring& sXml)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
-		CString bstrXml = _T("<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">") + std_string2string(sXml) + _T("</c:rich>");
+		
+		std::wstring	bstrXml = L"<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">";
+						bstrXml += sXml;
+						bstrXml += L"</c:rich>";
+
 		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}

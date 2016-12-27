@@ -48,7 +48,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	static void resend(CFStream& stream, const unsigned int data_place, const unsigned int data);
 

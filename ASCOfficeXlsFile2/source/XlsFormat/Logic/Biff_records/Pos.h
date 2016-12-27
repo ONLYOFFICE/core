@@ -47,8 +47,7 @@ public:
 	~Pos();
 
 	BaseObjectPtr clone();
-
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
@@ -67,7 +66,9 @@ public:
 
 //-----------------------------
 
+	int				m_iLayoutTarget;
 	short			m_iLinkObject;
+
 	BaseObjectPtr	m_Frame;
 
 };

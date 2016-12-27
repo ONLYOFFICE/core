@@ -54,7 +54,6 @@ public:
 	~OfficeArtBlip();
 
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record){}
 	
 	XLS::BiffStructurePtr clone()
 	{

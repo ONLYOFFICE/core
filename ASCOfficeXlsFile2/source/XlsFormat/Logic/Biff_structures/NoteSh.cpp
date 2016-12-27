@@ -60,15 +60,6 @@ BiffStructurePtr NoteSh::clone()
 	return BiffStructurePtr(new NoteSh(*this));
 }
 
-
-void NoteSh::store(CFRecord& record)
-{
-#pragma message("####################### NoteSh record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! NoteSh record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void NoteSh::load(CFRecord& record)
 {
 	global_info = record.getGlobalWorkbookInfo();

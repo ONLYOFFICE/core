@@ -50,15 +50,6 @@ BaseObjectPtr XFExt::clone()
 	return BaseObjectPtr(new XFExt(*this));
 }
 
-
-void XFExt::writeFields(CFRecord& record)
-{
-#pragma message("####################### XFExt record is not implemented")
-	Log::error("XFExt record is not implemented.");
-	//record << some_value;
-}
-
-
 void XFExt::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

@@ -53,15 +53,6 @@ BiffStructurePtr FeatSmartTag::clone()
 	return BiffStructurePtr(new FeatSmartTag(*this));
 }
 
-
-void FeatSmartTag::store(CFRecord& record)
-{
-#pragma message("####################### FeatSmartTag record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FeatSmartTag record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void FeatSmartTag::load(CFRecord& record)
 {
 	unsigned char cSmartTags;

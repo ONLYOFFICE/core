@@ -346,7 +346,7 @@ namespace PPTX
 														if (sImageExtension.GetLength() < 1) 
 														{
 															CImageFileFormatChecker checker;
-															sImageExtension = std_string2string(checker.DetectFormatByData(pDstBuffer, dstLen));								
+															sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
 														}
                                                         //папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
                                                         CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;

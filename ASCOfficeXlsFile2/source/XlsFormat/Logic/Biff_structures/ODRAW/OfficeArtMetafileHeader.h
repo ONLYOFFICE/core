@@ -73,7 +73,7 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtMetafileHeader;
 	
-	virtual void store(XLS::CFRecord& record);
+
 	virtual void load(XLS::CFRecord& record);
 
 	_UINT32 cbSize;

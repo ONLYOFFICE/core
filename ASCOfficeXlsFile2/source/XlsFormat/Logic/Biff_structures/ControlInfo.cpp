@@ -42,11 +42,6 @@ BiffStructurePtr ControlInfo::clone()
 	return BiffStructurePtr(new ControlInfo(*this));
 }
 
-
-void ControlInfo::store(CFRecord& record)
-{	
-}
-
 void ControlInfo::load(CFRecord& record)
 {
 	unsigned short flags;

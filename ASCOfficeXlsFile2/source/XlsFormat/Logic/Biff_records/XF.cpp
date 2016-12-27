@@ -52,30 +52,6 @@ BaseObjectPtr XF::clone()
 	return BaseObjectPtr(new XF(*this));
 }
 
-
-void XF::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	
-	SETBIT(flags, 0, fLocked);
-	SETBIT(flags, 1, fHidden);
-	SETBIT(flags, 2, fStyle);
-	SETBIT(flags, 3, f123Prefix);
-	SETBITS(flags, 4, 15, ixfParent);
-	record << ifnt << ifmt << flags;
-	
-
-	if(fStyle)
-	{
-		style.store(record);
-	}
-	else
-	{
-		cell.store(record);
-	}
-}
-
-
 void XF::readFields(CFRecord& record)
 {
 	unsigned short flags;

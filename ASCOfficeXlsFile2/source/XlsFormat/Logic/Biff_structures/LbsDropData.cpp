@@ -43,22 +43,6 @@ BiffStructurePtr LbsDropData::clone()
 	return BiffStructurePtr(new LbsDropData(*this));
 }
 
-
-void LbsDropData::store(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBITS(flags, 0, 1, wStyle);
-	SETBIT(flags, 3, fFiltered);
-
-	record << flags << cLine << dxMin << str;
-
-	if(0 != (str.getStructSize() & 1))
-	{
-		record.reserveNunBytes(1); // padding
-	}
-}
-
-
 void LbsDropData::load(CFRecord& record)
 {
 	unsigned short flags;

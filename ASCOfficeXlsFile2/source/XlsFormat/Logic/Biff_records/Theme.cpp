@@ -52,15 +52,6 @@ BaseObjectPtr Theme::clone()
 	return BaseObjectPtr(new Theme(*this));
 }
 
-
-void Theme::writeFields(CFRecord& record)
-{
-#pragma message("####################### Theme record is not implemented")
-	Log::error("Theme record is not implemented.");
-	//record << some_value;
-}
-
-
 void Theme::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

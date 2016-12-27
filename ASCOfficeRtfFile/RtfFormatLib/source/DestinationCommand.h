@@ -44,7 +44,7 @@
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXRelsWriter.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Enums.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 
 #define COMMAND_RTF_BOOL( pattern, target, command, hasParameter, parameter )\
 		else if( pattern == command )\

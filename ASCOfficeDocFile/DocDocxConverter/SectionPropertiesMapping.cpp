@@ -38,7 +38,7 @@ namespace DocFileFormat
 	SectionPropertiesMapping::SectionPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping (pWriter)
 	{		
 		m_bDeleteNode		=	TRUE;
-		m_pXmlNode			=	new XMLTools::XMLElement<wchar_t> (_T("w:sectPr"));
+        m_pXmlNode			=	new XMLTools::XMLElement (_T("w:sectPr"));
 
 		m_nColumns			=	0;
 		m_arrWidth			=	NULL;
@@ -53,7 +53,7 @@ namespace DocFileFormat
 		_type				=	std::wstring (_T("nextPage"));
 	}
 
-	SectionPropertiesMapping::SectionPropertiesMapping (XMLTools::XMLElement<wchar_t>* pBaseNode, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping(NULL)
+    SectionPropertiesMapping::SectionPropertiesMapping (XMLTools::XMLElement* pBaseNode, ConversionContext* pContext, int nSelectProperties) : PropertiesMapping(NULL)
 	{
 		m_bDeleteNode		=	FALSE;
 		m_pXmlNode			=	pBaseNode;	
@@ -87,16 +87,16 @@ namespace DocFileFormat
 	{
 		SectionPropertyExceptions* sepx	=	static_cast<SectionPropertyExceptions*>(visited);
 
-		XMLTools::XMLElement<wchar_t> pgSz		(_T("w:pgSz"));
-		XMLTools::XMLElement<wchar_t> pgMar		(_T("w:pgMar"));
-		XMLTools::XMLElement<wchar_t> lnNumType	(_T("w:lnNumType"));
-		XMLTools::XMLElement<wchar_t> cols		(_T("w:cols"));
-		XMLTools::XMLElement<wchar_t> docGrid	(_T("w:docGrid"));
-		XMLTools::XMLElement<wchar_t> pgBorders	(_T("w:pgBorders"));
-		XMLTools::XMLElement<wchar_t> paperSrc	(_T("w:paperSrc"));
-		XMLTools::XMLElement<wchar_t> footnotePr(_T("w:footnotePr"));
-		XMLTools::XMLElement<wchar_t> endnotePr	(_T("w:endnotePr"));
-		XMLTools::XMLElement<wchar_t> pgNumType	(_T("w:pgNumType"));
+        XMLTools::XMLElement pgSz		(_T("w:pgSz"));
+        XMLTools::XMLElement pgMar		(_T("w:pgMar"));
+        XMLTools::XMLElement lnNumType	(_T("w:lnNumType"));
+        XMLTools::XMLElement cols		(_T("w:cols"));
+        XMLTools::XMLElement docGrid	(_T("w:docGrid"));
+        XMLTools::XMLElement pgBorders	(_T("w:pgBorders"));
+        XMLTools::XMLElement paperSrc	(_T("w:paperSrc"));
+        XMLTools::XMLElement footnotePr(_T("w:footnotePr"));
+        XMLTools::XMLElement endnotePr	(_T("w:endnotePr"));
+        XMLTools::XMLElement pgNumType	(_T("w:pgNumType"));
 
 		HeaderAndFooterTable* pTable	=	_ctx->_doc->headerAndFooterTable;
 
@@ -235,7 +235,7 @@ namespace DocFileFormat
 			case sprmSBrcTop:
 			{
 				//top
-				XMLTools::XMLElement<wchar_t> topBorder( _T( "w:top" ) );
+                XMLTools::XMLElement topBorder( _T( "w:top" ) );
 				BorderCode bc( iter->Arguments, iter->argumentsSize );
 				appendBorderAttributes( &bc, &topBorder );
 				addOrSetBorder( &pgBorders, &topBorder);
@@ -245,7 +245,7 @@ namespace DocFileFormat
 			case sprmSBrcLeft80:
 			case sprmSBrcLeft:
 			{
-				XMLTools::XMLElement<wchar_t> leftBorder( _T( "w:left" ) );
+                XMLTools::XMLElement leftBorder( _T( "w:left" ) );
 				BorderCode bc( iter->Arguments, iter->argumentsSize );
 				appendBorderAttributes( &bc, &leftBorder);
 				addOrSetBorder( &pgBorders, &leftBorder);
@@ -256,7 +256,7 @@ namespace DocFileFormat
 			case sprmSBrcBottom:
 			{
 				//left
-				XMLTools::XMLElement<wchar_t> bottomBorder( _T( "w:bottom" ) );
+                XMLTools::XMLElement bottomBorder( _T( "w:bottom" ) );
 				BorderCode bc( iter->Arguments, iter->argumentsSize );
 				appendBorderAttributes( &bc, &bottomBorder );
 				addOrSetBorder( &pgBorders, &bottomBorder);
@@ -267,7 +267,7 @@ namespace DocFileFormat
 			case sprmSBrcRight:
 			{
 				//left
-				XMLTools::XMLElement<wchar_t> rightBorder( _T( "w:right" ) );
+                XMLTools::XMLElement rightBorder( _T( "w:right" ) );
 				BorderCode bc( iter->Arguments, iter->argumentsSize );
 				appendBorderAttributes( &bc, &rightBorder);
 				addOrSetBorder( &pgBorders, &rightBorder);
@@ -466,7 +466,7 @@ namespace DocFileFormat
 		// build the columns
 		if (m_arrWidth)
 		{
-			XMLTools::XMLAttribute<wchar_t> equalWidth( _T( "w:equalWidth" ), _T( "0" ) );
+            XMLTools::XMLAttribute equalWidth( _T( "w:equalWidth" ), _T( "0" ) );
 			cols.AppendAttribute( equalWidth );
 
 			//calculate the width of the last column:
@@ -486,9 +486,9 @@ namespace DocFileFormat
 
 			for (int i = 0; i < m_nColumns; ++i)
 			{
-				XMLTools::XMLElement<wchar_t>	col		(_T( "w:col" ));
-				XMLTools::XMLAttribute<wchar_t>	w		(_T( "w:w" ),		FormatUtils::IntToWideString (m_arrWidth[i]).c_str());
-				XMLTools::XMLAttribute<wchar_t>	space	(_T( "w:space" ),	FormatUtils::IntToWideString (m_arrSpace[i]).c_str());
+                XMLTools::XMLElement	col		(_T( "w:col" ));
+                XMLTools::XMLAttribute	w		(_T( "w:w" ),		FormatUtils::IntToWideString (m_arrWidth[i]).c_str());
+                XMLTools::XMLAttribute	space	(_T( "w:space" ),	FormatUtils::IntToWideString (m_arrSpace[i]).c_str());
 
 				col.AppendAttribute (w);
 				col.AppendAttribute (space);
@@ -532,9 +532,9 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteString (m_pXmlNode->GetXMLString().c_str() );
 	}
 
-	void SectionPropertiesMapping::AppendRef (XMLTools::XMLElement<wchar_t> *parent, const wchar_t* element, const wchar_t* refType, const wchar_t* refId)
+    void SectionPropertiesMapping::AppendRef (XMLTools::XMLElement *parent, const wchar_t* element, const wchar_t* refType, const wchar_t* refId)
 	{
-		XMLTools::XMLElement<wchar_t> headerRef (_T("w"), element);
+        XMLTools::XMLElement headerRef (_T("w"), element);
 
 		headerRef.AppendAttribute (_T("w:type"), refType);
 		headerRef.AppendAttribute (_T("r:id"), refId);

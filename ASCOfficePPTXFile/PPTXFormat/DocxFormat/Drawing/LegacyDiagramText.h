@@ -194,7 +194,7 @@ namespace PPTX
 				{
 					std::string		strAnsi		= std::string((char*)m_Data+pos, rec.RecLen);
 					std::wstring	strUnicode(strAnsi.begin(), strAnsi.end());
-					m_Text = std_string2string(strUnicode);
+					m_Text = strUnicode;
 				}break;
 				case 0x0FA1:	//StyleTextPropAtom
 				{

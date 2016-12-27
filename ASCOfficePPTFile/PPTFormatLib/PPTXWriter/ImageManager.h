@@ -42,7 +42,7 @@ namespace NSPresentationEditor
 	private:
 		std::map<std::wstring, std::wstring>	m_mapImages;
 
-		LONG									m_lIndexNextImage;
+        long									m_lIndexNextImage;
 		std::wstring							m_strDstMedia;
 
 	public:
@@ -81,29 +81,28 @@ namespace NSPresentationEditor
 
 			if (strExts == _T(".tmp"))	strExts = _T(".png");
 
-			CString strImage = _T("");
-			strImage.Format(_T("image%d"), m_lIndexNextImage++);
+			std::wstring strImage = L"image" + std::to_wstring(m_lIndexNextImage++);
 
-			std::wstring strOutput = m_strDstMedia + string2std_string(strImage) + strExts;		
-			strImage  = _T("../media/") + strImage + std_string2string(strExts);
+			std::wstring strOutput = m_strDstMedia + strImage + strExts;		
+			strImage  = _T("../media/") + strImage + strExts;
 
 			// теперь нужно скопировать картинку
 			if (strOutput != strInput)
 			{
-				if (CDirectory::CopyFile(std_string2string(strInput), std_string2string(strOutput), NULL, NULL) == false)
+                if (CDirectory::CopyFile(strInput, strOutput) == false)
 				{
 					return L"";
 				}
 			}
-			m_mapImages[strInput] = string2std_string(strImage);
+			m_mapImages[strInput] = strImage;
 			return strImage;
 		}
 
 		AVSINLINE bool IsNeedDownload(const std::wstring& strFile)
 		{
-			int n1 = strFile.find(_T("www"));
-			int n2 = strFile.find(_T("http"));
-			int n3 = strFile.find(_T("ftp"));
+			int n1 = strFile.find(L"www");
+			int n2 = strFile.find(L"http");
+			int n3 = strFile.find(L"ftp");
 
 			if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)))
 				return true;
@@ -280,13 +279,13 @@ namespace NSPresentationEditor
 			}
 			m_mapHyperlinks[strHyperlink] = m_lNextRelsID;
 
-			CString strRid = _T("");
-			strRid.Format(_T("rId%d"), m_lNextRelsID++);
+			CString strRid;
+			strRid.Format(L"rId%d", m_lNextRelsID++);
 
-			std::wstring strRels = _T("<Relationship Id=\"") ;
+			std::wstring strRels = L"<Relationship Id=\"";
 
-            strRels += string2std_string(strRid) + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"");
-            strRels += strHyperlink + _T("\"/>");
+            strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
+            strRels += strHyperlink + L"\"/>";
 
 			m_oWriter.WriteString(strRels);
 		}
@@ -304,17 +303,15 @@ namespace NSPresentationEditor
 
 			m_mapImages[strImage] = m_lNextRelsID;
 
-			CString strRid = _T("");
-			strRid.Format(_T("rId%d"), m_lNextRelsID++);
-
-			std::wstring strRels = _T("<Relationship Id=\"") ;
-
-            strRels += string2std_string(strRid) + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
-            strRels += strImage + _T("\"");
+			std::wstring strRid		= L"rId" + std::to_wstring(m_lNextRelsID++);
+			
+			std::wstring strRels	= L"<Relationship Id=\"" + strRid + L"\"";
+            strRels += L" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\"";
+            strRels += L" Target=\"" + strImage + L"\"";
 
 			if (bExternal)
-				strRels += std::wstring(L" TargetMode=\"External\"");
-			strRels += std::wstring(L"/>");
+				strRels += L" TargetMode=\"External\"";
+			strRels += L"/>";
 
 			m_oWriter.WriteString(strRels);
 

@@ -43,13 +43,6 @@ BiffStructurePtr ISSTInf::clone()
 }
 
 
-void ISSTInf::store(CFRecord& record)
-{
-	record << ib << cbOffset;
-	record.reserveNunBytes(2); // reserved
-}
-
-
 void ISSTInf::load(CFRecord& record)
 {
 	record >> ib >> cbOffset;

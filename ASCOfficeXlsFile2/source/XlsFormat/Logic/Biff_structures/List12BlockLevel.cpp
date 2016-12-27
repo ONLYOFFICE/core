@@ -51,11 +51,6 @@ List12BlockLevel::~List12BlockLevel()
 {
 }
 
-void List12BlockLevel::store(CFRecord& record)
-{	
-}
-
-
 void List12BlockLevel::load(CFRecord& record)
 {	
 	record >> cbdxfHeader;

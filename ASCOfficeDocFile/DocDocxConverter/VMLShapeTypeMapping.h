@@ -42,8 +42,8 @@ namespace DocFileFormat
 	class VMLShapeTypeMapping: public PropertiesMapping, public IMapping
 	{
 	private: 
-		XMLTools::XMLElement<wchar_t> *_lock;
-		bool _isInlineShape;
+        XMLTools::XMLElement *  _lock;
+        bool                    _isInlineShape;
 
 	public:
 		VMLShapeTypeMapping(XMLTools::CStringXmlWriter* writer, bool isInlineShape = false );

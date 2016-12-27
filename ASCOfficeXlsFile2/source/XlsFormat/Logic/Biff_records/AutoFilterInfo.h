@@ -50,7 +50,7 @@ class AutoFilterInfo: public BiffRecord
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 //-----------------------------
 	_UINT16 cEntries;

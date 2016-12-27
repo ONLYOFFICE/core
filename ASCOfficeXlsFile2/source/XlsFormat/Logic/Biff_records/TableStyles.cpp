@@ -50,15 +50,6 @@ BaseObjectPtr TableStyles::clone()
 	return BaseObjectPtr(new TableStyles(*this));
 }
 
-
-void TableStyles::writeFields(CFRecord& record)
-{
-#pragma message("####################### TableStyles record is not implemented")
-	Log::error("TableStyles record is not implemented.");
-	//record << some_value;
-}
-
-
 void TableStyles::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);

@@ -47,7 +47,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	void setNilType(const unsigned short type);
 	const bool isNil();

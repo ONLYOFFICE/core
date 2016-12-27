@@ -43,12 +43,6 @@ BiffStructurePtr ExtPtgErr::clone()
 }
 
 
-void ExtPtgErr::store(CFRecord& record)
-{
-	record << err;
-}
-
-
 void ExtPtgErr::load(CFRecord& record)
 {
 	record >> err;

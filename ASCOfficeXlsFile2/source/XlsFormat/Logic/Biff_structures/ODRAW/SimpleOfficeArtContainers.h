@@ -74,7 +74,6 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSolverContainer(*this)); }
 
 	void loadFields(XLS::CFRecord& record);
-	void storeFields(XLS::CFRecord& record) {}
 };
 
 class OfficeArtSpContainer : public OfficeArtContainer
@@ -100,7 +99,6 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientData(*this)); }
 	
 	void loadFields(XLS::CFRecord& record);
-	void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;
 
@@ -114,7 +112,6 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFConnectorRule(*this)); }
 	
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FConnectorRule
 
@@ -134,7 +131,6 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFCalloutRule(*this)); }
 	
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FCalloutRule
 
@@ -150,7 +146,6 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFArcRule(*this)); }
 	
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FArcRule
 
@@ -166,14 +161,9 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }
 	
 	void loadFields(XLS::CFRecord& record);
-	void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientTextbox;
-
-
 };
-
-
 
 typedef boost::shared_ptr<OfficeArtSpgrContainer> OfficeArtSpgrContainerPtr;
 typedef boost::shared_ptr<OfficeArtSpContainer> OfficeArtSpContainerPtr;

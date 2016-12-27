@@ -50,14 +50,6 @@ BaseObjectPtr Password::clone()
 	return BaseObjectPtr(new Password(*this));
 }
 
-
-void Password::writeFields(CFRecord& record)
-{
-	wPassword_num = static_cast<unsigned short>(STR::hex_str2int(wPassword));
-	record << wPassword_num;
-}
-
-
 void Password::readFields(CFRecord& record)
 {
 	record >> wPassword_num;

@@ -73,8 +73,8 @@ namespace PPTX
 			if (xml.GetLength() > 0)
 			{
 				CString temp = _T("<v:object>");
-				temp.Append(xml);
-				temp.Append(_T("</v:object>"));
+                temp += xml;
+                temp += L"</v:object>";
 				
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				oDrawingConverter.SetAdditionalParam(_T("parent_spTree"), (BYTE*)spTreeElements, 0);
@@ -103,8 +103,8 @@ namespace PPTX
 			if (xml.GetLength() > 0)
 			{
 				CString temp = _T("<v:object>");
-				temp.Append(xml);
-				temp.Append(_T("</v:object>"));
+                temp += xml;
+                temp += L"</v:object>";
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				//oDrawingConverter.SetFontManager(pFontManager);
 
@@ -114,7 +114,6 @@ namespace PPTX
 				CString *main_props = NULL;
 
 				oDrawingConverter.SetRelsPath(rels);
-				//oDrawingConverter.SetAdditionalParam(_T("xfrm_override"), (BYTE*)&xfrm, sizeof(xfrm));
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
 				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)

@@ -49,9 +49,9 @@ namespace DocFileFormat
 		_brcRight	=	NULL;
 		_brcBottom	=	NULL;
 
-        _tcPr		=	new XMLTools::XMLElement<wchar_t>(L"w:tcPr");
-        _tcMar		=	new XMLTools::XMLElement<wchar_t>(L"w:tcMar");
-        _tcBorders	=	new XMLTools::XMLElement<wchar_t>(L"w:tcBorders");
+        _tcPr		=	new XMLTools::XMLElement(L"w:tcPr");
+        _tcMar		=	new XMLTools::XMLElement(L"w:tcMar");
+        _tcBorders	=	new XMLTools::XMLElement(L"w:tcBorders");
 
 		_ftsWidth	=	Global::nil;
 	}
@@ -271,10 +271,11 @@ namespace DocFileFormat
 		}
 
 		//width
-        XMLTools::XMLElement<wchar_t> tcW( L"w:tcW" );
-        XMLTools::XMLAttribute<wchar_t> tcWType( L"w:type", FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ).c_str() );
-        XMLTools::XMLAttribute<wchar_t> tcWVal( L"w:w", FormatUtils::IntToWideString( _width ).c_str() );
-		tcW.AppendAttribute( tcWType );
+        XMLTools::XMLElement    tcW     ( L"w:tcW" );
+        XMLTools::XMLAttribute  tcWType ( L"w:type", FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) );
+        XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width ) );
+
+        tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );
 		_tcPr->AppendChild( tcW );
 
@@ -310,28 +311,28 @@ namespace DocFileFormat
 		//append borders
 		if (_brcTop)
 		{
-            XMLTools::XMLElement<wchar_t> topBorder( L"w:top" );
+            XMLTools::XMLElement topBorder( L"w:top" );
 			appendBorderAttributes(_brcTop, &topBorder);
 			addOrSetBorder(_tcBorders, &topBorder );
 		}
 
 		if (_brcLeft )
 		{
-            XMLTools::XMLElement<wchar_t> leftBorder( L"w:left" );
+            XMLTools::XMLElement leftBorder( L"w:left" );
 			appendBorderAttributes(_brcLeft, &leftBorder);
 			addOrSetBorder(_tcBorders, &leftBorder);
 		}
 
 		if (_brcBottom)
 		{
-            XMLTools::XMLElement<wchar_t> bottomBorder( L"w:bottom" );
+            XMLTools::XMLElement bottomBorder( L"w:bottom" );
 			appendBorderAttributes(_brcBottom, &bottomBorder);
 			addOrSetBorder(_tcBorders, &bottomBorder);
 		}
 
 		if (_brcRight)
 		{
-            XMLTools::XMLElement<wchar_t> rightBorder( L"w:right" );
+            XMLTools::XMLElement rightBorder( L"w:right" );
 			appendBorderAttributes( _brcRight, &rightBorder );
 			addOrSetBorder( _tcBorders, &rightBorder );
 		}

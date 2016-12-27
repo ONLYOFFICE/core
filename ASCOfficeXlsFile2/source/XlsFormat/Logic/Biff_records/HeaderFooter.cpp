@@ -52,47 +52,6 @@ BaseObjectPtr HeaderFooter::clone()
 	return BaseObjectPtr(new HeaderFooter(*this));
 }
 
-
-void HeaderFooter::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_HeaderFooter);
-	record << frtHeader;
-	_GUID_ guid_num;
-	if(!STR::bstr2guid(guidSView, guid_num))
-	{
-		// EXCEPT::LE::AttributeDataWrong(L"guid", L"HeaderFooter", guidSView);
-	}
-	record << guid_num;
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fHFDiffOddEven);
-	SETBIT(flags, 1, fHFDiffFirst);
-	SETBIT(flags, 2, fHFScaleWithDoc);
-	SETBIT(flags, 3, fHFAlignMargins);
-	record << flags;
-	cchHeaderEven = strHeaderEven.getSize();
-	cchFooterEven = strFooterEven.getSize();
-	cchHeaderFirst = strHeaderFirst.getSize();
-	cchFooterFirst = strFooterFirst.getSize();
-	record << cchHeaderEven << cchFooterEven << cchHeaderFirst << cchFooterFirst;
-	if(cchHeaderEven)
-	{
-		record << strHeaderEven;
-	}
-	if(cchFooterEven)
-	{
-		record << strFooterEven;
-	}
-	if(cchHeaderFirst)
-	{
-		record << strHeaderFirst;
-	}
-	if(cchFooterFirst)
-	{
-		record << strFooterFirst;
-	}
-}
-
-
 void HeaderFooter::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_HeaderFooter);

@@ -50,17 +50,6 @@ BaseObjectPtr Scatter::clone()
 	return BaseObjectPtr(new Scatter(*this));
 }
 
-
-void Scatter::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fBubbles);
-	SETBIT(flags, 1, fShowNegBubbles);
-	SETBIT(flags, 2, fHasShadow);
-	record >> pcBubbleSizeRatio >> wBubbleSize >> flags;
-}
-
-
 void Scatter::readFields(CFRecord& record)
 {
 	unsigned short flags;

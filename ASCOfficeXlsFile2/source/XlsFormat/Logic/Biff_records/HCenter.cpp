@@ -50,13 +50,6 @@ BaseObjectPtr HCenter::clone()
 	return BaseObjectPtr(new HCenter(*this));
 }
 
-
-void HCenter::writeFields(CFRecord& record)
-{
-	record << hcenter;
-}
-
-
 void HCenter::readFields(CFRecord& record)
 {
 	record >> hcenter;

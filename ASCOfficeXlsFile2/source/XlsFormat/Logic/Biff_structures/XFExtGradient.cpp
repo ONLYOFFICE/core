@@ -43,14 +43,6 @@ BiffStructurePtr XFExtGradient::clone()
 }
 
 
-void XFExtGradient::store(CFRecord& record)
-{
-#pragma message("####################### XFExtGradient record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFExtGradient record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void XFExtGradient::load(CFRecord& record)
 {
 	record >> gradient >> cGradStops;

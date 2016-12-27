@@ -37,7 +37,7 @@
 #include <stack>
 
 #ifndef APPEND
-#define APPEND(str,ascii) str.Append(ascii)
+    #define APPEND(str,ascii) str += ascii
 #endif
 
 #define OUTPUTCHARS

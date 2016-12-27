@@ -77,13 +77,6 @@ std::wstring FormulaValue::getValue()
 	return result;
 }
 
-//
-
-void FormulaValue::store(CFRecord& record)
-{
-	record << data.xnum;
-}
-
 
 void FormulaValue::load(CFRecord& record)
 {

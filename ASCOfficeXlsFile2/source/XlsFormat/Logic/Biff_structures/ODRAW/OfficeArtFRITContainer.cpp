@@ -49,12 +49,6 @@ XLS::BiffStructurePtr OfficeArtFRITContainer::clone()
 }
 
 
-void OfficeArtFRITContainer::storeFields(XLS::CFRecord& record)
-{
-	record << rgfrit;
-}
-
-
 void OfficeArtFRITContainer::loadFields(XLS::CFRecord& record)
 {
 	size_t frits_start = record.getRdPtr();

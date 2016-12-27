@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typePictFmlaKey;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	ObjFmla fmlaLinkedCell;
 	ObjFmla fmlaListFillRange;

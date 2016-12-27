@@ -54,15 +54,6 @@ BiffStructurePtr ExtNameParsedFormula::clone()
 	return BiffStructurePtr(new ExtNameParsedFormula(*this));
 }
 
-
-void ExtNameParsedFormula::store(CFRecord& record)
-{
-#pragma message("####################### ExtNameParsedFormula record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtNameParsedFormula record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't be a ParsedFormulas's derived?
 {
 	unsigned short cb;

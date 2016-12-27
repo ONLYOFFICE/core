@@ -49,12 +49,6 @@ XLS::BiffStructurePtr OfficeArtBStoreContainer::clone()
 	return XLS::BiffStructurePtr(new OfficeArtBStoreContainer(*this));
 }
 
-
-void OfficeArtBStoreContainer::storeFields(XLS::CFRecord& record)
-{	
-}
-
-
 void OfficeArtBStoreContainer::loadFields(XLS::CFRecord& record)
 {	
 	for (size_t i = 0; i < rh_own.recInstance; i++)

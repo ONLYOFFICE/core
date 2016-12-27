@@ -52,19 +52,6 @@ XLS::BiffStructurePtr OfficeArtClientAnchorSheet::clone()
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorSheet(*this));
 }
 
-
-
-void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
-{
-	unsigned short flags = 0;
-	
-	SETBIT(flags, 0, fMove);
-	SETBIT(flags, 1, fSize);
-	
-	record << flags << colL << dxL << rwT << dyT << colR << dxR << rwB << dyB;
-}
-
-
 void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 {
 	global_info = record.getGlobalWorkbookInfo();

@@ -126,7 +126,7 @@ namespace OOX
 					CString sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</colorScale>"));
@@ -187,7 +187,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					m_oColor->toXML2(writer, _T("color"));
@@ -317,7 +317,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</iconSet>"));
@@ -410,7 +410,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</cfRule>"));
@@ -516,7 +516,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</conditionalFormatting>"));

@@ -51,15 +51,6 @@ BaseObjectPtr CompressPictures::clone()
 	return BaseObjectPtr(new CompressPictures(*this));
 }
 
-
-void CompressPictures::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_CompressPictures);
-	record << frtHeader;
-	record << fAutoCompressPictures;
-}
-
-
 void CompressPictures::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_CompressPictures);

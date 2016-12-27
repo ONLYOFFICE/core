@@ -51,7 +51,7 @@ public:
 	static const ElementType	type = typeFactoidData;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	bool fDelete;
 	bool fXMLBased;

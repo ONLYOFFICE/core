@@ -42,7 +42,7 @@
 
 OOXReader::OOXReader( RtfDocument& oDocument, std::wstring  path ): m_oDocument(oDocument)
 {
-	m_sPath = std_string2string(path);
+	m_sPath = path;
 	m_nCurItap = 0;
 
 	m_convertationManager = NULL;

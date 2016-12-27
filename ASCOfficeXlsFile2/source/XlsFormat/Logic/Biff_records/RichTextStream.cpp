@@ -50,15 +50,6 @@ BaseObjectPtr RichTextStream::clone()
 	return BaseObjectPtr(new RichTextStream(*this));
 }
 
-
-void RichTextStream::writeFields(CFRecord& record)
-{
-#pragma message("####################### RichTextStream record is not implemented")
-	Log::error("RichTextStream record is not implemented.");
-	//record << some_value;
-}
-
-
 void RichTextStream::readFields(CFRecord& record)
 {
 #pragma message("####################### RichTextStream record is not implemented")

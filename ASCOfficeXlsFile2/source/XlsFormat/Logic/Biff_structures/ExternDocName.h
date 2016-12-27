@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeExternDocName;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned short			ixals;
 	ShortXLUnicodeString	extName;

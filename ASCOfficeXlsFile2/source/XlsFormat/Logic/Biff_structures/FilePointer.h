@@ -50,7 +50,7 @@ public:
 	static const ElementType	type = typeFilePointer;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	_UINT32 offset;
 };

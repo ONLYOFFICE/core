@@ -50,13 +50,6 @@ BaseObjectPtr Fbi::clone()
 	return BaseObjectPtr(new Fbi(*this));
 }
 
-
-void Fbi::writeFields(CFRecord& record)
-{
-	record << dmixBasis << dmiyBasis << twpHeightBasis << scab << ifnt;
-}
-
-
 void Fbi::readFields(CFRecord& record)
 {
 	record >> dmixBasis >> dmiyBasis >> twpHeightBasis >> scab >> ifnt;

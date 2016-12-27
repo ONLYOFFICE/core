@@ -50,16 +50,6 @@ BaseObjectPtr LegendException::clone()
 	return BaseObjectPtr(new LegendException(*this));
 }
 
-
-void LegendException::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fDelete);
-	SETBIT(flags, 1, fLabel);
-	record << iss << flags;
-}
-
-
 void LegendException::readFields(CFRecord& record)
 {
 	unsigned short flags;

@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeMDXStrIndex;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	_UINT32 index;
 };

@@ -32,7 +32,6 @@
 // ASCOfficeXlsFileTest.cpp : Defines the entry point for the console application.
 //
 
-#include <boost/timer.hpp>
 #include <iostream>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
@@ -41,23 +40,22 @@
 #include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../source/XlsXlsxConverter/progressCallback.h"
 
-#include "../Common/XmlUtils.h"
-
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
+#pragma comment(lib,"Shell32.lib")	
+#pragma comment(lib,"Advapi32.lib")
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	HRESULT hr = S_OK;
-    boost::timer t1;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argv[2];
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);
-	
+	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.xlsx";
+
+	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);	
 	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 
-	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"", L"C:\\Windows\\Fonts", NULL);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, L"password", L"C:\\Windows\\Fonts", NULL);
 
 	if (hr == S_OK) 
 	{
@@ -66,9 +64,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	
 	FileSystem::Directory::DeleteDirectory(dstTempPath);
-
-////////////////////////////////////////////////////////////////////////
-    std::cout << "\n\nTime : " << t1.elapsed() << "\n";   
 
 	return hr;
 }

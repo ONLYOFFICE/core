@@ -1310,7 +1310,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 		if ( PROP_DEF != m_nFillOpacity)
 		{
-			CString sOpacity; sOpacity.Format(L"%d", /*100 - */m_nFillOpacity);
+            CString sOpacity = std::to_wstring( /*100 - */m_nFillOpacity);
 			sResult += L" opacity=\"" + sOpacity +L"%\"";
 			//sResult.AppendFormat( L" opacity=\"%df\"", m_nFillOpacity );
 		}

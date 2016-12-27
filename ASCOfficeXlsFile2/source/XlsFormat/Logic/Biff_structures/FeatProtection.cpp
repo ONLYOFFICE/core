@@ -56,14 +56,6 @@ BiffStructurePtr FeatProtection::clone()
 }
 
 
-void FeatProtection::store(CFRecord& record)
-{
-#pragma message("####################### FeatProtection record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FeatProtection record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void FeatProtection::load(CFRecord& record)
 {
 	_UINT32 flags;

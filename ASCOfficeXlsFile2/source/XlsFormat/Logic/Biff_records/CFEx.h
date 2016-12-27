@@ -49,17 +49,17 @@ public:
 	~CFEx();
 
 	BaseObjectPtr clone();
-
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeCFEx;
 	
-//-----------------------------
 	FrtRefHeaderU	frtRefHeaderU;
 	unsigned int	fIsCF12;
 	_UINT16			nID;
 	CFExNonCF12		content;
+//-----------------------------
+	int dxfId_;
 };
 
 } // namespace XLS

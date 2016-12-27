@@ -42,11 +42,6 @@ BiffStructurePtr XFPropBorder::clone()
 	return BiffStructurePtr(new XFPropBorder(*this));
 }
 
-void XFPropBorder::store(CFRecord& record)
-{
-	record << color << dgBorder;
-}
-
 
 void XFPropBorder::load(CFRecord& record)
 {

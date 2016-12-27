@@ -42,15 +42,6 @@ BiffStructurePtr CFExNonCF12::clone()
 	return BiffStructurePtr(new CFExNonCF12(*this));
 }
 
-
-void CFExNonCF12::store(CFRecord& record)
-{
-#pragma message("####################### CFExNonCF12 record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CFExNonCF12 record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void CFExNonCF12::load(CFRecord& record)
 {
 	unsigned char flags;

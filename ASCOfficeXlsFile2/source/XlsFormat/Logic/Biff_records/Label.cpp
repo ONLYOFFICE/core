@@ -51,15 +51,6 @@ BaseObjectPtr Label::clone()
 	return BaseObjectPtr(new Label(*this));
 }
 
-
-void Label::writeFields(CFRecord& record)
-{
-	global_info_ = record.getGlobalWorkbookInfo();
-
-	record << cell << st;
-}
-
-
 void Label::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
@@ -124,15 +115,6 @@ BaseObjectPtr CommentText::clone()
 {
 	return BaseObjectPtr(new CommentText(*this));
 }
-
-
-void CommentText::writeFields(CFRecord& record)
-{
-	global_info_ = record.getGlobalWorkbookInfo();
-
-	record << cell << st;
-}
-
 
 void CommentText::readFields(CFRecord& record)
 {

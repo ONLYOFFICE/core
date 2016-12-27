@@ -128,7 +128,7 @@ public:
 		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
 		file.ReadFile(pBuffer, 16);
-		dwBytesRead = file.GetPosition();
+		dwBytesRead = (DWORD)file.GetPosition();
 		file.CloseFile();
 
 		//jpeg	

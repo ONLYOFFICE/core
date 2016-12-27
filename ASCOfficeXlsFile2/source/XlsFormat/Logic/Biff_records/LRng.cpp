@@ -50,15 +50,6 @@ BaseObjectPtr LRng::clone()
 	return BaseObjectPtr(new LRng(*this));
 }
 
-
-void LRng::writeFields(CFRecord& record)
-{
-#pragma message("####################### LRng record is not implemented")
-	Log::error("LRng record is not implemented.");
-	//record << some_value;
-}
-
-
 void LRng::readFields(CFRecord& record)
 {
 	record >> crefRw;

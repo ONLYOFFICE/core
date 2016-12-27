@@ -55,12 +55,6 @@ BiffStructurePtr PtgArray::clone()
 }
 
 
-void PtgArray::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(7); // unused
-}
-
-
 void PtgArray::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(7); // unused

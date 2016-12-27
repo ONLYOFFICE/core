@@ -148,7 +148,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 	CFile file;
 
 	std::wstring sExt;
-	if (file.OpenFile(std_string2string(fileName)) == S_OK)
+	if (file.OpenFile(fileName) == S_OK)
 	{
 		BYTE buffer[128];
 		int buffer_size = 128;

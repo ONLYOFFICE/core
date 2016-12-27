@@ -51,11 +51,6 @@ BaseObjectPtr AutoFilter12::clone()
 }
 
 
-void AutoFilter12::writeFields(CFRecord& record)
-{
-}
-
-
 void AutoFilter12::readFields(CFRecord& record)
 {
 	_UINT16 flags;

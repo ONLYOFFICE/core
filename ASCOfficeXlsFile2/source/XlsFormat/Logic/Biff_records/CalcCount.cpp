@@ -50,13 +50,6 @@ BaseObjectPtr CalcCount::clone()
 	return BaseObjectPtr(new CalcCount(*this));
 }
 
-
-void CalcCount::writeFields(CFRecord& record)
-{
-	record << cIter;
-}
-
-
 void CalcCount::readFields(CFRecord& record)
 {
 	record >> cIter;

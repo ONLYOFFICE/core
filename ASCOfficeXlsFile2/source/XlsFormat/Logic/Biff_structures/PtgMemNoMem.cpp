@@ -42,14 +42,6 @@ BiffStructurePtr PtgMemNoMem::clone()
 	return BiffStructurePtr(new PtgMemNoMem(*this));
 }
 
-
-void PtgMemNoMem::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(4); // unused
-	record << cce;
-}
-
-
 void PtgMemNoMem::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // unused

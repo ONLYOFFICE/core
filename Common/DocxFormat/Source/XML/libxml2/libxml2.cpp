@@ -369,7 +369,7 @@ namespace XmlUtils
 			return _default;
 
 		std::map<CStringA, CStringA>::const_iterator pFind = 
-			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength()));
 
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
@@ -386,7 +386,7 @@ namespace XmlUtils
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-        return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
+        return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true);
 	}
 	CString CXmlNode::GetAttribute(const CString& sName, const CString& _default)
 	{
@@ -394,12 +394,12 @@ namespace XmlUtils
 			return _default;
 
 		std::map<CStringA, CStringA>::const_iterator pFind = 
-			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength()));
 
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-        return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
+        return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true);
 	}
 	bool CXmlNode::GetAttributeIfExist(const CString& sName, CString& sOutput)
 	{
@@ -407,11 +407,11 @@ namespace XmlUtils
 		if (IsValid())
 		{
 			std::map<CStringA, CStringA>::const_iterator pFind = 
-				m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+				m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength()));
 
 			if (pFind != m_pBase->m_attributes.end())
 			{
-                sOutput = std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
+                sOutput = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true);
 				bRes = true;
 			}
 		}
@@ -448,7 +448,7 @@ namespace XmlUtils
 			return _default;
 
 		std::map<CStringA, CStringA>::const_iterator pFind = 
-			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength())));
+			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), sName.GetLength()));
 
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
@@ -487,7 +487,7 @@ namespace XmlUtils
 			return _default;
 
 		std::map<CStringA, CStringA>::const_iterator pFind = 
-			m_pBase->m_attributes.find(std_string2string(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), (LONG)sName.GetLength())));
+			m_pBase->m_attributes.find(NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.GetString(), (LONG)sName.GetLength()));
 
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;

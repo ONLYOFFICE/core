@@ -35,7 +35,6 @@
 #include "Ole1FormatReader.h"
 
 #include "ConvertationManager.h"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Enums.h"
 
 #include <boost/algorithm/string.hpp>
 

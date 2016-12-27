@@ -50,20 +50,6 @@ BaseObjectPtr Index::clone()
 	return BaseObjectPtr(new Index(*this));
 }
 
-
-void Index::writeFields(CFRecord& record)
-{
-	record.reserveNunBytes(4); // reserved
-	record << rwMic << rwMac;
-	record.registerDelayedDataReceiver(NULL, sizeof(_UINT32)/*ibXF*/);
-
-	for(unsigned int i = 0; i < num_pointers ; ++i)
-	{
-		record.registerDelayedDataReceiver(NULL, sizeof(_UINT32)/*FilePointer*/);
-	}
-}
-
-
 void Index::readFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // reserved

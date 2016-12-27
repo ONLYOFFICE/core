@@ -52,14 +52,11 @@ public:
 	CompositeObject();
 	~CompositeObject();
 
-	//virtual const bool doSomething(BinProcessor& proc);
-	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory); // Read self and children
-	//virtual const bool write(BinWriterProcessor& proc, const bool is_mandatory); // Write self and children
-	virtual const bool loadContent(BinProcessor& proc) = 0;
+	virtual const bool read				(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory); // Read self and children
+	virtual const bool loadContent		(BinProcessor& proc) = 0;
+	virtual const bool loadContentRead	(BinReaderProcessor& proc);
 
-	virtual const bool loadContentRead(BinReaderProcessor& proc);
-
-	static const ElementType	type = typeCompositeObject;
+	static const ElementType type = typeCompositeObject;
 	
 	virtual ElementType get_type() { return type; }
 };

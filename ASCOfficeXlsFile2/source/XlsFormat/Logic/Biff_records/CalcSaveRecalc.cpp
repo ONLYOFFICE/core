@@ -51,12 +51,6 @@ BaseObjectPtr CalcSaveRecalc::clone()
 }
 
 
-void CalcSaveRecalc::writeFields(CFRecord& record)
-{
-	record << fSaveRecalc;
-}
-
-
 void CalcSaveRecalc::readFields(CFRecord& record)
 {
 	record >> fSaveRecalc;

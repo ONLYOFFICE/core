@@ -50,13 +50,6 @@ BaseObjectPtr CrtLayout12A::clone()
 	return BaseObjectPtr(new CrtLayout12A(*this));
 }
 
-
-void CrtLayout12A::writeFields(CFRecord& record)
-{
-
-}
-
-
 void CrtLayout12A::readFields(CFRecord& record)
 {
 #pragma message("####################### CrtLayout12A record is not implemented")

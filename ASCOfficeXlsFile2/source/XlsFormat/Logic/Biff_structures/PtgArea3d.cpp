@@ -61,13 +61,6 @@ BiffStructurePtr PtgArea3d::clone()
 	return BiffStructurePtr(new PtgArea3d(*this));
 }
 
-void PtgArea3d::storeFields(CFRecord& record)
-{
-	record << ixti;
-	record << area; 
-}
-
-
 void PtgArea3d::loadFields(CFRecord& record)
 {
 	global_info = record.getGlobalWorkbookInfo();

@@ -51,7 +51,6 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFSP;
 

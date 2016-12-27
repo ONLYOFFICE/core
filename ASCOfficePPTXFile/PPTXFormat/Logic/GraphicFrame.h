@@ -57,7 +57,6 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			void fromXMLOle(XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 
@@ -79,7 +78,6 @@ namespace PPTX
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;
-			nullable<COLEObject>	oleObject;
 
 			CString		 GetVmlXmlBySpid(CString & rels)	const;
 		protected:

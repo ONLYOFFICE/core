@@ -43,13 +43,6 @@ BiffStructurePtr PtgElfColSV::clone()
 	return BiffStructurePtr(new PtgElfColSV(*this));
 }
 
-
-void PtgElfColSV::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(4); // unused
-}
-
-
 void PtgElfColSV::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // unused

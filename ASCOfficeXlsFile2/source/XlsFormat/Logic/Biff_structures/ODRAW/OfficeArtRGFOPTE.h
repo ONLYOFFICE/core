@@ -49,7 +49,7 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRGFOPTE;
 

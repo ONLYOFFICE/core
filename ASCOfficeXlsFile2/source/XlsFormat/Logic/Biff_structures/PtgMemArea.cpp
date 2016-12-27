@@ -44,14 +44,6 @@ BiffStructurePtr PtgMemArea::clone()
 }
 
 
-void PtgMemArea::storeFields(CFRecord& record)
-{
-#pragma message("####################### PtgMemArea record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgMemArea record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
-
 void PtgMemArea::loadFields(CFRecord& record)
 {
 	record.skipNunBytes(4); // unused

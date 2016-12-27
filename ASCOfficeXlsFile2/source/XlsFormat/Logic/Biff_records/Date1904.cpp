@@ -51,12 +51,6 @@ BaseObjectPtr Date1904::clone()
 }
 
 
-void Date1904::writeFields(CFRecord& record)
-{
-	record << f1904DateSystem;
-}
-
-
 void Date1904::readFields(CFRecord& record)
 {
 	record >> f1904DateSystem;

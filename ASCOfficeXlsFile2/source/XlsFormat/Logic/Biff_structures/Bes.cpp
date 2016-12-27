@@ -44,11 +44,6 @@ BiffStructurePtr Bes::clone()
 	return BiffStructurePtr(new Bes(*this));
 }
 
-void Bes::store(CFRecord& record)
-{
-	record << bBoolErr << fError;
-}
-
 
 void Bes::load(CFRecord& record)
 {

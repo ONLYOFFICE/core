@@ -235,8 +235,7 @@ namespace SimpleTypes
 
 			virtual std::wstring       ToString  () const 
 			{
-				CString sRes;
-                sRes.Format(_T("%d"), (long)this->m_eValue);
+                std::wstring sRes = std::to_wstring( (long)this->m_eValue);
 				return sRes;
 			}
 			virtual std::wstring       ToHexString  () const 
@@ -497,8 +496,7 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-				CString sRes;
-                sRes.Format(_T("%d"), (int)this->m_eValue);
+                CString sRes = std::to_wstring((int)this->m_eValue);
 				return sRes;
 			}
 			CString ToStringWord() const 
@@ -1678,8 +1676,7 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-				CString sResult;
-                sResult.Format( _T("%d"), this->m_eValue );
+                CString sResult = std::to_wstring(this->m_eValue );
 				return sResult;
 			}
 

@@ -53,13 +53,6 @@ BaseObjectPtr Mms::clone()
 }
 
 
-void Mms::writeFields(CFRecord& record)
-{
-	// This record is reserved and MUST be ignored.
-	record.reserveNunBytes(2); // reserved
-}
-
-
 void Mms::readFields(CFRecord& record)
 {
 	// This record is reserved and MUST be ignored.

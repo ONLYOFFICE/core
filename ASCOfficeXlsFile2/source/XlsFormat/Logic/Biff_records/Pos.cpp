@@ -103,9 +103,10 @@ int Pos::serialize(std::wostream & _stream)
 					{
 						CP_XML_NODE(L"c:layoutTarget"){CP_XML_ATTR(L"val", m_iLayoutTarget == 1 ? L"outer" : L"inner");}
 					}
-					//if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
+					if (m_iLinkObject == 1 && mdTopLt == 2 &&  mdBotRt == 2) 
+						x += 0.5	+ (w > 0 ? w : 0);
 					//if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
-					if (m_iLinkObject == 3) y += 0		+ (h > 0 ? h : 0);
+					//if (m_iLinkObject == 3) y += 0	+ (h > 0 ? h : 0);
 
 					CP_XML_NODE(L"c:xMode")	{CP_XML_ATTR(L"val", L"edge");}
 					CP_XML_NODE(L"c:yMode")	{CP_XML_ATTR(L"val", L"edge");}

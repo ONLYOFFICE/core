@@ -70,7 +70,7 @@ void Dv::readFields(CFRecord& record)
 	_UINT32 flags;
 	record >> flags;
 
-	valType		= static_cast<unsigned char>(GETBITS(flags, 0, 3));
+	valType		= static_cast<_valTypeDv>(GETBITS(flags, 0, 3));
 	errStyle	= static_cast<unsigned char>(GETBITS(flags, 4, 6));
 	
 	fStrLookup		= GETBIT(flags, 7);
@@ -79,7 +79,7 @@ void Dv::readFields(CFRecord& record)
 	mdImeMode		= static_cast<unsigned char>(GETBITS(flags, 10, 17));
 	fShowInputMsg	= GETBIT(flags, 18);
 	fShowErrorMsg	= GETBIT(flags, 19);
-	typOperator		= static_cast<unsigned char>(GETBITS(flags, 20, 23));
+	typOperator		= static_cast<_typOperatorDv>(GETBITS(flags, 20, 23));
 
 	record >> PromptTitle >> ErrorTitle >> Prompt >> Error;
 	
@@ -95,9 +95,49 @@ int Dv::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"dataValidation")
 		{
-			CP_XML_ATTR(L"sqref", sqref.strValue);
-			CP_XML_ATTR(L"type", L"list");
+			CP_XML_ATTR(L"sqref",				sqref.strValue);
+			CP_XML_ATTR(L"showErrorMessage",	fShowErrorMsg);
+			CP_XML_ATTR(L"showInputMessage",	fShowInputMsg);
+			CP_XML_ATTR(L"allowBlank",			fAllowBlank);
 
+			switch(typOperator)
+			{
+				case operatorDvBetween:				CP_XML_ATTR(L"operator", L"between");			break;
+				case operatorDvNotBetween:			CP_XML_ATTR(L"operator", L"notBetween");		break;
+				case operatorDvEquals:				CP_XML_ATTR(L"operator", L"equal");				break;
+				case operatorDvNotEquals:			CP_XML_ATTR(L"operator", L"notEqual");			break;
+				case operatorDvGreaterThan:			CP_XML_ATTR(L"operator", L"greaterThan");		break;
+				case operatorDvLessThan:			CP_XML_ATTR(L"operator", L"lessThan");			break;
+				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual");break;
+				case operatorDvLessThanOrEqual:		CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
+			}
+			switch(valType)
+			{
+				case typeDvCustom:		CP_XML_ATTR(L"type", L"custom");	break;
+				case typeDvDate:		CP_XML_ATTR(L"type", L"date");		break;
+				case typeDvDecimal:		CP_XML_ATTR(L"type", L"decimal");	break;
+				case typeDvList:		CP_XML_ATTR(L"type", L"list");		break;
+				case typeDvNone:		CP_XML_ATTR(L"type", L"none");		break;
+				case typeDvTextLength:	CP_XML_ATTR(L"type", L"textLength");break;
+				case typeDvTime:		CP_XML_ATTR(L"type", L"time");		break;
+				case typeDvWhole:		CP_XML_ATTR(L"type", L"whole");		break;
+			}
+			if (!PromptTitle.value().empty())
+			{
+				CP_XML_ATTR(L"promtTitle", PromptTitle.value());
+			}
+			if (!Prompt.value().empty())
+			{
+				CP_XML_ATTR(L"promt", Prompt.value());
+			}
+			if (!ErrorTitle.value().empty())
+			{
+				CP_XML_ATTR(L"errorTitle", ErrorTitle.value());
+			}
+			if (!Error.value().empty())
+			{
+				CP_XML_ATTR(L"error", Error.value());
+			}
 			std::wstring sFormula1 = replace_zero(formula1.getAssembledFormula(), L",");
 			std::wstring sFormula2 = replace_zero(formula2.getAssembledFormula(), L",");
 

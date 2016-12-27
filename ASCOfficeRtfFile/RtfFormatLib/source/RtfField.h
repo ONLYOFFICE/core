@@ -117,7 +117,10 @@ public:
 class RtfFieldInst : public IDocumentElement
 {
 public:
-
+	RtfFieldInst() 
+	{
+		SetDefault();
+	} 
 	void SetDefaultRtf()
 	{
 		SetDefault();

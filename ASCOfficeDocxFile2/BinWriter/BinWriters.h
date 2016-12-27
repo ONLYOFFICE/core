@@ -6400,6 +6400,7 @@ namespace BinDocxRW
 			for(int i = 0, length = Content.size(); i < length; i++)
 			{
 				OOX::WritingElement* item = Content[i];
+				
 				if(OOX::et_w_tc == item->getType())
 				{
 					OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);

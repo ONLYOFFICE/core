@@ -38,9 +38,28 @@
 
 namespace XLS
 {
-
-
-// Logical representation of Dv record in BIFF8
+enum _typOperatorDv
+{
+	operatorDvBetween = 0,
+	operatorDvNotBetween,
+	operatorDvEquals,
+	operatorDvNotEquals,
+	operatorDvGreaterThan,
+	operatorDvLessThan,
+	operatorDvGreaterThanOrEqual,
+	operatorDvLessThanOrEqual
+};
+enum _valTypeDv
+{
+	typeDvCustom = 0,
+	typeDvDate,
+	typeDvDecimal,
+	typeDvList,
+	typeDvNone,
+	typeDvTextLength,
+	typeDvTime,
+	typeDvWhole
+};
 class Dv: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Dv)
@@ -55,7 +74,7 @@ public:
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	unsigned char	valType;
+	_valTypeDv		valType;
 	unsigned char	errStyle;
 	
 	bool			fStrLookup;
@@ -64,7 +83,7 @@ public:
 	unsigned char	mdImeMode;
 	bool			fShowInputMsg;
 	bool			fShowErrorMsg;
-	unsigned char	typOperator;
+	_typOperatorDv	typOperator;
 
 	XLUnicodeString PromptTitle;
 	XLUnicodeString ErrorTitle;

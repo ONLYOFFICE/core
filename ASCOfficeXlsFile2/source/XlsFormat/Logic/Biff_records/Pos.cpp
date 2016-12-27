@@ -79,8 +79,8 @@ int Pos::serialize(std::wostream & _stream)
 	{
 		Frame* Frame_ = dynamic_cast<Frame*>(m_Frame.get());
 
-		bAutoPosition	= !Frame_->fAutoPosition;
-		bAutoSize		= !Frame_->fAutoSize;
+		bAutoPosition	= Frame_->fAutoPosition;
+		bAutoSize		= Frame_->fAutoSize;
 	}
 	double x = x1 / 4000.;
 	double y = y1 / 4000.;
@@ -103,8 +103,8 @@ int Pos::serialize(std::wostream & _stream)
 					{
 						CP_XML_NODE(L"c:layoutTarget"){CP_XML_ATTR(L"val", m_iLayoutTarget == 1 ? L"outer" : L"inner");}
 					}
-					if (m_iLinkObject == 1 && mdTopLt == 2 &&  mdBotRt == 2) 
-						x += 0.5	+ (w > 0 ? w : 0);
+					//if (m_iLinkObject == 1 && mdTopLt == 2 &&  mdBotRt == 2 && x == 0) 
+					//	x += 0.5 - (w > 0 ? w / 2 : 0);
 					//if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
 					//if (m_iLinkObject == 3) y += 0	+ (h > 0 ? h : 0);
 

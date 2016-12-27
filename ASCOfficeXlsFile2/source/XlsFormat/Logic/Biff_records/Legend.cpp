@@ -111,6 +111,8 @@ int Legend::serialize(std::wostream & _stream, int size)
 					dy = dy * size;
 				}
 			}
+			CP_XML_NODE(L"c:layout");
+			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}
 		}
 		else
 		{

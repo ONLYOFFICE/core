@@ -198,7 +198,7 @@ int AXS::serialize(std::wostream & _stream)
 				axis_line_format->serialize(CP_XML_STREAM());
 			}
 		}
-		if (m_FontX)
+		if ((m_FontX) || ((tick) && (!tick->fAutoRot)))
 		{
 			CP_XML_NODE(L"c:txPr")
 			{

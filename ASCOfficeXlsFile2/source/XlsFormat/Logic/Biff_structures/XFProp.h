@@ -52,9 +52,8 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	int		serialize(std::wostream & stream);
-	void	serialize_attr(CP_ATTR_NODE);
+	int		serialize		(std::wostream & stream);
+	void	serialize_attr	(CP_ATTR_NODE);
 
 	unsigned short		xfPropType;
 	unsigned short		cb;

@@ -219,7 +219,7 @@ int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespac
 	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
 	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
-	if (iFmt - 1 > sz || iFmt < 1) return 0;
+	if (iFmt - 1 >= sz || iFmt < 1) return 0;
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 

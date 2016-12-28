@@ -110,7 +110,7 @@ void XFProps::load(CFRecord& record)
 		}
 	}
 }
-int XFProps::serialize(std::wostream & stream)
+int XFProps::serialize(std::wostream & stream, bool dxf)
 {
 	CP_XML_WRITER(stream)    
     {
@@ -130,7 +130,14 @@ int XFProps::serialize(std::wostream & stream)
 			{	
 				for (int i = 0; i < arXFPropNumFmt.size(); i++)
 				{
-					arXFPropNumFmt[i].serialize(CP_XML_STREAM());
+					if (dxf)
+					{
+						arXFPropNumFmt[i].serialize_attr(CP_GET_XML_NODE());
+					}
+					else
+					{
+						arXFPropNumFmt[i].serialize(CP_XML_STREAM());
+					}
 				}
 			}
 		}

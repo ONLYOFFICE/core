@@ -672,7 +672,7 @@ namespace DocFileFormat
 	{
 		if (grpprlChpx)
 		{
-			unsigned int cp = 0;
+			unsigned int index = 0;
 			bool isPictureBullet = false;
 
 			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
@@ -681,7 +681,7 @@ namespace DocFileFormat
 				{
 					case sprmCPbiIBullet:
 					{
-						cp = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
+						index = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
 					}break;
 
 					case sprmCPbiGrf:
@@ -694,7 +694,7 @@ namespace DocFileFormat
 			if (isPictureBullet)
 			{
 				m_pXmlWriter->WriteNodeBegin(_T("w:lvlPicBulletId"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:val"), FormatUtils::IntToWideString(cp));
+				m_pXmlWriter->WriteAttribute(_T("w:val"), FormatUtils::IntToWideString(index));
 				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);  
 			}
 		}

@@ -169,6 +169,23 @@ static void serialize_val_prop(std::wostream & stream, const std::wstring & name
 		}
 	}
 }
+static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStructurePtr & val)
+{
+	if (val == NULL)	return;
+	if (name.empty())	return;
+
+	BIFF_DWORD* dword = dynamic_cast<BIFF_DWORD*>(val.get());
+	if (dword)	CP_XML_ATTR(name.c_str(), *dword->value());
+
+	BIFF_WORD*	word = dynamic_cast<BIFF_WORD*>(val.get());
+	if (word)	CP_XML_ATTR(name.c_str(), *word->value());
+
+	BIFF_BYTE*	byte_ = dynamic_cast<BIFF_BYTE*>(val.get());
+	if (byte_)	CP_XML_ATTR(name.c_str(), *byte_->value());
+
+	LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
+	if (str_)	CP_XML_ATTR(name.c_str(), xml::utils::replace_text_to_xml(str_->value()));
+}
 static void serialize_border_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
 {
 	if (name.empty())	return;
@@ -206,39 +223,49 @@ static void serialize_border_prop(std::wostream & stream, const std::wstring & n
 
 void XFProp::serialize_attr(CP_ATTR_NODE)
 {
-	if (xfPropType == 0)
+	switch(xfPropType)
 	{
-		BIFF_BYTE* byte_ = dynamic_cast<BIFF_BYTE*>(xfPropDataBlob.get());
-		if (!byte_)	return;
+		case 0x0000:
+		{
+			BIFF_BYTE* byte_ = dynamic_cast<BIFF_BYTE*>(xfPropDataBlob.get());
+			if (!byte_)	return;
 
-		switch(*byte_)
-		{		
-			case 2:		CP_XML_ATTR(L"patternType", L"pct50");					break; //50% gray
-			case 3:		CP_XML_ATTR(L"patternType", L"pct75");					break; //75% gray
-			case 4:		CP_XML_ATTR(L"patternType", L"pct25");					break; //25% gray
-			case 5:		CP_XML_ATTR(L"patternType", L"horzStripe");				break; //Horizontal stripe
-			case 6:		CP_XML_ATTR(L"patternType", L"vertStripe");				break; //Vertical stripe
-			case 7:		CP_XML_ATTR(L"patternType", L"reverseDiagStripe");		break; //Reverse diagonal stripe
-			case 8:		CP_XML_ATTR(L"patternType", L"diagStripe");				break; //Diagonal stripe
-			case 9:		CP_XML_ATTR(L"patternType", L"diagCross");				break; //Diagonal crosshatch
-			case 10:	CP_XML_ATTR(L"patternType", L"trellis");				break; //Thick Diagonal crosshatch
-			case 11:	CP_XML_ATTR(L"patternType", L"thinHorzStripe");			break; //Thin horizontal stripe
-			case 12:	CP_XML_ATTR(L"patternType", L"thinVertStripe");			break; //Thin vertical stripe
-			case 13:	CP_XML_ATTR(L"patternType", L"thinReverseDiagStripe");	break; //Thin reverse diagonal stripe
-			case 14:	CP_XML_ATTR(L"patternType", L"thinDiagStripe");			break; //Thin diagonal stripe
-			case 15:	CP_XML_ATTR(L"patternType", L"thinHorzCross");			break; //Thin horizontal crosshatch
-			case 16:	CP_XML_ATTR(L"patternType", L"thinDiagCross");			break; //Thin diagonal crosshatch
-			case 17:	CP_XML_ATTR(L"patternType", L"gray125");				break; //12.5% gray
-			case 18:	CP_XML_ATTR(L"patternType", L"gray0625");				break; //6.25% gray
-			default:
-						CP_XML_ATTR(L"patternType", L"solid");		
-		}
+			switch(*byte_)
+			{		
+				case 2:		CP_XML_ATTR(L"patternType", L"pct50");					break; //50% gray
+				case 3:		CP_XML_ATTR(L"patternType", L"pct75");					break; //75% gray
+				case 4:		CP_XML_ATTR(L"patternType", L"pct25");					break; //25% gray
+				case 5:		CP_XML_ATTR(L"patternType", L"horzStripe");				break; //Horizontal stripe
+				case 6:		CP_XML_ATTR(L"patternType", L"vertStripe");				break; //Vertical stripe
+				case 7:		CP_XML_ATTR(L"patternType", L"reverseDiagStripe");		break; //Reverse diagonal stripe
+				case 8:		CP_XML_ATTR(L"patternType", L"diagStripe");				break; //Diagonal stripe
+				case 9:		CP_XML_ATTR(L"patternType", L"diagCross");				break; //Diagonal crosshatch
+				case 10:	CP_XML_ATTR(L"patternType", L"trellis");				break; //Thick Diagonal crosshatch
+				case 11:	CP_XML_ATTR(L"patternType", L"thinHorzStripe");			break; //Thin horizontal stripe
+				case 12:	CP_XML_ATTR(L"patternType", L"thinVertStripe");			break; //Thin vertical stripe
+				case 13:	CP_XML_ATTR(L"patternType", L"thinReverseDiagStripe");	break; //Thin reverse diagonal stripe
+				case 14:	CP_XML_ATTR(L"patternType", L"thinDiagStripe");			break; //Thin diagonal stripe
+				case 15:	CP_XML_ATTR(L"patternType", L"thinHorzCross");			break; //Thin horizontal crosshatch
+				case 16:	CP_XML_ATTR(L"patternType", L"thinDiagCross");			break; //Thin diagonal crosshatch
+				case 17:	CP_XML_ATTR(L"patternType", L"gray125");				break; //12.5% gray
+				case 18:	CP_XML_ATTR(L"patternType", L"gray0625");				break; //6.25% gray
+							CP_XML_ATTR(L"patternType", L"solid");		
+			}
+		}break;
+		case 0x0003:
+		{
+			XFPropGradient * grad_ = dynamic_cast<XFPropGradient*>(xfPropDataBlob.get());
+			if (grad_) grad_->serialize_attr(CP_GET_XML_NODE());
+ 		}break;
+		case 0x0026:
+		{
+			serialize_val_attr(CP_GET_XML_NODE(), L"formatCode",	xfPropDataBlob);		
+		}break;
+		case 0x0029:
+		{
+			serialize_val_attr(CP_GET_XML_NODE(), L"numFmtId",	xfPropDataBlob);	
+		}break;	
 	}
-	if (xfPropType == 3)
-	{
-		XFPropGradient * grad_ = dynamic_cast<XFPropGradient*>(xfPropDataBlob.get());
-		if (grad_) grad_->serialize_attr(CP_GET_XML_NODE());
- 	}
 }
 int XFProp::serialize(std::wostream & stream)
 {

@@ -419,9 +419,7 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
 
-		if (!m_isInlinePicture)
-		{
-			//borders
+		{//borders			
 			writePictureBorder( L"bordertop",		pict->brcTop );
 			writePictureBorder( L"borderleft",		pict->brcLeft );
 			writePictureBorder( L"borderbottom",	pict->brcBottom );

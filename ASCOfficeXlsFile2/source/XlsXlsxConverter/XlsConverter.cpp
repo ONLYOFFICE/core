@@ -435,12 +435,16 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get(), sheet);
 
-	if (sheet->m_arNote.size() > 0 && xls_global_info->Version < 0x0600)
+	if (!sheet->m_arNote.empty() && xls_global_info->Version < 0x0600)
 	{
+		xlsx_context->get_drawing_context().start_drawing(0);
 		for (int i = 0 ; i < sheet->m_arNote.size(); i++)
 		{
-			convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
+			xlsx_context->get_drawing_context().start_drawing(0x0019);
+				convert(dynamic_cast<XLS::Note*>(sheet->m_arNote[i].get()));
+			xlsx_context->get_drawing_context().end_drawing();
 		}
+		xlsx_context->get_drawing_context().end_group();
 	}
 
 	if (sheet->m_PAGESETUP)
@@ -1704,11 +1708,6 @@ void XlsConverter::convert(XLS::Note* note)
 
 	note->note_sh.calculate();
 
-	if (xls_global_info->Version < 0x0600)
-	{
-		xlsx_context->get_comments_context().start_comment();
-	}
-
 	xlsx_context->get_comments_context().set_ref	(note->note_sh.ref_, note->note_sh.col, note->note_sh.row);
 	xlsx_context->get_comments_context().set_author	(note->note_sh.stAuthor);
 	xlsx_context->get_comments_context().set_visibly(note->note_sh.fShow);
@@ -1720,9 +1719,8 @@ void XlsConverter::convert(XLS::Note* note)
 	if (xls_global_info->Version < 0x0600)
 	{
 		//todooo размеры произвольные .. можно сделать оценку по размеру строки
-		xlsx_context->get_drawing_context().set_child_anchor(120, 64, note->note_sh.x_/ 12700. , note->note_sh.y_/ 12700.);
-		xlsx_context->get_comments_context().set_content(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
-		xlsx_context->get_comments_context().end_comment();
+		xlsx_context->get_drawing_context().set_child_anchor(note->note_sh.x_ , note->note_sh.y_, 120 * 12700., 64 * 12700.);
+		xlsx_context->get_drawing_context().set_text(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
 	}
 }
 

@@ -52,7 +52,8 @@ public:
 
 	unsigned short		cprops;
 
-	int serialize(std::wostream & stream);
+	int serialize(std::wostream & stream){ return serialize(stream, false) ; }
+	int serialize(std::wostream & stream, bool dxf);
 	
 	std::vector<XFProp> arXFPropFont;
 	std::vector<XFProp> arXFPropNumFmt;

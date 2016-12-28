@@ -93,7 +93,6 @@ void DXFN::load(CFRecord& record)
 
 	if(ibitAtrNum)
 	{
-		dxfnum.setIsUserDefined(fIfmtUser);
 		record >> dxfnum;
 	}
 	if(ibitAtrFnt)

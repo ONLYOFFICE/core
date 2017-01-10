@@ -224,7 +224,7 @@ namespace DocFileFormat
 	{
 		HeaderRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( _T( "word/_rels/header" ) ) + FormatUtils::IntToWideString( ++_headerCounter ) + std::wstring( _T( ".xml.rels" ) ) ) ) );
 
-		return AddPart( _T( "word" ), ( std::wstring( _T( "header" ) ) + FormatUtils::IntToWideString( _headerCounter ) + std::wstring( _T( ".xml" ) ) ).c_str(), WordprocessingMLContentTypes::Header, OpenXmlRelationshipTypes::Header );
+		return AddPart( _T( "word" ), ( std::wstring( _T( "header" ) ) + FormatUtils::IntToWideString( _headerCounter ) + std::wstring( _T( ".xml" ) ) ), WordprocessingMLContentTypes::Header, OpenXmlRelationshipTypes::Header );
 	}
 
 	int OpenXmlPackage::AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
@@ -245,7 +245,7 @@ namespace DocFileFormat
 	{
 		FooterRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( _T( "word/_rels/footer" ) ) + FormatUtils::IntToWideString( ++_footerCounter ) + std::wstring( _T( ".xml.rels" ) ) ) ) );
 
-		return AddPart( _T( "word" ), ( std::wstring( _T( "footer" ) ) + FormatUtils::IntToWideString( _footerCounter ) + std::wstring( _T( ".xml" ) ) ).c_str(), WordprocessingMLContentTypes::Footer, OpenXmlRelationshipTypes::Footer );
+		return AddPart( _T( "word" ), ( std::wstring( _T( "footer" ) ) + FormatUtils::IntToWideString( _footerCounter ) + std::wstring( _T( ".xml" ) ) ), WordprocessingMLContentTypes::Footer, OpenXmlRelationshipTypes::Footer );
 	}
 
 	int OpenXmlPackage::AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
@@ -322,13 +322,13 @@ namespace DocFileFormat
 			for ( std::list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
 			{
 				writer.WriteNodeBegin( _T( "Relationship" ), TRUE );
-				writer.WriteAttribute( _T( "Id" ), iter->Id.c_str() );
-				writer.WriteAttribute( _T( "Type" ), iter->Type.c_str() );
-				writer.WriteAttribute( _T( "Target" ), iter->Target.c_str() );
+				writer.WriteAttribute( _T( "Id" ), iter->Id );
+				writer.WriteAttribute( _T( "Type" ), iter->Type );
+				writer.WriteAttribute( _T( "Target" ), iter->Target );
 
 				if ( !iter->TargetMode.empty() )
 				{
-					writer.WriteAttribute( _T( "TargetMode" ), iter->TargetMode.c_str() );
+					writer.WriteAttribute( _T( "TargetMode" ), iter->TargetMode );
 				}
 
 				writer.WriteNodeEnd( _T( "" ), TRUE );
@@ -358,16 +358,16 @@ namespace DocFileFormat
 		for ( std::map<std::wstring, std::wstring>::iterator iter = DocumentContentTypesFile._defaultTypes.begin(); iter != DocumentContentTypesFile._defaultTypes.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Default" ), TRUE );
-			writer.WriteAttribute( _T( "Extension" ), iter->first.c_str() );
-			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._defaultTypes[iter->first].c_str() );
+			writer.WriteAttribute( _T( "Extension" ), iter->first );
+			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._defaultTypes[iter->first] );
 			writer.WriteNodeEnd( _T( "" ), TRUE );
 		}
 
 		for ( std::map<std::wstring, std::wstring>::iterator iter = DocumentContentTypesFile._partOverrides.begin(); iter != DocumentContentTypesFile._partOverrides.end(); iter++ )
 		{
 			writer.WriteNodeBegin( _T( "Override" ), TRUE );
-			writer.WriteAttribute( _T( "PartName" ), iter->first.c_str() );
-			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._partOverrides[iter->first].c_str() );
+			writer.WriteAttribute( _T( "PartName" ), iter->first );
+			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._partOverrides[iter->first] );
 			writer.WriteNodeEnd( _T( "" ), TRUE );
 		}
 

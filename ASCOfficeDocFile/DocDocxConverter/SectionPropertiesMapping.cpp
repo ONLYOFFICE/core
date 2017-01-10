@@ -157,7 +157,7 @@ namespace DocFileFormat
 			case sprmSDxaLeft:
 			{
 				_marLeft = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-				appendValueAttribute( &pgMar, _T( "w:left" ), FormatUtils::IntToWideString( _marLeft ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:left" ), FormatUtils::IntToWideString( _marLeft ) );
 			}
 			break;
 
@@ -165,38 +165,38 @@ namespace DocFileFormat
 			case sprmSDxaRight:
 			{
 				_marRight = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-				appendValueAttribute( &pgMar, _T( "w:right" ), FormatUtils::IntToWideString( _marRight ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:right" ), FormatUtils::IntToWideString( _marRight ) );
 			}
 			break;
 
 			case sprmOldSDyaTop:
 			case sprmSDyaTop:
 //top margin
-				appendValueAttribute( &pgMar, _T( "w:top" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:top" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDyaBottom:
 			case sprmSDyaBottom:
 //bottom margin
-				appendValueAttribute( &pgMar, _T( "w:bottom" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:bottom" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDzaGutter:
 			case sprmSDzaGutter:
 //gutter margin
-				appendValueAttribute( &pgMar, _T( "w:gutter" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:gutter" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDyaHdrTop:
 			case sprmSDyaHdrTop:
 //header margin
-				appendValueAttribute( &pgMar, _T( "w:header"), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:header"), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDyaHdrBottom:
 			case sprmSDyaHdrBottom:
 //footer margin
-				appendValueAttribute( &pgMar, _T( "w:footer" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgMar, _T( "w:footer" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 //page size and orientation
@@ -204,30 +204,30 @@ namespace DocFileFormat
 			case sprmSXaPage:
 				{
 					_pgWidth = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-					appendValueAttribute( &pgSz, _T( "w:w" ), FormatUtils::IntToWideString( _pgWidth ).c_str() );
+					appendValueAttribute( &pgSz, _T( "w:w" ), FormatUtils::IntToWideString( _pgWidth ) );
 				}
 				break;
 
 			case sprmOldSYaPage:
 			case sprmSYaPage:
-				appendValueAttribute( &pgSz, _T( "w:h" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &pgSz, _T( "w:h" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSBOrientation:
 			case sprmSBOrientation:
 				//orientation
-				appendValueAttribute( &pgSz, _T( "w:orient" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageOrientationMap[0][0], 3, 10 ).c_str() );
+				appendValueAttribute( &pgSz, _T( "w:orient" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageOrientationMap[0][0], 3, 10 ) );
 				break;
 
 //paper source
 			case sprmOldSDmBinFirst:
 			case sprmSDmBinFirst:
-				appendValueAttribute( &paperSrc, _T( "w:first" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &paperSrc, _T( "w:first" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDmBinOther:
 			case sprmSDmBinOther:
-				appendValueAttribute( &paperSrc, _T( "w:other" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &paperSrc, _T( "w:other" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 //page borders
@@ -276,12 +276,12 @@ namespace DocFileFormat
 
 			case sprmSRncFtn:
 				//restart code
-				appendValueElement( &footnotePr, _T( "numRestart" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), &FootnoteRestartCodeMap[0][0], 3, 11 ).c_str(), true );
+				appendValueElement( &footnotePr, _T( "numRestart" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), &FootnoteRestartCodeMap[0][0], 3, 11 ), true );
 				break;
 
 			case sprmSRncEdn:
 				//restart code
-				appendValueElement( &endnotePr, _T( "numRestart" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), &EndnoteRestartCodeMap[0][0], 3, 11 ).c_str(), true );
+				appendValueElement( &endnotePr, _T( "numRestart" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), &EndnoteRestartCodeMap[0][0], 3, 11 ), true );
 				break;
 
 			case sprmSFpc:
@@ -305,31 +305,31 @@ namespace DocFileFormat
 			}break;			
 
 			case sprmSNfcFtnRef:
-				appendValueElement( &footnotePr, _T( "numFmt" ), NumberingMapping::GetNumberFormatWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+				appendValueElement( &footnotePr, _T( "numFmt" ), NumberingMapping::GetNumberFormatWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				break;
 
 			case sprmSNfcEdnRef:
-				appendValueElement( &endnotePr, _T( "numFmt" ), NumberingMapping::GetNumberFormatWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+				appendValueElement( &endnotePr, _T( "numFmt" ), NumberingMapping::GetNumberFormatWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				break;
 
 			case sprmSNFtn:
-				appendValueElement( &footnotePr, _T( "numStart" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+				appendValueElement( &footnotePr, _T( "numStart" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				break;
 
 			case sprmSNEdn:
-				appendValueElement( &endnotePr, _T( "numStart" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+				appendValueElement( &endnotePr, _T( "numStart" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				break;
 
 			case sprmSDyaLinePitch:
-				appendValueAttribute( &docGrid, _T( "w:linePitch" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &docGrid, _T( "w:linePitch" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmSDxtCharSpace:
-				appendValueAttribute( &docGrid, _T( "w:charSpace" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute( &docGrid, _T( "w:charSpace" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmSClm:
-				appendValueAttribute( &docGrid, _T( "w:type" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), &DocGridTypeMap[0][0], 4, 14 ).c_str() );
+				appendValueAttribute( &docGrid, _T( "w:type" ), FormatUtils::MapValueToWideString( FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), &DocGridTypeMap[0][0], 4, 14 ) );
 				break;
 
 			case sprmOldSCcolumns:
@@ -340,14 +340,14 @@ namespace DocFileFormat
 				RELEASEARRAYOBJECTS (m_arrSpace);					
 				m_arrSpace				=	new short [m_nColumns];
 
-				appendValueAttribute (&cols, _T( "w:num" ), FormatUtils::IntToWideString (m_nColumns).c_str());
+				appendValueAttribute (&cols, _T( "w:num" ), FormatUtils::IntToWideString (m_nColumns));
 			}
 			break;
 
 			case sprmOldSDxaColumns:
 			case sprmSDxaColumns:
 				//evenly spaced columns
-				appendValueAttribute (&cols, _T( "w:space" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ).c_str() );
+				appendValueAttribute (&cols, _T( "w:space" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ) );
 				break;
 
 			case sprmOldSDxaColWidth:
@@ -403,12 +403,12 @@ namespace DocFileFormat
 
 			case sprmOldSVjc:
 			case sprmSVjc:
-				appendValueElement (m_pXmlNode, _T( "vAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &TextVerticalAlignment[0][0], 4, 7 ).c_str(), true );
+				appendValueElement (m_pXmlNode, _T( "vAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &TextVerticalAlignment[0][0], 4, 7 ), true );
 				break;
 
 			case sprmOldSNfcPgn:
 			case sprmSNfcPgn:
-				appendValueAttribute( &pgNumType, _T( "w:fmt" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageNumberFormatCodeMap[0][0], 42, 29 ).c_str() );
+				appendValueAttribute( &pgNumType, _T( "w:fmt" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &PageNumberFormatCodeMap[0][0], 42, 29 ) );
 				break;
 
 			case sprmOldSPgnStart:
@@ -439,7 +439,7 @@ namespace DocFileFormat
 					SLncOperand mode		=	(SLncOperand)FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize);
                     mode					=	(SLncOperand)(std::min)((std::max)(mode,lncPerPage),lncContinue);
 
-					appendValueAttribute (&lnNumType, _T("w:restart"), LineNumberRestart[mode].c_str() );
+					appendValueAttribute (&lnNumType, _T("w:restart"), LineNumberRestart[mode] );
 				}
 				break;
 
@@ -461,7 +461,7 @@ namespace DocFileFormat
 		}
 
 		if (bWasSprmSFPgnRestart && false == wsSprmSPgnStart.empty() )
-			appendValueAttribute( &pgNumType, _T( "w:start" ), wsSprmSPgnStart.c_str() );
+			appendValueAttribute( &pgNumType, _T( "w:start" ), wsSprmSPgnStart );
 
 		// build the columns
 		if (m_arrWidth)
@@ -487,8 +487,8 @@ namespace DocFileFormat
 			for (int i = 0; i < m_nColumns; ++i)
 			{
                 XMLTools::XMLElement	col		(_T( "w:col" ));
-                XMLTools::XMLAttribute	w		(_T( "w:w" ),		FormatUtils::IntToWideString (m_arrWidth[i]).c_str());
-                XMLTools::XMLAttribute	space	(_T( "w:space" ),	FormatUtils::IntToWideString (m_arrSpace[i]).c_str());
+                XMLTools::XMLAttribute	w		(_T( "w:w" ),		FormatUtils::IntToWideString (m_arrWidth[i]));
+                XMLTools::XMLAttribute	space	(_T( "w:space" ),	FormatUtils::IntToWideString (m_arrSpace[i]));
 
 				col.AppendAttribute (w);
 				col.AppendAttribute (space);
@@ -496,7 +496,7 @@ namespace DocFileFormat
 			}
 		}
 
-		appendValueElement (m_pXmlNode, _T( "type" ), _type.c_str(), true );
+		appendValueElement (m_pXmlNode, _T( "type" ), _type, true );
 
 		if (footnotePr.GetChildCount())
 			m_pXmlNode->AppendChild (footnotePr);
@@ -529,10 +529,10 @@ namespace DocFileFormat
 			m_pXmlNode->AppendChild (pgNumType);
 
 		if (m_pXmlWriter)
-			m_pXmlWriter->WriteString (m_pXmlNode->GetXMLString().c_str() );
+			m_pXmlWriter->WriteString (m_pXmlNode->GetXMLString() );
 	}
 
-    void SectionPropertiesMapping::AppendRef (XMLTools::XMLElement *parent, const wchar_t* element, const wchar_t* refType, const wchar_t* refId)
+    void SectionPropertiesMapping::AppendRef (XMLTools::XMLElement *parent, const std::wstring& element, const std::wstring& refType, const std::wstring& refId)
 	{
         XMLTools::XMLElement headerRef (_T("w"), element);
 
@@ -576,7 +576,7 @@ namespace DocFileFormat
 				}
 			}
 
-			AppendRef (m_pXmlNode, StoryType.c_str(), Story.c_str(), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(nRelID) ).c_str() );
+			AppendRef (m_pXmlNode, StoryType, Story, ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(nRelID) ) );
 
 			return TRUE;
 		}

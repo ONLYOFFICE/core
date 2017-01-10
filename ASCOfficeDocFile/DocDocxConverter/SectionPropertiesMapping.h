@@ -167,7 +167,7 @@ namespace DocFileFormat
 		const std::wstring	& get_section_type();
 	private:
 		
-        void AppendRef (XMLTools::XMLElement* pBaseNode, const wchar_t* element, const wchar_t* refType, const wchar_t* refId);
+        void AppendRef (XMLTools::XMLElement* pBaseNode, const std::wstring& element, const std::wstring& refType, const std::wstring& refId);
 
 		bool WriteSectionStory (CharacterRange* pRange, const std::wstring& StoryType, const std::wstring& Story);
 

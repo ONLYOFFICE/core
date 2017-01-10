@@ -86,7 +86,7 @@ namespace DocFileFormat
 			{
 				m_pXmlWriter->WriteNodeBegin( _T( "w:style" ), TRUE );  
 
-				m_pXmlWriter->WriteAttribute( _T( "w:type" ), FormatUtils::MapValueToWideString( (*iter)->stk, &StyleKindMap[0][0], 5, 10 ).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:type" ), FormatUtils::MapValueToWideString( (*iter)->stk, &StyleKindMap[0][0], 5, 10 ));
 
 				//!!!TODO: There is NO default styles in DOC file. So, we can't choose one of them!!!
 				/*if ( ( (*iter)->sti != Null ) && ( (*iter)->sti != User ) )
@@ -95,19 +95,19 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T( "w:default" ), _T( "1" ) );
 				}*/
 
-				m_pXmlWriter->WriteAttribute( _T( "w:styleId" ), FormatUtils::XmlEncode(MakeStyleId( *iter )).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:styleId" ), FormatUtils::XmlEncode(MakeStyleId( *iter )));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				// <w:name val="" />
 				m_pXmlWriter->WriteNodeBegin( _T( "w:name" ), TRUE );  
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(getStyleName( *iter ), true ).c_str());
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(getStyleName( *iter ), true ));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				// <w:basedOn val="" />
 				if ( ( (*iter)->istdBase != 4095 ) && ( (*iter)->istdBase < sheet->Styles->size() ) )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:basedOn" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdBase ) )).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdBase ) )));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 				}
 
@@ -115,7 +115,7 @@ namespace DocFileFormat
 				if ( (*iter)->istdNext < sheet->Styles->size() )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:next" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdNext ) )).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdNext ) )));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 				}
 
@@ -123,7 +123,7 @@ namespace DocFileFormat
 				if ( (*iter)->istdLink < sheet->Styles->size() )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:link" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdLink ) )).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdLink ) )));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 				}
 
@@ -242,19 +242,19 @@ namespace DocFileFormat
 
 		FontFamilyName* ffnAscii = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[0] ) );
 		if (ffnAscii)
-			m_pXmlWriter->WriteAttribute( _T( "w:ascii" ), FormatUtils::XmlEncode(ffnAscii->xszFtn).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:ascii" ), FormatUtils::XmlEncode(ffnAscii->xszFtn, true));
 
 		FontFamilyName* ffnAsia = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[1] ) );
 		if (ffnAsia)
-			m_pXmlWriter->WriteAttribute( _T( "w:eastAsia" ), FormatUtils::XmlEncode(ffnAsia->xszFtn).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:eastAsia" ), FormatUtils::XmlEncode(ffnAsia->xszFtn, true));
 
 		FontFamilyName* ffnAnsi = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[2] ) );
 		if (ffnAnsi)
-			m_pXmlWriter->WriteAttribute( _T( "w:hAnsi" ), FormatUtils::XmlEncode(ffnAnsi->xszFtn).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:hAnsi" ), FormatUtils::XmlEncode(ffnAnsi->xszFtn, true));
 
 		FontFamilyName* ffnComplex = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[3] ) );
 		if (ffnComplex)
-			m_pXmlWriter->WriteAttribute( _T( "w:cs" ), FormatUtils::XmlEncode(ffnComplex->xszFtn).c_str() );
+			m_pXmlWriter->WriteAttribute( _T( "w:cs" ), FormatUtils::XmlEncode(ffnComplex->xszFtn, true));
 
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:rFonts" ) );
@@ -263,7 +263,7 @@ namespace DocFileFormat
 		std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lang" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), langcode.c_str() );
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), langcode);
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 		m_pXmlWriter->WriteNodeEnd( _T( "w:lang" ) );
 

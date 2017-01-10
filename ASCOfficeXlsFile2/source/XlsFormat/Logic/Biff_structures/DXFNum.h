@@ -50,11 +50,7 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	int serialize(std::wostream & stream);
-
-	void		setIsUserDefined(const bool is_user_defined); 
-	const bool	getIsUserDefined() const; 
 
 	_CP_OPT(bool)	is_user_defined_;
 	

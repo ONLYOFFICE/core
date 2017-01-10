@@ -96,7 +96,7 @@ namespace DocFileFormat
 
 			if ( papx->istd < m_document->Styles->Styles->size() )
 			{
-				styleId.SetValue( FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId( m_document->Styles->Styles->at( papx->istd ) )).c_str() );
+				styleId.SetValue( FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId( m_document->Styles->Styles->at( papx->istd ) )) );
 			}
 
 			pStyle.AppendAttribute( styleId );
@@ -139,7 +139,7 @@ namespace DocFileFormat
 			{
 				case sprmPIpgp:
 				{
-					appendValueElement(_pPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize)).c_str(), true);
+					appendValueElement(_pPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize)), true);
 				}break;			
 
 				case sprmPFAutoSpaceDE:
@@ -242,7 +242,7 @@ namespace DocFileFormat
 						flValue *= -1;
 					}
 
-					appendValueAttribute( &ind, flName.c_str(), flValue );
+					appendValueAttribute( &ind, flName, flValue );
 				}break;				
 
 				case sprmPDxcLeft1:
@@ -283,7 +283,7 @@ namespace DocFileFormat
 				{
 					LineSpacingDescriptor lspd( iter->Arguments, iter->argumentsSize );
 
-                    XMLTools::XMLAttribute line( _T( "w:line" ), FormatUtils::IntToWideString( abs( lspd.dyaLine ) ).c_str() );
+                    XMLTools::XMLAttribute line( _T( "w:line" ), FormatUtils::IntToWideString( abs( lspd.dyaLine ) ));
 					spacing.AppendAttribute( line );
 
                     XMLTools::XMLAttribute lineRule( _T( "w:lineRule" ), _T( "auto" ) );
@@ -314,7 +314,7 @@ namespace DocFileFormat
                     jc = new XMLTools::XMLElement( L"w:jc" );
 					if ( jc )
 					{
-                        XMLTools::XMLAttribute jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ).c_str() );
+                        XMLTools::XMLAttribute jcVal( L"w:val", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ));
 						jc->AppendAttribute( jcVal );
 					}
 				}break;	
@@ -438,10 +438,13 @@ namespace DocFileFormat
 				}break;
 
 				case sprmOldPNLvlAnm:
-				{					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
+				{					
+					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
 					if (level > 0 && level < 10) 					
 						appendValueElement( _pPr, _T( "outlineLvl" ), level, false );		
-				}break;				case sprmOldPFNoLineNumb:
+				}break;				
+				
+				case sprmOldPFNoLineNumb:
 				{
 				}break;
 
@@ -498,7 +501,7 @@ namespace DocFileFormat
 						tab.AppendAttribute( tabsVal );
 
 						//position
-                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ).c_str() );
+                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ) );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -515,9 +518,9 @@ namespace DocFileFormat
 					}
 
 					//read the added tabs
-					unsigned char itbdAddMax = iter->Arguments[pos];
+					unsigned char itbdAddMax = pos < iter->argumentsSize ? iter->Arguments[pos] : 0;
 
-					pos++;
+					if (itbdAddMax > 0)	pos++;
 
 					for ( int i = 0; i < itbdAddMax; i++ )
 					{
@@ -526,15 +529,15 @@ namespace DocFileFormat
                         XMLTools::XMLElement tab( _T( "w:tab" ) );
 
 						//justification
-                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ).c_str() );
+                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ) );
 						tab.AppendAttribute( tabsVal );
 
 						//tab leader type
-                        XMLTools::XMLAttribute leader( _T( "w:leader" ), FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ).c_str() );
+                        XMLTools::XMLAttribute leader( _T( "w:leader" ), FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ) );
 						tab.AppendAttribute( leader );
 
 						//position
-                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ).c_str() );
+                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ) );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -551,14 +554,14 @@ namespace DocFileFormat
 					//position code
 					unsigned char flag = iter->Arguments[0];
 
-					appendValueAttribute (_framePr, _T( "w:hAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0xC0 ) >> 6 ), &Global::HorizontalPositionCode[0][0], 4, 7 ).c_str() );
-					appendValueAttribute (_framePr, _T( "w:vAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0x30 ) >> 4 ), &Global::VerticalPositionCode[0][0], 4, 7 ).c_str() );
+					appendValueAttribute (_framePr, _T( "w:hAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0xC0 ) >> 6 ), &Global::HorizontalPositionCode[0][0], 4, 7 ) );
+					appendValueAttribute (_framePr, _T( "w:vAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0x30 ) >> 4 ), &Global::VerticalPositionCode[0][0], 4, 7 ) );
 				}
 				break;
 
 				case sprmOldPWr:
 				case sprmPWr:
-					appendValueAttribute( _framePr, _T( "w:wrap" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextFrameWrapping[0][0], 6, 10 ).c_str() );
+					appendValueAttribute( _framePr, _T( "w:wrap" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextFrameWrapping[0][0], 6, 10 ) );
 					break;
 
 				case sprmOldPDxaAbs:
@@ -595,7 +598,7 @@ namespace DocFileFormat
 				{
 					short pDcs = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 
-					appendValueAttribute( _framePr, _T( "w:dropCap" ), FormatUtils::MapValueToWideString( ( pDcs & 0x07 ), &Global::TextFrameDropCapLocation[0][0], 3, 7 ).c_str() );
+					appendValueAttribute( _framePr, _T( "w:dropCap" ), FormatUtils::MapValueToWideString( ( pDcs & 0x07 ), &Global::TextFrameDropCapLocation[0][0], 3, 7 ) );
 
 					appendValueAttribute( _framePr, _T( "w:lines" ), (unsigned char)( ( pDcs & 0xF8 ) >> 3 ) );
 				}
@@ -678,7 +681,7 @@ namespace DocFileFormat
 		//write Properties
 		if ( ( _pPr->GetChildCount() > 0 ) || ( _pPr->GetAttributeCount() > 0 ) )
 		{
-			m_pXmlWriter->WriteString( _pPr->GetXMLString().c_str() );
+			m_pXmlWriter->WriteString( _pPr->GetXMLString() );
 		}
 	}
 }

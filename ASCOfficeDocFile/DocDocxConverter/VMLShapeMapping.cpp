@@ -149,10 +149,10 @@ namespace DocFileFormat
 			m_shapeId = GetShapeID(shape);
 
 			m_pXmlWriter->WriteNodeBegin( L"v:group", true );
-			m_pXmlWriter->WriteAttribute( L"id", m_shapeId .c_str());
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)).c_str() );
-			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)).c_str() );
-			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)).c_str() );
+			m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)));
+			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)));
+			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)));
 
 			// Write wrap coords			
 			std::list<OptionEntry>::const_iterator end = options.end();
@@ -164,7 +164,7 @@ namespace DocFileFormat
 					{
 						std::wstring wrapCoords	= getWrapCoords(*iter);
 						if (wrapCoords.length())
-							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords.c_str());
+							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 					}
 					break;
 				}
@@ -205,7 +205,7 @@ namespace DocFileFormat
 				if (wrap != L"through")
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w10:wrap",	true );
-					m_pXmlWriter->WriteAttribute( L"type",		wrap.c_str() );
+					m_pXmlWriter->WriteAttribute( L"type",		wrap);
 					m_pXmlWriter->WriteNodeEnd	( L"w10:wrap",	true );
 				}
 			}
@@ -246,16 +246,16 @@ namespace DocFileFormat
 			if (pShape->GetShapeType())
 			{
 				freeform =	false;
-				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())).c_str());
+				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())));
 
-			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)).c_str());
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)));
 			}
 
 			if (pShape->is<LineType>())
 			{
 				//append "from" and  "to" attributes
-				m_pXmlWriter->WriteAttribute(L"from", GetLineFrom(pAnchor).c_str());
-				m_pXmlWriter->WriteAttribute(L"to",	GetLineTo(pAnchor).c_str());
+				m_pXmlWriter->WriteAttribute(L"from", GetLineFrom(pAnchor));
+				m_pXmlWriter->WriteAttribute(L"to",	GetLineTo(pAnchor));
 			}
 
 			if (m_isBullete)
@@ -410,7 +410,7 @@ namespace DocFileFormat
 
 					if (!wrapCoords.empty())
 					{
-						m_pXmlWriter->WriteAttribute( L"wrapcoords", wrapCoords.c_str() );
+						m_pXmlWriter->WriteAttribute( L"wrapcoords", wrapCoords);
 					}
 				}break;
 			case geoRight:
@@ -433,7 +433,7 @@ namespace DocFileFormat
 				{
 					RGBColor lineColor((int)iter->op, RedFirst);
 					if ( !pShape->fBackground )
-						m_pXmlWriter->WriteAttribute( L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode).c_str());
+						m_pXmlWriter->WriteAttribute( L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode));
 				}break;
 			case lineWidth:
 				{
@@ -445,67 +445,67 @@ namespace DocFileFormat
 				}break;
 			case lineDashing:
 				{
-					appendValueAttribute(&m_stroke, L"dashstyle", FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ).c_str() );
+					appendValueAttribute(&m_stroke, L"dashstyle", FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ) );
 				}break;
 			case lineStyle:
 				{
-					appendValueAttribute(&m_stroke, L"linestyle", getLineStyle( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"linestyle", getLineStyle( iter->op ));
 				}break;
 			case lineEndArrowhead:
 				{
-					appendValueAttribute(&m_stroke, L"endarrow", getArrowStyle( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"endarrow", getArrowStyle( iter->op ));
 				}break;
 			case lineEndArrowLength:
 				{
-					appendValueAttribute(&m_stroke, L"endarrowlength", getArrowLength( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"endarrowlength", getArrowLength( iter->op ));
 				}break;
 			case lineEndArrowWidth:
 				{
-					appendValueAttribute(&m_stroke, L"endarrowwidth", getArrowWidth( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"endarrowwidth", getArrowWidth( iter->op ));
 				}break;
 			case lineStartArrowhead:
 				{
-					appendValueAttribute(&m_stroke, L"startarrow", getArrowStyle( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"startarrow", getArrowStyle( iter->op ));
 				}break;
 			case lineStartArrowLength:
 				{
-					appendValueAttribute(&m_stroke, L"startarrowlength", getArrowLength( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"startarrowlength", getArrowLength( iter->op ));
 				}break;
 			case lineStartArrowWidth:
 				{
-					appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth( iter->op ).c_str());
+					appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth( iter->op ));
 				}break;
 // FILL
 			case fillColor:
 				{
 					RGBColor fillColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"fillcolor", ( std::wstring( L"#" )  + fillColor.SixDigitHexCode ).c_str());
+					m_pXmlWriter->WriteAttribute(L"fillcolor", ( std::wstring( L"#" )  + fillColor.SixDigitHexCode ));
 				}break;
 			case fillBackColor:
 				{
 					RGBColor fillBackColor( (int)iter->op, RedFirst );
-					appendValueAttribute(&m_fill, L"color2", ( std::wstring( L"#" )  + fillBackColor.SixDigitHexCode ).c_str());
+					appendValueAttribute(&m_fill, L"color2", ( std::wstring( L"#" )  + fillBackColor.SixDigitHexCode ));
 				}break;
 			case fillAngle:
 				{
 					FixedPointNumber fllAngl( iter->op );
-					appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( fllAngl.ToAngle() ).c_str());
+					appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( fllAngl.ToAngle() ));
 				}break;
 			case fillShadeType:
 				{
-					appendValueAttribute(&m_fill, L"method", getFillMethod( iter->op ).c_str());
+					appendValueAttribute(&m_fill, L"method", getFillMethod( iter->op ));
 				}break;
 			case fillShadeColors:
 				{
-					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex, iter->op ).c_str());
+					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex, iter->op ));
 				}break;
 			case fillFocus:
 				{
-					appendValueAttribute(&m_fill, L"focus", ( FormatUtils::IntToWideString( iter->op ) + L"%"  ).c_str());
+					appendValueAttribute(&m_fill, L"focus", ( FormatUtils::IntToWideString( iter->op ) + L"%"  ));
 				}break;
 			case fillType:
 				{
-					appendValueAttribute(&m_fill, L"type", getFillType( iter->op ).c_str());
+					appendValueAttribute(&m_fill, L"type", getFillType( iter->op ));
 				}break;
 			case fillBlip:
 				{
@@ -523,28 +523,28 @@ namespace DocFileFormat
 
 					if ( (pFillBlip != NULL) && copyPicture(pFillBlip) )
 					{
-						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 					}
 				}break;
 			case fillOpacity:
 				{
-					appendValueAttribute(&m_fill, L"opacity", ( FormatUtils::IntToWideString( iter->op ) + L"f" ).c_str());
+					appendValueAttribute(&m_fill, L"opacity", ( FormatUtils::IntToWideString( iter->op ) + L"f" ));
 				}
 				break;
 			case fillBackOpacity:
 				{
-					appendValueAttribute(&m_fill, L"opacity2", (FormatUtils::IntToWideString(iter->op) + L"f").c_str());
+					appendValueAttribute(&m_fill, L"opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
 				}break;
 // SHADOW
 			case shadowType:
 				{
-					appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op).c_str());
+					appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op));
 				}break;
 
 			case shadowColor:
 				{
 					RGBColor shadowColor((int)iter->op, RedFirst);
-					appendValueAttribute(&m_shadow, L"color", ( std::wstring( L"#" ) + shadowColor.SixDigitHexCode ).c_str());
+					appendValueAttribute(&m_shadow, L"color", ( std::wstring( L"#" ) + shadowColor.SixDigitHexCode ));
 				}break;
 			case shadowOffsetX:
 				{
@@ -574,7 +574,7 @@ namespace DocFileFormat
 				{
 					double shadowOpa = (iter->op / pow( (double)2, (double)16));
 
-					appendValueAttribute(&m_shadow, L"opacity", FormatUtils::DoubleToFormattedWideString( shadowOpa, L"%.2f" ).c_str());
+					appendValueAttribute(&m_shadow, L"opacity", FormatUtils::DoubleToFormattedWideString( shadowOpa, L"%.2f" ));
 				}break;
 			case shadowStyleBooleanProperties:
 				{
@@ -595,7 +595,7 @@ namespace DocFileFormat
 						BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
 						if (copyPicture(oBlip))
 						{
-							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
 						}
 					}
 				}break;
@@ -604,7 +604,7 @@ namespace DocFileFormat
 					std::wstring name;
 					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
 					if (!name.empty())
-						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name).c_str());
+						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name));
 				}break;
 // 3D STYLE
 			case f3D:
@@ -616,37 +616,37 @@ namespace DocFileFormat
 				{
 					EmuValue backwardValue( (int)iter->op );
 					std::wstring depth = FormatUtils::DoubleToWideString( backwardValue.ToPoints() ) + L"pt";
-					appendValueAttribute(&m_3dstyle, L"backdepth", depth.c_str());
+					appendValueAttribute(&m_3dstyle, L"backdepth", depth);
 				}break; 
 			case c3DAmbientIntensity:
 				{
 					std::wstring intens = FormatUtils::IntToWideString((int)iter->op) + L"f";
-					appendValueAttribute(&m_3dstyle, L"brightness", intens.c_str());
+					appendValueAttribute(&m_3dstyle, L"brightness", intens);
 				}break; 
 			case c3DSpecularAmt:
 				{
 					std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
-					appendValueAttribute(&m_3dstyle, L"specularity", amt.c_str());
+					appendValueAttribute(&m_3dstyle, L"specularity", amt);
 				}break; 
 			case c3DDiffuseAmt:
 				{
 					std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
-					appendValueAttribute(&m_3dstyle, L"diffusity", amt.c_str());
+					appendValueAttribute(&m_3dstyle, L"diffusity", amt);
 				}break; 
 			case c3DKeyIntensity:
 				{
 					std::wstring amt = FormatUtils::IntToWideString((int)iter->op);
-					appendValueAttribute(&m_3dstyle, L"lightlevel", amt.c_str());
+					appendValueAttribute(&m_3dstyle, L"lightlevel", amt);
 				}break; 	
 			case c3DExtrusionColor:
 				{
 					std::wstring color = FormatUtils::IntToFormattedWideString(iter->op, L"#%06x");
-					appendValueAttribute(&m_3dstyle, L"color", color.c_str());
+					appendValueAttribute(&m_3dstyle, L"color", color);
 				}break;
 			case c3DSkewAngle:
 				{
 					FixedPointNumber skewAngle( iter->op );
-					appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( skewAngle.ToAngle() ).c_str());
+					appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( skewAngle.ToAngle() ));
 				}break;
 			case c3DXViewpoint:
 				{
@@ -706,10 +706,10 @@ namespace DocFileFormat
 
 					if (0 <= text.find(L"\n"))
 					{
-						m_textpath.AppendText(text.c_str());
+						m_textpath.AppendText(text);
 					}
 					text = ReplaceString(text, L"\n", L"&#xA;");						
-					appendValueAttribute(&m_textpath, L"string", text.c_str());
+					appendValueAttribute(&m_textpath, L"string", text);
 				}break;
 			case gtextFont:
 				{
@@ -772,7 +772,7 @@ namespace DocFileFormat
 					std::wstring path	=	ParsePath(options);
 
 					if (false == path.empty())
-						m_pXmlWriter->WriteAttribute (L"path", path.c_str());
+						m_pXmlWriter->WriteAttribute (L"path", path);
 				}break;
 				default:
 				{
@@ -786,7 +786,7 @@ namespace DocFileFormat
 			std::wstring path	=	ParsePath(options);
 
 			if (false == path.empty())
-				m_pXmlWriter->WriteAttribute (L"path", path.c_str());
+				m_pXmlWriter->WriteAttribute (L"path", path);
 		}
 
 		if ( !filled )
@@ -806,7 +806,7 @@ namespace DocFileFormat
 
 		if ( ( xCoord > 0 ) && ( yCoord > 0 ) )
 		{
-			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( xCoord ) + L"," + FormatUtils::IntToWideString( yCoord ) ).c_str() );
+			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( xCoord ) + L"," + FormatUtils::IntToWideString( yCoord ) ));
 		}
 
 		int nCode	=	0;
@@ -819,7 +819,7 @@ namespace DocFileFormat
 		{
 			if (nAdjValues)												
 			{
-				m_pXmlWriter->WriteAttribute(L"arcsize", adjValues[0].c_str());
+				m_pXmlWriter->WriteAttribute(L"arcsize", adjValues[0]);
 			}
 		}
 		else
@@ -831,7 +831,7 @@ namespace DocFileFormat
 				for (int i = 1; i < nAdjValues; ++i)
 					adjTag += std::wstring(L",") + adjValues[i];
 
-				m_pXmlWriter->WriteAttribute(L"adj", adjTag.c_str());
+				m_pXmlWriter->WriteAttribute(L"adj", adjTag);
 			}
 		}
 
@@ -853,7 +853,7 @@ namespace DocFileFormat
 		}
 		if ( !offset.empty() )
 		{
-			appendValueAttribute(&m_shadow, L"offset", offset.c_str());
+			appendValueAttribute(&m_shadow, L"offset", offset);
 		}
 
 		std::wstring offset2;
@@ -873,13 +873,13 @@ namespace DocFileFormat
 
 		if (!offset2.empty())
 		{
-			appendValueAttribute(&m_shadow, L"offset2", offset2.c_str());
+			appendValueAttribute(&m_shadow, L"offset2", offset2);
 		}
 
 //build shadow origin
 		if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
 		{
-			appendValueAttribute(&m_shadow, L"origin", (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(shadowOriginY)).c_str());
+			appendValueAttribute(&m_shadow, L"origin", (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(shadowOriginY)));
 		}
 
 // write shadow
@@ -890,7 +890,7 @@ namespace DocFileFormat
 				appendValueAttribute(&m_shadow, L"on", L"t" );
 			}
 
-			m_pXmlWriter->WriteString(m_shadow.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
 		}
 //write 3d style 
 		if (m_3dstyle.GetAttributeCount() > 0)
@@ -918,7 +918,7 @@ namespace DocFileFormat
 					viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
 				}
 
-				appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint.c_str());
+				appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint);
 			}
 // write the viewpointorigin
 			if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
@@ -936,10 +936,10 @@ namespace DocFileFormat
 					viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, L"%.2f" );
 				}
 
-				appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin.c_str());
+				appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin);
 			}
 
-			m_pXmlWriter->WriteString(m_3dstyle.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(m_3dstyle.GetXMLString());
 		}
 // write wrap
 		if (m_pSpa)
@@ -949,19 +949,19 @@ namespace DocFileFormat
 			if (wrap != L"through")
 			{
 				m_pXmlWriter->WriteNodeBegin( L"w10:wrap", true );
-				m_pXmlWriter->WriteAttribute( L"type", wrap.c_str() );
+				m_pXmlWriter->WriteAttribute( L"type", wrap );
 				m_pXmlWriter->WriteNodeEnd	( L"w10:wrap", true );
 			}
 		}
 // write fill
 		if (m_fill.GetAttributeCount())
 		{
-			m_pXmlWriter->WriteString(m_fill.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(m_fill.GetXMLString());
 		}		
 // write imagedata
 		if (m_imagedata.GetAttributeCount())
 		{
-			m_pXmlWriter->WriteString(m_imagedata.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(m_imagedata.GetXMLString());
 		}		
 		
 		if ( pShape->fBackground )	
@@ -972,13 +972,13 @@ namespace DocFileFormat
 // write stroke
 		if (m_stroke.GetAttributeCount())
 		{
-			m_pXmlWriter->WriteString(m_stroke.GetXMLString().c_str());
+			m_pXmlWriter->WriteString(m_stroke.GetXMLString());
 		}
 // text path
 		if (m_textpath.GetAttributeCount())
 		{
-			appendValueAttribute(&m_textpath, L"style", FormatUtils::XmlEncode(m_textPathStyle).c_str());
-			m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
+			appendValueAttribute(&m_textpath, L"style", FormatUtils::XmlEncode(m_textPathStyle));
+			m_pXmlWriter->WriteString(m_textpath.GetXMLString());
 		}
 		if (freeform)
 		{
@@ -1942,7 +1942,7 @@ namespace DocFileFormat
 
 		DrawingPrimitive *primitive = dynamic_cast<DrawingPrimitive *>(primitives->at(index));
 		
-		m_pXmlWriter->WriteNodeBegin(primitive->strVmlType.c_str(), true );
+		m_pXmlWriter->WriteNodeBegin(primitive->strVmlType, true );
 	
 		if (primitive->type == 0x0007)
 		{
@@ -1993,7 +1993,7 @@ namespace DocFileFormat
 			}
 		}
 		
-		m_pXmlWriter->WriteNodeEnd( primitive->strVmlType.c_str() );
+		m_pXmlWriter->WriteNodeEnd( primitive->strVmlType );
 	
 		index++;
 		return index;
@@ -2009,8 +2009,8 @@ namespace DocFileFormat
 		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
 		
 		count_vml_objects++;
-		//m_pXmlWriter->WriteAttribute ( L"id")	, strId.c_str());
-		m_pXmlWriter->WriteAttribute ( L"o:spid", strId.c_str());
+		//m_pXmlWriter->WriteAttribute ( L"id")	, strId);
+		m_pXmlWriter->WriteAttribute ( L"o:spid", strId);
 
 		std::wstring strStyle = L"position:absolute;visibility:visible;mso-wrap-style:square;";
 
@@ -2025,8 +2025,8 @@ namespace DocFileFormat
 			std::wstring strStart	=  FormatUtils::IntToWideString(line->xaStart + primitive->xa) + L"," + FormatUtils::IntToWideString(line->yaStart + primitive->ya); 
 			std::wstring strEnd		=  FormatUtils::IntToWideString(line->xaEnd + primitive->xa) + L"," + FormatUtils::IntToWideString(line->yaEnd + primitive->ya);
 
-			m_pXmlWriter->WriteAttribute(L"from",  strStart.c_str() );
-			m_pXmlWriter->WriteAttribute(L"to",	strEnd.c_str());
+			m_pXmlWriter->WriteAttribute(L"from",  strStart);
+			m_pXmlWriter->WriteAttribute(L"to",	strEnd);
 		}
 		else
 		{
@@ -2054,8 +2054,8 @@ namespace DocFileFormat
 				std::wstring strSize = FormatUtils::IntToWideString(primitive->dxa) + L"," + FormatUtils::IntToWideString(primitive->dya);
 				std::wstring strOrigin = FormatUtils::IntToWideString(primitive->xa) + L"," + FormatUtils::IntToWideString(primitive->ya);
 				
-				m_pXmlWriter->WriteAttribute( L"coordsize", strSize.c_str());
-				//m_pXmlWriter->WriteAttribute( L"coordorigin"), strOrigin.c_str());
+				m_pXmlWriter->WriteAttribute( L"coordsize", strSize);
+				//m_pXmlWriter->WriteAttribute( L"coordorigin"), strOrigin);
 			}
 			else
 			{
@@ -2070,23 +2070,23 @@ namespace DocFileFormat
 		
 		if (primitive->type > 1)
 		{
-			m_pXmlWriter->WriteAttribute( L"fillColor", FormatUtils::IntToFormattedWideString(primitive->fillFore, L"#%06x").c_str());
+			m_pXmlWriter->WriteAttribute( L"fillColor", FormatUtils::IntToFormattedWideString(primitive->fillFore, L"#%06x"));
 		}
-		m_pXmlWriter->WriteAttribute( L"style", strStyle.c_str());
+		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
 		std::wstring strStrokeWeight = FormatUtils::IntToWideString(primitive->lineWeight / 20) + L"pt";
 		if (primitive->lineWeight > 20)
-			m_pXmlWriter->WriteAttribute( L"strokeweight", strStrokeWeight.c_str());
+			m_pXmlWriter->WriteAttribute( L"strokeweight", strStrokeWeight);
 
 		if (primitive->type > 0)
-			m_pXmlWriter->WriteAttribute( L"strokecolor", FormatUtils::IntToFormattedWideString(primitive->lineColor, L"#%06x").c_str());
+			m_pXmlWriter->WriteAttribute( L"strokecolor", FormatUtils::IntToFormattedWideString(primitive->lineColor, L"#%06x"));
 
 		m_pXmlWriter->WriteNodeEnd( L"", true, false );
 		
 		if (primitive->type > 1 && primitive->fillPattern > 1)
 		{
 			m_pXmlWriter->WriteNodeBegin(L"v:fill", true );
-				m_pXmlWriter->WriteAttribute( L"color2", FormatUtils::IntToFormattedWideString(primitive->fillBack, L"#%06x").c_str());
+				m_pXmlWriter->WriteAttribute( L"color2", FormatUtils::IntToFormattedWideString(primitive->fillBack, L"#%06x"));
 				m_pXmlWriter->WriteAttribute( L"type", L"pattern");
 			m_pXmlWriter->WriteNodeEnd( L"", true, false );
 			m_pXmlWriter->WriteNodeEnd( L"v:fill" );
@@ -2096,7 +2096,7 @@ namespace DocFileFormat
 		{
 			m_pXmlWriter->WriteNodeBegin(L"v:stroke", true );
 				std::wstring strDashStyle = FormatUtils::IntToWideString(primitive->lineStyle) + L" 1";
-				m_pXmlWriter->WriteAttribute( L"dashstyle", strDashStyle.c_str());
+				m_pXmlWriter->WriteAttribute( L"dashstyle", strDashStyle);
 			m_pXmlWriter->WriteNodeEnd( L"", true, false );
 			m_pXmlWriter->WriteNodeEnd( L"v:stroke" );
 		}

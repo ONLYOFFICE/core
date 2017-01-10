@@ -65,25 +65,25 @@ namespace DocFileFormat
 			{
 			case Default:
 				{
-                    att = new XMLTools::XMLAttribute( L"w:val", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
 				}
 				break;
 
 			case EastAsian:
 				{                    
-                    att = new XMLTools::XMLAttribute( L"w:eastAsia", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:eastAsia", langcode);
 				}
 				break;
 
 			case Complex:
 				{
-                    att = new XMLTools::XMLAttribute( L"w:bidi", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:bidi", langcode);
 				}
 				break;
 
 			default:
 				{    
-                    att = new XMLTools::XMLAttribute( L"w:val", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
 				}
 				break;
 			}
@@ -91,7 +91,7 @@ namespace DocFileFormat
 			if (m_pXmlWriter)
 			{
 				// !!!TODO!!!
-				m_pXmlWriter->WriteString( att->GetXMLString().c_str() );
+				m_pXmlWriter->WriteString( att->GetXMLString());
 			}
 			else if ( _parent != NULL )
 			{

@@ -83,12 +83,12 @@ namespace DocFileFormat
 			{
 				//start abstractNum
 				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				//nsid
 				m_pXmlWriter->WriteNodeBegin( _T( "w:nsid" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				//multiLevelType
@@ -111,7 +111,7 @@ namespace DocFileFormat
 
 				//template
 				m_pXmlWriter->WriteNodeBegin( _T( "w:tmpl" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->tplc, _T( "%08x" ) ).c_str());
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->tplc, _T( "%08x" ) ));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				// writes the levels
@@ -131,12 +131,12 @@ namespace DocFileFormat
 			{
 				//start abstractNum
 				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				////nsid
 				//m_pXmlWriter->WriteNodeBegin( _T( "w:nsid" ), TRUE );
-				//m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ).c_str() );
+				//m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ));
 				//m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				//multiLevelType
@@ -160,26 +160,26 @@ namespace DocFileFormat
 
 				//start num
 				m_pXmlWriter->WriteNodeBegin( _T( "w:num" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i + 1).c_str());
+				m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i + 1));
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 				int index = FindIndexbyId( rglst->listData, lfo->lsid );
 
 				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNumId" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( index ).c_str() );
+				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( index ) );
 				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 				for (std::vector<ListFormatOverrideLevel*>::const_iterator iter = lfo->rgLfoLvl.begin(); iter != lfo->rgLfoLvl.end(); ++iter)
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:lvlOverride" ), TRUE );
 
-					m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString( (*iter)->ilvl ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString( (*iter)->ilvl ));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 					if ( ( (*iter)->fStartAt ) && ( !(*iter)->fFormatting ) )
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w:startOverride" ), TRUE );
-						m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( (*iter)->iStartAt ).c_str() );
+						m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( (*iter)->iStartAt ));
 						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 					}
 
@@ -197,12 +197,12 @@ namespace DocFileFormat
 				for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:num" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i+1).c_str());
+					m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i+1));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 
 					m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNumId" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( i ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( i ));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 					m_pXmlWriter->WriteNodeEnd(_T( "w:num"));
@@ -255,8 +255,10 @@ namespace DocFileFormat
 
 					if (!FormatUtils::IsControlSymbol(xchBullet))
 					{
-						ret.push_back(lvl->xst[0]);
-						ret.push_back(L'\0');
+						ret.push_back(lvl->xst[0]);//??? xchBullet
+					}
+					else
+					{
 					}
 				}
 			}
@@ -487,20 +489,20 @@ namespace DocFileFormat
 
 //--------------------------------------------------------------------------------
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
+			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl.iStartAt).c_str());
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl.iStartAt));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl.nfc, true).c_str());
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl.nfc, true));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 //// suffix
 //		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
-//		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8).c_str());
+//		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8));
 //		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 // Number level text
@@ -516,13 +518,13 @@ namespace DocFileFormat
 		if (!lvlText.empty())
 		{
 			m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:val"), lvlText.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:val"), lvlText);
 			m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
 		}
 
 // jc
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7).c_str());
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 // pPr
 		m_pXmlWriter->WriteNodeBegin( _T( "w:pPr" ), FALSE );
@@ -535,8 +537,8 @@ namespace DocFileFormat
 		{
 			m_pXmlWriter->WriteNodeBegin( _T( "w:rFonts" ), TRUE );
 				// w:hint="default"
-				m_pXmlWriter->WriteAttribute(_T("w:hAnsi"), fontFamily.c_str());
-				m_pXmlWriter->WriteAttribute(_T("w:ascii"), fontFamily.c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:hAnsi"), fontFamily);
+				m_pXmlWriter->WriteAttribute(_T("w:ascii"), fontFamily);
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 		}
 		m_pXmlWriter->WriteNodeEnd(_T("w:rPr"));
@@ -557,25 +559,25 @@ namespace DocFileFormat
 // Проверяем шрифт
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level).c_str());
+		m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 // starts at
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl->iStartAt).c_str());
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl->iStartAt));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 // number format
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl->nfc).c_str());
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl->nfc));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 // suffix
 
 		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8).c_str());
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 
 // style
@@ -585,14 +587,14 @@ namespace DocFileFormat
 		if (styleIndex != ListData::ISTD_NIL)
 		{
 			m_pXmlWriter->WriteNodeBegin( _T( "w:pStyle" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))).c_str());
+			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))));
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 		}
 
 // Number level text
 
 		m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
-		m_pXmlWriter->WriteAttribute(_T("w:val"), GetLvlText(lvl, cpMapping.CheckIsSymbolFont()).c_str());
+		m_pXmlWriter->WriteAttribute(_T("w:val"), GetLvlText(lvl, cpMapping.CheckIsSymbolFont()));
 		m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
 
 		WriteLevelPictureBullet(lvl->grpprlChpx);
@@ -606,7 +608,7 @@ namespace DocFileFormat
 		}
 // jc
 		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7).c_str());
+		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7));
 		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
 // pPr
 		bool isBidi = false;
@@ -638,7 +640,7 @@ namespace DocFileFormat
 				if ((pict.mfp.mm > 98) && (pict.shapeContainer != NULL))
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:numPicBullet" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:numPicBulletId" ), FormatUtils::IntToWideString( iter->first ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:numPicBulletId" ), FormatUtils::IntToWideString( iter->first ));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 					m_pXmlWriter->WriteNodeBegin( _T( "w:pict" ) );
 
@@ -670,7 +672,7 @@ namespace DocFileFormat
 	{
 		if (grpprlChpx)
 		{
-			unsigned int cp = 0;
+			unsigned int index = 0;
 			bool isPictureBullet = false;
 
 			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprlChpx->grpprl->begin(); iter != grpprlChpx->grpprl->end(); ++iter)
@@ -679,7 +681,7 @@ namespace DocFileFormat
 				{
 					case sprmCPbiIBullet:
 					{
-						cp = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
+						index = FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize);
 					}break;
 
 					case sprmCPbiGrf:
@@ -692,7 +694,7 @@ namespace DocFileFormat
 			if (isPictureBullet)
 			{
 				m_pXmlWriter->WriteNodeBegin(_T("w:lvlPicBulletId"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:val"), FormatUtils::IntToWideString(cp).c_str());
+				m_pXmlWriter->WriteAttribute(_T("w:val"), FormatUtils::IntToWideString(index));
 				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);  
 			}
 		}

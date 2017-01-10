@@ -56,11 +56,11 @@ namespace DocFileFormat
 
 		//zoom
 		m_oXmlWriter.WriteNodeBegin	( L"w:zoom",  TRUE );
-		m_oXmlWriter.WriteAttribute	( L"w:percent",  FormatUtils::IntToWideString( dop->wScaleSaved ).c_str() );
+		m_oXmlWriter.WriteAttribute	( L"w:percent",  FormatUtils::IntToWideString( dop->wScaleSaved ) );
 
 		if ( dop->zkSaved != 0 )
 		{
-			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::MapValueToWideString( dop->zkSaved, &ZoomTypeMap[0][0], 3, 9 ).c_str() );
+			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::MapValueToWideString( dop->zkSaved, &ZoomTypeMap[0][0], 3, 9 ) );
 		}
 		m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 
@@ -104,31 +104,31 @@ namespace DocFileFormat
 
 		if ( proofState.GetAttributeCount() > 0 )
 		{
-			m_oXmlWriter.WriteString( proofState.GetXMLString().c_str() );
+			m_oXmlWriter.WriteString( proofState.GetXMLString() );
 		}
 
 		//stylePaneFormatFilter
 		if ( dop->grfFmtFilter != 0 )
 		{
 			m_oXmlWriter.WriteNodeBegin( L"w:stylePaneFormatFilter",  TRUE );
-			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToFormattedWideString( dop->grfFmtFilter, L"%04x" ).c_str() );
+			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToFormattedWideString( dop->grfFmtFilter, L"%04x" ) );
 			m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 		}
 
 		//default tab stop
 		m_oXmlWriter.WriteNodeBegin( L"w:defaultTabStop",  TRUE );
-		m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dxaTab ).c_str() );
+		m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dxaTab ) );
 		m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 
 		//drawing grid
 		if( dop->dogrid != NULL )
 		{
 			m_oXmlWriter.WriteNodeBegin( L"w:displayHorizontalDrawingGridEvery",  TRUE );
-			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dogrid->dxGridDisplay ).c_str() );
+			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dogrid->dxGridDisplay ) );
 			m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 
 			m_oXmlWriter.WriteNodeBegin( L"w:displayVerticalDrawingGridEvery",  TRUE );
-			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dogrid->dyGridDisplay ).c_str() );
+			m_oXmlWriter.WriteAttribute( L"w:val",  FormatUtils::IntToWideString( dop->dogrid->dyGridDisplay ) );
 			m_oXmlWriter.WriteNodeEnd( L"",  TRUE );
 
 			if ( dop->dogrid->fFollowMargins == false )
@@ -153,22 +153,22 @@ namespace DocFileFormat
 
 		if ( dop->nFtn != 0 )
 		{
-			appendValueAttribute( &footnotePr, L"w:numStart",  FormatUtils::IntToWideString( dop->nFtn ).c_str() );
+			appendValueAttribute( &footnotePr, L"w:numStart",  FormatUtils::IntToWideString( dop->nFtn ) );
 		}
 
 		if ( dop->rncFtn != 0 )
 		{
-			appendValueAttribute( &footnotePr, L"w:numRestart",  FormatUtils::IntToWideString( dop->rncFtn ).c_str() );
+			appendValueAttribute( &footnotePr, L"w:numRestart",  FormatUtils::IntToWideString( dop->rncFtn ) );
 		}
 
 		if ( dop->Fpc != 0 )
 		{
-			appendValueAttribute( &footnotePr, L"w:pos",  FormatUtils::MapValueToWideString( dop->Fpc, &FootnotePositionMap[0][0], 4, 12  ).c_str() );
+			appendValueAttribute( &footnotePr, L"w:pos",  FormatUtils::MapValueToWideString( dop->Fpc, &FootnotePositionMap[0][0], 4, 12  ) );
 		}
 
 		if ( footnotePr.GetAttributeCount() > 0 )
 		{
-			m_oXmlWriter.WriteString( footnotePr.GetXMLString().c_str() );
+			m_oXmlWriter.WriteString( footnotePr.GetXMLString() );
 		}
 
 

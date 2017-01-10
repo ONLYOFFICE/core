@@ -183,7 +183,7 @@ namespace DocFileFormat
 	void WordprocessingDocument::SaveDocument()
 	{
 		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + _T( "word" ) ;
-		//OOX::CPath pathWord = CString(m_strOutputPath.c_str()) + FILE_SEPARATOR_STR + _T( "word" );
+		//OOX::CPath pathWord = CString(m_strOutputPath) + FILE_SEPARATOR_STR + _T( "word" );
 		//FileSystem::Directory::CreateDirectory( pathWord.GetPath() );
         NSDirectory::CreateDirectory( pathWord );
 

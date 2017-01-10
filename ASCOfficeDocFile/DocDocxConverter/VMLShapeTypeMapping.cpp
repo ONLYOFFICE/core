@@ -58,21 +58,21 @@ namespace DocFileFormat
             m_pXmlWriter->WriteNodeBegin( L"v:shapetype", true );
 
 			// ID
-            m_pXmlWriter->WriteAttribute( L"id", GenerateTypeId( pShape ).c_str() );
+            m_pXmlWriter->WriteAttribute( L"id", GenerateTypeId( pShape ));
 
 			// Coordinate System
             m_pXmlWriter->WriteAttribute( L"coordsize", L"21600,21600");
 
 			// Shape Code
-            m_pXmlWriter->WriteAttribute( L"o:spt", FormatUtils::IntToWideString( pShape->GetTypeCode() ).c_str() );
+            m_pXmlWriter->WriteAttribute( L"o:spt", FormatUtils::IntToWideString( pShape->GetTypeCode() ));
 
 			// Adj
 			if (pShape->AdjustmentValues.length())
-                m_pXmlWriter->WriteAttribute( L"adj", pShape->AdjustmentValues.c_str() );
+                m_pXmlWriter->WriteAttribute( L"adj", pShape->AdjustmentValues);
 
 			// Path
 			if (!pShape->Path.empty())
-                m_pXmlWriter->WriteAttribute( L"path", pShape->Path.c_str() );
+                m_pXmlWriter->WriteAttribute( L"path", pShape->Path);
 			else if (_isInlineShape)
                 m_pXmlWriter->WriteAttribute( L"path", L"m@4@5l@4@11@9@11@9@5xe");
 
@@ -99,12 +99,12 @@ namespace DocFileFormat
 			if (!pShape->Textpath.empty())
 			{
                 m_pXmlWriter->WriteNodeBegin( L"v:textpath", true );
-				m_pXmlWriter->WriteString( pShape->Textpath.c_str() );
+				m_pXmlWriter->WriteString( pShape->Textpath );
                 m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
 			// Stroke
             m_pXmlWriter->WriteNodeBegin( L"v:stroke", true );
-            m_pXmlWriter->WriteAttribute( L"joinstyle", FormatUtils::MapValueToWideString( pShape->Joins, &JoinStyleMap[0][0], 3, 6 ).c_str() );
+            m_pXmlWriter->WriteAttribute( L"joinstyle", FormatUtils::MapValueToWideString( pShape->Joins, &JoinStyleMap[0][0], 3, 6 ));
             m_pXmlWriter->WriteNodeEnd( L"", true );
 
 			// Formulas
@@ -115,7 +115,7 @@ namespace DocFileFormat
 				for ( std::list<std::wstring>::iterator iter = pShape->Formulas.begin(); iter != pShape->Formulas.end(); iter++ )
 				{
                     m_pXmlWriter->WriteNodeBegin( L"v:f", true );
-                    m_pXmlWriter->WriteAttribute( L"eqn", iter->c_str() );
+                    m_pXmlWriter->WriteAttribute( L"eqn", *iter );
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}
 
@@ -147,19 +147,19 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteAttribute( L"gradientshapeok", L"t" );
 
 				if (pShape->Limo.length())
-                    m_pXmlWriter->WriteAttribute( L"limo", pShape->Limo.c_str() );
+                    m_pXmlWriter->WriteAttribute( L"limo", pShape->Limo );
 
 				if (pShape->ConnectorLocations.length())
 				{
                     m_pXmlWriter->WriteAttribute( L"o:connecttype", L"custom");
-                    m_pXmlWriter->WriteAttribute( L"o:connectlocs", pShape->ConnectorLocations.c_str() );
+                    m_pXmlWriter->WriteAttribute( L"o:connectlocs", pShape->ConnectorLocations);
 				}
 
 				if (pShape->TextBoxRectangle.length())
-                    m_pXmlWriter->WriteAttribute( L"textboxrect", pShape->TextBoxRectangle.c_str() );
+                    m_pXmlWriter->WriteAttribute( L"textboxrect", pShape->TextBoxRectangle);
 
 				if (pShape->ConnectorAngles.length())
-                    m_pXmlWriter->WriteAttribute( L"o:connectangles", pShape->ConnectorAngles.c_str() );
+                    m_pXmlWriter->WriteAttribute( L"o:connectangles", pShape->ConnectorAngles);
 			}
 			WordArtTextType* wordArt = dynamic_cast<WordArtTextType*>(pShape);
 			if (wordArt)
@@ -177,7 +177,7 @@ namespace DocFileFormat
 
 			if ( _lock->GetAttributeCount() > 1 )
 			{
-				m_pXmlWriter->WriteString( _lock->GetXMLString().c_str() );
+				m_pXmlWriter->WriteString( _lock->GetXMLString() );
 			}
 
 			// Handles
@@ -190,22 +190,22 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeBegin( L"v:h", true );
 
 					if (iter->position.length())
-                        m_pXmlWriter->WriteAttribute( L"position", iter->position.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"position", iter->position);
 
 					if (iter->switchHandle.length())
-                        m_pXmlWriter->WriteAttribute( L"switch", iter->switchHandle.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"switch", iter->switchHandle);
 
 					if (iter->xrange.length())
-                        m_pXmlWriter->WriteAttribute( L"xrange", iter->xrange.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"xrange", iter->xrange);
 
 					if (iter->yrange.length())
-                        m_pXmlWriter->WriteAttribute( L"yrange", iter->yrange.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"yrange", iter->yrange);
 
 					if (iter->polar.length())
-                        m_pXmlWriter->WriteAttribute( L"polar", iter->polar.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"polar", iter->polar);
 
 					if (iter->radiusrange.length())
-                        m_pXmlWriter->WriteAttribute( L"radiusrange", iter->radiusrange.c_str() );
+                        m_pXmlWriter->WriteAttribute( L"radiusrange", iter->radiusrange );
 
                     m_pXmlWriter->WriteNodeEnd( L"", true );
 				}

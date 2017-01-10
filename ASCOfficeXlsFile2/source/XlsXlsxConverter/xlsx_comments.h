@@ -70,13 +70,13 @@ class xlsx_comments
 public:
     xlsx_comments();
     ~xlsx_comments();
-    static xlsx_comments_ptr create();
 
-public:
     void add(_xlsx_comment & d);
     bool empty() const;
 
-   void serialize(std::wostream & strm);    
+	void serialize(std::wostream & strm);    
+	
+	static xlsx_comments_ptr create();
 
 private:
     class Impl;

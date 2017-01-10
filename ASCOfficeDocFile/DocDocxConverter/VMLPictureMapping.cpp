@@ -149,7 +149,7 @@ namespace DocFileFormat
 		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
 		file.CloseFile();
 
-		OOX::CPath path(sTempXmlFile.c_str());
+		OOX::CPath path(sTempXmlFile);
 		OOX::CDocument docEmbedded(path, path);
 
 		bool res = false;
@@ -194,9 +194,9 @@ namespace DocFileFormat
 		if ( b != NULL )
 		{
 			b->operator += ( propName );
-			b->operator += ( _T( ":" ) );
+			b->operator += ( L":" );
 			b->operator += ( propValue );
-			b->operator +=( _T( ";" ) );
+			b->operator +=( L";" );
 		}
 	}
 
@@ -213,7 +213,7 @@ namespace DocFileFormat
 		m_isEquation		=	false;
 		m_isEmbedded		=	false;
 
-        m_imageData			=	new XMLTools::XMLElement( _T( "v:imagedata" ) );
+        m_imageData			=	new XMLTools::XMLElement( L"v:imagedata" );
 	}
 
 	VMLPictureMapping::~VMLPictureMapping()
@@ -256,24 +256,24 @@ namespace DocFileFormat
 		{
 			type.SetType(msosptPictureFrame);
 		}
-		m_pXmlWriter->WriteNodeBegin( _T( "v:shape" ), true );
+		m_pXmlWriter->WriteNodeBegin( L"v:shape", true );
 		
-		m_pXmlWriter->WriteAttribute( _T( "type" ), std::wstring( _T( "#" ) + VMLShapeTypeMapping::GenerateTypeId(&type)).c_str());
+		m_pXmlWriter->WriteAttribute( L"type", std::wstring( L"#" + VMLShapeTypeMapping::GenerateTypeId(&type)));
 
 		count_vml_objects++;
 
 		if (m_shapeId.empty())
-			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+			m_shapeId =	L"_x0000_s" + FormatUtils::IntToWideString(1024 + count_vml_objects);
 		
-		m_pXmlWriter->WriteAttribute( _T( "id" ), m_shapeId.c_str() );
+		m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
 
 		if (m_isOlePreview)
 		{
-			m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
+			m_pXmlWriter->WriteAttribute( L"o:ole", L"" );
 		}
 		else if (m_isBullete)
 		{
-            m_pXmlWriter->WriteAttribute( _T( "o:bullet" ), _T( "1" ) );
+            m_pXmlWriter->WriteAttribute( L"o:bullet", L"1" );
 		}
 //todooo oбъединить с shape_mapping		
 
@@ -304,25 +304,25 @@ namespace DocFileFormat
 			case borderBottomColor:
 				{
 					RGBColor bottomColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( _T( "o:borderbottomcolor" ), ( std::wstring( _T( "#" ) ) + bottomColor.SixDigitHexCode ).c_str() );
+					m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
 				}
 				break;
 			case borderLeftColor:
 				{  
 					RGBColor leftColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( _T( "o:borderleftcolor" ), ( std::wstring( _T( "#" ) ) + leftColor.SixDigitHexCode ).c_str() );
+					m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
 				}  
 				break;
 			case borderRightColor:
 				{  
 					RGBColor rightColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( _T( "o:borderrightcolor" ), ( std::wstring( _T( "#" ) ) + rightColor.SixDigitHexCode ).c_str() );
+					m_pXmlWriter->WriteAttribute( L"o:borderrightcolor",  L"#" + rightColor.SixDigitHexCode);
 				}
 				break;
 			case borderTopColor:
 				{
 					RGBColor topColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( _T( "o:bordertopcolor" ), ( std::wstring( _T( "#" ) ) + topColor.SixDigitHexCode ).c_str() );
+					m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
 				}
 				break;
 //CROPPING
@@ -330,28 +330,28 @@ namespace DocFileFormat
 				{  
 					//cast to signed integer
 					int cropBottom = (int)iter->op;
-					appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + std::wstring( _T( "f" ) ) ).c_str() );
+					appendValueAttribute(m_imageData, L"cropbottom", FormatUtils::IntToWideString( cropBottom ) + L"f" );
 				}
 				break;
 			case cropFromLeft:
 				{  
 					//cast to signed integer
 					int cropLeft = (int)iter->op;
-					appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + std::wstring( _T( "f" ) ) ).c_str());
+					appendValueAttribute(m_imageData, L"cropleft", FormatUtils::IntToWideString( cropLeft ) + L"f" );
 				}
 				break;
 			case cropFromRight:
 				{
 					//cast to signed integer
 					int cropRight = (int)iter->op;
-					appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + std::wstring( _T( "f" ) ) ).c_str());
+					appendValueAttribute(m_imageData, L"cropright", FormatUtils::IntToWideString( cropRight ) + L"f" );
 				}
 				break;
 			case cropFromTop:
 				{
 					//cast to signed integer
 					int cropTop = (int)iter->op;
-					appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + std::wstring( _T( "f" ) ) ).c_str());
+					appendValueAttribute(m_imageData, L"croptop", FormatUtils::IntToWideString( cropTop ) + L"f" );
 				}
 				break;
 //------------------------------------------------------------
@@ -365,23 +365,23 @@ namespace DocFileFormat
 					std::wstring v = strHeight;
 					strHeight = strWidth; strWidth = v;
 
-					appendStyleProperty(&strStyle, _T( "rotation" ), FormatUtils::DoubleToWideString(dAngle));
+					appendStyleProperty(&strStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
 				}break;
 			case posh:
 				{
-					appendStyleProperty(&strStyle, _T("mso-position-horizontal"), VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
+					appendStyleProperty(&strStyle, L"mso-position-horizontal", VMLShapeMapping::mapHorizontalPosition((PositionHorizontal)iter->op));
 				}break;
 			case posrelh:
 				{
-					appendStyleProperty(&strStyle, _T("mso-position-horizontal-relative"), VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					appendStyleProperty(&strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case posv:
 				{
-					appendStyleProperty(&strStyle, _T("mso-position-vertical"), VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
+					appendStyleProperty(&strStyle, L"mso-position-vertical", VMLShapeMapping::mapVerticalPosition((PositionVertical)iter->op));
 				}break;
 			case posrelv:
 				{
-					appendStyleProperty(&strStyle, _T("mso-position-vertical-relative"), VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					appendStyleProperty(&strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 			case groupShapeBooleans:
 				{
@@ -390,52 +390,53 @@ namespace DocFileFormat
 					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
 					{
 						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(&strStyle, _T( "z-index" ), _T( "-1" ) );
+						appendStyleProperty(&strStyle, L"z-index", L"-1" );
 					}
 					//else if (!m_isInlinePicture)
 					//{
-					//	appendStyleProperty( &strStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+					//	appendStyleProperty( &strStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 					//}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
 					{
-						appendStyleProperty(&strStyle, _T( "visibility" ), _T( "hidden" ));
+						appendStyleProperty(&strStyle, L"visibility", L"hidden");
 					}
 				}
 				break;
 			}
 		}
 
-		strStyle +=  _T( "width:" )  + strWidth + _T( "pt;" ) + _T( "height:" ) + strHeight + _T( "pt;" );
-		m_pXmlWriter->WriteAttribute( _T( "style" ), strStyle.c_str() );
+		strStyle +=  L"width:"  + strWidth + L"pt;" + L"height:" + strHeight + L"pt;";
+		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 		
 		if (CopyPicture(pict))
 		{
 			//v:imageData
-			appendValueAttribute(m_imageData, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
-			appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
-			m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
+			appendValueAttribute(m_imageData, L"r:id", L"rId" + FormatUtils::IntToWideString(m_nImageId));
+			appendValueAttribute(m_imageData, L"o:title", L"" );
+			m_pXmlWriter->WriteString(m_imageData->GetXMLString());
 		}
 
-		//borders
-		writePictureBorder( _T( "bordertop" ),		pict->brcTop );
-		writePictureBorder( _T( "borderleft" ),		pict->brcLeft );
-		writePictureBorder( _T( "borderbottom" ),	pict->brcBottom );
-		writePictureBorder( _T( "borderright" ),	pict->brcRight );
+		{//borders			
+			writePictureBorder( L"bordertop",		pict->brcTop );
+			writePictureBorder( L"borderleft",		pict->brcLeft );
+			writePictureBorder( L"borderbottom",	pict->brcBottom );
+			writePictureBorder( L"borderright",	pict->brcRight );
+		}
 
-		m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
+		m_pXmlWriter->WriteNodeEnd( L"v:shape" );
 	}
 
 	void VMLPictureMapping::writePictureBorder( const std::wstring & name, const BorderCode* brc )
 	{
 		if (!brc || name.empty()) return;
 
-		m_pXmlWriter->WriteNodeBegin( ( std::wstring( _T( "w10:" ) ) + name).c_str(), true );
-		m_pXmlWriter->WriteAttribute( _T( "type" ), getBorderType( brc->brcType ).c_str() );
-		m_pXmlWriter->WriteAttribute( _T( "width" ), FormatUtils::IntToWideString( brc->dptLineWidth ).c_str() );
-		m_pXmlWriter->WriteNodeEnd	( _T( "" ), true );
+		m_pXmlWriter->WriteNodeBegin( L"w10:" + name, true );
+		m_pXmlWriter->WriteAttribute( L"type", getBorderType( brc->brcType ));
+		m_pXmlWriter->WriteAttribute( L"width", FormatUtils::IntToWideString( brc->dptLineWidth ));
+		m_pXmlWriter->WriteNodeEnd	( L"", true );
 	}
 
 	bool VMLPictureMapping::CopyPicture (PictureDescriptor* pict)
@@ -534,26 +535,26 @@ namespace DocFileFormat
 		switch (nType)
 		{
 		case Global::msoblipDIB:
-			return std::wstring(_T(".bmp"));
+			return std::wstring(L".bmp");
 
 		case Global::msoblipEMF:
-			return std::wstring(_T(".emf"));
+			return std::wstring(L".emf");
 
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
-			return std::wstring(_T(".jpg"));
+			return std::wstring(L".jpg");
 
 		case Global::msoblipPNG:
-			return std::wstring(_T(".png"));
+			return std::wstring(L".png");
 
 		case Global::msoblipTIFF:
-			return std::wstring(_T(".tif"));
+			return std::wstring(L".tif");
 
 		case Global::msoblipWMF:
-			return std::wstring(_T(".wmf"));
+			return std::wstring(L".wmf");
 
 		default:
-			return std::wstring(_T(".png"));
+			return std::wstring(L".png");
 		}
 	}
 
@@ -565,17 +566,17 @@ namespace DocFileFormat
 			return std::wstring(OpenXmlContentTypes::Emf);
 
 			//case msoblipGIF:
-			//  return wstring( _T( "image/gif" ) );
+			//  return wstring( L"image/gif" );
 
 			//case msoblipICON:
-			//  return wstring( _T( "image/x-icon" ) );
+			//  return wstring( L"image/x-icon" );
 
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
 			return std::wstring(OpenXmlContentTypes::Jpeg);
 
 			//case msoblipPCX:
-			//  return wstring( _T( "image/pcx" ) );
+			//  return wstring( L"image/pcx" );
 
 		case Global::msoblipPNG:
 			return std::wstring(OpenXmlContentTypes::Png);

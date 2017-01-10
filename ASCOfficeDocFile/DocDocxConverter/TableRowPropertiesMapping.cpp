@@ -90,7 +90,7 @@ namespace DocFileFormat
 				case sprmTWidthAfter:
 				{						//width after
                     XMLTools::XMLElement wAfter( L"w:wAfter" );
-                    XMLTools::XMLAttribute wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ).c_str() );
+                    XMLTools::XMLAttribute wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ) );
 					wAfter.AppendAttribute( wAfterValue );
 
                     XMLTools::XMLAttribute wAfterType( L"w:type", L"dxa" );
@@ -106,7 +106,7 @@ namespace DocFileFormat
 					if ( before != 0 )
 					{
                         XMLTools::XMLElement wBefore( L"w:wBefore" );
-                        XMLTools::XMLAttribute wBeforeValue( L"w:w", FormatUtils::IntToWideString( before ).c_str() );
+                        XMLTools::XMLAttribute wBeforeValue( L"w:w", FormatUtils::IntToWideString( before ) );
 						wBefore.AppendAttribute( wBeforeValue );
 
                         XMLTools::XMLAttribute wBeforeType( L"w:type", L"dxa" );
@@ -128,7 +128,7 @@ namespace DocFileFormat
 					if ( rH > 0 )
 					{
                         rowHeightRule.SetValue( L"atLeast" );
-						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ).c_str() );
+						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ) );
 						rowHeight.AppendAttribute( rowHeightVal );
 					}
 					else if( rH == 0 )
@@ -139,7 +139,7 @@ namespace DocFileFormat
 					{
                         rowHeightRule.SetValue( L"exact" );
 						rH *= -1;
-						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ).c_str() );
+						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ) );
 						rowHeight.AppendAttribute( rowHeightVal );
 					}
 
@@ -158,7 +158,7 @@ namespace DocFileFormat
 				//div id
 			case sprmTIpgp:
 			{
-                appendValueElement( _trPr, L"divId", FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+                appendValueElement( _trPr, L"divId", FormatUtils::IntToWideString( FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize ) ), true );
 			}break;
 
 				//borders 80 exceptions
@@ -260,7 +260,7 @@ namespace DocFileFormat
 		//write Properties
 		if ( ( _trPr->GetChildCount() > 0 ) || ( _trPr->GetAttributeCount() > 0 ) )
 		{
-			m_pXmlWriter->WriteString( _trPr->GetXMLString().c_str() );
+			m_pXmlWriter->WriteString( _trPr->GetXMLString() );
 		}
 	}
 }

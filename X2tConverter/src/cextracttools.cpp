@@ -293,6 +293,10 @@ namespace NExtractTools
         }
         oBuilder.WriteString(_T("</Changes>"));
         oBuilder.WriteString(sMailMerge);
+		if (NULL != params.m_oThumbnail && (NULL == params.m_oThumbnail->first || true == *params.m_oThumbnail->first))
+		{
+			oBuilder.WriteString(_T("<OnlyOnePage>1</OnlyOnePage>"));
+		}
         oBuilder.WriteString(_T("</Settings>"));
         return oBuilder.GetData();
     }

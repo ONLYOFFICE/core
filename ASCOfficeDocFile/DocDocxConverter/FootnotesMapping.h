@@ -70,7 +70,7 @@ namespace DocFileFormat
 				while ( cp <= ( m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn - 2 ) )
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w:footnote" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ));
 					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[id + 1] )

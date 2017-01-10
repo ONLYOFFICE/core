@@ -66,7 +66,7 @@ int DXF::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"dxf")
 		{
-			xfprops.serialize(CP_XML_STREAM());
+			xfprops.serialize(CP_XML_STREAM(), true);
 		}
 	}
 	return 0;

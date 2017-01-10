@@ -73,10 +73,10 @@ namespace DocFileFormat
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
 
 					m_pXmlWriter->WriteNodeBegin( _T( "w:comment" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( index ).c_str() );
+					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( index ));
 					m_pXmlWriter->WriteAttribute( _T( "w:author" ),
-						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ).c_str());
-					m_pXmlWriter->WriteAttribute( _T( "w:initials" ), atrdPre10->GetUserInitials().c_str() );
+						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ));
+					m_pXmlWriter->WriteAttribute( _T( "w:initials" ), atrdPre10->GetUserInitials());
 
 					//!!!TODO!!!
 					/*//ATRDpost10 is optional and not saved in all files

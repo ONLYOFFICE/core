@@ -371,9 +371,9 @@ namespace DocFileFormat
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < this->Text->size(); ++j, ++k )
+					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
 					{
-						if ( this->Text->at( j ) == 1 )
+						if ( Text->at( j ) == 1 )
 						{
 							PictureBulletsCPsMap.insert (std::make_pair( k, j ));
 						}
@@ -424,7 +424,7 @@ namespace DocFileFormat
 				int cp = SectionPlex->CharacterPositions[i + 1];
 
 				//Get the SEPX
-				VirtualStreamReader wordReader( this->WordDocumentStream, sed->fcSepx, bOlderVersion);
+				VirtualStreamReader wordReader( WordDocumentStream, sed->fcSepx, bOlderVersion);
 
 				//!!!TODO: cbSepx is the size in bytes of the rest properties part!!!
 				short cbSepx	=	wordReader.ReadInt16();
@@ -672,7 +672,7 @@ namespace DocFileFormat
 
 			//last fkp? 
 			//use full table
-			if ( i++ == ( this->AllChpxFkps->size() - 1 ) )
+			if ( i++ == ( AllChpxFkps->size() - 1 ) )
 			{
 				max = fkp->rgfcSize;
 			}

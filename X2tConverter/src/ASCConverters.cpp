@@ -669,6 +669,26 @@ namespace NExtractTools
            NSFile::CFileBinary::Remove(sPdfBinFile);
        return nRes;
    }
+	std::wstring getExtentionByRasterFormat(int format)
+	{
+		std::wstring sExt;
+		switch(format)
+		{
+			case 1:
+				sExt = L".bmp";
+			break;
+			case 2:
+				sExt = L".gif";
+			break;
+			case 3:
+				sExt = L".jpg";
+			break;
+			default:
+				sExt = L".png";
+			break;
+		}
+		return sExt;
+	}
 	//doct_bin -> image
 	int doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
@@ -731,9 +751,7 @@ namespace NExtractTools
 			{
 				sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
 				FileSystem::Directory::CreateDirectory(sThumbnailDir);
-				std::wstring::size_type pos = sTo.find_last_of('.');
-				std::wstring sExt = std::wstring::npos == pos ? L"" : sTo.substr(pos);
-				imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + sExt;
+				imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
 			}
 			BYTE* pData;
 			DWORD nBytesCount;
@@ -1747,9 +1765,7 @@ namespace NExtractTools
 				{
 					sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
 					FileSystem::Directory::CreateDirectory(sThumbnailDir);
-					std::wstring::size_type pos = sTo.find_last_of('.');
-
-					sFileToExt = std::wstring::npos == pos ? L"" : sTo.substr(pos);
+					sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 				}
 				int nPagesCount = pReader->GetPagesCount();
 				if (bIsOnlyFirst)
@@ -1879,7 +1895,7 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
-       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
            nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
@@ -2047,7 +2063,7 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
-       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
            nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
@@ -2176,7 +2192,7 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
            nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
-       else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+       else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
        {
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
            nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
@@ -2306,7 +2322,7 @@ namespace NExtractTools
            oHtmlRenderer.CloseFile();
            RELEASEOBJECT(pReader);
        }
-	   else if(AVS_OFFICESTUDIO_FILE_IMAGE == nFormatTo)
+	   else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 	   {
 		   IOfficeDrawingFile* pReader = NULL;
 		   nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, &oApplicationFonts);

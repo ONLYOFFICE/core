@@ -30,6 +30,17 @@
                                   encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF8)];
 }
 
++ (id)stringWithUtf8Buffer:(const char*)string length:(size_t)len
+{
+    if (len < 1) {
+        return @"";
+    }
+
+    return [[NSString alloc] initWithBytes:string
+                                    length:len*sizeof(char)
+                                  encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF8)];
+}
+
 + (NSMutableArray*)stringsArray:(const std::vector<std::wstring>&)sources {
     size_t count = sources.size();
     NSMutableArray* array = [NSMutableArray arrayWithCapacity:count];

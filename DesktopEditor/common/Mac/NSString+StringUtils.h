@@ -44,6 +44,7 @@
 @interface NSString (StringUtils)
 + (id)stringWithWString:(const std::wstring&)string;
 + (id)stringWithAString:(const std::string&)string;
++ (id)stringWithUtf8Buffer:(const char*)string length:(size_t)len;
 + (NSMutableArray*)stringsArray:(const std::vector<std::wstring>&)sources;
 - (std::wstring)stdwstring;
 - (std::string)stdstring;

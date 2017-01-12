@@ -101,6 +101,8 @@ public:
 
         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();
+        
+        return true;
 	}
 };
 typedef boost::shared_ptr<OOXRelsWriter> OOXRelsWriterPtr;

@@ -385,6 +385,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../Common/3dParty/boost/boost_1_58_0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;
@@ -420,6 +421,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../Common/3dParty/boost/boost_1_58_0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;

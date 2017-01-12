@@ -288,7 +288,9 @@ namespace NSPresentationEditor
             strRels += strHyperlink + L"\"/>";
 
 			m_oWriter.WriteString(strRels);
-		}
+		
+            return strRid;
+        }
 
 		AVSINLINE CString WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
 		{

@@ -670,6 +670,7 @@ namespace SimpleTypes
                 switch(this->m_eValue)
 				{
 				case borderstyleDashDot : return _T("dashDot");break;
+				case borderstyleDashDotDot : return _T("dashDotDot");break;
 				case borderstyleDashed : return _T("dashed");break;
 				case borderstyleDotted : return _T("dotted");break;
 				case borderstyleDouble : return _T("double");break;

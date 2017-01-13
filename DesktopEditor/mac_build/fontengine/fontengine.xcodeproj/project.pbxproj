@@ -18,6 +18,25 @@
 		17C1FF1A1ACC4AF7006B99B3 /* FontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D918461AC5A0EA0096D788 /* FontManager.h */; };
 		17C1FF1B1ACC4AF7006B99B3 /* GlyphString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D9184A1AC5A0EA0096D788 /* GlyphString.h */; };
 		17C1FF1C1ACC4AF7006B99B3 /* FontPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D918481AC5A0EA0096D788 /* FontPath.h */; };
+		6967BEEC1E28C17D00A129E2 /* FontConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEEB1E28C17D00A129E2 /* FontConverter.h */; };
+		6967BF001E28C2A200A129E2 /* Consts.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEEE1E28C2A200A129E2 /* Consts.h */; };
+		6967BF011E28C2A200A129E2 /* FontConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEEF1E28C2A200A129E2 /* FontConverter.cpp */; };
+		6967BF021E28C2A200A129E2 /* FontConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF01E28C2A200A129E2 /* FontConverter.h */; };
+		6967BF031E28C2A200A129E2 /* FontFileBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF11E28C2A200A129E2 /* FontFileBase.h */; };
+		6967BF041E28C2A200A129E2 /* FontFileEncodings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEF21E28C2A200A129E2 /* FontFileEncodings.cpp */; };
+		6967BF051E28C2A200A129E2 /* FontFileEncodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF31E28C2A200A129E2 /* FontFileEncodings.h */; };
+		6967BF061E28C2A200A129E2 /* FontFileTrueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEF41E28C2A200A129E2 /* FontFileTrueType.cpp */; };
+		6967BF071E28C2A200A129E2 /* FontFileTrueType.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF51E28C2A200A129E2 /* FontFileTrueType.h */; };
+		6967BF081E28C2A200A129E2 /* FontFileType1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEF61E28C2A200A129E2 /* FontFileType1.cpp */; };
+		6967BF091E28C2A200A129E2 /* FontFileType1.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF71E28C2A200A129E2 /* FontFileType1.h */; };
+		6967BF0A1E28C2A200A129E2 /* FontFileType1C.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEF81E28C2A200A129E2 /* FontFileType1C.cpp */; };
+		6967BF0B1E28C2A200A129E2 /* FontFileType1C.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEF91E28C2A200A129E2 /* FontFileType1C.h */; };
+		6967BF0C1E28C2A200A129E2 /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEFA1E28C2A200A129E2 /* Hash.cpp */; };
+		6967BF0D1E28C2A200A129E2 /* Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEFB1E28C2A200A129E2 /* Hash.h */; };
+		6967BF0E1E28C2A200A129E2 /* MemoryUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEFC1E28C2A200A129E2 /* MemoryUtils.h */; };
+		6967BF0F1E28C2A200A129E2 /* StringExt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEFD1E28C2A200A129E2 /* StringExt.cpp */; };
+		6967BF101E28C2A200A129E2 /* StringExt.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEFE1E28C2A200A129E2 /* StringExt.h */; };
+		6967BF111E28C2A200A129E2 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967BEFF1E28C2A200A129E2 /* Utils.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +52,25 @@
 		17D918531AC5A0F70096D788 /* ApplicationFonts_ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ApplicationFonts_ios.mm; path = ../../../fontengine/ApplicationFonts_ios.mm; sourceTree = "<group>"; };
 		17D918541AC5A0F70096D788 /* ApplicationFonts.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApplicationFonts.cpp; path = ../../../fontengine/ApplicationFonts.cpp; sourceTree = "<group>"; };
 		17D918551AC5A0F70096D788 /* ApplicationFonts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationFonts.h; path = ../../../fontengine/ApplicationFonts.h; sourceTree = "<group>"; };
+		6967BEEB1E28C17D00A129E2 /* FontConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontConverter.h; path = ../../../fontengine/FontConverter.h; sourceTree = "<group>"; };
+		6967BEEE1E28C2A200A129E2 /* Consts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Consts.h; sourceTree = "<group>"; };
+		6967BEEF1E28C2A200A129E2 /* FontConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontConverter.cpp; sourceTree = "<group>"; };
+		6967BEF01E28C2A200A129E2 /* FontConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontConverter.h; sourceTree = "<group>"; };
+		6967BEF11E28C2A200A129E2 /* FontFileBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontFileBase.h; sourceTree = "<group>"; };
+		6967BEF21E28C2A200A129E2 /* FontFileEncodings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontFileEncodings.cpp; sourceTree = "<group>"; };
+		6967BEF31E28C2A200A129E2 /* FontFileEncodings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontFileEncodings.h; sourceTree = "<group>"; };
+		6967BEF41E28C2A200A129E2 /* FontFileTrueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontFileTrueType.cpp; sourceTree = "<group>"; };
+		6967BEF51E28C2A200A129E2 /* FontFileTrueType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontFileTrueType.h; sourceTree = "<group>"; };
+		6967BEF61E28C2A200A129E2 /* FontFileType1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontFileType1.cpp; sourceTree = "<group>"; };
+		6967BEF71E28C2A200A129E2 /* FontFileType1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontFileType1.h; sourceTree = "<group>"; };
+		6967BEF81E28C2A200A129E2 /* FontFileType1C.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontFileType1C.cpp; sourceTree = "<group>"; };
+		6967BEF91E28C2A200A129E2 /* FontFileType1C.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontFileType1C.h; sourceTree = "<group>"; };
+		6967BEFA1E28C2A200A129E2 /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hash.cpp; sourceTree = "<group>"; };
+		6967BEFB1E28C2A200A129E2 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		6967BEFC1E28C2A200A129E2 /* MemoryUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryUtils.h; sourceTree = "<group>"; };
+		6967BEFD1E28C2A200A129E2 /* StringExt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringExt.cpp; sourceTree = "<group>"; };
+		6967BEFE1E28C2A200A129E2 /* StringExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringExt.h; sourceTree = "<group>"; };
+		6967BEFF1E28C2A200A129E2 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +103,7 @@
 		17D918371AC5A0870096D788 /* fontengine */ = {
 			isa = PBXGroup;
 			children = (
+				6967BEED1E28C2A200A129E2 /* fontconverter */,
 				17D918531AC5A0F70096D788 /* ApplicationFonts_ios.mm */,
 				17D918541AC5A0F70096D788 /* ApplicationFonts.cpp */,
 				17D918551AC5A0F70096D788 /* ApplicationFonts.h */,
@@ -76,8 +115,35 @@
 				17D918481AC5A0EA0096D788 /* FontPath.h */,
 				17D918491AC5A0EA0096D788 /* GlyphString.cpp */,
 				17D9184A1AC5A0EA0096D788 /* GlyphString.h */,
+				6967BEEB1E28C17D00A129E2 /* FontConverter.h */,
 			);
 			path = fontengine;
+			sourceTree = "<group>";
+		};
+		6967BEED1E28C2A200A129E2 /* fontconverter */ = {
+			isa = PBXGroup;
+			children = (
+				6967BEEE1E28C2A200A129E2 /* Consts.h */,
+				6967BEEF1E28C2A200A129E2 /* FontConverter.cpp */,
+				6967BEF01E28C2A200A129E2 /* FontConverter.h */,
+				6967BEF11E28C2A200A129E2 /* FontFileBase.h */,
+				6967BEF21E28C2A200A129E2 /* FontFileEncodings.cpp */,
+				6967BEF31E28C2A200A129E2 /* FontFileEncodings.h */,
+				6967BEF41E28C2A200A129E2 /* FontFileTrueType.cpp */,
+				6967BEF51E28C2A200A129E2 /* FontFileTrueType.h */,
+				6967BEF61E28C2A200A129E2 /* FontFileType1.cpp */,
+				6967BEF71E28C2A200A129E2 /* FontFileType1.h */,
+				6967BEF81E28C2A200A129E2 /* FontFileType1C.cpp */,
+				6967BEF91E28C2A200A129E2 /* FontFileType1C.h */,
+				6967BEFA1E28C2A200A129E2 /* Hash.cpp */,
+				6967BEFB1E28C2A200A129E2 /* Hash.h */,
+				6967BEFC1E28C2A200A129E2 /* MemoryUtils.h */,
+				6967BEFD1E28C2A200A129E2 /* StringExt.cpp */,
+				6967BEFE1E28C2A200A129E2 /* StringExt.h */,
+				6967BEFF1E28C2A200A129E2 /* Utils.h */,
+			);
+			name = fontconverter;
+			path = ../../../fontengine/fontconverter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -87,11 +153,23 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6967BF111E28C2A200A129E2 /* Utils.h in Headers */,
 				17C1FF181ACC4AF7006B99B3 /* FontFile.h in Headers */,
+				6967BF071E28C2A200A129E2 /* FontFileTrueType.h in Headers */,
+				6967BF0B1E28C2A200A129E2 /* FontFileType1C.h in Headers */,
 				17C1FF191ACC4AF7006B99B3 /* ApplicationFonts.h in Headers */,
+				6967BF051E28C2A200A129E2 /* FontFileEncodings.h in Headers */,
+				6967BF001E28C2A200A129E2 /* Consts.h in Headers */,
+				6967BF0D1E28C2A200A129E2 /* Hash.h in Headers */,
 				17C1FF1A1ACC4AF7006B99B3 /* FontManager.h in Headers */,
+				6967BF021E28C2A200A129E2 /* FontConverter.h in Headers */,
+				6967BF101E28C2A200A129E2 /* StringExt.h in Headers */,
 				17C1FF1B1ACC4AF7006B99B3 /* GlyphString.h in Headers */,
+				6967BF0E1E28C2A200A129E2 /* MemoryUtils.h in Headers */,
+				6967BEEC1E28C17D00A129E2 /* FontConverter.h in Headers */,
+				6967BF031E28C2A200A129E2 /* FontFileBase.h in Headers */,
 				17C1FF1C1ACC4AF7006B99B3 /* FontPath.h in Headers */,
+				6967BF091E28C2A200A129E2 /* FontFileType1.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,9 +227,16 @@
 				17C1FF0F1ACC4AF7006B99B3 /* FontPath.cpp in Sources */,
 				17C1FF101ACC4AF7006B99B3 /* ApplicationFonts_ios.mm in Sources */,
 				17C1FF111ACC4AF7006B99B3 /* FontManager.cpp in Sources */,
+				6967BF0A1E28C2A200A129E2 /* FontFileType1C.cpp in Sources */,
+				6967BF061E28C2A200A129E2 /* FontFileTrueType.cpp in Sources */,
+				6967BF0F1E28C2A200A129E2 /* StringExt.cpp in Sources */,
+				6967BF081E28C2A200A129E2 /* FontFileType1.cpp in Sources */,
 				17C1FF121ACC4AF7006B99B3 /* ApplicationFonts.cpp in Sources */,
 				17C1FF131ACC4AF7006B99B3 /* FontFile.cpp in Sources */,
 				17C1FF141ACC4AF7006B99B3 /* GlyphString.cpp in Sources */,
+				6967BF0C1E28C2A200A129E2 /* Hash.cpp in Sources */,
+				6967BF011E28C2A200A129E2 /* FontConverter.cpp in Sources */,
+				6967BF041E28C2A200A129E2 /* FontFileEncodings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -82,6 +82,8 @@ const std::wstring Bes::toString()
 	{
 		return Boolean<unsigned char>(bBoolErr);
 	}
+    
+    return L""; // TODO: need fixed
 }
 
 

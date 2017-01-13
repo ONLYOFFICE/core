@@ -188,6 +188,8 @@ struct BErr : public BiffStructure_NoVtbl
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
 			break;
 		}
+        
+        return L""; // TODO: need fixed
 	}
 };
 

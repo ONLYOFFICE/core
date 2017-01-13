@@ -17,6 +17,7 @@
 		17DAB6891ACC371F005AF479 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB6881ACC371F005AF479 /* Images.xcassets */; };
 		17DAB68C1ACC371F005AF479 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB68A1ACC371F005AF479 /* LaunchScreen.xib */; };
 		17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */; };
+		6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967BEB21E27D5BE00A129E2 /* libiconv.tbd */; };
 		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		17DAB68B1ACC371F005AF479 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Demo-Hayden-Management-v2.docx"; sourceTree = "<group>"; };
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
+		6967BEB21E27D5BE00A129E2 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */,
 				69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -82,6 +85,7 @@
 				69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */,
 				17DAB67A1ACC371E005AF479 /* iosTest */,
 				17DAB6791ACC371E005AF479 /* Products */,
+				6967BEB11E27D5BE00A129E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -129,6 +133,14 @@
 				17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */,
 			);
 			name = Files;
+			sourceTree = "<group>";
+		};
+		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6967BEB21E27D5BE00A129E2 /* libiconv.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		69920A3B1E016F9700E7E6EE /* Products */ = {

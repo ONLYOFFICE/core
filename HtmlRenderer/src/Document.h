@@ -842,15 +842,15 @@ namespace NSHtmlRenderer
 	// additiaonal params ----------------------------------------------------------------------
         inline HRESULT CommandLong(const LONG& lType, const LONG& lCommand)
         {
-            m_pRenderer->CommandLong(lType, lCommand);
+            return m_pRenderer->CommandLong(lType, lCommand);
         }
         inline HRESULT CommandDouble(const LONG& lType, const double& dCommand)
         {
-            m_pRenderer->CommandDouble(lType, dCommand);
+            return m_pRenderer->CommandDouble(lType, dCommand);
         }
         inline HRESULT CommandString(const LONG& lType, const std::wstring& sCommand)
         {
-            m_pRenderer->CommandString(lType, sCommand);
+            return m_pRenderer->CommandString(lType, sCommand);
         }
 
 	};

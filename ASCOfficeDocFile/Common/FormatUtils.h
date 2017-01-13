@@ -505,6 +505,7 @@ namespace DocFormatUtils
 			{
 				STLCollection->push_back(result[i]);
 			}
+            return true;
 		}
 
 		template<class T> static bool GetSTLCollectionFromUtf8( T *STLCollection, unsigned char *bytes, int size)

@@ -391,13 +391,11 @@ namespace NSHtmlRenderer
                         return sFamilyName.substr(7);
                     }
                 }
-                else
-                {
-                    // Ничего не делаем
-                    return sFamilyName;
-                }
+                
+                // Ничего не делаем
+                return sFamilyName;
             }
-
+            
             void LoadFontParams()
             {
                 // читаем и выставляем все настройки шрифта

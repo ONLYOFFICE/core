@@ -228,6 +228,7 @@ namespace NExtractTools
 
 		return res;
     }
+#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -369,4 +370,5 @@ namespace NExtractTools
 			sBinTo = sBinFrom;
 		return 0;
     }
+#endif
 }

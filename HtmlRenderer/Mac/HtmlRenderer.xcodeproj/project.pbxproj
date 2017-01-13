@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6967B0CB1E27A25D00A129E2 /* HtmlFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0C91E27A25D00A129E2 /* HtmlFile.cpp */; };
+		6967BEDE1E28BC7300A129E2 /* HTMLRenderer3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BED51E28BC7300A129E2 /* HTMLRenderer3.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		6967B0BB1E27A22E00A129E2 /* CopyFiles */ = {
+		6967BEBF1E28BC1700A129E2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
@@ -23,13 +23,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6967B0BD1E27A22E00A129E2 /* libHtmlFile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHtmlFile.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		6967B0C91E27A25D00A129E2 /* HtmlFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HtmlFile.cpp; path = ../../../HtmlFile.cpp; sourceTree = "<group>"; };
-		6967B0CA1E27A25D00A129E2 /* HtmlFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HtmlFile.h; path = ../../../HtmlFile.h; sourceTree = "<group>"; };
+		6967BEC11E28BC1700A129E2 /* libHtmlRenderer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libHtmlRenderer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6967BECF1E28BC7300A129E2 /* CanvasWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CanvasWriter.h; sourceTree = "<group>"; };
+		6967BED01E28BC7300A129E2 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		6967BED11E28BC7300A129E2 /* Common2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common2.h; sourceTree = "<group>"; };
+		6967BED21E28BC7300A129E2 /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
+		6967BED31E28BC7300A129E2 /* FontManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontManager.h; sourceTree = "<group>"; };
+		6967BED41E28BC7300A129E2 /* FontManagerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontManagerBase.h; sourceTree = "<group>"; };
+		6967BED51E28BC7300A129E2 /* HTMLRenderer3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HTMLRenderer3.cpp; sourceTree = "<group>"; };
+		6967BED61E28BC7300A129E2 /* SVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGWriter.h; sourceTree = "<group>"; };
+		6967BED71E28BC7300A129E2 /* SVGWriter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGWriter2.h; sourceTree = "<group>"; };
+		6967BED81E28BC7300A129E2 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Text.h; sourceTree = "<group>"; };
+		6967BED91E28BC7300A129E2 /* VectorGraphicsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorGraphicsWriter.h; sourceTree = "<group>"; };
+		6967BEDA1E28BC7300A129E2 /* VectorGraphicsWriter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorGraphicsWriter2.h; sourceTree = "<group>"; };
+		6967BEDB1E28BC7300A129E2 /* VMLWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMLWriter.h; sourceTree = "<group>"; };
+		6967BEDC1E28BC7300A129E2 /* Writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Writer.h; sourceTree = "<group>"; };
+		6967BEE11E28BC7900A129E2 /* HTMLRenderer3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTMLRenderer3.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		6967B0BA1E27A22E00A129E2 /* Frameworks */ = {
+		6967BEBE1E28BC1700A129E2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -39,105 +52,128 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6967B0B41E27A22E00A129E2 = {
+		6967BEB81E28BC1700A129E2 = {
 			isa = PBXGroup;
 			children = (
-				6967B0BF1E27A22E00A129E2 /* HtmlFile */,
-				6967B0BE1E27A22E00A129E2 /* Products */,
+				6967BEC31E28BC1700A129E2 /* HtmlRenderer */,
+				6967BEC21E28BC1700A129E2 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		6967B0BE1E27A22E00A129E2 /* Products */ = {
+		6967BEC21E28BC1700A129E2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6967B0BD1E27A22E00A129E2 /* libHtmlFile.a */,
+				6967BEC11E28BC1700A129E2 /* libHtmlRenderer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6967B0BF1E27A22E00A129E2 /* HtmlFile */ = {
+		6967BEC31E28BC1700A129E2 /* HtmlRenderer */ = {
 			isa = PBXGroup;
 			children = (
-				6967B1111E27A6E800A129E2 /* xmlutils */,
-				6967B0CA1E27A25D00A129E2 /* HtmlFile.h */,
-				6967B0C91E27A25D00A129E2 /* HtmlFile.cpp */,
+				6967BEDF1E28BC7900A129E2 /* include */,
+				6967BECD1E28BC7300A129E2 /* src */,
 			);
-			path = HtmlFile;
+			path = HtmlRenderer;
 			sourceTree = "<group>";
 		};
-		6967B1111E27A6E800A129E2 /* xmlutils */ = {
+		6967BECD1E28BC7300A129E2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				6967BECF1E28BC7300A129E2 /* CanvasWriter.h */,
+				6967BED01E28BC7300A129E2 /* Common.h */,
+				6967BED11E28BC7300A129E2 /* Common2.h */,
+				6967BED21E28BC7300A129E2 /* Document.h */,
+				6967BED31E28BC7300A129E2 /* FontManager.h */,
+				6967BED41E28BC7300A129E2 /* FontManagerBase.h */,
+				6967BED51E28BC7300A129E2 /* HTMLRenderer3.cpp */,
+				6967BED61E28BC7300A129E2 /* SVGWriter.h */,
+				6967BED71E28BC7300A129E2 /* SVGWriter2.h */,
+				6967BED81E28BC7300A129E2 /* Text.h */,
+				6967BED91E28BC7300A129E2 /* VectorGraphicsWriter.h */,
+				6967BEDA1E28BC7300A129E2 /* VectorGraphicsWriter2.h */,
+				6967BEDB1E28BC7300A129E2 /* VMLWriter.h */,
+				6967BEDC1E28BC7300A129E2 /* Writer.h */,
 			);
-			name = xmlutils;
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+		6967BEDF1E28BC7900A129E2 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				6967BEE11E28BC7900A129E2 /* HTMLRenderer3.h */,
+			);
+			name = include;
+			path = ../../include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6967B0BC1E27A22E00A129E2 /* HtmlFile */ = {
+		6967BEC01E28BC1700A129E2 /* HtmlRenderer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6967B0C61E27A22E00A129E2 /* Build configuration list for PBXNativeTarget "HtmlFile" */;
+			buildConfigurationList = 6967BECA1E28BC1700A129E2 /* Build configuration list for PBXNativeTarget "HtmlRenderer" */;
 			buildPhases = (
-				6967B0B91E27A22E00A129E2 /* Sources */,
-				6967B0BA1E27A22E00A129E2 /* Frameworks */,
-				6967B0BB1E27A22E00A129E2 /* CopyFiles */,
+				6967BEBD1E28BC1700A129E2 /* Sources */,
+				6967BEBE1E28BC1700A129E2 /* Frameworks */,
+				6967BEBF1E28BC1700A129E2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = HtmlFile;
-			productName = HtmlFile;
-			productReference = 6967B0BD1E27A22E00A129E2 /* libHtmlFile.a */;
+			name = HtmlRenderer;
+			productName = HtmlRenderer;
+			productReference = 6967BEC11E28BC1700A129E2 /* libHtmlRenderer.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		6967B0B51E27A22E00A129E2 /* Project object */ = {
+		6967BEB91E28BC1700A129E2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = OnlyOffce;
 				TargetAttributes = {
-					6967B0BC1E27A22E00A129E2 = {
+					6967BEC01E28BC1700A129E2 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = 2WH24U26GJ;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 6967B0B81E27A22E00A129E2 /* Build configuration list for PBXProject "HtmlFile" */;
+			buildConfigurationList = 6967BEBC1E28BC1700A129E2 /* Build configuration list for PBXProject "HtmlRenderer" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 6967B0B41E27A22E00A129E2;
-			productRefGroup = 6967B0BE1E27A22E00A129E2 /* Products */;
+			mainGroup = 6967BEB81E28BC1700A129E2;
+			productRefGroup = 6967BEC21E28BC1700A129E2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6967B0BC1E27A22E00A129E2 /* HtmlFile */,
+				6967BEC01E28BC1700A129E2 /* HtmlRenderer */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		6967B0B91E27A22E00A129E2 /* Sources */ = {
+		6967BEBD1E28BC1700A129E2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6967B0CB1E27A25D00A129E2 /* HtmlFile.cpp in Sources */,
+				6967BEDE1E28BC7300A129E2 /* HTMLRenderer3.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		6967B0C41E27A22E00A129E2 /* Debug */ = {
+		6967BEC81E28BC1700A129E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -184,7 +220,7 @@
 			};
 			name = Debug;
 		};
-		6967B0C51E27A22E00A129E2 /* Release */ = {
+		6967BEC91E28BC1700A129E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -225,28 +261,18 @@
 			};
 			name = Release;
 		};
-		6967B0C71E27A22E00A129E2 /* Debug */ = {
+		6967BECB1E28BC1700A129E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					LIBXML_READER_ENABLED,
-					MAC,
-					unix,
-					_IOS,
-					NOMINMAX,
-					LINUX,
-				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/devel",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -254,28 +280,18 @@
 			};
 			name = Debug;
 		};
-		6967B0C81E27A22E00A129E2 /* Release */ = {
+		6967BECC1E28BC1700A129E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = 2WH24U26GJ;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					UNICODE,
-					_UNICODE,
-					_USE_LIBXML2_READER_,
-					_USE_XMLLITE_READER_,
-					USE_LITE_READER,
-					LIBXML_READER_ENABLED,
-					MAC,
-					unix,
-					_IOS,
-					NOMINMAX,
-					LINUX,
-				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/devel",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -286,25 +302,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6967B0B81E27A22E00A129E2 /* Build configuration list for PBXProject "HtmlFile" */ = {
+		6967BEBC1E28BC1700A129E2 /* Build configuration list for PBXProject "HtmlRenderer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6967B0C41E27A22E00A129E2 /* Debug */,
-				6967B0C51E27A22E00A129E2 /* Release */,
+				6967BEC81E28BC1700A129E2 /* Debug */,
+				6967BEC91E28BC1700A129E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6967B0C61E27A22E00A129E2 /* Build configuration list for PBXNativeTarget "HtmlFile" */ = {
+		6967BECA1E28BC1700A129E2 /* Build configuration list for PBXNativeTarget "HtmlRenderer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6967B0C71E27A22E00A129E2 /* Debug */,
-				6967B0C81E27A22E00A129E2 /* Release */,
+				6967BECB1E28BC1700A129E2 /* Debug */,
+				6967BECC1E28BC1700A129E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 6967B0B51E27A22E00A129E2 /* Project object */;
+	rootObject = 6967BEB91E28BC1700A129E2 /* Project object */;
 }

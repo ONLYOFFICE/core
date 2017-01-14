@@ -15,7 +15,7 @@ CONFIG += staticlib
 DEFINES += \
     _QT
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     DEFINES += \
     _LINUX \
     _LINUX_QT
@@ -65,7 +65,7 @@ SOURCES += \
     ../../../editor/Viewer.cpp \
     NativeControl.cpp
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     SOURCES += ../../../editor/GLplatform/gl_linux_qt.cpp
 }
 

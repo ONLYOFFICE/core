@@ -33,10 +33,10 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_32
 }
 
@@ -50,7 +50,7 @@ CONFIG(debug, debug|release) {
 
 LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
 
-linux-g++ {
+linux-* {
 LIBS += -ldl
 }
 

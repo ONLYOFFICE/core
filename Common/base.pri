@@ -17,24 +17,24 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
     CONFIG += core_win_32
 }
 
-linux-g++ {
+linux-* {
     CONFIG += core_linux
-linux-g++:contains(QMAKE_HOST.arch, x86_64): {
-    message("linux-64")
-    CONFIG += core_linux_64
-}
-linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
-    message("linux-32")
-    CONFIG += core_linux_32
-}
+    contains(QMAKE_HOST.arch, x86_64): {
+        message("linux-64")
+        CONFIG += core_linux_64
+    }
+    !contains(QMAKE_HOST.arch, x86_64): {
+        message("linux-32")
+        CONFIG += core_linux_32
+    }
 }
 
-linux-g++-64 {
+linux*:contains(QMAKE_TARGET.arch, 64) {
     message("linux-64")
     CONFIG += core_linux
     CONFIG += core_linux_64
 }
-linux-g++-32 {
+linux*:!contains(QMAKE_TARGET.arch, 64) {
     message("linux-32")
     CONFIG += core_linux
     CONFIG += core_linux_32

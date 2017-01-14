@@ -40,7 +40,7 @@ CONFIG(debug, debug|release){
 
 message(Debug)
 
-linux-g++{
+linux-*:contains(QMAKE_TARGET.arch, 64){
 
     message(64 bit)
 
@@ -79,7 +79,7 @@ CONFIG(release, debug|release){
 
 message(Release)
 
-linux-g++{
+linux-*:contains(QMAKE_TARGET.arch, 64){
 
     message(64 bit)
 

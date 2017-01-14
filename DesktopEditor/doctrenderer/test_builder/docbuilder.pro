@@ -16,7 +16,7 @@ TEMPLATE = app
 CONFIG -= debug_and_release debug_and_release_target
 CONFIG += c++11
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     QMAKE_LFLAGS += -Wl,--rpath=./
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
 }
@@ -29,7 +29,7 @@ win32 {
 DEFINES += WIN32
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     DEFINES += \
         LINUX \
         _LINUX \
@@ -63,11 +63,11 @@ CONFIG(debug, debug|release) {
 TARGET_PLATFORM = _win32
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_64
     TARGET_PLATFORM = _linux64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH_DOCTRENDERER = $$DESTINATION_SDK_PATH/linux_32
     TARGET_PLATFORM = _linux32
 }
@@ -84,7 +84,7 @@ TARGET = docbuilder$$TARGET_PLATFORM
 
 LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER/docbuilder -ldoctrenderer
 
-linux-g++ {
+linux-* {
 LIBS += -ldl
 }
 

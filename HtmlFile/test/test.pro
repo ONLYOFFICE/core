@@ -44,10 +44,10 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
 }
 
@@ -55,7 +55,7 @@ LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
 LIBS += -L$$DESTINATION_SDK_PATH -lUnicodeConverter
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     QMAKE_LFLAGS += -Wl,--rpath=./
 
     LIBS        += $$PWD/../../build/bin/icu/linux_64/libicuuc.so.55

@@ -357,21 +357,9 @@ namespace NExtractTools
 
         if (pptx_file)
         {
-#if defined(_WIN32) || defined (_WIN64)
-			BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
-            BSTR bstrTempUnpackedPPTX	= SysAllocString(sFrom.c_str());
-            BSTR bstrTo					= SysAllocString(sTo.c_str());
-
-            pptx_file->SetFontDir (bstrFontPath);
-            nRes = (S_OK == pptx_file->OpenFileToPPTY (bstrTempUnpackedPPTX, bstrTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-
-            SysFreeString(bstrFontPath);
-            SysFreeString(bstrTempUnpackedPPTX);
-            SysFreeString(bstrTo);
-#else
             pptx_file->SetFontDir (params.getFontPath());
             nRes = (S_OK == pptx_file->OpenFileToPPTY (sFrom, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-#endif
+
             delete pptx_file;
         }
 
@@ -429,24 +417,9 @@ namespace NExtractTools
 
         if (pptx_file)
         {
-#if defined(_WIN32) || defined (_WIN64)
-            BSTR bstrFontPath		= SysAllocString(params.getFontPath().c_str());
-            BSTR bstrTargetBin		= SysAllocString(sTargetBin.c_str());
-            BSTR bstrResultPptxDir	= SysAllocString(sTo.c_str());
-            BSTR bstrThemeDir	= SysAllocString(sThemeDir.c_str());
-
-            pptx_file->SetFontDir (bstrFontPath);
-            nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(bstrTargetBin, bstrResultPptxDir, bstrThemeDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-
-            SysFreeString(bstrFontPath);
-            SysFreeString(bstrTargetBin);
-            SysFreeString(bstrResultPptxDir);
-            SysFreeString(bstrThemeDir);
-#else
             pptx_file->SetFontDir(params.getFontPath());
-
             nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(sTargetBin, sTo, sThemeDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-#endif
+
             delete pptx_file;
         }
         //удаляем EditorWithChanges, потому что он не в Temp
@@ -881,21 +854,9 @@ namespace NExtractTools
 
        if (pptx_file)
        {
-#if defined(_WIN32) || defined (_WIN64)
-           BSTR bstrFontPath			= SysAllocString(params.getFontPath().c_str());
-           BSTR bstrTempUnpackedPPTX	= SysAllocString(sTempUnpackedPPTX.c_str());
-           BSTR bstrTo					= SysAllocString(sTo.c_str());
-
-           pptx_file->SetFontDir (bstrFontPath);
-           nRes = (S_OK == pptx_file->OpenFileToPPTY (bstrTempUnpackedPPTX, bstrTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-
-           SysFreeString(bstrFontPath);
-           SysFreeString(bstrTempUnpackedPPTX);
-           SysFreeString(bstrTo);
-#else
            pptx_file->SetFontDir (params.getFontPath());
            nRes = (S_OK == pptx_file->OpenFileToPPTY (sTempUnpackedPPTX, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-#endif
+
            delete pptx_file;
        }
 

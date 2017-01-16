@@ -36,9 +36,9 @@ class CRecordDocRoutingSlipAtom : public CUnknownRecord
 {
 	struct SDocRoutingSlipAtom
 	{
-		USHORT m_nType;
-		USHORT m_nLength;
-		CString m_strText;
+        USHORT      m_nType;
+        USHORT      m_nLength;
+        std::wstring m_strText;
 	};
 
 	UINT m_nLength;

@@ -42,7 +42,7 @@
 #include "oox_rels.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 namespace oox {
 

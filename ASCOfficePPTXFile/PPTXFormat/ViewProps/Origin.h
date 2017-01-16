@@ -50,7 +50,7 @@ namespace PPTX
 				x = node.ReadAttributeInt(L"x");
 				y = node.ReadAttributeInt(L"y");
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("x"), x);

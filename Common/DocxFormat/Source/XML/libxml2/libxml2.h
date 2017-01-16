@@ -42,7 +42,7 @@
 
 namespace XmlUtils
 {
-	typedef enum XmlNodeType
+    typedef enum XmlNodeType
 	{	
 		XmlNodeType_None					= 0,
 		XmlNodeType_Element					= 1,
@@ -65,7 +65,7 @@ namespace XmlUtils
 		_XmlNodeType_Last					= 17
     } XmlNodeType;
 
-	class CXmlLiteReader
+    class CXmlLiteReader
 	{
 	protected:
 		xmlTextReaderPtr	reader;
@@ -76,12 +76,12 @@ namespace XmlUtils
 		std::string			m_sTempA;
 	public:
 
-		CXmlLiteReader()
+        CXmlLiteReader()
 		{			
 			reader = NULL;
 			m_pStream = NULL;
 		}
-		virtual ~CXmlLiteReader()
+        virtual ~CXmlLiteReader()
 		{
 			Clear();
 		}
@@ -158,7 +158,7 @@ namespace XmlUtils
 			if(-1 == nTempType)
                 return false;
 
-			oNodeType = (XmlNodeType)nTempType;
+            oNodeType = (XmlNodeType)nTempType;
 
             return true;
 		}
@@ -167,7 +167,7 @@ namespace XmlUtils
 			if ( !IsValid() )
                 return false;
 
-			XmlNodeType oNodeType = XmlNodeType_None;
+            XmlNodeType oNodeType = XmlNodeType_None;
 			
 			while ( XmlNodeType_Element != oNodeType )
 			{
@@ -178,10 +178,10 @@ namespace XmlUtils
 				if(-1 == nTempType)
 					break;
 
-				oNodeType = (XmlNodeType)nTempType;
+                oNodeType = (XmlNodeType)nTempType;
 			}
 
-			if ( XmlNodeType_Element == oNodeType )
+            if ( XmlNodeType_Element == oNodeType )
                 return true;
 
             return false;
@@ -193,7 +193,7 @@ namespace XmlUtils
 			if ( !IsValid() )
                 return false;
 
-			XmlNodeType eNodeType = XmlNodeType_None;
+            XmlNodeType eNodeType = XmlNodeType_None;
 			int nCurDepth = -1;
 			
 			while ( 1 == xmlTextReaderRead(reader) )
@@ -202,16 +202,16 @@ namespace XmlUtils
 				int nTempDepth = xmlTextReaderDepth(reader);
 				if(-1 == nTempType || -1 == nTempDepth)
                     return false;
-				eNodeType = (XmlNodeType)nTempType;
+                eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = nTempDepth;
 
 				// � ������������ ���� ������� ����� �� ��� � ��������������
 				if (nCurDepth < nDepth)
 					break;
 
-				if ( XmlNodeType_Element == eNodeType && nCurDepth == nDepth + 1 )
+                if ( XmlNodeType_Element == eNodeType && nCurDepth == nDepth + 1 )
                     return true;
-				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
+                else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
                     return false;
 			}
 
@@ -222,7 +222,7 @@ namespace XmlUtils
 			if ( !IsValid() )
                 return false;
 
-			XmlNodeType eNodeType = XmlNodeType_None;
+            XmlNodeType eNodeType = XmlNodeType_None;
 			int nCurDepth = -1;
 			
 			while ( 1 == xmlTextReaderRead(reader) )
@@ -233,7 +233,7 @@ namespace XmlUtils
 				if(-1 == nTempType || -1 == nTempDepth)
                     return false;
 				
-				eNodeType = (XmlNodeType)nTempType;
+                eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = nTempDepth;
 
 				if (nCurDepth < nDepth)
@@ -259,7 +259,7 @@ namespace XmlUtils
 			else if ( nDepth == GetDepth() && 0 != xmlTextReaderIsEmptyElement(reader) )
                 return true;
 
-			XmlNodeType eNodeType = XmlNodeType_None;
+            XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
 			// � ������������ ���� ������� ����� �� ��� � ��������������
@@ -271,7 +271,7 @@ namespace XmlUtils
 				int nTempType = xmlTextReaderNodeType(reader);
 				if(-1 == nTempType)
                     return false;
-				eNodeType = (XmlNodeType)nTempType;
+                eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = GetDepth();
 
 				if ( nCurDepth < nDepth )
@@ -368,18 +368,18 @@ namespace XmlUtils
 			return m_sTempA.c_str();
 		}
 
-		inline CString GetText2()
+        inline std::wstring GetText2()
 		{
 			if ( !IsValid() )
 				return _T("");
 
-			CString sResult;
+            std::wstring sResult;
 
 			if ( 0 != xmlTextReaderIsEmptyElement(reader) )
 				return sResult;
 
 			int nDepth = GetDepth();
-			XmlNodeType eNodeType = XmlNodeType_EndElement;
+            XmlNodeType eNodeType = XmlNodeType_EndElement;
 			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
 			{
 				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
@@ -399,7 +399,7 @@ namespace XmlUtils
 				return sResult;
 
 			int nDepth = GetDepth();
-			XmlNodeType eNodeType = XmlNodeType_EndElement;
+            XmlNodeType eNodeType = XmlNodeType_EndElement;
 			while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
 			{
 				if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
@@ -408,11 +408,11 @@ namespace XmlUtils
 
 			return sResult;
 		}
-		inline CString GetOuterXml()
+        inline std::wstring GetOuterXml()
 		{
 			return GetXml(false);
 		}
-		inline CString GetInnerXml()
+        inline std::wstring GetInnerXml()
 		{
 			return GetXml(true);
 		}
@@ -446,19 +446,19 @@ namespace XmlUtils
             return 1 == xmlTextReaderMoveToElement(reader) ? true: false;
 		}
 	private:
-		inline CString GetXml(bool bInner)
+        inline std::wstring GetXml(bool bInner)
 		{
 			if ( !IsValid() )
 				return L"";
 
-			CStringWriter oResult;
+            CStringWriter oResult;
 			if(false == bInner)
 				WriteElement(oResult);
 
 			int nDepth = GetDepth();
 			if ( 0 == xmlTextReaderIsEmptyElement(reader) )
 			{
-				XmlNodeType eNodeType = XmlNodeType_None;
+                XmlNodeType eNodeType = XmlNodeType_None;
 
 				int nCurDepth = -1;
 				// � ������������ ���� ������� ����� �� ��� � ��������������
@@ -498,7 +498,7 @@ namespace XmlUtils
 
 			return oResult.GetData();
 		}
-		void WriteElement(CStringWriter& oResult)
+        void WriteElement(CStringWriter& oResult)
 		{
 			oResult.AddCharSafe((TCHAR)'<');
 			oResult.WriteEncodeXmlString(GetName().c_str());
@@ -555,24 +555,22 @@ namespace XmlUtils
 		}		
 	};
 
-	class CXmlNodeBase : public IXmlDOMDocument
+    class CXmlNodeBase : public IXmlDOMDocument
 	{
 	public:
 		IXmlDOMDocument* m_pDocument;
 
-		std::map<CStringA, CStringA> m_attributes;
-		std::vector<CXmlNodeBase*> m_nodes;
-		CString m_sText;
-		CString m_sName;
+        std::map<std::string, std::string> m_attributes;
+        std::vector<CXmlNodeBase*> m_nodes;
+        std::wstring m_sText;
+        std::wstring m_sName;
 
 	public:
-		CXmlNodeBase() : IXmlDOMDocument()
+        CXmlNodeBase() : IXmlDOMDocument()
 		{
 			m_pDocument = NULL;
-			m_sText = L"";
-			m_sName = L"";
 		}
-		~CXmlNodeBase()
+        ~CXmlNodeBase()
 		{
 			if (NULL != m_pDocument)
 				m_pDocument->Release();
@@ -597,173 +595,173 @@ namespace XmlUtils
 				m_pDocument->Release();
 		}
 
-		CString GetXml();
-		void GetXml(CStringWriter& oWriter);
+        std::wstring GetXml();
+        void GetXml(CStringWriter& oWriter);
 	};
 
-    class CXmlNode;
-    class CXmlNodes
-    {
-    private:
-        std::vector<CXmlNode> m_nodes;
+    //class CXmlNode;
+    //class CXmlNodes
+    //{
+    //private:
+    //    std::vector<CXmlNode> m_nodes;
 
-    public:
-        CXmlNodes();
-        bool IsValid();
-        int GetCount();
-        bool GetAt(int nIndex, CXmlNode& oXmlNode);
+    //public:
+    //    CXmlNodes();
+    //    bool IsValid();
+    //    int GetCount();
+    //    bool GetAt(int nIndex, CXmlNode& oXmlNode);
 
-        friend class CXmlNode;
-    };
+    //    friend class CXmlNode;
+    //};
 
 
-	class CXmlNode
-	{
-	private:
-		CXmlNodeBase* m_pBase;
+	//class CXmlNode
+	//{
+	//private:
+	//	CXmlNodeBase* m_pBase;
 
-	public:
-		CXmlNode()
-		{
-			m_pBase = NULL;
-		}
-		~CXmlNode()
-		{
-			Clear();
-		}
-		CXmlNode(const CXmlNode& oSrc);
+	//public:
+	//	CXmlNode()
+	//	{
+	//		m_pBase = NULL;
+	//	}
+	//	~CXmlNode()
+	//	{
+	//		Clear();
+	//	}
+	//	CXmlNode(const CXmlNode& oSrc);
 
-	public:
-		bool FromXmlFile(const wchar_t* sFile, bool bRemoveRootNode = false)
-		{
-			return FromXmlFile(std::wstring(sFile), bRemoveRootNode);
-		}
-		bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
-        bool FromXmlFile2(const CString& strXmlFilePath);
-		bool FromXmlStringA(const std::string& sString);
-		bool FromXmlString(const wchar_t* sString)
-		{
-			return FromXmlString(std::wstring(sString));
-		}
-		bool FromXmlString(const std::wstring& sString);
+	//public:
+	//	bool FromXmlFile(const wchar_t* sFile, bool bRemoveRootNode = false)
+	//	{
+	//		return FromXmlFile(std::wstring(sFile), bRemoveRootNode);
+	//	}
+	//	bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
+ //       bool FromXmlFile2(const std::wstring& strXmlFilePath);
+	//	bool FromXmlStringA(const std::string& sString);
+	//	bool FromXmlString(const wchar_t* sString)
+	//	{
+	//		return FromXmlString(std::wstring(sString));
+	//	}
+	//	bool FromXmlString(const std::wstring& sString);
 
-        bool IsValid() const;
-		void Clear();
-		CString GetName();
-		CString GetText();
-		bool GetTextIfExist(CString& sOutput);
-		CString GetTextExt(const CString& strDefaultValue = _T(""));
-		CString GetXml(const CString& strDefaultValue = _T(""));
+ //       bool IsValid() const;
+	//	void Clear();
+    //	std::wstring GetName();
+    //	std::wstring GetText();
+    //	bool GetTextIfExist(std::wstring& sOutput);
+    //	std::wstring GetTextExt(const std::wstring& strDefaultValue = _T(""));
+    //	std::wstring GetXml(const std::wstring& strDefaultValue = _T(""));
 
-		CString ReadAttributeBase(const wchar_t* bstrName);
-		template<typename T>
-		void ReadAttributeBase(const wchar_t* bsName, T& value)
-		{
-			CString sAttr;
-			if(GetAttributeIfExist(CString(bsName), sAttr))
-				value = sAttr.GetString();
-		}
-		CString ReadAttribute(const CString& strAttibuteName);
-		template<typename T>
-		void ReadAllAttributes(T& strNames, T& strValues)
-		{
-			if (!IsValid())
-				return;
+    //	std::wstring ReadAttributeBase(const wchar_t* bstrName);
+	//	template<typename T>
+	//	void ReadAttributeBase(const wchar_t* bsName, T& value)
+	//	{
+    //		std::wstring sAttr;
+    //		if(GetAttributeIfExist(std::wstring(bsName), sAttr))
+	//			value = sAttr.GetString();
+	//	}
+    //	std::wstring ReadAttribute(const std::wstring& strAttibuteName);
+	//	template<typename T>
+	//	void ReadAllAttributes(T& strNames, T& strValues)
+	//	{
+	//		if (!IsValid())
+	//			return;
 
-			std::map<CStringA, CStringA>::iterator p;
-			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-			{
-                strNames.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), true));
-                strValues.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), true));
-			}
-		}
-		
-		CStringA GetAttributeA(const CStringA& sName, const CStringA& _default = "");
-		CStringA GetAttributeA(const CString& sName, const CStringA& _default = "");
+    //		std::map<std::string, std::string>::iterator p;
+	//		for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+	//		{
+ //               strNames.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), true));
+ //               strValues.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), true));
+	//		}
+	//	}
+	//	
+    //	std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
+    //	std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");
 
-		CString GetAttribute(const CStringA& sName, const CString& _default = L"");
-		CString GetAttribute(const CString& sName, const CString& _default = L"");
-		CString GetAttribute(const wchar_t* sName, const CString& _default = L"");
-		CString GetAttributeBase(const wchar_t* strAttributeName, const CString& strDefaultValue = _T(""));
-		bool GetAttributeIfExist(const CString& sName, CString& sOutput);
+    //	std::wstring GetAttribute(const std::string& sName, const std::wstring& _default = L"");
+    //	std::wstring GetAttribute(const std::wstring& sName, const std::wstring& _default = L"");
+    //	std::wstring GetAttribute(const wchar_t* sName, const std::wstring& _default = L"");
+    //	std::wstring GetAttributeBase(const wchar_t* strAttributeName, const std::wstring& strDefaultValue = _T(""));
+    //	bool GetAttributeIfExist(const std::wstring& sName, std::wstring& sOutput);
 
-		int GetAttributeInt(const CStringA& sName, const int& _default = 0);
-		int GetAttributeInt(const CString& sName, const int& _default = 0);
-		int ReadAttributeInt(const CString& str, const int& nDef = 0);
-		double ReadAttributeDouble(const CString& str, const double& nDef = 0);
+    //	int GetAttributeInt(const std::string& sName, const int& _default = 0);
+    //	int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
+    //	int ReadAttributeInt(const std::wstring& str, const int& nDef = 0);
+    //	double ReadAttributeDouble(const std::wstring& str, const double& nDef = 0);
 
-		double GetAttributeDouble(const CStringA& sName, const double& _default = 0);
-		double GetAttributeDouble(const CString& sName, const double& _default = 0);
-		
+    //	double GetAttributeDouble(const std::string& sName, const double& _default = 0);
+    //	double GetAttributeDouble(const std::wstring& sName, const double& _default = 0);
+	//	
 
-		CString ReadNodeTextBase(const wchar_t* bsName);
-		template <typename T>
-		void ReadNodeValueBase(const wchar_t* bsName, T& value)
-		{
-			value = ReadNodeTextBase(bsName);
-		}
-		CString ReadNodeText(const CString& strName);
-		CString ReadValueString(const CString& sName, const CString& nDef = _T(""));
-		int ReadValueInt(const CString& str, const int& nDef = 0);
+    //	std::wstring ReadNodeTextBase(const wchar_t* bsName);
+	//	template <typename T>
+	//	void ReadNodeValueBase(const wchar_t* bsName, T& value)
+	//	{
+	//		value = ReadNodeTextBase(bsName);
+	//	}
+    //	std::wstring ReadNodeText(const std::wstring& strName);
+    //	std::wstring ReadValueString(const std::wstring& sName, const std::wstring& nDef = _T(""));
+    //	int ReadValueInt(const std::wstring& str, const int& nDef = 0);
 
-		CString GetAttributeOrValue(const CString& strAttributeName, const CString& strDefaultValue = _T(""));
+    //	std::wstring GetAttributeOrValue(const std::wstring& strAttributeName, const std::wstring& strDefaultValue = _T(""));
 
-        /*
-        void LoadArray(const CString& sName, std::vector<T>& arList)
-        {
-            if (GetNodes(sName, oNodes))
-        }
-        */
+ //       /*
+ //       void LoadArray(const std::wstring& sName, std::vector<T>& arList)
+ //       {
+ //           if (GetNodes(sName, oNodes))
+ //       }
+ //       */
 
-		template <typename T>
-        void LoadArray(const CString& sName, std::vector<T>& arList)
-		{
-			CXmlNodes oNodes;
-			if (GetNodes(sName, oNodes))
-            {
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
-				{
-					CXmlNode oItem;
-					oNodes.GetAt(i, oItem);
+	//	template <typename T>
+ //       void LoadArray(const std::wstring& sName, std::vector<T>& arList)
+	//	{
+	//		CXmlNodes oNodes;
+	//		if (GetNodes(sName, oNodes))
+ //           {
+	//			int nCount = oNodes.GetCount();
+	//			for (int i = 0; i < nCount; ++i)
+	//			{
+	//				CXmlNode oItem;
+	//				oNodes.GetAt(i, oItem);
 
-                    //arList.Add ();
-                    //arList[i].fromXML(oItem);
-                    arList.push_back(T());
-                    arList[i].fromXML(oItem);
-				}
-			}
-		}
-		template <typename T>
-        void LoadArray(const CString& sName, const CString& sSubName, std::vector<T>& arList)
-		{
-			CXmlNode oNode;
-			if (GetNode(sName, oNode))
-				oNode.LoadArray(sSubName, arList);
-		}
-		CXmlNode ReadNode(const TCHAR* strNodeName);
-		CXmlNode ReadNode(const CString& strNodeName);
-		CXmlNode ReadNodeNoNS(const CString& strNodeName);
+ //                   //arList.Add ();
+ //                   //arList[i].fromXML(oItem);
+ //                   arList.push_back(T());
+ //                   arList[i].fromXML(oItem);
+	//			}
+	//		}
+	//	}
+	//	template <typename T>
+ //       void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList)
+	//	{
+	//		CXmlNode oNode;
+	//		if (GetNode(sName, oNode))
+	//			oNode.LoadArray(sSubName, arList);
+	//	}
+	//	CXmlNode ReadNode(const TCHAR* strNodeName);
+    //	CXmlNode ReadNode(const std::wstring& strNodeName);
+    //	CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
 
-		CXmlNode GetNode(const CString& sName);
-		CXmlNodes GetNodes(const CString& sName);
-        bool GetChilds(CXmlNodes& oXmlNodes);
+    //	CXmlNode GetNode(const std::wstring& sName);
+    //	CXmlNodes GetNodes(const std::wstring& sName);
+ //       bool GetChilds(CXmlNodes& oXmlNodes);
 
-		bool GetNode(const CString& sName, CXmlNode& oNode);
-		bool GetNodes(const CString& sName, CXmlNodes& oNodes);
+    //	bool GetNode(const std::wstring& sName, CXmlNode& oNode);
+    //	bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
 
-		CXmlNode& operator=(const CXmlNode& oSrc);
-	private:
-		void SetBase(CXmlNodeBase* pBase);
-		CString GetNamespace(const CString& strNodeName);
-		//CString GetNameNoNS(const CString& strNodeName);
-		std::wstring GetNameNoNS(const std::wstring& strNodeName);
-	public:
-		CString private_GetXml();
-		CString private_GetXml(const CString& strDefaultValue = _T(""));
-		CString private_GetXmlFast();
-		CString private_GetXmlFast(const CString& strDefaultValue);
-	};
+	//	CXmlNode& operator=(const CXmlNode& oSrc);
+	//private:
+	//	void SetBase(CXmlNodeBase* pBase);
+    //	std::wstring GetNamespace(const std::wstring& strNodeName);
+    //	//std::wstring GetNameNoNS(const std::wstring& strNodeName);
+	//	std::wstring GetNameNoNS(const std::wstring& strNodeName);
+	//public:
+    //	std::wstring private_GetXml();
+    //	std::wstring private_GetXml(const std::wstring& strDefaultValue = _T(""));
+    //	std::wstring private_GetXmlFast();
+    //	std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
+	//};
 
 
 }
@@ -805,7 +803,7 @@ namespace XmlUtils
 			return ( NULL != reader );
 		}
 
-        inline bool FromFile(CString& sFilePath)
+        inline bool FromFile(std::wstring& sFilePath)
 		{
 			Clear();
 
@@ -821,7 +819,7 @@ namespace XmlUtils
 
             return true;
 		}
-        inline bool FromString(CString& sXml)
+        inline bool FromString(std::wstring& sXml)
 		{
 			Clear();
 			UnicodeToUtf8(sXml, m_pStream, m_lStreamLen);
@@ -832,20 +830,20 @@ namespace XmlUtils
             return true;
 		}
 
-		CString Parse()
+        std::wstring Parse()
 		{
-			CString strRet = _T("");
+            std::wstring strRet = _T("");
 
 			xmlNodePtr root = xmlDocGetRootElement(reader);
 
 			strRet = ParseNode(root);
 
 			return strRet;
-		}
+        }
 
-		CString ParseNode(xmlNodePtr root)
+        std::wstring ParseNode(xmlNodePtr root)
 		{
-			CString strRet = _T("");
+            std::wstring strRet = _T("");
 
 			XmlNodeType oNodeType = XmlNodeType_None;
 			xmlNodePtr curNode = root;
@@ -857,11 +855,11 @@ namespace XmlUtils
 				if (XmlNodeType_Element == curNode->type)
 				{
 					strRet += _T("<");
-					CString sName(curNode->name);
+                    std::wstring sName(curNode->name);
 					strRet += sName;
 					strRet += _T(">");
 
-					CString strRet2 = ParseNode(curNode->children);
+                    std::wstring strRet2 = ParseNode(curNode->children);
 					strRet += strRet2;
 
 					strRet += _T("</");
@@ -874,7 +872,7 @@ namespace XmlUtils
 		}
 
 	private:
-		void UnicodeToUtf8(CString& strXml, BYTE*& pBuffer, LONG& lLen)
+        void UnicodeToUtf8(std::wstring& strXml, BYTE*& pBuffer, LONG& lLen)
 		{
 			int nLength = strXml.GetLength();
 

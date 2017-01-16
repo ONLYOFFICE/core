@@ -65,7 +65,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(list);
@@ -74,7 +74,7 @@ namespace PPTX
 			}
 		public:
 			std::vector<Cond>			list;
-			CString					name;
+			std::wstring					name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -52,6 +52,6 @@ namespace FileSystem {
 		static StringArray GetFilesInDirectory(LPCTSTR path, const bool& andSubdirectories = false);
         static StringArray GetFilesInDirectory(const String& path, const bool& andSubdirectories = false);
 
-        static int GetFilesCount(const CString& path, const bool& recursive = false);
+        static int GetFilesCount(const std::wstring& path, const bool& recursive = false);
 	};
 }

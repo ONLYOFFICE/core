@@ -87,7 +87,7 @@ namespace PPTX
 					}
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("isPhoto"), isPhoto);
@@ -102,7 +102,7 @@ namespace PPTX
 			}
             virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
             {
-                CString namespace_;
+                std::wstring namespace_;
                 if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
                     namespace_= _T("pic");
                 else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
@@ -112,7 +112,7 @@ namespace PPTX
 
                 toXmlWriter2(namespace_, pWriter);
             }
-            void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+            void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
             {
                 pWriter->StartNode(strNS + _T(":nvPr"));
 

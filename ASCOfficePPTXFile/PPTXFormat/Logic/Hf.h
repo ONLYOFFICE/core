@@ -52,7 +52,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"hdr", hdr);
 				node.ReadAttributeBase(L"sldNum", sldNum);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("dt"), dt);

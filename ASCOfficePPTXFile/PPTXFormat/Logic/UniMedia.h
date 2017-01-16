@@ -50,7 +50,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("audioCd"))
 					Media.reset(new Logic::AudioCD(node));
@@ -81,7 +81,7 @@ namespace PPTX
 				else Media.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (Media.IsInit())
 					return Media->toXML();

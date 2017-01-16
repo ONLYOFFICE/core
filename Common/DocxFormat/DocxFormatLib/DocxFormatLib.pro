@@ -72,16 +72,6 @@ SOURCES += \
     ../Source/Common/SimpleTypes_Word.cpp
 }
 
-core_windows {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/Directory.cpp \
-        ../Source/SystemUtility/FileSystem/File.cpp \
-} else {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-        ../Source/SystemUtility/FileSystem/FilePosix.cpp \
-}
-
 
 SOURCES += docxformatlib.cpp \
     ../Source/XML/libxml2/libxml2.cpp \
@@ -273,8 +263,6 @@ HEADERS += docxformatlib.h \
     ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
-    ../Source/XML/xmlutils.h \
-    ../Source/Base/ASCString.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
     ../Source/DocxFormat/Drawing/DrawingText.h \
     ../Source/DocxFormat/Drawing/DrawingTextProperties.h \

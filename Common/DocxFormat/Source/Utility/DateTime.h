@@ -43,14 +43,14 @@ class DateTime
 {
 public:
 	DateTime();
-	DateTime(const CString& sValue, const CString &sPattern);
+    DateTime(const std::wstring& sValue, const std::wstring &sPattern);
 
 public:
 
-	const CString ToString(const CString &sPattern) const;
+    const std::wstring ToString(const std::wstring &sPattern) const;
 
-	static const DateTime Parse     (const CString &sValue, const CString &sPattern);
-	static const int      ParseValue(const CString &sValue, const CString &sPattern, const CString &sElement);
+    static const DateTime Parse     (const std::wstring &sValue, const std::wstring &sPattern);
+    static const int      ParseValue(const std::wstring &sValue, const std::wstring &sPattern, const std::wstring &sElement);
 
 private:
 

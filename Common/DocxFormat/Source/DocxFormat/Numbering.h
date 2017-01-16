@@ -70,9 +70,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:legacy=\""),       m_oLegacy );
 				ComplexTypes_WriteAttribute( _T("w:legacyIndent=\""), m_oLegacyIndent );
@@ -125,16 +125,16 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:null=\""), m_oNull );
 
 				if ( m_sVal.IsInit() )
 				{
 					sResult += _T("w:val=\"");
-					sResult += m_sVal->GetString();
+                    sResult += m_sVal.get2();
 					sResult += _T("\" ");
 				}
 
@@ -154,7 +154,7 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::COnOff<> > m_oNull;
-			nullable<CString               > m_sVal;
+            nullable<std::wstring               > m_sVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -182,9 +182,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
@@ -230,9 +230,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
@@ -325,9 +325,9 @@ namespace OOX
 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:lvl ");
+                std::wstring sResult = _T("<w:lvl ");
 
 				ComplexTypes_WriteAttribute( _T("w:ilvl=\""),      m_oIlvl );
 				ComplexTypes_WriteAttribute( _T("w:tentative=\""), m_oTentative );
@@ -387,7 +387,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CLevelText                      > m_oLvlText;
 			nullable<ComplexTypes::Word::CNumFmt                         > m_oNumFmt;
 			nullable<OOX::Logic::CParagraphProperty                      > m_oPPr;
-			nullable<ComplexTypes::Word::CString_                        > m_oPStyle;
+			nullable<ComplexTypes::Word::String                        > m_oPStyle;
 			nullable<OOX::Logic::CRunProperty                            > m_oRPr;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oStart;
 			nullable<ComplexTypes::Word::CLevelSuffix                    > m_oSuffix;
@@ -468,9 +468,9 @@ namespace OOX
 					else if ( _T("w:tmpl")           == sName ) m_oTmpl = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:abstractNum ");
+                std::wstring sResult = _T("<w:abstractNum ");
 
 				ComplexTypes_WriteAttribute( _T("w:abstractNumId=\""), m_oAbstractNumId );
 
@@ -518,10 +518,10 @@ namespace OOX
 			// Childs
 			std::vector<OOX::Numbering::CLvl*                            > m_arrLvl;
 			nullable<ComplexTypes::Word::CMultiLevelType                 > m_oMultiLevelType;
-			nullable<ComplexTypes::Word::CString_                        > m_oName;
+			nullable<ComplexTypes::Word::String                        > m_oName;
 			nullable<ComplexTypes::Word::CLongHexNumber                  > m_oNsid;
-			nullable<ComplexTypes::Word::CString_                        > m_oNumStyleLink;
-			nullable<ComplexTypes::Word::CString_                        > m_oStyleLink;
+			nullable<ComplexTypes::Word::String                        > m_oNumStyleLink;
+			nullable<ComplexTypes::Word::String                        > m_oStyleLink;
 			nullable<ComplexTypes::Word::CLongHexNumber                  > m_oTmpl;
 		};
 		//--------------------------------------------------------------------------------
@@ -568,9 +568,9 @@ namespace OOX
 						m_oStartOverride = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:lvlOverride ");
+                std::wstring sResult = _T("<w:lvlOverride ");
 
 				ComplexTypes_WriteAttribute( _T("w:ilvl=\""), m_oIlvl );
 
@@ -675,9 +675,9 @@ namespace OOX
 						m_oAbstractNumId = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:num ");
+                std::wstring sResult = _T("<w:num ");
 
 				ComplexTypes_WriteAttribute( _T("w:numId=\""), m_oNumId );
 
@@ -764,9 +764,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:numPicBullet ");
+                std::wstring sResult = _T("<w:numPicBullet ");
 
 				sResult += m_oNumPicBulletId.ToString() + _T(">");
 
@@ -922,7 +922,7 @@ namespace OOX
 				if ( oNumbering.GetNode( _T("w:numIdMacAtCleanup"), oNumIdPicBulletNode ) )
 					m_oNumIdMacAtCleanup = oNumIdPicBulletNode;
 
-				// TO DO:  ак будут сделаны классы CDrawing, нужно будет сделать чтение
+				// TO DO:  ак будут сделаны классы CDrawing, нужно будет сделать чтение
 				//        w:numPicBullet
 				XmlUtils::CXmlNodes oNumPicList;
 				oNumbering.GetNodes( _T("w:numPicBullet"), oNumPicList );
@@ -942,7 +942,7 @@ namespace OOX
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+            std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
 
 			for (unsigned int nIndex = 0; nIndex < m_arrAbstractNum.size(); nIndex++ )

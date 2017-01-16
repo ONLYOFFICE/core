@@ -92,9 +92,9 @@ namespace OOX
 
 			}
 		}
-		virtual CString      toXML  () const
+		virtual std::wstring      toXML  () const
 		{
-			CString sResult = _T("<w:font w:name=\"");
+			std::wstring sResult = _T("<w:font w:name=\"");
 			sResult += m_sName;
 			sResult += _T("\">");
 
@@ -188,12 +188,12 @@ namespace OOX
 
 	public:
 
-		CString                                                 m_sName;           
+		std::wstring                                                 m_sName;           
 		nullable<SimpleTypes::CFontCharset<SimpleTypes::fontcharsetANSI>>	m_oCharset;  
 		nullable<SimpleTypes::CFontFamily<SimpleTypes::fontfamilyAuto>>		m_oFamily;
 		nullable<SimpleTypes::CPitch<SimpleTypes::pitchDefault>>			m_oPitch;
 
-		nullable<CString                                      > m_oAltName;        
+		nullable<std::wstring                                      > m_oAltName;        
 		nullable<SimpleTypes::COnOff<>                        > m_oNotTrueType;
 		nullable<SimpleTypes::CPanose                         > m_oPanose;
 

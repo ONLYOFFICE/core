@@ -31,7 +31,13 @@
  */
 #pragma once
 
-#include "ASCString.h"
+#include <string>
+
+#include <TCHAR.H>
+#include <WTYPES.H>
+
+#define _T(x)       __T(x)
+#define __T(x)      L##x
 
 #if defined(_WIN32) || defined (_WIN64)
 	// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'

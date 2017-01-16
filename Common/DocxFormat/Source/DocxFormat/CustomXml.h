@@ -74,9 +74,9 @@ namespace OOX
 			{
 				oNode.ReadAttributeBase( _T("ds:uri"), m_sUri );
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<ds:schemaRef ds:uri=\"") + m_sUri  + _T("\" />");
+				std::wstring sResult = _T("<ds:schemaRef ds:uri=\"") + m_sUri  + _T("\" />");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -86,7 +86,7 @@ namespace OOX
 
 		public:
 
-			CString m_sUri;
+			std::wstring m_sUri;
 		};
 
 		class CShemaRefs : public WritingElementWithChilds<CShemaRef>
@@ -129,9 +129,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<ds:schemaRefs>");
+				std::wstring sResult = _T("<ds:schemaRefs>");
 
 				for ( int nIndex = 0; nIndex < m_arrShemeRef.GetSize(); nIndex++ )
 					sResult += m_arrShemeRef[nIndex].toXML();
@@ -179,7 +179,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"");
+			std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"");
 			sXml += m_oItemID.ToString();
 			sXml += _T("\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">");
 

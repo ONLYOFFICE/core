@@ -41,6 +41,7 @@
     #include "windows.h"
     #include "windef.h"
     #include <shlobj.h>
+    #include <Rpc.h>
 #elif __linux__
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -436,6 +437,156 @@ namespace NSDirectory
 		}
 		return wsFolderPath.substr(0, n1);
 	}
+        static std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t pBuffer [MAX_PATH+1];
+            memset (pBuffer, 0, sizeof (wchar_t) * (MAX_PATH+1));
+
+            /*unRet = */GetTempFileNameW( strFolderPathRoot.c_str(), Prefix.c_str(), 0,pBuffer);
+
+            return std::wstring(pBuffer);
+#else
+            char pcRes[MAX_PATH];
+            if (NULL == pcRes) return _T("");
+
+            Prefix = strFolderPathRoot + FILE_SEPARATOR_STR + Prefix + _T("_XXXXXX");
+
+            std::wstring w_str  = Prefix.c_str();
+            std::string a_str   = stringWstingToUtf8String(w_str);
+
+            memcpy(pcRes, a_str.c_str(), a_str.length());
+            pcRes[a_str.length()] = '\0';
+
+            int res = mkstemp( pcRes);
+            if (-1 != res)
+                close(res);
+
+            std::string sRes = pcRes;
+            return stringUtf8ToWString (sRes);
+#endif
+        }
+        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot)
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            UUID uuid;
+            RPC_WSTR str_uuid;
+            UuidCreate (&uuid);
+            UuidToStringW (&uuid, &str_uuid);
+                    std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+            pcTemplate += (wchar_t *) str_uuid;
+            RpcStringFreeW (&str_uuid);
+
+            int attemps = 10;
+            while (!CreateDirectory(pcTemplate))
+            {
+                UuidCreate (&uuid);
+                UuidToStringW (&uuid, &str_uuid);
+                pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+                pcTemplate += (wchar_t *) str_uuid;
+                RpcStringFreeW (&str_uuid);
+                attemps--;
+
+                if (0 == attemps)
+                {
+                    pcTemplate = L"";
+                }
+            }
+            return pcTemplate;
+#else
+            std::string pcTemplate = stringWstingToUtf8String (strFolderPathRoot) + "/ascXXXXXX";
+            char *pcRes = mkdtemp(const_cast <char *> (pcTemplate.c_str()));
+            if (NULL == pcRes)
+                return _T("");
+
+            std::string sRes = pcRes;
+            return stringUtf8ToWString (sRes);
+#endif
+        }
+        static std::wstring GetTempPath()
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            wchar_t pBuffer [MAX_PATH+1];
+            memset (pBuffer, 0, sizeof (wchar_t) * (MAX_PATH+1));
+                    ::GetTempPathW (MAX_PATH, pBuffer);
+            std::wstring res;
+            res += std::wstring(pBuffer);
+
+            int nSeparator1Pos = res.rfind(L"/");
+            if (-1 == nSeparator1Pos)
+            {
+                nSeparator1Pos = res.rfind(L"\\");
+            }
+
+            if (-1 == nSeparator1Pos)
+                return L"";
+
+            return res.substr (0, nSeparator1Pos);
+#else
+            char *folder = getenv ("TEMP");
+
+            if (NULL == folder)
+                folder = getenv ("TMP");
+            if (NULL == folder)
+                folder = getenv ("TMPDIR");
+
+            if (NULL == folder)
+                folder = "/tmp";
+
+            return stringUtf8ToWString(folder);
+#endif
+        }
+
+        static int GetFilesCount(const std::wstring& path, const bool& recursive)
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            std::wstring pathMask = path + L"\\*";
+            int filesCount = 0;
+
+            WIN32_FIND_DATAW findData;
+            HANDLE findResult = FindFirstFileW(pathMask.c_str(), &findData);
+
+            do {
+                if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                    if (!recursive)
+                        continue;
+                    if ((std::wstring) findData.cFileName == L".")
+                        continue;
+                    if ((std::wstring) findData.cFileName == L"..")
+                        continue;
+                    std::wstring innerPath = path + L'\\' + (std::wstring) findData.cFileName;
+                    filesCount += GetFilesCount(innerPath, recursive);
+                }
+                else
+                    ++filesCount;
+            } while (FindNextFileW(findResult, &findData));
+
+            FindClose(findResult);
+            return filesCount;
+#else
+            std::string path_utf8 = stringWstingToUtf8String(path.c_str());
+
+            std::vector<std::string> files;
+            listdir (path_utf8.c_str(), recursive, files);
+
+            return files.size()+1;
+#endif
+        }
+#if !defined(_WIN32) && !defined (_WIN64)
+        static bool PathIsDirectory(const std::wstring& pathName)
+        {
+            struct stat s;
+
+            std::string sPathNameUtf8 = stringWstingToUtf8String (pathName);
+            if (stat(sPathNameUtf8.c_str(), &s) == 0)
+            {
+                if (s.st_mode & S_IFDIR)return true;
+                else return false;
+            }
+
+            return false;
+        }
+#endif
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

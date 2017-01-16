@@ -51,16 +51,16 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-                CString sCameraNodeName = _T("a:camera");
-                CString sLightRigNodeName = _T("a:lightRig");
-                CString sBackdropNodeName = _T("a:backdrop");
+                std::wstring sCameraNodeName = _T("a:camera");
+                std::wstring sLightRigNodeName = _T("a:lightRig");
+                std::wstring sBackdropNodeName = _T("a:backdrop");
                 camera		= node.ReadNode(sCameraNodeName);
                 lightRig	= node.ReadNode(sLightRigNodeName);
                 backdrop	= node.ReadNode(sBackdropNodeName);
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(camera);

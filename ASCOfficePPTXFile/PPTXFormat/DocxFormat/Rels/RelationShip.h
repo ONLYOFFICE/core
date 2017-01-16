@@ -46,14 +46,14 @@ namespace PPTX
 		class RelationShip : public WritingElement
 		{
 		public:
-			RelationShip(const PPTX::RId& rId, const CString& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
+			RelationShip(const PPTX::RId& rId, const std::wstring& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
 			{
 				boost::algorithm::replace_all(m_target.m_strFilename, L" ", L"_");
 			}
 			RelationShip(const PPTX::RId& rId, const smart_ptr<External> external): m_rId(rId), m_target(external->Uri()), 
 				m_type(external->type().RelationType())
 			{
-				m_mode = new CString(_T("External"));
+				m_mode = new std::wstring(_T("External"));
 			}
 			virtual ~RelationShip()
 			{
@@ -76,7 +76,7 @@ namespace PPTX
 				m_type		= node.GetAttribute(_T("Type"));
 				m_mode		= node.GetAttribute(_T("TargetMode"), _T("Internal"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("Id"), m_rId.ToString());
@@ -94,7 +94,7 @@ namespace PPTX
 			}
 
 		public:
-			const CString type() const
+			const std::wstring type() const
 			{
 				return m_type;
 			}
@@ -120,7 +120,7 @@ namespace PPTX
 		private:
 			RId						m_rId;
 			OOX::CPath					m_target;
-			CString					m_type;
+			std::wstring					m_type;
 			nullable_string			m_mode;
 		};
 	} // namespace Rels

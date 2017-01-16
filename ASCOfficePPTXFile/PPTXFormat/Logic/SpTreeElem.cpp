@@ -43,15 +43,16 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString GetHexColor(const DWORD& ARGB)
+		std::wstring GetHexColor(const DWORD& ARGB)
 		{
 			BYTE r = (BYTE)((ARGB >> 16) & 0xFF);
 			BYTE g = (BYTE)((ARGB >> 8) & 0xFF);
 			BYTE b = (BYTE)((ARGB & 0xFF));
 
-			CString sC = _T("");
-			sC.Format(_T("#%02X%02X%02X"), r, g, b);
-			return sC;
+            std::wstringstream sstream;
+            sstream << boost::wformat( L"%02X%02X%02X" ) % r % g % b;
+
+            return L"#" + sstream.str();
 		}
 
         void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
@@ -85,7 +86,7 @@ namespace PPTX
 
 				if (oBlip.blip.is_init() && oBlip.blip->embed.is_init())
 				{
-					CString fopacity = _T("");
+					std::wstring fopacity = _T("");
 					size_t eff_count = oBlip.blip->Effects.size();
 					for (size_t eff = 0; eff < eff_count; ++eff)
 					{
@@ -110,7 +111,7 @@ namespace PPTX
 						}
 					}
 
-					CString strId = oBlip.blip->embed->ToString();
+					std::wstring strId = oBlip.blip->embed->ToString();
 
 					if(bOle)
 					{
@@ -174,7 +175,7 @@ namespace PPTX
 			BYTE alpha = (BYTE)((ARGB >> 24) & 0xFF);
 			if (alpha < 255)
 			{
-                CString strA =  = std::to_string( alpha);
+                std::wstring strA =  = std::to_string( alpha);
 				strAttr += _T(" opacity=\"") + strA + _T("\"");
 			}
 			*/
@@ -208,8 +209,7 @@ namespace PPTX
 			if (line.w.is_init())
 			{
 				double dW = 72.0 * (*line.w) / (25.4 * 36000);
-				CString s = _T(""); 
-				s.Format(_T(" strokeweight=\"%.2lfpt\""), dW);
+                std::wstring s = L" strokeweight=\"" + XmlUtils::DoubleToString(dW, L"%.2lf") + L"pt\"";
 				strAttr += s;
 			}
 		}
@@ -239,7 +239,7 @@ namespace PPTX
 
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("sp") || name == _T("wsp"))
 				m_elem.reset(new Logic::Shape(node));
@@ -259,7 +259,7 @@ namespace PPTX
 				{
 					XmlUtils::CXmlNode oNodeFall;
 					XmlUtils::CXmlNodes oNodesC;
-					CString sRequires;
+					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
 					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 					{
@@ -341,7 +341,7 @@ namespace PPTX
 			}
 		}
 
-		CString SpTreeElem::toXML() const
+		std::wstring SpTreeElem::toXML() const
 		{
 			if (m_elem.IsInit())
 				return m_elem->toXML();

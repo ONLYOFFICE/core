@@ -80,13 +80,13 @@ namespace PPTX
 			void SetMajorLatin(const TextFont& mjltFont){MajorLatin = mjltFont;};
 			void SetMinorLatin(const TextFont& mnltFont){MinorLatin = mnltFont;};
 
-			CString GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
+			std::wstring GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
 
-			CString GetParagraphAlgn		(int level, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring GetParagraphAlgn		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			int	GetParagraphLeftMargin		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetParagraphIndent			(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetParagraphDefTabSz		(int level, const nullable<TextParagraphPr>& pParagraph)const;
-			CString GetParagraphFontAlgn	(int level, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring GetParagraphFontAlgn	(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			bool GetParagraphLatinLnBrk		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			bool GetParagraphRtl			(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetParagraphLnSpc			(int level, const nullable<TextParagraphPr>& pParagraph)const;
@@ -97,15 +97,15 @@ namespace PPTX
 
 			bool GetRunBold					(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			bool GetRunItalic				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			CString GetRunUnderline			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			CString GetRunStrike			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			CString GetRunCap				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring GetRunUnderline			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring GetRunStrike			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring GetRunCap				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetRunBaseline				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetRunSize					(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			int GetRunSize					(int level)const;
 
-			CString	GetRunFont				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph, LONG& lFontIndex)const;
-			CString GetRunPanose			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+			std::wstring	GetRunFont				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph, LONG& lFontIndex)const;
+			std::wstring GetRunPanose			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			BYTE GetRunCharset				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			BYTE GetRunPitchFamily			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 

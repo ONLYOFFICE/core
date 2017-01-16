@@ -68,7 +68,7 @@ namespace PPTX
 				SldAll = node.ReadNodeNoNS(_T("sldAll"));
 				SldRg = node.ReadNodeNoNS(_T("sldRg"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("loop"), loop);

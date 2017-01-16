@@ -53,7 +53,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"script", script);
 				node.ReadAttributeBase(L"typeface", typeface);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("script"), script);
@@ -115,11 +115,11 @@ namespace PPTX
 			}
 
 		public:
-			CString script;
-			CString typeface;
+			std::wstring script;
+			std::wstring typeface;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

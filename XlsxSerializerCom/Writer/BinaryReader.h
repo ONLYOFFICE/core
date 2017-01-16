@@ -35,9 +35,9 @@
 #include "../../Common/Base64.h"
 #include "../../Common/ATLDefine.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Sparkline.h"
 #include "../../DesktopEditor/common/Path.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include "../Common/BinReaderWriterDefines.h"
 #include "../Common/Common.h"
@@ -1670,14 +1670,15 @@ namespace BinXlsxRW {
 					BYTE* pSourceBuffer = m_oBufferedStream.GetPointer(length);
 					m_oBufferedStream.Seek(nStartPos);
 
-					CStringA sSignature(_T("XLST"));
-					int nSignatureSize = sSignature.GetLength();
-					int nDataLengthSize = sizeof(long);
-					int nJunkSize = 2;
-					int nWriteBufferLength = nSignatureSize + nDataLengthSize + length + nJunkSize;
-					BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
-					memcpy(pWriteBuffer, sSignature.GetBuffer(), nSignatureSize);
-					sSignature.ReleaseBuffer();
+                    std::string sSignature("XLST");
+                    int nSignatureSize      = sSignature.length();
+                    int nDataLengthSize     = sizeof(long);
+                    int nJunkSize           = 2;
+                    int nWriteBufferLength  = nSignatureSize + nDataLengthSize + length + nJunkSize;
+
+                    BYTE* pWriteBuffer = new BYTE[nWriteBufferLength];
+                    memcpy(pWriteBuffer, sSignature.c_str(), nSignatureSize);
+
 					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
 					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
 					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
@@ -1685,22 +1686,22 @@ namespace BinXlsxRW {
 
 					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
                     BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
-					CString sGfxdata;
+                    std::wstring sGfxdata;
 //					if(true == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
                     if(true == Base64_1::Base64Encode(pWriteBuffer, nWriteBufferLength, pbBase64Buffer, &nBase64BufferLen))
                     {
 						std::wstring strGfxdata = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen);
-						sGfxdata = CString(strGfxdata.c_str());
+                        sGfxdata = std::wstring(strGfxdata.c_str());
 						//важно иначе при редактировании и сохранении в Excel перетирается
                         sGfxdata += L"\r\n";
 					}
 					RELEASEARRAYOBJECTS(pbBase64Buffer);
 					RELEASEARRAYOBJECTS(pWriteBuffer);
 
-					if(!sGfxdata.IsEmpty())
+                    if(!sGfxdata.empty())
 					{
 						pNewComment->m_sGfxdata.Init();
-						pNewComment->m_sGfxdata->Append(sGfxdata);
+                        pNewComment->m_sGfxdata->append(sGfxdata);
 					}
 				}
 				res = Read1(length, &BinaryCommentReader::ReadCommentDatas, this, pNewComment);
@@ -1836,8 +1837,8 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CDrawing* m_pCurDrawing;
 		OOX::CVmlDrawing* m_pCurVmlDrawing;
 
-		const CString& m_sDestinationDir;
-		const CString& m_sMediaDir;
+        const std::wstring& m_sDestinationDir;
+        const std::wstring& m_sMediaDir;
 		SaveParams& m_oSaveParams;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		
@@ -1845,7 +1846,7 @@ namespace BinXlsxRW {
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-			std::map<long, ImageObject*>& mapMedia, const CString& sDestinationDir, const CString& sMediaDir, SaveParams& oSaveParams,
+            std::map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
 			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
 			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(sMediaDir), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
 		{
@@ -2061,8 +2062,8 @@ namespace BinXlsxRW {
 
                 res = Read1(length, &BinaryWorksheetsTableReader::ReadSparklineGroups, this, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
 
-                pOfficeArtExtension->m_oUri.Init();
-                pOfficeArtExtension->m_oUri->Append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
+                pOfficeArtExtension->m_sUri.Init();
+                pOfficeArtExtension->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
                 pOfficeArtExtension->m_sAdditionalNamespace = _T(" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
                 m_pCurWorksheet->m_oExtLst.Init();
                 m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
@@ -2544,7 +2545,7 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerHyperlinkTypes::Hyperlink == type)
 			{
-				CString sHyperlink(m_oBufferedStream.GetString3(length));
+                std::wstring sHyperlink(m_oBufferedStream.GetString3(length));
 				const OOX::RId& rId = m_pCurWorksheet->AddHyperlink(sHyperlink);
 				pHyperlink->m_oRid.Init();
 				pHyperlink->m_oRid->SetValue(rId.get());
@@ -2576,12 +2577,13 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadDrawings(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CDrawing* pDrawing = static_cast<OOX::Spreadsheet::CDrawing*>(poResult);
 			int res = c_oSerConstants::ReadOk;
-			if(c_oSerWorksheetsTypes::Drawing == type)
+
+            if(c_oSerWorksheetsTypes::Drawing == type)
 			{
 				OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType<>());
 				CellAnchorTransport oTransport(pCellAnchor);
@@ -2596,9 +2598,10 @@ namespace BinXlsxRW {
                     }
 
 					long nCurPos = oTransport.m_nPos;
-					CString* bstrXml = NULL;
-					HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(nCurPos, oTransport.m_nLength, CString(), XMLWRITER_DOC_TYPE_XLSX, &bstrXml);
-					//m_oBufferedStream.Seek(nCurPos + oTransport.m_nLength);
+                    std::wstring sVmlXml;
+                    HRESULT hRes = m_pOfficeDrawingConverter->SaveObjectEx(nCurPos, oTransport.m_nLength, std::wstring(), XMLWRITER_DOC_TYPE_XLSX, sVmlXml);
+
+                    //m_oBufferedStream.Seek(nCurPos + oTransport.m_nLength);
 					if(NULL != m_pCurDrawing)
 					{
 
@@ -2608,7 +2611,7 @@ namespace BinXlsxRW {
                         sOleXlsx = m_pOfficeDrawingConverter->GetOleXlsx();
 						sOleDrawing = m_pOfficeDrawingConverter->GetOleDrawing();
 					}
-					if(S_OK == hRes && NULL != bstrXml)
+                    if(S_OK == hRes && !sVmlXml.empty())
 					{
 						if(!sOleXlsx.empty() &&  pCellAnchor->m_oFrom.IsInit() && pCellAnchor->m_oTo.IsInit())
 						{
@@ -2619,7 +2622,7 @@ namespace BinXlsxRW {
 							if(pOleObject->m_oShapeId.IsInit() && pOleObject->m_oFilepathBin.IsInit() && pOleObject->m_oFilepathImg.IsInit() && pOleObject->m_oRidImg.IsInit())
 							{
 								//generate ClientData
-								CString sAnchor;
+                                std::wstring sAnchor;
 								sAnchor += pCellAnchor->m_oFrom->m_oCol->ToString();
 								sAnchor += L",";
 								sAnchor += std::to_wstring(pCellAnchor->m_oFrom->m_oColOff->ToPx()).c_str();
@@ -2640,12 +2643,13 @@ namespace BinXlsxRW {
 								oClientData.m_oObjectType->SetValue(SimpleTypes::Vml::vmlclientdataobjecttypePict);
 								oClientData.m_oSizeWithCells.Init();
 								oClientData.m_oAnchor.Init();
-								oClientData.m_oAnchor->Append(sAnchor);
+                                oClientData.m_oAnchor->append(sAnchor);
 
 								//add VmlDrawing
-								int nIndex = bstrXml->ReverseFind('<');
-								bstrXml->Insert(nIndex, oClientData.toXML());
-								m_pCurVmlDrawing->m_aXml.push_back(*bstrXml);
+                                int nIndex = sVmlXml.rfind('<');
+                                std::wstring strXml = oClientData.toXML();
+                                sVmlXml.insert(sVmlXml.begin() + nIndex, strXml.begin(), strXml.end());
+                                m_pCurVmlDrawing->m_aXml.push_back(sVmlXml);
 
 								//add image rels to VmlDrawing
 								NSCommon::smart_ptr<OOX::File> pImageFileVml(new OOX::Spreadsheet::Image());
@@ -2716,12 +2720,11 @@ namespace BinXlsxRW {
 						else if(sOleXlsx.empty())//если sOleXlsx не пустой, то в bstrXml старый shape
 						{
 							pCellAnchor->m_oXml.Init();
-							pCellAnchor->m_oXml->append(*bstrXml);
+                            pCellAnchor->m_oXml->append(sVmlXml);
 							pCellAnchor->m_oXml->append(_T("<xdr:clientData/>"));
 							pDrawing->m_arrItems.push_back(pCellAnchor);
 						}
 					}
-					RELEASEOBJECT(bstrXml);
 				}
 				else
 				{
@@ -3467,7 +3470,7 @@ namespace BinXlsxRW {
 	public: BinaryFileReader()
 			{
 			}
-			int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
+            int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
 			{
 				bool bResultOk = false;
 				NSFile::CFileBinary oFile;
@@ -3481,12 +3484,14 @@ namespace BinXlsxRW {
 
 					//проверяем формат
 					bool bValidFormat = false;
-					CString sSignature(g_sFormatSignature);
-					int nSigLength = sSignature.GetLength();
+                    std::wstring sSignature(g_sFormatSignature);
+                    int nSigLength = sSignature.length();
 					if(nBase64DataSize > nSigLength)
 					{
-						CStringA sCurSig((char*)pBase64Data, nSigLength);
-						if((CStringA)sSignature == sCurSig)
+                        std::string sCurSig((char*)pBase64Data, nSigLength);
+                        std::wstring wsCurSig(sCurSig.begin(), sCurSig.end());
+
+                        if(sSignature == wsCurSig)
 						{
 							bValidFormat = true;
 						}
@@ -3496,8 +3501,8 @@ namespace BinXlsxRW {
 						//Читаем из файла версию и длину base64
 						int nIndex = nSigLength;
 						int nType = 0;
-						CStringA version = "";
-						CStringA dst_len = "";
+                        std::string version = "";
+                        std::string dst_len = "";
 						while (true)
 						{
 							nIndex++;
@@ -3517,29 +3522,31 @@ namespace BinXlsxRW {
 								}
 							}
 							if(0 == nType)
-								version.AppendChar(_c);
+                                version += _c;
 							else
-								dst_len.AppendChar(_c);
+                                dst_len += _c;
 						}
-						int nDataSize = atoi(dst_len);
+                        int nDataSize = atoi(dst_len.c_str());
 						BYTE* pData = new BYTE[nDataSize];
+
                         if(false != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
 							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
 							oBufferedStream.Init(pData, 0, nDataSize);
 
 							int nVersion = g_nFormatVersion;
-							if(version.GetLength() > 0)
+                            if(version.length() > 0)
 							{
-								version = version.Right(version.GetLength() - 1);
-								int nTempVersion = atoi(version);
+                                version = version.substr(1);
+
+                                int nTempVersion = atoi(version.c_str());
 								if(0 != nTempVersion)
 								{
 									g_nCurFormatVersion = nVersion = nTempVersion;
 								}
 							}
                     // File Type
-							CString sDstPathCSV = sDstPath;
+                            std::wstring sDstPathCSV = sDstPath;
 							BYTE fileType;
 							UINT nCodePage;
 							WCHAR wcDelimiter;
@@ -3558,7 +3565,7 @@ namespace BinXlsxRW {
 							
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
 
-                            CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
+                            std::wstring sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 
                             if(NULL != pOfficeDrawingConverter)
 							{
@@ -3582,7 +3589,7 @@ namespace BinXlsxRW {
 				}
 				return S_OK;
 			}
-			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const CString& sFileInDir, const CString& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+            int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			{
 				long res = c_oSerConstants::ReadOk;
 				//mtLen
@@ -3614,7 +3621,7 @@ namespace BinXlsxRW {
 					}
 				}
                 OOX::CPath pathMedia = sOutDir + FILE_SEPARATOR_STR + _T("xl")   + FILE_SEPARATOR_STR + _T("media");
-                CString sMediaDir = pathMedia.GetPath();
+                std::wstring sMediaDir = pathMedia.GetPath();
 
                 std::map<long, ImageObject*> mapMedia;
 				if(-1 != nOtherOffBits)
@@ -3675,5 +3682,5 @@ namespace BinXlsxRW {
 
 			}
 	};
-};
+}
 #endif	// #ifndef BINARY_READER

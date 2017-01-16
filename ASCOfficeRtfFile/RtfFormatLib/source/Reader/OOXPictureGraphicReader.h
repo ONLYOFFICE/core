@@ -51,11 +51,11 @@ public:
 		m_ooxGraphic = ooxGraphic;
 	}
 	bool Parse( ReaderParameter oParam , RtfShape& oOutput);
-	static bool WriteDataToPicture( CString sPath, RtfPicture& oOutput, CString sTempPath )
+	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& oOutput, std::wstring sTempPath )
 	{
 		OOX::CPath ooxPath = sPath;	//для target 
 
-		if (sTempPath.GetLength() > 0)
+		if (sTempPath.length() > 0)
 			ooxPath = sTempPath;
 
 		oOutput.m_dScaleX = 100;
@@ -74,7 +74,7 @@ public:
 			oOutput.m_nWidthGoal = image.get_Width(); 
 			oOutput.m_nHeightGoal = image.get_Height();
 		
-			std::wstring sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
+            std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 			
 			if (image.SaveFile(sTargetFile, 4 /*_CXIMAGE_FORMAT_PNG*/) )
 			{
@@ -92,7 +92,7 @@ public:
 				CFile file_inp; //mpa
 				CFile file_out;//wmf
 
-				CString sTargetFile = FileSystem::Directory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
+                std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 
 				int res = file_inp.OpenFile(sPath);
 				if (res != S_OK) return false;

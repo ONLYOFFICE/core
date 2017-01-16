@@ -55,7 +55,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"), name);
@@ -136,7 +136,7 @@ namespace PPTX
 			}
 
 		public:
-			CString					name;
+			std::wstring					name;
 			Logic::FontCollection	majorFont;
 			Logic::FontCollection	minorFont;
 		protected:

@@ -41,8 +41,8 @@ namespace PPTX
 	{
 	public:
 		FileType(const OOX::CPath& defaultDirectory, const OOX::CPath& defaultFileName,
-							const CString& overrideType, 
-							const CString& relationType) : m_defaultDirectory(defaultDirectory),
+							const std::wstring& overrideType, 
+							const std::wstring& relationType) : m_defaultDirectory(defaultDirectory),
 			m_defaultFileName(defaultFileName),
 			m_overrideType(overrideType),
 			m_relationType(relationType)
@@ -50,8 +50,8 @@ namespace PPTX
 		}
 
 		FileType(const WCHAR* defaultDirectory, const WCHAR* defaultFileName,
-							const CString& overrideType, 
-							const CString& relationType) : m_defaultDirectory(defaultDirectory, false),
+							const std::wstring& overrideType, 
+							const std::wstring& relationType) : m_defaultDirectory(defaultDirectory, false),
 			m_defaultFileName(defaultFileName, false),
 			m_overrideType(overrideType),
 			m_relationType(relationType)
@@ -69,11 +69,11 @@ namespace PPTX
 		}
 
 	public:
-		inline const CString OverrideType() const
+		inline const std::wstring OverrideType() const
 		{
 			return m_overrideType;
 		}
-		inline const CString RelationType() const
+		inline const std::wstring RelationType() const
 		{
 			return m_relationType;
 		}
@@ -87,26 +87,26 @@ namespace PPTX
 		}
 
 	private:
-		CString		m_overrideType;
-		CString		m_relationType;
+		std::wstring		m_overrideType;
+		std::wstring		m_relationType;
 	 OOX::CPath		m_defaultDirectory;
 	 OOX::CPath		m_defaultFileName;
 	};
 
-	static const bool operator ==(const CString& type, const FileType& file)
+	static const bool operator ==(const std::wstring& type, const FileType& file)
 	{
 		//RelationType
 		//http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument
 		//http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument
 		//is valid and equal so compare tail
-		int nIndexType = type.ReverseFind('/');
-		CString relationType = file.RelationType();
-		int nIndexFile = relationType.ReverseFind('/');
-		CString tempType = (-1 == nIndexType) ? type : type.Right(type.GetLength() - nIndexType);
-		CString tempFile = (-1 == nIndexFile) ? relationType : relationType.Right(relationType.GetLength() - nIndexFile);
+		int nIndexType = type.rfind('/');
+		std::wstring relationType = file.RelationType();
+		int nIndexFile = relationType.rfind('/');
+		std::wstring tempType = (-1 == nIndexType) ? type : type.substr(nIndexType); // +1 ?????
+		std::wstring tempFile = (-1 == nIndexFile) ? relationType : relationType.substr(nIndexFile); //+1 ?????
 		return (tempType == tempFile);
 	}
-	static const bool operator ==(const FileType& file, const CString& type)
+	static const bool operator ==(const FileType& file, const std::wstring& type)
 	{
 		return type == file;
 	}

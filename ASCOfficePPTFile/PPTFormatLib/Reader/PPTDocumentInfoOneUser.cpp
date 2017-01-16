@@ -111,7 +111,7 @@ void CPPTUserInfo::Clear()
 	m_arOffsetPictures.clear();
 }
 
-bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem)
+bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, std::wstring strFolderMem)
 {
 	m_oUser.FromAtom(pUser);
 

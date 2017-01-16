@@ -340,13 +340,13 @@ namespace Docx2Txt
 		{
 			if(pParagraph->m_oParagraphProperty)
 			{
-				CString styleName;
+                std::wstring styleName;
 				if (pParagraph->m_oParagraphProperty->m_oPStyle.IsInit())
 					pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.IsInit() ? pParagraph->m_oParagraphProperty->m_oPStyle->m_sVal.get() : _T("");
 			
                 if(styleName != _T("") && pStyles)
 				{
-					std::map<CString, int>::iterator pPair = pStyles->m_arrStyleNamesMap.find(styleName);
+                    std::map<std::wstring, int>::iterator pPair = pStyles->m_arrStyleNamesMap.find(styleName);
 
 					if (pPair != pStyles->m_arrStyleNamesMap.end())
 					{

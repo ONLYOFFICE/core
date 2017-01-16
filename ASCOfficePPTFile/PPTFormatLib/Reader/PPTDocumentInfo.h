@@ -38,7 +38,7 @@ class CPPTDocumentInfo
 public:
 	CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-	CString							m_strFileDirectory;
+    std::wstring					m_strFileDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
 
 public:
@@ -66,7 +66,7 @@ public:
 		} 
 	}
 
-	void ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, CStringW strFolderMem)
+    void ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, std::wstring strFolderMem)
 	{
 		m_oCurrentUser.FromAtom(pCurrentUser);
 

@@ -67,7 +67,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("delay"), delay);
@@ -95,7 +95,7 @@ namespace PPTX
 			}
 
 		public:
-			CString									name;
+			std::wstring									name;
 //Choice
 			nullable_limit<Limit::TLRuntimeTrigger> rtn;
 			nullable<TgtEl>							tgtEl;

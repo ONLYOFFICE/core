@@ -66,7 +66,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"contentType", contentType);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:link"), link.ToString());
@@ -75,7 +75,7 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("a:") + name, oAttr);
 			}
 		public:
-			CString				name;
+			std::wstring				name;
 			PPTX::RId			link;
 			nullable_string		contentType;
 		protected:

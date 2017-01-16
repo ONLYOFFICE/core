@@ -96,7 +96,7 @@ public:
     std::vector<int>								m_arOffsetPictures;
     bool											m_bIsSetupEmpty;
 
-	CString											m_strFileDirectory;
+    std::wstring									m_strFileDirectory;
 
 	// вся инфа о ex - файлах
 	CExMedia										m_oExMedia;
@@ -113,7 +113,7 @@ public:
 
 	void Clear();
 
-    bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem);
+    bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, std::wstring strFolderMem);
 	void FromDocument();
 
 	void NormalizeCoords(long lWidth, long lHeight);

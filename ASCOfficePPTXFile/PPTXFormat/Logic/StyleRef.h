@@ -55,7 +55,7 @@ namespace PPTX
 				Color.GetColorFrom(node);
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("idx"), idx);
@@ -127,7 +127,7 @@ namespace PPTX
 			nullable_int	idx;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

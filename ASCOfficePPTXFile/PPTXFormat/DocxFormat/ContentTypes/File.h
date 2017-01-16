@@ -88,7 +88,7 @@ namespace PPTX
 			}
 
 		public:
-			void registration(const CString& type, const OOX::CPath& directory, const OOX::CPath& filename)
+			void registration(const std::wstring& type, const OOX::CPath& directory, const OOX::CPath& filename)
 			{
 				Override.add(type, directory / filename.m_strFilename);
 				Default.add(directory / filename.m_strFilename);

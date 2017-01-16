@@ -73,7 +73,7 @@ namespace OOX
 
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -126,7 +126,7 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -186,7 +186,7 @@ namespace OOX
 						m_oLineSpacingPoints = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

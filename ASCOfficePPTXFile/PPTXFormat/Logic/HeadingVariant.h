@@ -61,7 +61,7 @@ namespace PPTX
 					m_strContent =	 node.ReadNodeNoNS(_T("lpstr")).GetTextExt();
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (m_type.IsInit() && (m_type->get() == _T("i4")))
 				{

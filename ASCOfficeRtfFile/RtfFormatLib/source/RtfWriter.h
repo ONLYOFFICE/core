@@ -41,9 +41,9 @@ class RtfWriter
 {
 public:
 	
-	CString m_sTempFolder;
-	std::vector<CString> m_aTempFiles;
-	std::vector<CString> m_aTempFilesSectPr;
+    std::wstring                m_sTempFolder;
+    std::vector<std::wstring>   m_aTempFiles;
+    std::vector<std::wstring>   m_aTempFilesSectPr;
 
 	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
 	{
@@ -69,13 +69,13 @@ public:
 	bool SaveByItemEnd();
 private: 
 	RtfDocument& m_oDocument;
-	CString m_sFilename;
+    std::wstring m_sFilename;
 
 	bool m_bFirst;
 	int GetCount();
 	NFileWriter::CBufferedFileWriter* m_oCurTempFileWriter;
 	NFileWriter::CBufferedFileWriter* m_oCurTempFileSectWriter;
 
-	CString CreateRtfStart();
-	CString CreateRtfEnd( );
+    std::wstring CreateRtfStart();
+    std::wstring CreateRtfEnd( );
 };

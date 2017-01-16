@@ -67,9 +67,9 @@ namespace OOX
 			}
 		protected:
 
-			std::map<CString, smart_ptr<OOX::File>> m_mContainer;
+            std::map<std::wstring, smart_ptr<OOX::File>> m_mContainer;
 			size_t                                m_lMaxRid;
-			static std::map<CString, size_t> m_mapEnumeratedGlobal;
+            static std::map<std::wstring, size_t> m_mapEnumeratedGlobal;
 
 		protected:
 
@@ -95,7 +95,7 @@ namespace OOX
 			const bool IsExist(const FileType& oType) const;
 			const bool IsExist(const OOX::RId& rId) const;
 			const bool IsExternal(const OOX::RId& rId) const;
-			CString IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink);
+            std::wstring IsExistHyperlink(smart_ptr<OOX::HyperLink>& pHyperLink);
 
 			smart_ptr<OOX::File> Get(const FileType& oType);
 			const RId Add(smart_ptr<OOX::File>& pFile);
@@ -104,19 +104,19 @@ namespace OOX
 			template<typename T> 
 			T&                   Find();
 			smart_ptr<OOX::File> Find(const FileType& type) const;
-			void FindAllByType(const FileType& oType, std::map<CString, smart_ptr<OOX::File>>& aOutput) const;
+            void FindAllByType(const FileType& oType, std::map<std::wstring, smart_ptr<OOX::File>>& aOutput) const;
 			smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 
 			smart_ptr<OOX::File> operator [](const OOX::RId rId);
 			smart_ptr<OOX::File> operator [](const FileType& oType);
-			void SetGlobalNumberByType(const CString& sOverrideType, int val);
-			int GetGlobalNumberByType(const CString& sOverrideType);
+            void SetGlobalNumberByType(const std::wstring& sOverrideType, int val);
+            int GetGlobalNumberByType(const std::wstring& sOverrideType);
 		protected:
 
 			static UnknowTypeFile Unknown;
 
 		private:
-			std::map<CString, size_t> m_mapAddNamePair;
+            std::map<std::wstring, size_t> m_mapAddNamePair;
 			OOX::CRels* m_pCurRels;
 			const RId GetMaxRId();
 		};

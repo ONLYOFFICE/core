@@ -52,7 +52,7 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void GetShapeProperties(ShapeProperties& props)const;
 

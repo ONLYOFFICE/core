@@ -63,7 +63,7 @@ namespace PPTX
 			//FileContainer::read(filename, map);
 		
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			cSld = oNode.ReadNode(_T("p:cSld"));
 			cSld.SetParentFilePointer(this);

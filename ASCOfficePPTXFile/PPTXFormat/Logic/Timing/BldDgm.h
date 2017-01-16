@@ -58,7 +58,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("spid"), spid);
@@ -70,7 +70,7 @@ namespace PPTX
 			}
 
 		public:
-			CString								spid;
+			std::wstring								spid;
 			int									grpId;
 			nullable_bool						uiExpand;
 			nullable_limit<Limit::DgmBuildType> bld;

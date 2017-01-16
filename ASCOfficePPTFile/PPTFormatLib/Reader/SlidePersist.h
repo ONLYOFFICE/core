@@ -48,6 +48,6 @@ struct SSlidePersist
 
 	SSlidePersist();
 	SSlidePersist(const SSlidePersist& oSrc);
-	CString ToString();
+    std::wstring ToString();
 	SSlidePersist& operator =(const SSlidePersist& oSrc);
 }; 

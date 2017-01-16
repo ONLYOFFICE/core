@@ -35,9 +35,8 @@
 
 #include "../progressCallback.h"
 
-#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-
 #include <vector>
+#include <string>
 
 namespace cpdoccore
 {
@@ -341,7 +340,7 @@ public:
 //.......................................................................................................................
 		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
-		virtual CString										 find_link_by_id(CString sId, int t) = 0;
+        virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		
 		OOX::Spreadsheet::IFileContainer					*oox_current_child_document_spreadsheet;
 		OOX::IFileContainer									*oox_current_child_document;
@@ -361,18 +360,18 @@ public:
 		void convert(OOX::Drawing::CPresetGeometry2D			*oox_prst_geom);
 		int	 convert(OOX::Drawing::CPresetTextShape				*oox_text_preset);
 
-		void convert(OOX::Drawing::CLineProperties				*oox_line_prop,		CString *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CLineProperties				*oox_line_prop,		std::wstring *change_sheme_color = NULL);
 		
-		void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill,	CString *change_sheme_color = NULL);
-		void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill	,	CString *change_sheme_color = NULL);
-		void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	CString *change_sheme_color = NULL);
-		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill	,	CString *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CBlipFillProperties			*oox_bitmap_fill,	std::wstring *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CGradientFillProperties		*oox_grad_fill	,	std::wstring *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill	,	std::wstring *change_sheme_color = NULL);
 
-		void convert(OOX::Drawing::CEffectList					*oox_effect_list,	CString *change_sheme_color = NULL);
-		void convert(OOX::Drawing::COuterShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
-		void convert(OOX::Drawing::CInnerShadowEffect			*oox_shadow,		CString *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CEffectList					*oox_effect_list,	std::wstring *change_sheme_color = NULL);
+        void convert(OOX::Drawing::COuterShadowEffect			*oox_shadow,		std::wstring *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CInnerShadowEffect			*oox_shadow,		std::wstring *change_sheme_color = NULL);
 
-		void convert(OOX::Drawing::CFontCollection				*style_font,		CString *change_sheme_color = NULL);
+        void convert(OOX::Drawing::CFontCollection				*style_font,		std::wstring *change_sheme_color = NULL);
 		void convert(OOX::Drawing::CFontReference				*style_font_ref);
 		void convert(OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
 		void convert(OOX::Drawing::CPath2D						*oox_geom_path);

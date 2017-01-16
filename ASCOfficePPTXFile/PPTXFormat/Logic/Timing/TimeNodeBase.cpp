@@ -72,7 +72,7 @@ namespace PPTX
 
 		void TimeNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if(name == _T("seq"))
 				m_node.reset(new Logic::Seq(node));
@@ -135,7 +135,7 @@ namespace PPTX
 			else m_node.reset();
 		}
 
-		CString TimeNodeBase::toXML() const
+		std::wstring TimeNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
 				return m_node->toXML();

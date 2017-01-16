@@ -41,8 +41,7 @@
 
 namespace XmlUtils
 {
-	typedef
-	enum XmlNodeType
+	typedef enum XmlNodeType
 	{
 		XmlNodeType_None = 0,
 		XmlNodeType_Element = 1,
@@ -75,15 +74,15 @@ namespace XmlUtils
 		CXmlLiteReader();
 		virtual ~CXmlLiteReader();
 		
-	public:
+        public:
 
-		void Clear();
+                void Clear();
 		bool IsValid();
 
-		bool FromFile(const wchar_t* sFilePath);
-		bool FromFile(const std::wstring& sFilePath);
-		bool FromString(const wchar_t* sXml);
-		bool FromString(const std::wstring& sXml);
+		bool FromFile	(const wchar_t* sFilePath);
+		bool FromFile	(const std::wstring& sFilePath);
+		bool FromString	(const wchar_t* sXml);
+		bool FromString	(const std::wstring& sXml);
 		bool FromStringA(const std::string& sXml);
 
 		bool Read(XmlNodeType &oNodeType);
@@ -92,26 +91,28 @@ namespace XmlUtils
 		bool ReadNextSiblingNode2(int nDepth);
 		bool ReadTillEnd(int nDepth = -2);
 		
-		std::wstring GetName();
-		std::string GetNameA();
-		int GetDepth();
-		bool IsEmptyNode();
+		std::wstring	GetName();
+                std::string	GetNameA();
+                int		GetDepth();
+                bool		IsEmptyNode();
 
-		std::wstring GetText();
-		std::string GetTextA();
+		std::wstring	GetText();
+                std::string	GetTextA();
 
-		std::wstring GetText2();
-		std::string GetText2A();
+		std::wstring	GetText2();
+                std::string	GetText2A();
 		
-		std::wstring GetOuterXml();
-		std::wstring GetInnerXml();
+		std::wstring	GetText3();
+
+		std::wstring	GetOuterXml();
+		std::wstring	GetInnerXml();
 
 		int GetAttributesCount();
 		bool MoveToFirstAttribute();
 		bool MoveToNextAttribute();
 		bool MoveToElement();
 
-		bool IsEmptyElement();
+                bool IsEmptyElement();
 	};
 
 	class IXmlDOMDocument
@@ -248,68 +249,275 @@ namespace XmlUtils
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
 
-	public:
-		std::wstring private_GetXml();
-		std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
-		std::wstring private_GetXmlFast();
-		std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
+        public:
+                std::wstring private_GetXml();
+                std::wstring private_GetXml(const std::wstring& strDefaultValue = L"");
+                std::wstring private_GetXmlFast();
+                std::wstring private_GetXmlFast(const std::wstring& strDefaultValue);
 
-	public:
-		template <typename T>
-		void LoadArray(const std::wstring& sName, std::vector<T>& arList)
-		{
-			CXmlNodes oNodes;
-			if (GetNodes(sName, oNodes))
-			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
-				{
-					CXmlNode oItem;
-					oNodes.GetAt(i, oItem);
+        public:
+                template <typename T>
+                void LoadArray(const std::wstring& sName, std::vector<T>& arList)
+                {
+                    CXmlNodes oNodes;
+                    if (GetNodes(sName, oNodes))
+                    {
+                        int nCount = oNodes.GetCount();
+                        for (int i = 0; i < nCount; ++i)
+                        {
+                            CXmlNode oItem;
+                            oNodes.GetAt(i, oItem);
 
-					arList.push_back(T());
-					arList[i].fromXML(oItem);
-				}
-			}
-		}
-		template <typename T>
-		void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList)
-		{
-			CXmlNode oNode;
-			if (GetNode(sName, oNode))
-				oNode.LoadArray(sSubName, arList);
-		}
-		template<typename T>
-		void ReadAttributeBase(const wchar_t* bsName, T& value)
-		{
-			std::wstring sAttr;
-			if (GetAttributeIfExist(std::wstring(bsName), sAttr))
-				value = sAttr;
-		}
-		template<typename T>
-		void ReadAllAttributes(T& strNames, T& strValues)
-		{
-			if (!IsValid())
-				return;
+                            arList.push_back(T());
+                            arList[i].fromXML(oItem);
+                        }
+                    }
+                }
+                template <typename T>
+                void LoadArray(const std::wstring& sName, const std::wstring& sSubName, std::vector<T>& arList)
+                {
+                    CXmlNode oNode;
+                    if (GetNode(sName, oNode))
+                        oNode.LoadArray(sSubName, arList);
+                }
+                template<typename T>
+                void ReadAttributeBase(const wchar_t* bsName, T& value)
+                {
+                    std::wstring sAttr;
+                    if (GetAttributeIfExist(bsName, sAttr))
+                        value = sAttr;
+                }
+                template<typename T>
+                void ReadAllAttributes(T& strNames, T& strValues)
+                {
+                    if (!IsValid())
+                        return;
 
-			std::map<std::string, std::string>::iterator p;
-			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
-			{
-				strNames.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (LONG)p->first.length()), true);
-				strValues.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (LONG)p->second.length()), true);
-			}
-		}
-		template <typename T>
-		void ReadNodeValueBase(const wchar_t* bsName, T& value)
-		{
-			value = ReadNodeTextBase(bsName);
-		}
+                    std::map<std::string, std::string>::iterator p;
+                    for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
+                    {
+                        strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), p->first.length()));
+                        strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), p->second.length()));
+                    }
+                }
+                template <typename T>
+                void ReadNodeValueBase(const wchar_t* bsName, T& value)
+                {
+                    value = ReadNodeTextBase(bsName);
+                }
 
 	private:
 		void SetBase(CXmlNodeBase* pBase);
 		std::wstring GetNamespace(const std::wstring& strNodeName);
 		std::wstring GetNameNoNS(const std::wstring& strNodeName);
 	};
+
+
+	class CXmlWriter
+	{
+		std::wstring m_str;
+	
+	public:
+
+		CXmlWriter()
+		{
+		}
+		
+		std::wstring GetXmlString()
+		{
+			return m_str;
+		}
+		void SetXmlString(const std::wstring& strValue)
+		{
+			m_str = strValue;
+		}
+		
+		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
+		{
+			return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
+//#if defined(_WIN32) || defined (_WIN64)
+//            // win32 unicode and multibyte strings
+//			FILE* pFile = _tfopen(strFilePath, (L"wt"));
+//#else
+//            // *nix build
+//            #ifdef _UNICODE
+//                std::string sFilePathUtf8 = stringWstingToUtf8String (strFilePath);
+//                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
+//            #else
+//                // path is already utf8
+//                std::string sFilePathUtf8 = strFilePath;
+//                FILE* pFile = fopen(sFilePathUtf8.c_str(), "wt");
+//            #endif
+//#endif
+//
+//			if (!pFile)
+//                                return false;
+//
+//			std::string str; str = m_str;
+//			if (bEncodingToUTF8)
+//#ifdef _UNICODE
+//				str = EncodingUnicodeToUTF8();
+//#else
+//				str = EncodingASCIIToUTF8();
+//#endif
+//
+//			fprintf(pFile, str);
+//
+//			fclose(pFile);
+//
+//			return true;
+		}
+//#ifdef _UNICODE
+//        std::string EncodingUnicodeToUTF8()
+//        {
+//            //#if defined(_WIN32) || defined (_WIN64)
+//            //    int nLength = m_str.GetLength();
+//
+//            //    // Encoding Unicode to UTF-8
+//            //    std::string saStr;
+//            //    WideCharToMultiByte(CP_UTF8, 0, m_str.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
+//            //    saStr.ReleaseBuffer();
+//            //    return saStr;
+//            //#else
+//
+//                std::string sStrTempUtf8 = stringWstingToUtf8String (m_str);
+//                std::string saStr = sStrTempUtf8;
+//                return saStr;
+//            //#endif
+//        }
+//#else
+//		std::wstring EncodingASCIIToUTF8()
+//        {
+//            int nLength = m_str.GetLength();
+//
+//			wchar_t* pWStr = new wchar_t[nLength + 1];
+//			if (!pWStr)
+//				return (L"");
+//
+//			// set end string
+//			pWStr[nLength] = 0;
+//
+//			// Encoding ASCII to Unicode
+//            MultiByteToWideChar(CP_ACP, 0, m_str, nLength, pWStr, nLength);
+//
+//            int nLengthW = (int) wcslen(pWStr);
+//
+//			// Encoding Unicode to UTF-8
+//			std::wstring cStr; 
+//            WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, cStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
+//			cStr.ReleaseBuffer();
+//    
+//		    delete[] pWStr;
+//
+//            return cStr;
+//        }
+//#endif
+
+
+		void WriteString(const std::wstring& strValue)
+		{
+			m_str += strValue;
+		}
+		void WriteInteger(int Value, int Base = 10)
+		{
+            wchar_t str[33];
+            memset(str, 0, sizeof(str));
+#if defined(_WIN32) || defined (_WIN64)
+            _itow(Value, str, Base);
+#else
+            itow(Value, str, Base);
+#endif
+
+			m_str += std::wstring(str);
+		}
+		void WriteDouble(double Value)
+		{
+            std::wstring str = std::to_wstring(Value);
+
+			m_str += str;
+		}
+		void WriteBoolean(bool Value)
+		{
+			if (Value)
+				m_str += (L"true");
+			else
+				m_str += (L"false");
+		}
+		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false)
+		{
+			m_str += (L"<") + strNodeName;
+
+			if (!bAttributed)
+				m_str += (L">");
+		}
+		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true)
+		{
+			if (bEmptyNode)
+			{
+				if (bEndNode)
+					m_str += (L" />");
+				else
+					m_str += (L">");
+			}
+			else
+				m_str += (L"</") + strNodeName + (L">");
+		}
+		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
+		{
+			if (strNodeValue.empty())
+				m_str += L"<" + strNodeName + L"/>";
+			else
+				m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
+		}
+		void WriteNode(const std::wstring& strNodeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
+		{
+			WriteNodeBegin(strNodeName);
+			WriteString(strTextBeforeValue);
+			WriteInteger(nValue, nBase);
+			WriteString(strTextAfterValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteNode(const std::wstring& strNodeName, double dValue)
+		{
+			WriteNodeBegin(strNodeName);
+			WriteDouble(dValue);
+			WriteNodeEnd(strNodeName);
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
+		{
+			m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""))
+		{
+			WriteString(L" " + strAttributeName + L"=");
+			WriteString(L"\"");
+			WriteString(strTextBeforeValue);
+			WriteInteger(nValue, nBase);
+			WriteString(strTextAfterValue);
+			WriteString(L"\"");
+		}
+		void WriteAttribute(const std::wstring& strAttributeName, double dValue)
+		{
+			WriteString(L" " + strAttributeName + L"=");
+			WriteString(L"\"");
+			WriteDouble(dValue);
+			WriteString(L"\"");
+		}
+	};
+	static inline std::wstring GetNameNoNS(const std::wstring & strNodeName)
+	{
+		int nFind = (int)strNodeName.find(L":");
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.substr(nFind + 1);
+	}
+	static inline std::wstring GetNamespace(std::wstring& strNodeName)
+	{
+		int nFind = strNodeName.find(L":");
+		if (-1 == nFind)
+			return L"";
+		return strNodeName.substr(0, nFind);
+	}
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

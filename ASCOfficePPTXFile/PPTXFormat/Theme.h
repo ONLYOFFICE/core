@@ -75,9 +75,9 @@ namespace PPTX
 			m_map = NULL;
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 			
-			CString strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
+			std::wstring strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
 			if (_T("themeOverride") == strNodeName)
 			{
 				themeElements = oNode;
@@ -295,42 +295,42 @@ namespace PPTX
 		}
 
 		//////
-		DWORD GetRGBAFromScheme(const CString& str)const
+		DWORD GetRGBAFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetRGBAFromScheme(str);
 		}
-		DWORD GetARGBFromScheme(const CString& str)const
+		DWORD GetARGBFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetARGBFromScheme(str);
 		}
-		DWORD GetBGRAFromScheme(const CString& str)const
+		DWORD GetBGRAFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetBGRAFromScheme(str);
 		}
-		DWORD GetABGRFromScheme(const CString& str)const
+		DWORD GetABGRFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetABGRFromScheme(str);
 		}
 
 		//////
-		DWORD GetRGBAFromMap(const CString& str)const
+		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			return GetRGBAFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetARGBFromMap(const CString& str)const
+		DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			return GetARGBFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetBGRAFromMap(const CString& str)const
+		DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			return GetBGRAFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetABGRFromMap(const CString& str)const
+		DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
 		}
 
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
+		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
 		{
             if(presentation.IsInit())
 			{
@@ -348,21 +348,21 @@ namespace PPTX
 			props.SetMajorLatin(themeElements.fontScheme.majorFont.latin);
 			props.SetMinorLatin(themeElements.fontScheme.minorFont.latin);
 		}
-		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::Image> p = image(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetOleFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::OleObject> p = oleObject(rid);
 			if (!p.is_init())

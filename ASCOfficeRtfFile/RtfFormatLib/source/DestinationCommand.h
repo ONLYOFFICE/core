@@ -74,35 +74,35 @@
 class RtfBorderCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter,RtfBorder& oOutput);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter,RtfBorder& oOutput);
 };
 class RtfShadingCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter, RtfShading& oOutput );
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfShading& oOutput );
 };
 class RtfShadingCellCommand
 {
 public: 
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfShading& oOutput);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter, RtfShading& oOutput);
 };
 
 class RtfShadingCharCommand
 {
 public: 
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfShading& oOutput );
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter, RtfShading& oOutput );
 };
 
 class RtfShadingRowCommand
 {
 public: 
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfShading& oOutput);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter, RtfShading& oOutput);
 };
 
 class RtfFrameCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfFrame& oOutput )
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter, RtfFrame& oOutput )
 	{
 		return true;
 	}
@@ -111,39 +111,39 @@ public:
 class TextReader: public RtfAbstractReader
 {
 private: 
-	CString&	m_sName;
+    std::wstring&	m_sName;
 	bool		m_bErease;
 public:
-	TextReader( CString& sName, bool bErease = true ):m_sName(sName),m_bErease(bErease)
+    TextReader( std::wstring& sName, bool bErease = true ):m_sName(sName),m_bErease(bErease)
 	{
 	}
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		if( true == m_bErease )
-			sText.Replace(L";", L"");
+            boost::algorithm::replace_all(sText, L";", L"");
 		m_sName += sText;
 	}
 };
 class RtfCharPropsCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter, RtfCharProperty * props, bool bLookOnBorder = true);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfCharProperty * props, bool bLookOnBorder = true);
 	//bool bLookOnBorder; Надо ли читать свойства border( актуально для ParagraphReader )
 };
 class RtfParagraphPropsCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter, RtfParagraphProperty * props);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfParagraphProperty * props);
 };
 class RtfTableCellPropsCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter, RtfCellProperty * props);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfCellProperty * props);
 };
 class RtfTableRowPropsCommand
 {
 public:
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter, RtfRowProperty * props);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter, RtfRowProperty * props);
 };
 //Reader выражения в скобках
 class RtfOldListReader : public RtfAbstractReader
@@ -154,7 +154,7 @@ public:
 	RtfOldListReader( RtfOldList& oTarget) : m_oTarget(oTarget)
 	{
 	}
-	bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sKey, bool bHasPar, int nPar );
+    bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar );
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
 		m_oTarget.m_oLevelText->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
@@ -162,18 +162,18 @@ public:
 };
 //class RtfColorSchemeReader: public RtfAbstractReader
 //{
-//private: CString sSchemeXml;
-//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+//private: std::wstring sSchemeXml;
+//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 //		{
 //			sSchemeXml += sText;
 //		}
 //		void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
 //		{
-//			CString sXml = RtfUtility::EncodeHex(sSchemeXml);
+//			std::wstring sXml = RtfUtility::EncodeHex(sSchemeXml);
 //			XmlUtils::CXmlLiteReader oXmlReader;
 //			oXmlReader.OpenFromXmlString(sXml);
 //			oXmlReader.ReadRootNode(L"a:clrMap");
-//			CString sValue;
+//			std::wstring sValue;
 //			sValue = oXmlReader.ReadNodeAttribute(L"bg1",L"");
 //			if( L"" != sValue )
 //				oDocument.m_oColorSchemeMapping.bg1 = sValue;
@@ -214,7 +214,7 @@ public:
 //};
 //class RtfThemeDataReader: public RtfAbstractReader
 //{
-//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText )
+//public: void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 //		{
 //			oDocument.m_sThemeData += sText;
 //		}
@@ -235,51 +235,51 @@ public:
 		m_oFont.SetDefaultOOX();
 	}
 
-    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
     {
-        if( L"fonttbl" == sCommand )
+        if( "fonttbl" == sCommand )
             ;
-        else if( L"flomajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_flomajor;
-		else if( L"fhimajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fhimajor;
-        else if( L"fdbmajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbmajor;
-		else if( L"fbimajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbimajor;
-        else if( L"flominor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_flominor;
-        else if( L"fhiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fhiminor;
-        else if( L"fdbminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
-        else if( L"fbiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
+        else if( "flomajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_flomajor;
+        else if( "fhimajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fhimajor;
+        else if( "fdbmajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbmajor;
+        else if( "fbimajor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbimajor;
+        else if( "flominor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_flominor;
+        else if( "fhiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fhiminor;
+        else if( "fdbminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
+        else if( "fbiminor" == sCommand )	m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
         
-		else if( L"fnil"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
-        else if( L"froman"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_froman;
-        else if( L"fswiss"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
-        else if( L"fmodern" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
-        else if( L"fscript" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
-        else if( L"fdecor"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
-        else if( L"ftech"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_ftech;
-        else if( L"fbidi"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
+        else if( "fnil"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fnil;
+        else if( "froman"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_froman;
+        else if( "fswiss"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
+        else if( "fmodern" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
+        else if( "fscript" == sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fscript;
+        else if( "fdecor"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
+        else if( "ftech"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_ftech;
+        else if( "fbidi"	== sCommand )	m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
 
-        else if( L"panose"	== sCommand )	m_eInternalState	= is_panose;
-        else if( L"falt"	== sCommand )	m_eInternalState	= is_altname;
+        else if( "panose"	== sCommand )	m_eInternalState	= is_panose;
+        else if( "falt"	== sCommand )	m_eInternalState	= is_altname;
 
-        else if( L"f" == sCommand )
+        else if( "f" == sCommand )
         {
             if( true == hasParameter )
                 m_oFont.m_nID = parameter;
         }
-        else if( L"fcharset" == sCommand )
+        else if( "fcharset" == sCommand )
         {
             if( true == hasParameter )
             {
                 m_oFont.m_nCharset = parameter;
             }
         }
-        else if( L"cpg" == sCommand )
+        else if( "cpg" == sCommand )
         {
             if( true == hasParameter )
             {
                 m_oFont.m_nCodePage = parameter;
             }
         }
-        else if( L"fprq" == sCommand )
+        else if( "fprq" == sCommand )
         {
             if( true == hasParameter )
                 m_oFont.m_nPitch = parameter;
@@ -313,45 +313,48 @@ public:
 		oDocument.m_oProperty.m_nAnsiCodePage = nKeepGlobalCodepage;
 	}
 
-	CString RemoveLastUnchar(CString str)
+    std::wstring RemoveLastUnchar(std::wstring str)
 	{
 		int i = 1;
 		while(true)
 		{
-			if (i > str.GetLength())
+			if (i > str.length())
 				break;
-			if (str.GetAt(str.GetLength() - i) <= 0x20)
-				str.Delete(str.GetLength() - i , 1);
+            if (str[str.length() - i] <= 0x20)
+                str.erase(str.length() - i , 1);
 			else
 				break;
 		}
 		return str;
 	}
-    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
     {
         if( is_panose == m_eInternalState )
             m_oFont.m_sPanose += sText;
         else if( is_altname == m_eInternalState )
             m_oFont.m_sAltName += sText;
-        else if( is_normal == m_eInternalState && sText.GetLength() > 0)
+        else if( is_normal == m_eInternalState && sText.length() > 0)
         {
-            if( sText.Find(';') != -1 )
+            int pos = sText.find(';');
+            if (pos >= 0)
             {
-                sText.Remove(';');
-				if( sText.Find('&') !=0  )//todooo выясниснить что значит &;
-				{
-					//sText.Remove('&'); // 
-					m_oFont.m_sName += RemoveLastUnchar(sText);
-				}
-				
-			//todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
+                sText.erase(pos, 1);
+
+                if( sText.find('&') !=0  )//todooo выясниснить что значит &;
+                {
+                    //sText.Remove('&'); //
+                    m_oFont.m_sName += RemoveLastUnchar(sText);
+                }
+
+                //todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
 				oDocument.m_oFontTable.DirectAddItem( m_oFont );
 	
                 m_oFont.SetDefaultRtf();
             }
             else
             {
-                m_oFont.m_sName += sText.Trim();
+                boost::algorithm::trim(sText);
+                m_oFont.m_sName += sText;
             }
         }
     }
@@ -379,32 +382,32 @@ public:
 			oCurColor.SetDefaultRtf();
 			m_bIsSet = false;
 		}
-		bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sKey, bool bHasPar, int nPar )
+        bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar )
 		 {
-			if( L"colortbl" == sKey )
+            if( "colortbl" == sKey )
 				return true;
-			else if( L"cmaindarkone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarkone;
-			else if( L"cmainlightone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlightone;
-			else if( L"cmaindarktwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarktwo;
-			else if( L"cmainlighttwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlighttwo;
-			else if( L"caccentone"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentone;
-			else if( L"caccenttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::caccenttwo;
-			else if( L"caccentthree"	== sKey )				oCurColor.m_eTheme = RtfColor::caccentthree;
-			else if( L"caccentfour"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfour;
-			else if( L"caccentfive"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfive;
-			else if( L"caccentsix"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentsix;
-			else if( L"chyperlink"		== sKey )				oCurColor.m_eTheme = RtfColor::chyperlink;
-			else if( L"cfollowedhyperlink" == sKey )			oCurColor.m_eTheme = RtfColor::cfollowedhyperlink;
-			else if( L"cbackgroundone"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundone;
-			else if( L"ctextone"		== sKey )				oCurColor.m_eTheme = RtfColor::ctextone;
-			else if( L"cbackgroundtwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundtwo;
-			else if( L"ctexttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::ctexttwo;
+            else if( "cmaindarkone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarkone;
+            else if( "cmainlightone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlightone;
+            else if( "cmaindarktwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarktwo;
+            else if( "cmainlighttwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlighttwo;
+            else if( "caccentone"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentone;
+            else if( "caccenttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::caccenttwo;
+            else if( "caccentthree"	== sKey )				oCurColor.m_eTheme = RtfColor::caccentthree;
+            else if( "caccentfour"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfour;
+            else if( "caccentfive"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfive;
+            else if( "caccentsix"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentsix;
+            else if( "chyperlink"		== sKey )				oCurColor.m_eTheme = RtfColor::chyperlink;
+            else if( "cfollowedhyperlink" == sKey )			oCurColor.m_eTheme = RtfColor::cfollowedhyperlink;
+            else if( "cbackgroundone"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundone;
+            else if( "ctextone"		== sKey )				oCurColor.m_eTheme = RtfColor::ctextone;
+            else if( "cbackgroundtwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundtwo;
+            else if( "ctexttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::ctexttwo;
 			
-			else if( L"ctint" == sKey	&& true == bHasPar )	oCurColor.m_byteTint = nPar;
-			else if( L"cshade" == sKey	&& true == bHasPar )	oCurColor.m_byteShade = nPar;
-			else if( L"red" == sKey		&& true == bHasPar )	oCurColor.m_byteRed = nPar;
-			else if( L"green" == sKey	&& true == bHasPar )	oCurColor.m_byteGreen = nPar;
-			else if( L"blue" == sKey	&& true == bHasPar )	oCurColor.m_byteBlue = nPar;
+            else if( "ctint" == sKey	&& true == bHasPar )	oCurColor.m_byteTint = nPar;
+            else if( "cshade" == sKey	&& true == bHasPar )	oCurColor.m_byteShade = nPar;
+            else if( "red" == sKey		&& true == bHasPar )	oCurColor.m_byteRed = nPar;
+            else if( "green" == sKey	&& true == bHasPar )	oCurColor.m_byteGreen = nPar;
+            else if( "blue" == sKey	&& true == bHasPar )	oCurColor.m_byteBlue = nPar;
 			else
 			{
 				return false;
@@ -412,12 +415,12 @@ public:
 			m_bIsSet = true;
 			return true;
 		 }
-		void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
+        void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText )
 		{
 		//Romanization_Armenian.rtf
 		//{\colortbl\red0\blue159\green82;\red0\blue0\green0;\red255\blue255\green255;\red0\blue156\green90;\red169\blue86\green0;}
 		//{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;
-			int pos = oText.Find(';');
+            int pos = oText.find(';');
 			if( -1 != pos)
 			{
 				if( true == m_bIsSet )
@@ -448,9 +451,9 @@ public:
 	RtfDefCharPropReader( RtfCharProperty& oOutput ):m_oCharProp(oOutput)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"defchp" == sCommand )
+        if( "defchp" == sCommand )
 			return true;
 		else 
 			return RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oReader.m_oState->m_oCharProp );
@@ -466,17 +469,17 @@ class RtfRevisionTableReader : public RtfAbstractReader
 public: 
 	RtfRevisionTableReader() {}
 
-	bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sKey, bool bHasPar, int nPar )
+    bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar )
 	 {
-		if( L"revtbl" == sKey )
+        if( "revtbl" == sKey )
 			return true;
 
 		return true;
 	 }
 
-	void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString sText )
+    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
-		sText.Replace(L";", L"");
+        boost::algorithm::replace_all(sText, L";", L"");
 		oDocument.m_oRevisionTable.AddItem( sText );
 	}
 
@@ -496,66 +499,66 @@ public:
 		m_eInternalState = is_normal;
 	}
 
-	bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"info" == sCommand )
+        if( "info" == sCommand )
 			return true;
-		else if( L"title"		== sCommand )		m_eInternalState = is_title;
-		else if( L"subject"		== sCommand )		m_eInternalState = is_subject;
-		else if( L"author"		== sCommand )		m_eInternalState = is_author;
-		else if( L"manager"		== sCommand )		m_eInternalState = is_manager;
-		else if( L"company"		== sCommand )		m_eInternalState = is_company;
-		else if( L"operator"	== sCommand )		m_eInternalState = is_operator;
-		else if( L"category"	== sCommand )		m_eInternalState = is_category;
-		else if( L"keywords"	== sCommand )		m_eInternalState = is_keywords;
-		else if( L"comment"		== sCommand )		m_eInternalState = is_comment;
-		else if( L"doccomm"		== sCommand )		m_eInternalState = is_doccomm;
-		else if( L"hlinkbase"	== sCommand )		m_eInternalState = is_hlinkbase;
-		else if( L"version"		== sCommand )
+        else if( "title"		== sCommand )		m_eInternalState = is_title;
+        else if( "subject"		== sCommand )		m_eInternalState = is_subject;
+        else if( "author"		== sCommand )		m_eInternalState = is_author;
+        else if( "manager"		== sCommand )		m_eInternalState = is_manager;
+        else if( "company"		== sCommand )		m_eInternalState = is_company;
+        else if( "operator"	== sCommand )		m_eInternalState = is_operator;
+        else if( "category"	== sCommand )		m_eInternalState = is_category;
+        else if( "keywords"	== sCommand )		m_eInternalState = is_keywords;
+        else if( "comment"		== sCommand )		m_eInternalState = is_comment;
+        else if( "doccomm"		== sCommand )		m_eInternalState = is_doccomm;
+        else if( "hlinkbase"	== sCommand )		m_eInternalState = is_hlinkbase;
+        else if( "version"		== sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nVersion = parameter;
 		}
-		else if( L"vern" == sCommand )
+        else if( "vern" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nInternalVersion = parameter;
 		}
-		else if( L"edmins" == sCommand )
+        else if( "edmins" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nEndingTime = parameter;
 		}
-		else if( L"nofpages" == sCommand )
+        else if( "nofpages" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nNumberOfPages= parameter;
 		}
-		else if( L"nofwords" == sCommand )
+        else if( "nofwords" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nNumberOfWords= parameter;
 		}
-		else if( L"nofchars" == sCommand )
+        else if( "nofchars" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nNumberOfCharactersWithSpace= parameter;
 		}
-		else if( L"nofcharsws" == sCommand )
+        else if( "nofcharsws" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nNumberOfCharactersWithoutSpace= parameter;
 		}
-		else if( L"id" == sCommand )
+        else if( "id" == sCommand )
 		{
 			if( true == hasParameter )
 				oDocument.m_oInformation.m_nInternalId= parameter;
 		}
-		else if( L"creatim" == sCommand )	m_eInternalState = is_creatim;
-		else if( L"revtim"	== sCommand )	m_eInternalState = is_revtim;
-		else if( L"printim" == sCommand )	m_eInternalState = is_printim;
-		else if( L"buptim"	== sCommand )	m_eInternalState = is_buptim;
-		else if(  L"yr"		== sCommand  )
+        else if( "creatim" == sCommand )	m_eInternalState = is_creatim;
+        else if( "revtim"	== sCommand )	m_eInternalState = is_revtim;
+        else if( "printim" == sCommand )	m_eInternalState = is_printim;
+        else if( "buptim"	== sCommand )	m_eInternalState = is_buptim;
+        else if(  "yr"		== sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -565,7 +568,7 @@ public:
 				else if( is_buptim	== m_eInternalState )	oDocument.m_oInformation.m_oBackupTime.m_nYear	= parameter;
 			}
 		}
-		else if(  L"mo" == sCommand  )
+        else if( "mo" == sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -575,7 +578,7 @@ public:
 				else if( is_buptim	== m_eInternalState )	oDocument.m_oInformation.m_oBackupTime.m_nMonth	= parameter;
 			}
 		}
-		else if(  L"dy" == sCommand  )
+        else if ( "dy" == sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -585,7 +588,7 @@ public:
 				else if( is_buptim	== m_eInternalState )	oDocument.m_oInformation.m_oBackupTime.m_nDay	= parameter;
 			}
 		}
-		else if(  L"hr" == sCommand  )
+        else if ( "hr" == sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -595,7 +598,7 @@ public:
 				else if( is_buptim	== m_eInternalState )	oDocument.m_oInformation.m_oBackupTime.m_nHour	= parameter;
 			}
 		}
-		else if(  L"min" == sCommand  )
+        else if ( "min" == sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -605,7 +608,7 @@ public:
 				else if( is_buptim	== m_eInternalState )	oDocument.m_oInformation.m_oBackupTime.m_nMin	= parameter;
 			}
 		}
-		else if(  L"sec" == sCommand  )
+        else if ( "sec" == sCommand  )
 		{
 			if( true == hasParameter )
 			{
@@ -678,9 +681,9 @@ class RtfPictureReader :  public RtfAbstractReader
 			Checksum ^= (Reserved & 0x0000FFFFUL);
 			Checksum ^= ((Reserved & 0xFFFF0000UL) >> 16);
 		}
-		CString ToString()
+        std::wstring ToString()
 		{
-			CString sResult;
+            std::wstring sResult;
 			sResult += ByteToString( (BYTE*)&Key, 4, true );
 			sResult += ByteToString( (BYTE*)&Handle, 2, true );
 			sResult += ByteToString( (BYTE*)&Left, 2, true );
@@ -692,18 +695,15 @@ class RtfPictureReader :  public RtfAbstractReader
 			sResult += ByteToString( (BYTE*)&Checksum, 2, true );
 			return sResult;
 		}
-			CString ByteToString( BYTE* pbData, int nSize, bool bLittleEnd = true )
+            std::wstring ByteToString( BYTE* pbData, int nSize, bool bLittleEnd = true )
 			 {
-				CString sResult;
+                std::wstring sResult;
 				if( true == bLittleEnd )
 				{
 					for( int i = 0; i < nSize; i++ )
 					{
 						BYTE byteVal = pbData[i];
-						if( byteVal < 0x10 )
-							sResult.AppendFormat( L"0%x", byteVal );
-						else
-							sResult.AppendFormat( L"%x", byteVal );
+                        sResult += XmlUtils::IntToString(byteVal, L"%02X");
 					}
 				}
 				else
@@ -711,10 +711,7 @@ class RtfPictureReader :  public RtfAbstractReader
 					for( int i = nSize - 1 ; i >= 0; i-- )
 					{
 						BYTE byteVal = pbData[i];
-						if( byteVal < 0x10 )
-							sResult.AppendFormat( L"0%x", byteVal );
-						else
-							sResult.AppendFormat( L"%x", byteVal );
+                        sResult += XmlUtils::IntToString(byteVal, L"%02X");
 					}
 				}
 				return sResult;
@@ -723,8 +720,8 @@ class RtfPictureReader :  public RtfAbstractReader
 
 private: 
 	RtfShape&	m_oShape;
-	CString		m_sFile;
-	CString		m_sData;
+    std::wstring		m_sFile;
+    std::wstring		m_sData;
 	bool		m_bBin;
     BYTE*		m_pbBin;
 	int			m_nBinLength;
@@ -739,8 +736,8 @@ public:
 	{
 		RELEASEARRAYOBJECTS(m_pbBin);
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		m_sData += sText;
 	}
@@ -755,11 +752,11 @@ public:
 				oPLACEABLEMETAHEADER.Right = long( (m_oShape.m_oPicture->m_dScaleX / 100.0) * m_oShape.m_oPicture->m_nWidthGoal * ( 96.0 / 1440 ) ); //to pixel
 				oPLACEABLEMETAHEADER.Bottom = long( (m_oShape.m_oPicture->m_dScaleY / 100.0) * m_oShape.m_oPicture->m_nHeightGoal * ( 96.0 / 1440 ) );
 				oPLACEABLEMETAHEADER.CalculateChecksum();
-				m_sData.Insert( 0, oPLACEABLEMETAHEADER.ToString() );
+                m_sData = oPLACEABLEMETAHEADER.ToString() + m_sData;
 			}
 		}
 
-		CString sTempFile = Utils::CreateTempFile( oReader.m_sTempFolder );
+        std::wstring sTempFile = Utils::CreateTempFile( oReader.m_sTempFolder );
 		if(m_bBin)
 			RtfUtility::WriteDataToFileBinary( sTempFile, m_pbBin, m_nBinLength );
 		else
@@ -781,7 +778,7 @@ public:
 	RtfOleReader(RtfOle& oOle) : m_oOle(oOle)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
 };
 
 class RtfTrackerChangesReader:  public RtfAbstractReader
@@ -807,7 +804,7 @@ public:
 	//RtfTrackerChangesReader(RtfCellPropertyPtr		& prop) : m_pTableCellProps	(prop), m_eInternalState(is_normal) {}
 	RtfTrackerChangesReader(RtfSectionPropertyPtr		& prop) : m_pSectionProps	(prop), m_eInternalState(is_normal) {}
 
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter);
 };
 class RtfShapeReader : public RtfAbstractReader
 {
@@ -817,18 +814,18 @@ public:
 	public:
 		class ShapePropertyValueReader : public RtfAbstractReader
 		{
-			CString& m_sPropName;
+            std::wstring& m_sPropName;
 			RtfShape& m_oShape;
 		public: 
-			CString m_sPropValue;
-			ShapePropertyValueReader(CString& sPropName, RtfShape& oShape):m_sPropName(sPropName),m_oShape(oShape)
+            std::wstring m_sPropValue;
+            ShapePropertyValueReader(std::wstring& sPropName, RtfShape& oShape):m_sPropName(sPropName),m_oShape(oShape)
 			{
 			}
-			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter)
+            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter)
 			{
-				if( L"sv" == sCommand )
+                if( "sv" == sCommand )
 					return true;
-				else if( L"pict" == sCommand && ( L"pib" == m_sPropName  || L"fillBlip" == m_sPropName))
+                else if( "pict" == sCommand && ( L"pib" == m_sPropName  || L"fillBlip" == m_sPropName))
 				{
 					m_oShape.m_oPicture = RtfPicturePtr ( new RtfPicture() );
 					RtfPictureReader oPictureReader( oReader, m_oShape );
@@ -839,28 +836,28 @@ public:
 				return true;
 			}
 			void PopState( RtfDocument& oDocument, RtfReader& oReader );
-			void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText)
+            void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText)
 			{
 				m_sPropValue += oText;
 			}
 		};
 		private:
-			CString sPropName;
+            std::wstring sPropName;
 			RtfShape& m_oShape;
 		public: 
 			ShapePropertyReader(RtfShape& oShape):m_oShape(oShape)
 			{
 			}
-			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter)
+            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter)
 			{
-				if( L"sp" == sCommand )
+                if( "sp" == sCommand )
 					return true;
-				else if( L"sn" == sCommand )
+                else if( "sn" == sCommand )
 				{
 					TextReader oTextReader(sPropName);
 					StartSubReader( oTextReader, oDocument, oReader );
 				}
-				else if( L"sv" == sCommand )
+                else if( "sv" == sCommand )
 				{
 					ShapePropertyValueReader oShPropValReader(sPropName, m_oShape);
 					StartSubReader( oShPropValReader, oDocument, oReader );
@@ -876,7 +873,7 @@ public:
 	RtfShapeReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
 		//если задан поворот, то надо повернуть и исходный rect, если угол от 45 до 135 и от 225 до 315
@@ -957,9 +954,9 @@ public:
 	{
 		m_bHeader = true;
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"shpgrp" == sCommand )
+        if( "shpgrp" == sCommand )
 		{
 			if( true == m_bHeader )
 				m_bHeader = false;
@@ -972,7 +969,7 @@ public:
 				m_oShapeGroup.AddItem( pNewShape );
 			}
 		}
-		else if( L"shp" == sCommand )
+        else if( "shp" == sCommand )
 		{
 			RtfShapePtr		pNewShape	( new RtfShape() );
 			RtfShapeReader	oShapeReader( *pNewShape );
@@ -994,7 +991,7 @@ public:
 	RtfOldShapeReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter);
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
 		//если задан поворот, то надо повернуть и исходный rect, если угол от 45 до 135 и от 225 до 315
@@ -1073,11 +1070,11 @@ public:
 	RtfShppictReader( RtfShape& oShape ):m_oShape(oShape)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"shppict" == sCommand )
+        if( "shppict" == sCommand )
 			return true;
-		else if( L"pict" == sCommand )
+        else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
 			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
@@ -1105,19 +1102,19 @@ public:
 	RtfAllPictReader( RtfShape& oShape ) : m_oShape(oShape)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"shp" == sCommand )
+        if( "shp" == sCommand )
 		{
 			RtfShapeReader oShapeReader(m_oShape);
 			StartSubReader( oShapeReader, oDocument, oReader );
 		}
-		if( L"shppict" == sCommand )
+        if( "shppict" == sCommand )
 		{
 			RtfShppictReader oShppictReader(m_oShape);
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
-		else if( L"pict" == sCommand )
+        else if( "pict" == sCommand )
 		{
 			m_oShape.m_eAnchorTypeShape		= RtfShape::st_inline;
 			m_oShape.m_nShapeType			= NSOfficeDrawing::sptPictureFrame;
@@ -1156,17 +1153,17 @@ public:
 		m_oCharProp.SetDefaultRtf();
 	}
 
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"mmathPict" == sCommand  )
+        if( "mmathPict" == sCommand  )
 			;
-		else if( L"shppict" == sCommand )
+        else if( "shppict" == sCommand )
 		{
 			m_oMath.m_oPicture = RtfShapePtr( new RtfShape() );
 			RtfShppictReader oShppictReader( *m_oMath.m_oPicture );
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
-		else if( L"nonshppict" == sCommand )
+        else if( "nonshppict" == sCommand )
 			Skip( oDocument, oReader );
 		else 
 		{
@@ -1179,7 +1176,7 @@ public:
 				if( true == m_oMath.m_bHeader )
 				{
 					m_oMath.m_bHeader = false;
-					if (m_oMath.IsEmpty())
+                    if (m_oMath.IsEmpty())
 						m_oMath.SetRtfName( sCommand );
 					
 				}
@@ -1194,7 +1191,7 @@ public:
 					RtfMathReader oSubMathReader( *oNewMath );
 					bool resParseSub = StartSubReader( oSubMathReader, oDocument, oReader );
 
-					if (resParseSub && L"mctrlPr" == sCommand)
+                    if (resParseSub && "mctrlPr" == sCommand)
 					{
 						RtfCharPropertyPtr oNewCharProp ( new RtfCharProperty() );
 						oNewCharProp->Merge(oSubMathReader.m_oCharProp);
@@ -1206,7 +1203,7 @@ public:
 						if ((oNewMath->m_bIsVal || oNewMath->m_bIsBool) && hasParameter)
 						{
 							RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-							CString s = ExecuteMathProp(oDocument, sCommand, parameter);
+                            std::wstring s = ExecuteMathProp(oDocument, sCommand, parameter);
 							oChar->setText( s);
 							oNewMath->m_oVal.AddItem( oChar );
 						}
@@ -1226,7 +1223,7 @@ public:
 
 		return true;
 	}
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		RtfCharPtr pNewChar ( new RtfChar() );
 		pNewChar->m_oProperty.Merge(m_oCharProp);
@@ -1234,12 +1231,12 @@ public:
 		pNewChar->setText( sText ); 
 		m_oMath.AddItem( pNewChar );
 	}
-	CString ExecuteMathProp(RtfDocument& oDocument, CString sCommand, int parameter)
+    std::wstring ExecuteMathProp(RtfDocument& oDocument, std::string sCommand, int parameter)
 	{//rtf math properties (int) to oox math properties (string)
 
-		CString strProp;
+        std::wstring strProp;
 
-		if( L"mbrkBin" == sCommand )
+        if( "mbrkBin" == sCommand )
 		{
 			switch( parameter )
 			{
@@ -1248,7 +1245,7 @@ public:
 				case 2:	strProp = L"repeat";	break;
 			}
 		}
-		else if( L"mbrkBinSub" == sCommand )
+        else if( "mbrkBinSub" == sCommand )
 		{
 			switch( parameter )
 			{
@@ -1257,7 +1254,7 @@ public:
 				case 2:	strProp = L"-+";	break;
 			}
 		}
-		else if( L"mdefJc" == sCommand )
+        else if( "mdefJc" == sCommand )
 		{
 			switch( parameter )
 			{
@@ -1267,7 +1264,7 @@ public:
 				case 3:	strProp = L"right";			break;
 			}
 		}
-		else if( L"mnaryLim" == sCommand || L"mintLim" == sCommand  || L"mLim" == sCommand)
+        else if( "mnaryLim" == sCommand || "mintLim" == sCommand  || "mLim" == sCommand)
 		{
 			switch( parameter )
 			{
@@ -1275,7 +1272,7 @@ public:
 				case 1:	strProp = L"undOvr";	break;
 			}
 		}
-		else if ( L"mmathFont" == sCommand )
+        else if ( "mmathFont" == sCommand )
 		{
 			if (oDocument.m_oProperty.m_nDeffMathFont == PROP_DEF)
 				oDocument.m_oProperty.m_nDeffMathFont = parameter;
@@ -1286,7 +1283,7 @@ public:
 		}
 		else
 		{
-			strProp.Format(L"%d", parameter);
+            strProp = std::to_wstring( parameter);
 		}
 
 		return strProp;
@@ -1310,7 +1307,7 @@ public:
 	{
 		m_eInternalState = is_normal;
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
 		//если результат пустой пытаемся его сгенерировать
@@ -1330,7 +1327,7 @@ public:
 			oRenderParameter.poWriter	= &oTempWriter;
 			oRenderParameter.nType		= RENDER_TO_OOX_PARAM_PLAIN;
 
-			CString sResult = m_oField.m_pResult->RenderToOOX( oRenderParameter );
+            std::wstring sResult = m_oField.m_pResult->RenderToOOX( oRenderParameter );
 			if( L"" != sResult )
 				return false;
 		}
@@ -1348,38 +1345,50 @@ private:
 		oNewParametr.poWriter	= &oTempWriter;
 		oNewParametr.nType		= RENDER_TO_OOX_PARAM_PLAIN;
 
-		CString sCharCode;
-		CString sCharFont;
+        std::wstring sCharCode;
+        std::wstring sCharFont;
 
-		CString sField = m_oField.m_pInsert->m_pTextItems->RenderToOOX(oNewParametr);
-		int nStartTokenize = 0;
-		CString sResTokenize = sField.Tokenize( L" ", nStartTokenize );
-		if( L"SYMBOL" != sResTokenize )
-			return;
-		sResTokenize = sField.Tokenize( L" \"", nStartTokenize );
-		int nCommand = 0; //0 - none; 1 - \f; 3 - other
+        std::wstring sField = m_oField.m_pInsert->m_pTextItems->RenderToOOX(oNewParametr);
+        int nStartTokenize = 0;
 
-        bool bWaitRightBreak = false;
-        while( sResTokenize != L"" )
-		{
-			int nTokenLen = sResTokenize.GetLength();
+        int nCommand = 0; //0 - none; 1 - \f; 3 - other
+
+        std::vector<std::wstring> arResult;
+        boost::algorithm::split(arResult, sField, boost::algorithm::is_any_of(L" \""), boost::algorithm::token_compress_on);
+
+        if (arResult.size()< 1)
+            return;
+        if (L"SYMBOL" != arResult[0])
+            return;
+        nStartTokenize = arResult[0].length();
+
+        for (int i = 1 ; i < arResult.size(); i++)
+        {
+            std::wstring sResTokenize = arResult[i];
+
+            int nTokenLen = sResTokenize.length();
 			if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] != '\"' ) //текст в кавычках считается как один
 			{
 				//ищем следующую кавычку
-				int nNextQuot = sField.Find( '\"', nStartTokenize );
+                int nNextQuot = sField.find( '\"', nStartTokenize );
 				if( -1 != nNextQuot )
 				{
-					sResTokenize = sField.Mid( nStartTokenize - nTokenLen, nNextQuot - nStartTokenize + nTokenLen );
+                    sResTokenize = sField.substr( nStartTokenize - nTokenLen, nNextQuot - nStartTokenize + nTokenLen );
 					nStartTokenize = nNextQuot + 1;
+
+                    for (; i < arResult.size(); i++)
+                    {
+                        if ( 0 <= arResult[i].find( '\"'))
+                            break;
+                    }
 				}
 			}
 			if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] == '\"' )
-				sResTokenize = sResTokenize.Mid( 1, nTokenLen - 2 );
-			
+                sResTokenize = sResTokenize.substr( 1, nTokenLen - 2 );			
 
-			if( -1 != sResTokenize.Find( L"\\f" ) )
+            if( -1 != sResTokenize.find( L"\\f" ) )
 				nCommand = 1;
-			else if( -1 != sResTokenize.Find( L"\\" ) )
+            else if( -1 != sResTokenize.find( L"\\" ) )
 				nCommand = 3;
 			else if( 1 == nCommand )
 			{
@@ -1392,7 +1401,8 @@ private:
 			}
 			else
 				nCommand = 0;
-			sResTokenize = sField.Tokenize( L" ", nStartTokenize );
+
+            nStartTokenize += sResTokenize.length();
 		}
 		if( L"" == sCharCode || L"" == sCharFont )
 			return;
@@ -1416,7 +1426,7 @@ private:
 		
 		RtfAbstractReader reader;
 		
-		CString sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
+        std::wstring sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
 	//свойства копировать ? ващето есть дубль - проверить	
 		m_oField.m_pResult = RtfFieldInstPtr ( new RtfFieldInst() );
 		m_oField.m_pResult->SetDefault();
@@ -1441,16 +1451,16 @@ public:
 	RtfBookmarkStartReader( RtfBookmarkStart& oBookmark ):m_oBookmarkStart(oBookmark)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"bkmkstart" == sCommand )
+        if( "bkmkstart" == sCommand )
 			;
-		else if( L"bkmkcolf" == sCommand )
+        else if( "bkmkcolf" == sCommand )
 		{
 			if( true == hasParameter)
 				m_oBookmarkStart.nFirstColumn = parameter;
 		}
-		else if( L"bkmkcoll" == sCommand )
+        else if( "bkmkcoll" == sCommand )
 		{
 			if( true == hasParameter)
 				m_oBookmarkStart.nLastColumn = parameter;
@@ -1459,7 +1469,7 @@ public:
 			return false;
 		return true;
 	}
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		m_oBookmarkStart.m_sName += sText ;
 	}
@@ -1473,7 +1483,7 @@ public:
 	RtfBookmarkEndReader( RtfBookmarkEnd& oBookmark ):m_oBookmarkEnd(oBookmark)
 	{
 	}
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		m_oBookmarkEnd.m_sName += sText;
 	}
@@ -1519,8 +1529,8 @@ public:
 		m_oCurParagraph		= RtfParagraphPtr		(new RtfParagraph());
 		m_oTextItems		= TextItemContainerPtr	( new TextItemContainer() );
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,RtfAbstractReader& oAbstrReader,CString sCommand, bool hasParameter, int parameter);
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,RtfAbstractReader& oAbstrReader, std::string sCommand, bool hasParameter, int parameter);
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		m_bPar = false;
 		RtfCharPtr pNewChar ( new RtfChar() );
@@ -1556,7 +1566,7 @@ public:
 			 int nSkip = 0;
 
 			RtfAbstractReader reader;
-			CString sText = reader.ExecuteTextInternal( oDocument, oReader, sBullet, false, 0, nSkip );
+            std::wstring sText = reader.ExecuteTextInternal( oDocument, oReader, sBullet, false, 0, nSkip );
 			ExecuteText( oDocument, oReader, sText );
 		 }
 	 }
@@ -1571,13 +1581,13 @@ public:
 	RtfFootnoteReader( RtfFootnote& oRtfFootnote ):m_oRtfFootnote(oRtfFootnote)
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"footnote" == sCommand )
+        if( "footnote" == sCommand )
 		{
 			oReader.m_nFootnote = 1;
 		}
-		else if( L"ftnalt" == sCommand )
+        else if( "ftnalt" == sCommand )
 		{
 			m_oRtfFootnote.m_bEndNote = true;
 			oReader.m_nFootnote = 2;
@@ -1586,7 +1596,7 @@ public:
 			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
 		return true;
 	}
-	void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString sText )
+    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
 		m_oParPropDest.ExecuteText( oDocument, oReader, sText );
 	}
@@ -1607,9 +1617,9 @@ public:
 	{
 	}
 
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"defpap" == sCommand )
+        if( "defpap" == sCommand )
 			return true;
 		else
 			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter);
@@ -1625,31 +1635,31 @@ public:
 //private: 
 //	RtfStyleException m_oCurException;
 //public:
-//	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+//	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 //	{
-//		if( L"lsdlockedexcept" == sCommand )
+//		if( "lsdlockedexcept" == sCommand )
 //			return true;
-//		else if( L"lsdpriority" == sCommand )
+//		else if( "lsdpriority" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nPriority = parameter;
 //		}
-//		else if( L"lsdunhideused" == sCommand )
+//		else if( "lsdunhideused" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nHiddenWhenUse = parameter;
 //		}
-//		else if( L"lsdqformat" == sCommand )
+//		else if( "lsdqformat" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nQFormat = parameter;
 //		}
-//		else if( L"lsdlocked" == sCommand )
+//		else if( "lsdlocked" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nLocked = parameter;
 //		}
-//		else if( L"lsdsemihidden" == sCommand )
+//		else if( "lsdsemihidden" == sCommand )
 //		{
 //			if( true == hasParameter )
 //				m_oCurException.m_nSemiHidden = parameter;
@@ -1678,41 +1688,41 @@ public:
 //
 //class LatentstyleTableReader: public RtfAbstractReader
 //{
-//public: bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+//public: bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 //		{
-//			if( L"latentstyles" == sCommand )
+//			if( "latentstyles" == sCommand )
 //				return true;
-//			else if( L"lsdstimax" == sCommand )
+//			else if( "lsdstimax" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nCount = parameter;
 //			}
-//			else if( L"lsdlockeddef" == sCommand )
+//			else if( "lsdlockeddef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nLocked = parameter;
 //			}
-//			else if( L"lsdsemihiddendef" == sCommand )
+//			else if( "lsdsemihiddendef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nSemiHidden = parameter;
 //			}
-//			else if( L"lsdunhideuseddef" == sCommand )
+//			else if( "lsdunhideuseddef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nUnHiddenWhenUse = parameter;
 //			}
-//			else if( L"lsdqformatdef" == sCommand )
+//			else if( "lsdqformatdef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nQFormat = parameter;
 //			}
-//			else if( L"lsdprioritydef" == sCommand )
+//			else if( "lsdprioritydef" == sCommand )
 //			{
 //				if( true == hasParameter )
 //					oDocument.m_oLatentStyleTable.m_nPriority = parameter;
 //			}
-//			else if( L"lsdlockedexcept" == sCommand )
+//			else if( "lsdlockedexcept" == sCommand )
 //			{
 //				LockedExeceptReader oExceptionReader;
 //				StartSubReader( oExceptionReader, oDocument, oReader );
@@ -1746,9 +1756,9 @@ class RtfStyleTableReader: public RtfAbstractReader
 			m_oCurStyle = RtfParagraphStylePtr ( new RtfParagraphStyle() );
 			m_eInternalState = is_normal;
 		}
-			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{
-				if( L"s" == sCommand )
+                if( "s" == sCommand )
 				{
 					if( true == hasParameter )
 					{
@@ -1756,7 +1766,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
-				else if( L"cs" == sCommand )
+                else if( "cs" == sCommand )
 				{
 					if( true == hasParameter )
 					{
@@ -1764,7 +1774,7 @@ class RtfStyleTableReader: public RtfAbstractReader
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
-				else if( L"ts" == sCommand )
+                else if( "ts" == sCommand )
 				{
 					if( true == hasParameter )
 					{
@@ -1772,141 +1782,141 @@ class RtfStyleTableReader: public RtfAbstractReader
 						m_oCurStyle->m_nID = parameter;
 					}
 				}
-				COMMAND_RTF_INT( L"sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
-				COMMAND_RTF_INT( L"snext",		m_oCurStyle->m_nNext,				sCommand, hasParameter, parameter )
-				COMMAND_RTF_INT( L"slink",		m_oCurStyle->m_nLink,				sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"sqformat",	m_oCurStyle->m_bQFormat,			sCommand, hasParameter, parameter )
-				COMMAND_RTF_INT( L"spriority",	m_oCurStyle->m_nPriority,			sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"sunhideused", m_oCurStyle->m_bUnhiddenWhenUse,	sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"slocked",	m_oCurStyle->m_bLocked,				sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"shidden",	m_oCurStyle->m_bHidden,				sCommand, hasParameter, parameter )
-				else if( L"ssemihidden" == sCommand )
+                COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
+                COMMAND_RTF_INT( "snext",		m_oCurStyle->m_nNext,				sCommand, hasParameter, parameter )
+                COMMAND_RTF_INT( "slink",		m_oCurStyle->m_nLink,				sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "sqformat",	m_oCurStyle->m_bQFormat,			sCommand, hasParameter, parameter )
+                COMMAND_RTF_INT( "spriority",	m_oCurStyle->m_nPriority,			sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "sunhideused", m_oCurStyle->m_bUnhiddenWhenUse,	sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "slocked",	m_oCurStyle->m_bLocked,				sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "shidden",	m_oCurStyle->m_bHidden,				sCommand, hasParameter, parameter )
+                else if( "ssemihidden" == sCommand )
 				{
 					if( true == hasParameter && 0 == parameter)
 						m_oCurStyle->m_nSemiHidden = 0;
 					else
 						m_oCurStyle->m_nSemiHidden = 1;
 				}
-				COMMAND_RTF_BOOL( L"spersonal",	m_oCurStyle->m_bPersonal,	sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"scompose",	m_oCurStyle->m_bCompose,	sCommand, hasParameter, parameter )
-				COMMAND_RTF_BOOL( L"sreply",		m_oCurStyle->m_bReply,		sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "spersonal",	m_oCurStyle->m_bPersonal,	sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "scompose",	m_oCurStyle->m_bCompose,	sCommand, hasParameter, parameter )
+                COMMAND_RTF_BOOL( "sreply",		m_oCurStyle->m_bReply,		sCommand, hasParameter, parameter )
 
 				//tableStyleCommands
-				//else if( L"tscellpaddt" == sCommand )
+                //else if( "tscellpaddt" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nPaddingTop = parameter;
 				//}
-				//else if( L"tscellpaddl" == sCommand )
+                //else if( "tscellpaddl" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nPaddingLeft = parameter;
 				//}
-				//else if( L"tscellpaddr" == sCommand )
+                //else if( "tscellpaddr" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nPaddingRight = parameter;
 				//}
-				//else if( L"tscellpaddb" == sCommand )
+                //else if( "tscellpaddb" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nPaddingBottom = parameter;
 				//}
-				//else if( L"tscellpaddft" == sCommand )
+                //else if( "tscellpaddft" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nIsPaddingTop = parameter;
 				//}
-				//else if( L"tscellpaddfl" == sCommand )
+                //else if( "tscellpaddfl" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nIsPaddingLeft = parameter;
 				//}
-				//else if( L"tscellpaddfr" == sCommand )
+                //else if( "tscellpaddfr" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nIsPaddingRight = parameter;
 				//}
-				//else if( L"tscellpaddfb" == sCommand )
+                //else if( "tscellpaddfb" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nIsPaddingBottom = parameter;
 				//}
-				//else if( L"tsvertalt" == sCommand )
+                //else if( "tsvertalt" == sCommand )
 				//	m_oTableStyleProperty.m_eAlign = RtfTableStyleProperty::av_tsvertalt;
-				//else if( L"tsvertalc" == sCommand )
+                //else if( "tsvertalc" == sCommand )
 				//	m_oTableStyleProperty.m_eAlign = RtfTableStyleProperty::av_tsvertalc;
-				//else if( L"tsvertalb" == sCommand )
+                //else if( "tsvertalb" == sCommand )
 				//	m_oTableStyleProperty.m_eAlign = RtfTableStyleProperty::av_tsvertalb;
-				//else if( L"tsnowrap" == sCommand )
+                //else if( "tsnowrap" == sCommand )
 				//	m_oTableStyleProperty.m_bNoCellWrap = 1;
-				//else if( L"tscbandsh" == sCommand )
+                //else if( "tscbandsh" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nRowBandNumber = parameter;
 				//}
-				//else if( L"tscbandsv" == sCommand )
+                //else if( "tscbandsv" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nCellBandNumber = parameter;
 				//}
 				//else if(L"tsbghoriz" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbghoriz;
-				//else if( L"tsbgvert" == sCommand )
+                //else if( "tsbgvert" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgvert;
-				//else if( L"tsbgfdiag" == sCommand )
+                //else if( "tsbgfdiag" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgfdiag;
-				//else if( L"tsbgbdiag" == sCommand )
+                //else if( "tsbgbdiag" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgbdiag;
-				//else if( L"tsbgcross" == sCommand )
+                //else if( "tsbgcross" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgcross;
-				//else if( L"tsbgdcross" == sCommand )
+                //else if( "tsbgdcross" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdcross;
-				//else if( L"tsbgdkhor" == sCommand )
+                //else if( "tsbgdkhor" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkhoriz;
-				//else if( L"tsbgdkvert" == sCommand )
+                //else if( "tsbgdkvert" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkvert;
-				//else if( L"tsbgdkfdiag" == sCommand )
+                //else if( "tsbgdkfdiag" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkfdiag;
-				//else if( L"tsbgdkbdiag" == sCommand )
+                //else if( "tsbgdkbdiag" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkbdiag;
-				//else if( L"tsbgdkcross" == sCommand )
+                //else if( "tsbgdkcross" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkcross;
-				//else if( L"tsbgdkdcross" == sCommand )
+                //else if( "tsbgdkdcross" == sCommand )
 				//	m_oTableStyleProperty.m_oShading.m_eType = RtfShading::st_chbgdkdcross;
-				//else if( L"tscellcfpat" == sCommand )
+                //else if( "tscellcfpat" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_oShading.m_nForeColor = parameter;
 				//}
-				//else if( L"tscellcbpat" == sCommand )
+                //else if( "tscellcbpat" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_oShading.m_nBackColor = parameter;
 				//}
-				//else if( L"tscellpct" == sCommand )
+                //else if( "tscellpct" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_oShading.m_nValue = parameter;
 				//}
-				//else if( L"tsbrdrt" == sCommand )
+                //else if( "tsbrdrt" == sCommand )
 				//	m_eInternalState = is_tsbrdrt;
-				//else if( L"tsbrdrb" == sCommand )
+                //else if( "tsbrdrb" == sCommand )
 				//	m_eInternalState = is_tsbrdrb;
-				//else if( L"tsbrdrl" == sCommand )
+                //else if( "tsbrdrl" == sCommand )
 				//	m_eInternalState = is_tsbrdrl;
-				//else if( L"tsbrdrr" == sCommand )
+                //else if( "tsbrdrr" == sCommand )
 				//	m_eInternalState = is_tsbrdrr;
-				//else if( L"tsbrdrh" == sCommand )
+                //else if( "tsbrdrh" == sCommand )
 				//	m_eInternalState = is_tsbrdrh;
-				//else if( L"tsbrdrv" == sCommand )
+                //else if( "tsbrdrv" == sCommand )
 				//	m_eInternalState = is_tsbrdrv;
-				//else if( L"tscbandsh" == sCommand )
+                //else if( "tscbandsh" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nRowBandNumber = parameter;
 				//}
-				//else if( L"tscbandsv" == sCommand )
+                //else if( "tscbandsv" == sCommand )
 				//{
 				//	if( true == hasParameter )
 				//		m_oTableStyleProperty.m_nCellBandNumber = parameter;
@@ -1942,10 +1952,16 @@ class RtfStyleTableReader: public RtfAbstractReader
 
 			}
 
-			void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+            void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 			{
-				if( sText.Find(';') != -1 )
-					sText.Remove(';');
+                while (true)
+                {
+                    int pos = sText.find(';');
+                    if (pos < 0) break;
+
+                    sText.erase(pos, 1);
+                }
+
 				m_oCurStyle->m_sName += sText;
 			}
 			void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
@@ -2017,9 +2033,9 @@ class RtfStyleTableReader: public RtfAbstractReader
 				}
 			}
 	};
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"stylesheet" == sCommand )
+        if( "stylesheet" == sCommand )
 			return true;
 		else
 		{
@@ -2043,24 +2059,24 @@ public:
 				ListLevelReader(RtfListLevelProperty & oListLevelProp):m_oListLevelProp(oListLevelProp)
 				{
 				}
-				bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+                bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 				{
-					if( L"listlevel" == sCommand )
+                    if( "listlevel" == sCommand )
 						;
-					COMMAND_RTF_INT( L"levelnfc", m_oListLevelProp.m_nNumberType, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levelnfcn", m_oListLevelProp.m_nNumberType, sCommand, hasParameter, parameter )
-					COMMAND_RTF_BOOL( L"lvltentative", m_oListLevelProp.m_bTentative, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"leveljc", m_oListLevelProp.m_nJustification, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"leveljcn", m_oListLevelProp.m_nJustification, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levelfollow", m_oListLevelProp.m_nFollow, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levelstartat", m_oListLevelProp.m_nStart, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levelnorestart", m_oListLevelProp.m_nNoRestart, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levellegal", m_oListLevelProp.m_nLegal, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"levelpicture", m_oListLevelProp.m_nPictureIndex, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"li", m_oListLevelProp.m_nIndent, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"lin", m_oListLevelProp.m_nIndentStart, sCommand, hasParameter, parameter )
-					COMMAND_RTF_INT( L"fi", m_oListLevelProp.m_nFirstIndent, sCommand, hasParameter, parameter )
-					else if( L"tx" == sCommand  )
+                    COMMAND_RTF_INT( "levelnfc", m_oListLevelProp.m_nNumberType, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levelnfcn", m_oListLevelProp.m_nNumberType, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_BOOL( "lvltentative", m_oListLevelProp.m_bTentative, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "leveljc", m_oListLevelProp.m_nJustification, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "leveljcn", m_oListLevelProp.m_nJustification, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levelfollow", m_oListLevelProp.m_nFollow, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levelstartat", m_oListLevelProp.m_nStart, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levelnorestart", m_oListLevelProp.m_nNoRestart, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levellegal", m_oListLevelProp.m_nLegal, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "levelpicture", m_oListLevelProp.m_nPictureIndex, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "li", m_oListLevelProp.m_nIndent, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "lin", m_oListLevelProp.m_nIndentStart, sCommand, hasParameter, parameter )
+                    COMMAND_RTF_INT( "fi", m_oListLevelProp.m_nFirstIndent, sCommand, hasParameter, parameter )
+                    else if( "tx" == sCommand  )
 					{
 						if( true == hasParameter )
 						{
@@ -2069,13 +2085,13 @@ public:
 							m_oListLevelProp.m_oTabs.m_aTabs.push_back( oNewTab );
 						}
 					}
-					else if( L"leveltext" == sCommand  )
+                    else if( "leveltext" == sCommand  )
 					{
 						TextReader oLevelTextReader( m_oListLevelProp.m_sText );
 						oLevelTextReader.m_bUseGlobalCodepage = true;
 						return StartSubReader( oLevelTextReader, oDocument, oReader );
 					}
-					else if( L"levelnumbers" == sCommand  )
+                    else if( "levelnumbers" == sCommand  )
 					{
 						TextReader oLevelNumberReader( m_oListLevelProp.m_sNumber );
 						return StartSubReader( oLevelNumberReader, oDocument, oReader );
@@ -2099,20 +2115,20 @@ public:
 		ListReader(RtfListProperty& oListProp):m_oListProp(oListProp)
 		{
 		}
-		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+        bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 		{
-			if( L"list" == sCommand )
+            if( "list" == sCommand )
 				;
-			COMMAND_RTF_INT( L"listid", m_oListProp.m_nID , sCommand, hasParameter, parameter )
-			COMMAND_RTF_INT( L"listtemplateid", m_oListProp.m_nTemplateId , sCommand, hasParameter, parameter )
-			COMMAND_RTF_BOOL( L"listsimple", m_oListProp.m_nListSimple , sCommand, hasParameter, parameter )
-			COMMAND_RTF_BOOL( L"listhybrid", m_oListProp.m_bListHybrid , sCommand, hasParameter, parameter )
-			else if( L"listname" == sCommand )
+            COMMAND_RTF_INT( "listid", m_oListProp.m_nID , sCommand, hasParameter, parameter )
+            COMMAND_RTF_INT( "listtemplateid", m_oListProp.m_nTemplateId , sCommand, hasParameter, parameter )
+            COMMAND_RTF_BOOL( "listsimple", m_oListProp.m_nListSimple , sCommand, hasParameter, parameter )
+            COMMAND_RTF_BOOL( "listhybrid", m_oListProp.m_bListHybrid , sCommand, hasParameter, parameter )
+            else if( "listname" == sCommand )
 			{
 				TextReader oListNameReader( m_oListProp.m_sName );
 				return StartSubReader( oListNameReader, oDocument, oReader );
 			}
-			else if( L"listlevel" == sCommand  )
+            else if( "listlevel" == sCommand  )
 			{
 				RtfListLevelProperty oListLevelProp;
 				ListLevelReader oListLevelReader( oListLevelProp );
@@ -2137,12 +2153,12 @@ public:
 	class ListPictureReader: public RtfAbstractReader
 	{
 	public: 
-		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+        bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 		{
-			if( L"listpicture" == sCommand )
+            if( "listpicture" == sCommand )
 			{
 			}
-			else if( L"shppict" == sCommand )
+            else if( "shppict" == sCommand )
 			{
 				RtfShapePtr oNewPicture = RtfShapePtr ( new RtfShape() );
 				
@@ -2160,11 +2176,11 @@ public:
 	{
 
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"listtable" == sCommand )
+        if( "listtable" == sCommand )
 			return true;
-		else if( L"list" == sCommand )
+        else if( "list" == sCommand )
 		{
 			RtfListProperty oListProp;
 			ListReader oListReader(oListProp);
@@ -2177,7 +2193,7 @@ public:
 			else
 				return false;
 		}
-		else if( L"listpicture" == sCommand )
+        else if( "listpicture" == sCommand )
 		{
 			ListPictureReader oListPictureReader;
 			StartSubReader( oListPictureReader, oDocument, oReader );
@@ -2202,13 +2218,13 @@ private:
 			lfolevelReader( RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel& oOverrideLevel ):m_oOverrideLevel(oOverrideLevel)
 			{
 			}
-			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{
-			  if( L"lfolevel" == sCommand)
+              if( "lfolevel" == sCommand)
 				  return true;
-			  COMMAND_RTF_INT( L"listoverrideformat", m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
-			  COMMAND_RTF_INT( L"listoverridestartat", m_oOverrideLevel.m_nStart, sCommand, hasParameter, parameter )
-			  else if( L"listlevel" == sCommand )
+              COMMAND_RTF_INT( "listoverrideformat", m_oOverrideLevel.m_nLevelIndex, sCommand, hasParameter, parameter )
+              COMMAND_RTF_INT( "listoverridestartat", m_oOverrideLevel.m_nStart, sCommand, hasParameter, parameter )
+              else if( "listlevel" == sCommand )
 			  {
 				  m_oOverrideLevel.m_oLevel.m_nLevel = m_oOverrideLevel.m_nLevelIndex;
 				  RtfListTableReader::ListReader::ListLevelReader oListLevelReader( m_oOverrideLevel.m_oLevel );
@@ -2225,21 +2241,21 @@ private:
 			ListOverrideReader(RtfListOverrideProperty& oProperty):m_oProperty(oProperty)
 			{
 			}
-			bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+            bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 			{
-				if( L"listoverride" == sCommand)
+                if( "listoverride" == sCommand)
 					return true;
-				else if( L"listid" == sCommand )
+                else if( "listid" == sCommand )
 				{
 					if( true == hasParameter )
 						m_oProperty.m_nListID = parameter;
 				}
-				else if( L"ls" == sCommand )
+                else if( "ls" == sCommand )
 				{
 					if( true == hasParameter )
 						m_oProperty.m_nIndex = parameter;
 				}
-				else if( L"lfolevel" == sCommand )
+                else if( "lfolevel" == sCommand )
 				{
 					RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevel oOverrideLevel;
 					lfolevelReader olfolevelReader( oOverrideLevel );
@@ -2255,11 +2271,11 @@ public:
 	RtfListOverrideTableReader()
 	{
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
-		if( L"listoverridetable" == sCommand )
+        if( "listoverridetable" == sCommand )
 			return true;
-		else if( L"listoverride" == sCommand)
+        else if( "listoverride" == sCommand)
 		{
 			RtfListOverrideProperty oProperty;
 			ListOverrideReader oListOverrideReader( oProperty );
@@ -2284,23 +2300,23 @@ public:
 class RtfParagraphReader : public RtfAbstractReader
 {
 private: 
-	CString m_sHeader;
+    std::string m_sHeader;
 public: 
 	RtfParagraphPropDestination m_oParPropDest;
 
-	RtfParagraphReader( CString sHeader, RtfReader& oReader ):m_sHeader(sHeader)
+    RtfParagraphReader( std::string sHeader, RtfReader& oReader ): m_sHeader(sHeader)
 	{
 		if( PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap )
 			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 	{
 		if( m_sHeader == sCommand )
 			return true;
 		else
 			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
 	}
-	void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString sText )
+    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
 		m_oParPropDest.ExecuteText( oDocument, oReader, sText );
 	}
@@ -2313,7 +2329,7 @@ public:
 class RtfDocumentCommand
 {
 public: 
-	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter);
+    static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,  std::string sCommand, bool hasParameter, int parameter);
 };
 class RtfSectionCommand
 {
@@ -2328,7 +2344,7 @@ public:
 		m_eInternalState	= is_none;
 		nCurCollumnNumber	= PROP_DEF;
 	}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, RtfAbstractReader& oAbstrReader, CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, RtfAbstractReader& oAbstrReader, std::string sCommand, bool hasParameter, int parameter);
 };
 class RtfNormalReader : public RtfAbstractReader
 {
@@ -2348,8 +2364,8 @@ public:
 		}
 		m_nCurGroups = 0;
 	}
-	bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter );
-	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter );
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		oParagraphReaderDestination.ExecuteText( oDocument, oReader, sText );
 	}
@@ -2434,9 +2450,9 @@ public:
 	RtfFieldInst& m_oFieldInst;
 
 	RtfFieldInstReader( RtfFieldInst& oFieldInst ) :  m_oFieldInst(oFieldInst) {}
-	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader ,CString sCommand, bool hasParameter, int parameter);
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader , std::string sCommand, bool hasParameter, int parameter);
 
-	void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString sText )
+    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
 		RtfParagraphPropDestination::ExecuteText( oDocument, oReader, sText );
 	}

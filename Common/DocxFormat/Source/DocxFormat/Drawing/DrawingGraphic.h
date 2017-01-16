@@ -144,7 +144,7 @@ namespace OOX
 					} 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				// TO DO: Реализовать CGraphic::toXML()
 				return _T("");
@@ -167,7 +167,7 @@ namespace OOX
         public:
 			EGraphicType                     m_eGraphicType;
 			// Attributes
-			nullable<CString>                m_sUri;
+            nullable<std::wstring>                m_sUri;
 			//Child
 		};
 	} // Drawing

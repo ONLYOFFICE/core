@@ -51,7 +51,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"thruBlk", thruBlk);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("thruBlk"), thruBlk);
@@ -60,7 +60,7 @@ namespace PPTX
 			}
 
 		public:
-			CString					name;
+			std::wstring					name;
 			nullable_bool			thruBlk;
 		protected:
 			virtual void FillParentPointersForChilds(){};

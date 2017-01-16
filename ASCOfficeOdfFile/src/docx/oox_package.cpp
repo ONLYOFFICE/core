@@ -214,7 +214,7 @@ void rels_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"_rels";
 
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
    
 	if (rels_file_)
         rels_file_->write(path);
@@ -301,7 +301,7 @@ docProps_files::docProps_files()
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     core_.write(path);
     app_.write(path);
@@ -317,7 +317,7 @@ media::media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts) : mediaitem
 void media::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	mediaitems::items_array & items = mediaitems_.items();
     for (int i = 0; i < items.size(); i++ )
@@ -354,7 +354,7 @@ embeddings::embeddings(mediaitems & _EmbeddingsItems) : embeddingsitems_(_Embedd
 void embeddings::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"embeddings";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	content_types_file & content_types = get_main_document()->get_content_types_file();           
     

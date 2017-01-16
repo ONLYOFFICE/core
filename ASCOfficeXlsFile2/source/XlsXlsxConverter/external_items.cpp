@@ -43,8 +43,7 @@
 #include "mediaitems_utils.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 namespace oox {
 
@@ -164,9 +163,9 @@ void external_items::create_media_path(const std::wstring & out_path)
 	if (!media_path_.empty()) return;
 
 	std::wstring xl_path = out_path + FILE_SEPARATOR_STR + L"xl";
-	FileSystem::Directory::CreateDirectory(xl_path.c_str());
+    NSDirectory::CreateDirectory(xl_path.c_str());
 	
-	FileSystem::Directory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
+    NSDirectory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 
 	media_path_ = xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
 }

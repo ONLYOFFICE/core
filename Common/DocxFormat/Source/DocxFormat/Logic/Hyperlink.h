@@ -95,7 +95,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_hyperlink;
@@ -119,12 +119,12 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                                      > m_sAnchor;
-			nullable<CString                                      > m_sDocLocation;
+			nullable<std::wstring                                      > m_sAnchor;
+			nullable<std::wstring                                      > m_sDocLocation;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oHistory;
 			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<CString                                      > m_sTgtFrame;
-			nullable<CString                                      > m_sTooltip;
+			nullable<std::wstring                                      > m_sTgtFrame;
+			nullable<std::wstring                                      > m_sTooltip;
 
 			// Childs
 		};

@@ -50,7 +50,7 @@ namespace PPTX
 
 		public:
 			void AddObjectTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const ;
-			CString GetVmlXmlBySpid(CString spid, CString & rels) const ;
+			std::wstring GetVmlXmlBySpid(std::wstring spid, std::wstring & rels) const ;
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const ;
 
@@ -69,7 +69,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"),		name);
@@ -138,7 +138,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (strName == _T("control"))
 						{
@@ -150,7 +150,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 

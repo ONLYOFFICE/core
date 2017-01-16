@@ -52,7 +52,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return XmlUtils::CreateNode(_T("p:par"), cTn.toXML());
 			}

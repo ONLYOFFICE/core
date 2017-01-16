@@ -220,7 +220,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 
 				if( pHyperlink->m_oId.IsInit() )
 				{
-					CString sTarget;
+					std::wstring sTarget;
 					
 					if (oParam.oReader->m_currentContainer)
 					{ 
@@ -231,19 +231,21 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 							sTarget = pH->Uri().GetPath();
 						}
 					}
-					if( !sTarget.IsEmpty() )
+					if( !sTarget.empty() )
 					{
 						//заменяем пробелы на %20
-						sTarget.Replace( L" ", L"%20" );
-						CString sFileUrl = L"file:///";
-						if( 0 == sTarget.Find( sFileUrl ) )
+                        boost::algorithm::replace_all(sTarget, L" ", L"%20" );
+
+                        std::wstring sFileUrl = L"file:///";
+
+                        if( 0 == sTarget.find( sFileUrl ) )
 						{
-							int nFirstDDot = sTarget.Find( ':', sFileUrl.GetLength() );
-							int nLen = sTarget.GetLength();
+                            int nFirstDDot = sTarget.find( ':', sFileUrl.length() );
+							int nLen = sTarget.length();
 							if( -1 != nFirstDDot && nFirstDDot + 2 < nLen && '\\' == sTarget[nFirstDDot+1] )
 							{
 								if( '\\' != sTarget[nFirstDDot+2] ) 
-									sTarget.Insert( nFirstDDot + 1, '\\'  );
+                                    sTarget.insert( sTarget.begin() + nFirstDDot + 1, '\\'  );
 							}
 						}
 						RtfFieldPtr oCurField( new RtfField() );
@@ -253,7 +255,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					//добавляем insert
 						RtfCharPtr pNewChar( new RtfChar() );
 						pNewChar->m_bRtfEncode = true;// false;
-						CString sFieldText;
+						std::wstring sFieldText;
                         sFieldText += L"HYPERLINK \"" + sTarget + L"\"";
 						pNewChar->setText( sFieldText );
 						
@@ -345,7 +347,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				if(pBookmarkStart->m_oId.IsInit())
 				{
 					int nId = pBookmarkStart->m_oId->GetValue();
-					oParam.oReader->m_aBookmarks.insert(std::pair<int, CString>( nId, oNewBookmark->m_sName ));
+					oParam.oReader->m_aBookmarks.insert(std::pair<int, std::wstring>( nId, oNewBookmark->m_sName ));
 					oOutputParagraph.AddItem( oNewBookmark );
 				}
 			}break;
@@ -357,7 +359,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				//oNewBookmark->m_sName = pBookmarkEnd->;
 
 				int nId = pBookmarkEnd->m_oId->GetValue();
-				std::map<int, CString>::iterator pPair = oParam.oReader->m_aBookmarks.find( nId );
+				std::map<int, std::wstring>::iterator pPair = oParam.oReader->m_aBookmarks.find( nId );
 				if( pPair !=  oParam.oReader->m_aBookmarks.end())
 				{
 					oNewBookmark->m_sName = pPair->second;
@@ -441,7 +443,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			OOX::Logic::CText * ooxText = dynamic_cast<OOX::Logic::CText*>(ooxItem);
 			if (ooxText)
 			{
-				CString sValue;
+				std::wstring sValue;
 				//if ((ooxText->m_oSpace.IsInit()) && (ooxText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve))
 				//{
 				//	sValue = RtfUtility::Preserve(ooxText->m_sText);
@@ -462,7 +464,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			OOX::Logic::CDelText * ooxText = dynamic_cast<OOX::Logic::CDelText*>(ooxItem);
 			if (ooxText)
 			{
-				CString sValue;
+				std::wstring sValue;
 				//if ((ooxText->m_oSpace.IsInit()) && (ooxText->m_oSpace->GetValue() == SimpleTypes::xmlspacePreserve))
 				//{
 				//	sValue = RtfUtility::Preserve(ooxText->m_sText);
@@ -614,7 +616,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					}
 					if(ooxObject->m_oOleObject->m_oId.IsInit())
 					{
-						CString sRelativePath;
+						std::wstring sRelativePath;
 						
 						if (oParam.oReader->m_currentContainer)
 						{ 
@@ -627,9 +629,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							}
 						}
 						//todooo проверить что тут за путь ..
-						CString sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
+						std::wstring sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
 
-						POLE::Storage *storage = new POLE::Storage(sOlePath.GetBuffer());
+                        POLE::Storage *storage = new POLE::Storage(sOlePath.c_str());
 						if (storage)
 						{
 							//RtfOle2ToOle1Stream oStream;
@@ -640,7 +642,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							//if( SUCCEEDED( OleConvertIStorageToOLESTREAM( piStorage, &oStream ) ) )
 							//{
 							//	//сохраняем в файл
-							//	CString sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
+							//	std::wstring sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
 							//	HANDLE hFile = CreateFile ( sOleStorageName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 							//	if( INVALID_HANDLE_VALUE != hFile )
 							//	{
@@ -861,19 +863,19 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 			if(ooxSym->m_oFont.IsInit() && ooxSym->m_oChar.IsInit() )
 			{	
-				CString sFont = *ooxSym->m_oFont;
-				//CString sChar = ooxSym->m_oChar->GetValue();
+				std::wstring sFont = *ooxSym->m_oFont;
+				//std::wstring sChar = ooxSym->m_oChar->GetValue();
 
 				//sChar.MakeLower();
 				////оставляем только 2 байта (4 символа)
-				//if( sChar.GetLength() > 4 )
+				//if( sChar.length() > 4 )
 				//	sChar = sChar.Right( 4 );
 				////убираем маску F000
-				//if( sChar.GetLength() == 4 && 'f' == sChar[0] )
+				//if( sChar.length() == 4 && 'f' == sChar[0] )
 				//	sChar = sChar.Right( 3 );
 				
 				int nChar = ooxSym->m_oChar->GetValue();
-				CString sCharUnicode; sCharUnicode.AppendChar( nChar );
+                std::wstring sCharUnicode; sCharUnicode += nChar;
 				RtfFont oCurFont;
 				if( false == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
 				{
@@ -888,15 +890,15 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				
 				RtfCharPtr pNewChar ( new RtfChar() );
 				pNewChar->m_bRtfEncode = false;
-				CString sFieldText;
+				std::wstring sFieldText;
 				int nFontSize = 10;
 				if( PROP_DEF != oNewProperty.m_nFontSize )
 					nFontSize = oNewProperty.m_nFontSize / 2;
 
 				sFieldText = L"SYMBOL";
-                sFieldText.AppendFormat(L"%d", nChar);
+                sFieldText += std::to_wstring( nChar );
 				sFieldText += L" \\\\f \"" + sFont + L"\" \\\\s ";
-				sFieldText.AppendFormat(L"%d", nFontSize );
+                sFieldText += std::to_wstring( nFontSize );
 				
 				pNewChar->setText( sFieldText );
 				
@@ -975,7 +977,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 	//применяем все остальные свойчтва direct formating
 	if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
 	{
-		CString sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
+		std::wstring sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{
@@ -992,7 +994,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 // ------------ test
 	//if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
 	//{
-	//	CString sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
+	//	std::wstring sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
 	//	RtfStylePtr oCurStyle;
 	//	if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 	//	{
@@ -1312,7 +1314,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 	if (m_ooxRunProps->m_oRStyle.IsInit() && m_ooxRunProps->m_oRStyle->m_sVal.IsInit())
 	{
-		CString sStyleID = m_ooxRunProps->m_oRStyle->m_sVal.get2();
+		std::wstring sStyleID = m_ooxRunProps->m_oRStyle->m_sVal.get2();
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleID, oCurStyle)) 
 		{
@@ -1899,7 +1901,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		if(m_ooxSectionProperty->m_arrHeaderReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrHeaderReference[i]->m_oId.IsInit() )
 		{
-			CString sID = m_ooxSectionProperty->m_arrHeaderReference[i]->m_oId->GetValue();
+			std::wstring sID = m_ooxSectionProperty->m_arrHeaderReference[i]->m_oId->GetValue();
             switch(m_ooxSectionProperty->m_arrHeaderReference[i]->m_oType->GetValue())
 			{
 			case SimpleTypes::hdrftrDefault : 
@@ -1936,7 +1938,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		if(m_ooxSectionProperty->m_arrFooterReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrFooterReference[i]->m_oId.IsInit() )
 		{
-			CString sID = m_ooxSectionProperty->m_arrFooterReference[i]->m_oId->GetValue();
+			std::wstring sID = m_ooxSectionProperty->m_arrFooterReference[i]->m_oId->GetValue();
             switch(m_ooxSectionProperty->m_arrFooterReference[i]->m_oType->GetValue())
 			{
 			case SimpleTypes::hdrftrDefault : 

@@ -107,7 +107,7 @@ namespace BinXlsxRW{
 		fp.setFontManager(pFontManager);
 		
 		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-		if(false == m_sEmbeddedFontsDir.IsEmpty())
+        if(false == m_sEmbeddedFontsDir.empty())
 		{
 			NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 
@@ -120,12 +120,12 @@ namespace BinXlsxRW{
 			//pEmbeddedFontsManager добавляются все цифры
 			//для заголовков
 			pEmbeddedFontsManager->CheckFont(_T("Calibri"), pFontManager);
-			pEmbeddedFontsManager->CheckString(CString(_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
+            pEmbeddedFontsManager->CheckString(std::wstring(_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 
 			//дополнение для ошибок "#NULL!", "#DIV/0!"...
-			pEmbeddedFontsManager->CheckString(CString(_T("#!/?")));
+            pEmbeddedFontsManager->CheckString(std::wstring(_T("#!/?")));
 			//дополнение для num форматов по умолчанию с id от 0 до 49
-			pEmbeddedFontsManager->CheckString(CString(_T(".%E+-():")));
+            pEmbeddedFontsManager->CheckString(std::wstring(_T(".%E+-():")));
 		}
 
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
@@ -150,7 +150,7 @@ namespace BinXlsxRW{
 			long nStartPos = oBufferedStream.GetPosition();
 			BinXlsxRW::BinaryCommonWriter oBcw(oBufferedStream);
 
-			CString sOldRelsPath = m_pExternalDrawingConverter->GetRelsPath();
+            std::wstring sOldRelsPath = m_pExternalDrawingConverter->GetRelsPath();
 			m_pExternalDrawingConverter->SetRelsPath(sChartPath);
 
 			BinXlsxRW::BinaryChartWriter oBinaryChartWriter(oBufferedStream, m_pExternalDrawingConverter);	
@@ -176,13 +176,11 @@ namespace BinXlsxRW{
 			std::wstring sThemePath;
 			std::wstring sEmbedingPath;
 			
-			CString sFilenameReverse = sFilepath;	sFilenameReverse.MakeReverse();
-			
-			int nIndex	= sFilenameReverse.Find(FILE_SEPARATOR_CHAR);
-			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
+            int nIndex	= sFilepath.rfind(FILE_SEPARATOR_CHAR); 
+            nIndex		= sFilepath.rfind(FILE_SEPARATOR_CHAR, nIndex - 1);
 			if(-1 != nIndex)
 			{
-                CString sFilepathLeft = sFilepath.substr(0, sFilepath.length() - nIndex);
+                std::wstring sFilepathLeft = sFilepath.substr(0, nIndex + 1);
 				sThemePath		= sFilepathLeft + L"theme";
 				sEmbedingPath	= sFilepathLeft + L"embeddings";
 			}
@@ -206,8 +204,8 @@ namespace BinXlsxRW{
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 					long rId;
-					CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, CString(), &rId);
+                    std::wstring bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
+                    m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
 					oChartSpace.m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 					oChartSpace.m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -218,8 +216,8 @@ namespace BinXlsxRW{
 				}
 
 				std::wstring strFilepath	= sFilepath;
-                CString strDir              = NSSystemPath::GetDirectoryName(strFilepath);
-                CString strFilename         = NSSystemPath::GetFileName(strFilepath);
+                std::wstring strDir              = NSSystemPath::GetDirectoryName(strFilepath);
+                std::wstring strFilename         = NSSystemPath::GetFileName(strFilepath);
 
                 OOX::CPath pathRelsDir = strDir + FILE_SEPARATOR_STR + _T("_rels");
 
@@ -230,7 +228,7 @@ namespace BinXlsxRW{
                 OOX::CPath pathRelsFile = pathRelsDir + FILE_SEPARATOR_STR + strFilename + _T(".rels");
                 m_pExternalDrawingConverter->SaveDstContentRels(pathRelsFile.GetPath());
 
-				CString sContentType(sContentTypePath);
+                std::wstring sContentType(sContentTypePath);
                 sContentType += strFilename;
 
                 std::wstring sContent = L"<Override PartName=\"" + sContentType + L"\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>";
@@ -265,15 +263,15 @@ namespace BinXlsxRW{
 		NSDirectory::CreateDirectory(sTempDir);
 		OOX::CPath oPath(sTempDir.c_str());
 		//шиблонные папки
-		CString sXmlOptions = _T("");
-		CString sMediaPath;// will be filled by 'CreateXlsxFolders' method
-		CString sEmbedPath; // will be filled by 'CreateXlsxFolders' method
+        std::wstring sXmlOptions = _T("");
+        std::wstring sMediaPath;// will be filled by 'CreateXlsxFolders' method
+        std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
 		CreateXlsxFolders (sXmlOptions, sTempDir, sMediaPath, sEmbedPath);
 		//заполняем Xlsx
 		OOX::Spreadsheet::CXlsx oXlsx;
 		helper.toXlsx(oXlsx);
 		//write
-		CString sAdditionalContentTypes;
+        std::wstring sAdditionalContentTypes;
 		oXlsx.Write(oPath, sAdditionalContentTypes);
 		//zip
 		COfficeUtils oOfficeUtils(NULL);

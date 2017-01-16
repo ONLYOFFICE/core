@@ -62,7 +62,7 @@ namespace PPTX
 				{
 					link	=	media.GetAttribute(_T("r:embed"));
 
-					CString xmkl = media.GetXml();
+					std::wstring xmkl = media.GetXml();
 
 					XmlUtils::CXmlNode trim;
 					if (media.GetNode(_T("p14:trim"), trim))
@@ -73,7 +73,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				XmlUtils::CNodeValue oValue;

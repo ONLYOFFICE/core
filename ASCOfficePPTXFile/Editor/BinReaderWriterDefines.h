@@ -184,84 +184,84 @@ namespace NSBinPptxRW
 #define SPTREE_TYPE_GRFRAME				5
 #define SPTREE_TYPE_OLE					6
 
-static BYTE SchemeClr_GetBYTECode(const CString& sValue)
+static BYTE SchemeClr_GetBYTECode(const std::wstring& sValue)
 {
-	if (_T("accent1") == sValue)
+    if ((L"accent1") == sValue)
 		return 0;
-	if (_T("accent2") == sValue)
+    if ((L"accent2") == sValue)
 		return 1;
-	if (_T("accent3") == sValue)
+    if ((L"accent3") == sValue)
 		return 2;
-	if (_T("accent4") == sValue)
+    if ((L"accent4") == sValue)
 		return 3;
-	if (_T("accent5") == sValue)
+    if ((L"accent5") == sValue)
 		return 4;
-	if (_T("accent6") == sValue)
+    if ((L"accent6") == sValue)
 		return 5;
-	if (_T("bg1") == sValue)
+    if ((L"bg1") == sValue)
 		return 6;
-	if (_T("bg2") == sValue)
+    if ((L"bg2") == sValue)
 		return 7;
-	if (_T("dk1") == sValue)
+    if ((L"dk1") == sValue)
 		return 8;
-	if (_T("dk2") == sValue)
+    if ((L"dk2") == sValue)
 		return 9;
-	if (_T("folHlink") == sValue)
+    if ((L"folHlink") == sValue)
 		return 10;
-	if (_T("hlink") == sValue)
+    if ((L"hlink") == sValue)
 		return 11;
-	if (_T("lt1") == sValue)
+    if ((L"lt1") == sValue)
 		return 12;
-	if (_T("lt2") == sValue)
+    if ((L"lt2") == sValue)
 		return 13;
-	if (_T("phClr") == sValue)
+    if ((L"phClr") == sValue)
 		return 14;
-	if (_T("tx1") == sValue)
+    if ((L"tx1") == sValue)
 		return 15;
-	if (_T("tx2") == sValue)
+    if ((L"tx2") == sValue)
 		return 16;
 	return 0;
 }
-static CString SchemeClr_GetStringCode(const BYTE& val)
+static std::wstring SchemeClr_GetStringCode(const BYTE& val)
 {
 	switch (val)
 	{
 	case 0:
-		return _T("accent1");
+        return (L"accent1");
 	case 1:
-		return _T("accent2");
+        return (L"accent2");
 	case 2:
-		return _T("accent3");
+        return (L"accent3");
 	case 3:
-		return _T("accent4");
+        return (L"accent4");
 	case 4:
-		return _T("accent5");
+        return (L"accent5");
 	case 5:
-		return _T("accent6");
+        return (L"accent6");
 	case 6:
-		return _T("bg1");
+        return (L"bg1");
 	case 7:
-		return _T("bg2");
+        return (L"bg2");
 	case 8:
-		return _T("dk1");
+        return (L"dk1");
 	case 9:
-		return _T("dk2");
+        return (L"dk2");
 	case 10:
-		return _T("folHlink");
+        return (L"folHlink");
 	case 11:
-		return _T("hlink");
+        return (L"hlink");
 	case 12:
-		return _T("lt1");
+        return (L"lt1");
 	case 13:
-		return _T("lt2");
+        return (L"lt2");
 	case 14:
-		return _T("phClr");
+        return (L"phClr");
 	case 15:
-		return _T("tx1");
+        return (L"tx1");
 	case 16:
-		return _T("tx2");
+        return (L"tx2");
 	}
-	return _T("accent1");
+    return (L"accent1");
 }
 
 #define XMLWRITER_DOC_TYPE_PPTX         0

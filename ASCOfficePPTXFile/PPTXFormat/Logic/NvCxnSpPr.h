@@ -70,7 +70,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-            virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cNvPr);
@@ -81,7 +81,7 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-               CString namespace_;
+               std::wstring namespace_;
                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
                 {
                     pWriter->StartNode(_T("wps:nvCxnSpPr"));

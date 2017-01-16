@@ -73,7 +73,7 @@ namespace PPTX
 					XmlUtils::CXmlNode oNode;
 					oNodes.GetAt(i, oNode);
 
-					CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("nvSpPr") == strName)
 						nvSpPr = oNode;
@@ -113,7 +113,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString Shape::toXML() const
+		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("useBgFill"), attrUseBgFill);
@@ -184,7 +184,7 @@ namespace PPTX
 			//props.SetParentFilePointer(*parentFile);
 			if(parentFileIs<SlideMaster>())
 			{
-				CString type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
+				std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
 				//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
 				//	type = "text-box";
 				parentFileAs<SlideMaster>().FillShapeProperties(props, type);
@@ -201,7 +201,7 @@ namespace PPTX
 				//	levelUp->GetShapeProperties(props);
 				//else
 				//{
-					CString type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
+					std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
 					//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
 					//	type = "text-box";
 					parentFileAs<SlideLayout>().FillShapeProperties(props, type);
@@ -220,7 +220,7 @@ namespace PPTX
 				//	levelUp->GetShapeProperties(props);
 				//else
 				//{
-					CString type = nvSpPr.nvPr.ph.is_init()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
+					std::wstring type = nvSpPr.nvPr.ph.is_init()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
 					//if( (nvSpPr->cNvSpPr->txBox.get_value_or(false)) && (type == "") )
 					//	type = "text-box";
 					parentFileAs<Slide>().FillShapeProperties(props, type);
@@ -237,7 +237,7 @@ namespace PPTX
 
 		void Shape::FillShapeTextProperties(CShapeTextProperties& props)
 		{
-			CString type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
+			std::wstring type = nvSpPr.nvPr.ph.IsInit()?nvSpPr.nvPr.ph->type.get_value_or(_T("body")):_T("");
 			if (parentFileIs<SlideMaster>())
 			{
 				parentFileAs<SlideMaster>().FillShapeTextProperties(props, type);
@@ -397,8 +397,8 @@ namespace PPTX
 
 		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
 		{
-			CString strPath = _T("");
-			CString strTextRect = _T("");
+			std::wstring strPath = _T("");
+			std::wstring strTextRect = _T("");
 
 			LONG lW = 43200;
 			LONG lH = 43200;
@@ -461,7 +461,7 @@ namespace PPTX
 				{
 					if (txBody->bodyPr.anchor.is_init())
 					{
-						CString _strAnchor = txBody->bodyPr.anchor->get();
+						std::wstring _strAnchor = txBody->bodyPr.anchor->get();
 						if (_strAnchor == _T("t"))
 							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
 						else if (_strAnchor == _T("b"))
@@ -474,7 +474,7 @@ namespace PPTX
 				{
 					if (TextBoxBodyPr->anchor.is_init())
 					{
-						CString _strAnchor = TextBoxBodyPr->anchor->get();
+						std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
 						if (_strAnchor == _T("t"))
 							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
 						else if (_strAnchor == _T("b"))
@@ -494,7 +494,7 @@ namespace PPTX
 				}
 				if(!bOle)
 				{
-					pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
+					pWriter->WriteAttribute(_T("coordsize"), (std::wstring)_T("100000,100000"));
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
@@ -584,7 +584,7 @@ namespace PPTX
 				{
 					if (txBody->bodyPr.anchor.is_init())
 					{
-						CString _strAnchor = txBody->bodyPr.anchor->get();
+						std::wstring _strAnchor = txBody->bodyPr.anchor->get();
 						if (_strAnchor == _T("t"))
 							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
 						else if (_strAnchor == _T("b"))
@@ -597,7 +597,7 @@ namespace PPTX
 				{
 					if (TextBoxBodyPr->anchor.is_init())
 					{
-						CString _strAnchor = TextBoxBodyPr->anchor->get();
+						std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
 						if (_strAnchor == _T("t"))
 							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
 						else if (_strAnchor == _T("b"))
@@ -618,7 +618,7 @@ namespace PPTX
 
 				if(!bOle)
 				{
-					pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
+					pWriter->WriteAttribute(_T("coordsize"), (std::wstring)_T("100000,100000"));
 					pWriter->WriteAttribute(_T("path"), strPath);
 				}
 
@@ -655,8 +655,8 @@ namespace PPTX
 		}
 		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
 		{
-			CString strFillAttr = _T("");
-			CString strFillNode = _T("");
+			std::wstring strFillAttr = _T("");
+			std::wstring strFillNode = _T("");
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
 
 			pWriter->StartNode(_T("v:background"));

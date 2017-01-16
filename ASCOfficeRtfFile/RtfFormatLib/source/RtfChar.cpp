@@ -34,12 +34,12 @@
 
 #include "Writer/OOXWriter.h"
 
-CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
     
-	CString sResult;
+    std::wstring sResult;
     if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
     {
 		bool bInsert = false;
@@ -49,8 +49,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
-			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
+            std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nRevised = PROP_DEF;
@@ -59,8 +59,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
-			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
+            std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
@@ -89,8 +89,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 			{
 				bInsert = true;
 				
-				CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
-				CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+                std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
+                std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 				
 				sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 				m_oProperty.m_nRevised = PROP_DEF;
@@ -99,8 +99,8 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 			{
 				bDelete = true;
 				
-				CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
-				CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+                std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
+                std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 				
 				sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 				m_oProperty.m_nDeleted = PROP_DEF;
@@ -117,34 +117,34 @@ CString RtfChar::RenderToOOX(RenderParameter oRenderParameter)
     return sResult;
 }
 
-CString RtfChar::renderTextToXML( CString sParam, bool bDelete )
+std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
 {
-	CString sResult;
+    std::wstring sResult;
 	if( L"Text" == sParam )
     {
 		if (bDelete == false)
 		{
 			sResult += L"<w:t xml:space= \"preserve\">";
-				sResult += Utils::PrepareToXML( m_sChars );
+                sResult += XmlUtils::EncodeXmlString( m_sChars );
 			sResult += L"</w:t>";
 		}
 		else
 		{
 			sResult += L"<w:delText>";
-				sResult += Utils::PrepareToXML( m_sChars );
+                sResult += XmlUtils::EncodeXmlString( m_sChars );
 			sResult += L"</w:delText>";
 		}
     }
-	else if( L"Math" == sParam && !m_sChars.IsEmpty())
+    else if( L"Math" == sParam && !m_sChars.empty())
     {
 		sResult += L"<m:t>";
-			sResult += Utils::PrepareToXML( m_sChars );
+            sResult += XmlUtils::EncodeXmlString( m_sChars );
 		sResult += L"</m:t>";
     }
 	return sResult;
 }
 
-CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty  )
+std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty  )
 {
     RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
 	
@@ -167,10 +167,10 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 
 }
 
-CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage  )
+std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int nCodePage  )
 {
 	RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
-	CString sResult;
+    std::wstring sResult;
 
     //от настроек документа
     if( -1 == nCodePage && RtfDocumentProperty::cp_none != pDocument->m_oProperty.m_eCodePage )
@@ -194,7 +194,7 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage 
     if( -1 == nCodePage )
         nCodePage = CP_ACP;
 
-    std::wstring    unicodeStr (sText.GetBuffer(), sText.GetLength());
+    std::wstring    unicodeStr (sText);
     std::string     ansiStr ;
 
 	if (unicodeStr.empty())
@@ -204,19 +204,19 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage 
 
 	ansiStr = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
 
-    CString sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
+    std::wstring sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
     //обратное преобразование чтобы понять какие символы свонвертировались неправильно
 
-	while (sTextBack.GetLength() < sText.GetLength())
+    while (sTextBack.length() < sText.length())
 		sTextBack += L"-";
 
-    for( int i = 0; i < sText.GetLength() ; i++ )
+    for( int i = 0; i < sText.length() ; i++ )
     {
         bool bWriteUnicode = true;
 
         if(sTextBack[i] == sText[i] )
         {
-            CString sUniChar; sUniChar.AppendChar( unicodeStr[i] );
+            std::wstring sUniChar; sUniChar += unicodeStr[i];
 
             //делаем Ansi строку sUniChar
             // -> sTempAnsiChars
@@ -229,18 +229,18 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage 
 
                 if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d)
                 {
-                    sResult.AppendFormat( L"\\'%x", nCharCode );
+                    sResult += L"\\'" + XmlUtils::IntToString( nCharCode, L"%x");
                 } else if (0x00 <= nCharCode && nCharCode - 1 < 0x10)
                 {
-                    sResult.AppendFormat( L"\\'0%x", nCharCode - 1 );
+                    sResult += L"\\'0" + XmlUtils::IntToString( nCharCode - 1, L"%x" );
                 } else if (0x10 <= nCharCode - 1 && nCharCode  < 0x20)
                 {
-                    sResult.AppendFormat( L"\\'%x", nCharCode - 1 );
+                    sResult += L"\\'" + XmlUtils::IntToString(nCharCode - 1, L"%x" );
                 } else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
                 {
-                    sResult.AppendChar( nCharCode );
+                    sResult += nCharCode;
                 } else { // 0x80 <= nUnicode <= 0xff
-                    sResult.AppendFormat( L"\\'%x", nCharCode );
+                    sResult += L"\\'" + XmlUtils::IntToString(nCharCode, L"%x" );
                 }
             }
         }
@@ -250,9 +250,9 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage 
 
             if (0 < nUnicode && nUnicode <= 0x8000)
             {
-                sResult.AppendFormat( L"\\u%d*",nUnicode);
+                sResult += L"\\u" + std::to_wstring(nUnicode) + L"*";
             } else if (0x8000 < nUnicode && nUnicode <= 0xffff) {
-                sResult.AppendFormat( L"\\u%d*", nUnicode - 0x10000); //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
+                sResult += L"\\u" + std::to_wstring(nUnicode - 0x10000) + L"*"; //??? font alt name china ALL FONTS NEW.docx (Mekanik LET)
             } else {
                 sResult += L"\\u9633*";
             }
@@ -261,9 +261,9 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, int nCodePage 
     }
     return sResult;
 }
-CString RtfChar::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfChar::RenderToRtf(RenderParameter oRenderParameter)
 {
-    CString result;
+    std::wstring result;
 
     if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
     {
@@ -274,15 +274,15 @@ CString RtfChar::RenderToRtf(RenderParameter oRenderParameter)
     }
     else
     {
-        CString sText;
+        std::wstring sText;
         if( true == m_bRtfEncode )
             sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
         else
             sText = m_sChars;
 
-		CString sTextProp =  m_oProperty.RenderToRtf( oRenderParameter ) ;
+        std::wstring sTextProp =  m_oProperty.RenderToRtf( oRenderParameter ) ;
 		
-		if( !sText.IsEmpty() || !sTextProp.IsEmpty())
+        if( !sText.empty() || !sTextProp.empty())
         {
             if (oRenderParameter.nType != RENDER_TO_RTF_PARAM_NESTED)
 				result += L"{";
@@ -298,9 +298,9 @@ CString RtfChar::RenderToRtf(RenderParameter oRenderParameter)
     return result;
 }
 
-CString RtfCharSpecial::_RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfCharSpecial::_RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	switch( m_eType )
 	{
 		case rsc_chdate:		sResult += L"";										break;
@@ -341,12 +341,12 @@ CString RtfCharSpecial::_RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 
-	CString sResult;
+    std::wstring sResult;
 	if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
 	{
 		bool bInsert = false;
@@ -356,8 +356,8 @@ CString RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
-			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauth);
+            std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttm).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nRevised = PROP_DEF;
@@ -366,8 +366,8 @@ CString RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
-			CString sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_oProperty.m_nRevauthDel);
+            std::wstring sDate(RtfUtility::convertDateTime(m_oProperty.m_nRevdttmDel).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_oProperty.m_nDeleted = PROP_DEF;
@@ -391,9 +391,9 @@ CString RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 	
-CString RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"{";
 	sResult += m_oProperty.RenderToRtf( oRenderParameter );
 	switch( m_eType )
@@ -436,7 +436,7 @@ CString RtfCharSpecial::RenderToRtf(RenderParameter oRenderParameter)
 	//}
 	if( PROP_DEF != m_nSoftHeight )
 	{
-		sResult.AppendFormat( L"\\softlheight%d", m_nSoftHeight );
+        sResult += L"\\softlheight" + std::to_wstring( m_nSoftHeight );
 	}
 	sResult += L"}";
 	return sResult;

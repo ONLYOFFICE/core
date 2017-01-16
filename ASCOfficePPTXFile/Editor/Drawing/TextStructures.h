@@ -50,46 +50,46 @@ namespace NSPresentationEditor
 		PARAM = oSrc.##PARAM;					\
 	}
 
-	static CString ToNode(const NSCommon::nullable_base<WORD>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<WORD>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
 		int n = (int)prop.get();
-		CString strVal = XmlUtils::IntToString(n);
+        std::wstring strVal = XmlUtils::IntToString(n);
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<LONG>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<LONG>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
 		int n = (int)prop.get();
-		CString strVal = XmlUtils::IntToString(n);
+        std::wstring strVal = XmlUtils::IntToString(n);
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<DWORD>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::UIntToString((size_t)prop.get());
+        std::wstring strVal = XmlUtils::UIntToString((size_t)prop.get());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<double>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<double>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::DoubleToString(prop.get());
+        std::wstring strVal = XmlUtils::DoubleToString(prop.get());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<CColor>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::UIntToString(prop->GetLONG());
+        std::wstring strVal = XmlUtils::UIntToString(prop->GetLONG());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
 
@@ -407,7 +407,7 @@ namespace NSPresentationEditor
 			if (!oSrc.tabStops.empty())				tabStops		= oSrc.tabStops;
 		}
 
-		CString ToString(LONG lCount)
+        std::wstring ToString(LONG lCount)
 		{
 			return L"";
 		}
@@ -495,7 +495,7 @@ namespace NSPresentationEditor
 			if (!tabsStops.empty())					tabsStops = oSrc.tabsStops;
 		}
 
-		CString ToString()
+        std::wstring ToString()
 		{
 			return L"";
 		}
@@ -627,7 +627,7 @@ namespace NSPresentationEditor
 			}
 		}
 
-		CString ToString()
+        std::wstring ToString()
 		{
 			return L"";
 		}

@@ -109,9 +109,9 @@ namespace OOX
 				m_pTblGrid->fromXML( oNode_tblGrid );
 
 		}
-		CString CTblGridChange::toXML() const
+		std::wstring CTblGridChange::toXML() const
 		{			
-			CString sResult = _T("<w:tblGridChange ");
+			std::wstring sResult = _T("<w:tblGridChange ");
 
 			if ( m_oId.IsInit() )
 			{
@@ -200,14 +200,14 @@ namespace OOX
 					m_pTblPrEx->fromXML( oReader );
 			}
 		}
-		CString CTblPrExChange::toXML() const
+		std::wstring CTblPrExChange::toXML() const
 		{			
-			CString sResult = _T("<w:tblPrExChange ");
+			std::wstring sResult = _T("<w:tblPrExChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+                sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -228,7 +228,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+                sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 
@@ -428,9 +428,9 @@ namespace OOX
 		}
 
 
-		CString CTbl::toXML() const
+		std::wstring CTbl::toXML() const
 		{
-			CString sResult = _T("<w:tbl>");
+			std::wstring sResult = _T("<w:tbl>");
 
 			if ( m_oTblGrid.IsInit() )
 			{
@@ -669,9 +669,9 @@ namespace OOX
 		}
 
 
-		CString CTr::toXML() const
+		std::wstring CTr::toXML() const
 		{
-				CString sResult = _T("<w:tr ");
+				std::wstring sResult = _T("<w:tr ");
 
 				ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
 				ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );
@@ -883,14 +883,14 @@ namespace OOX
 			}
 		}
 
-		CString CTc::toXML() const
+		std::wstring CTc::toXML() const
 		{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_sId.IsInit() )
 				{
 					sResult += _T("<w:tc w:id=\"");
-					sResult += m_sId->GetString();
+                    sResult += m_sId.get2();
 					sResult += _T("\">");
 				}
 				else

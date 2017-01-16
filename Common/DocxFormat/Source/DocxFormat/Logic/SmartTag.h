@@ -83,7 +83,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_smartTag;
@@ -117,8 +117,8 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString> m_sElement;
-			nullable<CString> m_sUri;
+			nullable<std::wstring> m_sElement;
+			nullable<std::wstring> m_sUri;
 
 			// Childs
 		};

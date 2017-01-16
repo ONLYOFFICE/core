@@ -64,8 +64,8 @@ public:
 
 	_AnchorTypeShape m_eAnchorTypeShape;
 
-    CString m_sName;
-    CString m_sDescription;
+    std::wstring m_sName;
+    std::wstring m_sDescription;
 
 	int m_nLeft;					//shpleftN	Specifies position of shape from the left of the anchor. The value N is in twips.
 	int m_nTop;						//shptopN	Specifies position of shape from the top of the anchor. The value N is in twips.
@@ -100,9 +100,9 @@ public:
 	int m_nColStart;				//colStart Starting column
 	int m_nColSpan;					//colSpan Number of columns to span
 //Rehydration
-	CString m_sMetroBlob;			// metroBlob Specifies application-specific data used to convert a shape to other formats. It is an encoded TBYTE stream.
-	CString m_sMetroBlobRels;
-	CString m_sMetroBlobData;
+    std::wstring m_sMetroBlob;			// metroBlob Specifies application-specific data used to convert a shape to other formats. It is an encoded TBYTE stream.
+    std::wstring m_sMetroBlobRels;
+    std::wstring m_sMetroBlobData;
 //Object Type
 	int m_bIsBullet;				//fIsBullet Indicates whether a picture was inserted as a picture bullet.
 	int m_nRotation;
@@ -180,8 +180,8 @@ public:
 	int m_nLineDashing;
 
 //WordArt
-	CString m_sGtextUNICODE;
-	CString m_sGtextFont;
+    std::wstring m_sGtextUNICODE;
+    std::wstring m_sGtextFont;
 	int		m_nGtextSize;
 	int		m_bGtext;
 	int		m_bGtextFVertical;
@@ -217,11 +217,11 @@ public:
 	}
 	void SetDefault();
 
-	CString RenderToRtf		(RenderParameter oRenderParameter);
-	CString RenderToOOX		(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf		(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX		(RenderParameter oRenderParameter);
 
-	CString RenderToOOXBegin(RenderParameter oRenderParameter);
-	CString RenderToOOXEnd	(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXBegin(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXEnd	(RenderParameter oRenderParameter);
 	
 	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 	{
@@ -248,8 +248,8 @@ public:
 			nBottom = nCenterY + nWidth / 2;
 		}
 	}
-	CString RenderToRtfShapeProperty(RenderParameter oRenderParameter);
-	CString GetShapeNodeName(int type);
+    std::wstring RenderToRtfShapeProperty(RenderParameter oRenderParameter);
+    std::wstring GetShapeNodeName(int type);
 };
 
 
@@ -258,8 +258,8 @@ typedef boost::shared_ptr<RtfShape> RtfShapePtr;
 class RtfShapeGroup : public RtfShape, public ItemContainer<RtfShapePtr>
 {
 public: 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	bool IsValid()
 	{
 		return true;

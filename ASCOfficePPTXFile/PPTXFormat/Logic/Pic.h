@@ -53,7 +53,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("Content") == strValue) ||
 					(_T("Icon") == strValue))
@@ -96,7 +96,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("Embed") == strValue) ||
 					(_T("Link") == strValue))
@@ -139,7 +139,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("Always") == strValue) ||
 					(_T("OnCall") == strValue))
@@ -183,14 +183,14 @@ namespace PPTX
 		{
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			void toXmlWriterXlsx(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void FillParentPointersForChilds();
 			bool isValid();
-			CString GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const;
+			std::wstring GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const;
 			std::wstring GetOleData(const std::wstring& sFilePath)const;
 
 		public:
@@ -222,11 +222,11 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
-			virtual CString GetFullPicName()const;
-			virtual CString GetVideoLink()const;
-			virtual CString GetAudioLink()const;
+			virtual std::wstring GetFullPicName()const;
+			virtual std::wstring GetVideoLink()const;
+			virtual std::wstring GetAudioLink()const;
 			DWORD GetFill(UniFill& fill)const;
 			DWORD GetLine(Ln& line)const;
 			double GetStTrim () const;
@@ -262,7 +262,7 @@ namespace PPTX
 				{
 					pWriter->StartNode(_T("pic:pic"));
 					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("xmlns:pic"), (CString)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
+					pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
 				}
 				else
 				{
@@ -272,7 +272,7 @@ namespace PPTX
 						pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
 						if(spPr.xfrm.IsInit())
 						{
-							CString oldNamespace = spPr.xfrm->m_ns;
+							std::wstring oldNamespace = spPr.xfrm->m_ns;
 							spPr.xfrm->m_ns = _T("p");
 							spPr.xfrm->toXmlWriter(pWriter);
 							spPr.xfrm->m_ns = oldNamespace;
@@ -280,8 +280,8 @@ namespace PPTX
 						pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/presentationml/2006/ole\">");
 
 						pWriter->StartNode(_T("p:oleObj"));
-						pWriter->WriteAttribute(L"name", (CString)L"oleObj");
-						pWriter->WriteAttribute(L"showAsIcon", (CString)L"1");
+						pWriter->WriteAttribute(L"name", (std::wstring)L"oleObj");
+						pWriter->WriteAttribute(L"showAsIcon", (std::wstring)L"1");
 						if(oleObject->m_oId.IsInit())
 						{
 							pWriter->WriteAttribute2(L"r:id", oleObject->m_oId->get());
@@ -388,7 +388,7 @@ namespace PPTX
 						}
 					}
 				}
-				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.IsEmpty() && oleObject.IsInit())
+				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
 				{
 					oleObject->m_oId = PPTX::RId(blipFill.blip->oleRid);
 					oleObject->m_sFilepathBin = blipFill.blip->oleFilepathBin;

@@ -56,7 +56,7 @@ namespace PPTX
 			template<class T> T& as() {return Effect.as<T>();}
 			template<class T> const T& as() const {return static_cast<const T&>(*Effect);}
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

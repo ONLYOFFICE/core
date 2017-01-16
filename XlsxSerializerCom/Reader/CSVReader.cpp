@@ -38,23 +38,23 @@
 
 namespace CSVReader
 {
-    void AddCell(CString &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
+    void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 	{
 		while(!oDeleteChars.empty())
 		{
 			INT nIndex = oDeleteChars.top() - nStartCell;
-			sText.Delete(nIndex);
+            sText.erase(nIndex, 1);
 			oDeleteChars.pop();
 		}
 		// Пустую не пишем
-		if (0 == sText.GetLength())
+        if (0 == sText.length())
 			return;
 
 		OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 		pCell->m_oType.Init();
 
 		WCHAR *pEndPtr;
-		double dValue = wcstod(sText, &pEndPtr);
+        double dValue = wcstod(sText.c_str(), &pEndPtr);
 		if (NULL != *pEndPtr)
 		{
 			// Не число
@@ -81,7 +81,7 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-    void ReadFromCsvToXlsx(const CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
+    void ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
 	{
 		// Создадим Workbook
 		oXlsx.CreateWorkbook();
@@ -193,7 +193,7 @@ namespace CSVReader
 					if (bInQuote)
 						continue;
 					// New Cell
-					CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
+                    std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
 					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
                     bIsWrap = false;
 
@@ -215,7 +215,7 @@ namespace CSVReader
 					// New line
 					if (nStartCell != nIndex)
 					{
-						CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
+                        std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
 						AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
                         bIsWrap = false;
 					}
@@ -265,7 +265,7 @@ namespace CSVReader
 			if (nStartCell != nSize)
 			{
 				// New line
-				CString sCellText(pTemp + nStartCell, nSize - nStartCell);
+                std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
 				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 			}

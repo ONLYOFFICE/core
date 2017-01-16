@@ -55,11 +55,11 @@ int RtfDocument::GetType()
 	return TYPE_RTF_DOCUMENT;
 }
 
-CString RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
 {
 	return L"";
 }
-CString RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return L"";
 }

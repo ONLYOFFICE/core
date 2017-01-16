@@ -68,7 +68,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (charRg.IsInit())
 				{
@@ -76,7 +76,7 @@ namespace PPTX
 					oAttr.Write(_T("st"), st);
 					oAttr.Write(_T("end"), end);
 
-					CString strName = _T("p:pRg");
+					std::wstring strName = _T("p:pRg");
 					if (*charRg)
 						strName = _T("p:charRg");	
 

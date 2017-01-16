@@ -59,7 +59,7 @@ namespace PPTX
 		public:
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
-            virtual CString toXML() const;
+            virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

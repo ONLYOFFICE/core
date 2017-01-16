@@ -79,7 +79,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("<a:noAutofit/>");
 			}
@@ -116,9 +116,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:normAutofit fontScale=\"") + m_oFontScale.ToString()
+				std::wstring sResult = _T("<a:normAutofit fontScale=\"") + m_oFontScale.ToString()
 					+ _T("\" lnSpcReduction=\"") + m_oLnSpcReduction.ToString() + _T("\"/>");
 				return sResult;
 			}
@@ -196,7 +196,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("<a:spAutoFit/>");
 			}
@@ -279,9 +279,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:bodyPr");
+				std::wstring sResult = _T("<a:bodyPr");
 
 				if ( 0 != m_oRot.GetAngle() )
 					sResult += _T(" rot=\"") + m_oRot.ToString() + _T("\"");

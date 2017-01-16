@@ -73,13 +73,13 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("Characters"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nCharacters = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("CharactersWithSpaces"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nCharactersWithSpaces = oNum.GetValue();
 				}
 
@@ -88,13 +88,13 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("DocSecurity"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nDocSecurity = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("HiddenSlides"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nHiddenSlides = oNum.GetValue();
 				}
 
@@ -103,19 +103,19 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("HyperlinksChanged"), oItem ) )
 				{
-                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = oItem.GetText();
 					m_bHyperlinksChanged = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("Lines"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nLines = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("LinksUpToDate"), oItem ) )
 				{
-                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = oItem.GetText();
 					m_bLinksUpToDate = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
@@ -124,43 +124,43 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("MMClips"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nMMClips = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Notes"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nNotes = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Pages"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nPages = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Paragraphs"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nParagraphs = oNum.GetValue();
 				}
 
                 if ( oProperties.GetNode( _T("ScaleCrop"), oItem ) )
 				{
-                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = oItem.GetText();
 					m_bScaleCrop = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("SharedDoc"), oItem ) )
 				{
-                    SimpleTypes::COnOff<> oBool = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::COnOff<> oBool = oItem.GetText();
 					m_bSharedDoc = (oBool.GetValue() == SimpleTypes::onoffTrue);
 				}
 
 				if ( oProperties.GetNode( _T("Slides"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nSlides = oNum.GetValue();
 				}
 
@@ -169,20 +169,20 @@ namespace OOX
 
 				if ( oProperties.GetNode( _T("TotalTime"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nTotalTime = oNum.GetValue();
 				}
 
 				if ( oProperties.GetNode( _T("Words"), oItem ) )
 				{
-                    SimpleTypes::CDecimalNumber<> oNum = (const TCHAR *) oItem.GetText();
+                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
 					m_nWords = oNum.GetValue();
 				}
 			}
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+            std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\">");
 
 			if ( m_sApplication.IsInit() )
@@ -389,7 +389,7 @@ namespace OOX
 
 			sXml += _T("</Properties>");
 
-			CDirectory::SaveToFile( oPath.GetPath(), sXml );
+			NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml );
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 
@@ -406,11 +406,11 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-		void SetApplication(const CString& sVal)
+        void SetApplication(const std::wstring& sVal)
 		{
 			m_sApplication = sVal;
 		}
-		void SetAppVersion(const CString& sVal)
+        void SetAppVersion(const std::wstring& sVal)
 		{
 			m_sAppVersion = sVal;
 		}
@@ -422,7 +422,7 @@ namespace OOX
 		{
 			m_bScaleCrop = bVal;
 		}
-		void SetCompany(CString sVal)
+        void SetCompany(std::wstring sVal)
 		{
 			m_sCompany = sVal;
 		}
@@ -443,27 +443,27 @@ namespace OOX
 		//        HLinks
 		//        TitlesOfParts
 
-		nullable<CString> m_sApplication;
-		nullable<CString> m_sAppVersion;
+        nullable<std::wstring> m_sApplication;
+        nullable<std::wstring> m_sAppVersion;
 		nullable<int>     m_nCharacters;
 		nullable<int>     m_nCharactersWithSpaces;
-		nullable<CString> m_sCompany;
+        nullable<std::wstring> m_sCompany;
 		nullable<int>     m_nDocSecurity;
 		nullable<int>     m_nHiddenSlides;
-		nullable<CString> m_sHyperlinkBase;
+        nullable<std::wstring> m_sHyperlinkBase;
 		nullable<bool>    m_bHyperlinksChanged;
 		nullable<int>     m_nLines;
 		nullable<bool>    m_bLinksUpToDate;
-		nullable<CString> m_sManager;
+        nullable<std::wstring> m_sManager;
 		nullable<int>     m_nMMClips;
 		nullable<int>     m_nNotes;
 		nullable<int>     m_nPages;
 		nullable<int>     m_nParagraphs;
-		nullable<CString> m_sPresentationForm;
+        nullable<std::wstring> m_sPresentationForm;
 		nullable<bool>    m_bScaleCrop;
 		nullable<bool>    m_bSharedDoc;
 		nullable<int>     m_nSlides;
-		nullable<CString> m_sTemplate;
+        nullable<std::wstring> m_sTemplate;
 		nullable<int>     m_nTotalTime;
 		nullable<int>     m_nWords;
 	};

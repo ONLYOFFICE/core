@@ -54,7 +54,7 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("n"), n);
@@ -75,7 +75,7 @@ namespace PPTX
 			int d;
 			int n;
 		public:
-			CString name;
+			std::wstring name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

@@ -67,9 +67,9 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str = _T("<a:fillOverlay blend=\"") + blend.get() + _T("\">");
+				std::wstring str = _T("<a:fillOverlay blend=\"") + blend.get() + _T("\">");
 				str += Fill.toXML();
 				str += _T("</a:fillOverlay>");
 

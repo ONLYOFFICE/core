@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<xdr:cNvGraphicFramePr/>");
 			}
@@ -116,7 +116,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -126,11 +126,11 @@ namespace OOX
 
 				if (m_oCNvPr.IsInit())
 				{
-					CString sCNvPr = m_oCNvPr->toXML();
-					writer.WriteString(sCNvPr.GetBuffer());
-					sCNvPr.ReleaseBuffer();
+                    std::wstring sCNvPr = m_oCNvPr->toXML();
+                    writer.WriteString(sCNvPr.c_str());
 				}
-				else								writer.WriteString(_T("<xdr:cNvPr id=\"1\" name=\"diagram\"/>"));
+                else
+                    writer.WriteString(_T("<xdr:cNvPr id=\"1\" name=\"diagram\"/>"));
 
 				if (m_oCNvGraphicFramePr.IsInit())	m_oCNvGraphicFramePr->toXML(writer);
 				
@@ -185,7 +185,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -234,7 +234,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -300,7 +300,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -352,7 +352,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -373,7 +373,7 @@ namespace OOX
 						writer.WriteString(_T("<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">"));
 						writer.WriteString(_T("<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "));
 							writer.WriteString(_T("r:id=\""));
-								writer.WriteString(m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->ToString2());
+								writer.WriteString(m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->ToString());
 							writer.WriteString(_T("\"/>"));
 						writer.WriteString(_T("</a:graphicData>"));
 						writer.WriteString(_T("</a:graphic>"));
@@ -387,8 +387,9 @@ namespace OOX
 					return;
 
 				m_sXml.Init();
-				m_sXml->Append(oReader.GetOuterXml());
-                CString sXml = L"<root xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">";
+                m_sXml->append(oReader.GetOuterXml());
+
+                std::wstring sXml = L"<root xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">";
                 sXml += m_sXml.get();
                 sXml += L"</root>";
 				XmlUtils::CXmlLiteReader oSubReader;
@@ -422,7 +423,7 @@ namespace OOX
 			nullable<CGraphicFrameNonVisual>	m_oNvGraphicFramePr;
 			//xfrm
 			//extLst
-			nullable<CString>					m_sXml;
+            nullable<std::wstring>					m_sXml;
 		};
 	} //Spreadsheet
 } // namespace OOX

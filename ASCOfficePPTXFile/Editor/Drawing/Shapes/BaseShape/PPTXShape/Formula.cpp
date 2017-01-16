@@ -91,7 +91,7 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManag
 	{
 		(*pManager->Guides)[-m_lIndex-1] = dRes;
 		// переопределим формулу
-		pManager->mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
+                pManager->mapGuides.insert(std::pair<std::wstring, long>(m_sName, -m_lIndex-1));
 	}
 	else
 		(*pManager->Adjustments)[m_lIndex-1] = (long)dRes;

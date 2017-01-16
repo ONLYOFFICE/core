@@ -240,21 +240,21 @@ namespace OOX
 		}
 
 
-		CString CSmartTag::toXML() const
+		std::wstring CSmartTag::toXML() const
 		{
-				CString sResult = _T("<w:smartTag ");
+				std::wstring sResult = _T("<w:smartTag ");
 
 				if ( m_sElement.IsInit() )
 				{
 					sResult += _T("w:element=\"");
-					sResult += m_sElement->GetString();
+                    sResult += m_sElement.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUri.IsInit() )
 				{
 					sResult += _T("w:uri=\"");
-					sResult += m_sUri->GetString();
+                    sResult += m_sUri.get2();
 					sResult += _T("\" ");
 				}
 

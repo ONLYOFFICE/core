@@ -88,7 +88,7 @@ public:
 		return L"auto";
 	}
 
-	static CString ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, int nCount = 10)
+    static std::wstring ConvertStyles(NSPresentationEditor::CTextStyles& oStyles, NSPresentationEditor::CMetricInfo& oMetricInfo, int nCount = 10)
 	{
 		NSPresentationEditor::CStringWriter oWriter;
 		ConvertStyles(oStyles, oMetricInfo, oWriter, nCount);
@@ -103,7 +103,7 @@ public:
 				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oMetricInfo, oWriter, i);
 		}
 	}
-	static CString ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo, const int& nLevel)
+    static std::wstring ConvertStyleLevel(NSPresentationEditor::CTextStyleLevel& oLevel, NSPresentationEditor::CMetricInfo& oMetricInfo, const int& nLevel)
 	{
 		NSPresentationEditor::CStringWriter oWriter;
 		ConvertStyleLevel(oLevel, oMetricInfo, oWriter, nLevel);

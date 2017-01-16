@@ -107,7 +107,7 @@ public:
 		m_strName				= pAtom->m_strUNICODEUserName;
 	}
 
-	CString ToString()
+    std::wstring ToString()
 	{
         return L"";
 	}

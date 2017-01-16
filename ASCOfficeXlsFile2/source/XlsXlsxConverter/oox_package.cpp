@@ -40,6 +40,7 @@
 
 #include "external_items.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace oox {
@@ -150,7 +151,7 @@ void rels_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"_rels";
 
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
    
 	if (rels_file_)
         rels_file_->write(path);
@@ -237,7 +238,7 @@ docProps_files::docProps_files()
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     core_.write(path);
     app_.write(path);

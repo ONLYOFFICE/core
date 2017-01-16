@@ -61,7 +61,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"ref", ref);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (!ref.IsInit())
 					return _T("<a:effect/>");

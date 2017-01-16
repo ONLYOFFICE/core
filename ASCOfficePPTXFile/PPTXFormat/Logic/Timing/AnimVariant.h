@@ -66,7 +66,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 
@@ -102,7 +102,7 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + name, oValue);
 			}
 		public:
-			CString				name;
+			std::wstring				name;
 
 			nullable_bool		boolVal;
 			nullable_string		strVal;

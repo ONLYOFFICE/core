@@ -32,8 +32,7 @@
 #pragma once
 
 #include "NamespaceOwn.h"
-#include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
-#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace PPTX
 {
@@ -178,7 +177,7 @@ namespace PPTX
 		virtual ~WritingElement() {}
 
 		virtual void         fromXML(XmlUtils::CXmlNode& node) = 0;
-        virtual CString      toXML() const                     = 0;
+        virtual std::wstring      toXML() const                     = 0;
 		virtual EElementType getType() const
 		{
 			return PPTX::et_Unknown;

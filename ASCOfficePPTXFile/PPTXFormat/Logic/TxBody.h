@@ -85,7 +85,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(bodyPr);
@@ -137,9 +137,9 @@ namespace PPTX
 				*/
 			}
 
-			CString GetText()const
+			std::wstring GetText()const
 			{
-				CString result = _T("");
+				std::wstring result = _T("");
 				size_t count = Paragrs.size();
 
 				for (size_t i = 0; i < count; ++i)
@@ -209,7 +209,7 @@ namespace PPTX
 			nullable<TextListStyle> lstStyle;
 			std::vector<Paragraph>	Paragrs;
 
-			CString m_ns;
+			std::wstring m_ns;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -230,7 +230,7 @@ namespace PPTX
 				return (bodyPr.wrap->get() == _T("none"));
 			}
 
-			CString GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<PPTX::Logic::ShapeStyle>& shape_style);
+			std::wstring GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<PPTX::Logic::ShapeStyle>& shape_style);
 		};
 	} // namespace Logic
 } // namespace PPTX

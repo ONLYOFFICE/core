@@ -207,12 +207,12 @@ namespace NSPresentationEditor
 			m_oWriterVML.ClearNoAttack();
 		}
 //--------------------------------------------------------------------
-			CString ConvertShape	();
-			CString ConvertImage	();
-			CString ConvertLine		(CPen		& pen);
-			CString	ConvertShadow	(CShadow	& shadow);
-			CString	ConvertBrush	(CBrush		& brush);
-    static	CString	ConvertColor	(CColor		& color, long alpha);
+            std::wstring ConvertShape	();
+            std::wstring ConvertImage	();
+            std::wstring ConvertLine		(CPen		& pen);
+            std::wstring	ConvertShadow	(CShadow	& shadow);
+            std::wstring	ConvertBrush	(CBrush		& brush);
+    static	std::wstring	ConvertColor	(CColor		& color, long alpha);
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -439,9 +439,7 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			CString str = _T("");
-            str.Format(_T("<a:moveTo><a:pt x=\"%d\" y=\"%d\"/></a:moveTo>"), (LONG)x, (LONG)y);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" + std::to_wstring((int)y) + L"\"/></a:moveTo>");
 		}
 		inline void LineTo(const double& dX, const double& dY)
 		{
@@ -449,9 +447,7 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			CString str = _T("");
-            str.Format(_T("<a:lnTo><a:pt x=\"%d\" y=\"%d\"/></a:lnTo>"), (LONG)x, (LONG)y);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" +std::to_wstring((int)y) + L"\"/></a:lnTo>");
 		}
 		inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 		{
@@ -467,10 +463,9 @@ namespace NSPresentationEditor
 			double _y3 = y3;
 			m_oFullTransform.TransformPoint(_x3, _y3);
 
-			CString str = _T("");
-			str.Format(_T("<a:cubicBezTo><a:pt x=\"%d\" y=\"%d\"/><a:pt x=\"%d\" y=\"%d\"/><a:pt x=\"%d\" y=\"%d\"/></a:cubicBezTo>"), 
-                (LONG)_x1, (LONG)_y1, (LONG)_x2, (LONG)_y2, (LONG)_x3, (LONG)_y3);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:cubicBezTo><a:pt x=\"" + std::to_wstring((int)x1) + L"\" y=\"" + std::to_wstring((int)y1)
+                                      + L"\"/><a:pt x=\"" + std::to_wstring((int)x2) + L"\" y=\"" + std::to_wstring((int)y2) + L"\"/><a:pt x=\""
+                                      + std::to_wstring((int)x3) + L"\" y=\"" + std::to_wstring((int)y3) + L"\"/></a:cubicBezTo>");
 		}
 		void Start()
 		{
@@ -482,7 +477,7 @@ namespace NSPresentationEditor
 		}
 		void Close()
 		{
-			CString str = _T("<a:close/>");
+            std::wstring str = _T("<a:close/>");
 			m_oWriterPath.WriteString(str);
 		}
 

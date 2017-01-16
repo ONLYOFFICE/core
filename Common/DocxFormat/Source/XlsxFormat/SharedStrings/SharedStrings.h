@@ -71,8 +71,14 @@ namespace OOX
 
 				XmlUtils::CXmlLiteReader oReader;
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+				if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
+				{
+					//test un-upper(lower)case open - CALACATA GREECE.xlsx
+					if (!m_oReadPath.FileInDirectoryCorrect())
+						return;
+					if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
+						return;
+				}
 
 				if ( !oReader.ReadNextNode() )
 					return;
@@ -112,10 +118,10 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 
 				writer.WriteString(_T("</sst>"));
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), writer.GetData());
-				sPath.ReleaseBuffer();
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+
+                oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			virtual const OOX::FileType type() const
 			{

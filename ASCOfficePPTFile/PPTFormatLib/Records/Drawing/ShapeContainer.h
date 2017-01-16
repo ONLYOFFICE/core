@@ -1867,12 +1867,12 @@ public:
 		return etShape;
 	}
 
-	AVSINLINE CString GetFileName(CString strFilePath)
+    AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
 	{
-		int nIndex = strFilePath.ReverseFind(TCHAR('\\'));
+        int nIndex = strFilePath.rfind(TCHAR('\\'));
 		if (-1 != nIndex)
 		{
-			return strFilePath.Mid(nIndex + 1);
+            return strFilePath.substr(nIndex + 1);
 		}
 		return strFilePath;
 	}

@@ -44,7 +44,7 @@ namespace PPTX
 		public:
 			RunBase(){}
 			virtual ~RunBase(){}
-			virtual CString GetText()const =0;
+			virtual std::wstring GetText()const =0;
 		};
 	} // namespace Logic
 } // namespace PPTX

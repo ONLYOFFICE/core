@@ -57,15 +57,15 @@ public:
 		return *this;
 	}
 
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult = L"<w:tbl>";
+        std::wstring sResult = L"<w:tbl>";
 		sResult += m_oProperty.RenderToOOX(oRenderParameter);
 		sResult += L"<w:tblGrid>";
 		
 		for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
 		{
-			sResult.AppendFormat(L"<w:gridCol w:w=\"%d\"/>", m_aTableGrid[i]);
+            sResult += L"<w:gridCol w:w=\"" + std::to_wstring(m_aTableGrid[i]) + L"\"/>";
 		}
 		sResult += L"</w:tblGrid>";	
 
@@ -76,9 +76,9 @@ public:
 		sResult += L"</w:tbl>";
 		return sResult;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString result;
+        std::wstring result;
 		
 		result += L"\n";
 		for(int i = 0 ; i < (int)m_aArray.size(); i++)

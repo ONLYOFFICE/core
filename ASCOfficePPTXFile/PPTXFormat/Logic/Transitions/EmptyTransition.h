@@ -50,13 +50,13 @@ namespace PPTX
 				name = XmlUtils::GetNameNoNS(node.GetName());
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<p:") + name + _T("/>");
 			}
 
 		public:
-			CString name;
+			std::wstring name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

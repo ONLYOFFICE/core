@@ -56,7 +56,7 @@ namespace PPTX
 			template<class T> T& as() {return static_cast<T&>(*m_node);}
 			template<class T> const T& as() const {return static_cast<const T&>(*m_node);}
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 		//public:
 		private:
 			smart_ptr<WrapperWritingElement> m_node;

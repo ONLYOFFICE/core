@@ -67,9 +67,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -119,9 +119,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oType.IsInit() )
 				{
@@ -177,9 +177,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oFirstColumn.IsInit() )
 				{
@@ -395,9 +395,9 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -471,9 +471,9 @@ namespace ComplexTypes
 					oReader.ReadTillEnd();
 				PrepareAfterRead();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:bottomFromText=\""), m_oBottomFromText );
 				ComplexTypes_WriteAttribute( _T("w:horzAnchor=\""),     m_oHorzAnchor );
@@ -602,9 +602,9 @@ namespace OOX
 						m_oStart = oReader;
 				}
 			}
-			virtual CString      toXML() const                     
+			virtual std::wstring      toXML() const                     
 			{
-				CString sResult = _T("<w:tblBorders>");
+				std::wstring sResult = _T("<w:tblBorders>");
 
 				if ( m_oBottom.IsInit() )
 				{
@@ -755,9 +755,9 @@ namespace OOX
 						m_oStart = oReader;
 				}
 			}
-			virtual CString      toXML() const                     
+			virtual std::wstring      toXML() const                     
 			{
-				CString sResult = _T("<w:tblCellMar>");
+				std::wstring sResult = _T("<w:tblCellMar>");
 
 				if ( m_oBottom.IsInit() )
 				{
@@ -843,7 +843,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -853,10 +853,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                       > m_sAuthor;
+			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                       > m_sUserId;
 
 			// Childs
 			nullable<CTableProperty>				 m_pTblPr;
@@ -958,9 +958,9 @@ namespace OOX
 					else if ( _T("w:tblW")                == sName ) m_oTblW = oReader;
 				}
 			}
-			virtual CString toXML() const                     
+			virtual std::wstring toXML() const                     
 			{
-				CString sResult = _T("<w:tblPr>");
+				std::wstring sResult = _T("<w:tblPr>");
 
 				WritingElement_WriteNode_1( _T("<w:bidiVisual "),          m_oBidiVisual );
 				WritingElement_WriteNode_1( _T("<w:jc "),                  m_oJc );
@@ -1047,17 +1047,17 @@ namespace OOX
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CShading                        > m_oShade;
 			nullable<OOX::Logic::CTblBorders                             > m_oTblBorders;
-			nullable<ComplexTypes::Word::CString_                        > m_oTblCaption;
+			nullable<ComplexTypes::Word::String                        > m_oTblCaption;
 			nullable<OOX::Logic::CTblCellMar                             > m_oTblCellMar;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::CString_                        > m_oTblDescription;
+			nullable<ComplexTypes::Word::String                        > m_oTblDescription;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblInd;
 			nullable<ComplexTypes::Word::CTblLayoutType                  > m_oTblLayout;
 			nullable<ComplexTypes::Word::CTblLook                        > m_oTblLook;
 			nullable<ComplexTypes::Word::CTblOverlap                     > m_oTblOverlap;
 			nullable<ComplexTypes::Word::CTblPPr                         > m_oTblpPr;
 			nullable<OOX::Logic::CTblPrChange                            > m_oTblPrChange;
-			nullable<ComplexTypes::Word::CString_                        > m_oTblStyle;
+			nullable<ComplexTypes::Word::String                        > m_oTblStyle;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleColBandSize;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oTblStyleRowBandSize;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblW;
@@ -1096,9 +1096,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:hRule=\""), m_oHRule );
 				ComplexTypes_WriteAttribute( _T("w:val=\""),   m_oVal );
@@ -1146,7 +1146,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -1156,10 +1156,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                      > m_sAuthor;
+			nullable<std::wstring                      > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                       > m_sUserId;
 
 			// Childs
 			nullable<CTableRowProperties>            m_pTrPr;
@@ -1256,9 +1256,9 @@ namespace OOX
 					else if ( _T("w:wBefore")        == sName ) m_oWBefore = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:trPr>");
+				std::wstring sResult = _T("<w:trPr>");
 
 				WritingElement_WriteNode_1( _T("<w:cantSplit "),      m_oCantSplit );
 				WritingElement_WriteNode_1( _T("<w:cnfStyle "),       m_oCnfStyle );
@@ -1381,14 +1381,14 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1400,7 +1400,7 @@ namespace ComplexTypes
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1423,12 +1423,12 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<CString                          > m_sAuthor;
+			nullable<std::wstring                          > m_sAuthor;
 			nullable<SimpleTypes::CDateTime           > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<>    > m_oId;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMerge;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMergeOrig;
-			nullable<CString                          > m_sUserId;
+			nullable<std::wstring                          > m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1456,9 +1456,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
@@ -1505,9 +1505,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
 
@@ -1571,7 +1571,7 @@ namespace OOX
 					{
 						if ( oHeaders.GetAt( nIndex, oHeader ) )
 						{
-							ComplexTypes::Word::CString_ *oHead = new ComplexTypes::Word::CString_(oHeader);
+							ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oHeader);
 							if (oHead) m_arrHeaders.push_back( oHead );
 						}
 					}
@@ -1589,14 +1589,14 @@ namespace OOX
 
 					if ( _T("w:header") == sName )
 					{
-						ComplexTypes::Word::CString_ *oHead = new ComplexTypes::Word::CString_(oReader);
+						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oReader);
 						if (oHead) m_arrHeaders.push_back( oHead );
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:headers>");
+				std::wstring sResult = _T("<w:headers>");
 
 				for (unsigned int nIndex = 0; nIndex < m_arrHeaders.size(); nIndex++ )
 				{		
@@ -1617,7 +1617,7 @@ namespace OOX
 			}
 		public:
 
-			std::vector<ComplexTypes::Word::CString_ *> m_arrHeaders;
+			std::vector<ComplexTypes::Word::String *> m_arrHeaders;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1679,9 +1679,9 @@ namespace OOX
 					else if ( !m_oStart.IsInit() && _T("w:left")  == sName ) m_oStart = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:tcBorders>");
+				std::wstring sResult = _T("<w:tcBorders>");
 
 				WritingElement_WriteNode_1( _T("<w:bottom "),  m_oBottom );
 				WritingElement_WriteNode_1( _T("<w:end "),     m_oEnd );
@@ -1790,9 +1790,9 @@ namespace OOX
 					else if ( !m_oStart.IsInit() && _T("w:left")  == sName ) m_oStart = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:tcMar>");
+				std::wstring sResult = _T("<w:tcMar>");
 
 				WritingElement_WriteNode_1( _T("<w:bottom "), m_oBottom );
 				WritingElement_WriteNode_1( _T("<w:end "),    m_oEnd );
@@ -1855,7 +1855,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -1865,10 +1865,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                       > m_sAuthor;
+			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                       > m_sUserId;
 
 			// Childs
 			nullable<CTableCellProperties>			 m_pTcPr;
@@ -1983,9 +1983,9 @@ namespace OOX
 					else if ( _T("w:vMerge")         == sName ) m_oVMerge = oReader;
 				}
 			}
-			virtual CString      toXML() const             
+			virtual std::wstring      toXML() const             
 			{
-				CString sResult = _T("<w:tcPr>");
+				std::wstring sResult = _T("<w:tcPr>");
 
 				WritingElement_WriteNode_1( _T("<w:cellDel "),        m_oCellDel );
 				WritingElement_WriteNode_1( _T("<w:cellIns "),        m_oCellIns );

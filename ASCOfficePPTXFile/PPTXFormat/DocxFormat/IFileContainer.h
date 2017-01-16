@@ -60,7 +60,7 @@ namespace PPTX
 		{
 		}
 	protected:
-        std::map<CString, smart_ptr<PPTX::File>>	m_container;
+        std::map<std::wstring, smart_ptr<PPTX::File>>	m_container;
 		size_t m_lMaxRid;
 
 	protected:

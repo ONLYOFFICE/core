@@ -54,11 +54,11 @@ namespace PPTX
 					nullable_string sTmp;
 					node.ReadAttributeBase(L"val", sTmp);
 
-					if (val.is_init() && sTmp.is_init() && sTmp->Find(TCHAR('%')) != -1)
+					if (val.is_init() && sTmp.is_init() && sTmp->find(TCHAR('%')) != -1)
 						*val = (*val) * 1000;
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), val);
@@ -85,8 +85,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{				
-				CString _name;
-				CString sAttrNamespace;
+				std::wstring _name;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					_name = _T("w14:") + XmlUtils::GetNameNoNS(name);
@@ -102,7 +102,7 @@ namespace PPTX
 			}
 
 		public:
-			CString			name;
+			std::wstring			name;
 			nullable_int	val;
 		protected:
 			virtual void FillParentPointersForChilds(){};

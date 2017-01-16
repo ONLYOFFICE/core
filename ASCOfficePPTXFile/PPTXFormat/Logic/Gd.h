@@ -39,22 +39,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		static void ParseString(CString strDelimeters, CString strSource, std::vector<CString>* pArrayResults)
-		{
-			if (NULL == pArrayResults)
-				return;
-
-			CString resToken;
-			int curPos= 0;
-
-			resToken = strSource.Tokenize(strDelimeters, curPos);
-			while (resToken != _T(""))
-			{
-				pArrayResults->push_back(resToken);
-				resToken = strSource.Tokenize(strDelimeters, curPos);
-			};
-		}
-
 		class Gd : public WrapperWritingElement
 		{
 		public:
@@ -67,7 +51,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"fmla", fmla);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"), name);
@@ -99,8 +83,8 @@ namespace PPTX
 					int nStart = 0;
 					int nCurrent = 0;
 
-					WCHAR* pData = fmla->GetBuffer();
-					int nLen = fmla->GetLength();
+                    const wchar_t* pData = fmla->c_str();
+					int nLen = fmla->length();
 
 					int nFound = 0;
 					while (nCurrent < nLen)
@@ -148,23 +132,6 @@ namespace PPTX
 							pWriter->WriteString1Data(nFound + 1, pData + nStart, (ULONG)(nCurrent - nStart));
 						}
 					}
-
-					/*
-					std::vector<CString> arr;
-					ParseString(_T(" "), fmla.get(), &arr);
-
-					size_t nLen = arr.GetCount();
-					for (size_t i = 0; i < nLen; ++i)
-					{
-						if (i == 0)
-						{
-							int nVal = GetFormulaType(arr[i]);
-							pWriter->WriteInt1((int)(i + 1), nVal);
-						}
-						else
-							pWriter->WriteString1((int)i + 1, arr[i]);
-					}
-					*/
 				}
 				
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -174,7 +141,7 @@ namespace PPTX
 			{
 				pReader->Skip(5); // len + start attributes
 
-				CString _fmla = _T("");
+				std::wstring _fmla = _T("");
 				while (true)
 				{
 					BYTE _at = pReader->GetUChar_TypeNode();
@@ -198,7 +165,7 @@ namespace PPTX
 					fmla = _fmla;
 			}
 
-			int GetFormulaType(const CString& str) const
+			int GetFormulaType(const std::wstring& str) const
 			{
 				if (_T("*/") == str)
 					return 0;
@@ -267,7 +234,7 @@ namespace PPTX
 				return 0;
 			}
 
-			static CString GetFormulaName(const int& val)
+			static std::wstring GetFormulaName(const int& val)
 			{
 				switch (val)
 				{
@@ -299,7 +266,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"), name);

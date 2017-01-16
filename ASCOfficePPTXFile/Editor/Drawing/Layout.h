@@ -222,36 +222,36 @@ namespace NSPresentationEditor
 			return NSPresentationEditor::CColor();
 		}
 
-		static void CheckPlaceholderStyle(CString strStyleName, LONG& lType, LONG& lLevel, LONG& lTypeStyle)
+        static void CheckPlaceholderStyle(std::wstring strStyleName, LONG& lType, LONG& lLevel, LONG& lTypeStyle)
 		{
-			int nLen = strStyleName.GetLength();
-			TCHAR* pData = strStyleName.GetBuffer();
+            int         nLen  = strStyleName.length();
+            wchar_t*    pData = (wchar_t*)strStyleName.c_str();
 
 			lType		= 0;
 			lLevel		= 0;
 			lTypeStyle	= -1;
 
-			TCHAR* pDataEnd = pData + nLen;
-			TCHAR* pDataMem = pData + 1;
+            wchar_t* pDataEnd = pData + nLen;
+            wchar_t* pDataMem = pData + 1;
 			for (; ((pDataMem < pDataEnd) && XmlUtils::IsDigit(*pDataMem)); ++pDataMem)
 			{
 				lType *= 10;
-				lType += (*pDataMem - ((TCHAR)'0'));
+                lType += (*pDataMem - ((wchar_t)'0'));
 			}
 
 			pDataMem += 4;
 			for (; ((pDataMem < pDataEnd) && XmlUtils::IsDigit(*pDataMem)); ++pDataMem)
 			{
 				lLevel *= 10;
-				lLevel += (*pDataMem - ((TCHAR)'0'));
+                lLevel += (*pDataMem - ((wchar_t)'0'));
 			}
 
 			++pDataMem;
 			if (pDataMem + 1 < pDataEnd)
 			{
-				if ((TCHAR('c') == pDataMem[0]) && (TCHAR('f') == pDataMem[1]))
+                if ((wchar_t('c') == pDataMem[0]) && (wchar_t('f') == pDataMem[1]))
 					lTypeStyle = 1;
-				if ((TCHAR('p') == pDataMem[0]) && (TCHAR('f') == pDataMem[1]))
+                if ((wchar_t('p') == pDataMem[0]) && (wchar_t('f') == pDataMem[1]))
 					lTypeStyle = 0;
 			}
 		}

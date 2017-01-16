@@ -239,9 +239,9 @@ namespace OOX
 		}
 
 
-		CString CFldSimple::toXML() const
+		std::wstring CFldSimple::toXML() const
 		{
-				CString sResult = _T("<w:fldSimple ");
+				std::wstring sResult = _T("<w:fldSimple ");
 
 				sResult += _T("w:dirty=\"");
 				sResult += m_oDirty.ToString();
@@ -253,7 +253,7 @@ namespace OOX
 				if ( m_sInstr.IsInit() )
 				{
 					sResult += _T("w:instr=\"");
-					sResult += m_sInstr->GetString();
+                    sResult += m_sInstr.get2();
 					sResult += _T("\" ");
 				}
 

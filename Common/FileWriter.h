@@ -90,7 +90,7 @@ namespace NFileWriter
 	public :
 
 		// Конструктор ( от имени файла, сам контрол открывает файл )
-		CBufferedFileWriter ( CString & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
+                CBufferedFileWriter ( std::wstring & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
 		{
 			if (m_oFile.CreateFile(sFileName) != S_OK)
 			// Если не получилось открыть файл

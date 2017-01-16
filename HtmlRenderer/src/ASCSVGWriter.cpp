@@ -770,7 +770,7 @@ namespace NSHtmlRenderer
 		oTemp.TransformPoint(r, b);
 		}
 
-		m_oWriter.WriteImage((CString)bstrVal, x, y, r - x, b - y, m_pTransform->z_Rotation());
+		m_oWriter.WriteImage((std::wstring)bstrVal, x, y, r - x, b - y, m_pTransform->z_Rotation());
 		*/
 
 		return S_OK;

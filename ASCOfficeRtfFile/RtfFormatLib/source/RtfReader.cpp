@@ -71,9 +71,9 @@ void RtfReader::PopState()
 		m_oState = m_oState->m_pSaveState;
 }
 
-CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
+std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
 {
-    CString sResult;
+    std::wstring sResult;
 
     if( false == sCharString.empty())
     {

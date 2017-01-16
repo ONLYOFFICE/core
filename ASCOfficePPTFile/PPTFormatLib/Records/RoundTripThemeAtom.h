@@ -34,7 +34,7 @@
 
 class CRecordRoundTripThemeAtom : public CUnknownRecord
 {
-	CString m_strData;
+    std::wstring m_strData;
 
 public:
 	

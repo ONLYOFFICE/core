@@ -35,9 +35,9 @@
 #include "Writer/OOXWriter.h"
 #include "Writer/OOXRelsWriter.h"
 
-CString OOXFieldBegin::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring OOXFieldBegin::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"{\\field ";
 	RENDER_RTF_BOOL( m_bDirty, sResult, L"flddirty" )
 	RENDER_RTF_BOOL( m_bLock, sResult, L"fldlock" )
@@ -47,13 +47,13 @@ CString OOXFieldBegin::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString OOXFieldBegin::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring OOXFieldBegin::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	
 	sResult +=  L"<w:r>";
-		CString props = m_oCharProperty.RenderToOOX(oRenderParameter);
-		if (props.IsEmpty())
+        std::wstring props = m_oCharProperty.RenderToOOX(oRenderParameter);
+        if (props.empty())
 		{
 			sResult +=  L"<w:rPr>";
 				sResult += props;
@@ -70,11 +70,11 @@ CString OOXFieldBegin::RenderToOOX(RenderParameter oRenderParameter)
 }
 
 
-CString OOXFieldInsertText::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring OOXFieldInsertText::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( NULL != m_oText )
 	{
-		CString sResult;
+        std::wstring sResult;
 		sResult += L"<w:r>";
 		sResult += L"<w:instrText>";
 		
@@ -90,20 +90,20 @@ CString OOXFieldInsertText::RenderToOOX(RenderParameter oRenderParameter)
 	else
 		return L"";
 }
-CString RtfFieldInst::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfFieldInst::RenderToRtf(RenderParameter oRenderParameter)
 {
 	return L"";
 }
-CString RtfFieldInst::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfFieldInst::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
 	return L"";
 }
-CString RtfField::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfField::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"{\\field ";
 	
 	if( fm_none != m_eMode )
@@ -127,24 +127,24 @@ CString RtfField::RenderToRtf(RenderParameter oRenderParameter)
 	if( true == m_bReferenceToEndnote )
 		sResult +=  L"\\fldalt";
 
-	if( !m_sData.IsEmpty() )
+    if( !m_sData.empty() )
         sResult += L"{\\*\\datafield " + m_sData + L"}";
 	
 	sResult += L"}";
 
-    CString str = m_pResult->m_pTextItems->RenderToRtf( oRenderParameter ) ;
+    std::wstring str = m_pResult->m_pTextItems->RenderToRtf( oRenderParameter ) ;
    
 	sResult += L"{\\fldrslt " + str + L"}";
 	sResult += L"}";
 	return sResult;
 }
 
-CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
-	CString sResult;
+    std::wstring sResult;
 	
 	if( true == m_bTextOnly )
 	{
@@ -158,14 +158,14 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		bool bInsert = false;
 		bool bDelete = false;
 
-		CString sAuthor, sDate;
+        std::wstring sAuthor, sDate;
 
 		if (m_pInsert->m_oCharProperty.m_nRevised != PROP_DEF)
 		{
 			bInsert = true;
 			
 			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauth);
-			sDate	= CString(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttm).c_str());
+            sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttm).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nRevised = PROP_DEF;
@@ -175,7 +175,7 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			bDelete = true;
 			
 			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauthDel);
-			sDate	= CString(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttmDel).c_str());
+            sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttmDel).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nDeleted = PROP_DEF;
@@ -184,29 +184,29 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oNewParam	= oRenderParameter;
 		oNewParam.nType				= RENDER_TO_OOX_PARAM_PLAIN;
 		
-		CString sInsertText = m_pInsert->m_pTextItems->RenderToOOX( oNewParam );
+        std::wstring sInsertText = m_pInsert->m_pTextItems->RenderToOOX( oNewParam );
 		
-		int nIndex = sInsertText.Find( L"HYPERLINK" );			
+        int nIndex = sInsertText.find( L"HYPERLINK" );
 		if( -1 != nIndex )
 		{
-			CString sHyperlink = sInsertText;
-            sHyperlink.Delete( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );
+            std::wstring sHyperlink = sInsertText;
+            sHyperlink.erase( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );
 
-			int nSplash = sHyperlink.Find( L"\\" );
+            int nSplash = sHyperlink.find( L"\\" );
 			if (nSplash > 0)
 			{
-				sHyperlink = sHyperlink.Left(nSplash);
+                sHyperlink = sHyperlink.substr(0, nSplash);
 			}
 	
 		//оставляем только одну ссылку
-			sHyperlink.Remove( '\"' );
-			sHyperlink.Trim();
+            boost::algorithm::replace_all(sHyperlink, L"\"", L"" );
+            boost::algorithm::trim(sHyperlink);
 		//заменяем пробелы на %20
-			sHyperlink.Replace( L" ", L"%20" );
+            boost::algorithm::replace_all(sHyperlink, L" ", L"%20" );
 
 		//добавляем в rels
 			OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );
-			CString sId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", Utils::PrepareToXML( sHyperlink ), false );
+            std::wstring sId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink", XmlUtils::EncodeXmlString( sHyperlink ), false );
 		//добавляем гиперссылку в документ
 
             sResult += L"<w:hyperlink r:id=\"" + sId + L"\" >";
@@ -220,12 +220,12 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			RenderParameter oNewParametr	= oRenderParameter;
 			oNewParametr.nType				= RENDER_TO_OOX_PARAM_PLAIN;
 
-			CString props = m_pResult->m_oCharProperty.RenderToOOX(oRenderParameter);
-			if (!props.IsEmpty()) props = L"<w:rPr>" + props + L"</w:rPr>";
+            std::wstring props = m_pResult->m_oCharProperty.RenderToOOX(oRenderParameter);
+            if (!props.empty()) props = L"<w:rPr>" + props + L"</w:rPr>";
 
 	//начинаем Field
             sResult += L"<w:r>";
-			if (!props.IsEmpty())	
+            if (!props.empty())
 				sResult += props;			
 			sResult += L"<w:fldChar w:fldCharType=\"begin\"/>";
 			sResult += L"</w:r>";
@@ -236,7 +236,7 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 
 			if (m_pInsert->m_pTextItems)
 			{
-				sResult += Utils::PrepareToXML( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr) );
+                sResult += XmlUtils::EncodeXmlString( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr) );
 			}
 			sResult += L"</w:instrText></w:r>";
 			
@@ -268,7 +268,7 @@ CString RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			else
 			{
 				sResult += L"<w:r>";
-				if (!props.IsEmpty())	
+                if (!props.empty())
 					sResult += props;
 				sResult += L"</w:r>";
 			}

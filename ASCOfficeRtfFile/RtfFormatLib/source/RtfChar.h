@@ -71,9 +71,9 @@ public:
 		return a_none != m_eAlignment && r_none != m_eRelative;
 	}
 	
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		switch( m_eLeader )
 		{
 			case l_ptablnone:	sResult += L"\\ptablnone";	break;
@@ -93,13 +93,13 @@ public:
 			case a_center:	sResult += L"c";	break;
 			case a_right:	sResult += L"r";	break;
 		}
-		if( false == sResult.IsEmpty() )
+        if( false == sResult.empty() )
 			sResult = L"{" + sResult + L"}";
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		switch( m_eLeader )
 		{
 			case l_ptablnone:	sResult += L" w:leader=\"none\"";		break;
@@ -119,7 +119,7 @@ public:
 			case a_center:	sResult += L" w:alignment=\"center\"";	break;
 			case a_right:	sResult += L" w:alignment=\"right\"";	break;
 		}
-		if( !sResult.IsEmpty() )
+        if( !sResult.empty() )
 			sResult = L"<w:ptab" + sResult + L"/>";
 		return sResult;
 	}
@@ -173,16 +173,16 @@ public:
 		m_nTextWrapBreak	= PROP_DEF;
 		m_nSoftHeight		= PROP_DEF;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString _RenderToOOX(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring _RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfCharSpecial> RtfCharSpecialPtr;
 
 class RtfChar : public IDocumentElement
 {            
 protected: 
-	CString m_sChars;
+    std::wstring m_sChars;
 public: 
 	RtfChar()
 	{
@@ -195,41 +195,41 @@ public:
 	{
 		return TYPE_RTF_CHAR;
 	}
-	void AddText(CString text)
+    void AddText(std::wstring text)
 	{
 		m_sChars += text;
 	}
-	void setText(CString text)
+    void setText(std::wstring text)
 	{
 		m_sChars = text;
 	}
 
-	CString GetText()
+    std::wstring GetText()
 	{
 		return m_sChars;
 	}
-    CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
     
-	static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
-	static CString renderRtfText( CString& sText, void* poDocument, int nCodePage  );
+    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
+    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, int nCodePage  );
 
-    CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 private: 
-	CString renderTextToXML( CString sParam, bool bDelete = false );
+    std::wstring renderTextToXML( std::wstring sParam, bool bDelete = false );
 };
 class RtfCharNative : public RtfChar
 {            
 public: 
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString result;
+        std::wstring result;
 		if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
 		{
 			result = m_sChars;
 		}
 		else
 		{
-			CString sText = m_sChars;
+            std::wstring sText = m_sChars;
 			if( L"" != sText )
 			{
 				result += L"{";

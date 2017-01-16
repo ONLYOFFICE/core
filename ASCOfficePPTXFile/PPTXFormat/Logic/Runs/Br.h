@@ -61,7 +61,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rPr);
@@ -88,7 +88,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 
-			virtual CString GetText()const{return _T("\n");};
+			virtual std::wstring GetText()const{return _T("\n");};
 		public:
 			nullable<RunProperties> rPr;
 		protected:

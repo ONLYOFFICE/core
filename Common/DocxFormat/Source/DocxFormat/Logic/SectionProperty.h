@@ -61,8 +61,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:space"), m_oSpace );
-				oNode.ReadAttributeBase( _T("w:w"),     m_oW );
+				oNode.ReadAttributeBase( L"w:space", m_oSpace );
+				oNode.ReadAttributeBase( L"w:w",     m_oW );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -71,22 +71,18 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += _T("w:w=\"");
-					sResult.AppendFormat(_T("%d"), m_oW->ToTwips());
-					sResult += _T("\" ");
+					sResult += L"w:w=\"" + std::to_wstring(m_oW->ToTwips()) + L"\" ";
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += _T("w:space=\"");
-					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
-					sResult += _T("\" ");
+					sResult += L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
 				}
 
 				return sResult;
@@ -97,8 +93,8 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:space"), m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),     m_oW )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:space"), m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:w"),     m_oW )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -124,9 +120,9 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:charSpace"), m_oCharSpace );
-				oNode.ReadAttributeBase( _T("w:linePitch"), m_oLinePitch );
-				oNode.ReadAttributeBase( _T("w:type"),      m_oType );
+				oNode.ReadAttributeBase( (L"w:charSpace"), m_oCharSpace );
+				oNode.ReadAttributeBase( (L"w:linePitch"), m_oLinePitch );
+				oNode.ReadAttributeBase( (L"w:type"),      m_oType );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -135,29 +131,29 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oCharSpace.IsInit() )
 				{
-					sResult += _T("w:charSpace=\"");
+					sResult += (L"w:charSpace=\"");
 					sResult += m_oCharSpace->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oLinePitch.IsInit() )
 				{
-					sResult += _T("w:linePitch=\"");
+					sResult += (L"w:linePitch=\"");
 					sResult += m_oLinePitch->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += _T("w:type=\"");
+					sResult += (L"w:type=\"");
 					sResult += m_oType->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -168,9 +164,9 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:charSpace"), m_oCharSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:linePitch"), m_oLinePitch )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"),      m_oType )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:charSpace"), m_oCharSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:linePitch"), m_oLinePitch )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"),      m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -197,8 +193,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:id"),   m_oId );
-				oNode.ReadAttributeBase( _T("w:type"), m_oType );
+				oNode.ReadAttributeBase( (L"r:id"),   m_oId );
+				oNode.ReadAttributeBase( (L"w:type"), m_oType );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -207,22 +203,22 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
+					sResult += (L"r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += _T("w:type=\"");
+					sResult += (L"w:type=\"");
 					sResult += m_oType->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -233,8 +229,8 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"), m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -261,10 +257,10 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:countBy"),  m_oCountBy );
-				oNode.ReadAttributeBase( _T("w:distance"), m_oDistance );
-				oNode.ReadAttributeBase( _T("w:restart"),  m_oRestart );
-				oNode.ReadAttributeBase( _T("w:start"),    m_oStart );
+				oNode.ReadAttributeBase( (L"w:countBy"),  m_oCountBy );
+				oNode.ReadAttributeBase( (L"w:distance"), m_oDistance );
+				oNode.ReadAttributeBase( (L"w:restart"),  m_oRestart );
+				oNode.ReadAttributeBase( (L"w:start"),    m_oStart );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -273,36 +269,36 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oCountBy.IsInit() )
 				{
-					sResult += _T("w:countBy=\"");
+					sResult += (L"w:countBy=\"");
 					sResult += m_oCountBy->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oDistance.IsInit() )
 				{
-					sResult += _T("w:distance=\"");
+					sResult += (L"w:distance=\"");
 					sResult += m_oDistance->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oRestart.IsInit() )
 				{
-					sResult += _T("w:restart=\"");
+					sResult += (L"w:restart=\"");
 					sResult += m_oRestart->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += _T("w:start=\"");
+					sResult += (L"w:start=\"");
 					sResult += m_oStart->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -313,10 +309,10 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:countBy"),  m_oCountBy )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:distance"), m_oDistance )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:restart"),  m_oRestart )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:start"),    m_oStart )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:countBy"),  m_oCountBy )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:distance"), m_oDistance )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:restart"),  m_oRestart )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:start"),    m_oStart )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -345,8 +341,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:first"), m_oFirst );
-				oNode.ReadAttributeBase( _T("w:other"), m_oOther );
+				oNode.ReadAttributeBase( (L"w:first"), m_oFirst );
+				oNode.ReadAttributeBase( (L"w:other"), m_oOther );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -355,22 +351,22 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oFirst.IsInit() )
 				{
-					sResult += _T("w:first=\"");
+					sResult += (L"w:first=\"");
 					sResult += m_oFirst->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oOther.IsInit() )
 				{
-					sResult += _T("w:other=\"");
+					sResult += (L"w:other=\"");
 					sResult += m_oOther->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -381,8 +377,8 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:first"), m_oFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:other"), m_oOther )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:first"), m_oFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:other"), m_oOther )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -410,16 +406,16 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:color"),       m_oColor );
-				oNode.ReadAttributeBase( _T("w:frame"),       m_oFrame );
-				oNode.ReadAttributeBase( _T("r:id"),          m_oId );
-				oNode.ReadAttributeBase( _T("w:shadow"),      m_oShadow );
-				oNode.ReadAttributeBase( _T("w:space"),       m_oSpace );
-				oNode.ReadAttributeBase( _T("w:sz"),          m_oSz );
-				oNode.ReadAttributeBase( _T("w:themeColor"),  m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"),  m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),   m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),         m_oVal );
+				oNode.ReadAttributeBase( (L"w:color"),       m_oColor );
+				oNode.ReadAttributeBase( (L"w:frame"),       m_oFrame );
+				oNode.ReadAttributeBase( (L"r:id"),          m_oId );
+				oNode.ReadAttributeBase( (L"w:shadow"),      m_oShadow );
+				oNode.ReadAttributeBase( (L"w:space"),       m_oSpace );
+				oNode.ReadAttributeBase( (L"w:sz"),          m_oSz );
+				oNode.ReadAttributeBase( (L"w:themeColor"),  m_oThemeColor );
+				oNode.ReadAttributeBase( (L"w:themeShade"),  m_oThemeShade );
+				oNode.ReadAttributeBase( (L"w:themeTint"),   m_oThemeTint );
+				oNode.ReadAttributeBase( (L"w:val"),         m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -428,76 +424,76 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += _T("w:color=\"");
+					sResult += (L"w:color=\"");
 					sResult += m_oColor->ToStringNoAlpha();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += _T("w:frame=\"");
+					sResult += (L"w:frame=\"");
 					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
+					sResult += (L"r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += _T("w:shadow=\"");
+					sResult += (L"w:shadow=\"");
 					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += _T("w:space=\"");
+					sResult += (L"w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += _T("w:sz=\"");
+					sResult += (L"w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += _T("w:themeColor=\"");
+					sResult += (L"w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += _T("w:themeShade=\"");
+					sResult += (L"w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += _T("w:themeTint=\"");
+					sResult += (L"w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += (L"w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -508,16 +504,16 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shadow"),      m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),       m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sz"),          m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"),  m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"),  m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),   m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -551,18 +547,18 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("r:bottomLeft"),  m_oBottomLeft );
-				oNode.ReadAttributeBase( _T("r:bottomRight"), m_oBottomRight );
-				oNode.ReadAttributeBase( _T("w:color"),       m_oColor );
-				oNode.ReadAttributeBase( _T("w:frame"),       m_oFrame );
-				oNode.ReadAttributeBase( _T("r:id"),          m_oId );
-				oNode.ReadAttributeBase( _T("w:shadow"),      m_oShadow );
-				oNode.ReadAttributeBase( _T("w:space"),       m_oSpace );
-				oNode.ReadAttributeBase( _T("w:sz"),          m_oSz );
-				oNode.ReadAttributeBase( _T("w:themeColor"),  m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"),  m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),   m_oThemeTint );
-				oNode.ReadAttributeBase( _T("w:val"),         m_oVal );
+				oNode.ReadAttributeBase( (L"r:bottomLeft"),  m_oBottomLeft );
+				oNode.ReadAttributeBase( (L"r:bottomRight"), m_oBottomRight );
+				oNode.ReadAttributeBase( (L"w:color"),       m_oColor );
+				oNode.ReadAttributeBase( (L"w:frame"),       m_oFrame );
+				oNode.ReadAttributeBase( (L"r:id"),          m_oId );
+				oNode.ReadAttributeBase( (L"w:shadow"),      m_oShadow );
+				oNode.ReadAttributeBase( (L"w:space"),       m_oSpace );
+				oNode.ReadAttributeBase( (L"w:sz"),          m_oSz );
+				oNode.ReadAttributeBase( (L"w:themeColor"),  m_oThemeColor );
+				oNode.ReadAttributeBase( (L"w:themeShade"),  m_oThemeShade );
+				oNode.ReadAttributeBase( (L"w:themeTint"),   m_oThemeTint );
+				oNode.ReadAttributeBase( (L"w:val"),         m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -571,90 +567,90 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oBottomLeft.IsInit() )
 				{
-					sResult += _T("r:bottomLeft=\"");
+					sResult += (L"r:bottomLeft=\"");
 					sResult += m_oBottomLeft->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oBottomRight.IsInit() )
 				{
-					sResult += _T("r:bottomRight=\"");
+					sResult += (L"r:bottomRight=\"");
 					sResult += m_oBottomRight->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += _T("w:color=\"");
+					sResult += (L"w:color=\"");
 					sResult += m_oColor->ToStringNoAlpha();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += _T("w:frame=\"");
+					sResult += (L"w:frame=\"");
 					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
+					sResult += (L"r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += _T("w:shadow=\"");
+					sResult += (L"w:shadow=\"");
 					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += _T("w:space=\"");
+					sResult += (L"w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += _T("w:sz=\"");
+					sResult += (L"w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += _T("w:themeColor=\"");
+					sResult += (L"w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += _T("w:themeShade=\"");
+					sResult += (L"w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += _T("w:themeTint=\"");
+					sResult += (L"w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += (L"w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -665,18 +661,18 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:bottomLeft"), m_oBottomLeft )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:bottomRight"), m_oBottomRight )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:color"),       m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shadow"),      m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),       m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sz"),          m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"),  m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"),  m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),   m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:bottomLeft"), m_oBottomLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:bottomRight"), m_oBottomRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -704,18 +700,18 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:color"),       m_oColor );
-				oNode.ReadAttributeBase( _T("w:frame"),       m_oFrame );
-				oNode.ReadAttributeBase( _T("r:id"),          m_oId );
-				oNode.ReadAttributeBase( _T("w:shadow"),      m_oShadow );
-				oNode.ReadAttributeBase( _T("w:space"),       m_oSpace );
-				oNode.ReadAttributeBase( _T("w:sz"),          m_oSz );
-				oNode.ReadAttributeBase( _T("w:themeColor"),  m_oThemeColor );
-				oNode.ReadAttributeBase( _T("w:themeShade"),  m_oThemeShade );
-				oNode.ReadAttributeBase( _T("w:themeTint"),   m_oThemeTint );
-				oNode.ReadAttributeBase( _T("r:topLeft"),     m_oTopLeft );
-				oNode.ReadAttributeBase( _T("r:topRight"),    m_oTopRight );
-				oNode.ReadAttributeBase( _T("w:val"),         m_oVal );
+				oNode.ReadAttributeBase( (L"w:color"),       m_oColor );
+				oNode.ReadAttributeBase( (L"w:frame"),       m_oFrame );
+				oNode.ReadAttributeBase( (L"r:id"),          m_oId );
+				oNode.ReadAttributeBase( (L"w:shadow"),      m_oShadow );
+				oNode.ReadAttributeBase( (L"w:space"),       m_oSpace );
+				oNode.ReadAttributeBase( (L"w:sz"),          m_oSz );
+				oNode.ReadAttributeBase( (L"w:themeColor"),  m_oThemeColor );
+				oNode.ReadAttributeBase( (L"w:themeShade"),  m_oThemeShade );
+				oNode.ReadAttributeBase( (L"w:themeTint"),   m_oThemeTint );
+				oNode.ReadAttributeBase( (L"r:topLeft"),     m_oTopLeft );
+				oNode.ReadAttributeBase( (L"r:topRight"),    m_oTopRight );
+				oNode.ReadAttributeBase( (L"w:val"),         m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -724,90 +720,90 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += _T("w:color=\"");
+					sResult += (L"w:color=\"");
 					sResult += m_oColor->ToStringNoAlpha();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oFrame.IsInit() )
 				{
-					sResult += _T("w:frame=\"");
+					sResult += (L"w:frame=\"");
 					sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oId.IsInit() )
 				{
-					sResult += _T("r:id=\"");
+					sResult += (L"r:id=\"");
 					sResult += m_oId->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oShadow.IsInit() )
 				{
-					sResult += _T("w:shadow=\"");
+					sResult += (L"w:shadow=\"");
 					sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += _T("w:space=\"");
+					sResult += (L"w:space=\"");
 					sResult += m_oSpace->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oSz.IsInit() )
 				{
-					sResult += _T("w:sz=\"");
+					sResult += (L"w:sz=\"");
 					sResult += m_oSz->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += _T("w:themeColor=\"");
+					sResult += (L"w:themeColor=\"");
 					sResult += m_oThemeColor->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += _T("w:themeShade=\"");
+					sResult += (L"w:themeShade=\"");
 					sResult += m_oThemeShade->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += _T("w:themeTint=\"");
+					sResult += (L"w:themeTint=\"");
 					sResult += m_oThemeTint->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oTopLeft.IsInit() )
 				{
-					sResult += _T("r:topLeft=\"");
+					sResult += (L"r:topLeft=\"");
 					sResult += m_oTopLeft->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oTopRight.IsInit() )
 				{
-					sResult += _T("r:topRight=\"");
+					sResult += (L"r:topRight=\"");
 					sResult += m_oTopRight->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += (L"w:val=\"");
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -818,18 +814,18 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),       m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),       m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),          m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shadow"),      m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),       m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sz"),          m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"),  m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"),  m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),   m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:topLeft"),     m_oTopLeft )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:topRight"),    m_oTopRight )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:topLeft"),     m_oTopLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:topRight"),    m_oTopRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -857,13 +853,13 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:bottom"),  m_oBottom );
-				oNode.ReadAttributeBase( _T("w:footer"),  m_oFooter );
-				oNode.ReadAttributeBase( _T("w:gutter"),  m_oGutter );
-				oNode.ReadAttributeBase( _T("w:header"),  m_oHeader );
-				oNode.ReadAttributeBase( _T("w:left"),    m_oLeft   );
-				oNode.ReadAttributeBase( _T("w:right"),   m_oRight  );
-				oNode.ReadAttributeBase( _T("w:top"),     m_oTop    );
+				oNode.ReadAttributeBase( (L"w:bottom"),  m_oBottom );
+				oNode.ReadAttributeBase( (L"w:footer"),  m_oFooter );
+				oNode.ReadAttributeBase( (L"w:gutter"),  m_oGutter );
+				oNode.ReadAttributeBase( (L"w:header"),  m_oHeader );
+				oNode.ReadAttributeBase( (L"w:left"),    m_oLeft   );
+				oNode.ReadAttributeBase( (L"w:right"),   m_oRight  );
+				oNode.ReadAttributeBase( (L"w:top"),     m_oTop    );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -872,55 +868,55 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += _T("w:bottom=\"");
+					sResult += (L"w:bottom=\"");
 					sResult += m_oBottom->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oFooter.IsInit() )
 				{
-					sResult += _T("w:footer=\"");
+					sResult += (L"w:footer=\"");
 					sResult += m_oFooter->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oGutter.IsInit() )
 				{
-					sResult += _T("w:gutter=\"");
+					sResult += (L"w:gutter=\"");
 					sResult += m_oGutter->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oHeader.IsInit() )
 				{
-					sResult += _T("w:header=\"");
+					sResult += (L"w:header=\"");
 					sResult += m_oHeader->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += _T("w:left=\"");
+					sResult += (L"w:left=\"");
 					sResult += m_oLeft->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += _T("w:right=\"");
+					sResult += (L"w:right=\"");
 					sResult += m_oRight->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oTop.IsInit() )
 				{
-					sResult += _T("w:top=\"");
+					sResult += (L"w:top=\"");
 					sResult += m_oTop->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -932,13 +928,13 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bottom"), m_oBottom )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:footer"), m_oFooter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:gutter"), m_oGutter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:header"), m_oHeader )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:left"),   m_oLeft )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:right"),  m_oRight )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:top"),    m_oTop )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:bottom"), m_oBottom )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:footer"), m_oFooter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:gutter"), m_oGutter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:header"), m_oHeader )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:left"),   m_oLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:right"),  m_oRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:top"),    m_oTop )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -971,10 +967,10 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:chapSep"),   m_oChapSep );
-				oNode.ReadAttributeBase( _T("w:chapStyle"), m_oChapStyle );
-				oNode.ReadAttributeBase( _T("w:fmt"),       m_oFmt );
-				oNode.ReadAttributeBase( _T("w:start"),     m_oStart );
+				oNode.ReadAttributeBase( (L"w:chapSep"),   m_oChapSep );
+				oNode.ReadAttributeBase( (L"w:chapStyle"), m_oChapStyle );
+				oNode.ReadAttributeBase( (L"w:fmt"),       m_oFmt );
+				oNode.ReadAttributeBase( (L"w:start"),     m_oStart );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -983,34 +979,34 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oChapSep.IsInit() )
 				{
-					sResult += _T("w:chapSep=\"");
+					sResult += (L"w:chapSep=\"");
 					sResult += m_oChapSep->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oChapStyle.IsInit() )
 				{
-					sResult += _T("w:chapStyle=\"");
+					sResult += (L"w:chapStyle=\"");
 					sResult += m_oChapStyle->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oFmt.IsInit() )
 				{
-					sResult += _T("w:fmt=\"");
+					sResult += (L"w:fmt=\"");
 					sResult += m_oFmt->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oStart.IsInit() )
 				{
-					sResult += _T("w:start=\"");
+					sResult += (L"w:start=\"");
 					sResult += m_oStart->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -1021,10 +1017,10 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:chapSep"),   m_oChapSep )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:chapStyle"), m_oChapStyle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fmt"),       m_oFmt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:start"),     m_oStart )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:chapSep"),   m_oChapSep )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:chapStyle"), m_oChapStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:fmt"),       m_oFmt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:start"),     m_oStart )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1054,10 +1050,10 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:code"),   m_oCode );
-				oNode.ReadAttributeBase( _T("w:h"),      m_oH );
-				oNode.ReadAttributeBase( _T("w:orient"), m_oOrient );
-				oNode.ReadAttributeBase( _T("w:w"),      m_oW );
+				oNode.ReadAttributeBase( (L"w:code"),   m_oCode );
+				oNode.ReadAttributeBase( (L"w:h"),      m_oH );
+				oNode.ReadAttributeBase( (L"w:orient"), m_oOrient );
+				oNode.ReadAttributeBase( (L"w:w"),      m_oW );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1066,34 +1062,34 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oCode.IsInit() )
 				{
-					sResult += _T("w:code=\"");
+					sResult += (L"w:code=\"");
 					sResult += m_oCode->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oH.IsInit() )
 				{
-					sResult += _T("w:h=\"");
+					sResult += (L"w:h=\"");
 					sResult += m_oH->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oOrient.IsInit() )
 				{
-					sResult += _T("w:orient=\"");
+					sResult += (L"w:orient=\"");
 					sResult += m_oOrient->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 				if ( m_oW.IsInit() )
 				{
-					sResult += _T("w:w=\"");
+					sResult += (L"w:w=\"");
 					sResult += m_oW->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				return sResult;
@@ -1104,10 +1100,10 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:code"),   m_oCode )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:h"),      m_oH )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:orient"), m_oOrient )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),      m_oW )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:code"),   m_oCode )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:h"),      m_oH )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:orient"), m_oOrient )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:w"),      m_oW )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1137,7 +1133,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:val"), m_oVal );
+				oNode.ReadAttributeBase( (L"w:val"), m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1146,15 +1142,15 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -1165,7 +1161,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1206,14 +1202,14 @@ namespace OOX
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:equalWidth"), m_oEqualWidth );
-				oNode.ReadAttributeBase( _T("w:num"),        m_oNum );
-				oNode.ReadAttributeBase( _T("w:sep"),        m_oSep );
-				oNode.ReadAttributeBase( _T("w:space"),      m_oSpace );
+				oNode.ReadAttributeBase( (L"w:equalWidth"), m_oEqualWidth );
+				oNode.ReadAttributeBase( (L"w:num"),        m_oNum );
+				oNode.ReadAttributeBase( (L"w:sep"),        m_oSep );
+				oNode.ReadAttributeBase( (L"w:space"),      m_oSpace );
 
 				XmlUtils::CXmlNodes oCols;
 
-				if ( oNode.GetNodes( _T("w:col"), oCols ) )
+				if ( oNode.GetNodes( (L"w:col"), oCols ) )
 				{
 					for ( int nIndex = 0; nIndex < oCols.GetCount(); nIndex++ )
 					{
@@ -1237,56 +1233,54 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:col") == sName )
+					if ( L"w:col" == sName )
 					{
 						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
 						if (oColumn) m_arrColumns.push_back( oColumn );
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:cols ");
+                std::wstring sResult = L"<w:cols ";
 
 				if ( m_oNum.IsInit() )
 				{
-					sResult += _T("w:num=\"");
+					sResult += L"w:num=\"";
 					sResult += m_oNum->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oSep.IsInit() )
 				{
-					sResult += _T("w:sep=\"");
+					sResult += L"w:sep=\"";
 					sResult += m_oSep->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += _T("w:space=\"");
-					sResult.AppendFormat(_T("%d"), m_oSpace->ToTwips());
-					sResult += _T("\" ");
+					sResult +=L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
 				}
 
 				if ( m_oEqualWidth.IsInit() )
 				{
-					sResult += _T("w:equalWidth=\"");
+					sResult += L"w:equalWidth=\"";
 					sResult += m_oEqualWidth->ToString2(SimpleTypes::onofftostring1);
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				sResult += _T(">");
+				sResult += L">";
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
 				{
-					sResult += _T("<w:col ");
+					sResult += L"<w:col ";
 					if (m_arrColumns[nIndex])
 						sResult += m_arrColumns[nIndex]->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:cols>");
+				sResult += L"</w:cols>";
 
 				return sResult;
 			}
@@ -1302,10 +1296,10 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:equalWidth"), m_oEqualWidth )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:num"),        m_oNum )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sep"),        m_oSep )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:space"),      m_oSpace )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:equalWidth"), m_oEqualWidth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:num"),        m_oNum )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sep"),        m_oSep )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),      m_oSpace )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1336,16 +1330,16 @@ namespace OOX
 			{
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:numFmt"), oChild ) )
+				if ( oNode.GetNode( (L"w:numFmt"), oChild ) )
 					m_oNumFmt = oChild;
 
-				if ( oNode.GetNode( _T("w:numRestart"), oChild ) )
+				if ( oNode.GetNode( (L"w:numRestart"), oChild ) )
 					m_oNumRestart = oChild;
 
-				if ( oNode.GetNode( _T("w:numStart"), oChild ) )
+				if ( oNode.GetNode( (L"w:numStart"), oChild ) )
 					m_oNumStart = oChild;
 
-				if ( oNode.GetNode( _T("w:pos"), oChild ) )
+				if ( oNode.GetNode( (L"w:pos"), oChild ) )
 					m_oPos = oChild;
 			}
 
@@ -1358,49 +1352,49 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:numFmt") == sName )
+					if ( (L"w:numFmt") == sName )
 						m_oNumFmt = oReader;
-					else if ( _T("w:numRestart") == sName )
+					else if ( (L"w:numRestart") == sName )
 						m_oNumRestart = oReader;
-					else if ( _T("w:numStart") == sName )
+					else if ( (L"w:numStart") == sName )
 						m_oNumStart = oReader;
-					else if ( _T("w:pos") == sName )
+					else if ( (L"w:pos") == sName )
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<w:endnotePr>");
+                std::wstring sResult = (L"<w:endnotePr>");
 
 				if ( m_oNumFmt.IsInit() )
 				{
-					sResult += _T("<w:numFmt ");
+					sResult += (L"<w:numFmt ");
 					sResult += m_oNumFmt->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oNumRestart.IsInit() )
 				{
-					sResult += _T("<w:numRestart ");
+					sResult += (L"<w:numRestart ");
 					sResult += m_oNumRestart->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oNumStart.IsInit() )
 				{
-					sResult += _T("<w:numStart ");
+					sResult += (L"<w:numStart ");
 					sResult += m_oNumStart->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += _T("<w:pos ");
+					sResult += (L"<w:pos ");
 					sResult += m_oPos->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
-				sResult += _T("</w:endnotePr>");
+				sResult += (L"</w:endnotePr>");
 
 				return sResult;
 			}
@@ -1437,16 +1431,16 @@ namespace OOX
 			{
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:numFmt"), oChild ) )
+				if ( oNode.GetNode( (L"w:numFmt"), oChild ) )
 					m_oNumFmt = oChild;
 
-				if ( oNode.GetNode( _T("w:numRestart"), oChild ) )
+				if ( oNode.GetNode( (L"w:numRestart"), oChild ) )
 					m_oNumRestart = oChild;
 
-				if ( oNode.GetNode( _T("w:numStart"), oChild ) )
+				if ( oNode.GetNode( (L"w:numStart"), oChild ) )
 					m_oNumStart = oChild;
 
-				if ( oNode.GetNode( _T("w:pos"), oChild ) )
+				if ( oNode.GetNode( (L"w:pos"), oChild ) )
 					m_oPos = oChild;
 			}
 
@@ -1459,49 +1453,49 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:numFmt") == sName )
+					if ( (L"w:numFmt") == sName )
 						m_oNumFmt = oReader;
-					else if ( _T("w:numRestart") == sName )
+					else if ( (L"w:numRestart") == sName )
 						m_oNumRestart = oReader;
-					else if ( _T("w:numStart") == sName )
+					else if ( (L"w:numStart") == sName )
 						m_oNumStart = oReader;
-					else if ( _T("w:pos") == sName )
+					else if ( (L"w:pos") == sName )
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:footnotePr>");
+                std::wstring sResult = (L"<w:footnotePr>");
 
 				if ( m_oNumFmt.IsInit() )
 				{
-					sResult += _T("<w:numFmt ");
+					sResult += (L"<w:numFmt ");
 					sResult += m_oNumFmt->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oNumRestart.IsInit() )
 				{
-					sResult += _T("<w:numRestart ");
+					sResult += (L"<w:numRestart ");
 					sResult += m_oNumRestart->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oNumStart.IsInit() )
 				{
-					sResult += _T("<w:numStart ");
+					sResult += (L"<w:numStart ");
 					sResult += m_oNumStart->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += _T("<w:pos ");
+					sResult += (L"<w:pos ");
 					sResult += m_oPos->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
-				sResult += _T("</w:footnotePr>");
+				sResult += (L"</w:footnotePr>");
 
 				return sResult;
 			}
@@ -1535,22 +1529,22 @@ namespace OOX
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("w:display"),    m_oDisplay );
-				oNode.ReadAttributeBase( _T("w:offsetFrom"), m_oOffsetFrom );
-				oNode.ReadAttributeBase( _T("w:zOrder"),     m_oZOrder );
+				oNode.ReadAttributeBase( (L"w:display"),    m_oDisplay );
+				oNode.ReadAttributeBase( (L"w:offsetFrom"), m_oOffsetFrom );
+				oNode.ReadAttributeBase( (L"w:zOrder"),     m_oZOrder );
 
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:bottom"), oChild ) )
+				if ( oNode.GetNode( (L"w:bottom"), oChild ) )
 					m_oBottom = oChild;
 
-				if ( oNode.GetNode( _T("w:left"), oChild ) )
+				if ( oNode.GetNode( (L"w:left"), oChild ) )
 					m_oLeft = oChild;
 
-				if ( oNode.GetNode( _T("w:right"), oChild ) )
+				if ( oNode.GetNode( (L"w:right"), oChild ) )
 					m_oRight = oChild;
 
-				if ( oNode.GetNode( _T("w:top"), oChild ) )
+				if ( oNode.GetNode( (L"w:top"), oChild ) )
 					m_oTop = oChild;
 			}
 
@@ -1565,72 +1559,72 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:bottom") == sName )
+					if ( (L"w:bottom") == sName )
 						m_oBottom = oReader;
-					else if ( _T("w:left") == sName )
+					else if ( (L"w:left") == sName )
 						m_oLeft = oReader;
-					else if ( _T("w:right") == sName )
+					else if ( (L"w:right") == sName )
 						m_oRight = oReader;
-					else if ( _T("w:top") == sName )
+					else if ( (L"w:top") == sName )
 						m_oTop = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:pgBorders ");
+                std::wstring sResult = (L"<w:pgBorders ");
 
 				if ( m_oDisplay.IsInit() )
 				{
-					sResult += _T("w:display=\"");
+					sResult += (L"w:display=\"");
 					sResult += m_oDisplay->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oOffsetFrom.IsInit() )
 				{
-					sResult += _T("w:offsetFrom=\"");
+					sResult += (L"w:offsetFrom=\"");
 					sResult += m_oOffsetFrom->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oZOrder.IsInit() )
 				{
-					sResult += _T("w:zOrder=\"");
+					sResult += (L"w:zOrder=\"");
 					sResult += m_oZOrder->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
-				sResult += _T(">");
+				sResult += (L">");
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += _T("<w:bottom ");
+					sResult += (L"<w:bottom ");
 					sResult += m_oBottom->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += _T("<w:left ");
+					sResult += (L"<w:left ");
 					sResult += m_oLeft->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += _T("<w:right ");
+					sResult += (L"<w:right ");
 					sResult += m_oRight->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += _T("<w:top ");
+					sResult += (L"<w:top ");
 					sResult += m_oTop->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
-				sResult += _T("</w:pgBorders>");
+				sResult += (L"</w:pgBorders>");
 
 				return sResult;
 			}
@@ -1645,9 +1639,9 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:display"),    m_oDisplay )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:offsetFrom"), m_oOffsetFrom )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:zOrder"),     m_oZOrder )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:display"),    m_oDisplay )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:offsetFrom"), m_oOffsetFrom )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:zOrder"),     m_oZOrder )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1679,7 +1673,7 @@ namespace OOX
 			virtual ~CSectPrChange();
 			virtual void    fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString toXML() const;
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -1689,10 +1683,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                       > m_sAuthor;
+            nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+            nullable<std::wstring                       > m_sUserId;
 
 			// Childs
 			nullable<CSectionProperty>               m_pSecPr;
@@ -1757,32 +1751,32 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				if ( _T("w:sectPr") != oNode.GetName() )
+				if ( (L"w:sectPr") != oNode.GetName() )
 					return;
 
-				oNode.ReadAttributeBase( _T("w:rsidDel"),  m_oRsidDel );
-				oNode.ReadAttributeBase( _T("w:rsidR"),    m_oRsidR );
-				oNode.ReadAttributeBase( _T("w:rsidRPr"),  m_oRsidRPr );
-				oNode.ReadAttributeBase( _T("w:rsidSect"), m_oRsidSect );
+				oNode.ReadAttributeBase( (L"w:rsidDel"),  m_oRsidDel );
+				oNode.ReadAttributeBase( (L"w:rsidR"),    m_oRsidR );
+				oNode.ReadAttributeBase( (L"w:rsidRPr"),  m_oRsidRPr );
+				oNode.ReadAttributeBase( (L"w:rsidSect"), m_oRsidSect );
 
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:bidi"), oChild ) )
+				if ( oNode.GetNode( (L"w:bidi"), oChild ) )
 					m_oBidi = oChild;
 
-				if ( oNode.GetNode( _T("w:cols"), oChild ) )
+				if ( oNode.GetNode( (L"w:cols"), oChild ) )
 					m_oCols = oChild;
 
-				if ( oNode.GetNode( _T("w:docGrid"), oChild ) )
+				if ( oNode.GetNode( (L"w:docGrid"), oChild ) )
 					m_oDocGrid = oChild;
 
-				if ( oNode.GetNode( _T("w:endnotePr"), oChild ) )
+				if ( oNode.GetNode( (L"w:endnotePr"), oChild ) )
 					m_oEndnotePr = oChild;
 
 				if ( !m_bSectPrChange )
 				{
 					XmlUtils::CXmlNodes oNodes;
-					if ( oNode.GetNodes( _T("w:footerReference"), oNodes ) )
+					if ( oNode.GetNodes( (L"w:footerReference"), oNodes ) )
 					{
 						XmlUtils::CXmlNode oFooterNode;
 						for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
@@ -1796,16 +1790,16 @@ namespace OOX
 					}
 				}
 
-				if ( oNode.GetNode( _T("w:footnotePr"), oChild ) )
+				if ( oNode.GetNode( (L"w:footnotePr"), oChild ) )
 					m_oFootnotePr = oChild;
 
-				if ( oNode.GetNode( _T("w:formProt"), oChild ) )
+				if ( oNode.GetNode( (L"w:formProt"), oChild ) )
 					m_oFormProt = oChild;
 
 				if ( !m_bSectPrChange )
 				{
 					XmlUtils::CXmlNodes oNodes;
-					if ( oNode.GetNodes( _T("w:headerReference"), oNodes ) )
+					if ( oNode.GetNodes( (L"w:headerReference"), oNodes ) )
 					{
 						XmlUtils::CXmlNode oHeaderNode;
 						for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
@@ -1819,46 +1813,46 @@ namespace OOX
 					}
 				}
 
-				if ( oNode.GetNode( _T("w:lnNumType"), oChild ) )
+				if ( oNode.GetNode( (L"w:lnNumType"), oChild ) )
 					m_oLnNumType = oChild;
 
-				if ( oNode.GetNode( _T("w:noEndnote"), oChild ) )
+				if ( oNode.GetNode( (L"w:noEndnote"), oChild ) )
 					m_oNoEndnote = oChild;
 
-				if ( oNode.GetNode( _T("w:paperSrc"), oChild ) )
+				if ( oNode.GetNode( (L"w:paperSrc"), oChild ) )
 					m_oPaperSrc = oChild;
 
-				if ( oNode.GetNode( _T("w:pgBorders"), oChild ) )
+				if ( oNode.GetNode( (L"w:pgBorders"), oChild ) )
 					m_oPgBorders = oChild;
 
-				if ( oNode.GetNode( _T("w:pgMar"), oChild ) )
+				if ( oNode.GetNode( (L"w:pgMar"), oChild ) )
 					m_oPgMar = oChild;
 
-				if ( oNode.GetNode( _T("w:pgNumType"), oChild ) )
+				if ( oNode.GetNode( (L"w:pgNumType"), oChild ) )
 					m_oPgNumType = oChild;
 
-				if ( oNode.GetNode( _T("w:pgSz"), oChild ) )
+				if ( oNode.GetNode( (L"w:pgSz"), oChild ) )
 					m_oPgSz = oChild;
 
-				if ( oNode.GetNode( _T("w:printerSettings"), oChild ) )
+				if ( oNode.GetNode( (L"w:printerSettings"), oChild ) )
 					m_oPrinterSettings = oChild;
 
-				if ( oNode.GetNode( _T("w:rtlGutter"), oChild ) )
+				if ( oNode.GetNode( (L"w:rtlGutter"), oChild ) )
 					m_oRtlGutter = oChild;
 
-				if ( !m_bSectPrChange && oNode.GetNode( _T("w:sectPrChange"), oChild ) )
+				if ( !m_bSectPrChange && oNode.GetNode( (L"w:sectPrChange"), oChild ) )
 					m_oSectPrChange = oChild;
 
-				if ( oNode.GetNode( _T("w:textDirection"), oChild ) )
+				if ( oNode.GetNode( (L"w:textDirection"), oChild ) )
 					m_oTextDirection = oChild;
 
-				if ( oNode.GetNode( _T("w:titlePg"), oChild ) )
+				if ( oNode.GetNode( (L"w:titlePg"), oChild ) )
 					m_oTitlePg = oChild;
 
-				if ( oNode.GetNode( _T("w:type"), oChild ) )
+				if ( oNode.GetNode( (L"w:type"), oChild ) )
 					m_oType = oChild;
 
-				if ( oNode.GetNode( _T("w:vAlign"), oChild ) )
+				if ( oNode.GetNode( (L"w:vAlign"), oChild ) )
 					m_oVAlign = oChild;
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1872,97 +1866,97 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:bidi") == sName )
+					if ( (L"w:bidi") == sName )
 						m_oBidi = oReader;
-					else if ( _T("w:cols") == sName )
+					else if ( (L"w:cols") == sName )
 						m_oCols = oReader;
-					else if ( _T("w:docGrid") == sName )
+					else if ( (L"w:docGrid") == sName )
 						m_oDocGrid = oReader;
-					else if ( _T("w:endnotePr") == sName )
+					else if ( (L"w:endnotePr") == sName )
 						m_oEndnotePr = oReader;
-					else if ( !m_bSectPrChange && _T("w:footerReference") == sName )
+					else if ( !m_bSectPrChange && (L"w:footerReference") == sName )
 					{
 						ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oReader);
 						if (oFooter) m_arrFooterReference.push_back( oFooter );
 					}
-					else if ( _T("w:footnotePr") == sName )
+					else if ( (L"w:footnotePr") == sName )
 						m_oFootnotePr = oReader;
-					else if ( _T("w:formProt") == sName )
+					else if ( (L"w:formProt") == sName )
 						m_oFormProt = oReader;
-					else if ( !m_bSectPrChange && _T("w:headerReference") == sName )
+					else if ( !m_bSectPrChange && (L"w:headerReference") == sName )
 					{
 						ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef( oReader);
 						if (oHeader) m_arrHeaderReference.push_back( oHeader );
 					}
-					else if ( _T("w:lnNumType") == sName )
+					else if ( (L"w:lnNumType") == sName )
 						m_oLnNumType = oReader;
-					else if ( _T("w:noEndnote") == sName )
+					else if ( (L"w:noEndnote") == sName )
 						m_oNoEndnote = oReader;
-					else if ( _T("w:paperSrc") == sName )
+					else if ( (L"w:paperSrc") == sName )
 						m_oPaperSrc = oReader;
-					else if ( _T("w:pgBorders") == sName )
+					else if ( (L"w:pgBorders") == sName )
 						m_oPgBorders = oReader;
-					else if ( _T("w:pgMar") == sName )
+					else if ( (L"w:pgMar") == sName )
 						m_oPgMar = oReader;
-					else if ( _T("w:pgNumType") == sName )
+					else if ( (L"w:pgNumType") == sName )
 						m_oPgNumType = oReader;
-					else if ( _T("w:pgSz") == sName )
+					else if ( (L"w:pgSz") == sName )
 						m_oPgSz = oReader;
-					else if ( _T("w:printerSettings") == sName )
+					else if ( (L"w:printerSettings") == sName )
 						m_oPrinterSettings = oReader;
-					else if ( _T("w:rtlGutter") == sName )
+					else if ( (L"w:rtlGutter") == sName )
 						m_oRtlGutter = oReader;
-					else if ( !m_bSectPrChange && _T("w:sectPrChange") == sName )
+					else if ( !m_bSectPrChange && (L"w:sectPrChange") == sName )
 						m_oSectPrChange = oReader;
-					else if ( _T("w:textDirection") == sName )
+					else if ( (L"w:textDirection") == sName )
 						m_oTextDirection = oReader;
-					else if ( _T("w:titlePg") == sName )
+					else if ( (L"w:titlePg") == sName )
 						m_oTitlePg = oReader;
-					else if ( _T("w:type") == sName )
+					else if ( (L"w:type") == sName )
 						m_oType = oReader;
-					else if ( _T("w:vAlign") == sName )
+					else if ( (L"w:vAlign") == sName )
 						m_oVAlign = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:sectPr ");
+                std::wstring sResult = (L"<w:sectPr ");
 
 				if ( m_oRsidDel.IsInit() )
 				{
-					sResult += _T("w:rsidDel=\"");
+					sResult += (L"w:rsidDel=\"");
 					sResult += m_oRsidDel->ToString();
-					sResult += _T("\" ");						
+					sResult += (L"\" ");						
 				}
 
 				if ( m_oRsidR.IsInit() )
 				{
-					sResult += _T("w:rsidR=\"");
+					sResult += (L"w:rsidR=\"");
 					sResult += m_oRsidR->ToString();
-					sResult += _T("\" ");						
+					sResult += (L"\" ");						
 				}
 
 				if ( m_oRsidRPr.IsInit() )
 				{
-					sResult += _T("w:rsidRPr=\"");
+					sResult += (L"w:rsidRPr=\"");
 					sResult += m_oRsidRPr->ToString();
-					sResult += _T("\" ");						
+					sResult += (L"\" ");						
 				}
 
 				if ( m_oRsidSect.IsInit() )
 				{
-					sResult += _T("w:rsidSect=\"");
+					sResult += (L"w:rsidSect=\"");
 					sResult += m_oRsidSect->ToString();
-					sResult += _T("\" ");						
+					sResult += (L"\" ");						
 				}
 
-				sResult += _T(">");
+				sResult += (L">");
 
 				if ( m_oBidi.IsInit() )
 				{
-					sResult += _T("<w:bidi ");
+					sResult += (L"<w:bidi ");
 					sResult += m_oBidi->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oCols.IsInit() )
@@ -1970,9 +1964,9 @@ namespace OOX
 
 				if ( m_oDocGrid.IsInit() )
 				{
-					sResult += _T("<w:docGrid ");
+					sResult += (L"<w:docGrid ");
 					sResult += m_oDocGrid->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oEndnotePr.IsInit() )
@@ -1982,10 +1976,10 @@ namespace OOX
 				{
 					for (unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
 					{
-						sResult += _T("<w:footerReference ");
+						sResult += (L"<w:footerReference ");
 						if (m_arrFooterReference[nIndex])
 							sResult += m_arrFooterReference[nIndex]->ToString();
-						sResult += _T("/>");
+						sResult += (L"/>");
 					}
 				}
 
@@ -1994,41 +1988,41 @@ namespace OOX
 
 				if ( m_oFormProt.IsInit() )
 				{
-					sResult += _T("<w:formProt ");
+					sResult += (L"<w:formProt ");
 					sResult += m_oFormProt->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( !m_bSectPrChange )
 				{
 					for (unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
 					{
-						sResult += _T("<w:headerReference ");
+						sResult += (L"<w:headerReference ");
 						if (m_arrHeaderReference[nIndex])
 							sResult += m_arrHeaderReference[nIndex]->ToString();
-						sResult += _T("/>");
+						sResult += (L"/>");
 					}
 				}
 
 				if ( m_oLnNumType.IsInit() )
 				{
-					sResult += _T("<w:lnNumType ");
+					sResult += (L"<w:lnNumType ");
 					sResult += m_oLnNumType->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oNoEndnote.IsInit() )
 				{
-					sResult += _T("<w:noEndnote ");
+					sResult += (L"<w:noEndnote ");
 					sResult += m_oNoEndnote->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPaperSrc.IsInit() )
 				{
-					sResult += _T("<w:paperSrc ");
+					sResult += (L"<w:paperSrc ");
 					sResult += m_oPaperSrc->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPgBorders.IsInit() )
@@ -2036,37 +2030,37 @@ namespace OOX
 
 				if ( m_oPgMar.IsInit() )
 				{
-					sResult += _T("<w:pgMar ");
+					sResult += (L"<w:pgMar ");
 					sResult += m_oPgMar->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPgNumType.IsInit() )
 				{
-					sResult += _T("<w:pgNumType ");
+					sResult += (L"<w:pgNumType ");
 					sResult += m_oPgNumType->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPgSz.IsInit() )
 				{
-					sResult += _T("<w:pgSz ");
+					sResult += (L"<w:pgSz ");
 					sResult += m_oPgSz->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oPrinterSettings.IsInit() )
 				{
-					sResult += _T("<w:printerSettings ");
+					sResult += (L"<w:printerSettings ");
 					sResult += m_oPrinterSettings->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oRtlGutter.IsInit() )
 				{
-					sResult += _T("<w:rtlGutter ");
+					sResult += (L"<w:rtlGutter ");
 					sResult += m_oRtlGutter->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( !m_bSectPrChange && m_oSectPrChange.IsInit() )
@@ -2074,33 +2068,33 @@ namespace OOX
 
 				if ( m_oTextDirection.IsInit() )
 				{
-					sResult += _T("<w:textDirection ");
+					sResult += (L"<w:textDirection ");
 					sResult += m_oTextDirection->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oTitlePg.IsInit() )
 				{
-					sResult += _T("<w:titlePg ");
+					sResult += (L"<w:titlePg ");
 					sResult += m_oTitlePg->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += _T("<w:type ");
+					sResult += (L"<w:type ");
 					sResult += m_oType->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
 				if ( m_oVAlign.IsInit() )
 				{
-					sResult += _T("<w:vAlign ");
+					sResult += (L"<w:vAlign ");
 					sResult += m_oVAlign->ToString();
-					sResult += _T("/>");
+					sResult += (L"/>");
 				}
 
-				sResult += _T("</w:sectPr>");
+				sResult += (L"</w:sectPr>");
 
 				return sResult;
 			}
@@ -2116,10 +2110,10 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"),  m_oRsidDel )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),    m_oRsidR )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidRPr"),  m_oRsidRPr )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidSect"), m_oRsidSect )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:rsidDel"),  m_oRsidDel )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidR"),    m_oRsidR )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidRPr"),  m_oRsidRPr )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidSect"), m_oRsidSect )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 

@@ -456,8 +456,8 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				{
 					rtfMath->m_bIsVal = true;
 					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-					CString s; s.AppendFormat( L"%d", oFont.m_nID );
-					oChar->setText( s );
+
+                    oChar->setText( std::to_wstring(oFont.m_nID) );
 					rtfMath->m_oVal.AddItem( oChar );
 				}
 			}
@@ -904,7 +904,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
 	//----------------------------------
-			nullable<CString>	sVal;
+			nullable<std::wstring>	sVal;
 			
 			if		((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
 			else if ((ooxElemChar)		&& (ooxElemChar->m_val.IsInit()))			sVal = ooxElemChar->m_val->GetValue();
@@ -937,7 +937,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				rtfMath->m_bIsVal = true;
 				
 				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				if (!sVal->IsEmpty())
+                if (!sVal->empty())
 					oChar->setText( L" " + *sVal );
 				
 				rtfMath->m_oVal.AddItem( oChar );

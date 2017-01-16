@@ -147,7 +147,7 @@ namespace Oox2Odf
 		
 		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual OOX::CTheme								*oox_theme();
-		virtual CString									find_link_by_id (CString sId, int t);
+        virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 
 		void convert(OOX::WritingElement *oox_unknown);
     private:
@@ -179,7 +179,7 @@ namespace Oox2Odf
 		void convert_footnote		(int oox_ref_id);
 		void convert_endnote		(int oox_ref_id);
 		void convert_comment		(int oox_comm_id);
-		void convert_hdr_ftr		(CString sId);
+        void convert_hdr_ftr		(std::wstring sId);
 
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);

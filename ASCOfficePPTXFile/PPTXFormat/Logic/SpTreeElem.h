@@ -62,7 +62,7 @@ namespace PPTX
 			
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
             virtual bool is_init() const {return (m_elem.IsInit());}
 
 			template<class T> AVSINLINE const bool	is() const	{ return m_elem.is<T>(); }

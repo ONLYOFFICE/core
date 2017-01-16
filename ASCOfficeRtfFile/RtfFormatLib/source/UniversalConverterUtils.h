@@ -33,13 +33,12 @@
 #define BUFSIZE 2048
 #include <time.h>
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 class Utils
 {
 public:	
-	static int CopyDirOrFile(CString sSource, CString sDestination)
+    static int CopyDirOrFile(std::wstring sSource, std::wstring sDestination)
 	{
 		//удаляем sDestination, чтобы там не было.
 		if( 0 != RemoveDirOrFile( sDestination ) )
@@ -52,49 +51,37 @@ public:
 	}
 // return "" если не удалось создать
  
-	static int RemoveDirOrFile(CString sPath)
+    static int RemoveDirOrFile(std::wstring sPath)
 	{
 		CDirectory::DeleteFile(sPath);
 		return 0;
 	}
-	static CString CreateTempFile( )
+    static std::wstring CreateTempFile( )
 	{
-		return CreateTempFile(FileSystem::Directory::GetTempPath());
+        return CreateTempFile(NSDirectory::GetTempPath());
 	}
-	static CString CreateTempFile( CString sDir )
+    static std::wstring CreateTempFile( std::wstring sDir )
 	{
-		if( _T("") != sDir )
+        if( !sDir.empty() )
 		{
-			return FileSystem::Directory::CreateTempFileWithUniqueName(sDir,_T("img"));
+            return NSDirectory::CreateTempFileWithUniqueName(sDir, L"img");
 		}
 		else
 			return CreateTempFile();
 	}
 // return "" если не удалось создать
-	static CString CreateTempDir( CString sDir )//создаем файл в папке sDir
+    static std::wstring CreateTempDir( std::wstring sDir )//создаем файл в папке sDir
 	{
-		if( _T("") != sDir )
-		{
-			return FileSystem::Directory::CreateDirectoryWithUniqueName(sDir);
+        if( !sDir.empty() )
+        {
+            return NSDirectory::CreateDirectoryWithUniqueName(sDir);
 		}
 		else
 			return CreateTempDir();
 	}
-	static CString CreateTempDir()
+    static std::wstring CreateTempDir()
 	{
-        CString tmpDirectory = FileSystem::Directory::GetTempPath();
-        return FileSystem::Directory::CreateDirectoryWithUniqueName(tmpDirectory);
+        std::wstring tmpDirectory = NSDirectory::GetTempPath();
+        return NSDirectory::CreateDirectoryWithUniqueName(tmpDirectory);
 	}
-	static  CString PrepareToXML( const CString & sInput)
-	{
-		 CString sResult = sInput;
-		 //&amp; («&И), &lt; («<И), &gt; («>И), &apos; («'И), и &quot; («"И)
-		 sResult.Replace(_T("\x06"), _T(""));	//ЗБ·О±Ч·ҐАіЮн.rtf
-		 sResult.Replace(_T("&"), _T("&amp;"));
-		 sResult.Replace(_T("<"), _T("&lt;"));
-		 sResult.Replace(_T(">"), _T("&gt;"));
-		 sResult.Replace(_T("\""), _T("&quot;"));
-		 sResult.Replace(_T("'"), _T("&apos;"));
-		 return sResult;
-	 }
 };

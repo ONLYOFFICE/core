@@ -63,7 +63,7 @@ namespace PPTX
 
 		void BuildNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("bldP"))
 				m_node.reset(new Logic::BldP(node));
@@ -91,7 +91,7 @@ namespace PPTX
 			else m_node.reset();
 		}
 
-		CString BuildNodeBase::toXML() const
+		std::wstring BuildNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
 				return m_node->toXML();

@@ -140,9 +140,9 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -150,16 +150,16 @@ namespace OOX
 		{
 			return et_w_comment;
 		}
-		CString getText() const
+		std::wstring getText() const
 		{
 			bool bFirstPar = true;
-			CString sRes = getTextArr(m_arrItems, bFirstPar);
+			std::wstring sRes = getTextArr(m_arrItems, bFirstPar);
 			return sRes;
 		}
 	private:
-		CString getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
+		std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
-			CString sRes;
+			std::wstring sRes;
 			for(unsigned int i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				WritingElement* item = arrItems[i];
@@ -255,8 +255,8 @@ namespace OOX
 					break;
 				case OOX::et_w_t:
 					{
-						CString& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
-						if(!sText.IsEmpty())
+						std::wstring& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
+						if(!sText.empty())
 						{
 							sRes += sText;
 						}
@@ -282,10 +282,10 @@ namespace OOX
 
 		// Attributes
 
-		nullable<CString > m_oAuthor;
+		nullable<std::wstring > m_oAuthor;
 		nullable<SimpleTypes::CDateTime > m_oDate;
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-		nullable<CString > m_oInitials;
+		nullable<std::wstring > m_oInitials;
 
 		// Childs
 	};
@@ -380,9 +380,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -501,9 +501,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -525,8 +525,8 @@ namespace OOX
 
 		// Attributes
 
-		nullable<CString > m_oProviderId;
-		nullable<CString > m_oUserId;
+		nullable<std::wstring > m_oProviderId;
+		nullable<std::wstring > m_oUserId;
 	};
 
 	class CPerson : public WritingElement
@@ -559,9 +559,9 @@ namespace OOX
 					m_oPresenceInfo = oReader;
 			}
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -581,7 +581,7 @@ namespace OOX
 	public:
 
 		// Attributes
-		nullable<CString > m_oAuthor;
+		nullable<std::wstring > m_oAuthor;
 
 		nullable<CPresenceInfo> m_oPresenceInfo;
 	};

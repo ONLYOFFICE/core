@@ -63,7 +63,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"initials", initials);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -157,7 +157,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			XmlUtils::CXmlNodes oNodes;
 			oNode.GetNodes(_T("p:cmAuthor"), oNodes);

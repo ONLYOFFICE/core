@@ -75,7 +75,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 				
 				type = JoinEmpty;
 
@@ -91,7 +91,7 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if(type == JoinRound)
 					return _T("<a:round/>");
@@ -109,8 +109,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");

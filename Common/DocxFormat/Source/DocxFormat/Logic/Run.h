@@ -288,9 +288,9 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:r ");
+				std::wstring sResult = _T("<w:r ");
 
 				ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
 				ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );

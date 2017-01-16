@@ -58,43 +58,43 @@ namespace SimpleTypes
 	{
 	public:
 		CEditAs() {}
-		virtual EEditAs FromString(CString &sValue)
+		virtual EEditAs FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("bullseye") == sValue ) this->m_eValue = editasBullseye;
+					if      ( _T("bullseye") == sValue ) m_eValue = editasBullseye;
 				break;
 			case 'c':
-					if      ( _T("canvas")   == sValue ) this->m_eValue = editasCanvas;
-					else if ( _T("cycle")    == sValue ) this->m_eValue = editasCycle;
+					if      ( _T("canvas")   == sValue ) m_eValue = editasCanvas;
+					else if ( _T("cycle")    == sValue ) m_eValue = editasCycle;
 				break;
 			case 'o':
-					if      ( _T("orgchart") == sValue ) this->m_eValue = editasOrgchart;
+					if      ( _T("orgchart") == sValue ) m_eValue = editasOrgchart;
 				break;
 			case 'r':
-					if      ( _T("radial")   == sValue ) this->m_eValue = editasRadial;
+					if      ( _T("radial")   == sValue ) m_eValue = editasRadial;
 				break;
 			case 's':
-					if      ( _T("stacked")  == sValue ) this->m_eValue = editasStacked;
+					if      ( _T("stacked")  == sValue ) m_eValue = editasStacked;
 				break;
 			case 'v':
-					if      ( _T("venn")     == sValue ) this->m_eValue = editasVenn;
+					if      ( _T("venn")     == sValue ) m_eValue = editasVenn;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case editasBullseye : return _T("bullseye");
 			case editasCanvas   : return _T("canvas");
@@ -128,33 +128,33 @@ namespace SimpleTypes
 	{
 	public:
 		CExt() {}
-		virtual EExt    FromString(CString &sValue)
+		virtual EExt    FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("backwardCompatible") == sValue ) this->m_eValue = extBackwardCompatible;
+					if      ( _T("backwardCompatible") == sValue ) m_eValue = extBackwardCompatible;
 				break;
 			case 'e':
-					if      ( _T("edit")					== sValue ) this->m_eValue = extEdit;
+					if      ( _T("edit")					== sValue ) m_eValue = extEdit;
 				break;
 			case 'v':
-					if      ( _T("view")					== sValue ) this->m_eValue = extView;
+					if      ( _T("view")					== sValue ) m_eValue = extView;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case extBackwardCompatible : return _T("backwardCompatible");
 			case extEdit					: return _T("edit");
@@ -186,21 +186,21 @@ namespace SimpleTypes
 	public:
 		CFillMethod() {}
 
-		virtual EFillMethod FromString(CString& sValue)
+		virtual EFillMethod FromString(std::wstring& sValue)
 		{
-            if		(_T("any")			== sValue)	this->m_eValue = fillmethodAny;
-            else if	(_T("linear")		== sValue)	this->m_eValue = fillmethodLinear;
-            else if	(_T("linear sigma")	== sValue)	this->m_eValue = fillmethodLinearSigma;
-            else if (_T("sigma")		== sValue)	this->m_eValue = fillmethodSigma;
-            else if (_T("none")			== sValue)	this->m_eValue = fillmethodNone;
-            else									this->m_eValue = eDefValue;
+            if		(_T("any")			== sValue)	m_eValue = fillmethodAny;
+            else if	(_T("linear")		== sValue)	m_eValue = fillmethodLinear;
+            else if	(_T("linear sigma")	== sValue)	m_eValue = fillmethodLinearSigma;
+            else if (_T("sigma")		== sValue)	m_eValue = fillmethodSigma;
+            else if (_T("none")			== sValue)	m_eValue = fillmethodNone;
+            else									m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString() const
+		virtual std::wstring ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case fillmethodAny	        : return _T("any");
 			case fillmethodLinear	    : return _T("linear");
@@ -242,47 +242,47 @@ namespace SimpleTypes
 			{
 				if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
 					filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
-					this->m_eValue = eValue;
+					m_eValue = eValue;
 				else
-					   this->m_eValue = eDefValue;
+					   m_eValue = eDefValue;
 			}
 			else
-					this->m_eValue = eValue;
+					m_eValue = eValue;
 		}
-		virtual EFillType FromString(CString &sValue)
+		virtual EFillType FromString(std::wstring &sValue)
 		{
 			if ( 0 == nType )
 			{
-					if      (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
-					else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
-					else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
-					else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
-					else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
-					else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
-					else										this->m_eValue = eDefValue;
+					if      (_T("frame")			== sValue)	m_eValue = filltypeFrame;
+					else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
+					else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
+					else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
+					else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
+					else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
+					else										m_eValue = eDefValue;
 			}
 			else
 			{
-					if      (_T("background")		== sValue)	this->m_eValue = filltypeBackground;
-					else if (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
-					else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
-					else if (_T("gradientCenter")   == sValue)	this->m_eValue = filltypeGradientCenter;
-					else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
-					else if (_T("gradientUnscaled") == sValue)	this->m_eValue = filltypeGradientUnscaled;
-					else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
-					else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
-					else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
-					else										this->m_eValue = eDefValue;
+					if      (_T("background")		== sValue)	m_eValue = filltypeBackground;
+					else if (_T("frame")			== sValue)	m_eValue = filltypeFrame;
+					else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
+					else if (_T("gradientCenter")   == sValue)	m_eValue = filltypeGradientCenter;
+					else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
+					else if (_T("gradientUnscaled") == sValue)	m_eValue = filltypeGradientUnscaled;
+					else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
+					else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
+					else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
+					else										m_eValue = eDefValue;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString() const
+		virtual std::wstring ToString() const
 		{
 			if ( 0 == nType )
 			{
-					switch (this->m_eValue)
+					switch (m_eValue)
 				{
 				case filltypeFrame			: return _T("frame");
 				case filltypeGradient		: return _T("gradient");
@@ -295,7 +295,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-					switch (this->m_eValue)
+					switch (m_eValue)
 				{
 				case filltypeBackground		  : return _T("background");
 				case filltypeFrame			  : return _T("frame");
@@ -330,31 +330,31 @@ namespace SimpleTypes
 	{
 	public:
 		CImageAspect() {}
-		virtual EImageAspect FromString(CString &sValue)
+		virtual EImageAspect FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("atLeast") == sValue ) this->m_eValue = imageaspectAtLeast;
-					else if ( _T("atMost")  == sValue ) this->m_eValue = imageaspectAtMost;
+					if      ( _T("atLeast") == sValue ) m_eValue = imageaspectAtLeast;
+					else if ( _T("atMost")  == sValue ) m_eValue = imageaspectAtMost;
 				break;
 			case 'i':
-					if      ( _T("ignore")  == sValue ) this->m_eValue = imageaspectIgnore;
+					if      ( _T("ignore")  == sValue ) m_eValue = imageaspectIgnore;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString      ToString  () const 
+		virtual std::wstring      ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case imageaspectAtLeast : return _T("atLeast");
 			case imageaspectAtMost  : return _T("atMost");
@@ -385,20 +385,20 @@ namespace SimpleTypes
 	public:
 		CShadowType() {}
 
-		virtual EShadowType FromString(CString &sValue)
+		virtual EShadowType FromString(std::wstring &sValue)
 		{
-            if      (_T("double")		== sValue)	this->m_eValue = shadowtypeDouble;
-            else if (_T("emboss")		== sValue)	this->m_eValue = shadowtypeEmboss;
-            else if (_T("perspective")	== sValue)	this->m_eValue = shadowtypePerspective;
-            else if (_T("single")		== sValue)	this->m_eValue = shadowtypeSingle;
-            else									this->m_eValue = eDefValue;
+            if      (_T("double")		== sValue)	m_eValue = shadowtypeDouble;
+            else if (_T("emboss")		== sValue)	m_eValue = shadowtypeEmboss;
+            else if (_T("perspective")	== sValue)	m_eValue = shadowtypePerspective;
+            else if (_T("single")		== sValue)	m_eValue = shadowtypeSingle;
+            else									m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString() const
+		virtual std::wstring ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case shadowtypeDouble	    : return _T("double");
 			case shadowtypeEmboss	    : return _T("emboss");
@@ -426,33 +426,33 @@ namespace SimpleTypes
 	{
 	public:
 		CStrokeArrowLength() {}
-		virtual EStrokeArrowLength FromString(CString &sValue)
+		virtual EStrokeArrowLength FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-					if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
+					if      ( _T("long")   == sValue ) m_eValue = strokearrowlengthLong;
 				break;
 			case 'm':
-					if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
+					if      ( _T("medium") == sValue ) m_eValue = strokearrowlengthMedium;
 				break;
 			case 's':
-					if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
+					if      ( _T("short")  == sValue ) m_eValue = strokearrowlengthShort;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString            ToString  () const 
+		virtual std::wstring            ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case strokearrowlengthLong   : return _T("long");
 			case strokearrowlengthMedium : return _T("medium");
@@ -485,40 +485,40 @@ namespace SimpleTypes
 	{
 	public:
 		CStrokeArrowType() {}
-		virtual EStrokeArrowType FromString(CString &sValue)
+		virtual EStrokeArrowType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("block")   == sValue ) this->m_eValue = strokearrowtypeBlock;
+					if      ( _T("block")   == sValue ) m_eValue = strokearrowtypeBlock;
 				break;
 			case 'c':
-					if      ( _T("classic") == sValue ) this->m_eValue = strokearrowtypeClassic;
+					if      ( _T("classic") == sValue ) m_eValue = strokearrowtypeClassic;
 				break;
 			case 'd':
-					if      ( _T("diamond") == sValue ) this->m_eValue = strokearrowtypeDiamond;
+					if      ( _T("diamond") == sValue ) m_eValue = strokearrowtypeDiamond;
 				break;
 			case 'n':
-					if      ( _T("none")    == sValue ) this->m_eValue = strokearrowtypeNone;
+					if      ( _T("none")    == sValue ) m_eValue = strokearrowtypeNone;
 				break;
 			case 'o':
-					if      ( _T("open")    == sValue ) this->m_eValue = strokearrowtypeOpen;
-					else if ( _T("oval")    == sValue ) this->m_eValue = strokearrowtypeOval;
+					if      ( _T("open")    == sValue ) m_eValue = strokearrowtypeOpen;
+					else if ( _T("oval")    == sValue ) m_eValue = strokearrowtypeOval;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString          ToString  () const 
+		virtual std::wstring          ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case strokearrowtypeBlock   : return _T("block");
 			case strokearrowtypeClassic : return _T("classic");
@@ -551,33 +551,33 @@ namespace SimpleTypes
 	{
 	public:
 		CStrokeArrowWidth() {}
-		virtual EStrokeArrowWidth FromString(CString &sValue)
+		virtual EStrokeArrowWidth FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'm':
-					if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
+					if      ( _T("medium") == sValue ) m_eValue = strokearrowwidthMedium;
 				break;
 			case 'n':
-					if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
+					if      ( _T("narrow") == sValue ) m_eValue = strokearrowwidthNarrow;
 				break;
 			case 'w':
-					if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
+					if      ( _T("wide")   == sValue ) m_eValue = strokearrowwidthWide;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString           ToString  () const 
+		virtual std::wstring           ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case strokearrowwidthMedium : return _T("medium");
 			case strokearrowwidthNarrow : return _T("narrow");
@@ -607,33 +607,33 @@ namespace SimpleTypes
 	{
 	public:
 		CStrokeEndCap() {}
-		virtual EStrokeEndCap FromString(CString &sValue)
+		virtual EStrokeEndCap FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'f':
-					if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
+					if      ( _T("flat")   == sValue ) m_eValue = strokeendcapFlat;
 				break;
 			case 'r':
-					if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
+					if      ( _T("round")  == sValue ) m_eValue = strokeendcapRound;
 				break;
 			case 's':
-					if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
+					if      ( _T("square") == sValue ) m_eValue = strokeendcapSqaure;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString       ToString  () const 
+		virtual std::wstring       ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case strokeendcapFlat   : return _T("flat");
 			case strokeendcapRound  : return _T("round");
@@ -663,19 +663,19 @@ namespace SimpleTypes
 	public:
 		CStrokeJoinStyle() {}
 
-		virtual EStrokeJoinStyle FromString(CString &sValue)
+		virtual EStrokeJoinStyle FromString(std::wstring &sValue)
 		{
-            if      (_T("round")	== sValue)	this->m_eValue = strokejoinstyleRound;
-            else if (_T("miter")	== sValue)	this->m_eValue = strokejoinstyleMiter;
-            else if (_T("bevel")	== sValue)	this->m_eValue = strokejoinstyleMiter;
-            else								this->m_eValue = strokejoinstyleRound;
+            if      (_T("round")	== sValue)	m_eValue = strokejoinstyleRound;
+            else if (_T("miter")	== sValue)	m_eValue = strokejoinstyleMiter;
+            else if (_T("bevel")	== sValue)	m_eValue = strokejoinstyleMiter;
+            else								m_eValue = strokejoinstyleRound;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString() const
+		virtual std::wstring ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case strokejoinstyleRound	: return _T("round");
 			case strokejoinstyleMiter	: return _T("miter");
@@ -704,33 +704,33 @@ namespace SimpleTypes
 	{
 	public:
 		CStrokeLineStyle() {}
-		virtual EStrokeLineStyle FromString(CString &sValue)
+		virtual EStrokeLineStyle FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 's':
-					if      ( _T("single")           == sValue ) this->m_eValue = strokelinestyleSingle;
+					if      ( _T("single")           == sValue ) m_eValue = strokelinestyleSingle;
 				break;
 			case 't':
-					if      ( _T("thickBetweenThin") == sValue ) this->m_eValue = strokelinestyleThickBetweenThin;
-					else if ( _T("thickThin")        == sValue ) this->m_eValue = strokelinestyleThickThin;
-					else if ( _T("thinThick")        == sValue ) this->m_eValue = strokelinestyleThinThick;
-					else if ( _T("thinThin")         == sValue ) this->m_eValue = strokelinestyleThinThin;
+					if      ( _T("thickBetweenThin") == sValue ) m_eValue = strokelinestyleThickBetweenThin;
+					else if ( _T("thickThin")        == sValue ) m_eValue = strokelinestyleThickThin;
+					else if ( _T("thinThick")        == sValue ) m_eValue = strokelinestyleThinThick;
+					else if ( _T("thinThin")         == sValue ) m_eValue = strokelinestyleThinThin;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString          ToString  () const 
+		virtual std::wstring          ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case strokelinestyleSingle            : return _T("single");
 			case strokelinestyleThickBetweenThin  : return _T("thickBetweenThin");
@@ -765,30 +765,30 @@ namespace SimpleTypes
 	public:
 		CAlternateMathContentType() {}
 
-		virtual EAlternateMathContentType FromString(CString &sValue)
+		virtual EAlternateMathContentType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'o':
-					if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
+					if      ( _T("officeopenxmlmath") == sValue ) m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 				break;
 			case 'm':
-					if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
+					if      ( _T("mathml")            == sValue ) m_eValue = alternatemathcontenttypeMathMl;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString					  ToString  () const 
+		virtual std::wstring   ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case alternatemathcontenttypeOfficeOpenXmlMath: return _T("officeopenxmlmath");			
 			case alternatemathcontenttypeMathMl:            return _T("mathml");			
@@ -820,41 +820,41 @@ namespace SimpleTypes
 	public:
 		CVmlAngle() {}
 
-		virtual EVmlAngle FromString(CString &sValue)
+		virtual EVmlAngle FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '3':
-					if      ( _T("30")   == sValue ) this->m_eValue = vmlangle30;
+					if      ( _T("30")   == sValue ) m_eValue = vmlangle30;
 				break;
 			case '4':
-					if      ( _T("45")   == sValue ) this->m_eValue = vmlangle45;
+					if      ( _T("45")   == sValue ) m_eValue = vmlangle45;
 				break;
 			case '6':
-					if      ( _T("60")   == sValue ) this->m_eValue = vmlangle60;
+					if      ( _T("60")   == sValue ) m_eValue = vmlangle60;
 				break;
 			case '9':
-					if      ( _T("90")   == sValue ) this->m_eValue = vmlangle90;
+					if      ( _T("90")   == sValue ) m_eValue = vmlangle90;
 				break;
 			case 'a':  
-					if      ( _T("any")  == sValue ) this->m_eValue = vmlangleAny;
-					else if ( _T("auto") == sValue ) this->m_eValue = vmlangleAuto;
+					if      ( _T("any")  == sValue ) m_eValue = vmlangleAny;
+					else if ( _T("auto") == sValue ) m_eValue = vmlangleAuto;
 				break;
 
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString   ToString  () const 
+		virtual std::wstring   ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case vmlangle30:   return _T("30");			
 			case vmlangle45:   return _T("45");			
@@ -896,55 +896,55 @@ namespace SimpleTypes
 	public:
 		CBWMode() {}
 
-		virtual EBWMode FromString(CString &sValue)
+		virtual EBWMode FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")					== sValue ) this->m_eValue = bwmodeAuto;
+					if      ( _T("auto")					== sValue ) m_eValue = bwmodeAuto;
 				break;
 			case 'b':
-					if      ( _T("black")             == sValue ) this->m_eValue = bwmodeBlack;
-					else if ( _T("blackTextAndLines") == sValue ) this->m_eValue = bwmodeBlackTextAndLines;
+					if      ( _T("black")             == sValue ) m_eValue = bwmodeBlack;
+					else if ( _T("blackTextAndLines") == sValue ) m_eValue = bwmodeBlackTextAndLines;
 				break;
 			case 'c':
-					if      ( _T("color")             == sValue ) this->m_eValue = bwmodeColor;
+					if      ( _T("color")             == sValue ) m_eValue = bwmodeColor;
 				break;
 			case 'g':
-					if      ( _T("grayOutline")       == sValue ) this->m_eValue = bwmodeGrayOutline;
-					else if ( _T("grayScale")         == sValue ) this->m_eValue = bwmodeGrayScale;
+					if      ( _T("grayOutline")       == sValue ) m_eValue = bwmodeGrayOutline;
+					else if ( _T("grayScale")         == sValue ) m_eValue = bwmodeGrayScale;
 				break;
 			case 'h':  
-					if      ( _T("hide")					== sValue ) this->m_eValue = bwmodeHide;
-					else if ( _T("highContrast")      == sValue ) this->m_eValue = bwmodeHighContrast;
+					if      ( _T("hide")					== sValue ) m_eValue = bwmodeHide;
+					else if ( _T("highContrast")      == sValue ) m_eValue = bwmodeHighContrast;
 				break;
 			case 'i':
-					if      ( _T("inverseGray")       == sValue ) this->m_eValue = bwmodeInverseGray;
+					if      ( _T("inverseGray")       == sValue ) m_eValue = bwmodeInverseGray;
 				break;
 			case 'l':
-					if      ( _T("lightGrayscale")    == sValue ) this->m_eValue = bwmodeLightGrayscale;
+					if      ( _T("lightGrayscale")    == sValue ) m_eValue = bwmodeLightGrayscale;
 				break;
 			case 'u':
-					if      ( _T("undrawn")           == sValue ) this->m_eValue = bwmodeUndrawn;
+					if      ( _T("undrawn")           == sValue ) m_eValue = bwmodeUndrawn;
 				break;
 			case 'w':
-					if      ( _T("white")             == sValue ) this->m_eValue = bwmodeWhite;
+					if      ( _T("white")             == sValue ) m_eValue = bwmodeWhite;
 				break;
 
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case bwmodeAuto:					return _T("auto");			
 			case bwmodeBlack:             return _T("black");			
@@ -975,35 +975,35 @@ namespace SimpleTypes
 	public:
 		CCalloutDrop() {}
 
-		CString GetValue() const
+		std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+		void    SetValue(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+		std::wstring FromString(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+		std::wstring ToString  () const 
 		{
 			return m_sValue;
 		}
 
-		SimpleType_FromString2    (CString)
+		SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CCalloutDrop)
 
 	private:
 
-		CString m_sValue;
+		std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1021,30 +1021,30 @@ namespace SimpleTypes
 	public:
 		CColorMode() {}
 
-		virtual EColorMode FromString(CString &sValue)
+		virtual EColorMode FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
+					if      ( _T("auto")   == sValue ) m_eValue = colormodeAuto;
 				break;
 			case 'c':
-					if      ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
+					if      ( _T("custom") == sValue ) m_eValue = colormodeCustom;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString    ToString  () const 
+		virtual std::wstring    ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case colormodeAuto:   return _T("auto");			
 			case colormodeCustom: return _T("custom");			
@@ -1074,36 +1074,36 @@ namespace SimpleTypes
 	public:
 		CConnectorType() {}
 
-		virtual EConnectorType FromString(CString &sValue)
+		virtual EConnectorType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
+					if      ( _T("curved")   == sValue ) m_eValue = connectortypeCurved;
 				break;
 			case 'e':
-					if      ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
+					if      ( _T("elbow")    == sValue ) m_eValue = connectortypeElbow;
 				break;
 			case 'n':
-					if      ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
+					if      ( _T("none")     == sValue ) m_eValue = connectortypeNone;
 				break;
 			case 's':
-					if      ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
+					if      ( _T("straight") == sValue ) m_eValue = connectortypeStraight;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString        ToString  () const 
+		virtual std::wstring        ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case connectortypeCurved  : return _T("curved");			
 			case connectortypeElbow   : return _T("elbow");			
@@ -1135,36 +1135,36 @@ namespace SimpleTypes
 	public:
 		CConnectType() {}
 
-		virtual EConnectType FromString(CString &sValue)
+		virtual EConnectType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
+					if      ( _T("custom")   == sValue ) m_eValue = connecttypeCustom;
 				break;
 			case 'n':
-					if      ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
+					if      ( _T("none")     == sValue ) m_eValue = connecttypeNone;
 				break;
 			case 'r':
-					if      ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
+					if      ( _T("rect")     == sValue ) m_eValue = connecttypeRect;
 				break;
 			case 's':
-					if      ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
+					if      ( _T("segments") == sValue ) m_eValue = connecttypeSegments;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString      ToString  () const 
+		virtual std::wstring      ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case connecttypeCustom  : return _T("custom");			
 			case connecttypeNone    : return _T("none");			
@@ -1187,35 +1187,35 @@ namespace SimpleTypes
 	public:
 		CContentType() {}
 
-		CString GetValue() const
+		std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+		void    SetValue(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+		std::wstring FromString(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+		std::wstring ToString  () const 
 		{
 			return m_sValue;
 		}
 
-		SimpleType_FromString2    (CString)
+		SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CContentType)
 
 	private:
 
-		CString m_sValue;
+		std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1235,36 +1235,36 @@ namespace SimpleTypes
 	public:
 		CDiagramLayout() {}
 
-		virtual EDiagramLayout FromString(CString &sValue)
+		virtual EDiagramLayout FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '0':
-					if      ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
+					if      ( _T("0") == sValue ) m_eValue = diagramlayout0;
 				break;
 			case '1':
-					if      ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
+					if      ( _T("1") == sValue ) m_eValue = diagramlayout1;
 				break;
 			case '2':
-					if      ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
+					if      ( _T("2") == sValue ) m_eValue = diagramlayout2;
 				break;
 			case '3':
-					if      ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
+					if      ( _T("3") == sValue ) m_eValue = diagramlayout3;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString        ToString  () const 
+		virtual std::wstring        ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case diagramlayout0 : return _T("0");			
 			case diagramlayout1 : return _T("1");			
@@ -1295,42 +1295,42 @@ namespace SimpleTypes
 	public:
 		CExtrusionPlane() {}
 
-		virtual EExtrusionPlane FromString(CString &sValue)
+		virtual EExtrusionPlane FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'X':
-					if      ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
+					if      ( _T("XY") == sValue ) m_eValue = extrusionplaneXY;
 				break;
 			case 'Y':
-					if      ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
+					if      ( _T("YZ") == sValue ) m_eValue = extrusionplaneYZ;
 				break;
 			case 'Z':
-					if      ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
+					if      ( _T("ZX") == sValue ) m_eValue = extrusionplaneZX;
 				break;
 			case 'x':
-					if      ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
+					if      ( _T("xy") == sValue ) m_eValue = extrusionplaneXY;
 				break;
 			case 'y':
-					if      ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
+					if      ( _T("yz") == sValue ) m_eValue = extrusionplaneYZ;
 				break;
 			case 'z':
-					if      ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
+					if      ( _T("zx") == sValue ) m_eValue = extrusionplaneZX;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString         ToString  () const 
+		virtual std::wstring         ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case extrusionplaneXY: return _T("XY");			
 			case extrusionplaneYZ: return _T("YZ");			
@@ -1360,33 +1360,33 @@ namespace SimpleTypes
 	public:
 		CExtrusionRender() {}
 
-		virtual EExtrusionRender FromString(CString &sValue)
+		virtual EExtrusionRender FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
+					if      ( _T("boundingCube") == sValue ) m_eValue = extrusionrenderBoundingCube;
 				break;
 			case 's':
-					if      ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
+					if      ( _T("solid")        == sValue ) m_eValue = extrusionrenderSolid;
 				break;
 			case 'w':
-					if      ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
+					if      ( _T("wireFrame")    == sValue ) m_eValue = extrusionrenderWireFrame;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString          ToString  () const 
+		virtual std::wstring          ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case extrusionrenderBoundingCube: return _T("boundingCube");			
 			case extrusionrenderSolid:        return _T("solid");			
@@ -1414,18 +1414,18 @@ namespace SimpleTypes
 	public:
 		CExtrusionType() {}
 
-		virtual EExtrusionType FromString(CString& sValue)
+		virtual EExtrusionType FromString(std::wstring& sValue)
 		{
-            if		(_T("parallel")    == sValue ) this->m_eValue = extrusiontypeParallel;
-            else if	(_T("perspective") == sValue ) this->m_eValue = extrusiontypePerspective;
-            else								  this->m_eValue = eDefValue;
+            if		(_T("parallel")    == sValue ) m_eValue = extrusiontypeParallel;
+            else if	(_T("perspective") == sValue ) m_eValue = extrusiontypePerspective;
+            else								  m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString() const
+		virtual std::wstring ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case extrusiontypeParallel		: return _T("parallel");
 			case extrusiontypePerspective	: return _T("perspective");
@@ -1455,42 +1455,42 @@ namespace SimpleTypes
 	public:
 		CHow() {}
 
-		virtual EHow    FromString(CString &sValue)
+		virtual EHow    FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("bottom") == sValue ) this->m_eValue = howBottom;
+					if      ( _T("bottom") == sValue ) m_eValue = howBottom;
 				break;
 			case 'c':
-					if      ( _T("center") == sValue ) this->m_eValue = howCenter;
+					if      ( _T("center") == sValue ) m_eValue = howCenter;
 				break;
 			case 'l':
-					if      ( _T("left")   == sValue ) this->m_eValue = howLeft;
+					if      ( _T("left")   == sValue ) m_eValue = howLeft;
 				break;
 			case 'm':
-					if      ( _T("middle") == sValue ) this->m_eValue = howMiddle;
+					if      ( _T("middle") == sValue ) m_eValue = howMiddle;
 				break;
 			case 'r':
-					if      ( _T("right")  == sValue ) this->m_eValue = howRight;
+					if      ( _T("right")  == sValue ) m_eValue = howRight;
 				break;
 			case 't':
-					if      ( _T("top")    == sValue ) this->m_eValue = howTop;
+					if      ( _T("top")    == sValue ) m_eValue = howTop;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case howBottom: return _T("bottom");			
 			case howCenter: return _T("center");			
@@ -1523,33 +1523,33 @@ namespace SimpleTypes
 	public:
 		CHrAlign() {}
 
-		virtual EHrAlign FromString(CString &sValue)
+		virtual EHrAlign FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("center") == sValue ) this->m_eValue = hralignCenter;
+					if      ( _T("center") == sValue ) m_eValue = hralignCenter;
 				break;
 			case 'l':
-					if      ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
+					if      ( _T("left")   == sValue ) m_eValue = hralignLeft;
 				break;
 			case 'r':
-					if      ( _T("right")  == sValue ) this->m_eValue = hralignRight;
+					if      ( _T("right")  == sValue ) m_eValue = hralignRight;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString  ToString  () const 
+		virtual std::wstring  ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case hralignCenter: return _T("center");			
 			case hralignLeft  : return _T("left");			
@@ -1578,30 +1578,30 @@ namespace SimpleTypes
 	public:
 		CInsetMode() {}
 
-		virtual EInsetMode FromString(CString &sValue)
+		virtual EInsetMode FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
+					if      ( _T("auto")   == sValue ) m_eValue = insetmodeAuto;
 				break;
 			case 'c':
-					if      ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
+					if      ( _T("custom") == sValue ) m_eValue = insetmodeCustom;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString    ToString  () const 
+		virtual std::wstring    ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case insetmodeAuto   : return _T("auto");			
 			case insetmodeCustom : return _T("custom");			
@@ -1628,18 +1628,18 @@ namespace SimpleTypes
 	public:
 		COLEDrawAspect() {}
 
-		virtual EOLEDrawAspect FromString(CString &sValue)
+		virtual EOLEDrawAspect FromString(std::wstring &sValue)
 		{
-            if      (_T("Content")	== sValue)	this->m_eValue = oledrawaspectContent;
-            else if (_T("Icon")		== sValue)	this->m_eValue = oledrawaspectIcon;
-            else								this->m_eValue = eDefValue;
+            if      (_T("Content")	== sValue)	m_eValue = oledrawaspectContent;
+            else if (_T("Icon")		== sValue)	m_eValue = oledrawaspectIcon;
+            else								m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString        ToString() const
+		virtual std::wstring        ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case oledrawaspectContent	: return _T("Content");
 			case oledrawaspectIcon		: return _T("Icon");
@@ -1669,37 +1669,37 @@ namespace SimpleTypes
 	public:
 		COLELinkType() {}
 
-		virtual EOLELinkType FromString(CString &sValue)
+		virtual EOLELinkType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'B':
-					if      ( _T("Bitmap")           == sValue ) this->m_eValue = olelinktypeBitmap;
+					if      ( _T("Bitmap")           == sValue ) m_eValue = olelinktypeBitmap;
 				break;
 			case 'E':
-					if      ( _T("EnhancedMetaFile") == sValue ) this->m_eValue = olelinktypeEmf;
+					if      ( _T("EnhancedMetaFile") == sValue ) m_eValue = olelinktypeEmf;
 				break;
 			case 'J':
-					if      ( _T("Jpeg")             == sValue ) this->m_eValue = olelinktypeJpeg;
+					if      ( _T("Jpeg")             == sValue ) m_eValue = olelinktypeJpeg;
 				break;
 			case 'P':
-					if      ( _T("Picture")          == sValue ) this->m_eValue = olelinktypePicture;
-					else if ( _T("Png")					== sValue ) this->m_eValue = olelinktypePng;
+					if      ( _T("Picture")          == sValue ) m_eValue = olelinktypePicture;
+					else if ( _T("Png")					== sValue ) m_eValue = olelinktypePng;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString      ToString  () const 
+		virtual std::wstring      ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case olelinktypeBitmap:  return _T("Bitmap");			
 			case olelinktypeEmf:     return _T("EnhancedMetaFile");			
@@ -1729,18 +1729,18 @@ namespace SimpleTypes
 	public:
 		COLEType() {}
 
-		virtual EOLEType FromString(CString &sValue)
+		virtual EOLEType FromString(std::wstring &sValue)
 		{
-            if      (_T("embed")	== sValue)	this->m_eValue = oletypeEmbed;
-            else if (_T("link")		== sValue)	this->m_eValue = oletypeLink;
-            else								this->m_eValue = eDefValue;
+            if      (_T("embed")	== sValue)	m_eValue = oletypeEmbed;
+            else if (_T("link")		== sValue)	m_eValue = oletypeLink;
+            else								m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString  ToString() const
+		virtual std::wstring  ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case oletypeEmbed	: return _T("embed");
 			case oletypeLink	: return _T("link");
@@ -1765,18 +1765,18 @@ namespace SimpleTypes
 	public:
 		COLEUpdateMode() {}
 
-		virtual EOLEUpdateMode FromString(CString &sValue)
+		virtual EOLEUpdateMode FromString(std::wstring &sValue)
 		{
-            if      (_T("Always")	== sValue)	this->m_eValue = oleupdatemodeAlways;
-            else if (_T("OnCall")	== sValue)	this->m_eValue = oleupdatemodeOnCall;
-            else								this->m_eValue = eDefValue;
+            if      (_T("Always")	== sValue)	m_eValue = oleupdatemodeAlways;
+            else if (_T("OnCall")	== sValue)	m_eValue = oleupdatemodeOnCall;
+            else								m_eValue = eDefValue;
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString        ToString() const
+		virtual std::wstring        ToString() const
 		{
-            switch (this->m_eValue)
+            switch (m_eValue)
 			{
 			case oleupdatemodeAlways : return _T("Always");
 			case oleupdatemodeOnCall : return _T("OnCall");
@@ -1804,32 +1804,32 @@ namespace SimpleTypes
 	public:
 		CRType() {}
 
-		virtual ERType  FromString(CString &sValue)
+		virtual ERType  FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("align")     == sValue ) this->m_eValue = rtypeAlign;
-					else if ( _T("arc")       == sValue ) this->m_eValue = rtypeArc;
+					if      ( _T("align")     == sValue ) m_eValue = rtypeAlign;
+					else if ( _T("arc")       == sValue ) m_eValue = rtypeArc;
 				break;
 			case 'c':
-					if      ( _T("callout")   == sValue ) this->m_eValue = rtypeCallout;
-					else if ( _T("connector") == sValue ) this->m_eValue = rtypeConnector;
+					if      ( _T("callout")   == sValue ) m_eValue = rtypeCallout;
+					else if ( _T("connector") == sValue ) m_eValue = rtypeConnector;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case rtypeAlign    : return _T("align");			
 			case rtypeArc      : return _T("arc");			
@@ -1862,40 +1862,40 @@ namespace SimpleTypes
 	{
 	public:
 		CScreenSize() {}
-		virtual EScreenSize FromString(CString &sValue)
+		virtual EScreenSize FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '1':
-					if      ( _T("1024,768")  == sValue ) this->m_eValue = screensize1024x768;
-					else if ( _T("1152,862")  == sValue ) this->m_eValue = screensize1152x862;
+					if      ( _T("1024,768")  == sValue ) m_eValue = screensize1024x768;
+					else if ( _T("1152,862")  == sValue ) m_eValue = screensize1152x862;
 				break;
 			case '5':
-					if      ( _T("544,376")   == sValue ) this->m_eValue = screensize544x376;
+					if      ( _T("544,376")   == sValue ) m_eValue = screensize544x376;
 				break;
 			case '6':
-					if      ( _T("640,480")   == sValue ) this->m_eValue = screensize640x480;
+					if      ( _T("640,480")   == sValue ) m_eValue = screensize640x480;
 				break;
 			case '7':
-					if      ( _T("720,512")   == sValue ) this->m_eValue = screensize720x512;
+					if      ( _T("720,512")   == sValue ) m_eValue = screensize720x512;
 				break;
 			case '8':
-					if      ( _T("800,600")   == sValue ) this->m_eValue = screensize800x600;
+					if      ( _T("800,600")   == sValue ) m_eValue = screensize800x600;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString     ToString  () const 
+		virtual std::wstring     ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case screensize1024x768: return _T("1024,768");			
 			case screensize1152x862: return _T("1152,862");			
@@ -1932,30 +1932,30 @@ namespace SimpleTypes
 	public:
 		CBorderShadow() {}
 
-		virtual EBorderShadow FromString(CString &sValue)
+		virtual EBorderShadow FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'f':
-					if      ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
+					if      ( _T("f") == sValue || _T("false") == sValue ) m_eValue = bordershadowFalse;
 				break;
 			case 't':
-					if      ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
+					if      ( _T("t") == sValue || _T("true") == sValue  ) m_eValue = bordershadowTrue;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString       ToString  () const 
+		virtual std::wstring       ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case bordershadowTrue:  return _T("t");			
 			case bordershadowFalse: return _T("f");			
@@ -2008,70 +2008,70 @@ namespace SimpleTypes
 	public:
 		CBorderType() {}
 
-		virtual EBorderType FromString(CString &sValue)
+		virtual EBorderType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'd':
-					if      ( _T("dash")           == sValue ) this->m_eValue = bordertypeDash;
-					else if ( _T("dashDotDot")     == sValue ) this->m_eValue = bordertypeDashDotDot;
-					else if ( _T("dashDotStroked") == sValue ) this->m_eValue = bordertypeDashDotStroked;
-					else if ( _T("dashedSmall")    == sValue ) this->m_eValue = bordertypeDashedSmall;
-					else if ( _T("dot")            == sValue ) this->m_eValue = bordertypeDot;
-					else if ( _T("dotDash")        == sValue ) this->m_eValue = bordertypeDotDash;
-					else if ( _T("double")         == sValue ) this->m_eValue = bordertypeDouble;
-					else if ( _T("doubleWave")     == sValue ) this->m_eValue = bordertypeDoubleWave;
+					if      ( _T("dash")           == sValue ) m_eValue = bordertypeDash;
+					else if ( _T("dashDotDot")     == sValue ) m_eValue = bordertypeDashDotDot;
+					else if ( _T("dashDotStroked") == sValue ) m_eValue = bordertypeDashDotStroked;
+					else if ( _T("dashedSmall")    == sValue ) m_eValue = bordertypeDashedSmall;
+					else if ( _T("dot")            == sValue ) m_eValue = bordertypeDot;
+					else if ( _T("dotDash")        == sValue ) m_eValue = bordertypeDotDash;
+					else if ( _T("double")         == sValue ) m_eValue = bordertypeDouble;
+					else if ( _T("doubleWave")     == sValue ) m_eValue = bordertypeDoubleWave;
 				break;
 			case 'h':
-					if      ( _T("hairline")      == sValue ) this->m_eValue = bordertypeHairline;
+					if      ( _T("hairline")      == sValue ) m_eValue = bordertypeHairline;
 				break;
 
 			case 'H':
-					if      ( _T("HTMLInset")     == sValue ) this->m_eValue = bordertypeHTMLInset;
-					else if ( _T("HTMLOutset")    == sValue ) this->m_eValue = bordertypeHTMLOutset;
+					if      ( _T("HTMLInset")     == sValue ) m_eValue = bordertypeHTMLInset;
+					else if ( _T("HTMLOutset")    == sValue ) m_eValue = bordertypeHTMLOutset;
 				break;
 
 			case 'n':
-					if      ( _T("none")          == sValue ) this->m_eValue = bordertypeNone;
+					if      ( _T("none")          == sValue ) m_eValue = bordertypeNone;
 				break;
 
 			case 's':
-					if      ( _T("single")        == sValue ) this->m_eValue = bordertypeSingle;
+					if      ( _T("single")        == sValue ) m_eValue = bordertypeSingle;
 				break;
 
 			case 't':
-					if      ( _T("thick")					== sValue ) this->m_eValue = bordertypeThick;
-					else if ( _T("thickBetweenThin")      == sValue ) this->m_eValue = bordertypeThickBetweenThin;
-					else if ( _T("thickBetweenThinLarge") == sValue ) this->m_eValue = bordertypeThickBetweenThinLarge;
-					else if ( _T("thickBetweenThinSmall") == sValue ) this->m_eValue = bordertypeThickBetweenThinSmall;
-					else if ( _T("thickThin")             == sValue ) this->m_eValue = bordertypeThickThin;
-					else if ( _T("thickThinLarge")        == sValue ) this->m_eValue = bordertypeThickThinLarge;
-					else if ( _T("thickThinSmall")        == sValue ) this->m_eValue = bordertypeThickThinSmall;
-					else if ( _T("thinThick")             == sValue ) this->m_eValue = bordertypeThinThick;
-					else if ( _T("thinThickLarge")        == sValue ) this->m_eValue = bordertypeThinThickLarge;
-					else if ( _T("thinThickSmall")        == sValue ) this->m_eValue = bordertypeThinThickSmall;
-					else if ( _T("threeDEmboss")          == sValue ) this->m_eValue = bordertypeThreeDEmboss;
-					else if ( _T("threeDEngrave")         == sValue ) this->m_eValue = bordertypeThreeDEngrave;
-					else if ( _T("triple")					== sValue ) this->m_eValue = bordertypeTriple;
+					if      ( _T("thick")					== sValue ) m_eValue = bordertypeThick;
+					else if ( _T("thickBetweenThin")      == sValue ) m_eValue = bordertypeThickBetweenThin;
+					else if ( _T("thickBetweenThinLarge") == sValue ) m_eValue = bordertypeThickBetweenThinLarge;
+					else if ( _T("thickBetweenThinSmall") == sValue ) m_eValue = bordertypeThickBetweenThinSmall;
+					else if ( _T("thickThin")             == sValue ) m_eValue = bordertypeThickThin;
+					else if ( _T("thickThinLarge")        == sValue ) m_eValue = bordertypeThickThinLarge;
+					else if ( _T("thickThinSmall")        == sValue ) m_eValue = bordertypeThickThinSmall;
+					else if ( _T("thinThick")             == sValue ) m_eValue = bordertypeThinThick;
+					else if ( _T("thinThickLarge")        == sValue ) m_eValue = bordertypeThinThickLarge;
+					else if ( _T("thinThickSmall")        == sValue ) m_eValue = bordertypeThinThickSmall;
+					else if ( _T("threeDEmboss")          == sValue ) m_eValue = bordertypeThreeDEmboss;
+					else if ( _T("threeDEngrave")         == sValue ) m_eValue = bordertypeThreeDEngrave;
+					else if ( _T("triple")					== sValue ) m_eValue = bordertypeTriple;
 				break;
 
 			case 'w':
-					if      ( _T("wave")					 == sValue ) this->m_eValue = bordertypeWave;
+					if      ( _T("wave")					 == sValue ) m_eValue = bordertypeWave;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString     ToString  () const 
+		virtual std::wstring     ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case bordertypeDash:					 return _T("dash");			
 			case bordertypeDashDotDot:            return _T("dashDotDot");			
@@ -2126,38 +2126,38 @@ namespace SimpleTypes
 	public:
 		CHorizontalAnchor() {}
 
-		virtual EHorizontalAnchor FromString(CString &sValue)
+		virtual EHorizontalAnchor FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
+					if      ( _T("char")   == sValue ) m_eValue = horizontalanchorChar;
 				break;
 			case 'm':
-					if      ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
+					if      ( _T("margin") == sValue ) m_eValue = horizontalanchorMargin;
 				break;
 
 			case 'p':
-					if      ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
+					if      ( _T("page")   == sValue ) m_eValue = horizontalanchorPage;
 				break;
 
 			case 't':
-					if      ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
+					if      ( _T("text")   == sValue ) m_eValue = horizontalanchorText;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString           ToString  () const 
+		virtual std::wstring           ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case horizontalanchorChar:   return _T("char");			
 			case horizontalanchorMargin: return _T("margin");			
@@ -2189,38 +2189,38 @@ namespace SimpleTypes
 	public:
 		CVerticalAnchor() {}
 
-		virtual EVerticalAnchor FromString(CString &sValue)
+		virtual EVerticalAnchor FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-					if      ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
+					if      ( _T("line")   == sValue ) m_eValue = verticalanchorLine;
 				break;
 			case 'm':
-					if      ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
+					if      ( _T("margin") == sValue ) m_eValue = verticalanchorMargin;
 				break;
 
 			case 'p':
-					if      ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
+					if      ( _T("page")   == sValue ) m_eValue = verticalanchorPage;
 				break;
 
 			case 't':
-					if      ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
+					if      ( _T("text")   == sValue ) m_eValue = verticalanchorText;
 				break;
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString         ToString  () const 
+		virtual std::wstring         ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case verticalanchorLine:   return _T("line");			
 			case verticalanchorMargin: return _T("margin");			
@@ -2252,36 +2252,36 @@ namespace SimpleTypes
 	public:
 		CWrapSide() {}
 
-		virtual EWrapSide FromString(CString &sValue)
+		virtual EWrapSide FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("both")    == sValue ) this->m_eValue = wrapsideBoth;
+					if      ( _T("both")    == sValue ) m_eValue = wrapsideBoth;
 				break;
 			case 'l':
-					if      ( _T("largest") == sValue ) this->m_eValue = wrapsideLargest;
-					else if ( _T("left")    == sValue ) this->m_eValue = wrapsideLeft;
+					if      ( _T("largest") == sValue ) m_eValue = wrapsideLargest;
+					else if ( _T("left")    == sValue ) m_eValue = wrapsideLeft;
 				break;
 
 			case 'r':
-					if      ( _T("right")   == sValue ) this->m_eValue = wrapsideRight;
+					if      ( _T("right")   == sValue ) m_eValue = wrapsideRight;
 				break;
 
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString   ToString  () const 
+		virtual std::wstring   ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case wrapsideBoth:    return _T("both");			
 			case wrapsideLargest: return _T("largest");			
@@ -2314,37 +2314,37 @@ namespace SimpleTypes
 	public:
 		CWrapType() {}
 
-		virtual EWrapType FromString(CString &sValue)
+		virtual EWrapType FromString(std::wstring &sValue)
 		{
-            this->m_eValue = eDefValue;
+            m_eValue = eDefValue;
 
-			if ( sValue.GetLength() <= 0 )
-					return this->m_eValue;
+			if ( sValue.length() <= 0 )
+					return m_eValue;
 
-			wchar_t wChar = sValue.GetAt(0);
+			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'n':
-					if      ( _T("none")         == sValue ) this->m_eValue = wraptypeNone;
+					if      ( _T("none")         == sValue ) m_eValue = wraptypeNone;
 				break;
 			case 's':
-					if      ( _T("square")       == sValue ) this->m_eValue = wraptypeSquare;
+					if      ( _T("square")       == sValue ) m_eValue = wraptypeSquare;
 				break;
 
 			case 't':  
-					if      ( _T("through")      == sValue ) this->m_eValue = wraptypeThrough;
-					else if ( _T("tight")        == sValue ) this->m_eValue = wraptypeTight;
-					else if ( _T("topAndBottom") == sValue ) this->m_eValue = wraptypeTopAndBottom;
+					if      ( _T("through")      == sValue ) m_eValue = wraptypeThrough;
+					else if ( _T("tight")        == sValue ) m_eValue = wraptypeTight;
+					else if ( _T("topAndBottom") == sValue ) m_eValue = wraptypeTopAndBottom;
 				break;
 
 			}
 
-            return this->m_eValue;
+            return m_eValue;
 		}
 
-		virtual CString   ToString  () const 
+		virtual std::wstring   ToString  () const 
 		{
-            switch(this->m_eValue)
+            switch(m_eValue)
 			{
 			case wraptypeNone:         return _T("none");			
 			case wraptypeSquare:       return _T("square");			
@@ -2395,38 +2395,38 @@ namespace SimpleTypes
 		public:
 			CVmlClientDataObjectType() {}
 
-			virtual EVmlClientDataObjectType FromString(CString &sValue)
+			virtual EVmlClientDataObjectType FromString(std::wstring &sValue)
 			{
-					this->m_eValue = eDefValue;
+					m_eValue = eDefValue;
 
-				if ( sValue.GetLength() <= 0 )
-					   return this->m_eValue;
+				if ( sValue.length() <= 0 )
+					   return m_eValue;
 
-					if      ( _T("Button") == sValue ) this->m_eValue = vmlclientdataobjecttypeButton;
-					else if ( _T("Checkbox") == sValue ) this->m_eValue = vmlclientdataobjecttypeCheckbox;
-					else if ( _T("Dialog") == sValue ) this->m_eValue = vmlclientdataobjecttypeDialog;
-					else if ( _T("Drop") == sValue ) this->m_eValue = vmlclientdataobjecttypeDrop;
-					else if ( _T("Edit") == sValue ) this->m_eValue = vmlclientdataobjecttypeEdit;
-					else if ( _T("GBox") == sValue ) this->m_eValue = vmlclientdataobjecttypeGBox;
-					else if ( _T("Group") == sValue ) this->m_eValue = vmlclientdataobjecttypeGroup;
-					else if ( _T("Label") == sValue ) this->m_eValue = vmlclientdataobjecttypeLabel;
-					else if ( _T("LineA") == sValue ) this->m_eValue = vmlclientdataobjecttypeLineA;
-					else if ( _T("List") == sValue ) this->m_eValue = vmlclientdataobjecttypeList;
-					else if ( _T("Movie") == sValue ) this->m_eValue = vmlclientdataobjecttypeMovie;
-					else if ( _T("Note") == sValue ) this->m_eValue = vmlclientdataobjecttypeNote;
-					else if ( _T("Pict") == sValue ) this->m_eValue = vmlclientdataobjecttypePict;
-					else if ( _T("Radio") == sValue ) this->m_eValue = vmlclientdataobjecttypeRadio;
-					else if ( _T("Rect") == sValue ) this->m_eValue = vmlclientdataobjecttypeRect;
-					else if ( _T("RectA") == sValue ) this->m_eValue = vmlclientdataobjecttypeRectA;
-					else if ( _T("Scroll") == sValue ) this->m_eValue = vmlclientdataobjecttypeScroll;
-					else if ( _T("Shape") == sValue ) this->m_eValue = vmlclientdataobjecttypeShape;
-					else if ( _T("Spin") == sValue ) this->m_eValue = vmlclientdataobjecttypeSpin;
-					return this->m_eValue;
+					if      ( _T("Button") == sValue ) m_eValue = vmlclientdataobjecttypeButton;
+					else if ( _T("Checkbox") == sValue ) m_eValue = vmlclientdataobjecttypeCheckbox;
+					else if ( _T("Dialog") == sValue ) m_eValue = vmlclientdataobjecttypeDialog;
+					else if ( _T("Drop") == sValue ) m_eValue = vmlclientdataobjecttypeDrop;
+					else if ( _T("Edit") == sValue ) m_eValue = vmlclientdataobjecttypeEdit;
+					else if ( _T("GBox") == sValue ) m_eValue = vmlclientdataobjecttypeGBox;
+					else if ( _T("Group") == sValue ) m_eValue = vmlclientdataobjecttypeGroup;
+					else if ( _T("Label") == sValue ) m_eValue = vmlclientdataobjecttypeLabel;
+					else if ( _T("LineA") == sValue ) m_eValue = vmlclientdataobjecttypeLineA;
+					else if ( _T("List") == sValue ) m_eValue = vmlclientdataobjecttypeList;
+					else if ( _T("Movie") == sValue ) m_eValue = vmlclientdataobjecttypeMovie;
+					else if ( _T("Note") == sValue ) m_eValue = vmlclientdataobjecttypeNote;
+					else if ( _T("Pict") == sValue ) m_eValue = vmlclientdataobjecttypePict;
+					else if ( _T("Radio") == sValue ) m_eValue = vmlclientdataobjecttypeRadio;
+					else if ( _T("Rect") == sValue ) m_eValue = vmlclientdataobjecttypeRect;
+					else if ( _T("RectA") == sValue ) m_eValue = vmlclientdataobjecttypeRectA;
+					else if ( _T("Scroll") == sValue ) m_eValue = vmlclientdataobjecttypeScroll;
+					else if ( _T("Shape") == sValue ) m_eValue = vmlclientdataobjecttypeShape;
+					else if ( _T("Spin") == sValue ) m_eValue = vmlclientdataobjecttypeSpin;
+					return m_eValue;
 			}
 
-			virtual CString         ToString  () const 
+			virtual std::wstring         ToString  () const 
 			{
-					switch(this->m_eValue)
+					switch(m_eValue)
 				{
 				case vmlclientdataobjecttypeButton:      return _T("Button");
 				case vmlclientdataobjecttypeCheckbox:      return _T("Checkbox");
@@ -2471,34 +2471,34 @@ namespace SimpleTypes
 		public:
 			CVmlCalloutType() {}
 
-			virtual EVmlCalloutType FromString(CString &sValue)
+			virtual EVmlCalloutType FromString(std::wstring &sValue)
 			{
-					this->m_eValue = eDefValue;
+					m_eValue = eDefValue;
 
-				if ( sValue.GetLength() <= 0 )
-					   return this->m_eValue;
+				if ( sValue.length() <= 0 )
+					   return m_eValue;
 
-				wchar_t wChar = sValue.GetAt(0);
+				wchar_t wChar = sValue[0];
 				switch ( wChar )
 				{
 				case 'r':
-					   if      ( _T("rectangle")        == sValue ) this->m_eValue = vmlcallouttypeRectangle;
-					   else if ( _T("roundedrectangle") == sValue ) this->m_eValue = vmlcallouttypeRoundRectangle;
+					   if      ( _T("rectangle")        == sValue ) m_eValue = vmlcallouttypeRectangle;
+					   else if ( _T("roundedrectangle") == sValue ) m_eValue = vmlcallouttypeRoundRectangle;
 					break;
 				case 'o':
-					   if      ( _T("oval")             == sValue ) this->m_eValue = vmlcallouttypeOval;
+					   if      ( _T("oval")             == sValue ) m_eValue = vmlcallouttypeOval;
 					break;
 				case 'c':
-					   if      ( _T("cloud")            == sValue ) this->m_eValue = vmlcallouttypeCloud;
+					   if      ( _T("cloud")            == sValue ) m_eValue = vmlcallouttypeCloud;
 					break;
 				}
 
-					return this->m_eValue;
+					return m_eValue;
 			}
 
-			virtual CString         ToString  () const 
+			virtual std::wstring         ToString  () const 
 			{
-					switch(this->m_eValue)
+					switch(m_eValue)
 				{
 				case vmlcallouttypeRectangle:      return _T("rectangle");			
 				case vmlcallouttypeRoundRectangle: return _T("roundedrectangle");			
@@ -2520,18 +2520,18 @@ namespace SimpleTypes
 		public:
 			CVmlPath() {}
 
-			CString GetValue() const
+			std::wstring GetValue() const
 			{
 				return m_sValue;
 			}
 
-			void    SetValue(CString &sValue)
+			void    SetValue(std::wstring &sValue)
 			{
 				m_sValue = sValue;
 			}
 
 
-			CString FromString(CString &sValue)
+			std::wstring FromString(std::wstring &sValue)
 			{
 				// TO DO: Сделать парсер пата Part4. 14.2.2.3
 				m_sValue = sValue;
@@ -2539,17 +2539,17 @@ namespace SimpleTypes
 				return m_sValue;
 			}
 
-			CString ToString  () const 
+			std::wstring ToString  () const 
 			{
 				return m_sValue;
 			}
 
-			SimpleType_FromString2    (CString)
+			SimpleType_FromString2    (std::wstring)
 			SimpleType_Operator_Equal (CVmlPath)
 
 		private:
 
-			CString m_sValue;
+			std::wstring m_sValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -2583,60 +2583,60 @@ namespace SimpleTypes
 			{
 			}
 
-			virtual EVmlDashStyle FromString(CString &sValue)
+			virtual EVmlDashStyle FromString(std::wstring &sValue)
 			{
 				m_nCount    = 0;
 
-					this->m_eValue = eDefValue;
+					m_eValue = eDefValue;
 
-				if ( sValue.GetLength() <= 0 )
-					   return this->m_eValue;
+				if ( sValue.length() <= 0 )
+					   return m_eValue;
 
-				sValue.MakeLower();
+				sValue = XmlUtils::GetLower(sValue);
 
-				wchar_t wChar = sValue.GetAt(0);
+				wchar_t wChar = sValue[0];
 				switch ( wChar )
 				{
 				case 's':
-					   if      ( _T("solid")           == sValue ) this->m_eValue = vmldashstyleSolid;
-					   else if ( _T("shortdash")       == sValue ) this->m_eValue = vmldashstyleShortDash;
-					   else if ( _T("shortdot")        == sValue ) this->m_eValue = vmldashstyleShortDot;
-					   else if ( _T("shortdashdot")    == sValue ) this->m_eValue = vmldashstyleShortDashDot;
-					   else if ( _T("shortdashdotdot") == sValue ) this->m_eValue = vmldashstyleShortDashDotDot;
+					   if      ( _T("solid")           == sValue ) m_eValue = vmldashstyleSolid;
+					   else if ( _T("shortdash")       == sValue ) m_eValue = vmldashstyleShortDash;
+					   else if ( _T("shortdot")        == sValue ) m_eValue = vmldashstyleShortDot;
+					   else if ( _T("shortdashdot")    == sValue ) m_eValue = vmldashstyleShortDashDot;
+					   else if ( _T("shortdashdotdot") == sValue ) m_eValue = vmldashstyleShortDashDotDot;
 					break;
 				case 'd':
-					   if      ( _T("dot")             == sValue ) this->m_eValue = vmldashstyleDot;
-					   else if ( _T("dash")            == sValue ) this->m_eValue = vmldashstyleDash;
-					   else if ( _T("dashdot")         == sValue ) this->m_eValue = vmldashstyleDashDot;
+					   if      ( _T("dot")             == sValue ) m_eValue = vmldashstyleDot;
+					   else if ( _T("dash")            == sValue ) m_eValue = vmldashstyleDash;
+					   else if ( _T("dashdot")         == sValue ) m_eValue = vmldashstyleDashDot;
 					break;
 				case 'l':
-					   if      ( _T("longdash")        == sValue ) this->m_eValue = vmldashstyleLongDash;
-					   else if ( _T("longdashdot")     == sValue ) this->m_eValue = vmldashstyleLongDashDot;
-					   else if ( _T("longdashdotdot")  == sValue ) this->m_eValue = vmldashstyleLongDashDotDot;
+					   if      ( _T("longdash")        == sValue ) m_eValue = vmldashstyleLongDash;
+					   else if ( _T("longdashdot")     == sValue ) m_eValue = vmldashstyleLongDashDot;
+					   else if ( _T("longdashdotdot")  == sValue ) m_eValue = vmldashstyleLongDashDotDot;
 					break;
 
 				default:
 					{
-					this->m_eValue = vmldashstyleCustom;
+					m_eValue = vmldashstyleCustom;
 
-						CString sTemp = sValue;
-						for ( int nIndex = 0; nIndex < sValue.GetLength(); nIndex++ )
+						std::wstring sTemp = sValue;
+						for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
 						{
-							int nChar = sValue.GetAt( nIndex );
+							int nChar = sValue[nIndex ];
 							if ( ' ' == nChar )
 								continue;
 
-							int nEndPos = sValue.Find( _T(" "), nIndex );
+                            int nEndPos = sValue.find( _T(" "), nIndex );
 							if ( -1 == nEndPos )
-								nEndPos = sValue.GetLength();
+								nEndPos = sValue.length();
 
 							int nLen = nEndPos - nIndex;
 
 							if ( nLen <= 0 )
 								continue;
 
-							CString sTemp = sValue.Mid( nIndex, nLen );
-					   double dVal = sTemp.IsEmpty() ? 0 : _wtof( sTemp);
+							std::wstring sTemp = sValue.substr( nIndex, nLen );
+							double dVal = sTemp.empty() ? 0 : _wtof( sTemp.c_str());
 
 							if ( m_nCount >= 32 )
 								break;
@@ -2646,12 +2646,12 @@ namespace SimpleTypes
 					}
 				}
 
-					return this->m_eValue;
+					return m_eValue;
 			}
 
-			virtual CString       ToString  () const 
+			virtual std::wstring       ToString  () const 
 			{
-					switch(this->m_eValue)
+					switch(m_eValue)
 				{
 				case vmldashstyleSolid          :  return _T("solid");
 				case vmldashstyleShortDash      :  return _T("shortdash");
@@ -2666,7 +2666,7 @@ namespace SimpleTypes
 				case vmldashstyleLongDashDotDot :  return _T("longdashdotdot");
 				case vmldashstyleCustom         :
 					{
-						CString sResult;
+						std::wstring sResult;
 
 						for (int nIndex = 0; nIndex < m_nCount; nIndex++)
 						{
@@ -2716,33 +2716,33 @@ namespace SimpleTypes
 					m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				bool bFraction = ( 'f' == sValue.GetAt( nLen - 1 ) );
+                bool bFraction = ( 'f' == sValue[ nLen - 1 ] );
 
 				if ( bFraction )
 				{
-					   CString strValue = sValue.Mid( 0, nLen - 1 );
-					   int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
+					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
+                       int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
 
 					   SetValue( nValue );
 				}
 				else
 				{
-					   double dValue = sValue.IsEmpty() ? 0 : _wtof( sValue );
+                       double dValue = sValue.empty() ? 0 : _wtof( sValue.c_str() );
 					SetValue( dValue );
 				}
 
 				return m_dValue;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-                CString sResult = std::to_wstring( m_dValue );
+                std::wstring sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}
@@ -2794,47 +2794,44 @@ namespace SimpleTypes
 				m_nX = (int)(dZ * 65536);
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_nX = 0;
 				m_nY = 0;
 				m_nZ = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					CString strX = sValue.Mid( 0, nPos );
-					strX.Replace(_T("@"), _T(""));
+					std::wstring strX = sValue.substr( 0, nPos );
+					boost::algorithm::replace_all(strX, L"@", L"");
 
-					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+                    m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
-					int nPos2 = sValue.Find( _T(","), nPos + 1 );
+                    int nPos2 = sValue.find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
-					CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1)  ;
-					CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 );
+					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1)  ;
+					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 );
 
-					strZ.Replace(_T("@"), _T(""));
-					strY.Replace(_T("@"), _T(""));
+					boost::algorithm::replace_all(strY, L"@", L"");
+					boost::algorithm::replace_all(strZ, L"@", L"");
 
-					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
-					m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
+                    m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+                    m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
 
 					return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%d,%d,%d"), m_nX, m_nY, m_nZ );
-
-				return sResult;
+				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nX) + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2879,48 +2876,45 @@ namespace SimpleTypes
 				m_nX = nZ;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_nX = 0;
 				m_nY = 0;
 				m_nZ = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					CString strX = sValue.Mid( 0, nPos );
-					strX.Replace(_T("@"), _T(""));
+					std::wstring strX = sValue.substr( 0, nPos );
+					boost::algorithm::replace_all(strX, L"@", L"");
 
-					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
+                    m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
-				int nPos2 = sValue.Find( _T(","), nPos + 1 );
+                int nPos2 = sValue.find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
-					CString strY = sValue.Mid( nPos + 1, nPos2 - nPos - 1);
-					CString strZ = sValue.Mid( nPos2 + 1, nLen - nPos2 - 1 ) ;
+					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1);
+					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 ) ;
 
-					strZ.Replace(_T("@"), _T(""));
-					strY.Replace(_T("@"), _T(""));
+					boost::algorithm::replace_all(strY, L"@", L"");
+					boost::algorithm::replace_all(strZ, L"@", L"");
 
-					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
-					m_nZ = strZ.IsEmpty() ? 0 : _wtoi(strZ );
+                    m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+                    m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
 
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%d,%d,%d"), m_nX, m_nY, m_nZ );
-
-				return sResult;
+				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2959,44 +2953,41 @@ namespace SimpleTypes
 				m_nX = nY;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_nX = 0;
 				m_nY = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				
 				if ( -1 == nPos )
 				{
 					//only x coord
-					sValue.Replace(_T("@"), _T(""));
-					m_nX = sValue.IsEmpty() ? 0 : _wtoi(sValue );
+					boost::algorithm::replace_all(sValue, L"@", L"");
+                    m_nX = sValue.empty() ? 0 : _wtoi(sValue.c_str() );
 				}
 				else
 				{
-					CString strX = sValue.Mid( 0, nPos );
-					CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
+					std::wstring strX = sValue.substr( 0, nPos );
+					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 
-					strX.Replace(_T("@"), _T(""));
-					strY.Replace(_T("@"), _T(""));
+					boost::algorithm::replace_all(strY, L"@", L"");
+					boost::algorithm::replace_all(strX, L"@", L"");
 
-					m_nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-					m_nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+                    m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+                    m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
 				}
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%d,%d"), m_nX, m_nY );
-
-				return sResult;
+				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -3034,34 +3025,31 @@ namespace SimpleTypes
 				m_dX = dY;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					CString strX = sValue.Mid( 0, nPos );
-					CString strY = sValue.Mid( nPos + 1, nLen - nPos - 1 ) ;
+					std::wstring strX = sValue.substr( 0, nPos );
+					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 
-					m_dX = strX.IsEmpty() ? 0 : _wtof(strX );
-					m_dY = strY.IsEmpty() ? 0 : _wtof(strY );
+                    m_dX = strX.empty() ? 0 : _wtof(strX.c_str() );
+                    m_dY = strY.empty() ? 0 : _wtof(strY.c_str() );
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f,%f"), m_dX, m_dY );
-
-				return sResult;
+				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -3107,19 +3095,19 @@ namespace SimpleTypes
 				m_arrPoints.push_back( oPt );
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_arrPoints.clear();
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				int nStartPos = 0;
 				while ( true )
 				{
-					int nMidPos = sValue.Find( _T(","), nStartPos );
-					int nEndPos = sValue.Find( _T(","), nMidPos + 1 );
+                    int nMidPos = sValue.find( _T(","), nStartPos );
+                    int nEndPos = sValue.find( _T(","), nMidPos + 1 );
 
 					if ( -1 == nMidPos )
 						break;
@@ -3127,14 +3115,14 @@ namespace SimpleTypes
 					if ( -1 == nEndPos )
 						nEndPos = nLen;
 
-					   CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos );
-					   CString strY = sValue.Mid( nStartPos, nMidPos - nStartPos );
+					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos );
+					   std::wstring strY = sValue.substr( nStartPos, nMidPos - nStartPos );
 
-					   strX.Replace(_T("@"), _T(""));
-					   strY.Replace(_T("@"), _T(""));
+						boost::algorithm::replace_all(strX, L"@", L"");
+						boost::algorithm::replace_all(strY, L"@", L"");
 
-					   int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-					   int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+                       int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+                       int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
 
 					m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -3145,13 +3133,13 @@ namespace SimpleTypes
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					CString sTemp = std::to_wstring(m_arrPoints[nIndex].nX) + L"," + std::to_wstring(m_arrPoints[nIndex].nY);
+					std::wstring sTemp = std::to_wstring(m_arrPoints[nIndex].nX) + L"," + std::to_wstring(m_arrPoints[nIndex].nY);
 					if ( nIndex < m_arrPoints.size() - 1 ) sTemp += L",";
 					sResult += sTemp;
 				}
@@ -3183,24 +3171,18 @@ namespace SimpleTypes
 		//------------------------------------------------------------------------------------------
 
 		#define CSS_MAX_NAME_LEN 127
-		static void RemoveWhiteSpaces(CString *psText)
+		
+		static std::wstring RemoveWhiteSpaces(const std::wstring &sText)
 		{
-			psText->Remove( 0x01 ); psText->Remove( 0x10 );
-			psText->Remove( 0x02 ); psText->Remove( 0x11 );
-			psText->Remove( 0x03 ); psText->Remove( 0x12 );
-			psText->Remove( 0x04 ); psText->Remove( 0x13 );
-			psText->Remove( 0x05 ); psText->Remove( 0x14 );
-			psText->Remove( 0x06 ); psText->Remove( 0x15 );
-			psText->Remove( 0x07 ); psText->Remove( 0x16 );
-			psText->Remove( 0x08 ); psText->Remove( 0x17 );
-			psText->Remove( 0x09 ); psText->Remove( 0x18 );
-			psText->Remove( 0x0a ); psText->Remove( 0x19 );
-			psText->Remove( 0x0b ); psText->Remove( 0x1a );
-			psText->Remove( 0x0c ); psText->Remove( 0x1b );
-			psText->Remove( 0x0d ); psText->Remove( 0x1c );
-			psText->Remove( 0x0e ); psText->Remove( 0x1d );
-			psText->Remove( 0x0f ); psText->Remove( 0x1e );
-			psText->Remove( 0x20 ); psText->Remove( 0x1f );
+			std::wstring result;
+			for (int i = 0 ; i < sText.length(); i++)
+			{
+				if (XmlUtils::IsUnicodeSymbol(sText[i]) == true)
+				{
+					result += sText[i];
+				}
+			}
+			return result;
 		}
 
 		enum ECssPropertyType
@@ -3473,7 +3455,7 @@ namespace SimpleTypes
 				m_eType = cssptUnknown;
 			}
 
-			CCssProperty(CString sBuffer)
+			CCssProperty(std::wstring sBuffer)
 			{
 				Parse(sBuffer);
 			}
@@ -3494,10 +3476,10 @@ namespace SimpleTypes
 
 		private:
 
-			void Parse(CString &sBuffer)
+			void Parse(std::wstring &sBuffer)
 			{
-				int nPos = sBuffer.Find( ':' );
-				CString sValue;
+                int nPos = sBuffer.find( ':' );
+				std::wstring sValue;
 
 				if ( -1 == nPos )
 				{
@@ -3505,26 +3487,26 @@ namespace SimpleTypes
 				}
 				else
 				{
-					CString sProperty = sBuffer.Mid( 0, nPos );
-					sValue = sBuffer.Mid( nPos + 1, sBuffer.GetLength() - (nPos + 1) );
+					std::wstring sProperty = sBuffer.substr( 0, nPos );
+					sValue = sBuffer.substr( nPos + 1, sBuffer.length() - (nPos + 1) );
 
-					RemoveWhiteSpaces( &sProperty );
+					sProperty = RemoveWhiteSpaces( sProperty );
 
-					if ( sProperty.GetLength() <= 2 )
+					if ( sProperty.length() <= 2 )
 					{
 						m_eType = cssptUnknown;
 						return;
 					}
 
 					// Чтобы избежать большого количества сравнения строк проверим для начала по первым двум символам
-					int nChar1 = sProperty.GetAt( 0 );
-					int nChar2 = sProperty.GetAt( 1 );
+                    int nChar1 = sProperty[ 0 ];
+                    int nChar2 = sProperty[ 1 ];
 
 					switch( nChar1 )
 					{
 					case 'd':
 						{
-							if      ( _T("direction") == sProperty ) m_eType = cssptDirection;
+                            if      ( _T("direction") == sProperty )    m_eType = cssptDirection;
 							else										m_eType = cssptUnknown;
 
 							break;
@@ -3535,8 +3517,8 @@ namespace SimpleTypes
 							{
 							case 'l':
 								{
-									if ( _T("flip") == sProperty ) m_eType = cssptFlip;
-									else					    m_eType = cssptUnknown;
+                                    if ( _T("flip") == sProperty )  m_eType = cssptFlip;
+                                    else                            m_eType = cssptUnknown;
 
 									break;
 								}
@@ -3563,7 +3545,7 @@ namespace SimpleTypes
 					case 'h':
 						{
 							if      ( _T("height") == sProperty )	m_eType = cssptHeight;
-							else					           m_eType = cssptUnknown;
+                            else                                    m_eType = cssptUnknown;
 
 							break;
 						}
@@ -3743,11 +3725,11 @@ namespace SimpleTypes
 
 		private:
 
-			void ReadValue_Unknown(CString& sValue)
+			void ReadValue_Unknown(std::wstring& sValue)
 			{
 				// Ничего не делаем
 			}
-			void ReadValue_Flip(CString& sValue)
+			void ReadValue_Flip(std::wstring& sValue)
 			{
 				if      ( _T("x")  == sValue ) m_oValue.eFlip = cssflipX;
 				else if ( _T("y")  == sValue ) m_oValue.eFlip = cssflipY;
@@ -3756,79 +3738,79 @@ namespace SimpleTypes
 				else 
 					m_eType = cssptUnknown;
 			}
-			void ReadValue_Units(CString& sValue)
+			void ReadValue_Units(std::wstring& sValue)
 			{
 				int nPos = -1;
-				if ( -1 != ( nPos = sValue.Find(_T("auto" ) ) ) )
+				if ( -1 != ( nPos = sValue.find(_T("auto" ) ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeAuto;
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("in") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("in") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					m_oValue.oValue.dValue = Inch_To_Pt(dValue);
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("cm") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("cm") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					   m_oValue.oValue.dValue = Cm_To_Pt(dValue);
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("mm") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("mm") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					   m_oValue.oValue.dValue = Mm_To_Pt(dValue);
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("em") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("em") ) ) )
 				{
 					// TO DO: Реализовать единицы 'em'
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("ex") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("ex") ) ) )
 				{
 					// TO DO: Реализовать единицы 'ex'
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("pt") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("pt") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					   m_oValue.oValue.dValue = dValue;
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("pc") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("pc") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					   m_oValue.oValue.dValue = dValue * 12;
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("%") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("%") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypePerc;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   m_oValue.oValue.dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       m_oValue.oValue.dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 				}
-				else if ( -1 != ( nPos = sValue.Find( _T("px") ) ) )
+                else if ( -1 != ( nPos = sValue.find( _T("px") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
-					   CString strValue = sValue.Mid( 0, nPos );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nPos );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 
 					   m_oValue.oValue.dValue = Px_To_Pt(dValue);
 				}
@@ -3837,7 +3819,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeAbsolute;
 					try
 					{
-						m_oValue.oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+                        m_oValue.oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
 					}
 					catch(...)
 					{
@@ -3846,7 +3828,7 @@ namespace SimpleTypes
 					}
 			}
 
-			void ReadValue_MsoPosHor(CString& sValue)
+			void ReadValue_MsoPosHor(std::wstring& sValue)
 			{
 				if      ( _T("absolute") == sValue ) m_oValue.eMsoPosHor = cssmsoposhorAbsolute;
 				else if ( _T("left")     == sValue ) m_oValue.eMsoPosHor = cssmsoposhorLeft;
@@ -3857,7 +3839,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eMsoPosHor = cssmsoposhorAbsolute;
 			}
-			void ReadValue_MsoPosHorRel(CString& sValue)
+			void ReadValue_MsoPosHorRel(std::wstring& sValue)
 			{
 				if      ( _T("left-margin-area")	== sValue )	m_oValue.eMsoPosHorRel = cssmsoposhorrelLeftMargin;
 				else if ( _T("right-margin-area")	== sValue )	m_oValue.eMsoPosHorRel = cssmsoposhorrelRightMargin;
@@ -3868,7 +3850,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eMsoPosHorRel = cssmsoposhorrelText;
 			}
-			void ReadValue_MsoPosVer(CString& sValue)
+			void ReadValue_MsoPosVer(std::wstring& sValue)
 			{
 				if      ( _T("absolute") == sValue ) m_oValue.eMsoPosVer = cssmsoposverAbsolute;
 				else if ( _T("top")      == sValue ) m_oValue.eMsoPosVer = cssmsoposverTop;
@@ -3879,7 +3861,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eMsoPosVer = cssmsoposverAbsolute;
 			}
-			void ReadValue_MsoPosVerRel(CString& sValue)
+			void ReadValue_MsoPosVerRel(std::wstring& sValue)
 			{
 				if      ( _T("bottom-margin-area") == sValue )	m_oValue.eMsoPosVerRel = cssmsoposverrelBottomMargin;
 				else if ( _T("top-margin-area") == sValue )		m_oValue.eMsoPosVerRel = cssmsoposverrelTopMargin;
@@ -3891,20 +3873,20 @@ namespace SimpleTypes
 					m_oValue.eMsoPosVerRel = cssmsoposverrelText;
 			}
 
-            void ReadValue_Rotation(CString& sValue)
+            void ReadValue_Rotation(std::wstring& sValue)
             {
-					m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+                    m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
 
-				if (sValue.Find(_T("fd")) != -1)
+				if (sValue.find(_T("fd")) != -1)
 					m_oValue.dValue /= 6000;
 			}
 
-			void ReadValue_Double(CString& sValue)
+			void ReadValue_Double(std::wstring& sValue)
 			{
-					m_oValue.dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+                    m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
             }
 
-			void ReadValue_Boolean(CString& sValue)
+			void ReadValue_Boolean(std::wstring& sValue)
 			{
 				if ( _T("true") == sValue || _T("t") == sValue || _T("1") == sValue ) 
 					m_oValue.bValue = true;
@@ -3912,14 +3894,14 @@ namespace SimpleTypes
 					m_oValue.bValue = false;
 			}
 
-			void ReadValue_MsoWrapStyle(CString& sValue)
+			void ReadValue_MsoWrapStyle(std::wstring& sValue)
 			{
 				if      ( _T("square") == sValue ) m_oValue.eMsoWrapStyle = cssmsowrapstyleSqaure;
 				else if ( _T("none")   == sValue ) m_oValue.eMsoWrapStyle = cssmsowrapstyleNone;
 				else 
 					m_oValue.eMsoWrapStyle = cssmsowrapstyleSqaure;
 			}
-			void ReadValue_Position(CString& sValue)
+			void ReadValue_Position(std::wstring& sValue)
 			{
 				if      ( _T("static")   == sValue ) m_oValue.ePosition = csspositionStatic;
 				else if ( _T("absolute") == sValue ) m_oValue.ePosition = csspositionAbsolute;
@@ -3927,31 +3909,31 @@ namespace SimpleTypes
 				else 
 					m_oValue.ePosition = csspositionAbsolute;
 			}
-			void ReadValue_Visibility(CString& sValue)
+			void ReadValue_Visibility(std::wstring& sValue)
 			{
 				if      ( _T("hidden")  == sValue ) m_oValue.eVisibility = cssvisibilityHidden;
 				else if ( _T("inherit") == sValue ) m_oValue.eVisibility = cssvisibilityInherit;
 				else 
 					m_oValue.eVisibility = cssvisibilityInherit;
 			}
-			void ReadValue_ZIndex(CString& sValue)
+			void ReadValue_ZIndex(std::wstring& sValue)
 			{
 				if      ( _T("auto")  == sValue ) m_oValue.oZIndex.eType = csszindextypeAuto;
 				else
 				{
 					m_oValue.oZIndex.eType  = csszindextypeOrder;
-					m_oValue.oZIndex.nOrder = _wtoi( sValue );
+                    m_oValue.oZIndex.nOrder = _wtoi( sValue.c_str() );
 
 				}
 			}
-			void ReadValue_Direction(CString& sValue)
+			void ReadValue_Direction(std::wstring& sValue)
 			{
 				if      ( _T("ltr") == sValue ) m_oValue.eDirection = cssdirectionLTR;
 				else if ( _T("rtl") == sValue ) m_oValue.eDirection = cssdirectionRTL;
 				else 
 					m_oValue.eDirection = cssdirectionLTR;
 			}
-			void ReadValue_LayoutFlow(CString& sValue)
+			void ReadValue_LayoutFlow(std::wstring& sValue)
 			{
 				if      ( _T("horizontal")             == sValue ) m_oValue.eLayoutFlow = csslayoutflowHorizontal;
 				else if ( _T("vertical")					== sValue ) m_oValue.eLayoutFlow = csslayoutflowVertical;
@@ -3960,25 +3942,25 @@ namespace SimpleTypes
 				else 
 					m_oValue.eLayoutFlow = csslayoutflowHorizontal;
 			}
-			void ReadValue_DirectionAlt(CString& sValue)
+			void ReadValue_DirectionAlt(std::wstring& sValue)
 			{
 				m_oValue.eDirectionAlt = cssdirectionaltContext;
 			}
-			void ReadValue_LayoutFlowAlt(CString& sValue)
+			void ReadValue_LayoutFlowAlt(std::wstring& sValue)
 			{
 				m_oValue.eLayoutFlowAlt = csslayoutflowaltBottomToTop;
 			}
-			void ReadValue_String(CString& sValue)
+			void ReadValue_String(std::wstring& sValue)
 			{
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen > 127 )
 					return;
 
-				::memcpy( m_oValue.wsValue, sValue.GetBuffer(), nLen * sizeof( wchar_t ) );
+                ::memcpy( m_oValue.wsValue, sValue.c_str(), nLen * sizeof( wchar_t ) );
 				m_oValue.wsValue[nLen] = '\0';
 			}
 
-			void ReadValue_MsoRotate(CString& sValue)
+			void ReadValue_MsoRotate(std::wstring& sValue)
 			{
 				if      ( _T("0")   == sValue ) m_oValue.eRotate = cssmsorotate0;
 				else if ( _T("90")  == sValue ) m_oValue.eRotate = cssmsorotate90;
@@ -3987,7 +3969,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eRotate = cssmsorotate0;
 			}
-			void ReadValue_VTextAnchor(CString& sValue)
+			void ReadValue_VTextAnchor(std::wstring& sValue)
 			{
 				if      ( _T("top")					   == sValue ) m_oValue.eVTextAnchor = cssvtextanchorTop;
 				else if ( _T("middle")					== sValue ) m_oValue.eVTextAnchor = cssvtextanchorMiddle;
@@ -4002,7 +3984,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eVTextAnchor = cssvtextanchorTop;
 			}
-			void ReadValue_FontStyle(CString& sValue)
+			void ReadValue_FontStyle(std::wstring& sValue)
 			{
 				if      ( _T("normal")  == sValue ) m_oValue.eFontStyle = cssfontstyleNormal;
 				else if ( _T("italic")  == sValue ) m_oValue.eFontStyle = cssfontstyleItalic;
@@ -4010,14 +3992,14 @@ namespace SimpleTypes
 				else 
 					m_oValue.eFontStyle = cssfontstyleNormal;
 			}
-			void ReadValue_FontVariant(CString& sValue)
+			void ReadValue_FontVariant(std::wstring& sValue)
 			{
 				if      ( _T("normal")     == sValue ) m_oValue.eFontVariant = cssfontvariantNormal;
 				else if ( _T("small-caps") == sValue ) m_oValue.eFontVariant = cssfontvariantSmallCaps;
 				else 
 					m_oValue.eFontVariant = cssfontvariantNormal;
 			}
-			void ReadValue_FontWeight(CString& sValue)
+			void ReadValue_FontWeight(std::wstring& sValue)
 			{
 				if      ( _T("normal")  == sValue ) m_oValue.eFontWeight = cssfontweightNormal;
 				else if ( _T("lighter") == sValue ) m_oValue.eFontWeight = cssfontweightLighter;
@@ -4035,7 +4017,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eFontWeight = cssfontweightNormal;
 			}
-			void ReadValue_TextDecoration(CString& sValue)
+			void ReadValue_TextDecoration(std::wstring& sValue)
 			{
 				if      ( _T("none")         == sValue ) m_oValue.eTextDecoration = csstextdecorationNone;
 				else if ( _T("underline")    == sValue ) m_oValue.eTextDecoration = csstextdecorationUnderline;
@@ -4045,7 +4027,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eTextDecoration = csstextdecorationNone;
 			}
-			void ReadValue_VTextAlign(CString& sValue)
+			void ReadValue_VTextAlign(std::wstring& sValue)
 			{
 				if      ( _T("left")            == sValue ) m_oValue.eVTextAlign = cssvtextalignLeft;
 				else if ( _T("right")           == sValue ) m_oValue.eVTextAlign = cssvtextalignRight;
@@ -4056,7 +4038,7 @@ namespace SimpleTypes
 				else 
 					m_oValue.eVTextAlign = cssvtextalignLeft;
 			}
-			void ReadValue_VTextSpacingMode(CString& sValue)
+			void ReadValue_VTextSpacingMode(std::wstring& sValue)
 			{
 				if      ( _T("tightening") == sValue ) m_oValue.eVTextSpacingMode = cssvtextspacingmodeTightening;
 				else if ( _T("tracking")   == sValue ) m_oValue.eVTextSpacingMode = cssvtextspacingmodeTracking;
@@ -4076,6 +4058,9 @@ namespace SimpleTypes
 		//--------------------------------------------------------------------------------
 		// CCssStyle 14.1.2.1 (style) (Part 1)
 		//--------------------------------------------------------------------------------
+
+		typedef boost::shared_ptr<CCssProperty>	CCssPropertyPtr;
+
 		class CCssStyle
 		{
 		public:
@@ -4088,15 +4073,10 @@ namespace SimpleTypes
 			}
 			void Clear()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrProperties.size(); nIndex++ )
-				{
-					if ( m_arrProperties[nIndex] )delete m_arrProperties[nIndex];
-					m_arrProperties[nIndex] = NULL;
-				}
 				m_arrProperties.clear();
 			}
 
-			CString FromString(CString &sValue)
+			std::wstring FromString(std::wstring &sValue)
 			{
 				Clear();
 
@@ -4106,46 +4086,46 @@ namespace SimpleTypes
 				return m_sCss;
 			}
 
-			CString ToString  () const 
+			std::wstring ToString  () const 
 			{
 				return m_sCss;
 			}
 
-			SimpleType_FromString2    (CString)
+			SimpleType_FromString2    (std::wstring)
 			SimpleType_Operator_Equal (CCssStyle)
 
 		private:
 
 			bool ParseProperties()
 			{
-				CString sTemp = m_sCss;
-				while ( sTemp.GetLength() > 0 )
+				std::wstring sTemp = m_sCss;
+				while ( sTemp.length() > 0 )
 				{
-					int nPos = sTemp.Find( ';' );
+                    int nPos = sTemp.find( ';' );
 					if ( -1 == nPos )
 					{
 						CCssProperty *oProperty = new CCssProperty(sTemp);
 						if ((oProperty) && (cssptUnknown != oProperty->get_Type()) )
 						{
-							m_arrProperties.push_back( oProperty );
+							m_arrProperties.push_back( CCssPropertyPtr(oProperty) );
 						}
 						else
 							delete oProperty;
 
-						sTemp.Empty();
+                        sTemp.clear();
 						continue;
 					}
 					else
 					{
-						CCssProperty *oProperty = new  CCssProperty( sTemp.Mid( 0, nPos ) );
+						CCssProperty *oProperty = new  CCssProperty( sTemp.substr( 0, nPos ) );
 						if ((oProperty) &&  (cssptUnknown != oProperty->get_Type()) )
 						{
-							m_arrProperties.push_back( oProperty );
+							m_arrProperties.push_back( CCssPropertyPtr(oProperty) );
 						}
 						else
 							delete oProperty;
 
-						sTemp = sTemp.Mid( nPos + 1, sTemp.GetLength() - nPos - 1 );
+						sTemp = sTemp.substr( nPos + 1, sTemp.length() - nPos - 1 );
 					}
 				}
 
@@ -4154,8 +4134,8 @@ namespace SimpleTypes
 
 		public:
 
-			std::vector<SimpleTypes::Vml::CCssProperty*>  m_arrProperties;
-			CString										m_sCss;
+			std::vector<CCssPropertyPtr>	m_arrProperties;
+			std::wstring 					m_sCss;
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to) 
@@ -4184,34 +4164,31 @@ namespace SimpleTypes
 				m_dX = dY;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					SimpleTypes::CPoint oPt1 = (const TCHAR *) sValue.Mid( 0, nPos );
+                    SimpleTypes::CPoint oPt1 = sValue.substr( 0, nPos );
 				m_dX = oPt1.GetValue();
 
-					SimpleTypes::CPoint oPt2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                    SimpleTypes::CPoint oPt2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPt2.GetValue();
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f,%f"), m_dX, m_dY );
-
-				return sResult;
+				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -4249,34 +4226,31 @@ namespace SimpleTypes
 				m_dX = dY;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					SimpleTypes::CPercentage oPerc1 = (const TCHAR *) sValue.Mid( 0, nPos );
+                    SimpleTypes::CPercentage oPerc1 = sValue.substr( 0, nPos );
 				m_dX = oPerc1.GetValue();
 
-					SimpleTypes::CPercentage oPerc2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                    SimpleTypes::CPercentage oPerc2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPerc2.GetValue();
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f%%,%f%%"), m_dX, m_dY );
-
-				return sResult;
+				return std::to_wstring(m_dX) + L"%," + std::to_wstring(m_dY) + L"%";
 			}
 
 			SimpleType_FromString2    (double)
@@ -4314,34 +4288,31 @@ namespace SimpleTypes
 				m_dX = dY;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-					SimpleTypes::Vml::CVml_1_65536 oFraction1 = (const TCHAR *) sValue.Mid( 0, nPos );
+                    SimpleTypes::Vml::CVml_1_65536 oFraction1 = sValue.substr( 0, nPos );
 				m_dX = oFraction1.GetValue();
 
-					SimpleTypes::Vml::CVml_1_65536 oFraction2 = (const TCHAR *) sValue.Mid( nPos + 1, nLen - nPos - 1 );
+                    SimpleTypes::Vml::CVml_1_65536 oFraction2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oFraction2.GetValue();
 
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f,%f"), m_dX, m_dY );
-
-				return sResult;
+				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -4379,10 +4350,10 @@ namespace SimpleTypes
 				m_arrLimits.push_back( dValue );
 			}
 
-			int FromString(CString &sValue)
+			int FromString(std::wstring &sValue)
 			{
 				int nPos = 0;
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 
 				int nSpacePos = 0;
 				wchar_t wChar;
@@ -4395,11 +4366,11 @@ namespace SimpleTypes
 							return 0;
 					}
 
-					nSpacePos = sValue.Find( _T(" "), nPos );
+                    nSpacePos = sValue.find( _T(" "), nPos );
 					if ( -1 == nSpacePos )
 						nSpacePos = nLen;
 
-					   SimpleTypes::CPoint oPoint = (const TCHAR *) sValue.Mid( nPos, nSpacePos - nPos );
+                    SimpleTypes::CPoint oPoint = sValue.substr( nPos, nSpacePos - nPos );
 					nPos = nSpacePos + 1;
 
 					m_arrLimits.push_back( oPoint.ToPoints() );
@@ -4408,15 +4379,13 @@ namespace SimpleTypes
 				return 0;
 			}
 
-			CString ToString  () const 
+			std::wstring ToString  () const 
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrLimits.size(); nIndex++ )
 				{
-					CString sTemp;
-					sTemp.Format( _T("%fpt "), m_arrLimits[nIndex] );
-					sResult += sTemp;
+					sResult += std::to_wstring(m_arrLimits[nIndex]) + L"pt ";
 				}
 
 				return sResult;
@@ -4439,33 +4408,33 @@ namespace SimpleTypes
 		public:
 			CVml_TableProperties() {}
 
-			virtual int     FromString(CString &sValue)
+			virtual int     FromString(std::wstring &sValue)
 			{
-					this->m_eValue = _wtoi( sValue );
+				m_eValue = _wtoi( sValue.c_str() );
 
-					return this->m_eValue;
+				return m_eValue;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-                CString sResult = std::to_wstring( this->m_eValue);
+                std::wstring sResult = std::to_wstring( m_eValue);
 
 				return sResult;
 			}
 
 			bool IsTable() const
 			{
-					return ( this->m_eValue & 1 ? true : false );
+					return ( m_eValue & 1 ? true : false );
 			}
 
 			bool IsPlaceholder() const
 			{
-					return ( this->m_eValue & 2 ? true : false );
+					return ( m_eValue & 2 ? true : false );
 			}
 
 			bool IsBiDirectionalText() const
 			{
-					return ( this->m_eValue & 4 ? true : false );
+					return ( m_eValue & 4 ? true : false );
 			}
 
 			SimpleType_FromString           (int)
@@ -4502,11 +4471,11 @@ namespace SimpleTypes
 			{
 				return m_eTypeY;
 			}
-			CString					GetIdX() const
+			std::wstring GetIdX() const
 			{
 				return m_sIdX;
 			}
-			CString					GetIdY() const
+			std::wstring GetIdY() const
 			{
 				return m_sIdY;
 			}
@@ -4530,18 +4499,18 @@ namespace SimpleTypes
 				m_dY     = dY;
 			}
 
-			double FromString(CString &sValue)
+			double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				int nPos = sValue.Find( _T(",") );
+                int nPos = sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
-				CString sFirst  = sValue.Mid( 0, nPos );
-				CString sSecond = sValue.Mid( nPos + 1, nLen - nPos - 1 );
+				std::wstring sFirst  = sValue.substr( 0, nPos );
+				std::wstring sSecond = sValue.substr( nPos + 1, nLen - nPos - 1 );
 
 				Parse( sFirst, true );
 				Parse( sSecond, false );
@@ -4549,9 +4518,9 @@ namespace SimpleTypes
 				return 0;
 			}
 
-			CString ToString  () const 
+			std::wstring ToString  () const 
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				switch ( m_eTypeX )
 				{
@@ -4569,7 +4538,7 @@ namespace SimpleTypes
 				{
 				case vmlvector2dposConstant    : 
 					{
-                        CString sTemp = std::to_wstring( m_dY );
+                        std::wstring sTemp = std::to_wstring( m_dY );
 						sResult += sTemp;
 						break;
 					}
@@ -4588,15 +4557,15 @@ namespace SimpleTypes
 
 		private:
 
-			void Parse(CString &sValue, bool bFirst)
+			void Parse(std::wstring &sValue, bool bFirst)
 			{
 				EVml_Vector2D_Position eValue = vmlvector2dposConstant;
 				double dValue = 0.0;
-				CString sId;
+				std::wstring sId;
 
+                boost::algorithm::replace_all( sValue, _T(" "), _T("") );
 
-				sValue.Replace( _T(" "), _T("") );
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen > 0 )
 				{
 
@@ -4616,7 +4585,7 @@ namespace SimpleTypes
 					case '.':
 
 						eValue = vmlvector2dposConstant;
-					dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+                    dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
 						break;
 
 					case 'c':
@@ -4643,13 +4612,13 @@ namespace SimpleTypes
 					case '@':
 
 						eValue = vmlvector2dposFormula;
-						sId    = sValue.Mid( 1, nLen - 1 );
+						sId    = sValue.substr( 1, nLen - 1 );
 						break;
 
 					case '#':
 
 						eValue = vmlvector2dposAdjValue;
-						sId    = sValue.Mid( 1, nLen - 1 );
+						sId    = sValue.substr( 1, nLen - 1 );
 						break;
 					}
 
@@ -4674,8 +4643,8 @@ namespace SimpleTypes
 			EVml_Vector2D_Position m_eTypeX;
 			EVml_Vector2D_Position m_eTypeY;
 
-			CString					m_sIdX;  // Значение для типа Formula иди AdjValue
-			CString					m_sIdY;  //
+			std::wstring m_sIdX;  // Значение для типа Formula иди AdjValue
+			std::wstring m_sIdY;  //
 
 			double					m_dX;    // Значение для типа Constant
 			double					m_dY;    // 
@@ -4695,7 +4664,7 @@ namespace SimpleTypes
 				m_wcDelimiter = 0x20;
 				FromString( oOther.ToString() );
 			}
-			CVml_Polygon2D_Units(CString &sValue)
+			CVml_Polygon2D_Units(std::wstring &sValue)
 			{
 				m_wcDelimiter = 0x20;
 				FromString( sValue );
@@ -4710,7 +4679,7 @@ namespace SimpleTypes
 				m_wcDelimiter = 0x20;
 				FromString( wsStr );
 			}
-			const CVml_Polygon2D_Units &operator =(CString &sValue)
+			const CVml_Polygon2D_Units &operator =(std::wstring &sValue)
 			{
 				FromString( sValue );
 				return *this;
@@ -4751,19 +4720,19 @@ namespace SimpleTypes
 				m_arrPoints.push_back( oPt );
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_arrPoints.clear();
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				int nStartPos = 0;
 				while ( true )
 				{
-					int nMidPos = sValue.Find( _T(","), nStartPos );
-					int nEndPos = sValue.Find( m_wcDelimiter, nMidPos + 1 );
+                    int nMidPos = sValue.find( _T(","), nStartPos );
+                    int nEndPos = sValue.find( m_wcDelimiter, nMidPos + 1 );
 
 					if ( -1 == nMidPos )
 						break;
@@ -4771,14 +4740,14 @@ namespace SimpleTypes
 					if ( -1 == nEndPos )
 						nEndPos = nLen;
 
-					   CString strX = sValue.Mid( nStartPos, nMidPos - nStartPos ) ;
-					   CString strY = sValue.Mid( nMidPos + 1, nEndPos - nMidPos - 1 );
+					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos ) ;
+					   std::wstring strY = sValue.substr( nMidPos + 1, nEndPos - nMidPos - 1 );
 
-					   strX.Replace(_T("@"), _T(""));
-					   strY.Replace(_T("@"), _T(""));
+						boost::algorithm::replace_all(strX, L"@", L"");
+						boost::algorithm::replace_all(strY, L"@", L"");
 
-					   int nX = strX.IsEmpty() ? 0 : _wtoi(strX );
-					   int nY = strY.IsEmpty() ? 0 : _wtoi(strY );
+                       int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+                       int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
 
 					   m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -4789,13 +4758,13 @@ namespace SimpleTypes
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					sResult += std::to_wstring((float)m_arrPoints[nIndex].dX) + L"," + std::to_wstring((float)m_arrPoints[nIndex].dY);
+					sResult += std::to_wstring(m_arrPoints[nIndex].dX) + L"," + std::to_wstring(m_arrPoints[nIndex].dY);
 					if ( nIndex < m_arrPoints.size() - 1 )
 						sResult += m_wcDelimiter;
 				}
@@ -4852,40 +4821,40 @@ namespace SimpleTypes
 					m_dValue = (std::max)( 0.0, (std::min)( 100.0, dValue ) ) / 100.0;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-				bool bFraction   = ( 'f' == sValue.GetAt( nLen - 1 ) );
-				bool bPercentage = ( '%' == sValue.GetAt( nLen - 1 ) );
+                bool bFraction   = ( 'f' == sValue[ nLen - 1] );
+                bool bPercentage = ( '%' == sValue[ nLen - 1] );
 
 				if ( bFraction )
 				{
-					   CString strValue = sValue.Mid( 0, nLen - 1 );
-					   int nValue = strValue.IsEmpty() ? 0 : _wtoi(strValue );
+					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
+                       int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
 
 					   SetValue( nValue );
 				}
 				else if ( bPercentage )
 				{
-					   CString strValue = sValue.Mid( 0, nLen - 1 );
-					   double dValue = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
+                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					SetPercentage( dValue );
 				}
 				else
 				{
-					   double dValue = sValue.IsEmpty() ? 0 : _wtof(sValue );
+                       double dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
 					SetValue( dValue );
 				}
 
 				return m_dValue;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-                CString sResult = std::to_wstring( m_dValue );
+                std::wstring sResult = std::to_wstring( m_dValue );
 
 				return sResult;
 			}
@@ -4912,7 +4881,7 @@ namespace SimpleTypes
 				ResetMatrix();
 				FromString( oOther.ToString() );
 			}
-			CVml_Matrix(CString &sValue)
+			CVml_Matrix(std::wstring &sValue)
 			{
 				ResetMatrix();
 				FromString( sValue );
@@ -4927,7 +4896,7 @@ namespace SimpleTypes
 				ResetMatrix();
 				FromString( wsStr );
 			}
-			const CVml_Matrix &operator =(CString &sValue)
+			const CVml_Matrix &operator =(std::wstring &sValue)
 			{
 				FromString( sValue );
 				return *this;
@@ -4982,95 +4951,95 @@ namespace SimpleTypes
 				return m_dPy;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				ResetMatrix();
 
-				int nLen = sValue.GetLength();
+				int nLen = sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				// Sxx
 				int nStartPos = 0;
-				int nEndPos = sValue.Find( _T(","), nStartPos );
+                int nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dSxx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dSxx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				// Sxy
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(","), nStartPos );
+                nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dSxy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dSxy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				// Syx
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(","), nStartPos );
+                nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dSyx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dSyx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				// Syy
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(","), nStartPos );
+                nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dSyy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dSyy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				// Px
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(","), nStartPos );
+                nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dPx = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dPx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				// Py
 				nStartPos = nEndPos + 1;
-				nEndPos = sValue.Find( _T(","), nStartPos );
+                nEndPos = sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
 					{
-					   CString strValue = sValue.Mid( nStartPos, nEndPos - nStartPos );
-					   m_dPy = strValue.IsEmpty() ? 0 : _wtof(strValue );
+					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                       m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 					}
 
 				nStartPos = nEndPos + 1;		
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult;
-				sResult.Format( _T("%f,%f,%f,%f,%f,%f"), m_dSxx, m_dSxy, m_dSyx, m_dSyy,  m_dPx, m_dPy );
-				return sResult;
+				return	std::to_wstring(m_dSxx) + L"," + std::to_wstring(m_dSxy) + L"," +
+						std::to_wstring(m_dSyx) + L"," + std::to_wstring(m_dSyy) + L"," +
+						std::to_wstring(m_dPx)	+ L"," + std::to_wstring(m_dPy);
 			}
 
 			SimpleType_FromString2    (double)
@@ -5125,7 +5094,7 @@ namespace SimpleTypes
 				m_bUnitsY = true;
 			}
 
-			virtual double FromString(CString &sValue)
+			virtual double FromString(std::wstring &sValue)
 			{
 				m_dX = 0;
 				m_dY = 0;
@@ -5140,7 +5109,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 					return 0;
 
-				CString sTemp = sValue.Mid( 0, nPos );
+				std::wstring sTemp = sValue.substr( 0, nPos );
 				if ( -1 != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
@@ -5154,7 +5123,7 @@ namespace SimpleTypes
 					m_bUnitsX = true;
 				}
 
-				sTemp = sValue.Mid( nPos + 1, nLen - nPos - 1 );
+				sTemp = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				if ( -1 != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
@@ -5171,14 +5140,14 @@ namespace SimpleTypes
 				return 0;
 			}
 
-			virtual CString ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-				CString sResult = std::to_wstring((float)m_dX);
+				std::wstring sResult = std::to_wstring(m_dX);
 
 				if ( m_bUnitsX )	sResult += L"pt,";
 				else				sResult += L"%,";
 
-				sResult += std::to_wstring((float)m_dY);
+				sResult += std::to_wstring(m_dY);
 
 				if ( m_bUnitsY )	sResult += L"pt";
 				else				sResult += L"%";
@@ -5233,64 +5202,49 @@ namespace SimpleTypes
 				m_dBottom = dB;
 			}
 
-			double FromString(CString &sValue)
+			double FromString(std::wstring &sValue)
 			{
 				Set( 0, 0, 0, 0 );
 
-				int nLen = sValue.GetLength();
-				if ( nLen <= 0 )
+				if ( sValue.empty())
 					return 0;
 
+				std::vector<std::wstring> arSplit;
+
 				// Разделителями могут быть запятые и пробелы
-				sValue.Replace( L",", L" " );
-				while ( -1 != sValue.find( L"  " ) )
-					sValue.Replace( L"  ", L" " );
+				boost::algorithm::replace_all(sValue, L"@", L"");
+				boost::algorithm::split(arSplit, sValue, boost::algorithm::is_any_of(L", "), boost::algorithm::token_compress_on);
 
-				int nStartPos = 0;
-				if ( ' ' == sValue[0] )
-					nStartPos++;
+				if (arSplit.size() > 0)
+				{
+                    SimpleTypes::CPoint oPt = arSplit[0];
+					m_dLeft = oPt.GetValue();
+				}
 
-				// Left
-				int nEndPos = sValue.find( _T(" "), nStartPos );
-				if ( -1 == nEndPos )
-					nEndPos = nLen;
+				if (arSplit.size() > 1)
+				{
+                    SimpleTypes::CPoint oPt = arSplit[1];
+					m_dTop = oPt.GetValue();
+				}
 
-					SimpleTypes::CPoint oPtLeft = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
-				m_dLeft = oPtLeft.GetValue();
+				if (arSplit.size() > 2)
+				{
+                    SimpleTypes::CPoint oPt = arSplit[2];
+					m_dRight = oPt.GetValue();
+				}
 
-				// Top
-				nStartPos = nEndPos + 1;
-				nEndPos = sValue.find( _T(" "), nStartPos );
-				if ( -1 == nEndPos )
-					nEndPos = nLen;
-
-					SimpleTypes::CPoint oPtTop = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
-				m_dTop = oPtTop.GetValue();
-
-				// Right
-				nStartPos = nEndPos + 1;
-				nEndPos = sValue.find( L" ", nStartPos );
-				if ( -1 == nEndPos )
-					nEndPos = nLen;
-
-					SimpleTypes::CPoint oPtRight = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
-				m_dRight = oPtRight.GetValue();
-
-				// Bottom
-				nStartPos = nEndPos + 1;
-				nEndPos = sValue.find( L" ", nStartPos );
-				if ( -1 == nEndPos )
-					nEndPos = nLen;
-
-					SimpleTypes::CPoint oPtBottom = (const TCHAR *) sValue.Mid( nStartPos, nEndPos - nStartPos );
-				m_dBottom = oPtBottom.GetValue();
+				if (arSplit.size() > 3)
+				{
+                    SimpleTypes::CPoint oPt = arSplit[3];
+					m_dBottom = oPt.GetValue();
+				}
 
 				return 0;
 			}
 
-			CString ToString  () const 
+			std::wstring ToString  () const 
 			{
-				return std::to_wstring((float)m_dLeft) + L"pt," + std::to_wstring((float)m_dTop) + L"pt," + std::to_wstring((float)m_dRight) + L"pt,"+ std::to_wstring((float)m_dBottom) + L"pt";
+				return std::to_wstring(m_dLeft) + L"pt," + std::to_wstring(m_dTop) + L"pt," + std::to_wstring(m_dRight) + L"pt,"+ std::to_wstring(m_dBottom) + L"pt";
 			}
 
 			SimpleType_FromString2    (double)

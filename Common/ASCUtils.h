@@ -121,35 +121,6 @@
 	}\
 }
 
-class IBaseUnknown
-{
-private:
-	LONG	m_dwRef;
-
-public:
-	LONG __fastcall AddRef()
-	{
-		return InterlockedIncrement(&m_dwRef);
-	}
-	
-	LONG __fastcall Release()
-	{
-		LONG	lResult=InterlockedDecrement(&m_dwRef);
-		if (lResult==0)
-			delete this;
-		return lResult;
-	}
-
-public:
-	IBaseUnknown()
-	{
-		m_dwRef=1;
-	}
-	virtual ~IBaseUnknown()
-	{
-	}
-};
-
 #endif // #ifdef _WIN32
 #endif // #ifndef _AVSUTILS_H_	// For Borland compiler
 

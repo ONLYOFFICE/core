@@ -52,7 +52,7 @@ namespace PPTX
 
 				node.ReadAttributeBase(L"lang", lang);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("invalEndChars"), invalEndChars);
@@ -68,8 +68,8 @@ namespace PPTX
 			}
 
 		public:
-			CString				invalEndChars;
-			CString				invalStChars;
+			std::wstring				invalEndChars;
+			std::wstring				invalStChars;
 			nullable_string		lang;
 		protected:
 			virtual void FillParentPointersForChilds(){};

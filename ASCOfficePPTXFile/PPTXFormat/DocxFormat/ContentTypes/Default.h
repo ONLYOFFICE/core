@@ -47,7 +47,7 @@ namespace PPTX
 			{
 				m_extension = _T("");
 			}
-			Default(const CString& extension) : m_extension(extension)
+			Default(const std::wstring& extension) : m_extension(extension)
 			{
 			}
 			virtual ~Default()
@@ -68,7 +68,7 @@ namespace PPTX
 			{
 				m_extension = node.GetAttribute(_T("Extension"));
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				static const ExtensionTable table;
 				
@@ -84,13 +84,13 @@ namespace PPTX
 			}
 
 		public:
-			const bool operator ==(const CString& rhs) const
+			const bool operator ==(const std::wstring& rhs) const
 			{
 				return m_extension == rhs;
 			}
 
 		private:
-			CString	m_extension;
+			std::wstring	m_extension;
 		};
 	} // namespace ContentTypes
 } // namespace PPTX

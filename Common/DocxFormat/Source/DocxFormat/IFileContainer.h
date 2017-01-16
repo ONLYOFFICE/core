@@ -62,7 +62,7 @@ namespace OOX
 		}
 	protected:
 
-        std::map<CString, smart_ptr<OOX::File>> m_mContainer;
+        std::map<std::wstring, smart_ptr<OOX::File>> m_mContainer;
 		size_t                                m_lMaxRid;
 
 	protected:
@@ -100,7 +100,7 @@ namespace OOX
 		void      Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile);
 
 		template<typename T> 
-		T&                   Find();
+        T&                   Find();
 		smart_ptr<OOX::File> Find(const FileType& type) const;
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 

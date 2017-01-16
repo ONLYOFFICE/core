@@ -48,7 +48,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<p:present/>");
 			}
@@ -61,7 +61,7 @@ namespace PPTX
 				pWriter->WriteString(_T("<p:present/>"));
 			}
 		protected:
-			virtual void FillParentPointersForChilds(){};
+            virtual void FillParentPointersForChilds(){}
 		};
 	} // namespace nsShowPr
 } // namespace PPTX

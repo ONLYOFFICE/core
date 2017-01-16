@@ -51,11 +51,11 @@ namespace PPTX
 		}
 	public:
 
-        std::map<CString, smart_ptr<PPTX::File>> m_map;
+        std::map<std::wstring, smart_ptr<PPTX::File>> m_map;
 
 	public:
 
-        AVSINLINE std::map<CString, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
+        AVSINLINE std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
 		{
             return m_map.find(path.m_strFilename);
 		}

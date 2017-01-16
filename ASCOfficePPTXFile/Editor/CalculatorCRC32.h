@@ -55,11 +55,11 @@ public:
 		return dwRes;
 	}
 
-	DWORD Calc(const CString &sStream)
+	DWORD Calc(const std::wstring &sStream)
 	{
 		InitCRCTable();
 		DWORD dwRes = m_dwInitCrc;
-		int nSize = sStream.GetLength();
+		int nSize = sStream.length();
 		for (int i=0;i<nSize;i++)
 		{
 			dwRes = m_arCRCTable[(dwRes ^ (BYTE)sStream[i]) & 0xFF] ^ (dwRes >> 8);
@@ -68,7 +68,7 @@ public:
 		dwRes = dwRes ^ 0xFFFFFFFF;
 		return dwRes;
 	}
-	DWORD CalcPartFile(const CString &sFilepath)
+	DWORD CalcPartFile(const std::wstring &sFilepath)
 	{
 		DWORD dwRet = 0xFFFFFFFF;
 		//LPBYTE pBuffer = new BYTE[g_clFilePartSize];

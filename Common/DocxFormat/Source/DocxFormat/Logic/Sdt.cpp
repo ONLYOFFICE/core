@@ -250,9 +250,9 @@ namespace OOX
 		}
 
 
-		CString CSdtContent::toXML() const
+		std::wstring CSdtContent::toXML() const
 		{
-				CString sResult = _T("<w:sdtContent>");
+				std::wstring sResult = _T("<w:sdtContent>");
 
 				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{

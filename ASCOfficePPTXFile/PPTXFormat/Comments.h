@@ -112,16 +112,10 @@ namespace PPTX
 								XmlUtils::CXmlNode oNodeAU = oNodeExt.ReadNode(_T("p15:presenceInfo"));
 								if (oNodeAU.IsValid())
 								{
-									CString strData = oNodeAU.GetAttribute(_T("userId"));
+									std::wstring strData = oNodeAU.GetAttribute(_T("userId"));
 
-									strData.Replace(_T("&amp;"),	_T("&"));
-									strData.Replace(_T("&apos;"),	_T("'"));
-									strData.Replace(_T("&lt;"),		_T("<"));
-									strData.Replace(_T("&gt;"),		_T(">"));
-									strData.Replace(_T("&quot;"),	_T("\""));
-
-									if (_T("") != strData)
-										additional_data = strData;
+                                    if (!strData.empty())
+                                        additional_data = XmlUtils::EncodeXmlString(strData);
 
 									bIsFound2 = true;
 								}
@@ -144,7 +138,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -161,8 +155,7 @@ namespace PPTX
 
 				if (pos_x.is_init() && pos_y.is_init())
 				{
-					CString sPos = _T("");
-					sPos.Format(_T("<p:pos x=\"%d\" y=\"%d\"/>"), *pos_x, *pos_y);
+                    std::wstring sPos = L"<p:pos x=\"" + std::to_wstring(*pos_x) + L"\" y=\"" + std::to_wstring(*pos_y) + L"\"/>";
 					pWriter->WriteString(sPos);
 				}
 				if (text.is_init())
@@ -184,8 +177,7 @@ namespace PPTX
 					pWriter->WriteString(_T("<p:ext uri=\"{C676402C-5697-4E1C-873F-D02D1690AC5C}\">\
 <p15:threadingInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" timeZoneBias=\"-240\">"));
 
-					CString sPos = _T("");
-					sPos.Format(_T("<p15:parentCm authorId=\"%d\" idx=\"%d\"/>"), *parentAuthorId, *parentCommentId);
+                    std::wstring sPos = L"<p15:parentCm authorId=\"" + std::to_wstring(*parentAuthorId) + L"\" idx=\"" + std::to_wstring(*parentCommentId) + L"\"/>";
 					pWriter->WriteString(sPos);
 
 					pWriter->WriteString(_T("</p15:threadingInfo></p:ext>"));
@@ -196,13 +188,7 @@ namespace PPTX
 					pWriter->WriteString(_T("<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
 <p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\""));
 
-					CString strData = additional_data.get();
-
-					strData.Replace ( _T("&"),  _T("&amp;") );
-					strData.Replace ( _T("'"),  _T("&apos;") );
-					strData.Replace ( _T("<"),  _T("&lt;") );
-					strData.Replace ( _T(">"),  _T("&gt;") );
-					strData.Replace ( _T("\""), _T("&quot;") );
+                    std::wstring strData = XmlUtils::EncodeXmlString(additional_data.get());
 
 					pWriter->WriteString(strData);
 
@@ -309,7 +295,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			XmlUtils::CXmlNodes oNodes;
 			oNode.GetNodes(_T("p:cm"), oNodes);

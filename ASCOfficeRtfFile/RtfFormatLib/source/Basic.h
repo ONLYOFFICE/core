@@ -51,7 +51,7 @@ class RenderParameter
 		
 		int			nType;
 		int			nValue;
-		CString		sValue;
+        std::wstring		sValue;
 		int			RtfType;
 		
 		RenderParameter()
@@ -76,8 +76,8 @@ public:
 		{
 			return true;
 		}
-		virtual CString RenderToRtf(RenderParameter oRenderParameter) = 0;
-		virtual CString RenderToOOX(RenderParameter oRenderParameter) = 0;
+        virtual std::wstring RenderToRtf(RenderParameter oRenderParameter) = 0;
+        virtual std::wstring RenderToOOX(RenderParameter oRenderParameter) = 0;
 };
 
 class IRenderableProperty: public IDocumentElement
@@ -247,9 +247,9 @@ typedef boost::shared_ptr<ITextItemContainer> ITextItemContainerPtr;
 class TextItemContainer : public ITextItemContainer
 {
 public: 
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )//идем с конца - из за св-в секций
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
@@ -261,9 +261,9 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
        
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{

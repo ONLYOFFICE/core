@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -64,7 +64,7 @@ namespace OOX
 				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
 				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
 				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -115,7 +115,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

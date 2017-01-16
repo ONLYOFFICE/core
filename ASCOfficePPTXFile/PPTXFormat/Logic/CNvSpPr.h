@@ -86,7 +86,7 @@ namespace PPTX
 					l_Locks.ReadAttributeBase(L"noTextEdit", noTextEdit);
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("txBox"), txBox);
@@ -157,7 +157,7 @@ namespace PPTX
 					pWriter->EndNode(_T("p:cNvSpPr"));
 			}
 
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(strNS + _T(":cNvSpPr"));
 

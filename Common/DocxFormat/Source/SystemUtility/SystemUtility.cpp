@@ -35,8 +35,10 @@
 	#include <windows.h>
 #endif
 
-#include "FileSystem/FileSystem.h"
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
+#include <boost/algorithm/string.hpp>
 
 namespace OOX
 {
@@ -100,6 +102,94 @@ namespace OOX
         Normalize();
         return *this;
     }
+	void CPath::Normalize()
+	{
+		if (0 == m_strFilename.length())
+			return;
+
+		//todooo оптимизировать 
+		boost::algorithm::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
+		boost::algorithm::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
+
+		const wchar_t*  pData   = m_strFilename.c_str();
+        int             nLen    = (int) m_strFilename.length();
+
+        wchar_t*    pDataNorm       = new wchar_t   [nLen + 1];
+        int*        pSlashPoints    = new int       [nLen + 1];
+
+        int nStart          = 0;
+        int nCurrent        = 0;
+        int nCurrentSlash   = -1;
+        int nCurrentW       = 0;
+        bool bIsUp          = false;
+
+		while (nCurrent < nLen)
+		{
+            if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+			{
+				if (nStart < nCurrent)
+				{
+					bIsUp = false;
+					if ((nCurrent - nStart) == 2)
+					{
+						if (pData[nStart] == (wchar_t)'.' && pData[nStart + 1] == (wchar_t)'.')
+						{
+							if (nCurrentSlash > 0)
+							{
+								--nCurrentSlash;
+								nCurrentW = pSlashPoints[nCurrentSlash];
+								bIsUp = true;
+							}
+						}
+					}
+					if (!bIsUp)
+					{
+                        pDataNorm[nCurrentW++] = (wchar_t) FILE_SEPARATOR_CHAR;
+						++nCurrentSlash;
+						pSlashPoints[nCurrentSlash] = nCurrentW;
+					}
+				}
+				nStart = nCurrent + 1;					
+				++nCurrent;
+				continue;
+			}
+			pDataNorm[nCurrentW++] = pData[nCurrent];
+			++nCurrent;
+		}
+
+		pDataNorm[nCurrentW] = (wchar_t)'\0';
+
+		m_strFilename = std::wstring(pDataNorm, nCurrentW);
+
+		delete []pSlashPoints;
+		delete []pDataNorm;				
+	}
+
+
+	bool CPath::FileInDirectoryCorrect()
+	{
+		std::wstring fileDirectory = GetDirectory(false);
+		std::wstring lowerFileName = m_strFilename;
+
+		boost::algorithm::to_lower(lowerFileName);
+
+		CArray<std::wstring> trueArray;
+
+		NSDirectory::GetFiles2(fileDirectory, trueArray);
+
+		for (int i = 0; i < trueArray.GetCount(); i++)
+		{
+			std::wstring lowerTest = trueArray[i];
+			boost::algorithm::to_lower(lowerTest);
+
+			if (lowerTest == lowerFileName)
+			{
+				m_strFilename = trueArray[i];
+				return true;
+			}
+		}
+		return false;
+	}
 
     /*
 	AVSINLINE std::wstring CPath::GetExtention(bool bIsPoint) const
@@ -111,7 +201,7 @@ namespace OOX
         if (!bIsPoint)
             ++nFind;
 
-        return m_strFilename.Mid(nFind);
+        return m_strFilename.substr(nFind);
     }
     */
     /*
@@ -126,7 +216,7 @@ namespace OOX
         {
             if (bIsSlash)
                 ++nPos;
-            return m_strFilename.Mid(0, nPos);
+            return m_strFilename.substr(0, nPos);
         }
     }
     */
@@ -167,7 +257,7 @@ namespace OOX
 
     bool CSystemUtility::IsFileExist(const std::wstring& strFileName)
     {
-        return FileSystem::File::Exists(strFileName);
+        return NSFile::CFileBinary::Exists(strFileName);
     }
     bool CSystemUtility::IsFileExist(const CPath& oPath)
     {
@@ -182,7 +272,7 @@ namespace OOX
 
     int CSystemUtility::GetFilesCount(const std::wstring& strDirPath, const bool& bRecursive)
     {
-        return FileSystem::Directory::GetFilesCount(strDirPath, bRecursive);
+        return NSDirectory::GetFilesCount(strDirPath, bRecursive);
     }
 
     std::wstring CSystemUtility::GetFileExtention(const std::wstring& strFileName)
@@ -193,7 +283,7 @@ namespace OOX
 
     bool CSystemUtility::CreateDirectories(const CPath& oPath)
     {
-		return FileSystem::Directory::CreateDirectory(oPath.GetPath());
+        return NSDirectory::CreateDirectory(oPath.GetPath());
     }
 
     void CSystemUtility::ReplaceExtention(std::wstring& strName, std::wstring& str1, std::wstring& str2)

@@ -49,8 +49,8 @@ public:
 	{
 		if (!m_ooxFont) return false;
 
-		CString sFontName = m_ooxFont->m_sName;
-		if( sFontName.GetLength() < 1 ) return false;
+		std::wstring sFontName = m_ooxFont->m_sName;
+		if( sFontName.length() < 1 ) return false;
 
 		oOutputFont.m_sName = sFontName;
 		oOutputFont.m_nID = oParam.oRtf->m_oFontTable.GetCount() + 1;
@@ -103,7 +103,7 @@ public:
 	{
 		if (!m_ooxFont) return false;
 
-		CString sAscii, sAsciiTheme, sCs, sCsTheme, sEastAsia, sEastAsiaTheme, sHAnsi, sHAnsiTheme;
+		std::wstring sAscii, sAsciiTheme, sCs, sCsTheme, sEastAsia, sEastAsiaTheme, sHAnsi, sHAnsiTheme;
 		
 		if (m_ooxFont->m_sAscii.IsInit())			sAscii = m_ooxFont->m_sAscii.get2();
 		if (m_ooxFont->m_oAsciiTheme.IsInit())		sAsciiTheme = m_ooxFont->m_oAsciiTheme->ToString();
@@ -117,28 +117,28 @@ public:
 		if (m_ooxFont->m_sHAnsi.IsInit())			sHAnsi = m_ooxFont->m_sHAnsi.get2();
 		if (m_ooxFont->m_oHAnsiTheme.IsInit())		sHAnsiTheme = m_ooxFont->m_oHAnsiTheme->ToString();
 
-		CString sFont;	
-		CString sTempFont;
+		std::wstring sFont;	
+		std::wstring sTempFont;
 		
-		if( !sAscii.IsEmpty() )
+		if( !sAscii.empty() )
 			sFont = sAscii;
-		else if( !sAsciiTheme.IsEmpty() && !GetThemeFont(sAsciiTheme, *oParam.oReader).IsEmpty() )
+		else if( !sAsciiTheme.empty() && !GetThemeFont(sAsciiTheme, *oParam.oReader).empty() )
 			sFont = GetThemeFont(sAsciiTheme, *oParam.oReader);
-		else if( !sHAnsi.IsEmpty() )
+		else if( !sHAnsi.empty() )
 			sFont = sHAnsi;
-		else if( !sHAnsiTheme.IsEmpty() && !GetThemeFont(sHAnsiTheme, *oParam.oReader).IsEmpty() )
+		else if( !sHAnsiTheme.empty() && !GetThemeFont(sHAnsiTheme, *oParam.oReader).empty() )
 			sFont = GetThemeFont(sHAnsiTheme, *oParam.oReader);
-		else if( !sCs.IsEmpty()  )
+		else if( !sCs.empty()  )
 			sFont = sCs;
-		else if( !sCsTheme.IsEmpty()  && !GetThemeFont(sCsTheme, *oParam.oReader).IsEmpty() )
+		else if( !sCsTheme.empty()  && !GetThemeFont(sCsTheme, *oParam.oReader).empty() )
 			sFont = GetThemeFont(sCsTheme, *oParam.oReader);
-		else if( !sEastAsia.IsEmpty() )
+		else if( !sEastAsia.empty() )
 			sFont = sEastAsia;
-		else if( !sEastAsiaTheme.IsEmpty() && !GetThemeFont(sEastAsiaTheme, *oParam.oReader).IsEmpty() )
+		else if( !sEastAsiaTheme.empty() && !GetThemeFont(sEastAsiaTheme, *oParam.oReader).empty() )
 			sFont = GetThemeFont(sEastAsiaTheme, *oParam.oReader);
 
 
-		if( !sFont.IsEmpty() )
+		if( !sFont.empty() )
 		{
 			RtfFont oCurFont;
 			if( true == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
@@ -154,9 +154,9 @@ public:
 		return true;
 	}
 private: 
-	CString GetThemeFont( CString sTheme, OOXReader & oReader )
+	std::wstring GetThemeFont( std::wstring sTheme, OOXReader & oReader )
 	 {
-		CString sFont;
+		std::wstring sFont;
 		if		( L"majorAscii"		== sTheme )	sFont = oReader.m_smajorAscii;
 		else if ( L"majorBidi"		== sTheme )	sFont = oReader.m_smajorBidi;
 		else if ( L"majorEastAsia"	== sTheme )	sFont = oReader.m_smajorEastAsia;

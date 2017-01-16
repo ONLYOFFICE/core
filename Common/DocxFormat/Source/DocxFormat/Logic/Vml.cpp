@@ -137,9 +137,9 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		CString CTxbxContent::toXML() const
+		std::wstring CTxbxContent::toXML() const
 		{
-			CString sResult = _T("<w:txbxContent>");
+			std::wstring sResult = _T("<w:txbxContent>");
 
 			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
@@ -445,9 +445,9 @@ namespace OOX
 			}
 			oReader.MoveToElement();
 		}
-		CString CVmlCommonElements::WriteElements() const
+		std::wstring CVmlCommonElements::WriteElements() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
@@ -457,9 +457,9 @@ namespace OOX
 
 			return sResult;
 		};
-		CString CVmlCommonElements::WriteAttributes() const
+		std::wstring CVmlCommonElements::WriteAttributes() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			ComplexTypes_WriteAttribute2( _T("id=\""),          m_sId );
 			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
@@ -578,7 +578,7 @@ namespace OOX
 
 			return sResult;
 		}
-		CString CVmlCommonElements::toXML() const
+		std::wstring CVmlCommonElements::toXML() const
 		{
 			return _T("");
 		}
@@ -791,9 +791,9 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		CString CGroup::toXML() const
+		std::wstring CGroup::toXML() const
 		{
-			CString sResult = _T("<v:group ");
+			std::wstring sResult = _T("<v:group ");
 
 			ComplexTypes_WriteAttribute2( _T("id=\""),          m_sId );
 			ComplexTypes_WriteAttribute ( _T("style=\""),       m_oStyle );
@@ -891,9 +891,9 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CPolyLine 14.1.2.15 (Part4)
 		//--------------------------------------------------------------------------------	
-		CString CPolyLine::toXML() const
+		std::wstring CPolyLine::toXML() const
 		{
-			CString sResult = _T("<v:polyline ");
+			std::wstring sResult = _T("<v:polyline ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
@@ -908,23 +908,23 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CShape 14.1.2.19 (Part4)
 		//--------------------------------------------------------------------------------	
-		CString CShape::toXML() const
+		std::wstring CShape::toXML() const
 		{
-			CString sResult = _T("<v:shape ");
+			std::wstring sResult = _T("<v:shape ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
 			if ( m_sType.IsInit() )
 			{
 				sResult += _T("type=\"");
-				sResult += m_sType->GetString();
+                sResult += m_sType.get2();
 				sResult += _T("\" ");
 			}
 
-			if ( m_oAdj.IsInit() )
+            if ( m_sAdj.IsInit() )
 			{
 				sResult += _T("adj=\"");
-				sResult += m_oAdj->GetString();
+                sResult += m_sAdj.get2();
 				sResult += _T("\" ");
 			}
 
@@ -936,7 +936,7 @@ namespace OOX
 			if ( m_sEquationXML.IsInit() )
 			{
 				sResult += _T("equationxml=\"");
-				sResult += m_sEquationXML->GetString();
+                sResult += m_sEquationXML.get2();
 				sResult += _T("\" ");
 			}
 
@@ -951,16 +951,16 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CShapeType 14.1.2.20 (Part4)
 		//--------------------------------------------------------------------------------	
-		CString CShapeType::toXML() const
+		std::wstring CShapeType::toXML() const
 		{
-			CString sResult = _T("<v:shapetype ");
+			std::wstring sResult = _T("<v:shapetype ");
 
 			sResult += CVmlCommonElements::WriteAttributes();
 
-			if ( m_oAdj.IsInit() )
+            if ( m_sAdj.IsInit() )
 			{
 				sResult += _T("adj=\"");
-				sResult += m_oAdj->GetString();
+                sResult += m_sAdj.get2();
 				sResult += _T("\" ");
 			}
 
@@ -996,20 +996,20 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 
 				if ( _T("x:MoveWithCells") == sName )
-					m_oMoveWithCells = oReader.GetText2().GetString();
+                    m_oMoveWithCells = oReader.GetText2();
 				else if ( _T("x:SizeWithCells") == sName )
-					m_oSizeWithCells = oReader.GetText2().GetString();
+                    m_oSizeWithCells = oReader.GetText2();
 				else if ( _T("x:Anchor") == sName )
-					m_oAnchor = oReader.GetText2().GetString();
+                    m_oAnchor = oReader.GetText2();
 				else if ( _T("x:Row") == sName )
-					m_oRow = oReader.GetText2().GetString();
+                    m_oRow = oReader.GetText2();
 				else if ( _T("x:Column") == sName )
-					m_oColumn = oReader.GetText2().GetString();
+                    m_oColumn = oReader.GetText2();
 			}
 		}
-		CString CClientData::toXML() const
+		std::wstring CClientData::toXML() const
 		{
-			CString sResult = _T("<x:ClientData");
+			std::wstring sResult = _T("<x:ClientData");
 			if(m_oObjectType.IsInit())
 			{
 				sResult += L" ObjectType=\"";
@@ -1027,13 +1027,11 @@ namespace OOX
 			}
 			if(m_oRow.IsInit())
 			{
-                CString sRow;sRow.Format(_T("<x:Row>%d</x:Row>"), m_oRow.get().GetValue());
-				sResult += sRow;
+                sResult += L"<x:Row>" + std::to_wstring(m_oRow->GetValue()) + L"</x:Row>";
 			}
 			if(m_oColumn.IsInit())
 			{
-                CString sColumn;sColumn.Format(_T("<x:Column>%d</x:Column>"), m_oColumn.get().GetValue());
-				sResult += sColumn;
+                sResult += L"<x:Column>" + std::to_wstring(m_oColumn->GetValue()) + L"</x:Column>";
 			}
 			sResult += _T("</x:ClientData>");
 			return sResult;

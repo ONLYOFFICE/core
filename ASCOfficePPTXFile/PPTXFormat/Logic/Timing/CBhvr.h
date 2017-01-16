@@ -70,7 +70,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			CString toXML() const
+			std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("accumulate"), accumulate);

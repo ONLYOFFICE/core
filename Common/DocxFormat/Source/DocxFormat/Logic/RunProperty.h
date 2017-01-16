@@ -74,9 +74,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oCombine.IsInit() )
 				{
@@ -163,9 +163,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -217,9 +217,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -272,9 +272,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oID.IsInit() )
 				{
@@ -335,9 +335,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -396,14 +396,14 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{			
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_sAscii.IsInit() )
 				{
 					sResult += _T("w:ascii=\"");
-					sResult += m_sAscii->GetString();
+                    sResult += m_sAscii.get2();
 					sResult += _T("\" ");
 				}
 
@@ -417,7 +417,7 @@ namespace ComplexTypes
 				if ( m_sCs.IsInit() )
 				{
 					sResult += _T("w:cs=\"");
-					sResult += m_sCs->GetString();
+                    sResult += m_sCs.get2();
 					sResult += _T("\" ");
 				}
 
@@ -431,7 +431,7 @@ namespace ComplexTypes
 				if ( m_sEastAsia.IsInit() )
 				{
 					sResult += _T("w:eastAsia=\"");
-					sResult += m_sEastAsia->GetString();
+                    sResult += m_sEastAsia.get2();
 					sResult += _T("\" ");
 				}
 
@@ -445,7 +445,7 @@ namespace ComplexTypes
 				if ( m_sHAnsi.IsInit() )
 				{
 					sResult += _T("w:hAnsi=\"");
-					sResult += m_sHAnsi->GetString();
+                    sResult += m_sHAnsi.get2();
 					sResult += _T("\" ");
 				}
 
@@ -485,13 +485,13 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<CString              > m_sAscii;
+            nullable<std::wstring              > m_sAscii;
 			nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
-			nullable<CString              > m_sCs;
+            nullable<std::wstring              > m_sCs;
 			nullable<SimpleTypes::CTheme<>> m_oCsTheme;
-			nullable<CString              > m_sEastAsia;
+            nullable<std::wstring              > m_sEastAsia;
 			nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
-			nullable<CString              > m_sHAnsi;
+            nullable<std::wstring              > m_sHAnsi;
 			nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
 			nullable<SimpleTypes::CHint<> > m_oHint;
 		};
@@ -526,9 +526,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{			
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oColor.IsInit() )
 				{
@@ -614,9 +614,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{			
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -666,9 +666,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{			
-				CString sResult;
+                std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -717,18 +717,18 @@ namespace OOX
 			virtual ~CRPrChange();
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+            nullable<std::wstring                   > m_sAuthor;
+            nullable<SimpleTypes::CDateTime         > m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>  > m_oId;
+            nullable<std::wstring                   > m_sUserId;
 
-			nullable<CRunProperty>					 m_pRunPr;
+            nullable<CRunProperty>                  m_pRunPr;
 		};
 
 
@@ -904,9 +904,9 @@ namespace OOX
 
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:rPr>");
+                std::wstring sResult = _T("<w:rPr>");
 
 				if ( m_oBold.IsInit() )
 				{
@@ -1431,7 +1431,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CSignedHpsMeasure               > m_oPosition;
 			nullable<ComplexTypes::Word::CFonts                          > m_oRFonts;
 			nullable<OOX::Logic::CRPrChange                              > m_oRPrChange;
-			nullable<ComplexTypes::Word::CString_                        > m_oRStyle;
+            nullable<ComplexTypes::Word::String                          > m_oRStyle;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtL;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oShadow;
 			nullable<ComplexTypes::Word::CShading                        > m_oShd;
@@ -1448,8 +1448,8 @@ namespace OOX
 			nullable<ComplexTypes::Word::CTextScale                      > m_oW;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oWebHidden;
 			
-			nullable<CString>									m_sTextOutline;
-			nullable<CString>									m_sTextFill;
+            nullable<std::wstring>									m_sTextOutline;
+            nullable<std::wstring>									m_sTextFill;
 
 			nullable<OOX::Drawing::CGradientFillProperties>		m_oGradFill;
 		};

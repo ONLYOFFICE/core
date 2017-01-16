@@ -63,7 +63,7 @@ namespace OOX
 			{
 			}
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -124,7 +124,7 @@ namespace OOX
 				// TO DO: Реализовать fromXML(XmlUtils::CXmlNode& oNode)
 			}
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

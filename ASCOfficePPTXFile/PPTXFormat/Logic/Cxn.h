@@ -69,7 +69,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:cxn ang=\"") + ang + _T("\"><a:pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></a:cxn>");
 			}
@@ -102,13 +102,13 @@ namespace PPTX
 			}
 
 		public:
-			CString x;
-			CString y;
-			CString ang;
+			std::wstring x;
+			std::wstring y;
+			std::wstring ang;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></cxn>");
 			}

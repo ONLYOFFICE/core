@@ -50,7 +50,7 @@ namespace PPTX
 			node.LoadArray(_T("*"), Modifiers);
 		}
 
-		CString SchemeClr::toXML() const
+		std::wstring SchemeClr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("val"), val.get());
@@ -106,7 +106,7 @@ namespace PPTX
 		{
 			DWORD RGB = 0;
 			
-			CString str = val.get();
+			std::wstring str = val.get();
 			if (str == _T("phClr"))
 				RGB = ARGB;
 			else 
@@ -135,7 +135,7 @@ namespace PPTX
 		{
 			DWORD RGB = 0;
 			
-			CString str = val.get();
+			std::wstring str = val.get();
 			if(str == _T("phClr"))
 				RGB = rgb;
 			else

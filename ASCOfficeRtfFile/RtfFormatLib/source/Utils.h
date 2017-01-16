@@ -34,6 +34,7 @@
 #include "RtfDefine.h"
 
 #include "../../../Common/FileWriter.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #ifdef _ASC_USE_UNICODE_CONVERTER_
     #include "../../../UnicodeConverter/UnicodeConverter.h"
@@ -78,21 +79,21 @@ namespace Strings
 
 		return 0;
 	}
-    static int ToColor(const CString& strValue)
+    static int ToColor(const std::wstring& strValue)
     {
         // variables
         int blue	= 0;
         int green	= 0;
         int red		= 0;
 
-        CString color = strValue; color = color.Trim();
+        std::wstring color = strValue; //color = color.Trim();
 				
-        if (color.Find (L"0x") != -1)
-            color.Delete (0,2);
-        if (color.Find (L"#") != -1)
-            color.Delete (0,1);
+        if (color.find (L"0x") != -1)
+            color.erase (0, 2);
+        if (color.find (L"#") != -1)
+            color.erase (0, 1);
 
-        while (color.GetLength() < 6)
+        while (color.length() < 6)
             color = L"0" + color;
 
         red		= 16 * ToDigit(color[0]) + ToDigit(color[1]);
@@ -101,16 +102,16 @@ namespace Strings
 
         return RGB(red, green, blue);
     }
-	static void ToColor(const CString& strValue, int& nR, int& nG, int& nB, int& nA)
+    static void ToColor(const std::wstring& strValue, int& nR, int& nG, int& nB, int& nA)
 	{
-		CString color = strValue; color = color.Trim();
+        std::wstring color = strValue;// color = color.Trim();
 				
-		if (color.Find (L"0x")!=-1)
-			color.Delete (0,2);
-		if (color.Find (L"#")!=-1)
-			color.Delete (0,1);
+        if (color.find (L"0x")!=-1)
+            color.erase (0, 2);
+        if (color.find (L"#")!=-1)
+            color.erase (0, 1);
 
-		while (color.GetLength() < 8)
+        while (color.length() < 8)
 			color = L"0" + color;
 
 		nA = 16 * ToDigit(color[0]) + ToDigit(color[1]);
@@ -118,40 +119,38 @@ namespace Strings
 		nG = 16 * ToDigit(color[4]) + ToDigit(color[5]);
 		nB = 16 * ToDigit(color[6]) + ToDigit(color[7]);
 	}
-	static bool ToBoolean(const CString& strValue)
+    static bool ToBoolean(const std::wstring& strValue)
 	{
-		CString s = strValue;
+        std::wstring s = boost::algorithm::to_lower_copy(strValue);
 		
-		s.MakeLower();
-
-		return (s == L"true");
+        return (s == L"true");
 	}
-	static int ToInteger(const CString& strValue)
+    static int ToInteger(const std::wstring& strValue)
 	{
-		return _ttoi(strValue);
+        return _ttoi(strValue.c_str());
 	}
-	static double ToDouble(const CString& strValue)
+    static double ToDouble(const std::wstring& strValue)
 	{
 		double d = 0;
 
-		_stscanf(strValue, L" %lf", &d);
+        _stscanf(strValue.c_str(), L" %lf", &d);
 
 		return d;
 	}
 	
-	static CString FromInteger(int Value, int Base = 10)
+    static std::wstring FromInteger(int Value, int Base = 10)
 	{
-        CString str = std::to_wstring(Value);
+        std::wstring str = std::to_wstring(Value);
 
 		return str;
 	}
-	static CString FromDouble(double Value)
+    static std::wstring FromDouble(double Value)
 	{
-        CString str = std::to_wstring(Value);
+        std::wstring str = std::to_wstring(Value);
 
 		return str;
 	}
-	static CString FromBoolean(bool Value)
+    static std::wstring FromBoolean(bool Value)
 	{
 		if (Value)
 			return L"true";
@@ -164,29 +163,28 @@ namespace Strings
 class Convert
 {
 public:	
-	static  CString ToString(int i)
+    static  std::wstring ToString(int i)
 	{
-        CString result = std::to_wstring( i);
+        std::wstring result = std::to_wstring( i);
 		return result;
 	}
-	static  CString ToStringHex( int i, int nLen )
+    static  std::wstring ToStringHex( int i, int nLen )
 	{
-		CString result;
-		result.Format( L"%x", i);
-		for( int i = result.GetLength(); i < nLen; i++ )
-			result.Insert( 0 , '0' );
-		result.MakeUpper();
+        std::wstring result = XmlUtils::IntToString(i, L"%X");
+
+        for( int i = result.length(); i < nLen; i++ )
+            result.insert( result.begin() , '0' );
 		return result;
 	}
-	 static  int ToInt32(CString str, int base = 10)
+     static  int ToInt32(std::wstring str, int base = 10)
 	 {
 		 int nResult;
 		 if(16 == base)
-			 _stscanf(str, L"%x", &nResult);
+             _stscanf(str.c_str(), L"%x", &nResult);
 		 else if(8 == base)
-			 _stscanf(str, L"%o", &nResult);
+             _stscanf(str.c_str(), L"%o", &nResult);
 		 else 
-			 _stscanf(str, L"%d", &nResult);
+             _stscanf(str.c_str(), L"%d", &nResult);
 		 return nResult;
 	 }
 };
@@ -432,16 +430,16 @@ public:
     class RtfInternalEncoder
     {
     public:
-        static CString Encode( CString sFilename )
+        static std::wstring Encode( std::wstring sFilename )
         {
             return L"{\\*filename " + sFilename + L"\\*end}";
         }
-        static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
+        static void Decode( std::wstring& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
         {
 #if defined(_WIN32) || defined(_WIN64)
-            CStringA sAnsiText; sAnsiText = sText;
-            int nLenth = sAnsiText.GetLength();
-            BYTE* BufferString = (BYTE*)sAnsiText.GetBuffer() ;
+            std::string sAnsiText(sText.begin(), sText.end());
+            int nLenth = sAnsiText.length();
+            BYTE* BufferString = (BYTE*)sAnsiText.c_str() ;
 #else
             std::string sAnsiText(sText.begin(),sText.end());
             int nLenth = sAnsiText.length();
@@ -449,29 +447,27 @@ public:
 #endif
             int nStart = 0;
             int nFindRes = -1;
-            CString sFindString = L"{\\*filename ";
-            int nFindStringLen = sFindString.GetLength();
-            CString sFindEnd = L"\\*end}";
-            int nFindEndLen = sFindEnd.GetLength();
-            while( -1 != (nFindRes = sText.Find( sFindString, nStart )) )
+            std::wstring sFindString = L"{\\*filename ";
+            int nFindStringLen = sFindString.length();
+            std::wstring sFindEnd = L"\\*end}";
+            int nFindEndLen = sFindEnd.length();
+            while( -1 != (nFindRes = sText.find( sFindString, nStart )) )
             {
                 oFileWriter.Write( BufferString + nStart, nFindRes - nStart );
-                sText.ReleaseBuffer();
 
                 int nRightBound = 0;
-                nRightBound = sText.Find( sFindEnd, nStart + nFindStringLen );
+                nRightBound = sText.find( sFindEnd, nStart + nFindStringLen );
 
-                CString sTargetFilename = sText.Mid( nFindRes + nFindStringLen, nRightBound - nFindRes - nFindStringLen );
+                std::wstring sTargetFilename = sText.substr( nFindRes + nFindStringLen, nRightBound - nFindRes - nFindStringLen );
 
                 DecodeFromFile( sTargetFilename, oFileWriter );
 
                 nStart = nRightBound + nFindEndLen;
             }
             oFileWriter.Write( BufferString + nStart, nLenth - nStart );
-            sText.ReleaseBuffer();
         }
     private:
-        static void DecodeFromFile( CString& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
+        static void DecodeFromFile( std::wstring& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
          {
             CFile file;
 
@@ -502,59 +498,59 @@ public:
             file.CloseFile();
          }
     };
-    static float String2Percent( CString sValue )
+    static float String2Percent( std::wstring sValue )
 	{
 		int nPosition;
-		if( (nPosition = sValue.Find( L"f" )) != -1 )
+        if( (nPosition = sValue.find( L"f" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0, nPosition );
 			int dResult = Strings::ToInteger( sValue );
 			return (float)(1.0 * dResult / 65536);
 		}
-		else if( (nPosition = sValue.Find( L"%" )) != -1 )
+        else if( (nPosition = sValue.find( L"%" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0, nPosition );
 			return (float)Strings::ToDouble( sValue ) / 100;
 		}
 		else
 			return 0;
 	}
-	static int String2Twips( CString sValue )
+    static int String2Twips( std::wstring sValue )
 	{
 		int nPosition;
-		if( (nPosition = sValue.Find( L"pt" )) != -1 )
+        if( (nPosition = sValue.find( L"pt" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pt2Twip( dResult );
 		}
-		else if( (nPosition = sValue.Find( L"in" )) != -1 )
+        else if( (nPosition = sValue.find( L"in" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return in2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( L"cm" )) != -1 )
+        else if( (nPosition = sValue.find( L"cm" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return cm2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( L"mm" )) != -1 )
+        else if( (nPosition = sValue.find( L"mm" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return mm2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( L"pc" )) != -1 )
+        else if( (nPosition = sValue.find( L"pc" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pc2Twip(dResult);
 		}
-		else if( (nPosition = sValue.Find( L"pi" )) != -1 )
+        else if( (nPosition = sValue.find( L"pi" )) != -1 )
 		{
-			sValue = sValue.Left( nPosition );
+            sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pc2Twip(dResult);
 		}
@@ -605,7 +601,7 @@ public:
 	{
 		return (float)(1.0 * emu / (635 * 20.0));
 	}
-    static void WriteDataToFileBinary(CString& sFilename, BYTE* pbData, int nLength)
+    static void WriteDataToFileBinary(std::wstring& sFilename, BYTE* pbData, int nLength)
 	{
 		if( NULL == pbData )
 			return;
@@ -616,14 +612,14 @@ public:
 		file.WriteFile(pbData ,nLength);	
 		file.CloseFile();
 	}
-	static void WriteDataToFile(CString& sFilename, CString& sData)
+    static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData)
 	{
 		CFile file;
 
         if (file.CreateFile(sFilename) != S_OK) return;
 
-		TCHAR * buf  = sData.GetBuffer();
-		int nLengthText = sData.GetLength();
+        TCHAR * buf  = (TCHAR *)sData.c_str();
+        int nLengthText = sData.length();
 		int nLengthData = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nLengthData];
 		BYTE nByte=0;
@@ -634,15 +630,14 @@ public:
 			buf2[i] = nByte;
 		}
 		file.WriteFile(buf2 ,nLengthData);	
-		sData.ReleaseBuffer();
 		delete[] buf2;
 		file.CloseFile();
 
 	}
-	static void WriteDataToBinary( CString sData, BYTE** ppData, long& nSize)
+    static void WriteDataToBinary( std::wstring sData, BYTE** ppData, long& nSize)
 	{
-		TCHAR * buf  = sData.GetBuffer();
-		int nLengthText = sData.GetLength();
+        TCHAR * buf  = (TCHAR *)sData.c_str();
+        int nLengthText = sData.length();
 		nSize = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nSize];
 		(*ppData) = buf2;
@@ -653,27 +648,27 @@ public:
 			nByte |= ToByte(buf[ 2*i+1]);
 			buf2[i] = nByte;
 		}
-		sData.ReleaseBuffer();
 	}
-	static CString DecodeHex( CString sText )
+    static std::wstring DecodeHex( std::wstring sText )
 	{
-		CString sHexText;
-		for( int i = 0; i < sText.GetLength(); i++ )
+        std::wstring sHexText;
+        for( int i = 0; i < sText.length(); i++ )
 		{
             BYTE byteChar = sText[i];
-			sHexText.AppendFormat( L"%x", byteChar );
+            sHexText += XmlUtils::IntToString(byteChar, L"%x");
 		}
 		return sHexText;
 	}
-	static CString EncodeHex( CString sHexText )
+    static std::wstring EncodeHex( std::wstring sHexText )
 	{
-		CString sText;
-		for( int i = 0; i < sHexText.GetLength() -1 ; i+=2 )
+        std::wstring sText;
+        for( int i = 0; i < sHexText.length() -1 ; i+=2 )
 		{
 			int byte1 = ToByte( sHexText[i] );
 			int byte2 = ToByte(sHexText[i + 1] );
 			int cChar = (byte1 << 4) + byte2;
-			sText.AppendFormat( L"%c", cChar );
+
+            sText += XmlUtils::IntToString(cChar, L"%c" );
 		}
 		return sText;
 	}
@@ -689,15 +684,16 @@ public:
 	{
 		return nChar >= '0' && nChar <= '9';
 	}
-	static CString Preserve( CString sText )
+    static std::wstring Preserve( std::wstring sText )
 	{
-		CString sResult = sText;
+        std::wstring sResult = sText;
 		//обрезавем лишние пробелы
 		//sResult.Trim();
 
 		//удаляем дублирующие пробелы
-		while( sResult.Replace( L"  ", L" " ) > 0 )
-			;
+        boost::algorithm::replace_all(sResult, L"  ", L" ");
+//		while( sResult.Replace( L"  ", L" " ) > 0 )
+//			;
 		return sResult;
 	}
 
@@ -720,7 +716,7 @@ public:
         return 1252;//ANSI
     }
 #ifdef _ASC_USE_UNICODE_CONVERTER_
-    static CString convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
+    static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
         for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
@@ -762,27 +758,27 @@ public:
     }
 
 #else
-    static CString convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
+    static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
-        bool ansi = true;
+		std::wstring w_out;
 
-        size_t insize = end- start;
-        CString w_out;
-
-        w_out.GetBuffer(insize);
+		bool ansi = true;
+        size_t insize = end - start;
 
 		char *inptr = (char*)start.operator ->();
-        char* outptr = (char*)w_out.GetBuffer();
 		
 		if (nCodepage > 0)
         {
 #if defined (_WIN32) || defined (_WIN64)
 			int insize = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
-			if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)outptr, insize) > 0)
+
+			wchar_t *out = new wchar_t[insize];
+			if (out  && MultiByteToWideChar(nCodepage, 0, inptr, -1, out, insize) > 0)
             {
-                w_out.ReleaseBuffer();
+				w_out = std::wstring(out);
                 ansi = false;
             }
+			if (out) delete []out;
 #else
             std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
@@ -790,19 +786,21 @@ public:
             if (ic != (iconv_t) -1)
             {
                 size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+				wchar_t *out = new wchar_t[insize];
 
-                nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+                nconv = iconv (ic, &inptr, &insize, &out, &avail);
                 if (nconv == 0)
                 {
-                    w_out.ReleaseBuffer();
-                    ansi = false;
+					w_out = std::wstring(out);
+					ansi = false;
                 }
+				if (out) delete []out;
                 iconv_close(ic);
             }
 #endif
         }
         if (ansi)
-            w_out = std::wstring(start, end).c_str();
+            w_out = std::wstring(start, end);
 
         return w_out;
     }
@@ -812,7 +810,6 @@ public:
         bool ansi = true;
 
         size_t insize = end - start;
-        out.reserve(insize);
 
         char *inptr = (char*)start.operator ->();
         char* outptr = (char*)out.c_str();
@@ -822,12 +819,15 @@ public:
 #if defined (_WIN32) || defined (_WIN64)
             insize = WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, NULL, 0, NULL, NULL);
 
+			out.reserve(insize);
 			if (WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, outptr, insize, NULL, NULL) > 0)
 			{
+				out.resize(insize);
 				ansi = false;
 			}
 #else
-            std::string sCodepage =  "CP" + std::to_string(nCodepage);
+			out.reserve(insize);
+			std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
             iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
             if (ic != (iconv_t) -1)
@@ -835,7 +835,11 @@ public:
                 size_t nconv = 0, avail = insize * sizeof(wchar_t);
 
 				nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-                if (nconv == 0) ansi = false;
+                if (nconv == 0)
+				{
+					out.resize(insize);
+					ansi = false;
+				}
                 iconv_close(ic);
             }
 #endif

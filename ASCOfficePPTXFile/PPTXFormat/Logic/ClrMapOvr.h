@@ -54,7 +54,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (overrideClrMapping.IsInit())
 					return _T("<p:clrMapOvr>") + overrideClrMapping->toXML() + _T("</p:clrMapOvr>");

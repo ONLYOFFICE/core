@@ -92,7 +92,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
                     std::wstring sName1 = xmlReader.GetName();
 					if (sName1 == _T("Encoding"))
 					{
-						CString strValue = xmlReader.GetText2();
+                        std::wstring strValue = xmlReader.GetText2();
 						encoding = StlUtils::ToInteger(strValue);
 					}
 				}
@@ -183,29 +183,29 @@ HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 
 void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::FileWriter * pDocxWriter)
 {
-    CString strDirectory = _strDirectory;
+    std::wstring strDirectory = _strDirectory;
 	// rels
     OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR +L"_rels";
-    FileSystem::Directory::CreateDirectory(pathRels.GetPath());
+    NSDirectory::CreateDirectory(pathRels.GetPath());
 
 	// word
     OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
-    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+    NSDirectory::CreateDirectory(pathWord.GetPath());
 
 	// documentRels
     OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathWordRels.GetPath());
+    NSDirectory::CreateDirectory(pathWordRels.GetPath());
 
 	//media
     OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
-	CString sMediaPath = pathMedia.GetPath();
+    std::wstring sMediaPath = pathMedia.GetPath();
 
 	// theme
     OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath());
+    NSDirectory::CreateDirectory(pathTheme.GetPath());
 
     OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathThemeRels.GetPath());
+    NSDirectory::CreateDirectory(pathThemeRels.GetPath());
 	
     pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 
@@ -216,9 +216,9 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	OOX::CContentTypes oContentTypes;
 	//docProps
     OOX::CPath pathDocProps = strDirectory + FILE_SEPARATOR_STR + _T("docProps");
-    FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+    NSDirectory::CreateDirectory(pathDocProps.GetPath());
 	
-    OOX::CPath DocProps = CString(_T("docProps"));
+    OOX::CPath DocProps = std::wstring(_T("docProps"));
 
 	OOX::CApp* pApp = new OOX::CApp();
 	if (pApp)

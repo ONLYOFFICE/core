@@ -76,7 +76,7 @@ namespace OOX
 		void fromXML(XmlUtils::CXmlNode &)
 		{
 		}
-		CString toXML() const
+                std::wstring toXML() const
 		{
 			return _T("");
 		}
@@ -259,20 +259,23 @@ namespace OOX
 
 			//так как это не совсем xml - поправим
 
-			CFile file;
-			if (file.OpenFile(oPath.GetPath()) != S_OK) return;
-			int   DataSize = file.GetFileSize();
-			BYTE* Data = new BYTE[DataSize];
-
 			std::wstring fileContent;
-			if (Data)
+			NSFile::CFileBinary file;
+			if (file.OpenFile(oPath.GetPath()))
 			{
-				file.ReadFile(Data,DataSize); 
-				fileContent = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(Data,DataSize);
+				DWORD   DataSize = file.GetFileSize();
+				BYTE* Data = new BYTE[DataSize];
 
-				delete []Data;
+				if (Data)
+				{
+					file.ReadFile(Data, DataSize, DataSize); 
+					fileContent = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(Data,DataSize);
+
+					delete []Data;
+				}
+				file.CloseFile();
 			}
-			file.CloseFile();
+
 
 			if (fileContent.length() > 0)
 			{
@@ -385,9 +388,9 @@ namespace OOX
 						sXml.WriteString(sShape);
 					}
 				}
-                                sXml.WriteString(L"</xml>");
+				sXml.WriteString(L"</xml>");
 
-				CDirectory::SaveToFile( oPath.GetPath(), sXml.GetData() );
+				NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.AddDefault( oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -395,7 +398,7 @@ namespace OOX
 		virtual const OOX::FileType type() const
 		{
 			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::VmlDrawing;
-                        else			return OOX::FileTypes::VmlDrawing;
+			else				return OOX::FileTypes::VmlDrawing;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
@@ -420,11 +423,11 @@ namespace OOX
 	public:
 		CPath m_oReadPath;
 
-                std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
-                std::map<std::wstring, int>                                 m_mapShapes;    //связь id (_x0000_s1025) с номером объекта  для комментов
-                std::map<std::wstring,std::wstring>                         m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
-                std::vector<std::wstring>                                   m_aXml;
-                long                                                        m_lObjectIdVML;
+        std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
+        std::map<std::wstring, int>                                 m_mapShapes;    //связь id (_x0000_s1025) с номером объекта  для комментов
+        std::map<std::wstring, std::wstring>                        m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
+        std::vector<std::wstring>                                   m_aXml;
+        long                                                        m_lObjectIdVML;
 	};
 } // namespace OOX
 

@@ -60,7 +60,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"rad", rad);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rad"), rad);

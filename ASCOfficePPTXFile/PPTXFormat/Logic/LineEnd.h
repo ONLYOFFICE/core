@@ -55,7 +55,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"w", w);
 				node.ReadAttributeBase(L"len", len);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("type"), type);
@@ -144,7 +144,7 @@ namespace PPTX
 			nullable_limit<Limit::LineEndSize> len;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

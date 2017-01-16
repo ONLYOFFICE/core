@@ -236,9 +236,9 @@ namespace OOX
 		}
 
 
-		CString CBdo::toXML() const
+		std::wstring CBdo::toXML() const
 		{
-				CString sResult = _T("<w:bdo ");
+				std::wstring sResult = _T("<w:bdo ");
 
 				sResult += _T("w:val=\"");
 				sResult += m_oVal.ToString();

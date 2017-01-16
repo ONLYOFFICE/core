@@ -54,11 +54,11 @@ namespace PPTX
 				dir = node.GetAttribute(_T("dir"));
 				rig = node.GetAttribute(_T("rig"));
 
-                CString sRotNodeName = _T("a:rot");
+                std::wstring sRotNodeName = _T("a:rot");
                 rot = node.ReadNode(sRotNodeName);
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("dir"), dir.get());

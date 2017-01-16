@@ -128,6 +128,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetText2A();
 	}
+    std::wstring CXmlLiteReader::GetText3()
+	{
+		return m_pInternal->GetText3();
+	}
 
 	std::wstring CXmlLiteReader::GetOuterXml()
 	{

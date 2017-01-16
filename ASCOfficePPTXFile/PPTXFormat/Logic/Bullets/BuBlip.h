@@ -59,7 +59,7 @@ namespace PPTX
 			{
 				blip = node.ReadNodeNoNS(_T("blip"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return XmlUtils::CreateNode(_T("a:buBlip"), blip.toXML());
 			}

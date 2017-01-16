@@ -68,7 +68,7 @@ namespace OOX
 			m_arrFonts.clear();
 		}
 
-		bool Find(CString &sFontName, CFont *oFont)
+		bool Find(std::wstring &sFontName, CFont *oFont)
 		{
 			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
 			{
@@ -112,7 +112,7 @@ namespace OOX
 		}
 		virtual void write(const CPath &oFilePath, const CPath &oDirectoryPath, CContentTypes& content) const
 		{
-			CString sXml;
+			std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
 			for (unsigned int nIndex = 0; nIndex < m_arrFonts.size(); nIndex++ )
 			{

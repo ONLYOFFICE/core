@@ -35,8 +35,10 @@
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
+
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/common/Path.h"
@@ -222,10 +224,11 @@ namespace NExtractTools
                         XmlUtils::CXmlNode oXmlNode;
                         if(oXmlNodes.GetAt(i, oXmlNode))
                         {
-                            CString sValue;
+                            std::wstring sValue;
                             if(oXmlNode.GetTextIfExist(sValue))
                             {
                                 std::wstring sName = oXmlNode.GetName();
+
                                 if(_T("fileName") == sName)
                                     fileName = new std::wstring(sValue);
                                 else if(_T("from") == sName)
@@ -293,7 +296,7 @@ namespace NExtractTools
 					XmlUtils::CXmlNode oXmlNode;
 					if(oXmlNodes.GetAt(i, oXmlNode))
 					{
-						CString sValue;
+                        std::wstring sValue;
 						if(oXmlNode.GetTextIfExist(sValue))
 						{
 							std::wstring sName = oXmlNode.GetName();
@@ -387,7 +390,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlFile2(sFilename))
+            if(TRUE == oRoot.FromXmlFile(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -431,7 +434,7 @@ namespace NExtractTools
 						}
 						else
 						{
-							CString sValue;
+                            std::wstring sValue;
 							if(oXmlNode.GetTextIfExist(sValue))
 							{
 								if(_T("m_sKey") == sName)

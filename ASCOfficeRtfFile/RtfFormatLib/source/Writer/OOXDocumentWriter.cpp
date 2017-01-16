@@ -43,7 +43,7 @@
 
 //#include "../../../../ASCOfficeDocxFile2/BinReader/ContentTypesWriter.h"
 
-CString OOXDocumentWriter::CreateXmlStart()
+std::wstring OOXDocumentWriter::CreateXmlStart()
 {
 	//пишем Footnotes
 	RenderParameter oNewParam;
@@ -55,7 +55,7 @@ CString OOXDocumentWriter::CreateXmlStart()
 
 
 	//пишем document.xml
-	CString sResult = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
+	std::wstring sResult = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
 	sResult += _T("<w:document");
 	sResult += _T(" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"");
 	sResult += _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
@@ -70,9 +70,9 @@ CString OOXDocumentWriter::CreateXmlStart()
 	sResult += _T("<w:body>");
 	return sResult;
 }
-CString OOXDocumentWriter::CreateXmlEnd( )
+std::wstring OOXDocumentWriter::CreateXmlEnd( )
 {
-	CString sResult ;
+	std::wstring sResult ;
 
 	//пишем все кроме document.xml
 	RenderParameter oNewParam;
@@ -136,20 +136,20 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.poRels	= poNumberingWriter->m_oRelsWriter.get();
 	oNewParam.nType		= RENDER_TO_OOX_PARAM_STYLES;
 
-	CString sStyles;
-	CString sTempParaDef = m_oDocument.m_oDefaultParagraphProp.RenderToOOX(oNewParam);
-	CString sTempCharDef = m_oDocument.m_oDefaultCharProp.RenderToOOX(oNewParam);
+	std::wstring sStyles;
+	std::wstring sTempParaDef = m_oDocument.m_oDefaultParagraphProp.RenderToOOX(oNewParam);
+	std::wstring sTempCharDef = m_oDocument.m_oDefaultCharProp.RenderToOOX(oNewParam);
 	
-	if( false == sTempParaDef.IsEmpty() || false == sTempCharDef.IsEmpty() )
+	if( false == sTempParaDef.empty() || false == sTempCharDef.empty() )
 	{
 		sStyles += _T("<w:docDefaults>");
-		if( false == sTempCharDef.IsEmpty() )
+		if( false == sTempCharDef.empty() )
 		{
 			sStyles += _T("<w:rPrDefault><w:rPr>");
 			sStyles += sTempCharDef ;
 			sStyles += _T("</w:rPr></w:rPrDefault>");
 		}	
-		if( false == sTempParaDef.IsEmpty() )
+		if( false == sTempParaDef.empty() )
 		{
 			sStyles += _T("<w:pPrDefault><w:pPr>");
 			sStyles +=  sTempParaDef;
@@ -188,14 +188,14 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	return sResult;
 }
 
-bool OOXDocumentWriter::SaveByItemStart( CString sFolder )
+bool OOXDocumentWriter::SaveByItemStart( std::wstring sFolder )
 {
-	CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
-    FileSystem::Directory::CreateDirectory(pathWord) ;
+	std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+    NSDirectory::CreateDirectory(pathWord) ;
 
 	try
 	{
-		CString sFilename = pathWord + FILE_SEPARATOR_STR + _T("document.xml");
+		std::wstring sFilename = pathWord + FILE_SEPARATOR_STR + _T("document.xml");
 		m_oFileWriter = new NFileWriter::CBufferedFileWriter( sFilename );
 	}
 	catch(...)
@@ -205,8 +205,8 @@ bool OOXDocumentWriter::SaveByItemStart( CString sFolder )
 	m_oWriter.m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"), _T("word/document.xml") );
 	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"), _T("/word/document.xml") );
 
-	CString sXml = CreateXmlStart( );
-    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+	std::wstring sXml = CreateXmlStart( );
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
     m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
     return true;
@@ -230,12 +230,12 @@ bool OOXDocumentWriter::SaveByItem()
 			_section section;
 			if (m_oDocument.GetItem(section, 0))
 			{
-				sectPr = section.props->RenderToOOX(oNewParam).GetBuffer();
+                sectPr = section.props->RenderToOOX(oNewParam);
 			}
 
 			if( m_oDocument[0].props->GetCount() > 0 )
 			{
-				sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam).GetBuffer();
+                sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
 				
 				int nFind = -1, nFindPict = -1, pos = sXml.size();
 
@@ -271,8 +271,8 @@ bool OOXDocumentWriter::SaveByItem()
 		}
 		else if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 1 )//пишем параграф - один всегда  "прозапас для секций"
 		{
-			CString sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
-            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+			std::wstring sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
+            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
 			if (m_oFileWriter)
 			{
@@ -299,15 +299,15 @@ bool OOXDocumentWriter::SaveByItemEnd()
 
 	if( m_oDocument.GetCount() > 0 && m_oDocument[0].props->GetCount() > 0 )//дописываем последний параграф
 	{
-		CString sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
+		std::wstring sXml = m_oDocument[0].props->operator[](0)->RenderToOOX(oNewParam);
 		//удаляем первый параграф
 		m_oDocument[0].props->RemoveItem( 0 );
-        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
         m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
     }
-	CString sXml = CreateXmlEnd( );
-    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+	std::wstring sXml = CreateXmlEnd( );
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
 	if (m_oFileWriter)
 	{

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../DesktopEditor/common/Directory.h"
 #include "../Records/Drawing/ArtBlip.h"
 
 #include "PPTDocumentInfo.h"
@@ -48,7 +48,7 @@
 class CPPTFileReader
 {
 public: 
-	CPPTFileReader(POLE::Storage *pStg, CStringW strTemp): 
+    CPPTFileReader(POLE::Storage *pStg, std::wstring strTemp):
 		   m_pPowerPointStg(pStg),  
            m_bIsPPTFile(false),
 		   m_pDocStream(NULL), 
@@ -84,12 +84,12 @@ public:
 		
 		RELEASEOBJECT(pStm);
 
-		if (0 == m_strMemoryForder.GetLength())
+        if (0 == m_strMemoryForder.length())
 		{
-			m_strMemoryForder = FileSystem::Directory::GetTempPath();
+            m_strMemoryForder = NSDirectory::GetTempPath();
 		}
 
-		m_strMemoryForder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_strMemoryForder);
+        m_strMemoryForder = NSDirectory::CreateDirectoryWithUniqueName(m_strMemoryForder);
 
 	}
 	~CPPTFileReader()
@@ -99,7 +99,7 @@ public:
 	
 		RELEASEOBJECT(m_pPowerPointStg);
 		
-		FileSystem::Directory::DeleteDirectory(m_strMemoryForder);
+        NSDirectory::DeleteDirectory(m_strMemoryForder);
 	}
 
     bool IsPowerPoint()
@@ -222,7 +222,7 @@ private:
 
 public:	
 	// для картинок
-	CStringW					m_strMemoryForder;
+    std::wstring				m_strMemoryForder;
 
     std::vector<bool>			m_arLoadImageFlags;
 	DWORD						m_lImagesCount;

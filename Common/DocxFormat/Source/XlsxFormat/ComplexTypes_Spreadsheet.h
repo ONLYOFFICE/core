@@ -42,7 +42,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexType(){};
-			virtual ~ComplexType() {};
+            virtual ~ComplexType() {}
 
 			virtual void			FromXML(XmlUtils::CXmlNode& oNode) = 0;
 			virtual std::wstring	ToString() const = 0;
@@ -140,14 +140,14 @@ namespace ComplexTypes
 
 				nullable<SimpleTypes::CDecimalNumber<> > m_oVal;
 			};
-			class CString_ : public ComplexType
+            class String : public ComplexType
 			{
 			public:
-				ComplexTypes_AdditionConstructors(CString_)
-					CString_()
+                ComplexTypes_AdditionConstructors(String)
+                    String()
 				{
 				}
-				virtual ~CString_()
+                virtual ~String()
 				{
 				}
 

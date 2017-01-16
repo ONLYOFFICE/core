@@ -37,7 +37,7 @@ class RtfBookmarkStart : public IDocumentElement
 public: 
 	int nFirstColumn;
 	int nLastColumn;
-	CString m_sName;
+    std::wstring m_sName;
 	RtfBookmarkStart()
 	{
 		nFirstColumn = PROP_DEF;
@@ -47,13 +47,13 @@ public:
 	{
 		return TYPE_RTF_BOOKMARKSTART;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfBookmarkEnd : public IDocumentElement
 {
 public: 
-	CString m_sName;
+    std::wstring m_sName;
 	RtfBookmarkEnd()
 	{
 	}
@@ -61,8 +61,8 @@ public:
 	{
 		return TYPE_RTF_BOOKMARKEND;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfFootnote : public IDocumentElement
 {
@@ -79,8 +79,8 @@ public:
 	{
 		return TYPE_RTF_FOOTNOTE;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 typedef boost::shared_ptr<RtfFootnote>		RtfFootnotePtr;

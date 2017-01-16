@@ -59,7 +59,7 @@ namespace PPTX
 				Char = node.GetAttribute(_T("char"));
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("char"), Char);
@@ -91,7 +91,7 @@ namespace PPTX
 			}
 
 		public:
-			CString Char;
+			std::wstring Char;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

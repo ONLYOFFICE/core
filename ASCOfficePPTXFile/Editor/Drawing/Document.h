@@ -114,9 +114,9 @@ namespace NSPresentationEditor
 	public:
 
 		// функция производит расчет по теме и слайдам
-		CString GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
+                std::wstring GetXmlSlideTransition ( CSlide& oSlide/*, CAudioOverlay& oAudioOverlay*/ )
 		{
-			CString Source	=	CString ( _T("") );
+                        std::wstring Source	=	std::wstring ( _T("") );
 
 			int EffectID	=	1;
 			int lEffectDirection = oSlide.m_oSlideShow.m_oTransition.m_nEffectDirection;
@@ -314,7 +314,7 @@ namespace NSPresentationEditor
 				break;
 			}
 
-			Source.Format (	_T("<VideoCompose Time = \"%lf\" effectid=\"%d\" />"), oSlide.m_oSlideShow.m_oTransition.m_dSpeed, EffectID );	 
+                        Source = L"<VideoCompose Time=\"" + std::to_wstring(oSlide.m_oSlideShow.m_oTransition.m_dSpeed) + L"\" effectid=\"" + std::to_wstring(EffectID) + L"\"/>";
 
 			/*
 

@@ -42,12 +42,12 @@ SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
 	*this = oSrc;
 }
 
-CString SSlidePersist::ToString()
-{
-	CString str = _T("");
-	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
-	return str;
-}
+//std::wstring SSlidePersist::ToString()
+//{
+//    std::wstring str = _T("");
+//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
+//	return str;
+//}
 
 SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
 {

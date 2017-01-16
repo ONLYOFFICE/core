@@ -103,7 +103,7 @@ namespace PPTX
 		virtual WrapperWritingElement const* const	GetParentPointer()const		{return parentElement;}
 		virtual WrapperFile const* const			GetParentFilePointer()const {return parentFile;}
 
-		virtual void fromXMLString(CString strXml)
+		virtual void fromXMLString(std::wstring strXml)
 		{
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlString(strXml);

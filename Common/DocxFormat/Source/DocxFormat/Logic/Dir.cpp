@@ -147,9 +147,9 @@ namespace OOX
 		}
 
 
-		CString CDir::toXML() const
+		std::wstring CDir::toXML() const
 		{
-				CString sResult = _T("<w:dir");
+				std::wstring sResult = _T("<w:dir");
 				if(m_oVal.IsInit())
                 {
                     sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");

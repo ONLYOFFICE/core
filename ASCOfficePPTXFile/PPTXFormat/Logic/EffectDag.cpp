@@ -47,7 +47,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString EffectDag::toXML() const
+		std::wstring EffectDag::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("name"), name);

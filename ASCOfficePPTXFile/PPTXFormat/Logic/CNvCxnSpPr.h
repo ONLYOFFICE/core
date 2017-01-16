@@ -102,7 +102,7 @@ namespace PPTX
 			}
 
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("noAdjustHandles"), noAdjustHandles);

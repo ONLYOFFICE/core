@@ -51,7 +51,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"id", id);
 				node.ReadAttributeBase(L"collapse", collapse);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("id"), id);

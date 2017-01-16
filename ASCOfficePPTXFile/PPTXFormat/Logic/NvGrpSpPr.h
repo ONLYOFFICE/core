@@ -71,8 +71,8 @@ namespace PPTX
 			//			XmlUtils::CXmlNode oNode;
 			//			oNodes.GetAt(i, oNode);
 			//virtual void fromXML(XmlUtils::CXmlNode& node);
-            virtual CString toXML() const;
-			//			CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+            virtual std::wstring toXML() const;
+			//			std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 			//			if (_T("cNvPr") == strName)
 			//				cNvPr = oNode;
@@ -86,7 +86,7 @@ namespace PPTX
 			//	FillParentPointersForChilds();
 			//}
 
-			//virtual CString toXML() const;
+			//virtual std::wstring toXML() const;
 			//{
 			//	XmlUtils::CNodeValue oValue;
 			//	oValue.Write(cNvPr);

@@ -82,11 +82,11 @@ namespace OOX
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				if (sNodeName.IsEmpty()) return L"";
+				if (sNodeName.empty()) return L"";
 
-				CString sResult = _T("<") + sNodeName + _T(">");
+				std::wstring sResult = _T("<") + sNodeName + _T(">");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -108,9 +108,9 @@ namespace OOX
 		private:
 			EElementType	eType;
 		public:
-			CString			sNodeName;
+			std::wstring			sNodeName;
 
-			CString GetMathNodeName(const EElementType & enumType)  const
+			std::wstring GetMathNodeName(const EElementType & enumType)  const
 			{//todooo вытащить в одно место - пересекается с MathBottomNodes
 				switch(enumType)
 				{

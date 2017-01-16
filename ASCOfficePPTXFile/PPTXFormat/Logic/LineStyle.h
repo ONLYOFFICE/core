@@ -56,7 +56,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				if (ln.IsInit())
@@ -120,7 +120,7 @@ namespace PPTX
 			nullable<Ln>		ln;
 			nullable<StyleRef>	lnRef;
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -34,7 +34,8 @@
 #define PPTXOOX_RID_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace PPTX
 {
@@ -48,7 +49,7 @@ namespace PPTX
 		{
 			m_id = _T("rId") + XmlUtils::UIntToString(id);
 		}
-		RId(const CString& rid)
+		RId(const std::wstring& rid)
 		{
 			m_id = rid;
 		}
@@ -63,7 +64,7 @@ namespace PPTX
 			m_id = _T("rId") + XmlUtils::UIntToString(id);
 			return *this;
 		}		
-		const RId& operator= (const CString& rid)
+		const RId& operator= (const std::wstring& rid)
 		{
 			m_id = rid;			
 			return *this;
@@ -71,7 +72,7 @@ namespace PPTX
 #if defined(_WIN32) || defined (_WIN64)
 		const RId& operator= (const BSTR& rid)
 		{
-			m_id = (CString)rid;	
+			m_id = (std::wstring)rid;	
 			return *this;
 		}
 #endif
@@ -107,7 +108,7 @@ namespace PPTX
 			return m_id >= lhs.m_id;
 		}
 
-		AVSINLINE CString get() const { return m_id; }
+		AVSINLINE std::wstring get() const { return m_id; }
 
 	public:
 		const RId	next() const
@@ -116,7 +117,7 @@ namespace PPTX
 		}
 		
 	public:
-		const CString ToString() const
+		const std::wstring ToString() const
 		{
 			return m_id;
 		}
@@ -125,11 +126,11 @@ namespace PPTX
 		void toPPTY(BYTE type, T pWriter) const
 		{
 			pWriter->WriteBYTE(type);
-			pWriter->WriteStringW(m_id);
+            pWriter->WriteStringW(m_id.c_str());
 		}
 
 	private:
-		CString m_id;
+		std::wstring m_id;
 	};
 } // namespace PPTX
 

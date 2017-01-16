@@ -50,7 +50,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 				
 				if (strName == _T("prstGeom"))
 					m_geometry.reset(new Logic::PrstGeom(node));
@@ -68,7 +68,7 @@ namespace PPTX
 					m_geometry.reset(new Logic::CustGeom(oNode));
 				else m_geometry.reset();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (m_geometry.IsInit())
 					return m_geometry->toXML();
@@ -371,7 +371,7 @@ namespace PPTX
 					m_geometry->SetParentPointer(pParent);
 			};
 
-			void ConvertToCustomVML(IRenderer* punkRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight);
+			void ConvertToCustomVML(IRenderer* punkRenderer, std::wstring& strPath, std::wstring& strRect, LONG& lWidth, LONG& lHeight);
 		};
 	} // namespace Logic
 } // namespace PPTX

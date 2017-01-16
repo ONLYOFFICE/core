@@ -46,7 +46,7 @@ namespace PPTX
 		}
 
 
-		CString EffectStyle::toXML() const
+		std::wstring EffectStyle::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(EffectList);

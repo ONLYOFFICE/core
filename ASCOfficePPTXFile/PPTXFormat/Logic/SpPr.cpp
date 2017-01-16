@@ -83,7 +83,7 @@ namespace PPTX
 					XmlUtils::CXmlNode oNode;
 					oNodes.GetAt(i, oNode);
 
-					CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("xfrm") == strName)
 						xfrm = oNode;
@@ -100,7 +100,7 @@ namespace PPTX
 		}
 
 
-		CString SpPr::toXML() const
+		std::wstring SpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.WriteLimitNullable(_T("bwMode"), bwMode);

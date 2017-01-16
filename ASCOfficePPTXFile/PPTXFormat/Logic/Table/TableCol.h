@@ -59,11 +59,9 @@ namespace PPTX
 				Width = node.ReadAttributeInt(L"w");
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str = _T("");
-				str.Format(_T("<a:gridCol w=\"%d\" />"), Width);
-				return str;
+				return L"<a:gridCol w=\"" + std::to_wstring(Width) + L"\"/>";
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

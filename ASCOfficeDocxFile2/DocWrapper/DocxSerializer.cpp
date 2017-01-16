@@ -48,7 +48,7 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 	m_bIsNoBase64Save = false;
 	m_bSaveChartAsImg = false;
 }
-bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions)
 {
     std::wstring strDirSrc      = NSSystemPath::Combine(sTmpDir,	L"from");
     std::wstring strDirDst      = NSSystemPath::Combine(sTmpDir,	L"to");
@@ -65,7 +65,7 @@ bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, 
 				return true;
 	return false;
 }
-bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions)
 {
 	std::wstring strDirSrc		= NSSystemPath::Combine(sTmpDir,	L"from");
 	std::wstring strEditorBin	= NSSystemPath::Combine(strDirSrc,	L"Editor.bin");
@@ -74,15 +74,15 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
 	NSDirectory::CreateDirectory(strDirSrc);
 	NSDirectory::CreateDirectory(strDirDst);
 	
-	CString sEditorBin = strEditorBin;
+    std::wstring sEditorBin = strEditorBin;
 
     COfficeUtils oCOfficeUtils(NULL);
 
     if(S_OK == oCOfficeUtils.ExtractToDirectory(sSrcFileName, strDirSrc, NULL, 0))
     {
-        CString sMediaPath;
-        CString sThemePath;
-		CString sEmbedPath;
+        std::wstring sMediaPath;
+        std::wstring sThemePath;
+        std::wstring sEmbedPath;
 
         CreateDocxFolders(strDirDst, sThemePath, sMediaPath, sEmbedPath);
 
@@ -94,7 +94,7 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
     }
     return false;
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions)
 {
 	OOX::CPath pathMain(sSrcFileName);
     
@@ -111,7 +111,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
 
 	NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-	if(false == m_sEmbeddedFontsDir.IsEmpty())
+    if(false == m_sEmbeddedFontsDir.empty())
 	{
 		NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 
@@ -120,7 +120,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 		pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
 
 		//добавляем весь латинский алфавит для списков.
-		pEmbeddedFontsManager->CheckString(CString(_T("abcdefghijklmnopqrstuvwxyz")));
+        pEmbeddedFontsManager->CheckString(std::wstring(_T("abcdefghijklmnopqrstuvwxyz")));
 
 		//добавим мега шрифт
 		pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), fp.getFontManager());
@@ -167,7 +167,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	return true;
 }
 
-bool BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath)
+bool BinDocxRW::CDocxSerializer::CreateDocxFolders(std::wstring strDirectory, std::wstring& sThemePath, std::wstring& sMediaPath, std::wstring& sEmbedPath)
 {
 	bool res = true;
 	// rels
@@ -204,7 +204,7 @@ bool BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString
 
 	return res;
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath, const CString& sEmbedPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath)
 {
 	bool bResultOk = false;
 	
@@ -218,12 +218,12 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 
 		//проверяем формат
 		bool bValidFormat = false;
-		CString sSignature(g_sFormatSignature);
-		int nSigLength = sSignature.GetLength();
+        std::wstring sSignature(g_sFormatSignature);
+        int nSigLength = sSignature.length();
 		if(nBase64DataSize > nSigLength)
 		{
-			CStringA sCurSig((char*)pBase64Data, nSigLength);
-			if((CStringA)sSignature == sCurSig)
+            std::string sCurSig((char*)pBase64Data, nSigLength);
+            if(sSignature == std::wstring(sCurSig.begin(), sCurSig.end()))
 			{
                 bValidFormat = true;
             }
@@ -233,8 +233,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 			//Читаем из файла версию и длину base64
 			int nIndex = nSigLength;
 			int nType = 0;
-			CStringA version = "";
-			CStringA dst_len = "";
+            std::string version = "";
+            std::string dst_len = "";
 			while (true)
 			{
 				nIndex++;
@@ -253,12 +253,12 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 					}
 				}
 				if(0 == nType)
-					version.AppendChar(_c);
+                    version += _c;
 				else
-					dst_len.AppendChar(_c);
+                    dst_len += _c;
 			}
 			
-			int nDataSize = atoi(dst_len);
+            int nDataSize = atoi(dst_len.c_str());
 			BYTE* pData = new BYTE[nDataSize];
 			
             if(false != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
@@ -268,10 +268,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				oBufferedStream.Init(pData, 0, nDataSize);
 
 				int nVersion = g_nFormatVersion;
-				if(version.GetLength() > 0)
+                if(!version.empty())
 				{
-					version = version.Right(version.GetLength() - 1);
-					int nTempVersion = atoi(version);
+                    version = version.substr(1);
+                    int nTempVersion = atoi(version.c_str());
 					if(0 != nTempVersion)
 					{
 						g_nCurFormatVersion = nVersion = nTempVersion;
@@ -284,7 +284,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 
 				//папка с картинками
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
-				CString sFileInDir = strFileInDir.c_str();
+                std::wstring sFileInDir = strFileInDir.c_str();
 
                 oDrawingConverter.SetSourceFileDir(sFileInDir);
 	//default theme
@@ -296,9 +296,9 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				OOX::CContentTypes oContentTypes;
 	//docProps
                 OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
-                FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+                NSDirectory::CreateDirectory(pathDocProps.GetPath());
 				
-                OOX::CPath DocProps = CString(_T("docProps"));
+                OOX::CPath DocProps = std::wstring(_T("docProps"));
 
 				OOX::CApp* pApp = new OOX::CApp();
 				if (pApp)
@@ -353,17 +353,17 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 	}
 	return bResultOk;
 }
-bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml)
+bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, std::wstring& sOutputXml)
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
 	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
 	int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
 
-	sOutputXml = oTempContentWriter.m_oContent.GetData().GetString();
+    sOutputXml = oTempContentWriter.m_oContent.GetData();
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
+bool BinDocxRW::CDocxSerializer::getBinaryContent(const std::wstring& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 {
 	if(NULL == m_pParamsWriter)
 		return false;
@@ -371,15 +371,15 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 
 	XmlUtils::CXmlLiteReader oReader;
 	
-//    CString bsTxContentTemp = _T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+//    std::wstring bsTxContentTemp = _T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 //
 //    bsTxContentTemp += bsTxContent;
 //    bsTxContentTemp + _T("</root>");
     
-    CString sBegin(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
+    std::wstring sBegin(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
     
-    CString sEnd(_T("</root>"));
-    CString bsTxContentTemp = sBegin + bsTxContent + sEnd;
+    std::wstring sEnd(_T("</root>"));
+    std::wstring bsTxContentTemp = sBegin + bsTxContent + sEnd;
 	
 	OOX::Logic::CSdtContent oSdtContent;
 	if (oReader.FromString(bsTxContentTemp))
@@ -439,7 +439,7 @@ bool BinDocxRW::CDocxSerializer::getBinaryContentElem(OOX::EElementType eElemTyp
 	return true;
 }
 
-bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sOutputXml)
+bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::wstring& sOutputXml)
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
@@ -447,15 +447,15 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 
 	if(OOX::et_m_oMathPara == eType)
 	{
-		oTempContentWriter.m_oContent.WriteString(CString(_T("<m:oMathPara>")));
+        oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMathPara>")));
 		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathOMathPara, &oBinary_DocumentTableReader, NULL);
-		oTempContentWriter.m_oContent.WriteString(CString(_T("</m:oMathPara>")));
+        oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMathPara>")));
 	}
 	else if(OOX::et_m_oMath == eType)
 	{
-		oTempContentWriter.m_oContent.WriteString(CString(_T("<m:oMath>")));
+        oTempContentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMath>")));
 		oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadMathArg, &oBinary_DocumentTableReader, NULL);
-		oTempContentWriter.m_oContent.WriteString(CString(_T("</m:oMath>")));
+        oTempContentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
 	}
 
 
@@ -463,11 +463,11 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 	return true;
 }
 
-void BinDocxRW::CDocxSerializer::setFontDir(const CString& sFontDir)
+void BinDocxRW::CDocxSerializer::setFontDir(const std::wstring& sFontDir)
 {
 	m_sFontDir = sFontDir;
 }
-void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(const CString& sEmbeddedFontsDir)
+void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir)
 {
 	m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 }

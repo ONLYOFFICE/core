@@ -91,7 +91,7 @@ namespace OOX
 			{
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -100,7 +100,7 @@ namespace OOX
 				return OOX::et_mc_alternateContent;
 			}
 		public:
-			nullable<CString > m_sXml;
+			nullable<std::wstring > m_sXml;
 			
 			std::vector<WritingElement *> m_arrChoiceItems;
 			std::vector<WritingElement *> m_arrFallbackItems;

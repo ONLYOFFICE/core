@@ -38,7 +38,7 @@ namespace PPTX2EditorAdvanced
 {
 	using namespace NSBinPptxRW;
 
-	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const CString& strSourceDirectory, const CString& strDstFile)
+	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const std::wstring& strSourceDirectory, const std::wstring& strDstFile)
 	{	
 		// сначала соберем все объекты для конвертации и сформируем main-таблицы
 		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;
@@ -100,7 +100,7 @@ namespace PPTX2EditorAdvanced
 			size_t nCountLayouts = slideMaster->sldLayoutIdLst.size();
 			for (size_t iLayout = 0; iLayout < nCountLayouts; ++iLayout)
 			{
-                CString rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
+                std::wstring rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
                 smart_ptr<PPTX::SlideLayout> slideLayout = ((*slideMaster)[rId]).smart_dynamic_cast<PPTX::SlideLayout>();
 
 				// проверяем layout
@@ -160,7 +160,7 @@ namespace PPTX2EditorAdvanced
 		size_t nCount = presentation->sldIdLst.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-            CString rId = presentation->sldIdLst[i].rid.get();
+            std::wstring rId = presentation->sldIdLst[i].rid.get();
             smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();
 			
             if (slide.IsInit() == false)
@@ -356,12 +356,12 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::FontMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		std::map<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
+		std::map<std::wstring, std::wstring>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
 
 		LONG lIndexF = 0;
-		for (std::map<CString, CString>::iterator pPair = pFMaps->begin(); pPair != pFMaps->end(); ++pPair)
+		for (std::map<std::wstring, std::wstring>::iterator pPair = pFMaps->begin(); pPair != pFMaps->end(); ++pPair)
 		{
-			CString& oRec = pPair->second;
+			std::wstring& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexF++, oRec);
 		}
 
@@ -448,10 +448,8 @@ namespace PPTX2EditorAdvanced
 #else
             oFile.CreateFile(strDstFile);
 #endif
-			CString strPrefix = _T("");
-			strPrefix.Format(_T("PPTY;v1;%d;"), nBinBufferLen);
-			CStringA sW = (CStringA)strPrefix;
-			oFile.WriteFile(sW.GetBuffer(), (DWORD)sW.GetLength());
+			std::string strPrefix = "PPTY;v1;" + std::to_string(nBinBufferLen) + ";";
+            oFile.WriteFile((void*)strPrefix.c_str(), strPrefix.length());
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}

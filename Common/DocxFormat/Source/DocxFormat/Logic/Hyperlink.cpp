@@ -244,21 +244,21 @@ namespace OOX
 		}
 
 
-		CString CHyperlink::toXML() const
+		std::wstring CHyperlink::toXML() const
 		{
-				CString sResult = _T("<w:hyperlink ");
+				std::wstring sResult = _T("<w:hyperlink ");
 
 				if ( m_sAnchor.IsInit() )
 				{
 					sResult += _T("w:anchor=\"");
-					sResult += m_sAnchor->GetString();
+                    sResult += m_sAnchor.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sDocLocation.IsInit() )
 				{
 					sResult += _T("w:docLocation=\"");
-					sResult += m_sDocLocation->GetString();
+                    sResult += m_sDocLocation.get2();
 					sResult += _T("\" ");
 				}
 
@@ -279,14 +279,14 @@ namespace OOX
 				if ( m_sTgtFrame.IsInit() )
 				{
 					sResult += _T("w:tgtFrame=\"");
-					sResult += m_sTgtFrame->GetString();
+                    sResult += m_sTgtFrame.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sTooltip.IsInit() )
 				{
 					sResult += _T("w:tooltip=\"");
-					sResult += m_sTooltip->GetString();
+                    sResult += m_sTooltip.get2();
 					sResult += _T("\" ");
 				}
 

@@ -72,7 +72,7 @@ public:
 			}
 		return false;
 	}
-	bool GetItem( CString sTheme, RtfColor& oOutput )
+	bool GetItem( std::wstring sTheme, RtfColor& oOutput )
 	{
 		ThemeColor oThemeColor;
 		if( true == RtfColor.GetThemeByString("",oThemeColor) )

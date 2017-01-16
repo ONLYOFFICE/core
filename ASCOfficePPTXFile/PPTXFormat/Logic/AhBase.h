@@ -50,7 +50,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("ahXY"))
 					ah.reset(new Logic::AhXY(node));
@@ -69,7 +69,7 @@ namespace PPTX
 				else ah.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (ah.is_init())
 					return ah->toXML();
@@ -105,7 +105,7 @@ namespace PPTX
 					ah->SetParentPointer(pParent);
 			}
 			
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				if (!ah.IsInit())
 					return _T("");

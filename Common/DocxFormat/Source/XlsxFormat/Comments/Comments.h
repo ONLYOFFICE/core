@@ -65,7 +65,7 @@ namespace OOX
 			nullable<bool> m_bMove;
 			nullable<bool> m_bSize;
 			nullable<CSi> m_oText;
-			nullable<CString> m_sGfxdata;
+            nullable<std::wstring> m_sGfxdata;
 			CCommentItem()
 			{
 			}
@@ -86,7 +86,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -140,7 +140,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -149,7 +149,7 @@ namespace OOX
 				if(m_oRef.IsInit() && m_oAuthorId.IsInit() && m_oText.IsInit())
 				{
 					writer.WriteString(L"<comment");
-					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					WritingStringNullableAttrInt(L"authorId", m_oAuthorId, m_oAuthorId->GetValue());
 					writer.WriteString(L">");
 					
@@ -210,7 +210,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -314,9 +314,9 @@ namespace OOX
 					m_oCommentList->toXML(sXml);
 				sXml.WriteString(_T("</comments>"));
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -358,7 +358,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -367,7 +367,7 @@ namespace OOX
 				if(m_oId.IsInit())
 				{
 					writer.WriteString(L"<legacyDrawing r:id=\"");
-					writer.WriteString(m_oId->ToString2());
+					writer.WriteString(m_oId->ToString());
 					writer.WriteString(L"\"/>");					
 				}
 				

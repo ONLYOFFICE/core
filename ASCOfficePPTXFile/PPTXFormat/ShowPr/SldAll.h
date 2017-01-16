@@ -48,7 +48,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<p:sldAll/>");
 			}

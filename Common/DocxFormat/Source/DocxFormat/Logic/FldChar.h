@@ -67,9 +67,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -121,9 +121,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -183,9 +183,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -237,9 +237,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -299,9 +299,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -395,9 +395,9 @@ namespace OOX
 						m_oSizeAuto = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:checkBox>");
+				std::wstring sResult = _T("<w:checkBox>");
 
 				WritingElement_WriteNode_1( _T("<w:checked "),  m_oChecked );
 				WritingElement_WriteNode_1( _T("<w:default "),  m_oDefault );
@@ -483,7 +483,7 @@ namespace OOX
 					{
 						if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
 						{
-							ComplexTypes::Word::CString_ *oListEntry = new ComplexTypes::Word::CString_(oListEntryNode);
+                            ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oListEntryNode);
 							if (oListEntry) m_arrListEntry.push_back( oListEntry );
 						}
 					}
@@ -504,14 +504,14 @@ namespace OOX
 						m_oResult = oReader;
 					else if ( _T("w:listEntry") == sName )
 					{
-						ComplexTypes::Word::CString_ *oListEntry = new ComplexTypes::Word::CString_(oReader);
+                        ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oReader);
 						if (oListEntry) m_arrListEntry.push_back( oListEntry );
 					}
 				}
 			}				
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:ddList>");
+				std::wstring sResult = _T("<w:ddList>");
 
 				WritingElement_WriteNode_1( _T("<w:default "), m_oDefault );
 				WritingElement_WriteNode_1( _T("<w:result "),  m_oResult );
@@ -538,7 +538,7 @@ namespace OOX
 			// Childs
 			nullable<ComplexTypes::Word::CDecimalNumber >	m_oDefault;
 			nullable<ComplexTypes::Word::CDecimalNumber >	m_oResult;
-			std::vector<ComplexTypes::Word::CString_  *>	m_arrListEntry;
+            std::vector<ComplexTypes::Word::String  *>	m_arrListEntry;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -603,9 +603,9 @@ namespace OOX
 						m_oType = oReader;
 				}
 			}				
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:textInput>");
+				std::wstring sResult = _T("<w:textInput>");
 
 				WritingElement_WriteNode_1( _T("<w:default "),   m_oDefault );
 				WritingElement_WriteNode_1( _T("<w:format "),    m_oFormat );
@@ -624,8 +624,8 @@ namespace OOX
 		public:
 
 			// Childs
-			nullable<ComplexTypes::Word::CString_       > m_oDefault;
-			nullable<ComplexTypes::Word::CString_       > m_oFormat;
+            nullable<ComplexTypes::Word::String       > m_oDefault;
+            nullable<ComplexTypes::Word::String       > m_oFormat;
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oMaxLength;
 			nullable<ComplexTypes::Word::CFFTextType    > m_oType;
 
@@ -706,9 +706,9 @@ namespace OOX
 					else if ( _T("w:textInput")  == sName ) m_oTextInput = oReader;
 				}
 			}				
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:ffData>");
+				std::wstring sResult = _T("<w:ffData>");
 
 				WritingElement_WriteNode_1( _T("<w:calcOnExit "), m_oCalcOnExit );
 				WritingElement_WriteNode_2( m_oCheckBox );
@@ -811,9 +811,9 @@ namespace OOX
 						m_oFFData = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:fldChar ");
+				std::wstring sResult = _T("<w:fldChar ");
 
 				ComplexTypes_WriteAttribute( _T("w:dirty=\""),       m_oDirty );
 				ComplexTypes_WriteAttribute( _T("w:fldCharType=\""), m_oFldCharType );

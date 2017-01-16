@@ -52,11 +52,11 @@ public:
 	{
 		RELEASEOBJECT( m_oFileWriter );
 	}
-	CString CreateXmlStart();
+	std::wstring CreateXmlStart();
 
-	CString CreateXmlEnd( );
+	std::wstring CreateXmlEnd( );
 
-	bool SaveByItemStart( CString sFolder );
+	bool SaveByItemStart( std::wstring sFolder );
 	bool SaveByItem		();
 	bool SaveByItemEnd	();
 

@@ -62,13 +62,11 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (amt.IsInit())
 				{
-					CString strRes = _T("");
-					strRes.Format(_T("<a:alphaModFix amt=\"%d\" />"), *amt);
-					return strRes;
+					return L"<a:alphaModFix amt=\"" + std::to_wstring(*amt) + L"\"/>";
 				}
 
 				return _T("<a:alphaModFix/>");

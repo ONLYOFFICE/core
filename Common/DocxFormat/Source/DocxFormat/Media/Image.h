@@ -54,10 +54,10 @@ namespace OOX
 	public:
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 		{
-			CString newFilename = filename.GetFilename();
+            std::wstring newFilename = filename.GetFilename();
 			CPath newFilePath = filename.GetDirectory();
 
-			newFilename.Replace((TCHAR)' ', (TCHAR)'_');
+            boost::algorithm::replace_all(newFilename, L"", L"_");
 			if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath/newFilename))	
 			{
 				//if (m_filename.GetExtention(true) == _T(".svm"))

@@ -44,5 +44,5 @@ public:
 	{
 		m_ref = ref;
 	}
-	bool Parse(ReaderParameter oParam, CString sRID, TextItemContainerPtr& oOutput, bool bHeader );
+	bool Parse(ReaderParameter oParam, std::wstring sRID, TextItemContainerPtr& oOutput, bool bHeader );
 };

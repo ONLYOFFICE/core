@@ -303,7 +303,7 @@ namespace NExtractTools
     }
     int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params)
 	{
-		std::wstring sBinDir = FileSystem::Directory::GetFolderPath(sBinFrom);
+        std::wstring sBinDir = NSDirectory::GetFolderPath(sBinFrom);
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
@@ -357,7 +357,7 @@ namespace NExtractTools
 						// std::wstring sBinCopy = sChangesDir + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sBinFrom);
 						// NSFile::CFileBinary::Copy(sBinFrom, sBinCopy);
 
-                        std::wstring sToResultDir = FileSystem::Directory::GetFolderPath(sToResult);
+                        std::wstring sToResultDir = NSDirectory::GetFolderPath(sToResult);
                         std::wstring sTo = sToResultDir + FILE_SEPARATOR_STR + _T("changes.zip");
                         COfficeUtils oCOfficeUtils(NULL);
                         oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo, -1);

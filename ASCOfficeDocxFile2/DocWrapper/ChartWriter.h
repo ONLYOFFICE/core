@@ -32,8 +32,6 @@
 #ifndef CHART_WRITER
 #define CHART_WRITER
 
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-
 #include <string>
 #include <map>
 #include <vector>

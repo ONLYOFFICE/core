@@ -149,9 +149,9 @@ namespace OOX
 					m_oTableStyles->toXML(sXml);
 				sXml.WriteString(_T("</styleSheet>"));
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			void PrepareToWrite()

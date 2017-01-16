@@ -337,7 +337,7 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 {
 	std::wstring href_result;
 	std::wstring folderPath		= odfDocument->get_folder();	
-	std::wstring objectOutPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(folderPath);
+    std::wstring objectOutPath	= NSDirectory::CreateDirectoryWithUniqueName(folderPath);
 	
 	if (type == 1)
 	{
@@ -384,7 +384,7 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 		COfficeUtils oCOfficeUtils(NULL);
 		oCOfficeUtils.CompressFileOrDirectory(objectOutPath.c_str(), temp_file.c_str(), -1);
 	}	
-	FileSystem::Directory::DeleteDirectory(objectOutPath);
+    NSDirectory::DeleteDirectory(objectOutPath);
 	
 	return href_result;
 }

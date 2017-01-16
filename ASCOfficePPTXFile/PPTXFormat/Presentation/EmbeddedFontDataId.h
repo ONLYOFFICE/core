@@ -51,7 +51,7 @@ namespace PPTX
 
 				rid = node.GetAttribute(_T("r:id"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:id"), rid);
@@ -59,10 +59,10 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("p:") + m_name, oAttr);
 			}
 		public:
-			CString rid;
+			std::wstring rid;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

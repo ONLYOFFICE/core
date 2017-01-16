@@ -138,9 +138,8 @@ namespace OOX
 				sXml.WriteString(_T("<calcPr calcId=\"145621\"/>"));
 				sXml.WriteString(_T("</workbook>"));
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

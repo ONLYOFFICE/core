@@ -80,7 +80,7 @@ namespace PPTX
 			//FileContainer::read(filename, map);
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			cSld = oNode.ReadNode(_T("p:cSld"));
 			cSld.SetParentFilePointer(this);
@@ -159,8 +159,8 @@ namespace PPTX
 		{
 			if(pShape.nvSpPr.nvPr.ph.is_init())
 			{
-				CString idx = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-				CString type = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
+				std::wstring idx = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
+				std::wstring type = /*pShape.nvSpPr->nvPr->ph.is_init()?*/pShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
 				if(type == _T("ctrTitle"))
 					type = _T("title");
 
@@ -174,8 +174,8 @@ namespace PPTX
 						const Logic::Shape& LayoutShape = pElem->as<Logic::Shape>();
 						if(LayoutShape.nvSpPr.nvPr.ph.is_init())
 						{
-							CString lIdx = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
-							CString lType = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
+							std::wstring lIdx = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));//:"";
+							std::wstring lType = /*LayoutShape->nvSpPr->nvPr->ph.is_init()?*/LayoutShape.nvSpPr.nvPr.ph->type.get_value_or(_T("body"));//:"";
 							if(lType == _T("ctrTitle"))
 								lType = _T("title");
 							if((type == lType) && (idx == lIdx))
@@ -222,12 +222,12 @@ namespace PPTX
 				}
 			}
 		}
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
+		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
 		{
 			if(Master.IsInit())
 				Master->FillShapeProperties(props, type);
 		}
-		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const CString& type)const
+		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const std::wstring& type)const
 		{
 			if(Master.IsInit())
 				Master->FillShapeTextProperties(props, type);
@@ -251,21 +251,21 @@ namespace PPTX
 					Master->GetBackground(bg, ARGB);
 			}
 		}
-		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::Image> p = image(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetOleFromRId(const PPTX::RId& rid)const
 		{
 			smart_ptr<PPTX::OleObject> p = oleObject(rid);
 			if (!p.is_init())
@@ -273,7 +273,7 @@ namespace PPTX
 			return p->filename().m_strFilename;
 		}
 
-		virtual DWORD GetRGBAFromMap(const CString& str)const
+		virtual DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Master->GetRGBAFromMap(str);
@@ -282,7 +282,7 @@ namespace PPTX
 			return Master->GetRGBAFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
 
-		virtual DWORD GetARGBFromMap(const CString& str)const
+		virtual DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Master->GetARGBFromMap(str);
@@ -291,7 +291,7 @@ namespace PPTX
 			return Master->GetARGBFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
 
-		virtual DWORD GetBGRAFromMap(const CString& str)const
+		virtual DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Master->GetBGRAFromMap(str);
@@ -300,7 +300,7 @@ namespace PPTX
 			return Master->GetBGRAFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
 
-		virtual DWORD GetABGRFromMap(const CString& str)const
+		virtual DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Master->GetABGRFromMap(str);
@@ -491,12 +491,12 @@ namespace PPTX
 			}
 		}
 
-		const CString GetVmlXmlBySpid(const CString& spid)const
+		const std::wstring GetVmlXmlBySpid(const std::wstring& spid)const
 		{
-            CString xml;
+            std::wstring xml;
 			if((Vml.is_init()) && (spid != _T("")))
 			{
-				std::map<CString, CString>::const_iterator pPair = Vml->m_mapShapesXml.find(spid);
+				std::map<std::wstring, std::wstring>::const_iterator pPair = Vml->m_mapShapesXml.find(spid);
 				if (Vml->m_mapShapesXml.end() != pPair)
 					xml = pPair->second;
 			}

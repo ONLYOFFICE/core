@@ -144,13 +144,9 @@ namespace NSPresentationEditor
 
 	public:
 
-		inline void NormalizeString(CString& strText)
+        inline void NormalizeString(std::wstring& strText)
 		{
-			strText.Replace(_T("&"),	_T("&amp;"));
-			strText.Replace(_T("'"),	_T("&apos;"));
-			strText.Replace(_T("<"),	_T("&lt;"));
-			strText.Replace(_T(">"),	_T("&gt;"));
-			strText.Replace(_T("\""),	_T("&quot;"));
+            strText = XmlUtils::EncodeXmlString(strText);
 		}
 
 		void RecalcParagraphs	(CTheme* pTheme = NULL);

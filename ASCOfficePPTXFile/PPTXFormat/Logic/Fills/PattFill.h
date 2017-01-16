@@ -76,7 +76,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("prst"), prst);
@@ -85,13 +85,13 @@ namespace PPTX
 				oValue.Write(_T("a:fgClr"), fgClr);
 				oValue.Write(_T("a:bgClr"), bgClr);
 
-				CString strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
 				pWriter->StartNode(strName);
 
 				pWriter->StartAttributes();
@@ -131,7 +131,7 @@ namespace PPTX
 			UniColor fgClr;
 			UniColor bgClr;
 
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

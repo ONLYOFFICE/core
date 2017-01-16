@@ -54,10 +54,10 @@ namespace PPTX
 	public:
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, ContentTypes::File& content) const
 		{
-			CString newFilename = filename.GetFilename();
+			std::wstring newFilename = filename.GetFilename();
 			OOX::CPath newFilePath = filename.GetDirectory();
 
-			newFilename.Replace((TCHAR)' ', (TCHAR)'_');
+            boost::algorithm::replace_all(newFilename, L" ", L"_");
 			if (OOX::CSystemUtility::IsFileExist(m_filename) && !OOX::CSystemUtility::IsFileExist(newFilePath/newFilename))	
 			{
 				//if (m_filename.GetExtention(true) == _T(".svm"))

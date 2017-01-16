@@ -71,7 +71,7 @@ namespace Writers
 			if(false == IsEmpty())
 			{
                 OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("charts");
-				FileSystem::Directory::CreateDirectory(pathChartDir.GetPath());
+                NSDirectory::CreateDirectory(pathChartDir.GetPath());
 
                 for(int i = 0, length = m_aCharts.size(); i < length; ++i)
 				{

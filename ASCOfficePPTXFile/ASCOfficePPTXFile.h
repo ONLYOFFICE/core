@@ -52,16 +52,16 @@ class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
 	PPTX::Folder*					m_pFolder;
-    CString                         m_strTempDir;
-	CString							m_strDirectory;
+    std::wstring                         m_strTempDir;
+	std::wstring							m_strDirectory;
 
 	// writer to ppty
-	CString		m_strFontDirectory;
-	CString		m_strMediaDirectory;
+	std::wstring		m_strFontDirectory;
+	std::wstring		m_strMediaDirectory;
     bool		m_bIsUseSystemFonts;
-	CString		m_strEmbeddedFontsDirectory;
+	std::wstring		m_strEmbeddedFontsDirectory;
 
-	CString		m_strFolderThemes;
+	std::wstring		m_strFolderThemes;
 
 	//load_from_resource m_fCallbackResource;
     extract_to_directory    m_fCallbackExtract;

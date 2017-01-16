@@ -32,45 +32,45 @@
 #include "RtfParagraph.h"
 #include "Writer/OOXWriter.h"
 
-CString RtfOldList::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfOldList::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( NULL != m_oText )
 		sResult += m_oText->RenderToRtf( oRenderParameter );
 	return sResult;
 }
-CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( true == CanConvertToNumbering() )
 	{//сохраняем как список
 		if( RENDER_TO_OOX_PARAM_OLDLIST_ABS == oRenderParameter.nType )
 		{
-			CString sCharProp	= m_oLevelText->m_oProperty.m_oCharProperty.RenderToOOX( oRenderParameter );
-			CString sParProp	= m_oLevelText->m_oProperty.RenderToOOX( oRenderParameter );
+            std::wstring sCharProp	= m_oLevelText->m_oProperty.m_oCharProperty.RenderToOOX( oRenderParameter );
+            std::wstring sParProp	= m_oLevelText->m_oProperty.RenderToOOX( oRenderParameter );
 
 			RenderParameter oNewParameter = oRenderParameter;
 			oNewParameter.nType = RENDER_TO_OOX_PARAM_PLAIN;
-			CString sText = m_oLevelText->RenderToOOX( oNewParameter );
+            std::wstring sText = m_oLevelText->RenderToOOX( oNewParameter );
 
-			sResult.AppendFormat( L"<w:abstractNum w:abstractNumId=\"%d\">", m_nLs );
+            sResult += L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_nLs) + L"\">";
 			sResult += L"<w:multiLevelType w:val=\"singleLevel\" />";
 			sResult += L"<w:lvl w:ilvl=\"0\">";
 			sResult += L"<w:numFmt w:val=\"bullet\"/>";
 			
-			if(!sText.IsEmpty() )
-                sResult += L"<w:lvlText w:val=\"" + Utils::PrepareToXML( sText ) + L"\"/>";
+			if(!sText.empty() )
+                sResult += L"<w:lvlText w:val=\"" + XmlUtils::EncodeXmlString( sText ) + L"\"/>";
 			else
 			{
 				sResult += L"<w:lvlText w:val=\"";
-				sResult.AppendChar( 0xf0b7 );
+                sResult += 0xf0b7 ;
 				sResult += L"\"/>";
 			}
 			
-			if( !sParProp.IsEmpty() )
+			if( !sParProp.empty() )
                 sResult += L"<w:pPr>" + sParProp + L"</w:pPr>";
 			
-			if( !sCharProp.IsEmpty() )
+			if( !sCharProp.empty() )
                 sResult += L"<w:rPr>" + sCharProp + L"</w:rPr>";
 			
 			if( lj_none != m_eLevelJust )
@@ -89,11 +89,13 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:abstractNum>";
 		}
 		else if( RENDER_TO_OOX_PARAM_OLDLIST_OVR == oRenderParameter.nType )
-			sResult.AppendFormat(L"<w:num w:numId=\"%d\"><w:abstractNumId w:val=\"%d\"/></w:num>", m_nLs, m_nLs );
+            sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nLs) +
+                    L"\"><w:abstractNumId w:val=\"" + std::to_wstring(m_nLs) + L"\"/></w:num>";
 		else
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )
-				sResult.AppendFormat(L"<w:numPr><w:ilvl w:val=\"%d\"/><w:numId w:val=\"%d\"/></w:numPr>", m_nIlvl, m_nLs );
+                sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nLs) +
+                        L"\"/><w:numId w:val=\"%" + std::to_wstring(m_nLs) + L"\"/></w:numPr>";
 		}
 	}
 	return sResult;
@@ -124,8 +126,8 @@ bool RtfOldList::operator==( const RtfOldList& oOldList )
 		return false;
 	RenderParameter oParam;
 	oParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
-	CString sText1 = m_oLevelText->RenderToOOX( oParam );
-	CString sText2 = oOldList.m_oLevelText->RenderToOOX( oParam );
+    std::wstring sText1 = m_oLevelText->RenderToOOX( oParam );
+    std::wstring sText2 = oOldList.m_oLevelText->RenderToOOX( oParam );
 	if( sText1 != sText2 )
 		return false;
 	return  true;

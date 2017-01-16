@@ -59,7 +59,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = node.GetName();
+				std::wstring strName = node.GetName();
 
 				if (strName == _T("a:buClrTx"))
 					m_Color.reset(new Logic::BuClrTx(node));
@@ -147,7 +147,7 @@ namespace PPTX
 				return 0;
 			}
 
-			virtual CString toXML()const
+			virtual std::wstring toXML()const
 			{
 				if (m_Color.IsInit())
 					return m_Color->toXML();

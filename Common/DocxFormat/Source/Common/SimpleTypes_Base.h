@@ -32,9 +32,11 @@
 #pragma once
 
 #include "math.h"
-#include "../Common/Unit.h"
-#include "../XML/xmlutils.h"
+
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/Types.h"
+#include "../XML/Utils.h"
+#include "../Common/Unit.h"
 
 namespace SimpleTypes
 {
@@ -49,8 +51,8 @@ namespace SimpleTypes
 	}\
 	virtual Enum FromString(const std::wstring& wsStr)\
 	{\
-		CString sTemp( wsStr.c_str() );\
-		return FromString( (CString&)sTemp );\
+        std::wstring sTemp( wsStr.c_str() );\
+        return FromString( (std::wstring&)sTemp );\
 	}
 
 #define SimpleType_FromString2(Enum) \
@@ -61,8 +63,8 @@ namespace SimpleTypes
 	}\
 	Enum FromString(const std::wstring& wsStr)\
 	{\
-		CString sTemp( wsStr.c_str() );\
-		return FromString( (CString&)sTemp );\
+        std::wstring sTemp( wsStr.c_str() );\
+        return FromString( (std::wstring&)sTemp );\
 	}
 
 #define SimpleTypes_AdditionalOpearators(Class) \
@@ -83,7 +85,7 @@ namespace SimpleTypes
 
 //#if defined(_WIN32) || defined (_WIN64)
 //#define SimpleType_Operator_Equal(Class) \
-//	Class(CString &sValue)\
+//	Class(std::wstring &sValue)\
 //	{\
 //		FromString( sValue );\
 //	}\
@@ -95,7 +97,7 @@ namespace SimpleTypes
 //	{\
 //		FromString( wsStr );\
 //	}\
-//	const Class &operator =(CString &sValue)\
+//	const Class &operator =(std::wstring &sValue)\
 //	{\
 //		FromString( sValue );\
 //		return *this;\
@@ -112,7 +114,7 @@ namespace SimpleTypes
 //	}
 //#else
 #define SimpleType_Operator_Equal(Class) \
-    Class(CString &sValue)\
+    Class(std::wstring &sValue)\
     {\
         FromString( sValue );\
     }\
@@ -124,7 +126,7 @@ namespace SimpleTypes
     {\
         FromString( wsStr );\
     }\
-    const Class &operator =(CString &sValue)\
+    const Class &operator =(std::wstring &sValue)\
     {\
         FromString( sValue );\
         return *this;\
@@ -161,8 +163,8 @@ namespace SimpleTypes
 			m_eValue = eValue;
 		}
 
-		virtual E       FromString(CString &sValue)     = 0;
-		virtual CString ToString  () const              = 0;
+        virtual E               FromString(std::wstring &sValue)    = 0;
+        virtual std::wstring    ToString  () const                  = 0;
 
 	protected:
 
@@ -175,8 +177,8 @@ namespace SimpleTypes
 
 		CUniversalMeasure() {}
 
-		virtual double  FromString(CString &sValue)     = 0;
-		virtual CString ToString  () const              = 0;
+        virtual double  FromString(std::wstring &sValue)     = 0;
+        virtual std::wstring ToString  () const              = 0;
 
 		double ToPoints() const
 		{
@@ -222,18 +224,18 @@ namespace SimpleTypes
 
 	protected:
 
-		void Parse(CString &sValue, double dKoef)
+        void Parse(std::wstring &sValue, double dKoef)
 		{
             m_bUnit = false;
             m_dValue = 0;
 
-            if (sValue.IsEmpty()) return;
+            if (sValue.empty()) return;
 
-            if ( sValue.GetLength() <= 2 )
+            if ( sValue.length() <= 2 )
 			{
 				try
 				{
-					m_dValue = _wtof( sValue ) / dKoef;
+                    m_dValue = _wtof( sValue.c_str() ) / dKoef;
 				}
 				catch(...)
 				{
@@ -242,36 +244,36 @@ namespace SimpleTypes
 			}
 
 			// Проверим последние два символа
-			CString sUnit = sValue.Mid( sValue.GetLength() - 2, 2 );
+            std::wstring sUnit = sValue.substr( sValue.length() - 2, 2 );
 			m_bUnit = true;
 
 			if ( _T("cm") == sUnit )
 			{
-				double dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );
+                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Cm_To_Pt( dValue );
 			}
 			else if ( _T("mm") == sUnit )
 			{
-				double dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );  
+                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Mm_To_Pt( dValue );
 			}
 			else if ( _T("in") == sUnit )
 			{
-				double dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );  
+                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Inch_To_Pt( dValue );
 			}
 			else if ( _T("pt") == sUnit )
 			{
-				m_dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );  
+                m_dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 			}
 			else if ( _T("pc") == sUnit )
 			{
-				double dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );  
+                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = dValue * 12.0;
 			}
 			else if ( _T("pi") == sUnit )
 			{
-				double dValue = _wtof( sValue.Mid( 0, sValue.GetLength() - 2 ) );  
+                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = dValue * 12.0;
 			}
 			else
@@ -279,7 +281,7 @@ namespace SimpleTypes
 				m_bUnit = false;
 				try
 				{
-					m_dValue = _wtof( sValue ) / dKoef;
+                    m_dValue = _wtof( sValue.c_str() ) / dKoef;
 				}
 				catch(...)
 				{
@@ -303,19 +305,15 @@ namespace SimpleTypes
 	public:
 		CPoint() {}
 
-		virtual double  FromString(CString &sValue)
+        virtual double  FromString(std::wstring &sValue)
 		{
 			Parse(sValue, 1);
 			return m_dValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-			CString sResult;
-
-			sResult.Format( _T("%fpt"), m_dValue);
-
-			return sResult;
+            return std::to_wstring(m_dValue) + L"pt";
 		}
 
 		virtual double FromPoints(double dValue)
@@ -348,20 +346,16 @@ namespace SimpleTypes
 	public:
 		CInch() {}
 
-		virtual double  FromString(CString &sValue)
+        virtual double  FromString(std::wstring &sValue)
 		{
 			Parse(sValue, 1.0 / 72);
 			return m_dValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-			CString sResult;
-
-			sResult.Format( _T("%fin"), ToInches());
-
-			return sResult;
-		}
+            return std::to_wstring(ToInches()) + L"in";
+        }
 
 		SimpleType_FromString          (double)
 		SimpleType_Operator_Equal      (CInch)
@@ -377,19 +371,15 @@ namespace SimpleTypes
 	public:
 		CEmu() {}
 
-		virtual double  FromString(CString &sValue)
+        virtual double  FromString(std::wstring &sValue)
 		{
 			Parse(sValue, 12700);
 			return m_dValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-			CString sResult;
-
-			sResult.Format( _T("%fpt"), m_dValue);
-
-			return sResult;
+            return std::to_wstring(m_dValue) + L"pt";
 		}
 
 		virtual double FromPoints(double dValue)
@@ -447,15 +437,15 @@ namespace SimpleTypes
 	public:
 		CDouble() {}
 
-		virtual double  FromString(CString &sValue)
+        virtual double  FromString(std::wstring &sValue)
 		{
-			m_dValue = _wtof( sValue );
+            m_dValue = _wtof( sValue.c_str() );
 			return m_dValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-            CString sResult = std::to_wstring(m_dValue);
+            std::wstring sResult = std::to_wstring(m_dValue);
 			return sResult;
 		}
 		virtual std::wstring ToString2() const

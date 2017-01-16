@@ -64,7 +64,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (chartBuildStep.IsInit())
 				{

@@ -59,7 +59,7 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
@@ -220,7 +220,7 @@ namespace PPTX
 			nullable_limit<Limit::BWMode> bwMode;
 		//private:
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

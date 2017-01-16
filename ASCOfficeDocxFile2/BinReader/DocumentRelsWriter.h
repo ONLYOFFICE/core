@@ -38,14 +38,14 @@ namespace Writers
 {
 	class DocumentRelsWriter
 	{
-		CString	m_sDir;
+        std::wstring	m_sDir;
 	public:
-		DocumentRelsWriter(CString sDir):m_sDir(sDir)
+        DocumentRelsWriter(std::wstring sDir):m_sDir(sDir)
 		{
 		}
 		void Write()
 		{
-			CString s_Common;
+            std::wstring s_Common;
 
 			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \

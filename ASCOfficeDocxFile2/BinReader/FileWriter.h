@@ -54,7 +54,7 @@ namespace Writers
 	{
 	public:
 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
-		CString m_sThemePath;
+        std::wstring m_sThemePath;
 		bool m_bSaveChartAsImg;
 		
 		ContentTypesWriter		m_oContentTypesWriter;
@@ -76,7 +76,7 @@ namespace Writers
 		int m_nDocPrIndex;
 		BinDocxRW::CComments* m_pComments;
 	public:
-		FileWriter(CString sDirOutput,CString sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, CString sThemePath):
+        FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath):
 										m_pDrawingConverter(pDrawingConverter),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
 										m_oContentTypesWriter(sDirOutput), m_oFontTableWriter(sDirOutput, sFontDir, bNoFontDir),
 										m_oHeaderFooterWriter(sDirOutput, m_oContentTypesWriter),

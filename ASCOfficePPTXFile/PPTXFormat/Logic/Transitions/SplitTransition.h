@@ -53,7 +53,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"orient", orient);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("dir"), dir);

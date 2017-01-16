@@ -54,7 +54,7 @@ namespace PPTX
 				
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("sz"), sz);
@@ -76,7 +76,7 @@ namespace PPTX
 			nullable_bool	autoAdjust;
 
 		public:
-			CString name;
+			std::wstring name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

@@ -78,12 +78,10 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str1 = _T("");
-				str1.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
-				CString str2 = _T("");
-				str2.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
+				std::wstring str1 = L"<a:pt x=\"" + x1 + L"\" y=\"" + y1 + L"\" />";
+				std::wstring str2 = L"<a:pt x=\"" + x2 + L"\" y=\"" + y2 + L"\" />";
 
 				return _T("<a:quadBezTo>") + str1 + str2 + _T("</a:quadBezTo>");
 			}
@@ -124,20 +122,18 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			CString x1;
-			CString y1;
-			CString x2;
-			CString y2;
+			std::wstring x1;
+			std::wstring y1;
+			std::wstring x2;
+			std::wstring y2;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
-				CString str1 = _T("");
-				str1.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
-				CString str2 = _T("");
-				str2.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
+				std::wstring str1 = L"<a:pt x=\"" + x1 + L"\" y=\"" + y1 + L"\" />";
+				std::wstring str2 = L"<a:pt x=\"" + x2 + L"\" y=\"" + y2 + L"\" />";
 
 				return _T("<quadBezTo>") + str1 + str2 + _T("</quadBezTo>");
 			}

@@ -180,7 +180,7 @@ namespace OOX
 							PrepareComments(pComments, pVmlDrawing);
 						}
 					}
-					if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawingHF->m_oId.IsInit())
+					if (m_oHeaderFooter.IsInit() && m_oLegacyDrawing.IsInit() && m_oLegacyDrawing.IsInit())
 					{
 					}
 				}		
@@ -240,8 +240,8 @@ namespace OOX
 								if(pPair != m_mapComments.end())
 								{
 									CCommentItem* pCommentItem = pPair->second;
-									if(pShape->m_oGfxData.IsInit())
-										pCommentItem->m_sGfxdata = pShape->m_oGfxData.get2();
+									if(pShape->m_sGfxData.IsInit())
+										pCommentItem->m_sGfxdata = pShape->m_sGfxData.get2();
 									std::vector<int> m_aAnchor;
 									pClientData->getAnchorArray(m_aAnchor);
 									if(8 == m_aAnchor.size())
@@ -265,7 +265,7 @@ namespace OOX
 									{
 										if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 
-										SimpleTypes::Vml::CCssProperty *oProperty = pShape->m_oStyle->m_arrProperties[k];
+										SimpleTypes::Vml::CCssProperty *oProperty = pShape->m_oStyle->m_arrProperties[k].get();
 										if(SimpleTypes::Vml::cssptMarginLeft == oProperty->get_Type())
 										{
 											SimpleTypes::Vml::UCssValue oUCssValue= oProperty->get_Value();
@@ -373,16 +373,13 @@ namespace OOX
 					m_oTableParts->toXML(sXml);
                 if(m_oExtLst.IsInit())
 				{
-					CString sExtLst = m_oExtLst->toXMLWithNS(_T(""));
-					sXml.WriteString(sExtLst.GetBuffer());
-					sExtLst.ReleaseBuffer();
+                    sXml.WriteString(m_oExtLst->toXMLWithNS(_T("")));
 				}
 				sXml.WriteString(_T("</worksheet>"));
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+                NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+
+                oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
 			}
 			virtual const OOX::FileType type() const
@@ -401,11 +398,11 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-			const OOX::RId AddHyperlink (CString& sHref)
+            const OOX::RId AddHyperlink (std::wstring& sHref)
 			{
 				smart_ptr<OOX::HyperLink> oHyperlink = smart_ptr<OOX::HyperLink>( new OOX::HyperLink( OOX::CPath(sHref, false) ) );
-				CString sExistRId = IsExistHyperlink(oHyperlink);
-				if(sExistRId.IsEmpty())
+                std::wstring sExistRId = IsExistHyperlink(oHyperlink);
+                if(sExistRId.empty())
 				{
 					smart_ptr<OOX::File> oHyperlinkFile = oHyperlink.smart_dynamic_cast<OOX::File>();
 					const OOX::RId rId = Add( oHyperlinkFile );
@@ -449,7 +446,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CTableParts>					m_oTableParts;
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
-			std::map<std::wstring, CCommentItem*>						m_mapComments;
+			std::map<std::wstring, CCommentItem*>					m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
 			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;

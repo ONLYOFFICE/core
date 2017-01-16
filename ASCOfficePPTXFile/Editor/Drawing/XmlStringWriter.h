@@ -76,7 +76,7 @@ namespace NSPresentationEditor
 			RELEASEMEM(m_pData);
 		}
 
-        AVSINLINE void AddSize(size_t nSize)
+        void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -120,7 +120,7 @@ namespace NSPresentationEditor
 
 	public:
 		
-        AVSINLINE void WriteString(const wchar_t* pString, size_t& nLen)
+        void WriteString(const wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
 			// memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -130,15 +130,8 @@ namespace NSPresentationEditor
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-#if defined(_WIN32) || defined(_WIN64)
-        AVSINLINE void WriteString(_bstr_t& bsString)
-		{
-			size_t nLen = bsString.length();
-			WriteString(bsString.GetBSTR(), nLen);
-		}
-#endif // #if defined(_WIN32) || defined(_WIN64)
 		
-		AVSINLINE void WriteStringXML(const std::wstring & wString)
+		void WriteStringXML(const std::wstring & wString)
 		{
 			std::wstring buffer;
 			buffer.reserve(wString.size());
@@ -146,29 +139,29 @@ namespace NSPresentationEditor
 			{
 				switch(wString[pos])
 				{
-				case '&':  buffer.append(_T("&amp;"));      break;
-				case '\"': buffer.append(_T("&quot;"));     break;
-				case '\'': buffer.append(_T("&apos;"));     break;
-				case '<':  buffer.append(_T("&lt;"));       break;
-				case '>':  buffer.append(_T("&gt;"));       break;
+                                case '&':  buffer.append((L"&amp;"));      break;
+                                case '\"': buffer.append((L"&quot;"));     break;
+                                case '\'': buffer.append((L"&apos;"));     break;
+                                case '<':  buffer.append((L"&lt;"));       break;
+                                case '>':  buffer.append((L"&gt;"));       break;
 				default:   buffer.append(&wString[pos], 1);	break;
 				}
 			}
 			WriteString(buffer);
 		}
 
-        AVSINLINE void WriteString(const std::wstring & wString)
+        void WriteString(const std::wstring & wString)
 		{
 			size_t nLen = wString.length();
 			WriteString(wString.c_str(), nLen);
 		}
 
-        AVSINLINE size_t GetCurSize()
+        size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-        AVSINLINE void Write(CStringWriter& oWriter)
+		void Write(CStringWriter& oWriter)
 		{
 			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
 		}
@@ -191,10 +184,9 @@ namespace NSPresentationEditor
 			m_lSizeCur	= 0;
 		}
 
-		CString GetData()
+		std::wstring GetData()
 		{
-			CString str(m_pData, (int)m_lSizeCur);
-			return str;
+			return std::wstring(m_pData, (int)m_lSizeCur);
 		}
 
 		void CorrectUnicodeString()
@@ -218,182 +210,4 @@ namespace NSPresentationEditor
 			}
 		}
 	};
-
-	//class CXmlWriter
-	//{
-	//	CStringWriter m_oWriter;
-	//
-	//public:
-
-	//	CXmlWriter() : m_oWriter()
-	//	{
-	//	}
-	//	
-	//	inline CString GetXmlString()
-	//	{
-	//		return m_oWriter.GetData();
-	//	}
-
-	//	// write value
- //       AVSINLINE void WriteString(CString strValue)
-	//	{
-	//		m_oWriter.WriteString(strValue);
-	//	}
- //       AVSINLINE void WriteDouble(const double& val)
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("%lf"), val);
-	//		m_oWriter.WriteString(str);
-	//	}
- //       AVSINLINE void WriteLONG(const long& val)
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("%d"), val);
-	//		m_oWriter.WriteString(str);
-	//	}
- //       AVSINLINE void WriteDWORD(const DWORD& val)
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("%u"), val);
-	//		m_oWriter.WriteString(str);
-	//	}
- //       AVSINLINE void WriteDWORD_hex(const DWORD& val)
-	//	{
-	//		CString str = _T("");
-	//		str.Format(_T("%x"), val);
-	//		m_oWriter.WriteString(str);
-	//	}
-	//	// write attribute
- //       AVSINLINE void WriteAttributeString(const CString& strAttributeName, const CString& val)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_node_space);
-	//		m_oWriter.WriteString(strAttributeName);
-	//		m_oWriter.WriteString(g_bstr_node_equal);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//		m_oWriter.WriteString(val);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//	}
- //       AVSINLINE void WriteAttributeDouble(const CString& strAttributeName, const double& val)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_node_space);
-	//		m_oWriter.WriteString(strAttributeName);
-	//		m_oWriter.WriteString(g_bstr_node_equal);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//		WriteDouble(val);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//	}
- //       AVSINLINE void WriteAttributeLONG(const CString& strAttributeName, const LONG& val)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_node_space);
-	//		m_oWriter.WriteString(strAttributeName);
-	//		m_oWriter.WriteString(g_bstr_node_equal);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//		WriteLONG(val);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//	}
- //       AVSINLINE void WriteAttributeDWORD(const CString& strAttributeName, const DWORD& val)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_node_space);
-	//		m_oWriter.WriteString(strAttributeName);
-	//		m_oWriter.WriteString(g_bstr_node_equal);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//		WriteDWORD(val);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//	}
- //       AVSINLINE void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_node_space);
-	//		m_oWriter.WriteString(strAttributeName);
-	//		m_oWriter.WriteString(g_bstr_node_equal);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//		WriteDWORD_hex(val);
-	//		m_oWriter.WriteString(g_bstr_node_quote);
-	//	}
-	//	// document methods
- //       AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
-	//	{
-	//		m_oWriter.WriteString(g_bstr_nodeopen);
-	//		m_oWriter.WriteString(strNodeName);
-	//		
-	//		if (!bAttributed)
-	//			m_oWriter.WriteString(g_bstr_nodeclose);
-	//	}
- //       AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
-	//	{
-	//		if (bEmptyNode)
-	//		{
-	//			if (bEndNode)
-	//				m_oWriter.WriteString(g_bstr_nodeclose_slash);
-	//			else
-	//				m_oWriter.WriteString(g_bstr_nodeclose);
-	//		}
-	//		else
-	//		{
-	//			m_oWriter.WriteString(g_bstr_nodeopen_slash);
-	//			m_oWriter.WriteString(strNodeName);
-	//			m_oWriter.WriteString(g_bstr_nodeclose);
-	//		}
-	//	}
-	//	// write node values
- //       AVSINLINE void WriteNodeValueString(const CString& strNodeName, const CString& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		WriteString(val);
-	//		WriteNodeEnd(strNodeName);
-	//	}
- //       AVSINLINE void WriteNodeValueBool(const CString& strNodeName, const bool& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		
-	//		if (val)
-	//			WriteString(_T("1"));
-	//		else
-	//			WriteString(_T("0"));
-
-	//		WriteNodeEnd(strNodeName);
-	//	}
- //       AVSINLINE void WriteNodeValueDouble(const CString& strNodeName, const double& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		WriteDouble(val);
-	//		WriteNodeEnd(strNodeName);
-	//	}
- //       AVSINLINE void WriteNodeValueLONG(const CString& strNodeName, const LONG& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		WriteLONG(val);
-	//		WriteNodeEnd(strNodeName);
-	//	}
- //       AVSINLINE void WriteNodeValueDWORD(const CString& strNodeName, const DWORD& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		WriteDWORD(val);
-	//		WriteNodeEnd(strNodeName);
-	//	}
- //       AVSINLINE void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
-	//	{
-	//		WriteNodeBegin(strNodeName);
-	//		WriteDWORD_hex(val);
-	//		WriteNodeEnd(strNodeName);
-	//	}
-
-	//	
- //               bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = false)
-	//	{
-	//		CString strData = m_oWriter.GetData();
-	//		if (!bEncodingToUTF8)
-	//		{
-	//			CFile oFile;
-	//			oFile.CreateFile(strFilePath);
-	//			oFile.WriteFile((void*)strData.GetBuffer(), strData.GetLength());
-	//			oFile.CloseFile();
-	//		}
-	//		else
-	//		{
-	//			CDirectory::SaveToFile(strFilePath, strData);
-	//		}
-	//		
- //                       return true;
-	//	}
-	//};
 }

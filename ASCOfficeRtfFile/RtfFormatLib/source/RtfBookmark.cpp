@@ -37,15 +37,15 @@
 
 #include "Utils.h"
 
-CString RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
 	sResult += L"{\\*\\bkmkstart";
 	if( PROP_DEF != nFirstColumn )
-		sResult.AppendFormat(L"\\bkmkcolf%d", nFirstColumn);
+        sResult += L"\\bkmkcolf" + std::to_wstring( nFirstColumn);
 	if( PROP_DEF != nLastColumn )
-		sResult.AppendFormat(L"\\bkmkcoll%d", nLastColumn);
+        sResult += L"\\bkmkcoll" + std::to_wstring( nLastColumn);
 	
 	sResult += L" ";
     RtfCharProperty* pCharProperty = NULL;
@@ -53,16 +53,16 @@ CString RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
-	//ATLASSERT( false == m_sName.IsEmpty() );
+    std::wstring sResult;
+    //ATLASSERT( false == m_sName.empty() );
 	sResult += L"<w:bookmarkStart";
 	
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
 	RtfDocument	* poDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	
-	std::map<CString, int>::iterator pPair = poOOXWriter->m_aBookmarksId.find( m_sName );
+    std::map<std::wstring, int>::iterator pPair = poOOXWriter->m_aBookmarksId.find( m_sName );
 	
 	int nID;
 	if( poOOXWriter->m_aBookmarksId.end() != pPair )
@@ -72,18 +72,19 @@ CString RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 		nID = poDocument->m_oIdGenerator.Generate_BookmarkNumber();
 		poOOXWriter->m_aBookmarksId[m_sName] =  nID;
 	}
-	sResult.AppendFormat(L" w:id =\"%d\"", nID);
+    sResult += L" w:id =\"" + std::to_wstring(nID) + L"\"";
 	if( PROP_DEF != nFirstColumn )
-		sResult.AppendFormat(L" w:colFirst =\"%d\"", nID);
+        sResult += L" w:colFirst =\"" + std::to_wstring(nID) + L"\"";
 	if( PROP_DEF != nLastColumn )
-		sResult.AppendFormat(L" w:colLast =\"%d\"", nID);
-    sResult += L" w:name =\"" + Utils::PrepareToXML( m_sName ) + L"\"";
+        sResult += L" w:colLast =\"" + std::to_wstring(nID) + L"\"";
+
+    sResult += L" w:name =\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"";
 	sResult += L"/>";
 	return sResult;
 }
-CString RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
 	sResult += L"{\\*\\bkmkend";
 	sResult += L" ";
@@ -95,16 +96,16 @@ CString RtfBookmarkEnd::RenderToRtf(RenderParameter oRenderParameter)
 	
 	return sResult;
 }
-CString RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
 	sResult  += L"<w:bookmarkEnd";
 
 	OOXWriter* poOOXWriter = static_cast<OOXWriter*>( oRenderParameter.poWriter );
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	
-	std::map<CString, int>::iterator pPair = poOOXWriter->m_aBookmarksId.find( m_sName );
+    std::map<std::wstring, int>::iterator pPair = poOOXWriter->m_aBookmarksId.find( m_sName );
 	int nID;
 	if( poOOXWriter->m_aBookmarksId.end() != pPair )
 		nID = pPair->second;
@@ -113,13 +114,13 @@ CString RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 		nID = poDocument->m_oIdGenerator.Generate_BookmarkNumber();
 		poOOXWriter->m_aBookmarksId[m_sName] = nID;
 	}
-	sResult.AppendFormat(L" w:id =\"%d\"", nID);
+    sResult += L" w:id =\"" + std::to_wstring(nID) + L"\"";
 	sResult += L"/>";
 	return sResult;
 }
-CString RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	
 	sResult += L"{";
 	sResult += m_oCharProp.RenderToRtf( oRenderParameter );
@@ -137,9 +138,9 @@ CString RtfFootnote::RenderToRtf(RenderParameter oRenderParameter)
 	
 	return sResult;
 }
-CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
 	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	if( true == m_bEndNote )
@@ -152,15 +153,15 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		poEndnoteWriter->AddEndnote( L"", nID, m_oContent->RenderToOOX(oNewParameter) );
 		
 		sResult += L"<w:r>";
-		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
+        std::wstring srPr = m_oCharProp.RenderToOOX( oRenderParameter );
 
-		if( false == srPr.IsEmpty() )
+        if( false == srPr.empty() )
 		{
 			sResult += L"<w:rPr>";
             sResult += srPr;
 			sResult += L"</w:rPr>";
 		}
-		sResult.AppendFormat( L"<w:endnoteReference  w:id=\"%d\"/>", nID );
+        sResult += L"<w:endnoteReference  w:id=\"" + std::to_wstring(nID) + L"\"/>";
 		sResult += L"</w:r>";
 	}
 	else
@@ -175,15 +176,15 @@ CString RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
 		poFootnoteWriter->AddFootnote( L"", nID, m_oContent->RenderToOOX(oNewParameter) );
 		
 		sResult += L"<w:r>";
-		CString srPr = m_oCharProp.RenderToOOX( oRenderParameter );
+        std::wstring srPr = m_oCharProp.RenderToOOX( oRenderParameter );
 
-		if( false == srPr.IsEmpty() )
+        if( false == srPr.empty() )
 		{
 			sResult += L"<w:rPr>";
             sResult += srPr;
             sResult += L"</w:rPr>";
 		}
-		sResult.AppendFormat( L"<w:footnoteReference w:id=\"%d\"/>", nID );
+        sResult += L"<w:footnoteReference w:id=\"" + std::to_wstring(nID) + L"\"/>";
 		sResult += L"</w:r>";
 	}
 

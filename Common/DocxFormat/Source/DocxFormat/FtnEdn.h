@@ -265,9 +265,9 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
 				sResult = _T("<w:footnote ");
@@ -384,9 +384,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
 				sResult = _T("<w:footnote ");

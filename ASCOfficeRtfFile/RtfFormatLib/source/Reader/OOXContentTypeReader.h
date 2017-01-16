@@ -35,37 +35,37 @@
 
 class OOXContentTypeReader
 {
-private: CString m_sFilepath;
+private: std::wstring m_sFilepath;
 private: XmlUtils::CXmlLiteReader m_oReader;
 
-public: OOXContentTypeReader(CString sFilePath)
+public: OOXContentTypeReader(std::wstring sFilePath)
 		{
 			m_sFilepath = sFilePath;
 			m_oReader.OpenFromFile(m_sFilepath);
 			m_oReader.ReadRootNode("Relationships");
 			m_oReader.ReadNodeList("Relationship");
 		}
-public: bool GetByType(CString  sType, std::vector<CString>& aOutArray)
+public: bool GetByType(std::wstring  sType, std::vector<std::wstring>& aOutArray)
 		{
 			aOutArray.clear();
 			for(int i=0;i<oParam.oReader->GetLengthList();i++)
 			{
 				if(oParam.oReader->ReadNodeAttribute(i,"Type") == sType)
 				{
-                    CString sResult = oParam.oReader->ReadNodeAttribute(i, "Target");
+                    std::wstring sResult = oParam.oReader->ReadNodeAttribute(i, "Target");
 					sResult = sResult.Replace('/','\\');
                     aOutArray += sResult;
 				}
 			}
 			return aOutArray.size() > 0;
 		}
-public: CString GetByID(CString  sId)
+public: std::wstring GetByID(std::wstring  sId)
 		{
 			for(int i=0;i<oParam.oReader->GetLengthList();i++)
 			{
 				if(oParam.oReader->ReadNodeAttribute(i,"Id") == sId)
 				{
-					CString sResult = oParam.oReader->ReadNodeAttribute(i,"Target");
+					std::wstring sResult = oParam.oReader->ReadNodeAttribute(i,"Target");
 					sResult = sResult.Replace('/','\\');
 					return sResult;
 				}

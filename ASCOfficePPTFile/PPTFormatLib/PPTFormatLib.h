@@ -54,7 +54,7 @@ private:
 
 	void* m_pReader;
 
-	std::vector<CString> m_arUserSources;
+    std::vector<std::wstring> m_arUserSources;
 
     std::wstring m_strTempDirectory;
 	
@@ -78,6 +78,6 @@ private:
 
     bool CloseFile();
 
-	CString GetDirectory(CString strFileName);
+    std::wstring GetDirectory(std::wstring strFileName);
 };
 

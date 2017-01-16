@@ -40,7 +40,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		AVSINLINE int GetPhType(const CString& strType)
+		AVSINLINE int GetPhType(const std::wstring& strType)
 		{
 			if (_T("body") == strType)
 				return 0;
@@ -87,7 +87,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("body") == strValue) ||
 					(_T("chart") == strValue) ||

@@ -32,7 +32,6 @@
 #ifndef XLSX_SERIALIZER
 #define XLSX_SERIALIZER
 
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #include <string>
 
 namespace OOX
@@ -53,8 +52,8 @@ namespace BinXlsxRW {
 
 	class CXlsxSerializer{
 	private:
-		CString m_sFontDir;
-		CString m_sEmbeddedFontsDir;
+        std::wstring m_sFontDir;
+        std::wstring m_sEmbeddedFontsDir;
 		NSBinPptxRW::CDrawingConverter* m_pExternalDrawingConverter;
 	public:
 		CXlsxSerializer();

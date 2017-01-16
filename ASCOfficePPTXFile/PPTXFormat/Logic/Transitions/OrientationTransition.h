@@ -52,7 +52,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"dir", dir);
 			}
 
-			CString toXML() const
+			std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("dir"), dir);
@@ -61,7 +61,7 @@ namespace PPTX
 			}
 
 		public:
-			CString									name;
+			std::wstring									name;
 			nullable_limit<Limit::Orient>			dir;
 		protected:
 			virtual void FillParentPointersForChilds(){};

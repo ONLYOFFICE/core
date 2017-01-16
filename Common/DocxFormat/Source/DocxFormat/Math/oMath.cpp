@@ -41,7 +41,7 @@ namespace OOX
 	{
 		void    CMathArgNodes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			sNodeName = CString(oReader.GetName().c_str());				
+            sNodeName = std::wstring(oReader.GetName().c_str());
 			if(sNodeName == _T("m:deg"))
 					eType = et_m_deg;
 				else if (sNodeName == _T("m:den"))

@@ -58,7 +58,7 @@ namespace PPTX
 			{
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:close/>");
 			}
@@ -77,7 +77,7 @@ namespace PPTX
 			virtual void FillParentPointersForChilds(){};
 		
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				return _T("<close/>");
 			}

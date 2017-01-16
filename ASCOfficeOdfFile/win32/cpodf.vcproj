@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="OdfFormatReaderLib"
 	ProjectGUID="{50E20601-4A8D-4AFB-8870-63828D328429}"
 	RootNamespace="cpodf"
@@ -1475,6 +1475,14 @@
 				RelativePath="..\src\odf\odf_document_impl.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
 					>
 					<Tool
@@ -1616,14 +1624,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\odf\ruby.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\search_table_cell.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\src\odf\search_table_cell.h"
 				>
 			</File>
@@ -1714,10 +1714,6 @@
 		</File>
 		<File
 			RelativePath="..\src\ConvertOO2OOX.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\Common\DocxFormat\Source\SystemUtility\FileSystem\Directory.cpp"
 			>
 		</File>
 	</Files>

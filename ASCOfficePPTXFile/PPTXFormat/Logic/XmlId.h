@@ -52,7 +52,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"r:id", rid);
 				node.ReadAttributeBase(L"id", id);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:id"), rid.ToString());
@@ -85,7 +85,7 @@ namespace PPTX
 			nullable_string			id;
 			PPTX::RId				rid;
 		public:
-			CString					m_name;
+			std::wstring					m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

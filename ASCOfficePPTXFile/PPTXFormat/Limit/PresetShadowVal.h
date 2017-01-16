@@ -51,7 +51,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("shdw1") == strValue) ||
 					(_T("shdw2") == strValue) ||

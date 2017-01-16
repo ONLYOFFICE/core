@@ -193,7 +193,7 @@ namespace OOX
 			{
 				OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
 
-				smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
+                smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
 				if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
 					return (OOX::CHdrFtr*)pFile.operator->();
 				else 

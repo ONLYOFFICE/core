@@ -31,7 +31,7 @@
  */
 #include "ArtBlip.h"
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include "../../Reader/PPTDocumentInfo.h"
 

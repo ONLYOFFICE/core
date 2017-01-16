@@ -39,15 +39,13 @@
 #define CP_UTF8 65001
 #endif
 
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 namespace CSVWriter
 {
     void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, std::wstring &sWriteString, UINT &nCodePage, bool bIsEnd = false);
-    void WriteFromXlsxToCsv(const CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON);
+    void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON);
 }
 
 #endif //CSV_WRITER

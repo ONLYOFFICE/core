@@ -76,7 +76,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("rPr") == strName)
 						{
@@ -98,7 +98,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("id"), id);
@@ -110,12 +110,7 @@ namespace PPTX
 				
 				if (text.IsInit())
                 {
-                    CString s = *text;
-                    s.Replace(_T("&"),	_T("&amp;"));
-                    s.Replace(_T("'"),	_T("&apos;"));
-                    s.Replace(_T("<"),	_T("&lt;"));
-                    s.Replace(_T(">"),	_T("&gt;"));
-                    s.Replace(_T("\""),	_T("&quot;"));
+                    std::wstring s = XmlUtils::EncodeXmlString(*text);
 
                     oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
                 }
@@ -166,14 +161,14 @@ namespace PPTX
 
 			}
 
-			void SetText(const CString& src)
+			void SetText(const std::wstring& src)
 			{
 				text = src;
 			}
 
-			virtual CString GetText()const{return text.get_value_or(_T(""));};
+			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
 		public:
-			CString						id;
+			std::wstring						id;
 			
 			nullable_string				type;
 

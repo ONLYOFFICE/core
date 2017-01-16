@@ -63,7 +63,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:clrRepl>") + Color.toXML() + _T("</a:clrRepl>");
 			}

@@ -89,14 +89,14 @@ namespace OOX
 					m_pSecPr->fromXML( oReader );
 			}
 		}
-		CString CSectPrChange::toXML() const
+		std::wstring CSectPrChange::toXML() const
 		{			
-			CString sResult = _T("<w:sectPrChange ");
+			std::wstring sResult = _T("<w:sectPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+                sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -117,7 +117,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+                sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 

@@ -76,9 +76,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:alpha val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:alpha val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -131,9 +131,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:alphaMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:alphaMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -186,9 +186,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:alphaOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:alphaOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -241,9 +241,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:blue val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:blue val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -296,9 +296,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:blueMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:blueMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -351,9 +351,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:blueOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:blueOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -403,7 +403,7 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
 					return _T("<a:comp/>");
 				}
@@ -439,7 +439,7 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
 					return _T("<a:gamma/>");
 				}
@@ -475,7 +475,7 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
 					return _T("<a:gray/>");
 				}
@@ -514,9 +514,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:green val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:green val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -569,9 +569,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:greenMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:greenMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -624,9 +624,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:greenOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:greenOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -679,9 +679,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:hue val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:hue val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -734,9 +734,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:hueMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:hueMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -789,9 +789,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:hueOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:hueOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -841,7 +841,7 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
 					return _T("<a:inv/>");
 				}
@@ -877,7 +877,7 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
 					return _T("<a:invGamma/>");
 				}
@@ -916,9 +916,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:lum val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:lum val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -971,9 +971,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:lumMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:lumMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1026,9 +1026,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:lumOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:lumOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1081,9 +1081,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:red val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:red val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1136,9 +1136,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:redMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:redMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1191,9 +1191,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:redOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:redOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1246,9 +1246,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:sat val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:sat val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1301,9 +1301,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:satMod val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:satMod val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1356,9 +1356,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:satOff val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:satOff val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1411,9 +1411,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:shade val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:shade val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1466,9 +1466,9 @@ namespace OOX
 						oReader.ReadTillEnd();
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult = _T("<a:tint val=\"") + m_oVal.ToString() + _T("\"/>");
+                    std::wstring sResult = _T("<a:tint val=\"") + m_oVal.ToString() + _T("\"/>");
 
 					return sResult;
 				}
@@ -1596,9 +1596,9 @@ namespace OOX
 					}
 				}
 
-				virtual CString      toXML() const
+                virtual std::wstring      toXML() const
 				{
-					CString sResult;
+                    std::wstring sResult;
 					
                     for ( unsigned int nIndex = 0; nIndex < m_arrTransform.size(); nIndex++ )
 						sResult += m_arrTransform[nIndex]->toXML();
@@ -2117,9 +2117,9 @@ namespace OOX
 				SetHSL( dH, dS, dL );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:hslClr hue=\"") + m_oHue.ToString() + _T("\" sat=\"") + m_oSat.ToString() + _T("\" lum=\"") + m_oLum.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:hslClr hue=\"") + m_oHue.ToString() + _T("\" sat=\"") + m_oSat.ToString() + _T("\" lum=\"") + m_oLum.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2185,9 +2185,9 @@ namespace OOX
 				SetRGBA( unR, unG, unB );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:prstClr val=\"") + m_oVal.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:prstClr val=\"") + m_oVal.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2246,9 +2246,9 @@ namespace OOX
 				SetRGBA( 0, 0, 0 );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:schemeClr val=\"") + m_oVal.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:schemeClr val=\"") + m_oVal.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2313,9 +2313,9 @@ namespace OOX
 				SetRGBA( unR, unG, unB );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:scrgbClr r=\"") + m_oR.ToString() + _T("\" g=\"") + m_oG.ToString() + _T("\" b=\"") + m_oB.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:scrgbClr r=\"") + m_oR.ToString() + _T("\" g=\"") + m_oG.ToString() + _T("\" b=\"") + m_oB.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2380,9 +2380,9 @@ namespace OOX
 				SetRGBA( unR, unG, unB );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:srgbClr val=\"") + m_oVal.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:srgbClr val=\"") + m_oVal.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2443,9 +2443,9 @@ namespace OOX
 				SetRGBA( unR, unG, unB );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:sysClr val=\"") + m_oVal.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:sysClr val=\"") + m_oVal.ToString() + _T("\">");
 
 				sResult += CColorTransform::toXML();
 
@@ -2551,9 +2551,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				switch( m_eType )
 				{

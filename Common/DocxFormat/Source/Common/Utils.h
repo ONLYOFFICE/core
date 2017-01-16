@@ -38,7 +38,7 @@
 
 namespace Common
 {
-void readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes);
+void readAllShapeTypes(const OOX::CPath& oPath, std::vector<std::wstring>& aShapetypes);
 } // namespace Common
 
 #endif // COMMON_UTILS_INCLUDE_H_

@@ -38,20 +38,20 @@
 #if !defined(_WIN32) && !defined (_WIN64)
 #include "../../../DesktopEditor/common/Types.h"
 #define _USE_STRING_OPERATOR						\
-    virtual void operator=(const CString& value)	\
+    virtual void operator=(const std::wstring& value)	\
     {												\
         set(value);									\
     }
 
 #else
 #define _USE_STRING_OPERATOR						\
-    virtual void operator=(const CString& value)	\
+    virtual void operator=(const std::wstring& value)	\
     {												\
         set(value);									\
     }												\
     virtual void operator=(const BSTR& value)		\
     {												\
-        set((CString)value);						\
+        set((std::wstring)value);						\
     }
 #endif // #if !defined(_WIN32) && !defined (_WIN64)
 
@@ -64,7 +64,7 @@ namespace PPTX
 		class BaseLimit
 		{
 		public:
-			BaseLimit(const CString& str = _T("")) : m_strValue(str)
+			BaseLimit(const std::wstring& str = _T("")) : m_strValue(str)
 			{
 			}
 
@@ -79,23 +79,23 @@ namespace PPTX
 				return *this;
 			}
 
-			void operator=(const CString& str)
+			void operator=(const std::wstring& str)
 			{
 				set(str);
 			}
-			AVSINLINE void _set(const CString& strValue)
+			AVSINLINE void _set(const std::wstring& strValue)
 			{
 				set(strValue);
 			}
 
 		public:
-			virtual void set(const CString& strValue)		= 0;
+			virtual void set(const std::wstring& strValue)		= 0;
 
-			AVSINLINE CString& get() 
+			AVSINLINE std::wstring& get() 
 			{
 				return m_strValue;
 			}
-			AVSINLINE const CString& get() const 
+			AVSINLINE const std::wstring& get() const 
 			{
 				return m_strValue;
 			}
@@ -109,7 +109,7 @@ namespace PPTX
 			}
 
 		protected:
-			CString m_strValue;
+			std::wstring m_strValue;
 		};
 	} // namespace Limit
 } // namespace PPTX

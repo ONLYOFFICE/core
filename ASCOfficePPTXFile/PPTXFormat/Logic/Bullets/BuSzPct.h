@@ -59,7 +59,7 @@ namespace PPTX
 				val = node.ReadAttributeInt(_T("val"));
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write( _T("val"), val);

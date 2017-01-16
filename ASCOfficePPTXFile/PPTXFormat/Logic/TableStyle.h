@@ -72,7 +72,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("styleId"), styleId);
@@ -292,8 +292,8 @@ namespace PPTX
 			}
 
 		public:
-			CString styleId;
-			CString styleName;
+			std::wstring styleId;
+			std::wstring styleName;
 
 			nullable<TableBgStyle>	 tblBg;
 			nullable<TablePartStyle> wholeTbl;
@@ -311,7 +311,7 @@ namespace PPTX
 			nullable<TablePartStyle> nwCell;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

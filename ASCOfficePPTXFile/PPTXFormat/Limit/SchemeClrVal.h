@@ -53,7 +53,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("accent1") == strValue) || // (Accent Color 1)  Extra scheme color 1 
 					(_T("accent2") == strValue) || // (Accent Color 2)  Extra scheme color 2 

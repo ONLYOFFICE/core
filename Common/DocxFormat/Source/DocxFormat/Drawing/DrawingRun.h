@@ -85,9 +85,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				switch ( m_eType )
 				{

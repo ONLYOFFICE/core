@@ -34,9 +34,9 @@ namespace OOX
 {	
 	namespace Logic
 	{
-		CString      COMathPara::toXML() const
+        std::wstring      COMathPara::toXML() const
 		{
-			CString sResult = _T("<m:oMathPara>");
+            std::wstring sResult = _T("<m:oMathPara>");
 
 			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{

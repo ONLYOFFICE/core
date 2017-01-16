@@ -54,12 +54,12 @@ namespace PPTX
 				node.ReadAttributeBase(L"fov", fov);
 				node.ReadAttributeBase(L"zoom", zoom);
 
-                CString sRotNodeName = _T("a:rot");
+                std::wstring sRotNodeName = _T("a:rot");
                 rot		= node.ReadNode(sRotNodeName);
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("prst"), prst.get());

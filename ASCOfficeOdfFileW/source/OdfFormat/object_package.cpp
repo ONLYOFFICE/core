@@ -39,9 +39,9 @@
 #include "mediaitems.h"
 
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 namespace cpdoccore 
 {
@@ -129,7 +129,7 @@ namespace odf_writer
 				}
 			}
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"META-INF";
-			FileSystem::Directory::CreateDirectory(path);
+            NSDirectory::CreateDirectory(path);
 			simple_element elm(L"manifest.xml", resStream.str());
 			elm.write(path);
 		}
@@ -186,7 +186,7 @@ namespace odf_writer
 			if (mediaitems_.count_media < 1)return;
 
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-			FileSystem::Directory::CreateDirectory(path);
+            NSDirectory::CreateDirectory(path);
 
 			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
@@ -210,7 +210,7 @@ namespace odf_writer
 			if (mediaitems_.count_image < 1 )return;
 
 			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Pictures";
-			FileSystem::Directory::CreateDirectory(path);
+            NSDirectory::CreateDirectory(path);
 
 			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
@@ -295,7 +295,7 @@ namespace odf_writer
 			BOOST_FOREACH(const element_ptr & item, objects_)
 			{				
 				std::wstring path = RootPath + FILE_SEPARATOR_STR + item->local_path;
-				FileSystem::Directory::CreateDirectory(path);
+                NSDirectory::CreateDirectory(path);
 				
 				item->write(path);
 			}

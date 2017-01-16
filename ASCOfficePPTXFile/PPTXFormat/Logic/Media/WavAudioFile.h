@@ -64,7 +64,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"name", name);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:embed"), embed.ToString());
@@ -89,7 +89,7 @@ namespace PPTX
 			nullable_string name;
 			PPTX::RId		embed;
 		public:
-			CString			m_name;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

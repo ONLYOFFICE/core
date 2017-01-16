@@ -34,7 +34,7 @@
 
 class CRecordRoundTripColorMappingAtom : public CUnknownRecord
 {
-	CStringW m_pString;
+    std::wstring m_pString;
 
 public:
 	

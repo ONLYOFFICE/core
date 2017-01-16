@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -115,7 +115,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -123,7 +123,7 @@ namespace OOX
 			{
 				if (3 < m_arrItems.size()) // min 2 + 2
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<colorScale>"));
 
 					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
@@ -168,7 +168,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -176,7 +176,7 @@ namespace OOX
 			{
 				if (2 == m_arrItems.size() && m_oColor.IsInit())
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<dataBar"));
 					WritingStringNullableAttrInt(L"maxLength", m_oMaxLength, m_oMaxLength->GetValue());
 					WritingStringNullableAttrInt(L"minLength", m_oMinLength, m_oMinLength->GetValue());
@@ -252,7 +252,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -291,7 +291,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -299,7 +299,7 @@ namespace OOX
 			{
 				if (1 < m_arrItems.size()) // min value = 2
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<iconSet"));
 					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
@@ -380,7 +380,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -497,7 +497,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -505,9 +505,9 @@ namespace OOX
 			{
 				if (m_oSqRef.IsInit() && 0 < m_arrItems.size())
 				{
-					CString sRoot;
+                    std::wstring sRoot;
 					writer.WriteString(L"<conditionalFormatting");
-					WritingStringAttrString(L"sqref", m_oSqRef->ToString2());
+					WritingStringAttrString(L"sqref", m_oSqRef->ToString());
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{

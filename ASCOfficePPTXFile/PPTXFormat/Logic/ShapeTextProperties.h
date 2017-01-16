@@ -49,9 +49,9 @@ namespace PPTX
 		{
 		public:
 			LONG	FontRef;
-			CString	strFontName;
-			CString strPanose;
-			CString strPitchFamily;
+			std::wstring	strFontName;
+			std::wstring strPanose;
+			std::wstring strPitchFamily;
 			BYTE	Charset;
 
 		public:
@@ -135,7 +135,7 @@ namespace PPTX
 				return -1;
 			}
 
-			CString GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
+			std::wstring GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
 
 			nullable_base<WORD> GetParagraphAlgn		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<LONG>	GetParagraphLeftMargin	(int level, const nullable<TextParagraphPr>& pParagraph)const;

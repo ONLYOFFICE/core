@@ -49,7 +49,7 @@ namespace PPTX
 			{
 				node.ReadAttributeBase(_T("restart"), restart);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("restart"), restart);

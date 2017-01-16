@@ -42,9 +42,9 @@ namespace Writers
 		DefaultThemeWriter()
 		{
 		}
-		void Write(CString sThemeFilePath)
+        void Write(std::wstring sThemeFilePath)
 		{
-			CString s_Common;
+            std::wstring s_Common;
 
 			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?> \
 <a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\"> \

@@ -77,7 +77,7 @@ namespace PPTX
 			void FillRGBFromVal()
 			{
 				DWORD RGB = 0;
-				CString str = val.get();
+				std::wstring str = val.get();
                 if (str != L"")
 				{
 					switch((CHAR)str[0])
@@ -148,14 +148,14 @@ namespace PPTX
 			}
 
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str = _T("");
-				str.Format(_T("%.02X%.02X%.02X"), red, green, blue);
+				std::wstringstream sstream;
+				sstream << boost::wformat( L"%02x%02x%02x" ) % red % green % blue;
 				
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), val.get());
-				oAttr.Write(_T("lastClr"), str);
+				oAttr.Write(_T("lastClr"), sstream.str());
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(Modifiers);
@@ -165,8 +165,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");
@@ -177,12 +177,12 @@ namespace PPTX
 
 				pWriter->StartNode(sNodeNamespace + _T("sysClr"));
 						
-				CString str = _T("");
-				str.Format(_T("%.02X%.02X%.02X"), red, green, blue);
+                std::wstringstream sstream;
+                sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
-				pWriter->WriteAttribute(sAttrNamespace + _T("lastClr"), str);
+                pWriter->WriteAttribute(sAttrNamespace + _T("lastClr"), sstream.str());
 				pWriter->EndAttributes();
 
 				size_t nCount = Modifiers.size();

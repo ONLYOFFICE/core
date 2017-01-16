@@ -63,7 +63,7 @@ namespace PPTX
 			}
 
 		public:
-			void registration(const RId& rId, const CString& type, const OOX::CPath& filename)
+			void registration(const RId& rId, const std::wstring& type, const OOX::CPath& filename)
 			{
 				m_items.push_back(RelationShip(rId, type, filename));
 			}

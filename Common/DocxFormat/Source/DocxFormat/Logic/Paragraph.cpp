@@ -252,9 +252,9 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		CString CParagraph::toXML() const
+		std::wstring CParagraph::toXML() const
 		{
-			CString sResult = _T("<w:p ");
+			std::wstring sResult = _T("<w:p ");
 
 			ComplexTypes_WriteAttribute( _T("w:rsidDel=\""),      m_oRsidDel );
 			ComplexTypes_WriteAttribute( _T("w:rsidP=\""),        m_oRsidP );
@@ -302,7 +302,7 @@ namespace OOX
 		{
 			m_arrItems.push_back( (WritingElement*)pRun );
 		}
-		void CParagraph::AddText(CString& sText)
+		void CParagraph::AddText(std::wstring& sText)
 		{
 			WritingElement *pR = new CRun();
 			if ( !pR )
@@ -325,7 +325,7 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-        void CParagraph::AddText(CString& sText, CRunProperty * pProperty)
+        void CParagraph::AddText(std::wstring& sText, CRunProperty * pProperty)
 		{
 			WritingElement *pR = new CRun();
 			if ( !pR )
@@ -428,10 +428,12 @@ namespace OOX
 			}
 
 			CText *pText = (CText*)pT;
+			
 			char *sString = new char[nCount + 1];
 			::memset( sString, 0x20, nCount );
-			sString[nCount] = '\0';
-			pText->m_sText = sString;
+            sString[nCount] = '\0';
+			std::string s(sString);
+			pText->m_sText = std::wstring(s.begin(), s.end());
 			delete sString;
 			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
@@ -457,7 +459,8 @@ namespace OOX
 			char *sString = new char[nCount + 1];
 			::memset( sString, 0x20, nCount );
 			sString[nCount] = '\0';
-			pText->m_sText = sString;
+            std::string s(sString);
+            pText->m_sText = std::wstring(s.begin(), s.end());
 			delete sString;
 			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
@@ -471,7 +474,7 @@ namespace OOX
 		}
 
 
-		void CParagraph::AddBookmarkStart(int nId, CString& sName)
+		void CParagraph::AddBookmarkStart(int nId, std::wstring& sName)
 		{
 			WritingElement *pBS = new CBookmarkStart();
 			if ( !pBS )

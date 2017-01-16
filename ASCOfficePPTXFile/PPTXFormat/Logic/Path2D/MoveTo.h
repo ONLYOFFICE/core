@@ -66,11 +66,9 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str;
-				str.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x, y);
-				return _T("<a:moveTo>") + str + _T("</a:moveTo>"); 
+                return _T("<a:moveTo><a:pt x=\"") +  x + L"\" y=\"" +  y + _T("\"/></a:moveTo>");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
@@ -100,15 +98,14 @@ namespace PPTX
 			}
 
 		public:
-			CString x;
-			CString y;
+			std::wstring x;
+			std::wstring y;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
-				CString str;
-				str.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x, y);
+				std::wstring str = L"<a:pt x=\"" + x + L"\" y=\"" + y + L"\" />";
 				return _T("<moveTo>") + str + _T("</moveTo>"); 
 			}
 		};

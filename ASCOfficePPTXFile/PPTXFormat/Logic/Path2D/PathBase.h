@@ -44,7 +44,7 @@ namespace PPTX
 		public:
 			PathBase(){}
 			virtual ~PathBase(){}
-			virtual CString GetODString()const = 0;
+			virtual std::wstring GetODString()const = 0;
 		};
 	} // namespace Logic
 } // namespace PPTX

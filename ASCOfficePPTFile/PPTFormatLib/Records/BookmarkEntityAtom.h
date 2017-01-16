@@ -35,7 +35,7 @@
 class CRecordBookmarkEntityAtom : public CUnknownRecord
 {
 	UINT m_nID;
-	CStringW m_strName;
+    std::wstring m_strName;
 
 public:
 	

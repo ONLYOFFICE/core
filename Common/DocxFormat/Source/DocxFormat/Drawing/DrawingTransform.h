@@ -94,9 +94,9 @@ namespace OOX
 						m_oOff = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				
 				switch ( m_eType )
@@ -216,9 +216,9 @@ namespace OOX
 						m_oOff = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				
 				switch ( m_eType )

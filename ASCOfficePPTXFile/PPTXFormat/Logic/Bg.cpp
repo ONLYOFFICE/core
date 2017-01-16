@@ -74,7 +74,7 @@ namespace PPTX
 		}
 
 
-		CString Bg::toXML() const
+		std::wstring Bg::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.WriteLimitNullable(_T("bwMode"), bwMode);

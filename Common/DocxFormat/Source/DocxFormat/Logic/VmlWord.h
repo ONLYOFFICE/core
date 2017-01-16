@@ -69,7 +69,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("<wd:anchorLock/>");
 			}
@@ -121,9 +121,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				switch ( m_eType )
 				{
 				case et_wd_borderbottom: sResult = _T("<wd:borderbottom "); break;
@@ -199,9 +199,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w10:wrap ");
+				std::wstring sResult = _T("<w10:wrap ");
 
 				if ( m_oType.IsInit() )
 					sResult += _T("type=\"") + m_oType->ToString() + _T("\" ");

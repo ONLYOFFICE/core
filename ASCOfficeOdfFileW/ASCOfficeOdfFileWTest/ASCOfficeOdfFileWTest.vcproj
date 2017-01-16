@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="ASCOfficeOdfFileWTest"
 	ProjectGUID="{FBA8446A-150F-4A10-B4DA-1022048D6473}"
 	RootNamespace="ASCOfficeOdfFileWTest"
@@ -63,6 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="&#x0D;&#x0A;Rpcrt4.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -375,6 +376,30 @@
 			</File>
 			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"

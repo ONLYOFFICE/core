@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -62,7 +62,7 @@ namespace OOX
 			{
 				writer.WriteString(_T("<hyperlink"));
 				WritingStringNullableAttrEncodeXmlString(L"display", m_oDisplay, m_oDisplay.get());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				WritingStringNullableAttrEncodeXmlString(L"location", m_oLocation, m_oLocation.get());
 				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
 				WritingStringNullableAttrEncodeXmlString(L"tooltip", m_oTooltip, m_oTooltip.get());
@@ -117,7 +117,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

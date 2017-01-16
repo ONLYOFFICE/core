@@ -71,7 +71,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -91,10 +91,10 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString _name = m_name;
+				std::wstring _name = m_name;
 				if (_name == _T(""))
 					_name = _T("a:ln");
-				CString sAttrNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					_name = _T("w14:textOutline");
@@ -284,7 +284,7 @@ namespace PPTX
 			nullable_limit<Limit::CompoundLine> cmpd;
 			nullable_int						w;
 
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

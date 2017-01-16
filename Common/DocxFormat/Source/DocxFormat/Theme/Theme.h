@@ -114,7 +114,7 @@ namespace OOX
 		{
 			if(m_bWriteContent)
 			{
-				CString sXml;
+                std::wstring sXml;
 				sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"") + m_sName + _T("\">");
 
 				sXml += m_oThemeElements.toXML();
@@ -133,7 +133,7 @@ namespace OOX
 
 				sXml += _T("</a:theme>");
 
-				CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+				NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), sXml );
 			}
 			oContent.Registration( type().OverrideType(), oDirectory, oFilePath.GetFilename() );
 		}
@@ -154,33 +154,33 @@ namespace OOX
 
 	public:
 
-		const CString GetMajorFont() const
+        const std::wstring GetMajorFont() const
 		{
 			if ( m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue();
 			else
 				return _T("Times New Roman");
 		}		
-		const CString GetMinorFont() const
+        const std::wstring GetMinorFont() const
 		{
 			if ( m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue();
 			else
 				return _T("Times New Roman");
 		}
-		const CString GetMajorFontOrEmpty() const
+        const std::wstring GetMajorFontOrEmpty() const
 		{
 			if ( m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue();
 			else
-				return CString();
+                return std::wstring();
 		}		
-		const CString GetMinorFontOrEmpty() const
+        const std::wstring GetMinorFontOrEmpty() const
 		{
 			if ( m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue();
 			else
-				return CString();
+                return std::wstring();
 		}
 		void DoNotWriteContent(bool bDoNotWriteContent)
 		{
@@ -199,7 +199,7 @@ namespace OOX
 	public:
 		CPath									m_oReadPath;
 		// Attributes
-		CString                                        m_sName;
+        std::wstring                                        m_sName;
 
 		// Childs
 		nullable<OOX::Drawing::CCustomColorList>        m_oCustClrLst;

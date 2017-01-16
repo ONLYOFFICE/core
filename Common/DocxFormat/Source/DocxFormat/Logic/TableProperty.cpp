@@ -101,14 +101,14 @@ namespace OOX
 					m_pTblPr->fromXML( oReader );
 			}
 		}
-		CString CTblPrChange::toXML() const
+		std::wstring CTblPrChange::toXML() const
 		{			
-			CString sResult = _T("<w:tblPrChange ");
+			std::wstring sResult = _T("<w:tblPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+				sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -129,7 +129,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+				sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 
@@ -228,14 +228,14 @@ namespace OOX
 					m_pTrPr->fromXML( oReader );
 			}
 		}
-		CString CTrPrChange::toXML() const
+		std::wstring CTrPrChange::toXML() const
 		{			
-			CString sResult = _T("<w:trPrChange ");
+			std::wstring sResult = _T("<w:trPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+				sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -256,7 +256,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+				sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 
@@ -357,14 +357,14 @@ namespace OOX
 					m_pTcPr->fromXML( oReader );
 			}
 		}
-		CString CTcPrChange::toXML() const
+		std::wstring CTcPrChange::toXML() const
 		{			
-			CString sResult = _T("<w:tcPrChange ");
+			std::wstring sResult = _T("<w:tcPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+				sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -385,7 +385,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+				sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 

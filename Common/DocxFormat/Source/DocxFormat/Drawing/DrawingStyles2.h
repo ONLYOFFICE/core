@@ -74,9 +74,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:fontRef idx=\"") + m_oIdx.ToString() + _T("\">");
+				std::wstring sResult = _T("<a:fontRef idx=\"") + m_oIdx.ToString() + _T("\">");
 
 				sResult += CColor::toXML();
 
@@ -142,9 +142,9 @@ namespace OOX
 						m_oLightRig = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:scene3d>");
+				std::wstring sResult = _T("<a:scene3d>");
 
 				sResult += m_oCamera.toXML();
 				sResult += m_oLightRig.toXML();
@@ -214,9 +214,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				switch ( m_eType )
 				{

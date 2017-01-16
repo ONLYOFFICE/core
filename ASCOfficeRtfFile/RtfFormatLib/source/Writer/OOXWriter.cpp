@@ -119,10 +119,10 @@ bool OOXWriter::SaveByItemEnd()
 	OOX::CContentTypes oContentTypes;
 
 	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + L"word";
-    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+    NSDirectory::CreateDirectory(pathWord.GetPath());
 	
 	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + L"theme";
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
+    NSDirectory::CreateDirectory(pathTheme.GetPath()) ;
 	Writers::DefaultThemeWriter themeWriter;
 
 	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + L"theme1.xml");
@@ -141,7 +141,7 @@ bool OOXWriter::SaveByItemEnd()
 
 //-------------------------------------------------------------------------------------
 	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + L"docProps";
-    FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+    NSDirectory::CreateDirectory(pathDocProps.GetPath());
 	
 	if (m_poDocPropsApp)
 	{

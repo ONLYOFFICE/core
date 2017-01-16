@@ -56,7 +56,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"prst", prst);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -81,7 +81,7 @@ namespace PPTX
 			nullable_limit<Limit::BevelType>	prst;
 		//private:
 		public:
-			CString								m_name;
+			std::wstring								m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

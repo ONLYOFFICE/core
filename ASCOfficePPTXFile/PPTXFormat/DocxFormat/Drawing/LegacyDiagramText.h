@@ -118,7 +118,7 @@ namespace PPTX
 		}
 	
 	
-		CString										m_Text;
+		std::wstring										m_Text;
 
 		std::vector<PPTX::Logic::RunProperties>		m_arrRPr;
 		std::vector<PPTX::Logic::TextParagraphPr>	m_arrPPr;
@@ -180,14 +180,14 @@ namespace PPTX
 
                         if (conversionOK == eUnicodeConversionResult)
                         {
-                            m_Text = CString((WCHAR*)sBuffer, lSize);
+                            m_Text = std::wstring((WCHAR*)sBuffer, lSize);
 
                         }
                         delete []sBuffer;
                     }
 					else
 					{
-                        m_Text = CString((wchar_t*)(m_Data+pos),  lSize);
+                        m_Text = std::wstring((wchar_t*)(m_Data+pos),  lSize);
 					}
 				}break;	
 				case 0x0FA8:	//TextBytesAtom
@@ -201,7 +201,7 @@ namespace PPTX
 					//rgTextPFRun (variable)
 					//rgTextCFRun (variable)
 
-					ParseTextProps(m_Data + pos, rec.RecLen, m_Text.GetLength());
+					ParseTextProps(m_Data + pos, rec.RecLen, m_Text.length());
 				}break;
 				case 0x0FAA:	//TextSpecialInfoAtom
 				{

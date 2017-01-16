@@ -51,7 +51,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -96,13 +96,13 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("col") == sName )
-						m_oCol = oReader.GetText2().GetString();
+						m_oCol = oReader.GetText2();
 					else if ( _T("colOff") == sName )
-						m_oColOff = oReader.GetText2().GetString();
+						m_oColOff = oReader.GetText2();
 					else if ( _T("row") == sName )
-						m_oRow = oReader.GetText2().GetString();
+						m_oRow = oReader.GetText2();
 					else if ( _T("rowOff") == sName )
-						m_oRowOff = oReader.GetText2().GetString();
+						m_oRowOff = oReader.GetText2();
 				}
 			}
 
@@ -133,7 +133,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

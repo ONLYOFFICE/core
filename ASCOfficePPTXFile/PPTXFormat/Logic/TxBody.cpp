@@ -39,9 +39,9 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString TxBody::GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<ShapeStyle>& shape_style)
+		std::wstring TxBody::GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<ShapeStyle>& shape_style)
 		{
-			CString strXml = _T("<w:txbxContent ");
+			std::wstring strXml = _T("<w:txbxContent ");
 
 			strXml += _T("\
 	xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
@@ -70,7 +70,7 @@ namespace PPTX
 			smart_ptr<PPTX::WrapperFile> pTheme				= pWriter->ThemeDoc->smart_dynamic_cast<PPTX::WrapperFile>();
 			smart_ptr<PPTX::WrapperWritingElement> pClrMap	= pWriter->ClrMapDoc->smart_dynamic_cast<PPTX::WrapperWritingElement>();
 
-			CString sThemeFont = _T("");
+			std::wstring sThemeFont = _T("");
 			
 			DWORD dwColor = 0;
 			if (shape_style.is_init() && shape_style->fontRef.idx.is_init())
@@ -148,19 +148,19 @@ namespace PPTX
 						{
 						case 0:
 							// center
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("center"));
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("center"));
 							break;
 						case 2:
 						case 3:
 							// both
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("both"));
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("both"));
 							break;
 						case 5:
 							// right
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("right"));
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("right"));
 							break;
 						default:
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("left"));
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("left"));
 							break;
 						}
 
@@ -176,22 +176,22 @@ namespace PPTX
 						switch (nFA)
 						{
 						case 0: 
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("auto")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("auto")); 
 							break;
 						case 1: 
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("bottom")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("bottom")); 
 							break;
 						case 2: 
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("baseline")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("baseline")); 
 							break;
 						case 3: 
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("center")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("center")); 
 							break;
 						case 4: 
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("top")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("top")); 
 							break;
 						default:
-							oWriter.WriteAttribute(_T("w:val"), (CString)_T("baseline")); 
+							oWriter.WriteAttribute(_T("w:val"), (std::wstring)_T("baseline")); 
 							break;
 						}
 
@@ -262,17 +262,17 @@ namespace PPTX
 
 							if (pRPr->latin.is_init())
 							{
-								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->latin.get2());
+								std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->latin.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:asciiTheme"), (CString)_T("minorHAnsi"));
-									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (CString)_T("minorHAnsi"));
+									oWriter.WriteAttribute(_T("w:asciiTheme"), (std::wstring)_T("minorHAnsi"));
+									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (std::wstring)_T("minorHAnsi"));
 								}
 								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:asciiTheme"), (CString)_T("majorHAnsi"));
-									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (CString)_T("majorHAnsi"));
+									oWriter.WriteAttribute(_T("w:asciiTheme"), (std::wstring)_T("majorHAnsi"));
+									oWriter.WriteAttribute(_T("w:hAnsiTheme"), (std::wstring)_T("majorHAnsi"));
 								}
 								else
 								{
@@ -282,15 +282,15 @@ namespace PPTX
 							}
 							if (pRPr->ea.is_init())
 							{
-								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->ea.get2());
+								std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->ea.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (CString)_T("minorEastAsia"));
+									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (std::wstring)_T("minorEastAsia"));
 								}
 								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (CString)_T("majorEastAsia"));
+									oWriter.WriteAttribute(_T("w:eastAsiaTheme"), (std::wstring)_T("majorEastAsia"));
 								}
 								else
 								{
@@ -299,15 +299,15 @@ namespace PPTX
 							}
 							if (pRPr->cs.is_init())
 							{
-								CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->cs.get2());
+								std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(pRPr->cs.get2());
 
 								if (sPick == _T("minor") || sPick == _T("+mn-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:cstheme"), (CString)_T("minorBidi"));
+									oWriter.WriteAttribute(_T("w:cstheme"), (std::wstring)_T("minorBidi"));
 								}
 								else if (sPick == _T("major") || sPick == _T("+mj-lt"))
 								{
-									oWriter.WriteAttribute(_T("w:cstheme"), (CString)_T("majorBidi"));
+									oWriter.WriteAttribute(_T("w:cstheme"), (std::wstring)_T("majorBidi"));
 								}
 								else
 								{
@@ -323,8 +323,11 @@ namespace PPTX
 							BYTE _r = (BYTE)((dwColor >> 16) & 0xFF);
 							BYTE _g = (BYTE)((dwColor >> 8) & 0xFF);
 							BYTE _b = (BYTE)((dwColor) & 0xFF);
-							CString sHex = _T("");
-							sHex.Format(_T("<w:color w:val=\"%02X%02X%02X\" />"), _r, _g, _b);
+
+                            std::wstringstream sstream;
+                            sstream << boost::wformat( L"%.02X%.02X%.02X" ) % _r % _g % _b;
+
+                            std::wstring sHex = L"<w:color w:val=\"" + sstream.str() + L"\"/>";
 							oWriter.WriteString(sHex);
 						}
 
@@ -349,8 +352,7 @@ namespace PPTX
 							dSize /= 100;
 							int nSize = (int)(dSize * 2);
 							
-							CString strFS = _T("");
-							strFS.Format(_T("<w:sz w:val=\"%d\"/><w:szCs w:val=\"%d\"/>"), nSize, nSize);
+                            std::wstring strFS =L"<w:sz w:val=\"" + std::to_wstring(nSize) + L"\"/><w:szCs w:val=\"" + std::to_wstring(nSize) + L"\"/>";
 							oWriter.WriteString(strFS);
 						}
 						
@@ -365,7 +367,7 @@ namespace PPTX
 
 						oWriter.StartNode(_T("w:t"));
 						oWriter.StartAttributes();
-						oWriter.WriteAttribute(_T("xml:space"), (CString)_T("preserve"));
+						oWriter.WriteAttribute(_T("xml:space"), (std::wstring)_T("preserve"));
 						oWriter.EndAttributes();
 						oWriter.WriteString(oRun.GetText());
 						oWriter.EndNode(_T("w:t"));

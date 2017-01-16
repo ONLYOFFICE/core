@@ -46,18 +46,6 @@ namespace Txt2Docx
 
 		Txt::File		m_inputFile;
 		OOX::CDocument	m_outputFile;
-
-		static  CString PrepareToXML( const std::wstring & sInput)
-		{
-			 CString sResult = sInput;
-			 //&amp; («&И), &lt; («<И), &gt; («>И), &apos; («'И), и &quot; («"И)
-			 sResult.Replace(_T("&"), _T("&amp;"));
-			 sResult.Replace(_T("<"), _T("&lt;"));
-			 sResult.Replace(_T(">"), _T("&gt;"));
-			 sResult.Replace(_T("\""), _T("&quot;"));
-			 sResult.Replace(_T("'"), _T("&apos;"));
-			 return sResult;
-		}
 	};
 
     Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
@@ -117,9 +105,9 @@ namespace Txt2Docx
 			space.m_oLine.Init();		space.m_oLine->FromString(L"240");			
 			space.m_oLineRule.Init();	space.m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);			
 			
-			font.m_sAscii.Init();	*font.m_sAscii	= "Courier New";
-			font.m_sHAnsi.Init();	*font.m_sHAnsi	= "Courier New";
-			font.m_sCs.Init();		*font.m_sCs		= "Courier New";
+            font.m_sAscii.Init();	*font.m_sAscii	= L"Courier New";
+            font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
+            font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
 
 			for (std::list<std::wstring>::iterator line = m_inputFile.m_listContent.begin(); line != m_inputFile.m_listContent.end(); line++)
 			{
@@ -149,7 +137,7 @@ namespace Txt2Docx
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
 							rPr_->m_oRFonts		= font;
-                            CString s_ = PrepareToXML(s);
+                            std::wstring s_ = XmlUtils::EncodeXmlString(s);
                             paragraph->AddText(s_, rPr_);
 						}
 					}
@@ -159,7 +147,7 @@ namespace Txt2Docx
 			
 				if (!line->empty())
 				{
-                    CString s_ = PrepareToXML(*line);
+                    std::wstring s_ = XmlUtils::EncodeXmlString(*line);
                     paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);

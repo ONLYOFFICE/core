@@ -70,7 +70,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString TableCell::toXML() const
+		std::wstring TableCell::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("rowSpan"), RowSpan);

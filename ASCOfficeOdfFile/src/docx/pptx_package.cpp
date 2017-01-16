@@ -117,7 +117,7 @@ void slides_files::add_slide(slide_content_ptr slide)
 void slides_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slides" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
@@ -160,7 +160,7 @@ void slideMasters_files::add_slide(slide_content_ptr slide)
 void slideMasters_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideMasters" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
@@ -202,7 +202,7 @@ void slideLayouts_files::add_slide(slide_content_ptr slide)
 void slideLayouts_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideLayouts" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     for (int i = 0; i < slides_.size(); i++)
     {
@@ -254,7 +254,7 @@ void ppt_charts_files::add_chart(chart_content_ptr chart)
 void ppt_charts_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     for (int i = 0; i < charts_.size(); i++)
     {
@@ -284,7 +284,7 @@ void ppt_themes_files::add_theme(pptx_xml_theme_ptr theme)
 void ppt_themes_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"theme" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     for (int i = 0; i < themes_.size(); i++)
     {
@@ -310,7 +310,7 @@ ppt_comments_files_ptr ppt_comments_files::create(const std::vector<pptx_comment
 void ppt_comments_files::write(const std::wstring & RootPath)
 {
 	std::wstring comm_path = RootPath + FILE_SEPARATOR_STR +  L"comments";
-	FileSystem::Directory::CreateDirectory(comm_path.c_str());
+    NSDirectory::CreateDirectory(comm_path.c_str());
    
 	for (int i = 0; i < comments_.size(); i++)
     {
@@ -331,7 +331,7 @@ ppt_files::ppt_files()
 void ppt_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"ppt";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     slides_files_.set_rels(&rels_files_);
     slides_files_.set_main_document( this->get_main_document() );

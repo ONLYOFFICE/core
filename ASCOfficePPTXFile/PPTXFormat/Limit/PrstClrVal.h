@@ -50,7 +50,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("aliceBlue") == strValue) || // (Alice Blue Preset Color)  Specifies a color with RGB value (240,248,255) 
 					(_T("antiqueWhite") == strValue) || // (Antique White Preset Color)  Specifies a color with RGB value (250,235,215) 

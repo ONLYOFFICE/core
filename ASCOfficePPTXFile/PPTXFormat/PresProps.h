@@ -61,7 +61,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			ClrMru.clear();
 			XmlUtils::CXmlNode oNodeClr;

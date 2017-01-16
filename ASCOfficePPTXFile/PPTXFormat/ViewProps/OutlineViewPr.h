@@ -65,7 +65,7 @@ namespace PPTX
 
 				node.ReadNode(_T("p:sldLst")).LoadArray(_T("p:sld"), SldLst);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(CViewPr);

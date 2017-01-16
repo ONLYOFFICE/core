@@ -59,7 +59,7 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (_T("") == m_namespace)
 					return _T("<noFill/>");
@@ -79,7 +79,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
@@ -103,7 +103,7 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (_T("") == m_namespace)
 					return _T("<grpFill/>");
@@ -123,7 +123,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

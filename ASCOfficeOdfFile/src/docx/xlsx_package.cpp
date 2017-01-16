@@ -119,7 +119,7 @@ void sheets_files::add_sheet(sheet_content_ptr sheet)
 void sheets_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 
@@ -164,7 +164,7 @@ xl_files::xl_files()
 void xl_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     sheets_files_.set_rels(&rels_files_);
     sheets_files_.set_main_document( this->get_main_document() );
@@ -277,7 +277,7 @@ void xl_charts_files::add_chart(chart_content_ptr chart)
 void xl_charts_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 
@@ -312,7 +312,7 @@ xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 void xl_drawings::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     BOOST_FOREACH(drawing_elm const & e, drawings_)
     {
@@ -342,7 +342,7 @@ xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
 void xl_comments::write(const std::wstring & RootPath)
 {
 	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-	FileSystem::Directory::CreateDirectory(vml_path.c_str());
+    NSDirectory::CreateDirectory(vml_path.c_str());
    
 	BOOST_FOREACH(comment_elm const & e, comments_)
     {

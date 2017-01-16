@@ -72,7 +72,7 @@ namespace PPTX
 					XmlUtils::CXmlNode oNode;
 					oNodes.GetAt(i, oNode);
 
-					CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("nvCxnSpPr") == strName)
 						nvCxnSpPr = oNode;
@@ -86,7 +86,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString CxnSp::toXML() const
+		std::wstring CxnSp::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvCxnSpPr);

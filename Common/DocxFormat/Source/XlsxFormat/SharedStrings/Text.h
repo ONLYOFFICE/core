@@ -49,7 +49,7 @@ namespace OOX
 			virtual ~CText() {}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

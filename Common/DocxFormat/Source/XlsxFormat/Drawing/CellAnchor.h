@@ -57,7 +57,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -161,7 +161,7 @@ namespace OOX
 						{
 							XmlUtils::CXmlLiteReader oShapeReader;
 							//сформируем полноценную xml-строку
-                            CString xmlString;// = L"<?xml version=\"1.0\"?>";// encoding=\"UTF-8\"
+                            std::wstring xmlString;// = L"<?xml version=\"1.0\"?>";// encoding=\"UTF-8\"
 							xmlString += L"<root ";
 								xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 								xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
@@ -216,9 +216,9 @@ namespace OOX
 								std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 								if ( _T("Fallback") == sName || _T("Choice") == sName )
 								{
-									CString sRequires;
+                                    std::wstring sRequires;
 									ReadAttributesRequire(oReader, sRequires);
-									CString xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
+                                    std::wstring xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
 									xmlString += L"<root ";
 										xmlString += L"xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" ";
 										xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
@@ -230,7 +230,7 @@ namespace OOX
 									xmlString += L"</root>";
 
 									//todo better check (a14 can be math, slicer)
-									if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.Find(L"a14:m")))
+                                    if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.find(L"a14:m")))
 									{
 										continue;
 									}
@@ -278,7 +278,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, CString& sRequire)
+            void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire)
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )

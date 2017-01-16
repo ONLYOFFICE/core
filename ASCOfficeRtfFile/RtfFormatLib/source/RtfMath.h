@@ -39,8 +39,8 @@
 class RtfMath : public IDocumentElement, public ItemContainer<IDocumentElementPtr>
 {
 public: 
-	CString				m_sRtfName;
-	CString				m_sOOXName;
+    std::string         m_sRtfName;
+    std::string         m_sOOXName;
 
 	bool				m_bHeader; //чтобы отличать заголовок от вложенных групп
 
@@ -75,28 +75,28 @@ public:
 	}
 	bool IsEmpty()
 	{
-		return m_sRtfName.IsEmpty();
+        return m_sRtfName.empty();
 	}
 	bool IsValid()
 	{
-		return (false == m_sRtfName.IsEmpty());
+        return (false == m_sRtfName.empty());
 	}
-	bool IsRtfControlPropertyBool	( CString sControlW );
-	bool IsRtfControlProperty		( CString sControlW );
-	bool IsRtfControlWord			( CString sControlW );
+    bool IsRtfControlPropertyBool	( std::string sControl );
+    bool IsRtfControlProperty		( std::string sControl );
+    bool IsRtfControlWord			( std::string sControl );
 
-	void SetRtfName(CString sName)
+    void SetRtfName(std::string sName)
 	{
 		m_sRtfName = sName;
 		
 		m_sOOXName = sName;
-		m_sOOXName.Insert(1, L":");
+        m_sOOXName.insert(m_sOOXName.begin() + 1, L':');
 	}
 
 	void	SetOOXType		(int type);
 	
-	CString RenderToRtf		(RenderParameter oRenderParameter);
-	CString RenderToOOX		(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf		(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX		(RenderParameter oRenderParameter);
 };
 
 typedef boost::shared_ptr<RtfMath> RtfMathPtr;

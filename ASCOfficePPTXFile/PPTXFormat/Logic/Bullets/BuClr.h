@@ -64,7 +64,7 @@ namespace PPTX
 			{
 				Color.GetColorFrom(node);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return XmlUtils::CreateNode(_T("a:buClr"), Color.toXML());
 			}

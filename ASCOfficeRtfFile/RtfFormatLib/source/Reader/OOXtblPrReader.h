@@ -67,7 +67,7 @@ public:
 
 		if(m_ooxTableProps->m_oTblStyle.IsInit() && m_ooxTableProps->m_oTblStyle->m_sVal.IsInit())
 		{
-			CString sStyle = m_ooxTableProps->m_oTblStyle->m_sVal.get2();
+			std::wstring sStyle = m_ooxTableProps->m_oTblStyle->m_sVal.get2();
 			RtfStylePtr oStyle;
 			if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyle, oStyle) )
 			{

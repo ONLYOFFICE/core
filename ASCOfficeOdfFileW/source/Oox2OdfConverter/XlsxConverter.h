@@ -137,7 +137,7 @@ namespace Oox2Odf
 		
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual OOX::CTheme								*oox_theme();
-		virtual CString									find_link_by_id (CString sId, int t);
+        virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		

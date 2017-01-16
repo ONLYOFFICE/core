@@ -45,7 +45,7 @@ namespace MathEquation
 	class EquationRun
 	{
 		public:
-			CString str;
+            std::wstring str;
 			TMathFont* pFont;
 			LONG nTextSize;
 			bool bAccent;
@@ -57,7 +57,7 @@ namespace MathEquation
 			{
 				bNormal = false;
 			}
-			void AddChar(CString sChar, TMathFont* pNewFont, LONG lSize)
+            void AddChar(std::wstring sChar, TMathFont* pNewFont, LONG lSize)
 			{
 				str = sChar;
 				pFont = pNewFont;
@@ -197,10 +197,7 @@ namespace MathEquation
 					//else
 					//	nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
 
-					CString sFontName;
-
-					sFontName.Insert(0, _T("Cambria Math"));
-					if (sFontName)
+                    std::wstring sFontName = L"Cambria Math";
 					{
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
@@ -285,7 +282,7 @@ namespace MathEquation
 				else
 					bIsOpen = true;
 
-				CString sText;
+                std::wstring sText;
 				LONG lSize = oRManager.GetSize();
 
 				if (bLast)
@@ -308,12 +305,12 @@ namespace MathEquation
 								{
 									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSup);
 									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
-									CString str;
+                                    std::wstring str;
 									switch (oRun.eType)
 									{
-										case embelPrime:     str.Insert(0, 0x2032); break;
-										case embelDPrime:    str.Insert(0, 0x2033); break;
-										case embelTPrime:    str.Insert(0, 0x2034); break;
+                                        case embelPrime:     str =  0x2032; break;
+                                        case embelDPrime:    str =  0x2033; break;
+                                        case embelTPrime:    str =  0x2034; break;
 									}
 									WriteItemEnd(nCurPos1);
 									
@@ -332,8 +329,8 @@ namespace MathEquation
 								{
 									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
 									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
-									CString str;
-									str.Insert(0, 0x0060);
+                                    std::wstring str;
+                                    str =  0x0060;
 									WriteItemEnd(nCurPos1);
 
 									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);
@@ -351,24 +348,24 @@ namespace MathEquation
 								{
 									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Acc);
 									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::AccPr);
-									CString str;
+                                    std::wstring str;
 									switch (oRun.eType)
 									{
-										case embelDot:       str.Insert(0, 0x0307); break;
-										case embelDDot:      str.Insert(0, 0x0308); break;
-										case embelDDDot:     str.Insert(0, 0x20DB); break;
-										case embelTilde:     str.Insert(0, 0x0303); break;
-										case embelHat:       str.Insert(0, 0x0302); break;
-										case embelSlash:     str.Insert(0, 0x002F); break;
-										case embelLArrow:    str.Insert(0, 0x20D6); break;
-										case embelRArrow:    str.Insert(0, 0x20D7); break;
-										case embelDArrow:    str.Insert(0, 0x20E1); break;
-										case embelLHarpoon:  str.Insert(0, 0x20D0); break;
-										case embelRHarpoon:  str.Insert(0, 0x20D1); break;
-										case embelStrikeout: str.Insert(0, 0x0336); break;
-										case embelBar:       str.Insert(0, 0x0305); break;
-										case embelFrown:     str.Insert(0, 0x0311); break;
-										case embelSmile:     str.Insert(0, 0x0306); break;
+                                        case embelDot:       str =  0x0307; break;
+                                        case embelDDot:      str =  0x0308; break;
+                                        case embelDDDot:     str =  0x20DB; break;
+                                        case embelTilde:     str =  0x0303; break;
+                                        case embelHat:       str =  0x0302; break;
+                                        case embelSlash:     str =  0x002F; break;
+                                        case embelLArrow:    str =  0x20D6; break;
+                                        case embelRArrow:    str =  0x20D7; break;
+                                        case embelDArrow:    str =  0x20E1; break;
+                                        case embelLHarpoon:  str =  0x20D0; break;
+                                        case embelRHarpoon:  str =  0x20D1; break;
+                                        case embelStrikeout: str =  0x0336; break;
+                                        case embelBar:       str =  0x0305; break;
+                                        case embelFrown:     str =  0x0311; break;
+                                        case embelSmile:     str =  0x0306; break;
 									}
 									WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
 									WriteItemEnd(nCurPos1);
@@ -468,25 +465,25 @@ namespace MathEquation
 				EquationRun oRun;
 				if (uChar)
 				{
-					CString str;
+                    std::wstring str;
 					if (bSpecialSymbol)
 					{
 						switch(uChar)
 						{
 							case specialsymAlignment:
 							{
-								str.Insert(0, 0x0026);
+                                str =  0x0026;
 								if (oRManager.GetAlligment())
 									oRun.bNormal = true;
 								else
 									oRManager.SetAlligment(true);
 							}
 							break;
-							case specialsymZeroSpace:  str.Insert(0,0x200B); break;
-							case specialsymThinSpace:  str.Insert(0,0x2009); break;
-                            case specialsymThickSpace: str.Insert(0,0x2005); break;
-                            case specialsymLargeSpace: str.Insert(0,0x2003); break;
-                            case specialsymOnePtSpace: str.Insert(0,0x200A); break;
+                            case specialsymZeroSpace:  str = 0x200B; break;
+                            case specialsymThinSpace:  str = 0x2009; break;
+                            case specialsymThickSpace: str = 0x2005; break;
+                            case specialsymLargeSpace: str = 0x2003; break;
+                            case specialsymOnePtSpace: str = 0x200A; break;
 						}
 					}
 					else
@@ -502,7 +499,7 @@ namespace MathEquation
 							uChar = 0x03D5;
 						else if (uChar == 0x03D5)
 							uChar = 0x03C6;
-						str.Insert(0, uChar);
+                        str =  uChar;
 					}
 					
 					oRun.AddChar(str, pFont, nTextSize);
@@ -663,22 +660,22 @@ namespace MathEquation
 					WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, _T(""));
 				else
 				{
-					CString strOpen;
+                    std::wstring strOpen;
 					switch(eType)
 					{
-						case bracketsAngle:				strOpen.Insert(0, 0x27E8); break;
-						case bracketsRound:				strOpen.Insert(0, 0x0028); break;
-						case bracketsCurve:				strOpen.Insert(0, 0x007B); break;
-						case bracketsSquare:			strOpen.Insert(0, 0x005B); break;
-						case bracketsLine:				strOpen.Insert(0, 0x007C); break;
-						case bracketsDLine:				strOpen.Insert(0, 0x2016); break;
-						case bracketsFloor:				strOpen.Insert(0, 0x230A); break;
-						case bracketsCeil:				strOpen.Insert(0, 0x2308); break;
-						case bracketsSquareOpenOpen:	strOpen.Insert(0, 0x005B); break;
-						case bracketsSquareCloseClose:	strOpen.Insert(0, 0x005D); break;
-						case bracketsSquareCloseOpen:	strOpen.Insert(0, 0x005D); break;
-						case bracketsSquareRound:		strOpen.Insert(0, 0x005B); break;
-						case bracketsRoundSquare:		strOpen.Insert(0, 0x0028); break;
+                        case bracketsAngle:				strOpen =  0x27E8; break;
+                        case bracketsRound:				strOpen =  0x0028; break;
+                        case bracketsCurve:				strOpen =  0x007B; break;
+                        case bracketsSquare:			strOpen =  0x005B; break;
+                        case bracketsLine:				strOpen =  0x007C; break;
+                        case bracketsDLine:				strOpen =  0x2016; break;
+                        case bracketsFloor:				strOpen =  0x230A; break;
+                        case bracketsCeil:				strOpen =  0x2308; break;
+                        case bracketsSquareOpenOpen:	strOpen =  0x005B; break;
+                        case bracketsSquareCloseClose:	strOpen =  0x005D; break;
+                        case bracketsSquareCloseOpen:	strOpen =  0x005D; break;
+                        case bracketsSquareRound:		strOpen =  0x005B; break;
+                        case bracketsRoundSquare:		strOpen =  0x0028; break;
 					}
 					WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, strOpen);
 				}
@@ -687,22 +684,22 @@ namespace MathEquation
 					WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, _T(""));
 				else
 				{
-					CString strEnd;
+                    std::wstring strEnd;
 					switch(eType)
 					{
-						case bracketsAngle:				strEnd.Insert(0, 0x27E9); break;
-						case bracketsRound:				strEnd.Insert(0, 0x0029); break;
-						case bracketsCurve:				strEnd.Insert(0, 0x007D); break;
-						case bracketsSquare:			strEnd.Insert(0, 0x005D); break;
-						case bracketsLine:				strEnd.Insert(0, 0x007C); break;
-						case bracketsDLine:				strEnd.Insert(0, 0x2016); break;
-						case bracketsFloor:				strEnd.Insert(0, 0x230B); break;
-						case bracketsCeil:				strEnd.Insert(0, 0x2309); break;
-						case bracketsSquareOpenOpen:	strEnd.Insert(0, 0x005B); break;
-						case bracketsSquareCloseClose:	strEnd.Insert(0, 0x005D); break;
-						case bracketsSquareCloseOpen:	strEnd.Insert(0, 0x005B); break;
-						case bracketsSquareRound:		strEnd.Insert(0, 0x0029); break;
-						case bracketsRoundSquare:		strEnd.Insert(0, 0x005D); break;
+                        case bracketsAngle:				strEnd =  0x27E9; break;
+                        case bracketsRound:				strEnd =  0x0029; break;
+                        case bracketsCurve:				strEnd =  0x007D; break;
+                        case bracketsSquare:			strEnd =  0x005D; break;
+                        case bracketsLine:				strEnd =  0x007C; break;
+                        case bracketsDLine:				strEnd =  0x2016; break;
+                        case bracketsFloor:				strEnd =  0x230B; break;
+                        case bracketsCeil:				strEnd =  0x2309; break;
+                        case bracketsSquareOpenOpen:	strEnd =  0x005B; break;
+                        case bracketsSquareCloseClose:	strEnd =  0x005D; break;
+                        case bracketsSquareCloseOpen:	strEnd =  0x005B; break;
+                        case bracketsSquareRound:		strEnd =  0x0029; break;
+                        case bracketsRoundSquare:		strEnd =  0x005D; break;
 					}
 					WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, strEnd);
 				}
@@ -889,14 +886,14 @@ namespace MathEquation
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Pos, pos);
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::VertJc, vertJc);
 
-				CString str;
+                std::wstring str;
 				switch(eType)
 				{
-					case bartypeLine:			str.Insert(0,0x0305);break;
-					case bartypeDoubleLine:		str.Insert(0,0x033F);break;
-					case bartypeArrowLeft:		str.Insert(0,0x20D6);break;
-					case bartypeArrowRight:		str.Insert(0,0x20D7);break;
-					case bartypeArrowDouble:	str.Insert(0,0x20E1);break;
+                    case bartypeLine:			str = 0x0305;break;
+                    case bartypeDoubleLine:		str = 0x033F;break;
+                    case bartypeArrowLeft:		str = 0x20D6;break;
+                    case bartypeArrowRight:		str = 0x20D7;break;
+                    case bartypeArrowDouble:	str = 0x20E1;break;
 				}
 				WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
 
@@ -941,12 +938,12 @@ namespace MathEquation
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Pos, pos);
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::VertJc, vertJc);
 
-				CString str;
+                std::wstring str;
 				switch(eType)
 				{
-					case arrowtypeLeft:			str.Insert(0,0x2190);break;
-					case arrowtypeRight:		str.Insert(0,0x2192);break;
-					case arrowtypeDouble:		str.Insert(0,0x2194);break;
+                    case arrowtypeLeft:			str = 0x2190;break;
+                    case arrowtypeRight:		str = 0x2192;break;
+                    case arrowtypeDouble:		str = 0x2194;break;
 				}
 				WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
 
@@ -975,12 +972,12 @@ namespace MathEquation
 				int lCount = 0;
 
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::NaryPr);
-				CString str;
+                std::wstring str;
 				switch(eType)
 				{		
                 //todooo проверить запись .. (BYTE)SimpleTypes::ххх
 					case integraltypeSingle:
-						str.Insert(0,0x222B);
+                        str = 0x222B;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -988,20 +985,20 @@ namespace MathEquation
 						lCount = 1;
 						break;
 					case integraltypeSingleRSub:
-						str.Insert(0,0x222B);
+                        str = 0x222B;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 1;
 						break;
 					case integraltypeSingleRSubSup:
-						str.Insert(0,0x222B);
+                        str = 0x222B;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						lCount = 1;
 						break;
 					case integraltypeSingleOriented:
-						str.Insert(0,0x222E);
+                        str = 0x222E;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
@@ -1009,7 +1006,7 @@ namespace MathEquation
 						lCount = 1;
 						break;
 					case integraltypeSingleOrientedRSub:
-						str.Insert(0,0x222E);
+                        str = 0x222E;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
@@ -1017,7 +1014,7 @@ namespace MathEquation
 						break;
 
 					case integraltypeDouble:
-						str.Insert(0,0x222C);
+                        str = 0x222C;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
@@ -1025,14 +1022,14 @@ namespace MathEquation
 						lCount = 2;
 						break;
 					case integraltypeDoubleRSub:
-						str.Insert(0,0x222C);
+                        str = 0x222C;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 2;
 						break;
 					case integraltypeDoubleOriented:
-						str.Insert(0,0x222F);
+                        str = 0x222F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1040,7 +1037,7 @@ namespace MathEquation
 						lCount = 2;
 						break;
 					case integraltypeDoubleOrientedRSub:
-						str.Insert(0,0x222F);
+                        str = 0x222F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1048,7 +1045,7 @@ namespace MathEquation
 						break;
 
 					case integraltypeTriple:
-						str.Insert(0,0x222D);
+                        str = 0x222D;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1056,14 +1053,14 @@ namespace MathEquation
 						lCount = 3;
 						break;
 					case integraltypeTripleRSub:
-						str.Insert(0,0x222D);
+                        str = 0x222D;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
 					case integraltypeTripleOriented:
-						str.Insert(0,0x2230);
+                        str = 0x2230;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1071,7 +1068,7 @@ namespace MathEquation
 						lCount = 3;
 						break;
 					case integraltypeTripleOrientedRSub:
-						str.Insert(0,0x2230);
+                        str = 0x2230;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1079,20 +1076,20 @@ namespace MathEquation
 						break;
 
 					case integraltypeSingleCSubSup:
-						str.Insert(0,0x222B);
+                        str = 0x222B;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						lCount = 1;
 						break;
 					case integraltypeSingleCSub:
-						str.Insert(0,0x222B);
+                        str = 0x222B;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 1;
 						break;
 					case integraltypeSingleOrientedCSub:
-						str.Insert(0,0x222E);
+                        str = 0x222E;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1100,14 +1097,14 @@ namespace MathEquation
 						break;
 
 					case integraltypeDoubleOrientedCSub:
-						str.Insert(0,0x222F);
+                        str = 0x222F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 2;
 						break;
 					case integraltypeDoubleCSub:
-						str.Insert(0,0x222C);
+                        str = 0x222C;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1115,14 +1112,14 @@ namespace MathEquation
 						break;
 
 					case integraltypeTripleOrientedCSub:
-						str.Insert(0,0x2230);
+                        str = 0x2230;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
 					case integraltypeTripleCSub:
-						str.Insert(0,0x222D);
+                        str = 0x222D;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
@@ -1159,10 +1156,10 @@ namespace MathEquation
 					WriteRun();
 
 				BYTE pos, vertJc;
-				CString chr;
+                std::wstring chr;
 				if (bTop)
 				{
-					chr.Insert(0,0x23DE);
+                    chr = 0x23DE;
 					vertJc = SimpleTypes::verticaljcTop;
 					pos = SimpleTypes::tbTop;
 					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::LimUpp);
@@ -1174,7 +1171,7 @@ namespace MathEquation
 				}
 				else
 				{
-					chr.Insert(0,0x23DF);
+                    chr = 0x23DF;
 					vertJc = SimpleTypes::verticaljcBottom;
 					pos = SimpleTypes::tbBot;
 					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::LimLow);
@@ -1223,155 +1220,155 @@ namespace MathEquation
 				m_aNArrayStack.push(nCurPos);
 
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::NaryPr);
-				CString str;
+                std::wstring str;
 				switch(eType)
 				{		
 					case narySumCSub:
-						str.Insert(0,0x2211);
+                        str = 0x2211;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumCSubSup:
-						str.Insert(0,0x2211);
+                        str = 0x2211;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case narySum:
-						str.Insert(0,0x2211);
+                        str = 0x2211;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case narySumRSub:
-						str.Insert(0,0x2211);
+                        str = 0x2211;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumRSubSup:
-						str.Insert(0,0x2211);
+                        str = 0x2211;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryProdCSub:
-						str.Insert(0,0x220F);
+                        str = 0x220F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdCSubSup:
-						str.Insert(0,0x220F);
+                        str = 0x220F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryProd:
-						str.Insert(0,0x220F);
+                        str = 0x220F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryProdRSub:
-						str.Insert(0,0x220F);
+                        str = 0x220F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdRSubSup:
-						str.Insert(0,0x220F);
+                        str = 0x220F;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryCoProdCSub:
-						str.Insert(0,0x2210);
+                        str = 0x2210;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdCSubSup:
-						str.Insert(0,0x2210);
+                        str = 0x2210;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryCoProd:
-						str.Insert(0,0x2210);
+                        str = 0x2210;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryCoProdRSub:
-						str.Insert(0,0x2210);
+                        str = 0x2210;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdRSubSup:
-						str.Insert(0,0x2210);
+                        str = 0x2210;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryUnionCSub:
-						str.Insert(0,0x22C3);
+                        str = 0x22C3;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionCSubSup:
-						str.Insert(0,0x22C3);
+                        str = 0x22C3;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryUnion:
-						str.Insert(0,0x22C3);
+                        str = 0x22C3;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryUnionRSub:
-						str.Insert(0,0x22C3);
+                        str = 0x22C3;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionRSubSup:
-						str.Insert(0,0x22C3);
+                        str = 0x22C3;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryIntersectCSub:
-						str.Insert(0,0x22C2);
+                        str = 0x22C2;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectCSubSup:
-						str.Insert(0,0x22C2);
+                        str = 0x22C2;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryIntersect:
-						str.Insert(0,0x22C2);
+                        str = 0x22C2;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryIntersectRSub:
-						str.Insert(0,0x22C2);
+                        str = 0x22C2;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectRSubSup:
-						str.Insert(0,0x22C2);
+                        str = 0x22C2;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
                         WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
@@ -1452,24 +1449,24 @@ namespace MathEquation
 				m_aDelimiterStack.push(nCurPos);
 
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::DelimiterPr);
-				CString beg, sep, end;
+                std::wstring beg, sep, end;
 				switch (eType)
 				{
 					case angbrwithsepBoth:	// < | >
-						beg.Insert(0,0x27E8); sep.Insert(0, 0x007C); end.Insert(0, 0x27E9);
+                        beg = 0x27E8; sep =  0x007C; end =  0x27E9;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::SepChr, sep);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
 						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 2);
 						break;
 					case angbrwithsepLeft:	// < |
-						beg.Insert(0,0x27E8); end.Insert(0, 0x007C);
+                        beg = 0x27E8; end =  0x007C;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
 						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 1);
 						break;
 					case angbrwithsepRight:	// | >
-						beg.Insert(0,0x007C); end.Insert(0, 0x27E9);
+                        beg = 0x007C; end =  0x27E9;
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
 						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 1);
@@ -1528,7 +1525,7 @@ namespace MathEquation
 
 				WriteItemEnd(nCurPos);
 			}
-			void WriteItemValStr(BYTE name, CString val)
+            void WriteItemValStr(BYTE name, std::wstring val)
 			{
 				int nCurPos = WriteItemStart(name);
 
@@ -2415,7 +2412,7 @@ namespace MathEquation
 
 		private:
 
-			CString rRet;
+            std::wstring rRet;
 
 			bool bEmbel;
 			std::stack<CBaseCommand*> m_aCommandStack;

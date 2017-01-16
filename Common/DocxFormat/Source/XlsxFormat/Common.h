@@ -37,7 +37,7 @@ namespace OOX
 	{
 		namespace SpreadsheetCommon
 		{
-			CString WriteDouble(double dVal);
+            std::wstring WriteDouble(double dVal);
 		}
 	}
 }

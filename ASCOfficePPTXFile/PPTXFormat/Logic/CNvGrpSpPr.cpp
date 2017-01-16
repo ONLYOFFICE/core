@@ -68,7 +68,7 @@ namespace PPTX
 		}
 
 
-		CString CNvGrpSpPr::toXML() const
+		std::wstring CNvGrpSpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("noChangeAspect"), noChangeAspect);

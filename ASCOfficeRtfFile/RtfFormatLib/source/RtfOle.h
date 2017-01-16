@@ -42,7 +42,7 @@ public:
 	int				m_nShapeId;
 	int				m_nWidth;
 	int				m_nHeight;
-	CString			m_sOleClass;
+    std::wstring			m_sOleClass;
 	RtfShapePtr		m_oResultPic;
 
 	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
@@ -64,10 +64,10 @@ public:
         return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && L"" != m_sOleFilename;
                 /*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 
-	void SetFilename( CString sFilename )
+    void SetFilename( std::wstring sFilename )
 	{
 		m_sOleFilename = sFilename;
 	}
@@ -92,9 +92,9 @@ public:
 	}
 private: 
 	POLE::Storage*	m_piStorage;
-	CString			m_sOleFilename;
+    std::wstring			m_sOleFilename;
 
-	CString RenderToOOXOnlyOle(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXOnlyOle(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfOle> RtfOlePtr;
 

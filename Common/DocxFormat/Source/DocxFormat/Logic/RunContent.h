@@ -68,9 +68,9 @@ namespace OOX
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:br ");
+                std::wstring sResult = _T("<w:br ");
 
 				if ( SimpleTypes::brtypeTextWrapping == m_oType.GetValue() )
 				{
@@ -150,9 +150,9 @@ namespace OOX
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:contentPart ");
+                std::wstring sResult = _T("<w:contentPart ");
 
 				if ( m_oId.IsInit() )
 				{
@@ -225,7 +225,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:cr />");
 			}
@@ -257,7 +257,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:dayLong />");
 			}
@@ -289,7 +289,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:dayShort />");
 			}
@@ -328,9 +328,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<w:delText xml:space=\"") + m_oSpace->ToString() + _T("\">");
@@ -382,7 +382,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 
@@ -407,7 +407,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:lastRenderedPageBreak />");
 			}
@@ -439,7 +439,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:monthLong />");
 			}
@@ -471,7 +471,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:monthShort />");
 			}
@@ -503,7 +503,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:noBreakHyphen />");
 			}
@@ -535,7 +535,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:pgNum />");
 			}
@@ -570,9 +570,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:ptab ");
+                std::wstring sResult = _T("<w:ptab ");
 
 				ComplexTypes_WriteAttribute( _T("w:alignment=\""),  m_oAlignment );
 				ComplexTypes_WriteAttribute( _T("w:leader=\""),     m_oLeader );
@@ -642,7 +642,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:ruby />");
 			}
@@ -674,7 +674,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:softHyphen />");
 			}
@@ -710,16 +710,16 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:sym ");
+                std::wstring sResult = _T("<w:sym ");
 
 				ComplexTypes_WriteAttribute( _T("w:char=\""), m_oChar );
 				
 				if ( m_oFont.IsInit() )
 				{
 					sResult += _T("w:font=\"");
-					sResult += m_oFont->GetString();
+                    sResult += m_oFont.get2();
 					sResult += _T("\" ");
 				}
 
@@ -760,8 +760,8 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CShortHexNumber<> > m_oChar;
-			nullable<CString                        > m_oFont;
+            nullable<SimpleTypes::CShortHexNumber<> >   m_oChar;
+            nullable<std::wstring>                      m_oFont;
 
 		};
 
@@ -793,9 +793,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<w:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
@@ -846,7 +846,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 
@@ -870,7 +870,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:tab />");
 			}
@@ -902,7 +902,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:yearLong />");
 			}
@@ -934,7 +934,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:yearShort />");
 			}
@@ -973,7 +973,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:annotationRef />");
 			}
@@ -1008,9 +1008,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:commentReference ");
+                std::wstring sResult = _T("<w:commentReference ");
 
 				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
 
@@ -1077,7 +1077,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:continuationSeparator />");
 			}
@@ -1116,9 +1116,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<w:delInstrText xml:space=\"") + m_oSpace->ToString() + _T("\">");
@@ -1171,7 +1171,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1194,7 +1194,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:endnoteRef />");
 			}
@@ -1230,9 +1230,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:endnoteReference ");
+                std::wstring sResult = _T("<w:endnoteReference ");
 
 				if ( m_oCustomMarkFollows.IsInit() )
 				{
@@ -1308,7 +1308,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:footnoteRef />");
 			}
@@ -1344,9 +1344,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:footnoteReference ");
+                std::wstring sResult = _T("<w:footnoteReference ");
 
 				if ( m_oCustomMarkFollows.IsInit() )
 				{
@@ -1428,9 +1428,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<w:instrText xml:space=\"") + m_oSpace->ToString() + _T("\">");
@@ -1482,7 +1482,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1505,7 +1505,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:separator />");
 			}

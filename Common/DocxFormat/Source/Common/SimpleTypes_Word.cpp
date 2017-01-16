@@ -34,7 +34,7 @@
 namespace SimpleTypes
 {	
     template<>
-    EHexColor CHexColor<EHexColor::hexcolorAuto>::FromString (CString &sValue)
+    EHexColor CHexColor<EHexColor::hexcolorAuto>::FromString (std::wstring &sValue)
     {
         if ( _T("auto") == sValue || _T("none") == sValue )
             this->m_eValue = hexcolorAuto;
@@ -50,13 +50,13 @@ namespace SimpleTypes
                 m_unG = oHighlightColor.Get_G();
                 m_unB = oHighlightColor.Get_B();
             }
-            else if ( 6 <= sValue.GetLength() )
+            else if ( 6 <= sValue.length() )
             {
                 this->m_eValue = hexcolorRGB;
-                m_sValue = sValue.Mid( 0, 6 );
+                m_sValue = sValue.substr( 0, 6 );
                 Parse();
             }
-            else if ( 3 == sValue.GetLength() )// a la #339 (Compo 3AP.docx)
+            else if ( 3 == sValue.length() )// a la #339 (Compo 3AP.docx)
             {
                 this->m_eValue = hexcolorRGB;
                 m_sValue = sValue;
@@ -69,7 +69,7 @@ namespace SimpleTypes
         return this->m_eValue;
     }
     template<>
-    EHexColor CHexColor<EHexColor::hexcolorRGB>::FromString (CString &sValue)
+    EHexColor CHexColor<EHexColor::hexcolorRGB>::FromString (std::wstring &sValue)
     {
         if ( _T("auto") == sValue || _T("none") == sValue )
             this->m_eValue = hexcolorAuto;
@@ -85,13 +85,13 @@ namespace SimpleTypes
                 m_unG = oHighlightColor.Get_G();
                 m_unB = oHighlightColor.Get_B();
             }
-            else if ( 6 <= sValue.GetLength() )
+            else if ( 6 <= sValue.length() )
             {
                 this->m_eValue = hexcolorRGB;
-                m_sValue = sValue.Mid( 0, 6 );
+                m_sValue = sValue.substr( 0, 6 );
                 Parse();
             }
-            else if ( 3 == sValue.GetLength() )// a la #339 (Compo 3AP.docx)
+            else if ( 3 == sValue.length() )// a la #339 (Compo 3AP.docx)
             {
                 this->m_eValue = hexcolorRGB;
                 m_sValue = sValue;

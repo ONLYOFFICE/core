@@ -72,7 +72,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"tx", tx);
 				node.ReadAttributeBase(L"ty", ty);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("algn"), algn);

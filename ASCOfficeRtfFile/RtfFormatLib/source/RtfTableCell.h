@@ -47,9 +47,9 @@ public:
 	RtfTableCell()
 	{
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString result;
+        std::wstring result;
 
 		for(int i =0 ; i < (int)m_aArray.size();i++)
 		{
@@ -76,12 +76,12 @@ public:
 			result += L"\\nestcell{\\nonesttables  }"; //todo как бы вернуть
 		return result;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult = L"<w:tc>";
+        std::wstring sResult = L"<w:tc>";
 
-		CString sProp = m_oProperty.RenderToOOX( oRenderParameter );
-		if( !sProp.IsEmpty() )
+        std::wstring sProp = m_oProperty.RenderToOOX( oRenderParameter );
+		if( !sProp.empty() )
 		{
 			sResult += L"<w:tcPr>";
 				sResult += sProp;

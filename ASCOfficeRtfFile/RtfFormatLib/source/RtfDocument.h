@@ -111,7 +111,7 @@ public:
 	RtfDocument();
 	int GetType();
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfDocument> RtfDocumentPtr;

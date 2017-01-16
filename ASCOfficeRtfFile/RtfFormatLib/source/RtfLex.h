@@ -45,7 +45,7 @@ private:
     LONG64 m_nSizeAbs;//размер файла
     LONG64 m_nPosAbs;//позиция в файле
 
-	//CStringA m_sBuffer;
+    //std::string m_sBuffer;
 	unsigned char* m_aBuffer;
 public:
 	StringStream()
@@ -111,9 +111,9 @@ public:
             m_nPosAbs--;	//взять любой txt переименовать в rtf - зацикливание
         }
 	}
-	void putString( CStringA sText )
+    void putString( std::string sText )
 	{
-		int nExtBufSize = sText.GetLength();
+        int nExtBufSize = sText.length();
 		//копируем буфер в темповый буфер
 		unsigned char* aTempBuf = new unsigned char[ m_nSizeAbs ];
 		memcpy( aTempBuf, m_aBuffer, m_nSizeAbs );
@@ -123,9 +123,8 @@ public:
 		//копируем все в новый буфер
 		unsigned long nDelimiter = (unsigned long)m_nPosAbs + 1;
 		memcpy( m_aBuffer, aTempBuf, nDelimiter );
-		char* bf = sText.GetBuffer();
-		memcpy( m_aBuffer + nDelimiter , bf, nExtBufSize );
-		sText.ReleaseBuffer();
+        memcpy( m_aBuffer + nDelimiter , sText.c_str(), nExtBufSize );
+
 		memcpy( m_aBuffer + nDelimiter + nExtBufSize , aTempBuf + nDelimiter , m_nSizeAbs - nDelimiter );
 		RELEASEARRAYOBJECTS( aTempBuf );
 
@@ -231,7 +230,7 @@ public:
 
 		return m_oCurToken;
 	}
-	void putString( CStringA sText )
+    void putString( std::string sText )
 	{
 		m_oStream.putString( sText );
 	}
@@ -243,7 +242,7 @@ private:
 //        palabraClave.GetBuffer( 20 );
 //		palabraClave.ReleaseBuffer();
 
-		CString parametroStr ;
+        std::wstring parametroStr ;
 		int parametroInt = 0;
 
 		int c = m_oStream.getc();
@@ -281,9 +280,7 @@ private:
 			{
 				token.Type = RtfToken::Control;
 
-                CStringA s = std::to_string( c);
-
-				token.Key = s.GetBuffer();
+                token.Key = std::to_string( c);
 
 				if (c == '\'')
 				{
@@ -337,19 +334,19 @@ private:
 			while (RtfUtility::IsDigit(c))
 			{
 				m_oStream.getc();
-				parametroStr.AppendChar(c);
+                parametroStr += c;
 
 				c = m_oStream.getc();
 				m_oStream.ungetc();
 			}
             try
             {
-                parametroInt = _wtoi(parametroStr.GetBuffer());
+                parametroInt = _wtoi(parametroStr.c_str());
             }catch(...)
             {
                 try
                 {
-                    parametroInt = (int)_wtoi64(parametroStr.GetBuffer());
+                    parametroInt = (int)_wtoi64(parametroStr.c_str());
                 }catch(...)
                 {
                 }

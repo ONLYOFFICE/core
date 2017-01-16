@@ -80,7 +80,7 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			
 
 			virtual EElementType getType() const

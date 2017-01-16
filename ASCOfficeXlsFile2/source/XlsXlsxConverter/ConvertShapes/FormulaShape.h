@@ -38,9 +38,10 @@
 #include <math.h>
 #include "ShapeUtils.h"
 
-#include "../../../../Common/DocxFormat/Source/XML/xmlutils.h"
-
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/graphics/aggplustypes.h"
+
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace NSCustomShapesConvert
 {

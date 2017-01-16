@@ -64,7 +64,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (strName == _T("effectLst"))
 					List.reset(new Logic::EffectLst(node));
@@ -87,7 +87,7 @@ namespace PPTX
 				else List.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (!List.IsInit())
 					return _T("");

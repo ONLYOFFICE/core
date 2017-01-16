@@ -61,8 +61,8 @@ public:
 	
 	void SetDefault();
 	
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
 	bool operator==( const RtfOldList& oOldList );
 };
@@ -83,6 +83,6 @@ public:
 	{
 	}
 	int AddItem( IDocumentElementPtr piRend );	
-	CString RenderToRtf(RenderParameter oRenderParameter);	
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };

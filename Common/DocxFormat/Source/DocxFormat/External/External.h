@@ -63,7 +63,7 @@ namespace OOX
 		}
 
 	public:
-		AVSINLINE CPath Uri() const
+		 CPath Uri() const
 		{
 			return m_uri;
 		}

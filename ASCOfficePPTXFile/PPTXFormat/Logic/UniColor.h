@@ -69,7 +69,7 @@ namespace PPTX
 				return 0;
 			}
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

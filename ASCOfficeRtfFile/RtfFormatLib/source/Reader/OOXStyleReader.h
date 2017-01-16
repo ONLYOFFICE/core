@@ -330,7 +330,7 @@ public:
 		if (m_ooxStyle->m_sStyleId.IsInit() == false) return false;
 
 		RtfStylePtr oCurStyle ;
-		CString sStyleName = m_ooxStyle->m_sStyleId.get2();
+		std::wstring sStyleName = m_ooxStyle->m_sStyleId.get2();
 
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{

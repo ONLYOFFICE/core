@@ -45,8 +45,8 @@ namespace NSPresentationEditor
 	class CPPTXWriter
 	{
 	public:
-		CString	m_strTempDirectory;
-		CString m_strDstFileName;
+        std::wstring	m_strTempDirectory;
+        std::wstring    m_strDstFileName;
 
 		CDocument	*	m_pDocument;
 		CPPTUserInfo*	m_pUserInfo;

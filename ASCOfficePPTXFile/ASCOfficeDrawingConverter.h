@@ -84,7 +84,7 @@ namespace PPTX
 	{
 	public:
 		std::vector<std::wstring>	m_arParams;
-        TCHAR                   m_Separator;
+        wchar_t                     m_Separator;
 
 	public:
 		CStringTrimmer();
@@ -99,8 +99,8 @@ namespace PPTX
 	class CCSS
 	{
 	public:
-        std::map<std::wstring, std::wstring>  m_mapSettings;
-        std::wstring                     m_strClassName;
+        std::map<std::wstring, std::wstring>    m_mapSettings;
+        std::wstring                            m_strClassName;
 
 	public:
 		CCSS();
@@ -181,9 +181,9 @@ namespace NSBinPptxRW
 		};
 
 
-        std::map<std::wstring, CShape*>                                  m_mapShapeTypes;
+        std::map<std::wstring, CShape*>                                 m_mapShapeTypes;
 		std::map<std::wstring, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
-        std::wstring                                             m_strCurrentRelsPath;
+        std::wstring                                                    m_strCurrentRelsPath;
 
         NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
         int                                                 m_lNextId;
@@ -200,7 +200,7 @@ namespace NSBinPptxRW
 		NSCommon::smart_ptr<PPTX::WrapperFile>*				m_pTheme;
 		NSCommon::smart_ptr<PPTX::WrapperWritingElement>*	m_pClrMap;
 
-        std::wstring                                             m_strFontDirectory;
+        std::wstring                                        m_strFontDirectory;
 
 		CDrawingConverter();
 
@@ -208,7 +208,7 @@ namespace NSBinPptxRW
 
         HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
         HRESULT SetRelsPath         (const std::wstring& bsRelsPath);
-        std::wstring GetRelsPath         ();
+        std::wstring GetRelsPath    ();
         HRESULT SetMediaDstPath     (const std::wstring& bsMediaPath);
         HRESULT SetEmbedDstPath     (const std::wstring& bsEmbedPath);
 

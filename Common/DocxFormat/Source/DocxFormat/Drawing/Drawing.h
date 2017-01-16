@@ -36,7 +36,6 @@
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Drawing.h"
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/Encoding.h"
 
 #include "../WritingElement.h"
 #include "../RId.h"

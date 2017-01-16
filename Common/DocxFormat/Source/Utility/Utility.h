@@ -35,7 +35,6 @@
 
 #include "DateTime.h"
 #include "Unit.h"
-#include "Encoding.h"
 
 #ifdef _HTML_FILE
 

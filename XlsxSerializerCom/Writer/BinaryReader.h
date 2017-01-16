@@ -3529,7 +3529,7 @@ namespace BinXlsxRW {
                         int nDataSize = atoi(dst_len.c_str());
 						BYTE* pData = new BYTE[nDataSize];
 
-                        if(false != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+                        if(false != Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
 							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
 							oBufferedStream.Init(pData, 0, nDataSize);

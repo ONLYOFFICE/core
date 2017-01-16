@@ -92,15 +92,15 @@ namespace XmlUtils
 		bool ReadTillEnd(int nDepth = -2);
 		
 		std::wstring	GetName();
-                std::string	GetNameA();
-                int		GetDepth();
-                bool		IsEmptyNode();
+        std::string     GetNameA();
+        int             GetDepth();
+        bool            IsEmptyNode();
 
 		std::wstring	GetText();
-                std::string	GetTextA();
+        std::string     GetTextA();
 
 		std::wstring	GetText2();
-                std::string	GetText2A();
+        std::string     GetText2A();
 		
 		std::wstring	GetText3();
 
@@ -112,7 +112,7 @@ namespace XmlUtils
 		bool MoveToNextAttribute();
 		bool MoveToElement();
 
-                bool IsEmptyElement();
+        bool IsEmptyElement();
 	};
 
 	class IXmlDOMDocument
@@ -418,23 +418,13 @@ namespace XmlUtils
 		{
 			m_str += strValue;
 		}
-		void WriteInteger(int Value, int Base = 10)
+        void WriteInteger(int Value)
 		{
-            wchar_t str[33];
-            memset(str, 0, sizeof(str));
-#if defined(_WIN32) || defined (_WIN64)
-            _itow(Value, str, Base);
-#else
-            itow(Value, str, Base);
-#endif
-
-			m_str += std::wstring(str);
+            m_str += std::to_wstring(Value);
 		}
 		void WriteDouble(double Value)
 		{
-            std::wstring str = std::to_wstring(Value);
-
-			m_str += str;
+            m_str += std::to_wstring(Value);
 		}
 		void WriteBoolean(bool Value)
 		{
@@ -469,11 +459,11 @@ namespace XmlUtils
 			else
 				m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
 		}
-		void WriteNode(const std::wstring& strNodeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
+        void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"")
 		{
 			WriteNodeBegin(strNodeName);
 			WriteString(strTextBeforeValue);
-			WriteInteger(nValue, nBase);
+            WriteInteger(nValue);
 			WriteString(strTextAfterValue);
 			WriteNodeEnd(strNodeName);
 		}
@@ -487,12 +477,12 @@ namespace XmlUtils
 		{
 			m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
 		}
-		void WriteAttribute(const std::wstring& strAttributeName, int nValue, int nBase = 10, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""))
+        void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""))
 		{
 			WriteString(L" " + strAttributeName + L"=");
 			WriteString(L"\"");
 			WriteString(strTextBeforeValue);
-			WriteInteger(nValue, nBase);
+            WriteInteger(nValue);
 			WriteString(strTextAfterValue);
 			WriteString(L"\"");
 		}
@@ -511,7 +501,7 @@ namespace XmlUtils
 			return strNodeName;
 		return strNodeName.substr(nFind + 1);
 	}
-	static inline std::wstring GetNamespace(std::wstring& strNodeName)
+    static inline std::wstring GetNamespace(const std::wstring& strNodeName)
 	{
 		int nFind = strNodeName.find(L":");
 		if (-1 == nFind)

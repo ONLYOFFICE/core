@@ -1869,7 +1869,7 @@ public:
 
     AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
 	{
-        int nIndex = strFilePath.rfind(TCHAR('\\'));
+        int nIndex = strFilePath.rfind(wchar_t('\\'));
 		if (-1 != nIndex)
 		{
             return strFilePath.substr(nIndex + 1);

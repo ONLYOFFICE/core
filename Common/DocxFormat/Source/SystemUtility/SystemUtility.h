@@ -45,15 +45,15 @@ namespace OOX
 	public:
 		CPath();
 		CPath(const std::wstring&	sName, bool bIsNorm = true);
-		CPath(LPCSTR&				sName, bool bIsNorm = true);
-		CPath(LPCWSTR&				sName, bool bIsNorm = true);
+        CPath(const char*&			sName, bool bIsNorm = true);
+        CPath(const wchar_t*&		sName, bool bIsNorm = true);
 
 		CPath(const CPath& oSrc);
 
 		CPath& operator=(const	CPath&			oSrc);
 		CPath& operator=(const	std::wstring&	oSrc);
-		CPath& operator=(		LPCSTR			oSrc);
-        CPath& operator=(		LPCWSTR			oSrc);
+        CPath& operator=(const  char*			oSrc);
+        CPath& operator=(const  wchar_t*		oSrc);
 
 		friend CPath operator/(const CPath& path1, const CPath& path2)
 		{

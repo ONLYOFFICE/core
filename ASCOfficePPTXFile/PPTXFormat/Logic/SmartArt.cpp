@@ -239,13 +239,13 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
             std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-            int nPos = strDstChart.rfind(TCHAR('m'));
+            int nPos = strDstChart.rfind(wchar_t('m'));
 			if (-1 != nPos)
                 strDstChart = strDstChart.substr(0, nPos);
 
             strDstChart += L"charts";
         //на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
-            NSDirectory::CreateDirectoryW(strDstChart);
+            NSDirectory::CreateDirectory(strDstChart);
 
             std::wstring* sContentTypes = NULL;
 

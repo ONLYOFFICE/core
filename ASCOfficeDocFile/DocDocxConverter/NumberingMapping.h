@@ -52,9 +52,9 @@ namespace DocFileFormat
 
 	static const wchar_t LevelJustificationMap[3][7] =
 	{
-		_T("left"),
-		_T("center"),
-		_T("right")
+        L"left",
+        L"center",
+        L"right"
 	};
 
 	class NumberingMapping: public AbstractOpenXmlMapping, public IMapping

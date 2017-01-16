@@ -67,7 +67,7 @@ namespace NSGuidesVML
     };
 
     #define VML_GUIDE_COUNT 18
-    const LPWSTR VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
+    static const wchar_t* VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
         L"sum",
         L"prod",
         L"mid",

@@ -40,8 +40,8 @@ namespace DocFileFormat
 			_isTableStyleNeeded(isTableStyleNeeded)
 {
 	_styles		= styles;
-    _tblPr		= new XMLTools::XMLElement( _T( "w:tblPr" ) );
-    _tblBorders = new XMLTools::XMLElement( _T( "w:tblBorders" ) );
+    _tblPr		= new XMLTools::XMLElement( L"w:tblPr");
+    _tblBorders = new XMLTools::XMLElement( L"w:tblBorders");
 	_grid		= grid;
 }
 TablePropertiesMapping::~TablePropertiesMapping()
@@ -63,10 +63,10 @@ namespace DocFileFormat
 	{
 		TablePropertyExceptions* tapx = static_cast<TablePropertyExceptions*>( visited );
 
-        XMLTools::XMLElement	tblCellMar	( _T( "w:tblCellMar" ) );
-        XMLTools::XMLElement	tblLayout	( _T( "w:tblLayout" ) );
-        XMLTools::XMLElement	tblpPr		( _T( "w:tblpPr" ) );
-        XMLTools::XMLAttribute layoutType	( _T( "w:type" ), _T( "fixed" ) );
+        XMLTools::XMLElement	tblCellMar	( L"w:tblCellMar");
+        XMLTools::XMLElement	tblLayout	( L"w:tblLayout");
+        XMLTools::XMLElement	tblpPr		( L"w:tblpPr");
+        XMLTools::XMLAttribute layoutType	( L"w:type", L"fixed");
 		bool bLayoutFixed = true;
 
 		short tblIndent		= 0;
@@ -109,10 +109,10 @@ namespace DocFileFormat
 					unsigned char fts = iter->Arguments[0];
 					short width = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
-                    XMLTools::XMLElement tblW( _T( "w:tblW" ) );
+                    XMLTools::XMLElement tblW( L"w:tblW");
 
-                    XMLTools::XMLAttribute w( _T( "w:w" ), FormatUtils::IntToWideString( width ) );
-                    XMLTools::XMLAttribute type( _T( "w:type" ), FormatUtils::MapValueToWideString( fts, &WidthType[0][0], 4, 5 ) );
+                    XMLTools::XMLAttribute w( L"w:w", FormatUtils::IntToWideString( width ) );
+                    XMLTools::XMLAttribute type( L"w:type", FormatUtils::MapValueToWideString( fts, &WidthType[0][0], 4, 5 ) );
 
 					tblW.AppendAttribute( type );
 					tblW.AppendAttribute( w );
@@ -126,7 +126,7 @@ namespace DocFileFormat
 				case sprmTJcRow:
 				{				//justification
 
-					appendValueElement( _tblPr, _T( "jc" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ), true );
+                    appendValueElement( _tblPr, L"jc" , FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::JustificationCode[0][0], 10, 15 ), true );
 				}
 				break;
 
@@ -148,9 +148,9 @@ namespace DocFileFormat
 						
 						std::wstring id = ind < _styles->Styles->size() ? StyleSheetMapping::MakeStyleId( _styles->Styles->at( ind ) ) : L"";
 
-						if( id != std::wstring( _T( "TableNormal" )) && !id.empty() )
+                        if( id != std::wstring( L"TableNormal") && !id.empty() )
 						{
-							appendValueElement( _tblPr, _T( "tblStyle" ), id, true );
+                            appendValueElement( _tblPr, L"tblStyle", id, true );
 						}
 					}
 				}
@@ -160,7 +160,7 @@ namespace DocFileFormat
 				case sprmTFBiDi90:
 				{				//bidi
 
-					appendValueElement( _tblPr, _T( "bidiVisual" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), true );
+                    appendValueElement( _tblPr, L"bidiVisual", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ), true );
 				}
 				break;
 
@@ -168,7 +168,7 @@ namespace DocFileFormat
 				case sprmTTlp:
 				{				//table look
 
-					appendValueElement( _tblPr, _T( "tblLook" ), FormatUtils::IntToFormattedWideString( FormatUtils::BytesToInt16( iter->Arguments, 2, iter->argumentsSize ), _T( "%04x" ) ), true );
+                    appendValueElement( _tblPr, L"tblLook", FormatUtils::IntToFormattedWideString( FormatUtils::BytesToInt16( iter->Arguments, 2, iter->argumentsSize ), L"%04x" ), true );
 				}
 				break;
 
@@ -177,7 +177,7 @@ namespace DocFileFormat
 
 					if ( iter->Arguments[0] == 1 )
 					{
-						layoutType.SetValue( _T( "auto" ) );
+                        layoutType.SetValue( L"auto" );
 						bLayoutFixed = false;
 					}
 				}
@@ -194,7 +194,7 @@ namespace DocFileFormat
 
 					if ( FormatUtils::BitmaskToBool( (int)grfbrc, 0x01 ) )
 					{
-						appendDxaElement( &tblCellMar,  _T( "top" ), strValue, true );
+                        appendDxaElement( &tblCellMar,  L"top" , strValue, true );
 					}
 
 					if ( FormatUtils::BitmaskToBool( (int)grfbrc, 0x02 ) )
@@ -204,7 +204,7 @@ namespace DocFileFormat
 
 					if ( FormatUtils::BitmaskToBool( (int)grfbrc, 0x04 ) )
 					{
-						appendDxaElement( &tblCellMar, _T( "bottom" ), strValue, true );
+                        appendDxaElement( &tblCellMar, L"bottom", strValue, true );
 					}
 
 					if ( FormatUtils::BitmaskToBool( (int)grfbrc, 0x08 ) )
@@ -217,28 +217,28 @@ namespace DocFileFormat
 				case sprmTCHorzBands:
 				{				//row count
 
-					appendValueElement( _tblPr, _T( "tblStyleRowBandSize" ), iter->Arguments[0], true );
+                    appendValueElement( _tblPr, L"tblStyleRowBandSize", iter->Arguments[0], true );
 				}
 				break;
 
 				case sprmTCVertBands:
 				{				//col count
 
-					appendValueElement( _tblPr, _T( "tblStyleColBandSize" ), iter->Arguments[0], true );
+                    appendValueElement( _tblPr, L"tblStyleColBandSize", iter->Arguments[0], true );
 				}
 				break;
 
 				case sprmTFNoAllowOverlap:
 				{				//overlap
 
-					std::wstring tblOverlapVal = std::wstring( _T( "overlap" ) );
+                    std::wstring tblOverlapVal = std::wstring( L"overlap");
 
 					if ( iter->Arguments[0] )
 					{
-						tblOverlapVal = std::wstring( _T( "never" ) );
+                        tblOverlapVal = std::wstring( L"never");
 					}
 
-					appendValueElement( _tblPr, _T( "tblOverlap" ), tblOverlapVal, true );
+                    appendValueElement( _tblPr, L"tblOverlap", tblOverlapVal, true );
 				}
 				break;
 
@@ -332,47 +332,47 @@ namespace DocFileFormat
 				{
 					unsigned char flag = ( iter->Arguments[0] & 0x30 ) >> 4;
 
-					appendValueAttribute( &tblpPr, _T( "w:vertAnchor" ), FormatUtils::MapValueToWideString( flag, &Global::VerticalPositionCode[0][0], 4, 7 ) );
+                    appendValueAttribute( &tblpPr, L"w:vertAnchor", FormatUtils::MapValueToWideString( flag, &Global::VerticalPositionCode[0][0], 4, 7 ) );
 
 					flag = ( iter->Arguments[0] & 0xC0 ) >> 6;
 
-					appendValueAttribute( &tblpPr, _T( "w:horzAnchor" ), FormatUtils::MapValueToWideString( flag, &Global::HorizontalPositionCode[0][0], 4, 7 ) );
+                    appendValueAttribute( &tblpPr, L"w:horzAnchor", FormatUtils::MapValueToWideString( flag, &Global::HorizontalPositionCode[0][0], 4, 7 ) );
 				}
 				break;
 
 				case sprmTDxaFromText:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:leftFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:leftFromText", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
 				case sprmTDxaFromTextRight:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:rightFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:rightFromText", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
 				case sprmTDyaFromText:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:topFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:topFromText", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
 				case sprmTDyaFromTextBottom:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:bottomFromText" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:bottomFromText", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}			
 				break;
 
 				case sprmTDxaAbs:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:tblpX" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:tblpX", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 
 				case sprmTDyaAbs:
 				{
-					appendValueAttribute( &tblpPr, _T( "w:tblpY" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &tblpPr, L"w:tblpY", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 				}
 				break;
 			}
@@ -381,12 +381,12 @@ namespace DocFileFormat
 		//indent
 		if ( tblIndent != 0 )
 		{
-            XMLTools::XMLElement tblInd( _T( "w:tblInd" ) );
+            XMLTools::XMLElement tblInd( L"w:tblInd");
 
-            XMLTools::XMLAttribute tblIndW( _T( "w:w" ),FormatUtils::IntToWideString( tblIndent ) );
+            XMLTools::XMLAttribute tblIndW( L"w:w", FormatUtils::IntToWideString( tblIndent ) );
 			tblInd.AppendAttribute( tblIndW );
 
-            XMLTools::XMLAttribute tblIndType( _T( "w:type" ), _T( "dxa" ) );
+            XMLTools::XMLAttribute tblIndType( L"w:type", L"dxa");
 			tblInd.AppendAttribute( tblIndType );
 
 			_tblPr->AppendChild( tblInd );
@@ -401,42 +401,42 @@ namespace DocFileFormat
 		//set borders
 		if ( brcTop != NULL )
 		{
-            XMLTools::XMLElement topBorder( _T( "w:top" ) );
+            XMLTools::XMLElement topBorder( L"w:top");
 			appendBorderAttributes( brcTop, &topBorder );
 			addOrSetBorder( _tblBorders, &topBorder );
 		}
 
 		if ( brcLeft != NULL )
 		{
-            XMLTools::XMLElement leftBorder( _T( "w:left" ) );
+            XMLTools::XMLElement leftBorder( L"w:left");
 			appendBorderAttributes( brcLeft, &leftBorder );
 			addOrSetBorder( _tblBorders, &leftBorder );
 		}
 
 		if ( brcBottom != NULL )
 		{
-            XMLTools::XMLElement bottomBorder( _T( "w:bottom" ) );
+            XMLTools::XMLElement bottomBorder( L"w:bottom");
 			appendBorderAttributes( brcBottom, &bottomBorder );
 			addOrSetBorder( _tblBorders, &bottomBorder );
 		}
 
 		if ( brcRight != NULL )
 		{
-            XMLTools::XMLElement rightBorder( _T( "w:right" ) );
+            XMLTools::XMLElement rightBorder( L"w:right");
 			appendBorderAttributes( brcRight, &rightBorder );
 			addOrSetBorder( _tblBorders, &rightBorder );
 		}
 
 		if ( brcHorz != NULL )
 		{
-            XMLTools::XMLElement insideHBorder( _T( "w:insideH" ) );
+            XMLTools::XMLElement insideHBorder( L"w:insideH");
 			appendBorderAttributes( brcHorz, &insideHBorder );
 			addOrSetBorder( _tblBorders, &insideHBorder );
 		}
 
 		if ( brcVert != NULL )
 		{
-            XMLTools::XMLElement insideVBorder( _T( "w:insideV" ) );
+            XMLTools::XMLElement insideVBorder( L"w:insideV");
 			appendBorderAttributes( brcVert, &insideVBorder );
 			addOrSetBorder( _tblBorders, &insideVBorder );
 		}
@@ -453,20 +453,20 @@ namespace DocFileFormat
 		//append margins
 		if ( ( marginLeft == 0 ) && ( gabHalf != 0 ) )
 		{
-			appendDxaElement( &tblCellMar, _T( "left" ), FormatUtils::IntToWideString( gabHalf ), true );
+            appendDxaElement( &tblCellMar, L"left", FormatUtils::IntToWideString( gabHalf ), true );
 		}
 		else
 		{
-			appendDxaElement( &tblCellMar, _T( "left" ), FormatUtils::IntToWideString( marginLeft ), true );
+            appendDxaElement( &tblCellMar, L"left", FormatUtils::IntToWideString( marginLeft ), true );
 		}
 
 		if ( ( marginRight == 0 ) && ( gabHalf != 0 ) )
 		{
-			appendDxaElement( &tblCellMar, _T( "right" ), FormatUtils::IntToWideString( gabHalf ), true );
+            appendDxaElement( &tblCellMar, L"right", FormatUtils::IntToWideString( gabHalf ), true );
 		}
 		else
 		{
-			appendDxaElement( &tblCellMar, _T( "right" ), FormatUtils::IntToWideString( marginRight ), true );
+            appendDxaElement( &tblCellMar, L"right", FormatUtils::IntToWideString( marginRight ), true );
 		}
 
 		_tblPr->AppendChild( tblCellMar );
@@ -478,7 +478,7 @@ namespace DocFileFormat
 		}
 
 		//append the grid
-        _tblGrid = new XMLTools::XMLElement( _T( "w:tblGrid" ) );
+        _tblGrid = new XMLTools::XMLElement( L"w:tblGrid");
 
 		//Если _grid состоит из одних DocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
 		bool bWriteGridCol = false;
@@ -499,8 +499,8 @@ namespace DocFileFormat
 		{
 			for ( unsigned int i = 0; i < _grid->size(); i++ )		
 			{
-                XMLTools::XMLElement gridCol( _T( "w:gridCol" ) );
-                XMLTools::XMLAttribute gridColW( _T( "w:w" ), FormatUtils::IntToWideString( _grid->at( i ) ) );
+                XMLTools::XMLElement gridCol( L"w:gridCol");
+                XMLTools::XMLAttribute gridColW( L"w:w", FormatUtils::IntToWideString( _grid->at( i ) ) );
 				gridCol.AppendAttribute( gridColW );
 				_tblGrid->AppendChild( gridCol );
 			}

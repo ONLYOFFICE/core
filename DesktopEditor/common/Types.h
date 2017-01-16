@@ -116,7 +116,7 @@ typedef double T_ULONG64;
 #endif
 
 #ifndef VOID
-typedef void			VOID, *LPVOID;
+    typedef void			VOID, *LPVOID;
 #endif
 
 #ifndef FLT_EPSILON

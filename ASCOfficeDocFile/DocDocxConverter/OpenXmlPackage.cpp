@@ -52,17 +52,17 @@
 
 namespace DocFileFormat
 {
-	OpenXmlPackage::OpenXmlPackage(const WordDocument* _docFile) :  m_strOutputPath(_T("")), relID(1), _imageCounter(0), _headerCounter(0), _footerCounter(0),
-		_oleCounter(0), docFile(NULL), DocumentRelationshipsFile( _T( "word/_rels/document.xml.rels" ) ), MainRelationshipsFile( _T( "_rels/.rels" ) ),
-		FootnotesRelationshipsFile( _T( "word/_rels/footnotes.xml.rels" ) ), EndnotesRelationshipsFile( _T( "word/_rels/endnotes.xml.rels" ) ),
-		CommentsRelationshipsFile( _T( "word/_rels/comments.xml.rels" ) ), NumberingRelationshipsFile( _T( "word/_rels/numbering.xml.rels" ) )
+    OpenXmlPackage::OpenXmlPackage(const WordDocument* _docFile) :  m_strOutputPath(L""), relID(1), _imageCounter(0), _headerCounter(0), _footerCounter(0),
+        _oleCounter(0), docFile(NULL), DocumentRelationshipsFile( L"word/_rels/document.xml.rels"), MainRelationshipsFile( L"_rels/.rels"),
+        FootnotesRelationshipsFile( L"word/_rels/footnotes.xml.rels"), EndnotesRelationshipsFile( L"word/_rels/endnotes.xml.rels"),
+        CommentsRelationshipsFile( L"word/_rels/comments.xml.rels"), NumberingRelationshipsFile( L"word/_rels/numbering.xml.rels")
 	{
 		docFile = _docFile;
 
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( _T( "rels" ), std::wstring( OpenXmlContentTypes::Relationships ) ) );
-		DocumentContentTypesFile._defaultTypes.insert( make_pair( _T( "xml" ), std::wstring( OpenXmlContentTypes::Xml ) ) );
+        DocumentContentTypesFile._defaultTypes.insert( make_pair( L"rels", std::wstring( OpenXmlContentTypes::Relationships ) ) );
+        DocumentContentTypesFile._defaultTypes.insert( make_pair( L"xml", std::wstring( OpenXmlContentTypes::Xml ) ) );
 
-		MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( _T( "rId1" ) ), OpenXmlRelationshipTypes::OfficeDocument, _T( "word/document.xml" ) ) );
+        MainRelationshipsFile.Relationships.push_back( Relationship( std::wstring( L"rId1"), OpenXmlRelationshipTypes::OfficeDocument, L"word/document.xml") );
 	}
 
 
@@ -197,34 +197,34 @@ namespace DocFileFormat
 
 	int OpenXmlPackage::RegisterDocument()
 	{
-		return AddPart( _T( "word" ), _T( "document.xml" ), WordprocessingMLContentTypes::MainDocument, _T( "" ) );
+        return AddPart( L"word", L"document.xml", WordprocessingMLContentTypes::MainDocument, L"");
 	}
 
 	int OpenXmlPackage::RegisterFontTable()
 	{
-		return AddPart( _T( "word" ), _T( "fontTable.xml" ), WordprocessingMLContentTypes::FontTable, OpenXmlRelationshipTypes::FontTable );
+        return AddPart( L"word", L"fontTable.xml", WordprocessingMLContentTypes::FontTable, OpenXmlRelationshipTypes::FontTable );
 	}
 
 	int OpenXmlPackage::RegisterNumbering()
 	{
-		return AddPart( _T( "word" ), _T( "numbering.xml" ), WordprocessingMLContentTypes::Numbering, OpenXmlRelationshipTypes::Numbering );
+        return AddPart( L"word", L"numbering.xml", WordprocessingMLContentTypes::Numbering, OpenXmlRelationshipTypes::Numbering );
 	}
 
 	int OpenXmlPackage::RegisterSettings()
 	{
-		return AddPart( _T( "word" ), _T( "settings.xml" ), WordprocessingMLContentTypes::Settings, OpenXmlRelationshipTypes::Settings );
+        return AddPart( L"word", L"settings.xml", WordprocessingMLContentTypes::Settings, OpenXmlRelationshipTypes::Settings );
 	}
 
 	int OpenXmlPackage::RegisterStyleSheet()
 	{
-		return AddPart( _T( "word" ), _T( "styles.xml" ), WordprocessingMLContentTypes::Styles, OpenXmlRelationshipTypes::Styles );
+        return AddPart( L"word", L"styles.xml", WordprocessingMLContentTypes::Styles, OpenXmlRelationshipTypes::Styles );
 	}	 
 
 	int OpenXmlPackage::RegisterHeader()
 	{
-		HeaderRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( _T( "word/_rels/header" ) ) + FormatUtils::IntToWideString( ++_headerCounter ) + std::wstring( _T( ".xml.rels" ) ) ) ) );
+        HeaderRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( L"word/_rels/header") + FormatUtils::IntToWideString( ++_headerCounter ) + std::wstring( L".xml.rels" ) ) ) );
 
-		return AddPart( _T( "word" ), ( std::wstring( _T( "header" ) ) + FormatUtils::IntToWideString( _headerCounter ) + std::wstring( _T( ".xml" ) ) ), WordprocessingMLContentTypes::Header, OpenXmlRelationshipTypes::Header );
+        return AddPart( L"word", ( std::wstring( L"header") + FormatUtils::IntToWideString( _headerCounter ) + std::wstring( L".xml" ) ), WordprocessingMLContentTypes::Header, OpenXmlRelationshipTypes::Header );
 	}
 
 	int OpenXmlPackage::AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
@@ -233,7 +233,7 @@ namespace DocFileFormat
 
 		if ( !HeaderRelationshipsFiles.empty() )
 		{
-			HeaderRelationshipsFiles.back().Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++HeaderRelationshipsFiles.back().RelID ) ), relationshipType, fileName, targetMode ) );
+            HeaderRelationshipsFiles.back().Relationships.push_back( Relationship( ( std::wstring( L"rId") + FormatUtils::IntToWideString( ++HeaderRelationshipsFiles.back().RelID ) ), relationshipType, fileName, targetMode ) );
 
 			relID = HeaderRelationshipsFiles.back().RelID;
 		}
@@ -243,9 +243,9 @@ namespace DocFileFormat
 
 	int OpenXmlPackage::RegisterFooter()
 	{
-		FooterRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( _T( "word/_rels/footer" ) ) + FormatUtils::IntToWideString( ++_footerCounter ) + std::wstring( _T( ".xml.rels" ) ) ) ) );
+        FooterRelationshipsFiles.push_back( RelationshipsFile( ( std::wstring( L"word/_rels/footer" ) + FormatUtils::IntToWideString( ++_footerCounter ) + std::wstring( L".xml.rels" ) ) ) );
 
-		return AddPart( _T( "word" ), ( std::wstring( _T( "footer" ) ) + FormatUtils::IntToWideString( _footerCounter ) + std::wstring( _T( ".xml" ) ) ), WordprocessingMLContentTypes::Footer, OpenXmlRelationshipTypes::Footer );
+        return AddPart( L"word", ( std::wstring( L"footer" ) + FormatUtils::IntToWideString( _footerCounter ) + std::wstring( L".xml") ), WordprocessingMLContentTypes::Footer, OpenXmlRelationshipTypes::Footer );
 	}
 
 	int OpenXmlPackage::AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
@@ -254,7 +254,7 @@ namespace DocFileFormat
 
 		if ( !FooterRelationshipsFiles.empty() )
 		{
-			FooterRelationshipsFiles.back().Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++FooterRelationshipsFiles.back().RelID ) ), relationshipType, fileName, targetMode ) );
+            FooterRelationshipsFiles.back().Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++FooterRelationshipsFiles.back().RelID ) ), relationshipType, fileName, targetMode ) );
 
 			relID = FooterRelationshipsFiles.back().RelID;
 		}
@@ -264,43 +264,43 @@ namespace DocFileFormat
 
 	int OpenXmlPackage::RegisterFootnotes()
 	{
-		return AddPart( _T( "word" ), _T( "footnotes.xml" ), WordprocessingMLContentTypes::Footnotes, OpenXmlRelationshipTypes::Footnotes );
+        return AddPart( L"word", L"footnotes.xml", WordprocessingMLContentTypes::Footnotes, OpenXmlRelationshipTypes::Footnotes );
 	}
 
 	int OpenXmlPackage::AddFootnotesPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		FootnotesRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++FootnotesRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
+        FootnotesRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++FootnotesRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
 
 		return FootnotesRelationshipsFile.RelID;
 	}
 
 	int OpenXmlPackage::RegisterEndnotes()
 	{
-		return AddPart( _T( "word" ), _T( "endnotes.xml" ), WordprocessingMLContentTypes::Endnotes, OpenXmlRelationshipTypes::Endnotes );
+        return AddPart( L"word", L"endnotes.xml", WordprocessingMLContentTypes::Endnotes, OpenXmlRelationshipTypes::Endnotes );
 	}
 
 	int OpenXmlPackage::AddEndnotesPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		EndnotesRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++EndnotesRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
+        EndnotesRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++EndnotesRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
 
 		return EndnotesRelationshipsFile.RelID;
 	}
 
 	int OpenXmlPackage::RegisterComments()
 	{
-		return AddPart( _T( "word" ), _T( "comments.xml" ), WordprocessingMLContentTypes::Comments, OpenXmlRelationshipTypes::Comments );
+        return AddPart( L"word", L"comments.xml", WordprocessingMLContentTypes::Comments, OpenXmlRelationshipTypes::Comments );
 	}
 
 	int OpenXmlPackage::AddCommentsPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		CommentsRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++CommentsRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
+        CommentsRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++CommentsRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
 
 		return CommentsRelationshipsFile.RelID;
 	}
 
 	int OpenXmlPackage::AddNumberingPart( const std::wstring& fileName, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		NumberingRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( ++NumberingRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
+        NumberingRelationshipsFile.Relationships.push_back( Relationship( ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( ++NumberingRelationshipsFile.RelID ) ), relationshipType, fileName, targetMode ) );
 
 		return NumberingRelationshipsFile.RelID;
 	}
@@ -311,30 +311,30 @@ namespace DocFileFormat
 		{
 			XMLTools::CStringXmlWriter writer;
 
-			writer.WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-			writer.WriteNodeBegin( _T( "Relationships" ), TRUE );
+            writer.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+            writer.WriteNodeBegin( L"Relationships", TRUE );
 
 			//write namespaces
-			writer.WriteAttribute( _T( "xmlns" ), OpenXmlNamespaces::RelationshipsPackage );
+            writer.WriteAttribute( L"xmlns", OpenXmlNamespaces::RelationshipsPackage );
 
-			writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
+            writer.WriteNodeEnd( L"", TRUE, FALSE );
 
 			for ( std::list<Relationship>::const_iterator iter = relationshipsFile.Relationships.begin(); iter != relationshipsFile.Relationships.end(); iter++ )
 			{
-				writer.WriteNodeBegin( _T( "Relationship" ), TRUE );
-				writer.WriteAttribute( _T( "Id" ), iter->Id );
-				writer.WriteAttribute( _T( "Type" ), iter->Type );
-				writer.WriteAttribute( _T( "Target" ), iter->Target );
+                writer.WriteNodeBegin( L"Relationship", TRUE );
+                writer.WriteAttribute( L"Id", iter->Id );
+                writer.WriteAttribute( L"Type", iter->Type );
+                writer.WriteAttribute( L"Target", iter->Target );
 
 				if ( !iter->TargetMode.empty() )
 				{
-					writer.WriteAttribute( _T( "TargetMode" ), iter->TargetMode );
+                    writer.WriteAttribute( L"TargetMode", iter->TargetMode );
 				}
 
-				writer.WriteNodeEnd( _T( "" ), TRUE );
+                writer.WriteNodeEnd( L"", TRUE );
 			}
 
-			writer.WriteNodeEnd( _T( "Relationships" ) );
+            writer.WriteNodeEnd( L"Relationships" );
 
 			std::wstring pathFileName = m_strOutputPath + FILE_SEPARATOR_STR + relationshipsFile.FileName;
 			
@@ -347,76 +347,76 @@ namespace DocFileFormat
 		XMLTools::CStringXmlWriter writer;
 
 		// write content types
-		writer.WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-		writer.WriteNodeBegin( _T( "Types" ), TRUE );
+        writer.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
+        writer.WriteNodeBegin( L"Types", TRUE );
 
 		//write namespaces
-		writer.WriteAttribute( _T( "xmlns" ), OpenXmlNamespaces::ContentTypes );
+        writer.WriteAttribute( L"xmlns", OpenXmlNamespaces::ContentTypes );
 
-		writer.WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        writer.WriteNodeEnd( L"", TRUE, FALSE );
 
 		for ( std::map<std::wstring, std::wstring>::iterator iter = DocumentContentTypesFile._defaultTypes.begin(); iter != DocumentContentTypesFile._defaultTypes.end(); iter++ )
 		{
-			writer.WriteNodeBegin( _T( "Default" ), TRUE );
-			writer.WriteAttribute( _T( "Extension" ), iter->first );
-			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._defaultTypes[iter->first] );
-			writer.WriteNodeEnd( _T( "" ), TRUE );
+            writer.WriteNodeBegin( L"Default", TRUE );
+            writer.WriteAttribute( L"Extension", iter->first );
+            writer.WriteAttribute( L"ContentType", DocumentContentTypesFile._defaultTypes[iter->first] );
+            writer.WriteNodeEnd( L"", TRUE );
 		}
 
 		for ( std::map<std::wstring, std::wstring>::iterator iter = DocumentContentTypesFile._partOverrides.begin(); iter != DocumentContentTypesFile._partOverrides.end(); iter++ )
 		{
-			writer.WriteNodeBegin( _T( "Override" ), TRUE );
-			writer.WriteAttribute( _T( "PartName" ), iter->first );
-			writer.WriteAttribute( _T( "ContentType" ), DocumentContentTypesFile._partOverrides[iter->first] );
-			writer.WriteNodeEnd( _T( "" ), TRUE );
+            writer.WriteNodeBegin( L"Override", TRUE );
+            writer.WriteAttribute( L"PartName", iter->first );
+            writer.WriteAttribute( L"ContentType", DocumentContentTypesFile._partOverrides[iter->first] );
+            writer.WriteNodeEnd( L"", TRUE );
 		}
 
-		writer.WriteNodeEnd( _T( "Types" ) );
+        writer.WriteNodeEnd( L"Types" );
 
-		std::wstring pathFileName = m_strOutputPath + FILE_SEPARATOR_STR + _T( "[Content_Types].xml" );
+        std::wstring pathFileName = m_strOutputPath + FILE_SEPARATOR_STR + L"[Content_Types].xml" ;
 		
 		writer.SaveToFile(pathFileName, TRUE);
 	}
 
 	int OpenXmlPackage::RegisterImage(const IMapping* mapping, Global::BlipType blipType)
 	{
-		std::wstring fileName = ( std::wstring( _T( "media/image" ) ) + FormatUtils::IntToWideString( ++_imageCounter ) + VMLPictureMapping::GetTargetExt( blipType ) );
+        std::wstring fileName = ( std::wstring( L"media/image" ) + FormatUtils::IntToWideString( ++_imageCounter ) + VMLPictureMapping::GetTargetExt( blipType ) );
 
 		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( VMLPictureMapping::GetTargetExt( blipType ).erase( 0, 1 ), VMLPictureMapping::GetContentType( blipType ) ) );
-		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( std::wstring( _T( "vml" ) ), std::wstring( OpenXmlContentTypes::Vml ) ) );
+        DocumentContentTypesFile._defaultTypes.insert( std::make_pair( L"vml", std::wstring( OpenXmlContentTypes::Vml ) ));
 
-		return AddPart( mapping, _T( "word" ), fileName, VMLPictureMapping::GetContentType( blipType ), OpenXmlRelationshipTypes::Image );
+        return AddPart( mapping, L"word", fileName, VMLPictureMapping::GetContentType( blipType ), OpenXmlRelationshipTypes::Image );
 	}
 
 	int OpenXmlPackage::RegisterOLEObject(const IMapping* mapping, const std::wstring& objectType)
 	{
-		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
+        std::wstring fileName = ( std::wstring( L"embeddings/oleObject" ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
 		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
-		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::OleObject );
+        return AddPart( mapping, L"word", fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::OleObject );
 	}
 	int OpenXmlPackage::RegisterPackage(const IMapping* mapping, const std::wstring& objectType)
 	{
-		std::wstring fileName = ( std::wstring( _T( "embeddings/oleObject" ) ) + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
+        std::wstring fileName = ( std::wstring( L"embeddings/oleObject") + FormatUtils::IntToWideString( ++_oleCounter ) + OleObjectMapping::GetTargetExt(objectType));
 
 		DocumentContentTypesFile._defaultTypes.insert( std::make_pair( OleObjectMapping::GetTargetExt( objectType ).erase( 0, 1 ), OleObjectMapping::GetContentType(objectType)));
 
-		return AddPart( mapping, _T( "word" ), fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::Package);
+        return AddPart( mapping, L"word", fileName, OleObjectMapping::GetContentType( objectType ), OpenXmlRelationshipTypes::Package);
 	}
 	int OpenXmlPackage::RegisterExternalOLEObject(const IMapping* mapping, const std::wstring& objectType, const std::wstring& uri)
 	{
-		std::wstring fullUri	=	std::wstring(_T("file:///")) + uri;
-		std::wstring fileName	=	ReplaceString(fullUri, _T(" "), _T("%20"));
+        std::wstring fullUri	=	std::wstring(L"file:///") + uri;
+        std::wstring fileName	=	ReplaceString(fullUri, L" ", L"%20");
 
 		DocumentContentTypesFile._defaultTypes.insert(std::make_pair(OleObjectMapping::GetTargetExt(objectType).erase(0, 1), OleObjectMapping::GetContentType(objectType)));
 
-		return AddPart(mapping, _T(""), fileName, OleObjectMapping::GetContentType(objectType), OpenXmlRelationshipTypes::OleObject, _T("External"));
+        return AddPart(mapping, L"", fileName, OleObjectMapping::GetContentType(objectType), OpenXmlRelationshipTypes::OleObject, L"External");
 	}
 
 	int OpenXmlPackage::AddPart( const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType, const std::wstring& relationshipType, const std::wstring& targetMode )
 	{
-		if (( contentType != _T( "" ) ) && 
+        if (( contentType != L"" ) &&
 			( contentType != OpenXmlContentTypes::Xml )				&&
 			( contentType != OpenXmlContentTypes::MSWordDocx )		&& 
 			( contentType != OpenXmlContentTypes::OleObject )		&& 
@@ -426,9 +426,9 @@ namespace DocFileFormat
 		{
 			std::wstring  partOverride;
 
-			if (packageDir != std::wstring ( _T( "" ) ) )
+            if (packageDir != std::wstring ( L"") )
 			{
-				partOverride = std::wstring ( _T( "/" ) ) + packageDir + std::wstring( _T( "/" ) ); 
+                partOverride = std::wstring ( L"/" ) + packageDir + std::wstring( L"/");
 			}
 
 			partOverride += fileName; 
@@ -436,9 +436,9 @@ namespace DocFileFormat
 			DocumentContentTypesFile._partOverrides.insert( make_pair( partOverride, contentType ) );
 		}
 
-		if ( relationshipType != _T( "" ) )
+        if ( relationshipType != L"" )
 		{
-			DocumentRelationshipsFile.Relationships.push_back( Relationship( (std::wstring ( _T( "rId" ) ) + FormatUtils::IntToWideString( ++relID ) ), relationshipType, fileName, targetMode ) );
+            DocumentRelationshipsFile.Relationships.push_back( Relationship( L"rId" + FormatUtils::IntToWideString( ++relID ), relationshipType, fileName, targetMode ) );
 		}
 
 		return relID;

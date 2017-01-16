@@ -50,8 +50,8 @@
 
 namespace NExtractTools
 {
-    static const TCHAR* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
-    static const TCHAR* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
+    static const wchar_t* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
+    static const wchar_t* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
 
     typedef enum tagTConversionDirection
     {

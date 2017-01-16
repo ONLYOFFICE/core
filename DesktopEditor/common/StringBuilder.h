@@ -34,7 +34,8 @@
 
 #include <string>
 #include <algorithm>
-#include "./Types.h"
+
+#include "Types.h"
 
 namespace NSStringUtils
 {
@@ -50,7 +51,7 @@ namespace NSStringUtils
 		size_t		m_lSizeCur;
 
 	public:
-                CStringBuilderA()
+        CStringBuilderA()
 		{
 			m_pData = NULL;
 			m_lSize = 0;
@@ -58,7 +59,7 @@ namespace NSStringUtils
 			m_pDataCur = m_pData;
 			m_lSizeCur = m_lSize;
 		}
-                ~CStringBuilderA()
+        ~CStringBuilderA()
 		{
 			if (NULL != m_pData)
 				free(m_pData);

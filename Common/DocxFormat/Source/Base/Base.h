@@ -32,16 +32,21 @@
 #pragma once
 
 #include <string>
+#include <stdlib.h>
+#include <string.h>
 
-#include <TCHAR.H>
-#include <WTYPES.H>
+#include "unicode_util.h"
+
+#include "../../../DesktopEditor/common/File.h"
 
 #define _T(x)       __T(x)
 #define __T(x)      L##x
 
 #if defined(_WIN32) || defined (_WIN64)
-	// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
-	#ifndef FILE_SEPARATOR
+    #include <WTYPES.H>
+    // windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
+
+    #ifndef FILE_SEPARATOR
 	#define FILE_SEPARATOR
 	#define FILE_SEPARATOR_CHAR '\\'
 	#define FILE_SEPARATOR_STR _T("\\")
@@ -57,11 +62,9 @@
 	#define FILE_SEPARATOR_STR _T("/")
 #endif
 
-
 #ifndef _wtof
-    #define _wtof std::stod
-    //#define _wtoi std::stoi
-    #define _wtoi64(p) std::wcstoll((p),NULL,10)
+    #define _wtof       std::stod
+    #define _wtoi64(p)  std::wcstoll((p),NULL,10)
 
     static int _wtoi(std::wstring sVal)
     {

@@ -164,7 +164,7 @@ namespace NSBinPptxRW
 		{
 			if(nIndex1 + sFind1.length() < strInput.length())
 			{
-				TCHAR cRes = strInput[nIndex1 + sFind1.length()];
+                wchar_t cRes = strInput[nIndex1 + sFind1.length()];
 				if('1' <= cRes && cRes <= '6')
 				{
 					int nImageIndex = nIndex1 + sFind1.length() + 1;
@@ -187,7 +187,7 @@ namespace NSBinPptxRW
 			return pPair->second;
 
 		std::wstring strExts = _T(".jpg");
-        int nIndexExt = strInput.rfind(TCHAR('.'));
+        int nIndexExt = strInput.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
 			strExts = strInput.substr(nIndexExt);
 
@@ -356,7 +356,7 @@ namespace NSBinPptxRW
 			return pPair->second;
 
 		std::wstring strExts = _T(".jpg");
-        int nIndexExt = strUrl.rfind(TCHAR('.'));
+        int nIndexExt = strUrl.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
 			strExts = strUrl.substr(nIndexExt);
 

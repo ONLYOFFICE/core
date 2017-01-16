@@ -1455,7 +1455,7 @@ public:
             bool bDQuot = false;
             for(int i = 0, length = fld.length(); i < length; ++i)
             {
-                TCHAR sCurLetter = fld[i];
+                wchar_t sCurLetter = fld[i];
                 if('\"' == sCurLetter)
                     bDQuot = !bDQuot;
                 else if('\\' == sCurLetter && true == bDQuot && i + 1 < length && '\"' == fld[i + 1])
@@ -1710,7 +1710,7 @@ public:
 			int nPrevIndex = 0;
             for(int i = 0, length = sText.length(); i < length; i++)
 			{
-				TCHAR cToken = sText[i];
+                wchar_t cToken = sText[i];
 				if('\n' == cToken)
 				{
 					bFirst = writeContentWritePart(pComment, sText, nPrevIndex, i, bFirst, sRes);

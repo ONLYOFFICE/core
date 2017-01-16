@@ -63,11 +63,11 @@ namespace NSStringUtils
     #define IS_ALPHA(c) (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')))
     #define IS_DIGIT(c) (((c >= '0') && (c <= '9')) || (c == '-'))
 
-    static bool IsDigit(const TCHAR& c)
+    static bool IsDigit(const wchar_t& c)
     {
         return (((c >= '0') && (c <= '9')) || (c == '-'));
     }
-    static bool IsAlpha(const TCHAR& c)
+    static bool IsAlpha(const wchar_t& c)
     {
         return (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')));
     }
@@ -213,29 +213,29 @@ namespace NSStringUtils
         std::wstring strPath = strSource;
         int nLength = strPath.length();
         //strPath.Replace(_T(" "), _T(","));
-        if (strPath.find(TCHAR('h')) != -1)
+        if (strPath.find(wchar_t('h')) != -1)
         {
-            TCHAR* pBuff = new TCHAR[nLength + 1];
+            wchar_t* pBuff = new wchar_t[nLength + 1];
             int nCur = 0;
             for (int i = 1; i < nLength; ++i)
             {
-                TCHAR _c = strPath[i - 1];
-                if (_c != TCHAR('h'))
+                wchar_t _c = strPath[i - 1];
+                if (_c != wchar_t('h'))
                 {
                     pBuff[nCur++] = _c;
                 }
                 else
                 {
-                    TCHAR _c1 = strPath[i];
-                    if (_c1 == TCHAR('a') ||
-                            _c1 == TCHAR('b') ||
-                            _c1 == TCHAR('c') ||
-                            _c1 == TCHAR('d') ||
-                            _c1 == TCHAR('e') ||
-                            _c1 == TCHAR('f') ||
-                            _c1 == TCHAR('g') ||
-                            _c1 == TCHAR('h') ||
-                            _c1 == TCHAR('i'))
+                    wchar_t _c1 = strPath[i];
+                    if (_c1 == wchar_t('a') ||
+                            _c1 == wchar_t('b') ||
+                            _c1 == wchar_t('c') ||
+                            _c1 == wchar_t('d') ||
+                            _c1 == wchar_t('e') ||
+                            _c1 == wchar_t('f') ||
+                            _c1 == wchar_t('g') ||
+                            _c1 == wchar_t('h') ||
+                            _c1 == wchar_t('i'))
                     {
                         ++i;
                     }
@@ -257,7 +257,7 @@ namespace NSStringUtils
             }
         }
 
-        if (nLength > 0 && strPath[nLength - 1] == TCHAR(','))
+        if (nLength > 0 && strPath[nLength - 1] == wchar_t(','))
         {
             strPath += _T("0");
             ++nLength;
@@ -272,8 +272,8 @@ namespace NSStringUtils
                 //continue;
             }
 
-            TCHAR _c	= strPath[nIndex];
-            TCHAR _c1	= strPath[nIndex + 1];
+            wchar_t _c	= strPath[nIndex];
+            wchar_t _c1	= strPath[nIndex + 1];
 
             if (_c1 == ',')
             {

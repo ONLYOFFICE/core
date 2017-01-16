@@ -29,16 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "stdafx.h"
-#include "FontProcessor.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/ASCUtils.h"
 
 namespace DocWrapper {
-	TCHAR* gc_sNoNameFont = _T("NoNameFont");
-	TCHAR* gc_sDefaultFontName = _T("Arial");
+    wchar_t* gc_sNoNameFont         = _T("NoNameFont");
+    wchar_t* gc_sDefaultFontName    = _T("Arial");
 
 	FontProcessor::FontProcessor() : m_pFontManager(NULL)
 	{

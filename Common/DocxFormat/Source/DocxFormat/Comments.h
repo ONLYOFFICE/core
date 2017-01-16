@@ -238,7 +238,7 @@ namespace OOX
 					break;
 				case OOX::et_w_nonBreakHyphen:
 					{
-						TCHAR oNewChar = 0x2013;
+                        wchar_t oNewChar = 0x2013;
 						sRes += oNewChar;
 						break;
 					}
@@ -248,7 +248,7 @@ namespace OOX
 				case OOX::et_w_sym:
 					{
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
-                        TCHAR oNewChar = 0x0FFF & oSym->m_oChar->GetValue();
+                        wchar_t oNewChar = 0x0FFF & oSym->m_oChar->GetValue();
                         sRes += oNewChar;
                         //sRes.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
 					}

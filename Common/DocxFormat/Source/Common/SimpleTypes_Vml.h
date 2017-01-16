@@ -60,41 +60,41 @@ namespace SimpleTypes
 		CEditAs() {}
 		virtual EEditAs FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("bullseye") == sValue ) m_eValue = editasBullseye;
+                    if      ( _T("bullseye") == sValue ) this->m_eValue = editasBullseye;
 				break;
 			case 'c':
-					if      ( _T("canvas")   == sValue ) m_eValue = editasCanvas;
-					else if ( _T("cycle")    == sValue ) m_eValue = editasCycle;
+                    if      ( _T("canvas")   == sValue ) this->m_eValue = editasCanvas;
+                    else if ( _T("cycle")    == sValue ) this->m_eValue = editasCycle;
 				break;
 			case 'o':
-					if      ( _T("orgchart") == sValue ) m_eValue = editasOrgchart;
+                    if      ( _T("orgchart") == sValue ) this->m_eValue = editasOrgchart;
 				break;
 			case 'r':
-					if      ( _T("radial")   == sValue ) m_eValue = editasRadial;
+                    if      ( _T("radial")   == sValue ) this->m_eValue = editasRadial;
 				break;
 			case 's':
-					if      ( _T("stacked")  == sValue ) m_eValue = editasStacked;
+                    if      ( _T("stacked")  == sValue ) this->m_eValue = editasStacked;
 				break;
 			case 'v':
-					if      ( _T("venn")     == sValue ) m_eValue = editasVenn;
+                    if      ( _T("venn")     == sValue ) this->m_eValue = editasVenn;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case editasBullseye : return _T("bullseye");
 			case editasCanvas   : return _T("canvas");
@@ -130,31 +130,31 @@ namespace SimpleTypes
 		CExt() {}
 		virtual EExt    FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("backwardCompatible") == sValue ) m_eValue = extBackwardCompatible;
+                    if      ( _T("backwardCompatible") == sValue ) this->m_eValue = extBackwardCompatible;
 				break;
 			case 'e':
-					if      ( _T("edit")					== sValue ) m_eValue = extEdit;
+                    if      ( _T("edit")					== sValue ) this->m_eValue = extEdit;
 				break;
 			case 'v':
-					if      ( _T("view")					== sValue ) m_eValue = extView;
+                    if      ( _T("view")					== sValue ) this->m_eValue = extView;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case extBackwardCompatible : return _T("backwardCompatible");
 			case extEdit					: return _T("edit");
@@ -188,19 +188,19 @@ namespace SimpleTypes
 
 		virtual EFillMethod FromString(std::wstring& sValue)
 		{
-            if		(_T("any")			== sValue)	m_eValue = fillmethodAny;
-            else if	(_T("linear")		== sValue)	m_eValue = fillmethodLinear;
-            else if	(_T("linear sigma")	== sValue)	m_eValue = fillmethodLinearSigma;
-            else if (_T("sigma")		== sValue)	m_eValue = fillmethodSigma;
-            else if (_T("none")			== sValue)	m_eValue = fillmethodNone;
-            else									m_eValue = eDefValue;
+            if		(_T("any")			== sValue)	this->m_eValue = fillmethodAny;
+            else if	(_T("linear")		== sValue)	this->m_eValue = fillmethodLinear;
+            else if	(_T("linear sigma")	== sValue)	this->m_eValue = fillmethodLinearSigma;
+            else if (_T("sigma")		== sValue)	this->m_eValue = fillmethodSigma;
+            else if (_T("none")			== sValue)	this->m_eValue = fillmethodNone;
+            else									this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case fillmethodAny	        : return _T("any");
 			case fillmethodLinear	    : return _T("linear");
@@ -242,47 +242,47 @@ namespace SimpleTypes
 			{
 				if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
 					filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
-					m_eValue = eValue;
+                    this->m_eValue = eValue;
 				else
-					   m_eValue = eDefValue;
+                       this->m_eValue = eDefValue;
 			}
 			else
-					m_eValue = eValue;
+                    this->m_eValue = eValue;
 		}
 		virtual EFillType FromString(std::wstring &sValue)
 		{
 			if ( 0 == nType )
 			{
-					if      (_T("frame")			== sValue)	m_eValue = filltypeFrame;
-					else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
-					else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
-					else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
-					else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
-					else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
-					else										m_eValue = eDefValue;
+                    if      (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+                    else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+                    else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+                    else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+                    else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+                    else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+                    else										this->m_eValue = eDefValue;
 			}
 			else
 			{
-					if      (_T("background")		== sValue)	m_eValue = filltypeBackground;
-					else if (_T("frame")			== sValue)	m_eValue = filltypeFrame;
-					else if (_T("gradient")			== sValue)	m_eValue = filltypeGradient;
-					else if (_T("gradientCenter")   == sValue)	m_eValue = filltypeGradientCenter;
-					else if (_T("gradientRadial")	== sValue)	m_eValue = filltypeGradientRadial;
-					else if (_T("gradientUnscaled") == sValue)	m_eValue = filltypeGradientUnscaled;
-					else if (_T("pattern")			== sValue)	m_eValue = filltypePattern;
-					else if (_T("solid")			== sValue)	m_eValue = filltypeSolid;
-					else if (_T("tile")				== sValue)	m_eValue = filltypeTile;
-					else										m_eValue = eDefValue;
+                    if      (_T("background")		== sValue)	this->m_eValue = filltypeBackground;
+                    else if (_T("frame")			== sValue)	this->m_eValue = filltypeFrame;
+                    else if (_T("gradient")			== sValue)	this->m_eValue = filltypeGradient;
+                    else if (_T("gradientCenter")   == sValue)	this->m_eValue = filltypeGradientCenter;
+                    else if (_T("gradientRadial")	== sValue)	this->m_eValue = filltypeGradientRadial;
+                    else if (_T("gradientUnscaled") == sValue)	this->m_eValue = filltypeGradientUnscaled;
+                    else if (_T("pattern")			== sValue)	this->m_eValue = filltypePattern;
+                    else if (_T("solid")			== sValue)	this->m_eValue = filltypeSolid;
+                    else if (_T("tile")				== sValue)	this->m_eValue = filltypeTile;
+                    else										this->m_eValue = eDefValue;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString() const
 		{
 			if ( 0 == nType )
 			{
-					switch (m_eValue)
+                    switch (this->m_eValue)
 				{
 				case filltypeFrame			: return _T("frame");
 				case filltypeGradient		: return _T("gradient");
@@ -295,7 +295,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-					switch (m_eValue)
+                    switch (this->m_eValue)
 				{
 				case filltypeBackground		  : return _T("background");
 				case filltypeFrame			  : return _T("frame");
@@ -332,29 +332,29 @@ namespace SimpleTypes
 		CImageAspect() {}
 		virtual EImageAspect FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("atLeast") == sValue ) m_eValue = imageaspectAtLeast;
-					else if ( _T("atMost")  == sValue ) m_eValue = imageaspectAtMost;
+                    if      ( _T("atLeast") == sValue ) this->m_eValue = imageaspectAtLeast;
+                    else if ( _T("atMost")  == sValue ) this->m_eValue = imageaspectAtMost;
 				break;
 			case 'i':
-					if      ( _T("ignore")  == sValue ) m_eValue = imageaspectIgnore;
+                    if      ( _T("ignore")  == sValue ) this->m_eValue = imageaspectIgnore;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring      ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case imageaspectAtLeast : return _T("atLeast");
 			case imageaspectAtMost  : return _T("atMost");
@@ -387,18 +387,18 @@ namespace SimpleTypes
 
 		virtual EShadowType FromString(std::wstring &sValue)
 		{
-            if      (_T("double")		== sValue)	m_eValue = shadowtypeDouble;
-            else if (_T("emboss")		== sValue)	m_eValue = shadowtypeEmboss;
-            else if (_T("perspective")	== sValue)	m_eValue = shadowtypePerspective;
-            else if (_T("single")		== sValue)	m_eValue = shadowtypeSingle;
-            else									m_eValue = eDefValue;
+            if      (_T("double")		== sValue)	this->m_eValue = shadowtypeDouble;
+            else if (_T("emboss")		== sValue)	this->m_eValue = shadowtypeEmboss;
+            else if (_T("perspective")	== sValue)	this->m_eValue = shadowtypePerspective;
+            else if (_T("single")		== sValue)	this->m_eValue = shadowtypeSingle;
+            else									this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case shadowtypeDouble	    : return _T("double");
 			case shadowtypeEmboss	    : return _T("emboss");
@@ -428,31 +428,31 @@ namespace SimpleTypes
 		CStrokeArrowLength() {}
 		virtual EStrokeArrowLength FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-					if      ( _T("long")   == sValue ) m_eValue = strokearrowlengthLong;
+                    if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
 				break;
 			case 'm':
-					if      ( _T("medium") == sValue ) m_eValue = strokearrowlengthMedium;
+                    if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
 				break;
 			case 's':
-					if      ( _T("short")  == sValue ) m_eValue = strokearrowlengthShort;
+                    if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring            ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowlengthLong   : return _T("long");
 			case strokearrowlengthMedium : return _T("medium");
@@ -487,38 +487,38 @@ namespace SimpleTypes
 		CStrokeArrowType() {}
 		virtual EStrokeArrowType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("block")   == sValue ) m_eValue = strokearrowtypeBlock;
+                    if      ( _T("block")   == sValue ) this->m_eValue = strokearrowtypeBlock;
 				break;
 			case 'c':
-					if      ( _T("classic") == sValue ) m_eValue = strokearrowtypeClassic;
+                    if      ( _T("classic") == sValue ) this->m_eValue = strokearrowtypeClassic;
 				break;
 			case 'd':
-					if      ( _T("diamond") == sValue ) m_eValue = strokearrowtypeDiamond;
+                    if      ( _T("diamond") == sValue ) this->m_eValue = strokearrowtypeDiamond;
 				break;
 			case 'n':
-					if      ( _T("none")    == sValue ) m_eValue = strokearrowtypeNone;
+                    if      ( _T("none")    == sValue ) this->m_eValue = strokearrowtypeNone;
 				break;
 			case 'o':
-					if      ( _T("open")    == sValue ) m_eValue = strokearrowtypeOpen;
-					else if ( _T("oval")    == sValue ) m_eValue = strokearrowtypeOval;
+                    if      ( _T("open")    == sValue ) this->m_eValue = strokearrowtypeOpen;
+                    else if ( _T("oval")    == sValue ) this->m_eValue = strokearrowtypeOval;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring          ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowtypeBlock   : return _T("block");
 			case strokearrowtypeClassic : return _T("classic");
@@ -553,31 +553,31 @@ namespace SimpleTypes
 		CStrokeArrowWidth() {}
 		virtual EStrokeArrowWidth FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'm':
-					if      ( _T("medium") == sValue ) m_eValue = strokearrowwidthMedium;
+                    if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
 				break;
 			case 'n':
-					if      ( _T("narrow") == sValue ) m_eValue = strokearrowwidthNarrow;
+                    if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
 				break;
 			case 'w':
-					if      ( _T("wide")   == sValue ) m_eValue = strokearrowwidthWide;
+                    if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring           ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokearrowwidthMedium : return _T("medium");
 			case strokearrowwidthNarrow : return _T("narrow");
@@ -609,31 +609,31 @@ namespace SimpleTypes
 		CStrokeEndCap() {}
 		virtual EStrokeEndCap FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'f':
-					if      ( _T("flat")   == sValue ) m_eValue = strokeendcapFlat;
+                    if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
 				break;
 			case 'r':
-					if      ( _T("round")  == sValue ) m_eValue = strokeendcapRound;
+                    if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
 				break;
 			case 's':
-					if      ( _T("square") == sValue ) m_eValue = strokeendcapSqaure;
+                    if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring       ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokeendcapFlat   : return _T("flat");
 			case strokeendcapRound  : return _T("round");
@@ -665,17 +665,17 @@ namespace SimpleTypes
 
 		virtual EStrokeJoinStyle FromString(std::wstring &sValue)
 		{
-            if      (_T("round")	== sValue)	m_eValue = strokejoinstyleRound;
-            else if (_T("miter")	== sValue)	m_eValue = strokejoinstyleMiter;
-            else if (_T("bevel")	== sValue)	m_eValue = strokejoinstyleMiter;
-            else								m_eValue = strokejoinstyleRound;
+            if      (_T("round")	== sValue)	this->m_eValue = strokejoinstyleRound;
+            else if (_T("miter")	== sValue)	this->m_eValue = strokejoinstyleMiter;
+            else if (_T("bevel")	== sValue)	this->m_eValue = strokejoinstyleMiter;
+            else								this->m_eValue = strokejoinstyleRound;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case strokejoinstyleRound	: return _T("round");
 			case strokejoinstyleMiter	: return _T("miter");
@@ -706,31 +706,31 @@ namespace SimpleTypes
 		CStrokeLineStyle() {}
 		virtual EStrokeLineStyle FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 's':
-					if      ( _T("single")           == sValue ) m_eValue = strokelinestyleSingle;
+                    if      ( _T("single")           == sValue ) this->m_eValue = strokelinestyleSingle;
 				break;
 			case 't':
-					if      ( _T("thickBetweenThin") == sValue ) m_eValue = strokelinestyleThickBetweenThin;
-					else if ( _T("thickThin")        == sValue ) m_eValue = strokelinestyleThickThin;
-					else if ( _T("thinThick")        == sValue ) m_eValue = strokelinestyleThinThick;
-					else if ( _T("thinThin")         == sValue ) m_eValue = strokelinestyleThinThin;
+                    if      ( _T("thickBetweenThin") == sValue ) this->m_eValue = strokelinestyleThickBetweenThin;
+                    else if ( _T("thickThin")        == sValue ) this->m_eValue = strokelinestyleThickThin;
+                    else if ( _T("thinThick")        == sValue ) this->m_eValue = strokelinestyleThinThick;
+                    else if ( _T("thinThin")         == sValue ) this->m_eValue = strokelinestyleThinThin;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring          ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case strokelinestyleSingle            : return _T("single");
 			case strokelinestyleThickBetweenThin  : return _T("thickBetweenThin");
@@ -767,28 +767,28 @@ namespace SimpleTypes
 
 		virtual EAlternateMathContentType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'o':
-					if      ( _T("officeopenxmlmath") == sValue ) m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
+                    if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 				break;
 			case 'm':
-					if      ( _T("mathml")            == sValue ) m_eValue = alternatemathcontenttypeMathMl;
+                    if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring   ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case alternatemathcontenttypeOfficeOpenXmlMath: return _T("officeopenxmlmath");			
 			case alternatemathcontenttypeMathMl:            return _T("mathml");			
@@ -822,39 +822,39 @@ namespace SimpleTypes
 
 		virtual EVmlAngle FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '3':
-					if      ( _T("30")   == sValue ) m_eValue = vmlangle30;
+                    if      ( _T("30")   == sValue ) this->m_eValue = vmlangle30;
 				break;
 			case '4':
-					if      ( _T("45")   == sValue ) m_eValue = vmlangle45;
+                    if      ( _T("45")   == sValue ) this->m_eValue = vmlangle45;
 				break;
 			case '6':
-					if      ( _T("60")   == sValue ) m_eValue = vmlangle60;
+                    if      ( _T("60")   == sValue ) this->m_eValue = vmlangle60;
 				break;
 			case '9':
-					if      ( _T("90")   == sValue ) m_eValue = vmlangle90;
+                    if      ( _T("90")   == sValue ) this->m_eValue = vmlangle90;
 				break;
 			case 'a':  
-					if      ( _T("any")  == sValue ) m_eValue = vmlangleAny;
-					else if ( _T("auto") == sValue ) m_eValue = vmlangleAuto;
+                    if      ( _T("any")  == sValue ) this->m_eValue = vmlangleAny;
+                    else if ( _T("auto") == sValue ) this->m_eValue = vmlangleAuto;
 				break;
 
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring   ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case vmlangle30:   return _T("30");			
 			case vmlangle45:   return _T("45");			
@@ -898,53 +898,53 @@ namespace SimpleTypes
 
 		virtual EBWMode FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")					== sValue ) m_eValue = bwmodeAuto;
+                    if      ( _T("auto")					== sValue ) this->m_eValue = bwmodeAuto;
 				break;
 			case 'b':
-					if      ( _T("black")             == sValue ) m_eValue = bwmodeBlack;
-					else if ( _T("blackTextAndLines") == sValue ) m_eValue = bwmodeBlackTextAndLines;
+                    if      ( _T("black")             == sValue ) this->m_eValue = bwmodeBlack;
+                    else if ( _T("blackTextAndLines") == sValue ) this->m_eValue = bwmodeBlackTextAndLines;
 				break;
 			case 'c':
-					if      ( _T("color")             == sValue ) m_eValue = bwmodeColor;
+                    if      ( _T("color")             == sValue ) this->m_eValue = bwmodeColor;
 				break;
 			case 'g':
-					if      ( _T("grayOutline")       == sValue ) m_eValue = bwmodeGrayOutline;
-					else if ( _T("grayScale")         == sValue ) m_eValue = bwmodeGrayScale;
+                    if      ( _T("grayOutline")       == sValue ) this->m_eValue = bwmodeGrayOutline;
+                    else if ( _T("grayScale")         == sValue ) this->m_eValue = bwmodeGrayScale;
 				break;
 			case 'h':  
-					if      ( _T("hide")					== sValue ) m_eValue = bwmodeHide;
-					else if ( _T("highContrast")      == sValue ) m_eValue = bwmodeHighContrast;
+                    if      ( _T("hide")					== sValue ) this->m_eValue = bwmodeHide;
+                    else if ( _T("highContrast")      == sValue ) this->m_eValue = bwmodeHighContrast;
 				break;
 			case 'i':
-					if      ( _T("inverseGray")       == sValue ) m_eValue = bwmodeInverseGray;
+                    if      ( _T("inverseGray")       == sValue ) this->m_eValue = bwmodeInverseGray;
 				break;
 			case 'l':
-					if      ( _T("lightGrayscale")    == sValue ) m_eValue = bwmodeLightGrayscale;
+                    if      ( _T("lightGrayscale")    == sValue ) this->m_eValue = bwmodeLightGrayscale;
 				break;
 			case 'u':
-					if      ( _T("undrawn")           == sValue ) m_eValue = bwmodeUndrawn;
+                    if      ( _T("undrawn")           == sValue ) this->m_eValue = bwmodeUndrawn;
 				break;
 			case 'w':
-					if      ( _T("white")             == sValue ) m_eValue = bwmodeWhite;
+                    if      ( _T("white")             == sValue ) this->m_eValue = bwmodeWhite;
 				break;
 
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case bwmodeAuto:					return _T("auto");			
 			case bwmodeBlack:             return _T("black");			
@@ -1023,28 +1023,28 @@ namespace SimpleTypes
 
 		virtual EColorMode FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")   == sValue ) m_eValue = colormodeAuto;
+                    if      ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
 				break;
 			case 'c':
-					if      ( _T("custom") == sValue ) m_eValue = colormodeCustom;
+                    if      ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring    ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case colormodeAuto:   return _T("auto");			
 			case colormodeCustom: return _T("custom");			
@@ -1076,34 +1076,34 @@ namespace SimpleTypes
 
 		virtual EConnectorType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("curved")   == sValue ) m_eValue = connectortypeCurved;
+                    if      ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
 				break;
 			case 'e':
-					if      ( _T("elbow")    == sValue ) m_eValue = connectortypeElbow;
+                    if      ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
 				break;
 			case 'n':
-					if      ( _T("none")     == sValue ) m_eValue = connectortypeNone;
+                    if      ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
 				break;
 			case 's':
-					if      ( _T("straight") == sValue ) m_eValue = connectortypeStraight;
+                    if      ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring        ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case connectortypeCurved  : return _T("curved");			
 			case connectortypeElbow   : return _T("elbow");			
@@ -1137,34 +1137,34 @@ namespace SimpleTypes
 
 		virtual EConnectType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("custom")   == sValue ) m_eValue = connecttypeCustom;
+                    if      ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
 				break;
 			case 'n':
-					if      ( _T("none")     == sValue ) m_eValue = connecttypeNone;
+                    if      ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
 				break;
 			case 'r':
-					if      ( _T("rect")     == sValue ) m_eValue = connecttypeRect;
+                    if      ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
 				break;
 			case 's':
-					if      ( _T("segments") == sValue ) m_eValue = connecttypeSegments;
+                    if      ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring      ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case connecttypeCustom  : return _T("custom");			
 			case connecttypeNone    : return _T("none");			
@@ -1237,34 +1237,34 @@ namespace SimpleTypes
 
 		virtual EDiagramLayout FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '0':
-					if      ( _T("0") == sValue ) m_eValue = diagramlayout0;
+                    if      ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
 				break;
 			case '1':
-					if      ( _T("1") == sValue ) m_eValue = diagramlayout1;
+                    if      ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
 				break;
 			case '2':
-					if      ( _T("2") == sValue ) m_eValue = diagramlayout2;
+                    if      ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
 				break;
 			case '3':
-					if      ( _T("3") == sValue ) m_eValue = diagramlayout3;
+                    if      ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring        ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case diagramlayout0 : return _T("0");			
 			case diagramlayout1 : return _T("1");			
@@ -1297,40 +1297,40 @@ namespace SimpleTypes
 
 		virtual EExtrusionPlane FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'X':
-					if      ( _T("XY") == sValue ) m_eValue = extrusionplaneXY;
+                    if      ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'Y':
-					if      ( _T("YZ") == sValue ) m_eValue = extrusionplaneYZ;
+                    if      ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'Z':
-					if      ( _T("ZX") == sValue ) m_eValue = extrusionplaneZX;
+                    if      ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			case 'x':
-					if      ( _T("xy") == sValue ) m_eValue = extrusionplaneXY;
+                    if      ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'y':
-					if      ( _T("yz") == sValue ) m_eValue = extrusionplaneYZ;
+                    if      ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'z':
-					if      ( _T("zx") == sValue ) m_eValue = extrusionplaneZX;
+                    if      ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring         ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case extrusionplaneXY: return _T("XY");			
 			case extrusionplaneYZ: return _T("YZ");			
@@ -1362,31 +1362,31 @@ namespace SimpleTypes
 
 		virtual EExtrusionRender FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("boundingCube") == sValue ) m_eValue = extrusionrenderBoundingCube;
+                    if      ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
 				break;
 			case 's':
-					if      ( _T("solid")        == sValue ) m_eValue = extrusionrenderSolid;
+                    if      ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
 				break;
 			case 'w':
-					if      ( _T("wireFrame")    == sValue ) m_eValue = extrusionrenderWireFrame;
+                    if      ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring          ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case extrusionrenderBoundingCube: return _T("boundingCube");			
 			case extrusionrenderSolid:        return _T("solid");			
@@ -1416,16 +1416,16 @@ namespace SimpleTypes
 
 		virtual EExtrusionType FromString(std::wstring& sValue)
 		{
-            if		(_T("parallel")    == sValue ) m_eValue = extrusiontypeParallel;
-            else if	(_T("perspective") == sValue ) m_eValue = extrusiontypePerspective;
-            else								  m_eValue = eDefValue;
+            if		(_T("parallel")    == sValue ) this->m_eValue = extrusiontypeParallel;
+            else if	(_T("perspective") == sValue ) this->m_eValue = extrusiontypePerspective;
+            else								  this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case extrusiontypeParallel		: return _T("parallel");
 			case extrusiontypePerspective	: return _T("perspective");
@@ -1457,40 +1457,40 @@ namespace SimpleTypes
 
 		virtual EHow    FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("bottom") == sValue ) m_eValue = howBottom;
+                    if      ( _T("bottom") == sValue ) this->m_eValue = howBottom;
 				break;
 			case 'c':
-					if      ( _T("center") == sValue ) m_eValue = howCenter;
+                    if      ( _T("center") == sValue ) this->m_eValue = howCenter;
 				break;
 			case 'l':
-					if      ( _T("left")   == sValue ) m_eValue = howLeft;
+                    if      ( _T("left")   == sValue ) this->m_eValue = howLeft;
 				break;
 			case 'm':
-					if      ( _T("middle") == sValue ) m_eValue = howMiddle;
+                    if      ( _T("middle") == sValue ) this->m_eValue = howMiddle;
 				break;
 			case 'r':
-					if      ( _T("right")  == sValue ) m_eValue = howRight;
+                    if      ( _T("right")  == sValue ) this->m_eValue = howRight;
 				break;
 			case 't':
-					if      ( _T("top")    == sValue ) m_eValue = howTop;
+                    if      ( _T("top")    == sValue ) this->m_eValue = howTop;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case howBottom: return _T("bottom");			
 			case howCenter: return _T("center");			
@@ -1525,31 +1525,31 @@ namespace SimpleTypes
 
 		virtual EHrAlign FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("center") == sValue ) m_eValue = hralignCenter;
+                    if      ( _T("center") == sValue ) this->m_eValue = hralignCenter;
 				break;
 			case 'l':
-					if      ( _T("left")   == sValue ) m_eValue = hralignLeft;
+                    if      ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
 				break;
 			case 'r':
-					if      ( _T("right")  == sValue ) m_eValue = hralignRight;
+                    if      ( _T("right")  == sValue ) this->m_eValue = hralignRight;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring  ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case hralignCenter: return _T("center");			
 			case hralignLeft  : return _T("left");			
@@ -1580,28 +1580,28 @@ namespace SimpleTypes
 
 		virtual EInsetMode FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("auto")   == sValue ) m_eValue = insetmodeAuto;
+                    if      ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
 				break;
 			case 'c':
-					if      ( _T("custom") == sValue ) m_eValue = insetmodeCustom;
+                    if      ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring    ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case insetmodeAuto   : return _T("auto");			
 			case insetmodeCustom : return _T("custom");			
@@ -1630,16 +1630,16 @@ namespace SimpleTypes
 
 		virtual EOLEDrawAspect FromString(std::wstring &sValue)
 		{
-            if      (_T("Content")	== sValue)	m_eValue = oledrawaspectContent;
-            else if (_T("Icon")		== sValue)	m_eValue = oledrawaspectIcon;
-            else								m_eValue = eDefValue;
+            if      (_T("Content")	== sValue)	this->m_eValue = oledrawaspectContent;
+            else if (_T("Icon")		== sValue)	this->m_eValue = oledrawaspectIcon;
+            else								this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring        ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case oledrawaspectContent	: return _T("Content");
 			case oledrawaspectIcon		: return _T("Icon");
@@ -1671,35 +1671,35 @@ namespace SimpleTypes
 
 		virtual EOLELinkType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'B':
-					if      ( _T("Bitmap")           == sValue ) m_eValue = olelinktypeBitmap;
+                    if      ( _T("Bitmap")           == sValue ) this->m_eValue = olelinktypeBitmap;
 				break;
 			case 'E':
-					if      ( _T("EnhancedMetaFile") == sValue ) m_eValue = olelinktypeEmf;
+                    if      ( _T("EnhancedMetaFile") == sValue ) this->m_eValue = olelinktypeEmf;
 				break;
 			case 'J':
-					if      ( _T("Jpeg")             == sValue ) m_eValue = olelinktypeJpeg;
+                    if      ( _T("Jpeg")             == sValue ) this->m_eValue = olelinktypeJpeg;
 				break;
 			case 'P':
-					if      ( _T("Picture")          == sValue ) m_eValue = olelinktypePicture;
-					else if ( _T("Png")					== sValue ) m_eValue = olelinktypePng;
+                    if      ( _T("Picture")          == sValue ) this->m_eValue = olelinktypePicture;
+                    else if ( _T("Png")					== sValue ) this->m_eValue = olelinktypePng;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring      ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case olelinktypeBitmap:  return _T("Bitmap");			
 			case olelinktypeEmf:     return _T("EnhancedMetaFile");			
@@ -1731,16 +1731,16 @@ namespace SimpleTypes
 
 		virtual EOLEType FromString(std::wstring &sValue)
 		{
-            if      (_T("embed")	== sValue)	m_eValue = oletypeEmbed;
-            else if (_T("link")		== sValue)	m_eValue = oletypeLink;
-            else								m_eValue = eDefValue;
+            if      (_T("embed")	== sValue)	this->m_eValue = oletypeEmbed;
+            else if (_T("link")		== sValue)	this->m_eValue = oletypeLink;
+            else								this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring  ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case oletypeEmbed	: return _T("embed");
 			case oletypeLink	: return _T("link");
@@ -1767,16 +1767,16 @@ namespace SimpleTypes
 
 		virtual EOLEUpdateMode FromString(std::wstring &sValue)
 		{
-            if      (_T("Always")	== sValue)	m_eValue = oleupdatemodeAlways;
-            else if (_T("OnCall")	== sValue)	m_eValue = oleupdatemodeOnCall;
-            else								m_eValue = eDefValue;
+            if      (_T("Always")	== sValue)	this->m_eValue = oleupdatemodeAlways;
+            else if (_T("OnCall")	== sValue)	this->m_eValue = oleupdatemodeOnCall;
+            else								this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring        ToString() const
 		{
-            switch (m_eValue)
+            switch (this->m_eValue)
 			{
 			case oleupdatemodeAlways : return _T("Always");
 			case oleupdatemodeOnCall : return _T("OnCall");
@@ -1806,30 +1806,30 @@ namespace SimpleTypes
 
 		virtual ERType  FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-					if      ( _T("align")     == sValue ) m_eValue = rtypeAlign;
-					else if ( _T("arc")       == sValue ) m_eValue = rtypeArc;
+                    if      ( _T("align")     == sValue ) this->m_eValue = rtypeAlign;
+                    else if ( _T("arc")       == sValue ) this->m_eValue = rtypeArc;
 				break;
 			case 'c':
-					if      ( _T("callout")   == sValue ) m_eValue = rtypeCallout;
-					else if ( _T("connector") == sValue ) m_eValue = rtypeConnector;
+                    if      ( _T("callout")   == sValue ) this->m_eValue = rtypeCallout;
+                    else if ( _T("connector") == sValue ) this->m_eValue = rtypeConnector;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case rtypeAlign    : return _T("align");			
 			case rtypeArc      : return _T("arc");			
@@ -1864,38 +1864,38 @@ namespace SimpleTypes
 		CScreenSize() {}
 		virtual EScreenSize FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '1':
-					if      ( _T("1024,768")  == sValue ) m_eValue = screensize1024x768;
-					else if ( _T("1152,862")  == sValue ) m_eValue = screensize1152x862;
+                    if      ( _T("1024,768")  == sValue ) this->m_eValue = screensize1024x768;
+                    else if ( _T("1152,862")  == sValue ) this->m_eValue = screensize1152x862;
 				break;
 			case '5':
-					if      ( _T("544,376")   == sValue ) m_eValue = screensize544x376;
+                    if      ( _T("544,376")   == sValue ) this->m_eValue = screensize544x376;
 				break;
 			case '6':
-					if      ( _T("640,480")   == sValue ) m_eValue = screensize640x480;
+                    if      ( _T("640,480")   == sValue ) this->m_eValue = screensize640x480;
 				break;
 			case '7':
-					if      ( _T("720,512")   == sValue ) m_eValue = screensize720x512;
+                    if      ( _T("720,512")   == sValue ) this->m_eValue = screensize720x512;
 				break;
 			case '8':
-					if      ( _T("800,600")   == sValue ) m_eValue = screensize800x600;
+                    if      ( _T("800,600")   == sValue ) this->m_eValue = screensize800x600;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring     ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case screensize1024x768: return _T("1024,768");			
 			case screensize1152x862: return _T("1152,862");			
@@ -1934,28 +1934,28 @@ namespace SimpleTypes
 
 		virtual EBorderShadow FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'f':
-					if      ( _T("f") == sValue || _T("false") == sValue ) m_eValue = bordershadowFalse;
+                    if      ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
 				break;
 			case 't':
-					if      ( _T("t") == sValue || _T("true") == sValue  ) m_eValue = bordershadowTrue;
+                    if      ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring       ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case bordershadowTrue:  return _T("t");			
 			case bordershadowFalse: return _T("f");			
@@ -2010,68 +2010,68 @@ namespace SimpleTypes
 
 		virtual EBorderType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'd':
-					if      ( _T("dash")           == sValue ) m_eValue = bordertypeDash;
-					else if ( _T("dashDotDot")     == sValue ) m_eValue = bordertypeDashDotDot;
-					else if ( _T("dashDotStroked") == sValue ) m_eValue = bordertypeDashDotStroked;
-					else if ( _T("dashedSmall")    == sValue ) m_eValue = bordertypeDashedSmall;
-					else if ( _T("dot")            == sValue ) m_eValue = bordertypeDot;
-					else if ( _T("dotDash")        == sValue ) m_eValue = bordertypeDotDash;
-					else if ( _T("double")         == sValue ) m_eValue = bordertypeDouble;
-					else if ( _T("doubleWave")     == sValue ) m_eValue = bordertypeDoubleWave;
+                    if      ( _T("dash")           == sValue ) this->m_eValue = bordertypeDash;
+                    else if ( _T("dashDotDot")     == sValue ) this->m_eValue = bordertypeDashDotDot;
+                    else if ( _T("dashDotStroked") == sValue ) this->m_eValue = bordertypeDashDotStroked;
+                    else if ( _T("dashedSmall")    == sValue ) this->m_eValue = bordertypeDashedSmall;
+                    else if ( _T("dot")            == sValue ) this->m_eValue = bordertypeDot;
+                    else if ( _T("dotDash")        == sValue ) this->m_eValue = bordertypeDotDash;
+                    else if ( _T("double")         == sValue ) this->m_eValue = bordertypeDouble;
+                    else if ( _T("doubleWave")     == sValue ) this->m_eValue = bordertypeDoubleWave;
 				break;
 			case 'h':
-					if      ( _T("hairline")      == sValue ) m_eValue = bordertypeHairline;
+                    if      ( _T("hairline")      == sValue ) this->m_eValue = bordertypeHairline;
 				break;
 
 			case 'H':
-					if      ( _T("HTMLInset")     == sValue ) m_eValue = bordertypeHTMLInset;
-					else if ( _T("HTMLOutset")    == sValue ) m_eValue = bordertypeHTMLOutset;
+                    if      ( _T("HTMLInset")     == sValue ) this->m_eValue = bordertypeHTMLInset;
+                    else if ( _T("HTMLOutset")    == sValue ) this->m_eValue = bordertypeHTMLOutset;
 				break;
 
 			case 'n':
-					if      ( _T("none")          == sValue ) m_eValue = bordertypeNone;
+                    if      ( _T("none")          == sValue ) this->m_eValue = bordertypeNone;
 				break;
 
 			case 's':
-					if      ( _T("single")        == sValue ) m_eValue = bordertypeSingle;
+                    if      ( _T("single")        == sValue ) this->m_eValue = bordertypeSingle;
 				break;
 
 			case 't':
-					if      ( _T("thick")					== sValue ) m_eValue = bordertypeThick;
-					else if ( _T("thickBetweenThin")      == sValue ) m_eValue = bordertypeThickBetweenThin;
-					else if ( _T("thickBetweenThinLarge") == sValue ) m_eValue = bordertypeThickBetweenThinLarge;
-					else if ( _T("thickBetweenThinSmall") == sValue ) m_eValue = bordertypeThickBetweenThinSmall;
-					else if ( _T("thickThin")             == sValue ) m_eValue = bordertypeThickThin;
-					else if ( _T("thickThinLarge")        == sValue ) m_eValue = bordertypeThickThinLarge;
-					else if ( _T("thickThinSmall")        == sValue ) m_eValue = bordertypeThickThinSmall;
-					else if ( _T("thinThick")             == sValue ) m_eValue = bordertypeThinThick;
-					else if ( _T("thinThickLarge")        == sValue ) m_eValue = bordertypeThinThickLarge;
-					else if ( _T("thinThickSmall")        == sValue ) m_eValue = bordertypeThinThickSmall;
-					else if ( _T("threeDEmboss")          == sValue ) m_eValue = bordertypeThreeDEmboss;
-					else if ( _T("threeDEngrave")         == sValue ) m_eValue = bordertypeThreeDEngrave;
-					else if ( _T("triple")					== sValue ) m_eValue = bordertypeTriple;
+                    if      ( _T("thick")					== sValue ) this->m_eValue = bordertypeThick;
+                    else if ( _T("thickBetweenThin")      == sValue ) this->m_eValue = bordertypeThickBetweenThin;
+                    else if ( _T("thickBetweenThinLarge") == sValue ) this->m_eValue = bordertypeThickBetweenThinLarge;
+                    else if ( _T("thickBetweenThinSmall") == sValue ) this->m_eValue = bordertypeThickBetweenThinSmall;
+                    else if ( _T("thickThin")             == sValue ) this->m_eValue = bordertypeThickThin;
+                    else if ( _T("thickThinLarge")        == sValue ) this->m_eValue = bordertypeThickThinLarge;
+                    else if ( _T("thickThinSmall")        == sValue ) this->m_eValue = bordertypeThickThinSmall;
+                    else if ( _T("thinThick")             == sValue ) this->m_eValue = bordertypeThinThick;
+                    else if ( _T("thinThickLarge")        == sValue ) this->m_eValue = bordertypeThinThickLarge;
+                    else if ( _T("thinThickSmall")        == sValue ) this->m_eValue = bordertypeThinThickSmall;
+                    else if ( _T("threeDEmboss")          == sValue ) this->m_eValue = bordertypeThreeDEmboss;
+                    else if ( _T("threeDEngrave")         == sValue ) this->m_eValue = bordertypeThreeDEngrave;
+                    else if ( _T("triple")					== sValue ) this->m_eValue = bordertypeTriple;
 				break;
 
 			case 'w':
-					if      ( _T("wave")					 == sValue ) m_eValue = bordertypeWave;
+                    if      ( _T("wave")					 == sValue ) this->m_eValue = bordertypeWave;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring     ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case bordertypeDash:					 return _T("dash");			
 			case bordertypeDashDotDot:            return _T("dashDotDot");			
@@ -2128,36 +2128,36 @@ namespace SimpleTypes
 
 		virtual EHorizontalAnchor FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-					if      ( _T("char")   == sValue ) m_eValue = horizontalanchorChar;
+                    if      ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
 				break;
 			case 'm':
-					if      ( _T("margin") == sValue ) m_eValue = horizontalanchorMargin;
+                    if      ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
 				break;
 
 			case 'p':
-					if      ( _T("page")   == sValue ) m_eValue = horizontalanchorPage;
+                    if      ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
 				break;
 
 			case 't':
-					if      ( _T("text")   == sValue ) m_eValue = horizontalanchorText;
+                    if      ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring           ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case horizontalanchorChar:   return _T("char");			
 			case horizontalanchorMargin: return _T("margin");			
@@ -2191,36 +2191,36 @@ namespace SimpleTypes
 
 		virtual EVerticalAnchor FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-					if      ( _T("line")   == sValue ) m_eValue = verticalanchorLine;
+                    if      ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
 				break;
 			case 'm':
-					if      ( _T("margin") == sValue ) m_eValue = verticalanchorMargin;
+                    if      ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
 				break;
 
 			case 'p':
-					if      ( _T("page")   == sValue ) m_eValue = verticalanchorPage;
+                    if      ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
 				break;
 
 			case 't':
-					if      ( _T("text")   == sValue ) m_eValue = verticalanchorText;
+                    if      ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring         ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case verticalanchorLine:   return _T("line");			
 			case verticalanchorMargin: return _T("margin");			
@@ -2254,34 +2254,34 @@ namespace SimpleTypes
 
 		virtual EWrapSide FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-					if      ( _T("both")    == sValue ) m_eValue = wrapsideBoth;
+                    if      ( _T("both")    == sValue ) this->m_eValue = wrapsideBoth;
 				break;
 			case 'l':
-					if      ( _T("largest") == sValue ) m_eValue = wrapsideLargest;
-					else if ( _T("left")    == sValue ) m_eValue = wrapsideLeft;
+                    if      ( _T("largest") == sValue ) this->m_eValue = wrapsideLargest;
+                    else if ( _T("left")    == sValue ) this->m_eValue = wrapsideLeft;
 				break;
 
 			case 'r':
-					if      ( _T("right")   == sValue ) m_eValue = wrapsideRight;
+                    if      ( _T("right")   == sValue ) this->m_eValue = wrapsideRight;
 				break;
 
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring   ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case wrapsideBoth:    return _T("both");			
 			case wrapsideLargest: return _T("largest");			
@@ -2316,35 +2316,35 @@ namespace SimpleTypes
 
 		virtual EWrapType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
 			if ( sValue.length() <= 0 )
-					return m_eValue;
+                    return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'n':
-					if      ( _T("none")         == sValue ) m_eValue = wraptypeNone;
+                    if      ( _T("none")         == sValue ) this->m_eValue = wraptypeNone;
 				break;
 			case 's':
-					if      ( _T("square")       == sValue ) m_eValue = wraptypeSquare;
+                    if      ( _T("square")       == sValue ) this->m_eValue = wraptypeSquare;
 				break;
 
 			case 't':  
-					if      ( _T("through")      == sValue ) m_eValue = wraptypeThrough;
-					else if ( _T("tight")        == sValue ) m_eValue = wraptypeTight;
-					else if ( _T("topAndBottom") == sValue ) m_eValue = wraptypeTopAndBottom;
+                    if      ( _T("through")      == sValue ) this->m_eValue = wraptypeThrough;
+                    else if ( _T("tight")        == sValue ) this->m_eValue = wraptypeTight;
+                    else if ( _T("topAndBottom") == sValue ) this->m_eValue = wraptypeTopAndBottom;
 				break;
 
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
 		virtual std::wstring   ToString  () const 
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case wraptypeNone:         return _T("none");			
 			case wraptypeSquare:       return _T("square");			
@@ -2397,36 +2397,36 @@ namespace SimpleTypes
 
 			virtual EVmlClientDataObjectType FromString(std::wstring &sValue)
 			{
-					m_eValue = eDefValue;
+                    this->m_eValue = eDefValue;
 
 				if ( sValue.length() <= 0 )
-					   return m_eValue;
+                       return this->m_eValue;
 
-					if      ( _T("Button") == sValue ) m_eValue = vmlclientdataobjecttypeButton;
-					else if ( _T("Checkbox") == sValue ) m_eValue = vmlclientdataobjecttypeCheckbox;
-					else if ( _T("Dialog") == sValue ) m_eValue = vmlclientdataobjecttypeDialog;
-					else if ( _T("Drop") == sValue ) m_eValue = vmlclientdataobjecttypeDrop;
-					else if ( _T("Edit") == sValue ) m_eValue = vmlclientdataobjecttypeEdit;
-					else if ( _T("GBox") == sValue ) m_eValue = vmlclientdataobjecttypeGBox;
-					else if ( _T("Group") == sValue ) m_eValue = vmlclientdataobjecttypeGroup;
-					else if ( _T("Label") == sValue ) m_eValue = vmlclientdataobjecttypeLabel;
-					else if ( _T("LineA") == sValue ) m_eValue = vmlclientdataobjecttypeLineA;
-					else if ( _T("List") == sValue ) m_eValue = vmlclientdataobjecttypeList;
-					else if ( _T("Movie") == sValue ) m_eValue = vmlclientdataobjecttypeMovie;
-					else if ( _T("Note") == sValue ) m_eValue = vmlclientdataobjecttypeNote;
-					else if ( _T("Pict") == sValue ) m_eValue = vmlclientdataobjecttypePict;
-					else if ( _T("Radio") == sValue ) m_eValue = vmlclientdataobjecttypeRadio;
-					else if ( _T("Rect") == sValue ) m_eValue = vmlclientdataobjecttypeRect;
-					else if ( _T("RectA") == sValue ) m_eValue = vmlclientdataobjecttypeRectA;
-					else if ( _T("Scroll") == sValue ) m_eValue = vmlclientdataobjecttypeScroll;
-					else if ( _T("Shape") == sValue ) m_eValue = vmlclientdataobjecttypeShape;
-					else if ( _T("Spin") == sValue ) m_eValue = vmlclientdataobjecttypeSpin;
-					return m_eValue;
+                    if      ( _T("Button") == sValue ) this->m_eValue = vmlclientdataobjecttypeButton;
+                    else if ( _T("Checkbox") == sValue ) this->m_eValue = vmlclientdataobjecttypeCheckbox;
+                    else if ( _T("Dialog") == sValue ) this->m_eValue = vmlclientdataobjecttypeDialog;
+                    else if ( _T("Drop") == sValue ) this->m_eValue = vmlclientdataobjecttypeDrop;
+                    else if ( _T("Edit") == sValue ) this->m_eValue = vmlclientdataobjecttypeEdit;
+                    else if ( _T("GBox") == sValue ) this->m_eValue = vmlclientdataobjecttypeGBox;
+                    else if ( _T("Group") == sValue ) this->m_eValue = vmlclientdataobjecttypeGroup;
+                    else if ( _T("Label") == sValue ) this->m_eValue = vmlclientdataobjecttypeLabel;
+                    else if ( _T("LineA") == sValue ) this->m_eValue = vmlclientdataobjecttypeLineA;
+                    else if ( _T("List") == sValue ) this->m_eValue = vmlclientdataobjecttypeList;
+                    else if ( _T("Movie") == sValue ) this->m_eValue = vmlclientdataobjecttypeMovie;
+                    else if ( _T("Note") == sValue ) this->m_eValue = vmlclientdataobjecttypeNote;
+                    else if ( _T("Pict") == sValue ) this->m_eValue = vmlclientdataobjecttypePict;
+                    else if ( _T("Radio") == sValue ) this->m_eValue = vmlclientdataobjecttypeRadio;
+                    else if ( _T("Rect") == sValue ) this->m_eValue = vmlclientdataobjecttypeRect;
+                    else if ( _T("RectA") == sValue ) this->m_eValue = vmlclientdataobjecttypeRectA;
+                    else if ( _T("Scroll") == sValue ) this->m_eValue = vmlclientdataobjecttypeScroll;
+                    else if ( _T("Shape") == sValue ) this->m_eValue = vmlclientdataobjecttypeShape;
+                    else if ( _T("Spin") == sValue ) this->m_eValue = vmlclientdataobjecttypeSpin;
+                    return this->m_eValue;
 			}
 
 			virtual std::wstring         ToString  () const 
 			{
-					switch(m_eValue)
+                    switch(this->m_eValue)
 				{
 				case vmlclientdataobjecttypeButton:      return _T("Button");
 				case vmlclientdataobjecttypeCheckbox:      return _T("Checkbox");
@@ -2473,32 +2473,32 @@ namespace SimpleTypes
 
 			virtual EVmlCalloutType FromString(std::wstring &sValue)
 			{
-					m_eValue = eDefValue;
+                    this->m_eValue = eDefValue;
 
 				if ( sValue.length() <= 0 )
-					   return m_eValue;
+                       return this->m_eValue;
 
 				wchar_t wChar = sValue[0];
 				switch ( wChar )
 				{
 				case 'r':
-					   if      ( _T("rectangle")        == sValue ) m_eValue = vmlcallouttypeRectangle;
-					   else if ( _T("roundedrectangle") == sValue ) m_eValue = vmlcallouttypeRoundRectangle;
+                       if      ( _T("rectangle")        == sValue ) this->m_eValue = vmlcallouttypeRectangle;
+                       else if ( _T("roundedrectangle") == sValue ) this->m_eValue = vmlcallouttypeRoundRectangle;
 					break;
 				case 'o':
-					   if      ( _T("oval")             == sValue ) m_eValue = vmlcallouttypeOval;
+                       if      ( _T("oval")             == sValue ) this->m_eValue = vmlcallouttypeOval;
 					break;
 				case 'c':
-					   if      ( _T("cloud")            == sValue ) m_eValue = vmlcallouttypeCloud;
+                       if      ( _T("cloud")            == sValue ) this->m_eValue = vmlcallouttypeCloud;
 					break;
 				}
 
-					return m_eValue;
+                    return this->m_eValue;
 			}
 
 			virtual std::wstring         ToString  () const 
 			{
-					switch(m_eValue)
+                    switch(this->m_eValue)
 				{
 				case vmlcallouttypeRectangle:      return _T("rectangle");			
 				case vmlcallouttypeRoundRectangle: return _T("roundedrectangle");			
@@ -2587,10 +2587,10 @@ namespace SimpleTypes
 			{
 				m_nCount    = 0;
 
-					m_eValue = eDefValue;
+                    this->m_eValue = eDefValue;
 
 				if ( sValue.length() <= 0 )
-					   return m_eValue;
+                       return this->m_eValue;
 
 				sValue = XmlUtils::GetLower(sValue);
 
@@ -2598,26 +2598,26 @@ namespace SimpleTypes
 				switch ( wChar )
 				{
 				case 's':
-					   if      ( _T("solid")           == sValue ) m_eValue = vmldashstyleSolid;
-					   else if ( _T("shortdash")       == sValue ) m_eValue = vmldashstyleShortDash;
-					   else if ( _T("shortdot")        == sValue ) m_eValue = vmldashstyleShortDot;
-					   else if ( _T("shortdashdot")    == sValue ) m_eValue = vmldashstyleShortDashDot;
-					   else if ( _T("shortdashdotdot") == sValue ) m_eValue = vmldashstyleShortDashDotDot;
+                       if      ( _T("solid")           == sValue ) this->m_eValue = vmldashstyleSolid;
+                       else if ( _T("shortdash")       == sValue ) this->m_eValue = vmldashstyleShortDash;
+                       else if ( _T("shortdot")        == sValue ) this->m_eValue = vmldashstyleShortDot;
+                       else if ( _T("shortdashdot")    == sValue ) this->m_eValue = vmldashstyleShortDashDot;
+                       else if ( _T("shortdashdotdot") == sValue ) this->m_eValue = vmldashstyleShortDashDotDot;
 					break;
 				case 'd':
-					   if      ( _T("dot")             == sValue ) m_eValue = vmldashstyleDot;
-					   else if ( _T("dash")            == sValue ) m_eValue = vmldashstyleDash;
-					   else if ( _T("dashdot")         == sValue ) m_eValue = vmldashstyleDashDot;
+                       if      ( _T("dot")             == sValue ) this->m_eValue = vmldashstyleDot;
+                       else if ( _T("dash")            == sValue ) this->m_eValue = vmldashstyleDash;
+                       else if ( _T("dashdot")         == sValue ) this->m_eValue = vmldashstyleDashDot;
 					break;
 				case 'l':
-					   if      ( _T("longdash")        == sValue ) m_eValue = vmldashstyleLongDash;
-					   else if ( _T("longdashdot")     == sValue ) m_eValue = vmldashstyleLongDashDot;
-					   else if ( _T("longdashdotdot")  == sValue ) m_eValue = vmldashstyleLongDashDotDot;
+                       if      ( _T("longdash")        == sValue ) this->m_eValue = vmldashstyleLongDash;
+                       else if ( _T("longdashdot")     == sValue ) this->m_eValue = vmldashstyleLongDashDot;
+                       else if ( _T("longdashdotdot")  == sValue ) this->m_eValue = vmldashstyleLongDashDotDot;
 					break;
 
 				default:
 					{
-					m_eValue = vmldashstyleCustom;
+                    this->m_eValue = vmldashstyleCustom;
 
 						std::wstring sTemp = sValue;
 						for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
@@ -2646,12 +2646,12 @@ namespace SimpleTypes
 					}
 				}
 
-					return m_eValue;
+                    return this->m_eValue;
 			}
 
 			virtual std::wstring       ToString  () const 
 			{
-					switch(m_eValue)
+                    switch(this->m_eValue)
 				{
 				case vmldashstyleSolid          :  return _T("solid");
 				case vmldashstyleShortDash      :  return _T("shortdash");
@@ -4410,31 +4410,31 @@ namespace SimpleTypes
 
 			virtual int     FromString(std::wstring &sValue)
 			{
-				m_eValue = _wtoi( sValue.c_str() );
+                this->m_eValue = _wtoi( sValue.c_str() );
 
-				return m_eValue;
+                return this->m_eValue;
 			}
 
 			virtual std::wstring ToString  () const 
 			{
-                std::wstring sResult = std::to_wstring( m_eValue);
+                std::wstring sResult = std::to_wstring( this->m_eValue);
 
 				return sResult;
 			}
 
 			bool IsTable() const
 			{
-					return ( m_eValue & 1 ? true : false );
+                    return ( this->m_eValue & 1 ? true : false );
 			}
 
 			bool IsPlaceholder() const
 			{
-					return ( m_eValue & 2 ? true : false );
+                    return ( this->m_eValue & 2 ? true : false );
 			}
 
 			bool IsBiDirectionalText() const
 			{
-					return ( m_eValue & 4 ? true : false );
+                    return ( this->m_eValue & 4 ? true : false );
 			}
 
 			SimpleType_FromString           (int)

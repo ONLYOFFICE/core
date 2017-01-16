@@ -75,7 +75,7 @@ namespace NSPresentationEditor
 				return DownloadImage(strInput);
 
 			std::wstring strExts = _T(".jpg");
-			int nIndexExt = strInput.rfind(TCHAR('.'));
+            int nIndexExt = strInput.rfind(wchar_t('.'));
 			if (-1 != nIndexExt)
 				strExts = strInput.substr(nIndexExt);
 

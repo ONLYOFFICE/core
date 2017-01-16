@@ -38,7 +38,7 @@ namespace DocFileFormat
 		: PropertiesMapping( writer ), _isRunStyleNeeded(isRunStyleNeeded), _isOwnRPr(true), _isRTL(false)
 	{
 		_doc			= doc;
-        _rPr			= new XMLTools::XMLElement( _T( "w:rPr" ) );
+        _rPr			= new XMLTools::XMLElement( L"w:rPr");
 		_revisionData	= rev;
 		_currentPapx	= currentPapx;
 		_styleChpx		= styleChpx;
@@ -77,7 +77,7 @@ namespace DocFileFormat
 		// apend revision changes
 		if (_revisionData->Type == Changed)
 		{
-            XMLTools::XMLElement rPrChange( _T( "w:rPrChange" ) );
+            XMLTools::XMLElement rPrChange( L"w:rPrChange");
 
 			//todooo date - _revisionData->Dttm.Convert( new DateMapping( rPrChange ) );
 
@@ -85,7 +85,7 @@ namespace DocFileFormat
 			
 			if (author_str)
 			{
-                XMLTools::XMLAttribute author( _T( "w:author" ), FormatUtils::XmlEncode(*author_str));
+                XMLTools::XMLAttribute author( L"w:author", FormatUtils::XmlEncode(*author_str));
 				rPrChange.AppendAttribute( author );
 			}
 
@@ -108,7 +108,7 @@ namespace DocFileFormat
 	{
 		//Todo сделать определение симольного шрифта через fontManager
 		//Заглушка под Google Docs, они пишут bullet в Arial
-		if (-1 != m_sAsciiFont.find (_T("Arial")) && -1 != m_sEastAsiaFont.find (_T("Arial")) && -1 != m_shAnsiFont.find (_T("Arial")))
+        if (-1 != m_sAsciiFont.find (L"Arial") && -1 != m_sEastAsiaFont.find (L"Arial") && -1 != m_shAnsiFont.find (L"Arial"))
 			return false;
 
 		return true;
@@ -118,14 +118,14 @@ namespace DocFileFormat
 
     void CharacterPropertiesMapping::convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent )
 	{
-        XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( _T( "w:rFonts" ) );
-        XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( _T( "w:color" ) );
-        XMLTools::XMLAttribute	* colorVal	= new XMLTools::XMLAttribute	( _T( "w:val" ) );
-        XMLTools::XMLElement	* lang		= new XMLTools::XMLElement		( _T( "w:lang" ) );
+        XMLTools::XMLElement	* rFonts	= new XMLTools::XMLElement		( L"w:rFonts" );
+        XMLTools::XMLElement	* color		= new XMLTools::XMLElement		( L"w:color" );
+        XMLTools::XMLAttribute	* colorVal	= new XMLTools::XMLAttribute	( L"w:val" );
+        XMLTools::XMLElement	* lang		= new XMLTools::XMLElement		( L"w:lang" );
 
 		if (_webHidden)
 		{
-            XMLTools::XMLElement	* webHidden		= new XMLTools::XMLElement	( _T( "w:webHidden" ) );
+            XMLTools::XMLElement	* webHidden		= new XMLTools::XMLElement	( L"w:webHidden" );
 			parent->AppendChild( *webHidden );
 			RELEASEOBJECT( webHidden );
 		}
@@ -144,95 +144,95 @@ namespace DocFileFormat
 						_currentIstd = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 						if (_currentIstd < _doc->Styles->Styles->size())
 						{
-							appendValueElement( parent, _T( "rStyle" ), StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ), true );
+                            appendValueElement( parent, L"rStyle", StyleSheetMapping::MakeStyleId( _doc->Styles->Styles->at( _currentIstd ) ), true );
 						}
 					}
 				}break;	
 
 			case sprmCFBiDi :
-				appendFlagElement( parent, *iter, _T( "rtl" ), true );
+                appendFlagElement( parent, *iter, L"rtl", true );
 				_isRTL = true;
 				break;
 
 			case sprmOldCFBold :
 			case sprmCFBold :
-				appendFlagElement( parent, *iter, _T( "b" ), true );
+                appendFlagElement( parent, *iter, L"b", true );
 				break;
 
 			case sprmCFBoldBi :
-				appendFlagElement( parent, *iter, _T( "bCs" ), true );
+                appendFlagElement( parent, *iter, L"bCs", true );
 				break;
 
 			case sprmOldCFCaps :
 			case sprmCFCaps :
-				appendFlagElement( parent, *iter, _T( "caps" ), true );
+                appendFlagElement( parent, *iter, L"caps", true );
 				break;
 
 			case sprmCFComplexScripts :
-				appendFlagElement( parent, *iter, _T( "cs" ), true );
+                appendFlagElement( parent, *iter, L"cs", true );
 				break;
 
 			case sprmCFDStrike :
-				appendFlagElement( parent, *iter, _T( "dstrike" ), true );
+                appendFlagElement( parent, *iter, L"dstrike", true );
 				break;
 
 			case sprmCFEmboss :
-				appendFlagElement( parent, *iter, _T( "emboss" ), true );
+                appendFlagElement( parent, *iter, L"emboss", true );
 				break;
 
 			case sprmCFImprint :
-				appendFlagElement( parent, *iter, _T( "imprint" ), true );
+                appendFlagElement( parent, *iter, L"imprint", true );
 				break;
 
 			case sprmOldCFItalic :
 			case sprmCFItalic :
-				appendFlagElement( parent, *iter, _T( "i" ), true );
+                appendFlagElement( parent, *iter, L"i", true );
 				break;
 
 			case sprmCFItalicBi:
-				appendFlagElement( parent, *iter, _T( "iCs" ), true );
+                appendFlagElement( parent, *iter, L"iCs", true );
 				break;
 
 			case 0x0875:
-				appendFlagElement( parent, *iter, _T( "noProof" ), true );
+                appendFlagElement( parent, *iter, L"noProof", true );
 				break;
 
 			case sprmOldCFOutline:
 			case sprmCFOutline:
-				appendFlagElement( parent, *iter, _T( "outline" ), true );
+                appendFlagElement( parent, *iter, L"outline", true );
 				break;
 
 			case sprmOldCFShadow:
 			case sprmCFShadow:
-				appendFlagElement( parent, *iter, _T( "shadow" ), true );
+                appendFlagElement( parent, *iter, L"shadow", true );
 				break;
 
 			case sprmOldCFSmallCaps:
 			case sprmCFSmallCaps:
-				appendFlagElement( parent, *iter, _T( "smallCaps" ), true );
+                appendFlagElement( parent, *iter, L"smallCaps", true );
 				break;
 
 			case sprmCFSpecVanish:
-				appendFlagElement( parent, *iter, _T( "specVanish" ), true );
+                appendFlagElement( parent, *iter, L"specVanish", true );
 				break;
 
 			case sprmOldCFStrike:
 			case sprmCFStrike:
-				appendFlagElement( parent, *iter, _T( "strike" ), true );
+                appendFlagElement( parent, *iter, L"strike", true );
 				break;
 
 			case sprmOldCFVanish:
 			case sprmCFVanish:
-				appendFlagElement( parent, *iter, _T( "vanish" ), true );
+                appendFlagElement( parent, *iter, L"vanish", true );
 				break;
 
 			case 0x0811:
-				appendFlagElement( parent, *iter, _T( "webHidden" ), true );
+                appendFlagElement( parent, *iter, L"webHidden", true );
 				break;
 
 			case sprmOldCIss:
 			case sprmCIss:
-				appendValueElement( parent, _T( "vertAlign" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
+                appendValueElement( parent, L"vertAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
 				break;	
 
 			case sprmCRgLid0_80:
@@ -274,7 +274,7 @@ namespace DocFileFormat
 			case sprmCBrc80:
 			case sprmCBrc:
 				{  //borders
-                    XMLTools::XMLElement bdr( _T( "w:bdr" ) );
+                    XMLTools::XMLElement bdr( L"w:bdr" );
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 					appendBorderAttributes( &bc, &bdr );
 					parent->AppendChild( bdr );
@@ -305,17 +305,17 @@ namespace DocFileFormat
 
 			case sprmCOldHighlight:
 				{
-					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ), true );
+                    appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[1], &Global::ColorIdentifier[0][0], 17, 12 ), true );
 				}break;	
 			case sprmCHighlight:
 				{
-					appendValueElement( parent, _T( "highlight" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ), true );
+                    appendValueElement( parent, L"highlight", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::ColorIdentifier[0][0], 17, 12 ), true );
 				}break;	
 
 			case sprmOldCDxaSpace:
 			case sprmCDxaSpace:
 				{
-					appendValueElement( parent, _T( "spacing" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+                    appendValueElement( parent, L"spacing", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;
 
 			case sprmCFtcBi :
@@ -331,20 +331,20 @@ namespace DocFileFormat
 
 			case sprmCHpsBi :
 				{
-					appendValueElement( parent, _T( "szCs" ), 
+                    appendValueElement( parent, L"szCs",
 						FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );						
 				}
 				break;
 // Font Size in points (2~3276) default 20-half-points
 			case sprmOldCHps :
 				{
-					appendValueElement (parent, _T( "sz" ), 
+                    appendValueElement (parent, L"sz",
 						FormatUtils::IntToWideString (FormatUtils::BytesToUChar (iter->Arguments, 0, iter->argumentsSize) ),
 						true );
 				}break;
 			case sprmCHps : 
 				{  
-					appendValueElement (parent, _T( "sz" ), 
+                    appendValueElement (parent, L"sz",
 						FormatUtils::IntToWideString (FormatUtils::BytesToUInt16 (iter->Arguments, 0, iter->argumentsSize) ), true );						
 				}break;
 
@@ -355,18 +355,18 @@ namespace DocFileFormat
 			case sprmOldCHpsPos: 
 				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
 					short nVertPos = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
-					appendValueElement (parent, _T("position"), nVertPos, true);
+                    appendValueElement (parent, L"position", nVertPos, true);
 				}break;
 			case sprmCHpsPos: 
 				{	// The vertical position, in half-points, of text relative to the normal position. (MUST be between -3168 and 3168)
 					short nVertPos = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
-					appendValueElement (parent, _T("position"), nVertPos, true);
+                    appendValueElement (parent, L"position", nVertPos, true);
 				}break;
 
 			case sprmOldCHpsKern:
 			case sprmCHpsKern:
 				{
-					appendValueElement( parent, _T( "kern" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+                    appendValueElement( parent, L"kern", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;
 
 			case sprmOldCFtc:
@@ -376,7 +376,7 @@ namespace DocFileFormat
 					
 					if( nIndex < _doc->FontTable->Data.size() )
 					{
-                        XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
+                        XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( L"w:ascii" );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sAsciiFont = ffn->xszFtn;
 						ascii->SetValue( FormatUtils::XmlEncode(m_sAsciiFont, true));
@@ -390,7 +390,7 @@ namespace DocFileFormat
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex >= 0 && nIndex < _doc->FontTable->Data.size() )
 					{
-                        XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( _T( "w:eastAsia" ) );
+                        XMLTools::XMLAttribute* eastAsia = new XMLTools::XMLAttribute( L"w:eastAsia" );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_sEastAsiaFont = ffn->xszFtn;
 						eastAsia->SetValue( FormatUtils::XmlEncode(m_sEastAsiaFont));
@@ -405,7 +405,7 @@ namespace DocFileFormat
 					int nIndex = FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize );
 					if( nIndex>=0 && nIndex < _doc->FontTable->Data.size() )
 					{
-                        XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( _T( "w:hAnsi" ) );
+                        XMLTools::XMLAttribute* ansi = new XMLTools::XMLAttribute( L"w:hAnsi" );
 						FontFamilyName* ffn = static_cast<FontFamilyName*>( _doc->FontTable->operator [] ( nIndex ) );
 						m_shAnsiFont = ffn->xszFtn;
 						ansi->SetValue( FormatUtils::XmlEncode(m_shAnsiFont));
@@ -417,18 +417,18 @@ namespace DocFileFormat
 			case sprmOldCKul:
 			case sprmCKul:
 				{	//Underlining
-					appendValueElement( parent, _T( "u" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ), true );
+                    appendValueElement( parent, L"u", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::UnderlineCode[0][0], 56, 16 ), true );
 				}
 				break;		
 
 			case sprmCCharScale:
 				{	//char width
-					appendValueElement( parent, _T( "w" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
+                    appendValueElement( parent, L"w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) ), true );
 				}break;	
 							
 			case sprmCSfxText:
 				{	//animation
-					appendValueElement( parent, _T( "effect" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ), true );
+                    appendValueElement( parent, L"effect", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextAnimation[0][0], 7, 16 ), true );
 				}break;	
 
 			case sprmCIdctHint:
@@ -482,7 +482,7 @@ namespace DocFileFormat
 
 		if (!m_sDefaultFont.empty() && m_sAsciiFont.empty() && m_sEastAsiaFont.empty() && m_shAnsiFont.empty())
 		{//????
-            XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( _T( "w:ascii" ) );
+            XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( L"w:ascii" );
 			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont));
 			//rFonts->AppendAttribute( *ascii );
 			RELEASEOBJECT( ascii );
@@ -501,7 +501,7 @@ namespace DocFileFormat
 		}
 
 		//append color
-		if ( colorVal->GetValue() != _T( "" ) )
+        if ( colorVal->GetValue() != L"")
 		{
 			color->AppendAttribute( *colorVal );
 			parent->AppendChild( *color );
@@ -523,8 +523,8 @@ namespace DocFileFormat
 
 		if( flag != 128 )
 		{
-            XMLTools::XMLElement* ele = new XMLTools::XMLElement( _T( "w" ), elementName );
-            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( _T( "w:val" ) );
+            XMLTools::XMLElement* ele = new XMLTools::XMLElement( L"w", elementName );
+            XMLTools::XMLAttribute* val = new XMLTools::XMLAttribute( L"w:val" );
 
 			if ( unique )
 			{
@@ -533,7 +533,7 @@ namespace DocFileFormat
 
 			if ( flag == 0 )
 			{
-				val->SetValue( _T( "false" ) );
+                val->SetValue( L"false" );
 				ele->AppendAttribute( *val );
 				node->AppendChild( *ele );
 			}
@@ -576,7 +576,7 @@ namespace DocFileFormat
 				//invert it
 				if ( stylesVal )
 				{
-					val->SetValue( _T( "false" ) );
+                    val->SetValue( L"false" );
 					ele->AppendAttribute( *val );
 				}
 

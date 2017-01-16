@@ -74,7 +74,6 @@ SOURCES += \
 
 
 SOURCES += docxformatlib.cpp \
-    ../Source/XML/libxml2/libxml2.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
@@ -91,7 +90,6 @@ HEADERS += docxformatlib.h \
     ../Source/Common/Color.h \
     ../Source/Common/Common.h \
     ../Source/Common/ComplexTypes.h \
-    ../Source/Common/Encoding.h \
     ../Source/Common/Index.h \
     ../Source/Common/NumFormat.h \
     ../Source/Common/Point.h \
@@ -259,7 +257,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
-    ../Source/XML/libxml2/libxml2.h \
     ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \

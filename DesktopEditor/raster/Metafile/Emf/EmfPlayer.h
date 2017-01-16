@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
 #ifndef _METAFILE_EMF_EMFPLAYER_H
 #define _METAFILE_EMF_EMFPLAYER_H
 

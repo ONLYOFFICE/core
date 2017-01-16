@@ -80,7 +80,7 @@ namespace SerializeCommon
 		INT nDstLength = lFileSize;
 		BYTE *pBuffer = new BYTE [lFileSize];
 		memset(pBuffer, 0, lFileSize);
-        Base64::Base64Decode ((LPCSTR)sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
+        Base64::Base64Decode (sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
 
 		// Пишем в файл
 		oFile.WriteFile(pBuffer, nDstLength);

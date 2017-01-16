@@ -286,11 +286,11 @@ public:
     virtual bool LoadAdjustValuesList(const std::wstring& xml)
     {
         std::wstring strXml = xml;
-        if (0 == strXml.find((TCHAR)','))
+        if (0 == strXml.find((wchar_t)','))
             strXml = (_T("defaultAdj") + strXml);
         LONG lLastIndex = strXml.length() - 1;
 
-        if (lLastIndex >= 0 && lLastIndex == strXml.rfind((TCHAR)','))
+        if (lLastIndex >= 0 && lLastIndex == strXml.rfind((wchar_t)','))
         {
             strXml = strXml + _T("defaultAdj");
         }
@@ -596,7 +596,7 @@ protected:
         if (str.length() == 0)
             return false;
 
-        TCHAR mem = str[0];
+        wchar_t mem = str[0];
 
         bool bFormula = false;
         if ('@' == mem)

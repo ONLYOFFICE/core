@@ -33,8 +33,7 @@
 
 #include <iostream>
 #include <unistd.h>
-#include "./../DocxFormat/Source/Base/ASCString.h"
-#include "./../DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include<fcntl.h>
 #include <string>
@@ -108,7 +107,7 @@ public :
 protected:
     int createUniqueTempFile (std::string &filename)
     {
-        std::string sTempPath = stringWstingToUtf8String (FileSystem::Directory::GetTempPath());
+        std::string sTempPath = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(NSDirectory::GetTempPath());
         sTempPath += "/fileXXXXXX";
         int fd = mkstemp(const_cast <char *> (sTempPath.c_str()));
         if (-1 != fd)

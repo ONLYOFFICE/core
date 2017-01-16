@@ -339,7 +339,7 @@ namespace OOX
 				{
 					int nIndex = 0;
 					NSStringExt::ToUpper(sRef);
-					TCHAR cCurLetter = sRef[nIndex];
+                    wchar_t cCurLetter = sRef[nIndex];
 					while ('A' <= cCurLetter && cCurLetter <= 'Z' && nIndex < nLegnth)
 					{
 						nIndex++;

@@ -46,26 +46,26 @@ namespace SimpleTypes
 #define SimpleType_FromString(Enum) \
 	virtual Enum FromString(const wchar_t* cwsStr)\
 	{\
-		std::wstring wsTemp = cwsStr;\
-		return FromString( (const std::wstring&)wsTemp );\
-	}\
-	virtual Enum FromString(const std::wstring& wsStr)\
-	{\
-        std::wstring sTemp( wsStr.c_str() );\
-        return FromString( (std::wstring&)sTemp );\
-	}
+        std::wstring wsTemp(cwsStr);\
+        return FromString( wsTemp );\
+    }\
+    virtual Enum FromString(const std::wstring& wsStr)\
+    {\
+        std::wstring wsTemp (wsStr.c_str());\
+        return FromString( wsTemp );\
+    }
 
 #define SimpleType_FromString2(Enum) \
 	Enum FromString(const wchar_t* cwsStr)\
 	{\
-		std::wstring wsTemp = cwsStr;\
-		return FromString( (const std::wstring&)wsTemp );\
-	}\
-	Enum FromString(const std::wstring& wsStr)\
-	{\
-        std::wstring sTemp( wsStr.c_str() );\
-        return FromString( (std::wstring&)sTemp );\
-	}
+        std::wstring wsTemp (cwsStr);\
+        return FromString( wsTemp );\
+    }\
+    Enum FromString(const std::wstring& wsStr)\
+    {\
+        std::wstring wsTemp (wsStr.c_str());\
+        return FromString( wsTemp );\
+    }
 
 #define SimpleTypes_AdditionalOpearators(Class) \
 	const bool operator==(const Class& oOther) const\
@@ -83,36 +83,6 @@ namespace SimpleTypes
 		return false;\
 	}
 
-//#if defined(_WIN32) || defined (_WIN64)
-//#define SimpleType_Operator_Equal(Class) \
-//	Class(std::wstring &sValue)\
-//	{\
-//		FromString( sValue );\
-//	}\
-//	Class(const wchar_t* cwsValue)\
-//	{\
-//		FromString( cwsValue );\
-//	}\
-//	Class(const std::wstring& wsStr)\
-//	{\
-//		FromString( wsStr );\
-//	}\
-//	const Class &operator =(std::wstring &sValue)\
-//	{\
-//		FromString( sValue );\
-//		return *this;\
-//	}\
-//	const Class &operator =(const wchar_t* cwsString)\
-//	{\
-//		FromString( cwsString );\
-//		return *this;\
-//	}\
-//	const Class &operator =(const std::wstring& wsStr)\
-//	{\
-//		FromString( wsStr );\
-//		return *this;\
-//	}
-//#else
 #define SimpleType_Operator_Equal(Class) \
     Class(std::wstring &sValue)\
     {\
@@ -124,7 +94,7 @@ namespace SimpleTypes
     }\
     Class(const std::wstring& wsStr)\
     {\
-        FromString( wsStr );\
+        FromString( wsStr.c_str() );\
     }\
     const Class &operator =(std::wstring &sValue)\
     {\
@@ -138,10 +108,9 @@ namespace SimpleTypes
     }\
     const Class &operator =(const std::wstring& wsStr)\
     {\
-        FromString( wsStr );\
+        FromString( wsStr.c_str() );\
         return *this;\
     }
-//#endif
 
 	template<typename E, E DefValue = 0>
 	class CSimpleType
@@ -166,7 +135,7 @@ namespace SimpleTypes
         virtual E               FromString(std::wstring &sValue)    = 0;
         virtual std::wstring    ToString  () const                  = 0;
 
-	protected:
+    protected:
 
 		E m_eValue;
 	};

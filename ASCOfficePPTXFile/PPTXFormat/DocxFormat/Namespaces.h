@@ -44,7 +44,7 @@ namespace PPTX
 		std::wstring m_strLink;
 
 	public:
-		Namespace(LPCWSTR sName, LPCWSTR sLink) : m_strName(sName), m_strLink(sLink)
+        Namespace(const wchar_t* sName, const wchar_t* sLink) : m_strName(sName), m_strLink(sLink)
 		{
 		}
 	};

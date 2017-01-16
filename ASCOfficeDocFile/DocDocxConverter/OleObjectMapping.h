@@ -65,15 +65,15 @@ namespace DocFileFormat
 
 					ole->Program			= L"Word.Document";
 				}
-				m_pXmlWriter->WriteNodeBegin( _T( "o:OLEObject" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"o:OLEObject", TRUE );
 
 				if ( ole->bLinked )
 				{
 					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ));
-					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
-					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode);
+                    m_pXmlWriter->WriteAttribute( L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( relID ) ));
+                    m_pXmlWriter->WriteAttribute( L"Type", L"Link" );
+                    m_pXmlWriter->WriteAttribute( L"UpdateMode", ole->UpdateMode);
 				}
 				else
 				{
@@ -84,45 +84,45 @@ namespace DocFileFormat
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ));
-					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
+                    m_pXmlWriter->WriteAttribute( L"r:id", L"rId"+ FormatUtils::IntToWideString( relID ) );
+                    m_pXmlWriter->WriteAttribute( L"Type", L"Embed" );
 
 					copyEmbeddedObject( ole );
 				}
 
-				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program);
-				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId);
-				m_pXmlWriter->WriteAttribute( _T( "DrawAspect" ), _T( "Content" ) );
-				m_pXmlWriter->WriteAttribute( _T( "ObjectID" ), ole->ObjectId);
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteAttribute( L"ProgID", ole->Program);
+                m_pXmlWriter->WriteAttribute( L"ShapeID", _shapeId);
+                m_pXmlWriter->WriteAttribute( L"DrawAspect", L"Content" );
+                m_pXmlWriter->WriteAttribute( L"ObjectID", ole->ObjectId);
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				m_pXmlWriter->WriteNodeEnd( _T( "o:OLEObject" ) );
+                m_pXmlWriter->WriteNodeEnd( L"o:OLEObject" );
 			}
 		}
 
 		static std::wstring GetTargetExt(const std::wstring& objectType)
 		{
-			std::wstring objectExt = _T( ".bin" );
+            std::wstring objectExt = L".bin";
 
-			if ( objectType == _T( "Biff8" ) )
+            if ( objectType == L"Biff8" )
 			{
-				objectExt = _T( ".xls" );
+                objectExt = L".xls";
 			}
-			else if ( objectType == _T( "MSWordDoc" ) )
+            else if ( objectType == L"MSWordDoc" )
 			{
-				objectExt = _T( ".doc" );
+                objectExt = L".doc";
 			}
-			else if ( objectType == _T( "MSPresentation" ) )
+            else if ( objectType == L"MSPresentation" )
 			{
-				objectExt = _T( ".ppt" );
+                objectExt = L".ppt";
 			}
-			else if ( objectType == _T( "MSWordDocx" ) )
+            else if ( objectType == L"MSWordDocx" )
 			{
-				objectExt = _T( ".docx" );
+                objectExt = L".docx";
 			}
-			else if ( objectType == _T( "Equation" ) ) 
+            else if ( objectType == L"Equation" )
 			{
-				objectExt = _T( ".xml" );
+                objectExt = L".xml";
 			}
 			return objectExt;
 		}
@@ -131,23 +131,23 @@ namespace DocFileFormat
 		{
 			std::wstring objectContentType = OpenXmlContentTypes::OleObject;
 
-			if ( objectType == _T( "Biff8" ) )
+            if ( objectType == L"Biff8" )
 			{
 				objectContentType = OpenXmlContentTypes::MSExcel;
 			}
-			else if ( objectType == _T( "MSWordDoc" ) )
+            else if ( objectType == L"MSWordDoc" )
 			{
 				objectContentType = OpenXmlContentTypes::MSWord;
 			}
-			else if ( objectType == _T( "MSPresentation" ) )
+            else if ( objectType == L"MSPresentation" )
 			{
 				objectContentType = OpenXmlContentTypes::MSPowerpoint;
 			}
-			else if ( objectType == _T( "MSWordDocx" ) )
+            else if ( objectType == L"MSWordDocx" )
 			{
 				objectContentType = OpenXmlContentTypes::MSWordDocx;
 			}
-			else if ( objectType == _T( "Equation" ) )
+            else if ( objectType == L"Equation" )
 			{
 				objectContentType = OpenXmlContentTypes::Xml;
 			}
@@ -160,7 +160,7 @@ namespace DocFileFormat
 			if ( ole != NULL )
 			{
 				std::wstring clsid;
-				std::wstring exelChart = _T( "Excel.Chart" );
+                std::wstring exelChart = L"Excel.Chart";
 
 				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
 				{

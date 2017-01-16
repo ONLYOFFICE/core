@@ -466,7 +466,7 @@ namespace NSFile
 
         static std::string GetUtf8StringFromUnicode(const std::wstring& sData)
         {
-                return GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.length());
+            return GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.length());
         }
 
 		// utf16

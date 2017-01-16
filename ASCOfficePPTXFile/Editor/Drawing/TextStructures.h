@@ -848,7 +848,7 @@ namespace NSPresentationEditor
 			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
-				std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (TCHAR)(11), (TCHAR)(13)); 
+                std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (wchar_t)(11), (wchar_t)(13));
 			}
 		}
 		AVSINLINE bool IsEmpty()
@@ -861,7 +861,7 @@ namespace NSPresentationEditor
 				if (nLen > 1)
 					return false;
 
-				if ((nLen == 1) && ((TCHAR)(13) != m_arSpans[i].m_strText[0]))
+                if ((nLen == 1) && ((wchar_t)(13) != m_arSpans[i].m_strText[0]))
 					return false;
 			}
 			return true;

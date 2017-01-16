@@ -54,7 +54,7 @@ namespace PPTX
 					nullable_string sTmp;
 					node.ReadAttributeBase(L"val", sTmp);
 
-					if (val.is_init() && sTmp.is_init() && sTmp->find(TCHAR('%')) != -1)
+                    if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
 						*val = (*val) * 1000;
 				}
 			}

@@ -340,15 +340,32 @@ namespace SimpleTypes
 				m_unB = b;
 			}
             CHexColor(std::wstring & cwsValue)
-			{
-				FromString( cwsValue );
-			}
+            {
+                FromString( cwsValue );
+            }
 
-            virtual void FromString(std::wstring sValue)
+            virtual void FromString(std::wstring &sValue)
 			{
 				Parse(sValue);
 			}
-
+            virtual void FromString(const std::wstring &sValue)
+            {
+                Parse(sValue);
+            }
+            CHexColor(const std::wstring& wsStr)
+            {
+                FromString( wsStr);
+            }
+            const CHexColor &operator =(std::wstring &sValue)
+            {
+                FromString( sValue );
+                return *this;
+            }
+            const CHexColor &operator =(const std::wstring& wsStr)
+            {
+                FromString( wsStr);
+                return *this;
+            }
 			virtual std::wstring   ToString  () const 
 			{
                 std::wstring sResult;
@@ -356,7 +373,8 @@ namespace SimpleTypes
                 sResult += XmlUtils::IntToString(m_unR, L"%02X");
                 sResult += XmlUtils::IntToString(m_unG, L"%02X");
                 sResult += XmlUtils::IntToString(m_unB, L"%02X");
-				return sResult;
+
+                return sResult;
 			}
 			void Set_R(unsigned char R)
 			{
@@ -408,15 +426,17 @@ namespace SimpleTypes
 			}
 		private:
 
-            void Parse(std::wstring& sValue)
+            void Parse(const std::wstring& sValue)
 			{
                 int nValueLength = sValue.length();
-				if(3 == nValueLength)
+
+                if(3 == nValueLength)
 				{
 					int nTempR = HexToInt( (int)sValue[0] );
 					int nTempG = HexToInt( (int)sValue[1] );
 					int nTempB = HexToInt( (int)sValue[2] );
-					m_unR = nTempR +  (unsigned char)(nTempR << 4);
+
+                    m_unR = nTempR +  (unsigned char)(nTempR << 4);
 					m_unG = nTempG +  (unsigned char)(nTempG << 4);
 					m_unB = nTempB +  (unsigned char)(nTempB << 4);
 				}

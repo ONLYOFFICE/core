@@ -92,7 +92,7 @@ namespace OOX
 					
 					for(int i = nStartIndex; i < nLength; ++i)
 					{
-						TCHAR cElem = m_sText[i];
+                        wchar_t cElem = m_sText[i];
 						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
 							nStartIndex++;
 						else
@@ -100,7 +100,7 @@ namespace OOX
 					}
 					for(int i = nEndIndex; i > nStartIndex; --i)
 					{
-						TCHAR cElem = m_sText[i];
+                        wchar_t cElem = m_sText[i];
 						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
 							nEndIndex--;
 						else

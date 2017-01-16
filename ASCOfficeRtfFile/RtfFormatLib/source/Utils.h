@@ -68,7 +68,7 @@
 
 namespace Strings
 {	
-	static int ToDigit(TCHAR c)
+    static int ToDigit(wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return (int)(c - '0');
@@ -618,7 +618,7 @@ public:
 
         if (file.CreateFile(sFilename) != S_OK) return;
 
-        TCHAR * buf  = (TCHAR *)sData.c_str();
+        wchar_t * buf  = (wchar_t *)sData.c_str();
         int nLengthText = sData.length();
 		int nLengthData = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nLengthData];
@@ -636,7 +636,7 @@ public:
 	}
     static void WriteDataToBinary( std::wstring sData, BYTE** ppData, long& nSize)
 	{
-        TCHAR * buf  = (TCHAR *)sData.c_str();
+        wchar_t * buf  = (wchar_t *)sData.c_str();
         int nLengthText = sData.length();
 		nSize = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nSize];
@@ -672,7 +672,7 @@ public:
 		}
 		return sText;
 	}
-    static BYTE ToByte( TCHAR cChar )
+    static BYTE ToByte( wchar_t cChar )
 	{
         return (BYTE)(cChar > 'F' ? cChar - 0x57 : cChar > '9' ? cChar - 0x37 : cChar - 0x30);
 	}
@@ -788,7 +788,7 @@ public:
                 size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
 				wchar_t *out = new wchar_t[insize];
 
-                nconv = iconv (ic, &inptr, &insize, &out, &avail);
+                nconv = iconv (ic, &inptr, &insize, (char**)&out, &avail);
                 if (nconv == 0)
                 {
 					w_out = std::wstring(out);

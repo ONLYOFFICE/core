@@ -55,8 +55,8 @@
 
 namespace BinXlsxRW {
 
-	static TCHAR* gc_sMediaDirName = _T("media");
-	static TCHAR* gc_sMimeName = _T("mimetype");
+    static wchar_t* gc_sMediaDirName    = _T("media");
+    static wchar_t* gc_sMimeName        = _T("mimetype");
 
 	class BinaryTableWriter
 	{
@@ -2897,7 +2897,7 @@ namespace BinXlsxRW {
                     std::string sGfxDataA = std::string(sGfxData.begin(), sGfxData.end());
                     int nDataSize = sGfxDataA.length();
 					BYTE* pBuffer = new BYTE[nDataSize];
-                    if(false != Base64::Base64Decode((LPCSTR)sGfxDataA.c_str(), sGfxDataA.length(), pBuffer, &nDataSize))
+                    if(false != Base64::Base64Decode((const char*)sGfxDataA.c_str(), sGfxDataA.length(), pBuffer, &nDataSize))
 					{
 						int nLength = *((long*)(pBuffer + nSignatureSize));
 						NSBinPptxRW::CBinaryFileReader oBufferedStream;

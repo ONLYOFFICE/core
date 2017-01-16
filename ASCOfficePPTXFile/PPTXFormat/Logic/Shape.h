@@ -43,7 +43,6 @@
 #include "UniFill.h"
 #include "Ln.h"
 
-//#include "../../../Common/DocxFormat/Source/Utility/Encoding.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 namespace PPTX

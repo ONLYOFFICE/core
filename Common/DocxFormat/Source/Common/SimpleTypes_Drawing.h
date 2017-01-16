@@ -32,7 +32,6 @@
 #pragma once
 
 #include "SimpleTypes_Base.h"
-#include <stdlib.h>
 #include "../Base/ASCWinAPI.h"  // GetSysColor
 // Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (20.1.10)
 namespace SimpleTypes
@@ -47,8 +46,8 @@ namespace SimpleTypes
 		adjangleGuide = 1
 	};
 
-	template<EAdjAngle eDefValue = adjangleAngle>
-	class CAdjAngle : public CSimpleType<EAdjAngle, eDefValue>
+    template<EAdjAngle eDefValue = adjangleAngle>
+    class CAdjAngle : public CSimpleType<EAdjAngle, eDefValue>
 	{
 	public:
 
@@ -64,12 +63,12 @@ namespace SimpleTypes
 
 			Parse( sValue );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-            if ( adjangleAngle == m_eValue )
+            if ( adjangleAngle == this->m_eValue )
 			{
                 std::wstring sResult = std::to_wstring( m_nAngle );
 				return sResult;
@@ -110,12 +109,12 @@ namespace SimpleTypes
 
 			if ( bAngleValue )
 			{
-                m_eValue = adjangleAngle;
+                this->m_eValue = adjangleAngle;
 				m_nAngle = _wtoi( sValue.c_str() );
 			}
 			else
 			{
-                m_eValue = adjangleGuide;
+                this->m_eValue = adjangleGuide;
 				m_sGuide = sValue;
 			}
 		}
@@ -142,7 +141,7 @@ namespace SimpleTypes
 
 		CAdjCoordinate() 
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 		} 
 
         virtual double  FromString(std::wstring &sValue)
@@ -156,7 +155,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString() const
 		{
-            if ( adjcoordinateCoord == m_eValue )
+            if ( adjcoordinateCoord == this->m_eValue )
 			{
 				if ( m_bUnit )
 				{
@@ -220,19 +219,19 @@ namespace SimpleTypes
 
 			if ( bGuide )
 			{
-                m_eValue = adjcoordinateGuide;
+                this->m_eValue = adjcoordinateGuide;
 				m_sGuide = sValue;
 			}
 			else
 			{
-                m_eValue = adjcoordinateCoord;
+                this->m_eValue = adjcoordinateCoord;
 				// Значение хранится в m_dValue
 			}
 		}
 
 	private:
 
-        EAdjCoordinate m_eValue;
+        EAdjCoordinate      m_eValue;
         std::wstring        m_sGuide;
 	};
 
@@ -252,14 +251,14 @@ namespace SimpleTypes
 
         virtual int     FromString(std::wstring &sValue)
 		{
-			m_eValue = _wtoi( sValue.c_str() );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( m_eValue );
+            std::wstring sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -268,7 +267,7 @@ namespace SimpleTypes
 
 		double  GetAngle() const
 		{
-            return m_eValue / 60000.0;
+            return this->m_eValue / 60000.0;
 		}
 
 	};
@@ -290,15 +289,15 @@ namespace SimpleTypes
 
         virtual EAnimationBuildType FromString(std::wstring &sValue)
 		{
-            if      ( (L"allAtOnce") == sValue ) m_eValue = animationbuildtypeAllAtOnce;
-            else                                  m_eValue = eDefValue;
+            if      ( (L"allAtOnce") == sValue ) this->m_eValue = animationbuildtypeAllAtOnce;
+            else                                  this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring             ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case animationbuildtypeAllAtOnce : return (L"allAtOnce");
 			default                          : return (L"allAtOnce");
@@ -330,19 +329,19 @@ namespace SimpleTypes
 
         virtual EAnimationChartBuildType FromString(std::wstring &sValue)
 		{
-            if      ( (L"allAtOnce")  == sValue ) m_eValue = animationchartbuildtypeAllAtOnce;
-            else if ( (L"category")   == sValue ) m_eValue = animationchartbuildtypeCategory;
-            else if ( (L"categoryEl") == sValue ) m_eValue = animationchartbuildtypeCategoryEl;
-            else if ( (L"series")     == sValue ) m_eValue = animationchartbuildtypeSeries;
-            else if ( (L"seriesEl")   == sValue ) m_eValue = animationchartbuildtypeSeriesEl;
-            else                                   m_eValue = eDefValue;
+            if      ( (L"allAtOnce")  == sValue ) this->m_eValue = animationchartbuildtypeAllAtOnce;
+            else if ( (L"category")   == sValue ) this->m_eValue = animationchartbuildtypeCategory;
+            else if ( (L"categoryEl") == sValue ) this->m_eValue = animationchartbuildtypeCategoryEl;
+            else if ( (L"series")     == sValue ) this->m_eValue = animationchartbuildtypeSeries;
+            else if ( (L"seriesEl")   == sValue ) this->m_eValue = animationchartbuildtypeSeriesEl;
+            else                                   this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring                  ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case animationchartbuildtypeAllAtOnce  : return (L"allAtOnce");
 			case animationchartbuildtypeCategory   : return (L"category");
@@ -379,18 +378,18 @@ namespace SimpleTypes
 
         virtual EAnimationChartOnlyBuildType FromString(std::wstring &sValue)
 		{
-            if      ( (L"category")   == sValue ) m_eValue = animationchartonlybuildtypeCategory;
-            else if ( (L"categoryEl") == sValue ) m_eValue = animationchartonlybuildtypeCategoryEl;
-            else if ( (L"series")     == sValue ) m_eValue = animationchartonlybuildtypeSeries;
-            else if ( (L"seriesEl")   == sValue ) m_eValue = animationchartonlybuildtypeSeriesEl;
-            else                                   m_eValue = eDefValue;
+            if      ( (L"category")   == sValue ) this->m_eValue = animationchartonlybuildtypeCategory;
+            else if ( (L"categoryEl") == sValue ) this->m_eValue = animationchartonlybuildtypeCategoryEl;
+            else if ( (L"series")     == sValue ) this->m_eValue = animationchartonlybuildtypeSeries;
+            else if ( (L"seriesEl")   == sValue ) this->m_eValue = animationchartonlybuildtypeSeriesEl;
+            else                                   this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring                      ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case animationchartonlybuildtypeCategory   : return (L"category");
 			case animationchartonlybuildtypeCategoryEl : return (L"categoryEl");
@@ -426,18 +425,18 @@ namespace SimpleTypes
 
         virtual EAnimationDgmBuildType FromString(std::wstring &sValue)
 		{
-            if      ( (L"allAtOnce") == sValue ) m_eValue = animationdgmbuildtypeAllAtOnce;
-            else if ( (L"lvlAtOnce") == sValue ) m_eValue = animationdgmbuildtypeLvlAtOnce;
-            else if ( (L"lvlOne")    == sValue ) m_eValue = animationdgmbuildtypeLvlOne;
-            else if ( (L"one")       == sValue ) m_eValue = animationdgmbuildtypeOne;
-            else                                  m_eValue = eDefValue;
+            if      ( (L"allAtOnce") == sValue ) this->m_eValue = animationdgmbuildtypeAllAtOnce;
+            else if ( (L"lvlAtOnce") == sValue ) this->m_eValue = animationdgmbuildtypeLvlAtOnce;
+            else if ( (L"lvlOne")    == sValue ) this->m_eValue = animationdgmbuildtypeLvlOne;
+            else if ( (L"one")       == sValue ) this->m_eValue = animationdgmbuildtypeOne;
+            else                                  this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring                ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case animationdgmbuildtypeAllAtOnce : return (L"allAtOnce");
 			case animationdgmbuildtypeLvlAtOnce : return (L"lvlAtOnce");
@@ -473,17 +472,17 @@ namespace SimpleTypes
 
         virtual EAnimationDgmOnlyBuildType FromString(std::wstring &sValue)
 		{
-            if      ( (L"lvlAtOnce") == sValue ) m_eValue = animationdgmonlybuildtypeLvlAtOnce;
-            else if ( (L"lvlOne")    == sValue ) m_eValue = animationdgmonlybuildtypeLvlOne;
-            else if ( (L"one")       == sValue ) m_eValue = animationdgmonlybuildtypeOne;
-            else                                  m_eValue = eDefValue;
+            if      ( (L"lvlAtOnce") == sValue ) this->m_eValue = animationdgmonlybuildtypeLvlAtOnce;
+            else if ( (L"lvlOne")    == sValue ) this->m_eValue = animationdgmonlybuildtypeLvlOne;
+            else if ( (L"one")       == sValue ) this->m_eValue = animationdgmonlybuildtypeOne;
+            else                                  this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring                    ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case animationdgmonlybuildtypeLvlAtOnce : return (L"lvlAtOnce");
 			case animationdgmonlybuildtypeLvlOne    : return (L"lvlOne");
@@ -523,26 +522,26 @@ namespace SimpleTypes
 
         virtual EBevelPresetType FromString(std::wstring &sValue)
 		{
-            if      ( (L"angle")        == sValue ) m_eValue = bevelpresettypeAngle;
-            else if ( (L"artDeco")      == sValue ) m_eValue = bevelpresettypeArtDeco;
-            else if ( (L"circle")       == sValue ) m_eValue = bevelpresettypeCircle;
-            else if ( (L"convex")       == sValue ) m_eValue = bevelpresettypeConvex;
-            else if ( (L"coolSlant")    == sValue ) m_eValue = bevelpresettypeCoolSlant;
-            else if ( (L"cross")        == sValue ) m_eValue = bevelpresettypeCross;
-            else if ( (L"divot")        == sValue ) m_eValue = bevelpresettypeDivot;
-            else if ( (L"hardEdge")     == sValue ) m_eValue = bevelpresettypeHardEdge;
-            else if ( (L"relaxedInset") == sValue ) m_eValue = bevelpresettypeRelaxedInset;
-            else if ( (L"riblet")       == sValue ) m_eValue = bevelpresettypeRiblet;
-            else if ( (L"slope")        == sValue ) m_eValue = bevelpresettypeSlope;
-            else if ( (L"softRound")    == sValue ) m_eValue = bevelpresettypeSoftRound;
-            else                                     m_eValue = eDefValue;
+            if      ( (L"angle")        == sValue ) this->m_eValue = bevelpresettypeAngle;
+            else if ( (L"artDeco")      == sValue ) this->m_eValue = bevelpresettypeArtDeco;
+            else if ( (L"circle")       == sValue ) this->m_eValue = bevelpresettypeCircle;
+            else if ( (L"convex")       == sValue ) this->m_eValue = bevelpresettypeConvex;
+            else if ( (L"coolSlant")    == sValue ) this->m_eValue = bevelpresettypeCoolSlant;
+            else if ( (L"cross")        == sValue ) this->m_eValue = bevelpresettypeCross;
+            else if ( (L"divot")        == sValue ) this->m_eValue = bevelpresettypeDivot;
+            else if ( (L"hardEdge")     == sValue ) this->m_eValue = bevelpresettypeHardEdge;
+            else if ( (L"relaxedInset") == sValue ) this->m_eValue = bevelpresettypeRelaxedInset;
+            else if ( (L"riblet")       == sValue ) this->m_eValue = bevelpresettypeRiblet;
+            else if ( (L"slope")        == sValue ) this->m_eValue = bevelpresettypeSlope;
+            else if ( (L"softRound")    == sValue ) this->m_eValue = bevelpresettypeSoftRound;
+            else                                     this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring          ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case bevelpresettypeAngle        : return (L"angle");
 			case bevelpresettypeArtDeco      : return (L"artDeco");
@@ -591,25 +590,25 @@ namespace SimpleTypes
 
         virtual EBlackWhiteMode FromString(std::wstring &sValue)
 		{
-            if      ( (L"auto")       == sValue ) m_eValue = blackwhitemodeAuto;
-            else if ( (L"black")      == sValue ) m_eValue = blackwhitemodeBlack;
-            else if ( (L"blackGray")  == sValue ) m_eValue = blackwhitemodeBlackGray;
-            else if ( (L"blackWhite") == sValue ) m_eValue = blackwhitemodeBlackWhite;
-            else if ( (L"clr")        == sValue ) m_eValue = blackwhitemodeClr;
-            else if ( (L"gray")       == sValue ) m_eValue = blackwhitemodeGray;
-            else if ( (L"grayWhite")  == sValue ) m_eValue = blackwhitemodeGrayWhite;
-            else if ( (L"hidden")     == sValue ) m_eValue = blackwhitemodeHidden;
-            else if ( (L"invGray")    == sValue ) m_eValue = blackwhitemodeInvGray;
-            else if ( (L"ltGray")     == sValue ) m_eValue = blackwhitemodeLtGray;
-            else if ( (L"white")      == sValue ) m_eValue = blackwhitemodeWhite;
-            else                                   m_eValue = eDefValue;
+            if      ( (L"auto")       == sValue ) this->m_eValue = blackwhitemodeAuto;
+            else if ( (L"black")      == sValue ) this->m_eValue = blackwhitemodeBlack;
+            else if ( (L"blackGray")  == sValue ) this->m_eValue = blackwhitemodeBlackGray;
+            else if ( (L"blackWhite") == sValue ) this->m_eValue = blackwhitemodeBlackWhite;
+            else if ( (L"clr")        == sValue ) this->m_eValue = blackwhitemodeClr;
+            else if ( (L"gray")       == sValue ) this->m_eValue = blackwhitemodeGray;
+            else if ( (L"grayWhite")  == sValue ) this->m_eValue = blackwhitemodeGrayWhite;
+            else if ( (L"hidden")     == sValue ) this->m_eValue = blackwhitemodeHidden;
+            else if ( (L"invGray")    == sValue ) this->m_eValue = blackwhitemodeInvGray;
+            else if ( (L"ltGray")     == sValue ) this->m_eValue = blackwhitemodeLtGray;
+            else if ( (L"white")      == sValue ) this->m_eValue = blackwhitemodeWhite;
+            else                                   this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring         ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case blackwhitemodeAuto       : return (L"auto");
 			case blackwhitemodeBlack      : return (L"black");
@@ -651,19 +650,19 @@ namespace SimpleTypes
 
         virtual EBlendMode FromString(std::wstring &sValue)
 		{
-            if      ( (L"darken")  == sValue ) m_eValue = blendmodeDarken;
-            else if ( (L"lighten") == sValue ) m_eValue = blendmodeLighten;
-            else if ( (L"mult")    == sValue ) m_eValue = blendmodeMult;
-            else if ( (L"over")    == sValue ) m_eValue = blendmodeOver;
-            else if ( (L"screen")  == sValue ) m_eValue = blendmodeScreen;
-            else                                m_eValue = eDefValue;
+            if      ( (L"darken")  == sValue ) this->m_eValue = blendmodeDarken;
+            else if ( (L"lighten") == sValue ) this->m_eValue = blendmodeLighten;
+            else if ( (L"mult")    == sValue ) this->m_eValue = blendmodeMult;
+            else if ( (L"over")    == sValue ) this->m_eValue = blendmodeOver;
+            else if ( (L"screen")  == sValue ) this->m_eValue = blendmodeScreen;
+            else                                this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring    ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case blendmodeDarken  : return (L"darken");
 			case blendmodeLighten : return (L"lighten");
@@ -699,19 +698,19 @@ namespace SimpleTypes
 
         virtual EBlipCompression FromString(std::wstring &sValue)
 		{
-            if      ( (L"email")   == sValue ) m_eValue = blipcompressionEmail;
-            else if ( (L"hqprint") == sValue ) m_eValue = blipcompressionHQPrint;
-            else if ( (L"none")    == sValue ) m_eValue = blipcompressionNone;
-            else if ( (L"print")   == sValue ) m_eValue = blipcompressionPrint;
-            else if ( (L"screen")  == sValue ) m_eValue = blipcompressionScreen;
-            else                                m_eValue = eDefValue;
+            if      ( (L"email")   == sValue ) this->m_eValue = blipcompressionEmail;
+            else if ( (L"hqprint") == sValue ) this->m_eValue = blipcompressionHQPrint;
+            else if ( (L"none")    == sValue ) this->m_eValue = blipcompressionNone;
+            else if ( (L"print")   == sValue ) this->m_eValue = blipcompressionPrint;
+            else if ( (L"screen")  == sValue ) this->m_eValue = blipcompressionScreen;
+            else                                this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring          ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case blipcompressionEmail   : return (L"email");
 			case blipcompressionHQPrint : return (L"hqprint");
@@ -753,44 +752,44 @@ namespace SimpleTypes
 
         virtual EColorSchemeIndex FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( (L"accent1")  == sValue ) m_eValue = colorschemeindexAccent1;
-                else if ( (L"accent2")  == sValue ) m_eValue = colorschemeindexAccent2;
-                else if ( (L"accent3")  == sValue ) m_eValue = colorschemeindexAccent3;
-                else if ( (L"accent4")  == sValue ) m_eValue = colorschemeindexAccent4;
-                else if ( (L"accent5")  == sValue ) m_eValue = colorschemeindexAccent5;
-                else if ( (L"accent6")  == sValue ) m_eValue = colorschemeindexAccent6;
+                if      ( (L"accent1")  == sValue ) this->m_eValue = colorschemeindexAccent1;
+                else if ( (L"accent2")  == sValue ) this->m_eValue = colorschemeindexAccent2;
+                else if ( (L"accent3")  == sValue ) this->m_eValue = colorschemeindexAccent3;
+                else if ( (L"accent4")  == sValue ) this->m_eValue = colorschemeindexAccent4;
+                else if ( (L"accent5")  == sValue ) this->m_eValue = colorschemeindexAccent5;
+                else if ( (L"accent6")  == sValue ) this->m_eValue = colorschemeindexAccent6;
 				break;
 			case 'd':
-                if      ( (L"dk1")      == sValue ) m_eValue = colorschemeindexDk1;
-                else if ( (L"dk2")      == sValue ) m_eValue = colorschemeindexDk2;
+                if      ( (L"dk1")      == sValue ) this->m_eValue = colorschemeindexDk1;
+                else if ( (L"dk2")      == sValue ) this->m_eValue = colorschemeindexDk2;
 				break;
 			case 'f':
-                if      ( (L"folHlink") == sValue ) m_eValue = colorschemeindexFolHlink;
+                if      ( (L"folHlink") == sValue ) this->m_eValue = colorschemeindexFolHlink;
 				break;
 			case 'h':
-                if      ( (L"hlink")    == sValue ) m_eValue = colorschemeindexHlink;
+                if      ( (L"hlink")    == sValue ) this->m_eValue = colorschemeindexHlink;
 				break;
 			case 'l':
-                if      ( (L"lt1")      == sValue ) m_eValue = colorschemeindexLt1;
-                else if ( (L"lt2")      == sValue ) m_eValue = colorschemeindexLt2;
+                if      ( (L"lt1")      == sValue ) this->m_eValue = colorschemeindexLt1;
+                else if ( (L"lt2")      == sValue ) this->m_eValue = colorschemeindexLt2;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring           ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case colorschemeindexAccent1 : return (L"accent1");			
 			case colorschemeindexAccent2 : return (L"accent2");			
@@ -831,33 +830,33 @@ namespace SimpleTypes
 
         virtual ECompoundLine FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'd':
-                if      ( (L"dbl")       == sValue ) m_eValue = compoundlineDbl;
+                if      ( (L"dbl")       == sValue ) this->m_eValue = compoundlineDbl;
 				break;
 			case 's':
-                if      ( (L"sng")       == sValue ) m_eValue = compoundlineSng;
+                if      ( (L"sng")       == sValue ) this->m_eValue = compoundlineSng;
 				break;
 			case 't':
-                if      ( (L"thickThin") == sValue ) m_eValue = compoundlineThickThin;
-                else if ( (L"thinThick") == sValue ) m_eValue = compoundlineThinThick;
-                else if ( (L"tri")       == sValue ) m_eValue = compoundlineTri;
+                if      ( (L"thickThin") == sValue ) this->m_eValue = compoundlineThickThin;
+                else if ( (L"thinThick") == sValue ) this->m_eValue = compoundlineThinThick;
+                else if ( (L"tri")       == sValue ) this->m_eValue = compoundlineTri;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case compoundlineDbl:       return (L"dbl");			
 			case compoundlineSng:       return (L"sng");			
@@ -936,14 +935,14 @@ namespace SimpleTypes
 
         virtual int     FromString(std::wstring &sValue)
         {
-            m_eValue = _wtoi( sValue.c_str() );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -969,28 +968,28 @@ namespace SimpleTypes
 
         virtual EEffectContainerType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 's':
-                if      ( (L"sib")  == sValue ) m_eValue = effectcontainertypeSib;
+                if      ( (L"sib")  == sValue ) this->m_eValue = effectcontainertypeSib;
 				break;
 			case 't':
-                if      ( (L"tree") == sValue ) m_eValue = effectcontainertypeTree;
+                if      ( (L"tree") == sValue ) this->m_eValue = effectcontainertypeTree;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring              ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case effectcontainertypeSib:  return (L"sib");			
 			case effectcontainertypeTree: return (L"tree");		
@@ -1015,19 +1014,19 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-            m_eValue = (std::min)( 5400000, (std::max)( -5400000, nValue ) );
+            this->m_eValue = (std::min)( 5400000, (std::max)( -5400000, nValue ) );
 		}
 
         virtual int     FromString(std::wstring &sValue)
 		{
-            m_eValue = (std::min)( 5400000, (std::max)( -5400000, _wtoi( sValue.c_str() ) ) );
+            this->m_eValue = (std::min)( 5400000, (std::max)( -5400000, _wtoi( sValue.c_str() ) ) );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( m_eValue );
+            std::wstring sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -1036,7 +1035,7 @@ namespace SimpleTypes
 
 		double  GetAngle() const
 		{
-            return m_eValue / 60000.0;
+            return this->m_eValue / 60000.0;
 		}
 
 	};
@@ -1113,29 +1112,29 @@ namespace SimpleTypes
 
         virtual EFontCollectionIndex FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'm':
-                if      ( (L"major") == sValue ) m_eValue = fontcollectionindexMajor;
-                else if ( (L"minor") == sValue ) m_eValue = fontcollectionindexMinor;
+                if      ( (L"major") == sValue ) this->m_eValue = fontcollectionindexMajor;
+                else if ( (L"minor") == sValue ) this->m_eValue = fontcollectionindexMinor;
 				break;
 			case 'n':
-                if      ( (L"none")  == sValue ) m_eValue = fontcollectionindexNone;
+                if      ( (L"none")  == sValue ) this->m_eValue = fontcollectionindexNone;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring              ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case fontcollectionindexMajor: return (L"major");			
 			case fontcollectionindexMinor: return (L"minor");		
@@ -1161,19 +1160,19 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-            m_eValue = (std::min)( 10800000, (std::max)( 0, nValue ) );
+            this->m_eValue = (std::min)( 10800000, (std::max)( 0, nValue ) );
 		}
 
         virtual int     FromString(std::wstring &sValue)
 		{
-            m_eValue = (std::min)( 10800000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
+            this->m_eValue = (std::min)( 10800000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( m_eValue );
+            std::wstring sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -1182,7 +1181,7 @@ namespace SimpleTypes
 
 		double  GetAngle() const
 		{
-            return m_eValue / 60000.0;
+            return this->m_eValue / 60000.0;
 		}
 
 	};
@@ -1294,38 +1293,38 @@ namespace SimpleTypes
 
         virtual ELightRigDirection FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( (L"b")  == sValue ) m_eValue = lightrigdirectionB;
-                else if ( (L"bl") == sValue ) m_eValue = lightrigdirectionBL;
-                else if ( (L"br") == sValue ) m_eValue = lightrigdirectionBR;
+                if      ( (L"b")  == sValue ) this->m_eValue = lightrigdirectionB;
+                else if ( (L"bl") == sValue ) this->m_eValue = lightrigdirectionBL;
+                else if ( (L"br") == sValue ) this->m_eValue = lightrigdirectionBR;
 				break;
 			case 'l':
-                if      ( (L"l")  == sValue ) m_eValue = lightrigdirectionL;
+                if      ( (L"l")  == sValue ) this->m_eValue = lightrigdirectionL;
 				break;
 			case 'r':
-                if      ( (L"r")  == sValue ) m_eValue = lightrigdirectionR;
+                if      ( (L"r")  == sValue ) this->m_eValue = lightrigdirectionR;
 				break;
 			case 't':
-                if      ( (L"t")  == sValue ) m_eValue = lightrigdirectionT;
-                else if ( (L"tl") == sValue ) m_eValue = lightrigdirectionTL;
-                else if ( (L"tr") == sValue ) m_eValue = lightrigdirectionTR;
+                if      ( (L"t")  == sValue ) this->m_eValue = lightrigdirectionT;
+                else if ( (L"tl") == sValue ) this->m_eValue = lightrigdirectionTL;
+                else if ( (L"tr") == sValue ) this->m_eValue = lightrigdirectionTR;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring            ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case lightrigdirectionB:  return (L"b");			
 			case lightrigdirectionBL: return (L"bl");			
@@ -1384,67 +1383,67 @@ namespace SimpleTypes
 
         virtual ELightRigType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( (L"balanced")    == sValue ) m_eValue = lightrigtypeBalanced;
-                else if ( (L"brightRoom")  == sValue ) m_eValue = lightrigtypeBrightRoom;
+                if      ( (L"balanced")    == sValue ) this->m_eValue = lightrigtypeBalanced;
+                else if ( (L"brightRoom")  == sValue ) this->m_eValue = lightrigtypeBrightRoom;
 				break;
 			case 'c':
-                if      ( (L"chilly")      == sValue ) m_eValue = lightrigtypeChilly;
-                else if ( (L"contrasting") == sValue ) m_eValue = lightrigtypeContrasting;
+                if      ( (L"chilly")      == sValue ) this->m_eValue = lightrigtypeChilly;
+                else if ( (L"contrasting") == sValue ) this->m_eValue = lightrigtypeContrasting;
 				break;
 			case 'f':
-                if      ( (L"flat")        == sValue ) m_eValue = lightrigtypeFlat;
-                else if ( (L"flood")       == sValue ) m_eValue = lightrigtypeFlood;
-                else if ( (L"freezing")    == sValue ) m_eValue = lightrigtypeFreezing;
+                if      ( (L"flat")        == sValue ) this->m_eValue = lightrigtypeFlat;
+                else if ( (L"flood")       == sValue ) this->m_eValue = lightrigtypeFlood;
+                else if ( (L"freezing")    == sValue ) this->m_eValue = lightrigtypeFreezing;
 				break;
 			case 'g':
-                if      ( (L"glow")        == sValue ) m_eValue = lightrigtypeGlow;
+                if      ( (L"glow")        == sValue ) this->m_eValue = lightrigtypeGlow;
 				break;
 			case 'h':
-                if      ( (L"harsh")       == sValue ) m_eValue = lightrigtypeHarsh;
+                if      ( (L"harsh")       == sValue ) this->m_eValue = lightrigtypeHarsh;
 				break;
 			case 'l':
-                if      ( (L"legacyFlat1")   == sValue ) m_eValue = lightrigtypeLegacyFlat1;
-                else if ( (L"legacyFlat2")   == sValue ) m_eValue = lightrigtypeLegacyFlat2;
-                else if ( (L"legacyFlat3")   == sValue ) m_eValue = lightrigtypeLegacyFlat3;
-                else if ( (L"legacyFlat4")   == sValue ) m_eValue = lightrigtypeLegacyFlat4;
-                else if ( (L"legacyHarsh1")  == sValue ) m_eValue = lightrigtypeLegacyHarsh1;
-                else if ( (L"legacyHarsh2")  == sValue ) m_eValue = lightrigtypeLegacyHarsh2;
-                else if ( (L"legacyHarsh3")  == sValue ) m_eValue = lightrigtypeLegacyHarsh3;
-                else if ( (L"legacyHarsh4")  == sValue ) m_eValue = lightrigtypeLegacyHarsh4;
-                else if ( (L"legacyNormal1") == sValue ) m_eValue = lightrigtypeLegacyNormal1;
-                else if ( (L"legacyNormal2") == sValue ) m_eValue = lightrigtypeLegacyNormal2;
-                else if ( (L"legacyNormal3") == sValue ) m_eValue = lightrigtypeLegacyNormal3;
-                else if ( (L"legacyNormal4") == sValue ) m_eValue = lightrigtypeLegacyNormal4;
+                if      ( (L"legacyFlat1")   == sValue ) this->m_eValue = lightrigtypeLegacyFlat1;
+                else if ( (L"legacyFlat2")   == sValue ) this->m_eValue = lightrigtypeLegacyFlat2;
+                else if ( (L"legacyFlat3")   == sValue ) this->m_eValue = lightrigtypeLegacyFlat3;
+                else if ( (L"legacyFlat4")   == sValue ) this->m_eValue = lightrigtypeLegacyFlat4;
+                else if ( (L"legacyHarsh1")  == sValue ) this->m_eValue = lightrigtypeLegacyHarsh1;
+                else if ( (L"legacyHarsh2")  == sValue ) this->m_eValue = lightrigtypeLegacyHarsh2;
+                else if ( (L"legacyHarsh3")  == sValue ) this->m_eValue = lightrigtypeLegacyHarsh3;
+                else if ( (L"legacyHarsh4")  == sValue ) this->m_eValue = lightrigtypeLegacyHarsh4;
+                else if ( (L"legacyNormal1") == sValue ) this->m_eValue = lightrigtypeLegacyNormal1;
+                else if ( (L"legacyNormal2") == sValue ) this->m_eValue = lightrigtypeLegacyNormal2;
+                else if ( (L"legacyNormal3") == sValue ) this->m_eValue = lightrigtypeLegacyNormal3;
+                else if ( (L"legacyNormal4") == sValue ) this->m_eValue = lightrigtypeLegacyNormal4;
 				break;
 			case 'm':
-                if      ( (L"morning") == sValue ) m_eValue = lightrigtypeMorning;
+                if      ( (L"morning") == sValue ) this->m_eValue = lightrigtypeMorning;
 				break;
 			case 's':
-                if      ( (L"soft")    == sValue ) m_eValue = lightrigtypeSoft;
-                else if ( (L"sunrise") == sValue ) m_eValue = lightrigtypeSunrise;
-                else if ( (L"sunset")  == sValue ) m_eValue = lightrigtypeSunset;
+                if      ( (L"soft")    == sValue ) this->m_eValue = lightrigtypeSoft;
+                else if ( (L"sunrise") == sValue ) this->m_eValue = lightrigtypeSunrise;
+                else if ( (L"sunset")  == sValue ) this->m_eValue = lightrigtypeSunset;
 				break;
 			case 't':
-                if      ( (L"threePt") == sValue ) m_eValue = lightrigtypeThreePt;
-                else if ( (L"twoPt")   == sValue ) m_eValue = lightrigtypeTwoPt;
+                if      ( (L"threePt") == sValue ) this->m_eValue = lightrigtypeThreePt;
+                else if ( (L"twoPt")   == sValue ) this->m_eValue = lightrigtypeTwoPt;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case lightrigtypeBalanced      : return (L"balanced");
 			case lightrigtypeBrightRoom    : return (L"brightRoom");
@@ -1498,31 +1497,31 @@ namespace SimpleTypes
 
         virtual ELineCap FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'f':
-                if      ( (L"flat") == sValue ) m_eValue = linecapFlat;
+                if      ( (L"flat") == sValue ) this->m_eValue = linecapFlat;
 				break;
 			case 'r':
-                if      ( (L"rnd")  == sValue ) m_eValue = linecapRnd;
+                if      ( (L"rnd")  == sValue ) this->m_eValue = linecapRnd;
 				break;
 			case 's':
-                if      ( (L"sq")   == sValue ) m_eValue = linecapSq;
+                if      ( (L"sq")   == sValue ) this->m_eValue = linecapSq;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring  ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case linecapFlat: return (L"flat");			
 			case linecapRnd:  return (L"rnd");			
@@ -1552,31 +1551,31 @@ namespace SimpleTypes
 
         virtual ELineEndLength FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-                if      ( (L"lg")  == sValue ) m_eValue = lineendlengthLarge;
+                if      ( (L"lg")  == sValue ) this->m_eValue = lineendlengthLarge;
 				break;
 			case 'm':
-                if      ( (L"med") == sValue ) m_eValue = lineendlengthMedium;
+                if      ( (L"med") == sValue ) this->m_eValue = lineendlengthMedium;
 				break;
 			case 's':
-                if      ( (L"sm")  == sValue ) m_eValue = lineendlengthSmall;
+                if      ( (L"sm")  == sValue ) this->m_eValue = lineendlengthSmall;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring        ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case lineendlengthLarge:  return (L"lg");			
 			case lineendlengthMedium: return (L"med");			
@@ -1611,40 +1610,40 @@ namespace SimpleTypes
 
         virtual ELineEndType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( (L"arrow")    == sValue ) m_eValue = lineendtypeArrow;
+                if      ( (L"arrow")    == sValue ) this->m_eValue = lineendtypeArrow;
 				break;
 			case 'd':
-                if      ( (L"diamond")  == sValue ) m_eValue = lineendtypeDiamond;
+                if      ( (L"diamond")  == sValue ) this->m_eValue = lineendtypeDiamond;
 				break;
 			case 'n':
-                if      ( (L"none")     == sValue ) m_eValue = lineendtypeNone;
+                if      ( (L"none")     == sValue ) this->m_eValue = lineendtypeNone;
 				break;
 			case 'o':
-                if      ( (L"oval")     == sValue ) m_eValue = lineendtypeOval;
+                if      ( (L"oval")     == sValue ) this->m_eValue = lineendtypeOval;
 				break;
 			case 's':
-                if      ( (L"stealth")  == sValue ) m_eValue = lineendtypeStealth;
+                if      ( (L"stealth")  == sValue ) this->m_eValue = lineendtypeStealth;
 				break;
 			case 't':
-                if      ( (L"triangle") == sValue ) m_eValue = lineendtypeTriangle;
+                if      ( (L"triangle") == sValue ) this->m_eValue = lineendtypeTriangle;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring      ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case lineendtypeArrow:    return (L"arrow");			
 			case lineendtypeDiamond:  return (L"diamond");			
@@ -1679,31 +1678,31 @@ namespace SimpleTypes
 
         virtual ELineEndWidth FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-                if      ( (L"lg")  == sValue ) m_eValue = lineendwidthLarge;
+                if      ( (L"lg")  == sValue ) this->m_eValue = lineendwidthLarge;
 				break;
 			case 'm':
-                if      ( (L"med") == sValue ) m_eValue = lineendwidthMedium;
+                if      ( (L"med") == sValue ) this->m_eValue = lineendwidthMedium;
 				break;
 			case 's':
-                if      ( (L"sm")  == sValue ) m_eValue = lineendwidthSmall;
+                if      ( (L"sm")  == sValue ) this->m_eValue = lineendwidthSmall;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case lineendwidthLarge:  return (L"lg");			
 			case lineendwidthMedium: return (L"med");			
@@ -1728,18 +1727,18 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
         {
-			m_eValue = _wtoi64( sValue.c_str() );
-            if (m_eValue < 0)
-                m_eValue = 0;
-            if (m_eValue > 20116800)
-                m_eValue = 20116800;
+            this->m_eValue = _wtoi64( sValue.c_str() );
+            if (this->m_eValue < 0)
+                this->m_eValue = 0;
+            if (this->m_eValue > 20116800)
+                this->m_eValue = 20116800;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -1749,18 +1748,18 @@ namespace SimpleTypes
 
         double ToPoints()
         {
-            return Emu_To_Pt( m_eValue );
+            return Emu_To_Pt( this->m_eValue );
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
         }
 
 		double FromEmu(const __int64 nEmu)
 		{
-            m_eValue = nEmu;
-            return Emu_To_Pt( m_eValue );
+            this->m_eValue = nEmu;
+            return Emu_To_Pt( this->m_eValue );
 		}
     };
 	//--------------------------------------------------------------------------------
@@ -1784,34 +1783,34 @@ namespace SimpleTypes
 
         virtual EPathFillMode FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'd':
-                if      ( (L"darken")     == sValue ) m_eValue = pathfillmodeDarken;
-                else if ( (L"darkenLess") == sValue ) m_eValue = pathfillmodeDarkenLess;
+                if      ( (L"darken")     == sValue ) this->m_eValue = pathfillmodeDarken;
+                else if ( (L"darkenLess") == sValue ) this->m_eValue = pathfillmodeDarkenLess;
 				break;
 			case 'l':
-                if      ( (L"lighten")    == sValue ) m_eValue = pathfillmodeLighten;
-                else if ( (L"darkenLess") == sValue ) m_eValue = pathfillmodeLightenLess;
+                if      ( (L"lighten")    == sValue ) this->m_eValue = pathfillmodeLighten;
+                else if ( (L"darkenLess") == sValue ) this->m_eValue = pathfillmodeLightenLess;
 				break;
 			case 'n':
-                if      ( (L"none")       == sValue ) m_eValue = pathfillmodeNone;
-                else if ( (L"norm")       == sValue ) m_eValue = pathfillmodeNorm;
+                if      ( (L"none")       == sValue ) this->m_eValue = pathfillmodeNone;
+                else if ( (L"norm")       == sValue ) this->m_eValue = pathfillmodeNorm;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case pathfillmodeDarken:      return (L"darken");			
 			case pathfillmodeDarkenLess:  return (L"darkenLess");			
@@ -1846,31 +1845,31 @@ namespace SimpleTypes
 
         virtual EPathShadeType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"circle") == sValue ) m_eValue = pathshadetypeCircle;
+                if      ( (L"circle") == sValue ) this->m_eValue = pathshadetypeCircle;
 				break;
 			case 'r':
-                if      ( (L"rect")   == sValue ) m_eValue = pathshadetypeRect;
+                if      ( (L"rect")   == sValue ) this->m_eValue = pathshadetypeRect;
 				break;
 			case 's':
-                if      ( (L"shape")  == sValue ) m_eValue = pathshadetypeShape;
+                if      ( (L"shape")  == sValue ) this->m_eValue = pathshadetypeShape;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring        ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case pathshadetypeCircle: return (L"circle");			
 			case pathshadetypeRect:   return (L"rect");			
@@ -1901,28 +1900,28 @@ namespace SimpleTypes
 
         virtual EPenAlignment FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"ctr") == sValue ) m_eValue = penalignmentCtr;
+                if      ( (L"ctr") == sValue ) this->m_eValue = penalignmentCtr;
 				break;
 			case 'i':
-                if      ( (L"in")  == sValue ) m_eValue = penalignmentIn;
+                if      ( (L"in")  == sValue ) this->m_eValue = penalignmentIn;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case penalignmentCtr: return (L"ctr");			
 			case penalignmentIn:  return (L"in");			
@@ -2016,19 +2015,19 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
         {
-            m_eValue = sValue.empty() ? 0 : _wtoi64( sValue.c_str() );
+            this->m_eValue = sValue.empty() ? 0 : _wtoi64( sValue.c_str() );
 
-            if (m_eValue < 0)
-                m_eValue = 0;
-            if (m_eValue > 27273042316900)
-                m_eValue = 27273042316900;
+            if (this->m_eValue < 0)
+                this->m_eValue = 0;
+            if (this->m_eValue > 27273042316900)
+                this->m_eValue = 27273042316900;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -2038,25 +2037,25 @@ namespace SimpleTypes
 
         double ToPoints() const
         {
-            return Emu_To_Pt( m_eValue );
+            return Emu_To_Pt( this->m_eValue );
         }
 		double ToMM() const
         {
-            return Emu_To_Mm( m_eValue );
+            return Emu_To_Mm( this->m_eValue );
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
         }
         double ToTwips()
         {
-            return Emu_To_Twips( m_eValue );
+            return Emu_To_Twips( this->m_eValue );
         }
 		double FromEmu(const __int64& nEmu)
 		{
-            m_eValue = nEmu;
-            return Emu_To_Pt( (double)m_eValue );
+            this->m_eValue = nEmu;
+            return Emu_To_Pt( (double)this->m_eValue );
 		}
     };
 	//--------------------------------------------------------------------------------
@@ -2075,19 +2074,19 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-           m_eValue = (std::min)( 21600000, (std::max)( 0, nValue ) );
+           this->m_eValue = (std::min)( 21600000, (std::max)( 0, nValue ) );
 		}
 
         virtual int     FromString(std::wstring &sValue)
 		{
-			m_eValue = (std::min)( 21600000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
+            this->m_eValue = (std::min)( 21600000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( m_eValue );
+            std::wstring sResult = std::to_wstring( this->m_eValue );
 			return sResult;
 		}
 
@@ -2096,7 +2095,7 @@ namespace SimpleTypes
 
 		double  GetAngle() const
 		{
-            return m_eValue / 60000.0;
+            return this->m_eValue / 60000.0;
 		}
 
 	};
@@ -2280,92 +2279,92 @@ namespace SimpleTypes
 
         virtual EPresetCameraType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'i':
-                if      ( (L"isometricBottomDown")					== sValue ) m_eValue = presetcameratypeIsometricBottomDown;
-                else if ( (L"isometricBottomUp")					== sValue ) m_eValue = presetcameratypeIsometricBottomUp;
-                else if ( (L"isometricLeftDown")					== sValue ) m_eValue = presetcameratypeIsometricLeftDown;
-                else if ( (L"isometricLeftUp")						== sValue ) m_eValue = presetcameratypeIsometricLeftUp;
-                else if ( (L"isometricOffAxis1Left")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis1Left;
-                else if ( (L"isometricOffAxis1Right")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis1Right;
-                else if ( (L"isometricOffAxis1Top")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis1Top;
-                else if ( (L"isometricOffAxis2Left")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis2Left;
-                else if ( (L"isometricOffAxis2Right")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis2Right;
-                else if ( (L"isometricOffAxis2Top")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis2Top;
-                else if ( (L"isometricOffAxis3Bottom")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis3Bottom ;
-                else if ( (L"isometricOffAxis3Left")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis3Left;
-                else if ( (L"isometricOffAxis3Right")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis3Right;
-                else if ( (L"isometricOffAxis4Bottom")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis4Bottom;
-                else if ( (L"isometricOffAxis4Left")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis4Left;
-                else if ( (L"isometricOffAxis4Right")				== sValue ) m_eValue = presetcameratypeIsometricOffAxis4Right;
-                else if ( (L"isometricRightDown")					== sValue ) m_eValue = presetcameratypeIsometricRightDown;
-                else if ( (L"isometricRightUp")					== sValue ) m_eValue = presetcameratypeIsometricRightUp;
-                else if ( (L"isometricTopDown")					== sValue ) m_eValue = presetcameratypeIsometricTopDown;
-                else if ( (L"isometricTopUp")						== sValue ) m_eValue = presetcameratypeIsometricTopUp;
+                if      ( (L"isometricBottomDown")					== sValue ) this->m_eValue = presetcameratypeIsometricBottomDown;
+                else if ( (L"isometricBottomUp")					== sValue ) this->m_eValue = presetcameratypeIsometricBottomUp;
+                else if ( (L"isometricLeftDown")					== sValue ) this->m_eValue = presetcameratypeIsometricLeftDown;
+                else if ( (L"isometricLeftUp")						== sValue ) this->m_eValue = presetcameratypeIsometricLeftUp;
+                else if ( (L"isometricOffAxis1Left")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis1Left;
+                else if ( (L"isometricOffAxis1Right")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis1Right;
+                else if ( (L"isometricOffAxis1Top")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis1Top;
+                else if ( (L"isometricOffAxis2Left")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis2Left;
+                else if ( (L"isometricOffAxis2Right")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis2Right;
+                else if ( (L"isometricOffAxis2Top")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis2Top;
+                else if ( (L"isometricOffAxis3Bottom")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis3Bottom ;
+                else if ( (L"isometricOffAxis3Left")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis3Left;
+                else if ( (L"isometricOffAxis3Right")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis3Right;
+                else if ( (L"isometricOffAxis4Bottom")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis4Bottom;
+                else if ( (L"isometricOffAxis4Left")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis4Left;
+                else if ( (L"isometricOffAxis4Right")				== sValue ) this->m_eValue = presetcameratypeIsometricOffAxis4Right;
+                else if ( (L"isometricRightDown")					== sValue ) this->m_eValue = presetcameratypeIsometricRightDown;
+                else if ( (L"isometricRightUp")					== sValue ) this->m_eValue = presetcameratypeIsometricRightUp;
+                else if ( (L"isometricTopDown")					== sValue ) this->m_eValue = presetcameratypeIsometricTopDown;
+                else if ( (L"isometricTopUp")						== sValue ) this->m_eValue = presetcameratypeIsometricTopUp;
 				break;
 			case 'l':
-                if      ( (L"legacyObliqueBottom")					== sValue ) m_eValue = presetcameratypeLegacyObliqueBottom;
-                else if ( (L"legacyObliqueBottomLeft")				== sValue ) m_eValue = presetcameratypeLegacyObliqueBottomLeft;
-                else if ( (L"legacyObliqueBottomRight")			== sValue ) m_eValue = presetcameratypeLegacyObliqueBottomRight;
-                else if ( (L"legacyObliqueFront")					== sValue ) m_eValue = presetcameratypeLegacyObliqueFront;
-                else if ( (L"legacyObliqueLeft")					== sValue ) m_eValue = presetcameratypeLegacyObliqueLeft;
-                else if ( (L"legacyObliqueRight")					== sValue ) m_eValue = presetcameratypeLegacyObliqueRight;
-                else if ( (L"legacyObliqueTop")					== sValue ) m_eValue = presetcameratypeLegacyObliqueTop;
-                else if ( (L"legacyObliqueTopLeft")				== sValue ) m_eValue = presetcameratypeLegacyObliqueTopLeft;
-                else if ( (L"legacyObliqueTopRight")				== sValue ) m_eValue = presetcameratypeLegacyObliqueTopRight;
-                else if ( (L"legacyPerspectiveBottom")				== sValue ) m_eValue = presetcameratypeLegacyPerspectiveBottom;
-                else if ( (L"legacyPerspectiveBottomLeft")			== sValue ) m_eValue = presetcameratypeLegacyPerspectiveBottomLeft;
-                else if ( (L"legacyPerspectiveBottomRight")		== sValue ) m_eValue = presetcameratypeLegacyPerspectiveBottomRight;
-                else if ( (L"legacyPerspectiveFront")				== sValue ) m_eValue = presetcameratypeLegacyPerspectiveFront;
-                else if ( (L"legacyPerspectiveLeft")				== sValue ) m_eValue = presetcameratypeLegacyPerspectiveLeft;
-                else if ( (L"legacyPerspectiveRight")				== sValue ) m_eValue = presetcameratypeLegacyPerspectiveRight;
-                else if ( (L"legacyPerspectiveTop")				== sValue ) m_eValue = presetcameratypeLegacyPerspectiveTop;
-                else if ( (L"legacyPerspectiveTopLeft")			== sValue ) m_eValue = presetcameratypeLegacyPerspectiveTopLeft;
-                else if ( (L"legacyPerspectiveTopRight")			== sValue ) m_eValue = presetcameratypeLegacyPerspectiveTopRight;
+                if      ( (L"legacyObliqueBottom")					== sValue ) this->m_eValue = presetcameratypeLegacyObliqueBottom;
+                else if ( (L"legacyObliqueBottomLeft")				== sValue ) this->m_eValue = presetcameratypeLegacyObliqueBottomLeft;
+                else if ( (L"legacyObliqueBottomRight")			== sValue ) this->m_eValue = presetcameratypeLegacyObliqueBottomRight;
+                else if ( (L"legacyObliqueFront")					== sValue ) this->m_eValue = presetcameratypeLegacyObliqueFront;
+                else if ( (L"legacyObliqueLeft")					== sValue ) this->m_eValue = presetcameratypeLegacyObliqueLeft;
+                else if ( (L"legacyObliqueRight")					== sValue ) this->m_eValue = presetcameratypeLegacyObliqueRight;
+                else if ( (L"legacyObliqueTop")					== sValue ) this->m_eValue = presetcameratypeLegacyObliqueTop;
+                else if ( (L"legacyObliqueTopLeft")				== sValue ) this->m_eValue = presetcameratypeLegacyObliqueTopLeft;
+                else if ( (L"legacyObliqueTopRight")				== sValue ) this->m_eValue = presetcameratypeLegacyObliqueTopRight;
+                else if ( (L"legacyPerspectiveBottom")				== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveBottom;
+                else if ( (L"legacyPerspectiveBottomLeft")			== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveBottomLeft;
+                else if ( (L"legacyPerspectiveBottomRight")		== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveBottomRight;
+                else if ( (L"legacyPerspectiveFront")				== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveFront;
+                else if ( (L"legacyPerspectiveLeft")				== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveLeft;
+                else if ( (L"legacyPerspectiveRight")				== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveRight;
+                else if ( (L"legacyPerspectiveTop")				== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveTop;
+                else if ( (L"legacyPerspectiveTopLeft")			== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveTopLeft;
+                else if ( (L"legacyPerspectiveTopRight")			== sValue ) this->m_eValue = presetcameratypeLegacyPerspectiveTopRight;
 				break;
 			case 'o':
-                if      ( (L"obliqueBottom")						== sValue ) m_eValue = presetcameratypeObliqueBottom;
-                else if ( (L"obliqueBottomLeft")					== sValue ) m_eValue = presetcameratypeObliqueBottomLeft;
-                else if ( (L"obliqueBottomRight")					== sValue ) m_eValue = presetcameratypeObliqueBottomRight;
-                else if ( (L"obliqueLeft")							== sValue ) m_eValue = presetcameratypeObliqueLeft;
-                else if ( (L"obliqueRight")						== sValue ) m_eValue = presetcameratypeObliqueRight;
-                else if ( (L"obliqueTop")							== sValue ) m_eValue = presetcameratypeObliqueTop;
-                else if ( (L"obliqueTopLeft")						== sValue ) m_eValue = presetcameratypeObliqueTopLeft;
-                else if ( (L"obliqueTopRight")						== sValue ) m_eValue = presetcameratypeObliqueTopRight;
-                else if ( (L"orthographicFront")					== sValue ) m_eValue = presetcameratypeOrthographicFront;
+                if      ( (L"obliqueBottom")						== sValue ) this->m_eValue = presetcameratypeObliqueBottom;
+                else if ( (L"obliqueBottomLeft")					== sValue ) this->m_eValue = presetcameratypeObliqueBottomLeft;
+                else if ( (L"obliqueBottomRight")					== sValue ) this->m_eValue = presetcameratypeObliqueBottomRight;
+                else if ( (L"obliqueLeft")							== sValue ) this->m_eValue = presetcameratypeObliqueLeft;
+                else if ( (L"obliqueRight")						== sValue ) this->m_eValue = presetcameratypeObliqueRight;
+                else if ( (L"obliqueTop")							== sValue ) this->m_eValue = presetcameratypeObliqueTop;
+                else if ( (L"obliqueTopLeft")						== sValue ) this->m_eValue = presetcameratypeObliqueTopLeft;
+                else if ( (L"obliqueTopRight")						== sValue ) this->m_eValue = presetcameratypeObliqueTopRight;
+                else if ( (L"orthographicFront")					== sValue ) this->m_eValue = presetcameratypeOrthographicFront;
 				break;
 			case 'p':
-                if      ( (L"perspectiveAbove")					== sValue ) m_eValue = presetcameratypePerspectiveAbove;
-                else if ( (L"perspectiveAboveLeftFacing")			== sValue ) m_eValue = presetcameratypePerspectiveAboveLeftFacing;
-                else if ( (L"perspectiveAboveRightFacing")			== sValue ) m_eValue = presetcameratypePerspectiveAboveRightFacing;
-                else if ( (L"perspectiveBelow")					== sValue ) m_eValue = presetcameratypePerspectiveBelow;
-                else if ( (L"perspectiveContrastingLeftFacing")	== sValue ) m_eValue = presetcameratypePerspectiveContrastingLeftFacing;
-                else if ( (L"perspectiveContrastingRightFacing")	== sValue ) m_eValue = presetcameratypePerspectiveContrastingRightFacing;
-                else if ( (L"perspectiveFront")			        == sValue ) m_eValue = presetcameratypePerspectiveFront;
-                else if ( (L"perspectiveHeroicExtremeLeftFacing")	== sValue ) m_eValue = presetcameratypePerspectiveHeroicExtremeLeftFacing;
-                else if ( (L"perspectiveHeroicExtremeRightFacing") == sValue ) m_eValue = presetcameratypePerspectiveHeroicExtremeRightFacing;
-                else if ( (L"perspectiveHeroicLeftFacing")			== sValue ) m_eValue = presetcameratypePerspectiveHeroicLeftFacing;
-                else if ( (L"perspectiveHeroicRightFacing")		== sValue ) m_eValue = presetcameratypePerspectiveHeroicRightFacing;
-                else if ( (L"perspectiveLeft")						== sValue ) m_eValue = presetcameratypePerspectiveLeft;
-                else if ( (L"perspectiveRelaxed")					== sValue ) m_eValue = presetcameratypePerspectiveRelaxed;
-                else if ( (L"perspectiveRelaxedModerately")		== sValue ) m_eValue = presetcameratypePerspectiveRelaxedModerately;
-                else if ( (L"perspectiveRight")					== sValue ) m_eValue = presetcameratypePerspectiveRight;
+                if      ( (L"perspectiveAbove")					== sValue ) this->m_eValue = presetcameratypePerspectiveAbove;
+                else if ( (L"perspectiveAboveLeftFacing")			== sValue ) this->m_eValue = presetcameratypePerspectiveAboveLeftFacing;
+                else if ( (L"perspectiveAboveRightFacing")			== sValue ) this->m_eValue = presetcameratypePerspectiveAboveRightFacing;
+                else if ( (L"perspectiveBelow")					== sValue ) this->m_eValue = presetcameratypePerspectiveBelow;
+                else if ( (L"perspectiveContrastingLeftFacing")	== sValue ) this->m_eValue = presetcameratypePerspectiveContrastingLeftFacing;
+                else if ( (L"perspectiveContrastingRightFacing")	== sValue ) this->m_eValue = presetcameratypePerspectiveContrastingRightFacing;
+                else if ( (L"perspectiveFront")			        == sValue ) this->m_eValue = presetcameratypePerspectiveFront;
+                else if ( (L"perspectiveHeroicExtremeLeftFacing")	== sValue ) this->m_eValue = presetcameratypePerspectiveHeroicExtremeLeftFacing;
+                else if ( (L"perspectiveHeroicExtremeRightFacing") == sValue ) this->m_eValue = presetcameratypePerspectiveHeroicExtremeRightFacing;
+                else if ( (L"perspectiveHeroicLeftFacing")			== sValue ) this->m_eValue = presetcameratypePerspectiveHeroicLeftFacing;
+                else if ( (L"perspectiveHeroicRightFacing")		== sValue ) this->m_eValue = presetcameratypePerspectiveHeroicRightFacing;
+                else if ( (L"perspectiveLeft")						== sValue ) this->m_eValue = presetcameratypePerspectiveLeft;
+                else if ( (L"perspectiveRelaxed")					== sValue ) this->m_eValue = presetcameratypePerspectiveRelaxed;
+                else if ( (L"perspectiveRelaxedModerately")		== sValue ) this->m_eValue = presetcameratypePerspectiveRelaxedModerately;
+                else if ( (L"perspectiveRight")					== sValue ) this->m_eValue = presetcameratypePerspectiveRight;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring           ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetcameratypeIsometricBottomDown: return (L"isometricBottomDown"); // (Isometric Bottom Down) 
 			case presetcameratypeIsometricBottomUp: return (L"isometricBottomUp"); // (Isometric Bottom Up) 
@@ -2643,253 +2642,253 @@ namespace SimpleTypes
 
         virtual EPresetColorVal FromString(std::wstring &sValue)
 		{
-            m_eValue = presetcolorvalBlack;
+            this->m_eValue = presetcolorvalBlack;
 			SetRGBA( 0, 0, 0, 255 );
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( (L"aliceBlue")			== sValue ) { m_eValue = presetcolorvalAliceBlue; SetRGBA(240,248,255); }
-                else if ( (L"antiqueWhite")		== sValue ) { m_eValue = presetcolorvalAntiqueWhite; SetRGBA(250,235,215); }
-                else if ( (L"aqua")				== sValue ) { m_eValue = presetcolorvalAqua; SetRGBA(0,255,255); }
-                else if ( (L"aquamarine")			== sValue ) { m_eValue = presetcolorvalAquamarine; SetRGBA(127,255,212); }
-                else if ( (L"azure")				== sValue ) { m_eValue = presetcolorvalAzure; SetRGBA(240,255,255); }
+                if      ( (L"aliceBlue")			== sValue ) { this->m_eValue = presetcolorvalAliceBlue; SetRGBA(240,248,255); }
+                else if ( (L"antiqueWhite")		== sValue ) { this->m_eValue = presetcolorvalAntiqueWhite; SetRGBA(250,235,215); }
+                else if ( (L"aqua")				== sValue ) { this->m_eValue = presetcolorvalAqua; SetRGBA(0,255,255); }
+                else if ( (L"aquamarine")			== sValue ) { this->m_eValue = presetcolorvalAquamarine; SetRGBA(127,255,212); }
+                else if ( (L"azure")				== sValue ) { this->m_eValue = presetcolorvalAzure; SetRGBA(240,255,255); }
 				break;
 			case 'b':
-                if      ( (L"beige")				== sValue ) { m_eValue = presetcolorvalBeige; SetRGBA(245,245,220); }
-                else if ( (L"bisque")				== sValue ) { m_eValue = presetcolorvalBisque ; SetRGBA(255,228,196); }
-                else if ( (L"black")				== sValue ) { m_eValue = presetcolorvalBlack ; SetRGBA(0,0,0); }
-                else if ( (L"blanchedAlmond")		== sValue ) { m_eValue = presetcolorvalBlanchedAlmond ; SetRGBA(255,235,205); }
-                else if ( (L"blue")				== sValue ) { m_eValue = presetcolorvalBlue ; SetRGBA(0,0,255); }
-                else if ( (L"blueViolet")			== sValue ) { m_eValue = presetcolorvalBlueViolet ; SetRGBA(138,43,226); }
-                else if ( (L"brown")				== sValue ) { m_eValue = presetcolorvalBrown ; SetRGBA(165,42,42); }
-                else if ( (L"burlyWood")			== sValue ) { m_eValue = presetcolorvalBurlyWood ; SetRGBA(222,184,135); }
+                if      ( (L"beige")				== sValue ) { this->m_eValue = presetcolorvalBeige; SetRGBA(245,245,220); }
+                else if ( (L"bisque")				== sValue ) { this->m_eValue = presetcolorvalBisque ; SetRGBA(255,228,196); }
+                else if ( (L"black")				== sValue ) { this->m_eValue = presetcolorvalBlack ; SetRGBA(0,0,0); }
+                else if ( (L"blanchedAlmond")		== sValue ) { this->m_eValue = presetcolorvalBlanchedAlmond ; SetRGBA(255,235,205); }
+                else if ( (L"blue")				== sValue ) { this->m_eValue = presetcolorvalBlue ; SetRGBA(0,0,255); }
+                else if ( (L"blueViolet")			== sValue ) { this->m_eValue = presetcolorvalBlueViolet ; SetRGBA(138,43,226); }
+                else if ( (L"brown")				== sValue ) { this->m_eValue = presetcolorvalBrown ; SetRGBA(165,42,42); }
+                else if ( (L"burlyWood")			== sValue ) { this->m_eValue = presetcolorvalBurlyWood ; SetRGBA(222,184,135); }
 				break;
 			case 'c':
-                if      ( (L"cadetBlue")			== sValue ) { m_eValue = presetcolorvalCadetBlue ; SetRGBA(95,158,160); }
-                else if ( (L"chartreuse")			== sValue ) { m_eValue = presetcolorvalChartreuse ; SetRGBA(127,255,0); }
-                else if ( (L"chocolate")			== sValue ) { m_eValue = presetcolorvalChocolate ; SetRGBA(210,105,30); }
-                else if ( (L"coral")				== sValue ) { m_eValue = presetcolorvalCoral ; SetRGBA(255,127,80); }
-                else if ( (L"cornflowerBlue")		== sValue ) { m_eValue = presetcolorvalCornflowerBlue ; SetRGBA(100,149,237); }
-                else if ( (L"cornsilk")			== sValue ) { m_eValue = presetcolorvalCornsilk ; SetRGBA(255,248,220); }
-                else if ( (L"crimson")				== sValue ) { m_eValue = presetcolorvalCrimson ; SetRGBA(220,20,60); }
-                else if ( (L"cyan")				== sValue ) { m_eValue = presetcolorvalCyan ; SetRGBA(0,255,255); }
+                if      ( (L"cadetBlue")			== sValue ) { this->m_eValue = presetcolorvalCadetBlue ; SetRGBA(95,158,160); }
+                else if ( (L"chartreuse")			== sValue ) { this->m_eValue = presetcolorvalChartreuse ; SetRGBA(127,255,0); }
+                else if ( (L"chocolate")			== sValue ) { this->m_eValue = presetcolorvalChocolate ; SetRGBA(210,105,30); }
+                else if ( (L"coral")				== sValue ) { this->m_eValue = presetcolorvalCoral ; SetRGBA(255,127,80); }
+                else if ( (L"cornflowerBlue")		== sValue ) { this->m_eValue = presetcolorvalCornflowerBlue ; SetRGBA(100,149,237); }
+                else if ( (L"cornsilk")			== sValue ) { this->m_eValue = presetcolorvalCornsilk ; SetRGBA(255,248,220); }
+                else if ( (L"crimson")				== sValue ) { this->m_eValue = presetcolorvalCrimson ; SetRGBA(220,20,60); }
+                else if ( (L"cyan")				== sValue ) { this->m_eValue = presetcolorvalCyan ; SetRGBA(0,255,255); }
 				break;
 			case 'd':
-                if      ( (L"darkBlue")			== sValue ) { m_eValue = presetcolorvalDarkBlue ; SetRGBA(0,0,139); }
-                else if ( (L"darkCyan")			== sValue ) { m_eValue = presetcolorvalDarkCyan ; SetRGBA(0,139,139); }
-                else if ( (L"darkGoldenrod")		== sValue ) { m_eValue = presetcolorvalDarkGoldenrod ; SetRGBA(184,134,11); }
-                else if ( (L"darkGray")			== sValue ) { m_eValue = presetcolorvalDarkGray ; SetRGBA(169,169,169); }
-                else if ( (L"darkGreen")			== sValue ) { m_eValue = presetcolorvalDarkGreen ; SetRGBA(0,100,0); }
-                else if ( (L"darkGrey")			== sValue ) { m_eValue = presetcolorvalDarkGrey ; SetRGBA(169,169,169); }
-                else if ( (L"darkKhaki")			== sValue ) { m_eValue = presetcolorvalDarkKhaki ; SetRGBA(189,183,107); }
-                else if ( (L"darkMagenta")			== sValue ) { m_eValue = presetcolorvalDarkMagenta ; SetRGBA(139,0,139); }
-                else if ( (L"darkOliveGreen")		== sValue ) { m_eValue = presetcolorvalDarkOliveGreen ; SetRGBA(85,107,47); }
-                else if ( (L"darkOrange")			== sValue ) { m_eValue = presetcolorvalDarkOrange ; SetRGBA(255,140,0); }
-                else if ( (L"darkOrchid")			== sValue ) { m_eValue = presetcolorvalDarkOrchid ; SetRGBA(153,50,204); }
-                else if ( (L"darkRed")				== sValue ) { m_eValue = presetcolorvalDarkRed ; SetRGBA(139,0,0); }
-                else if ( (L"darkSalmon")			== sValue ) { m_eValue = presetcolorvalDarkSalmon ; SetRGBA(233,150,122); }
-                else if ( (L"darkSeaGreen")		== sValue ) { m_eValue = presetcolorvalDarkSeaGreen ; SetRGBA(143,188,143); }
-                else if ( (L"darkSlateBlue")		== sValue ) { m_eValue = presetcolorvalDarkSlateBlue ; SetRGBA(72,61,139); }
-                else if ( (L"darkSlateGray")		== sValue ) { m_eValue = presetcolorvalDarkSlateGray ; SetRGBA(47,79,79); }
-                else if ( (L"darkSlateGrey")		== sValue ) { m_eValue = presetcolorvalDarkSlateGrey ; SetRGBA(47,79,79); }
-                else if ( (L"darkTurquoise")		== sValue ) { m_eValue = presetcolorvalDarkTurquoise ; SetRGBA(0,206,209); }
-                else if ( (L"darkViolet")			== sValue ) { m_eValue = presetcolorvalDarkViolet ; SetRGBA(148,0,211); }
-                else if ( (L"deepPink")			== sValue ) { m_eValue = presetcolorvalDeepPink ; SetRGBA(255,20,147); }
-                else if ( (L"deepSkyBlue")			== sValue ) { m_eValue = presetcolorvalDeepSkyBlue ; SetRGBA(0,191,255); }
-                else if ( (L"dimGray")				== sValue ) { m_eValue = presetcolorvalDimGray ; SetRGBA(105,105,105); }
-                else if ( (L"dimGrey")				== sValue ) { m_eValue = presetcolorvalDimGrey ; SetRGBA(105,105,105); }
-                else if ( (L"dkBlue")				== sValue ) { m_eValue = presetcolorvalDkBlue ; SetRGBA(0,0,139); }
-                else if ( (L"dkCyan")				== sValue ) { m_eValue = presetcolorvalDkCyan ; SetRGBA(0,139,139); }
-                else if ( (L"dkGoldenrod")			== sValue ) { m_eValue = presetcolorvalDkGoldenrod ; SetRGBA(184,134,11); }
-                else if ( (L"dkGray")				== sValue ) { m_eValue = presetcolorvalDkGray ; SetRGBA(169,169,169); }
-                else if ( (L"dkGreen")				== sValue ) { m_eValue = presetcolorvalDkGreen ; SetRGBA(0,100,0); }
-                else if ( (L"dkGrey")				== sValue ) { m_eValue = presetcolorvalDkGrey ; SetRGBA(169,169,169); }
-                else if ( (L"dkKhaki")				== sValue ) { m_eValue = presetcolorvalDkKhaki ; SetRGBA(189,183,107); }
-                else if ( (L"dkMagenta")			== sValue ) { m_eValue = presetcolorvalDkMagenta ; SetRGBA(139,0,139); }
-                else if ( (L"dkOliveGreen")		== sValue ) { m_eValue = presetcolorvalDkOliveGreen ; SetRGBA(85,107,47); }
-                else if ( (L"dkOrange")			== sValue ) { m_eValue = presetcolorvalDkOrange ; SetRGBA(255,140,0); }
-                else if ( (L"dkOrchid")			== sValue ) { m_eValue = presetcolorvalDkOrchid ; SetRGBA(153,50,204); }
-                else if ( (L"dkRed")				== sValue ) { m_eValue = presetcolorvalDkRed ; SetRGBA(139,0,0); }
-                else if ( (L"dkSalmon")			== sValue ) { m_eValue = presetcolorvalDkSalmon ; SetRGBA(233,150,122); }
-                else if ( (L"dkSeaGreen")			== sValue ) { m_eValue = presetcolorvalDkSeaGreen ; SetRGBA(143,188,139); }
-                else if ( (L"dkSlateBlue")			== sValue ) { m_eValue = presetcolorvalDkSlateBlue ; SetRGBA(72,61,139); }
-                else if ( (L"dkSlateGray")			== sValue ) { m_eValue = presetcolorvalDkSlateGray ; SetRGBA(47,79,79); }
-                else if ( (L"dkSlateGrey")			== sValue ) { m_eValue = presetcolorvalDkSlateGrey ; SetRGBA(47,79,79); }
-                else if ( (L"dkTurquoise")			== sValue ) { m_eValue = presetcolorvalDkTurquoise ; SetRGBA(0,206,209); }
-                else if ( (L"dkViolet")			== sValue ) { m_eValue = presetcolorvalDkViolet ; SetRGBA(148,0,211); }
-                else if ( (L"dodgerBlue")			== sValue ) { m_eValue = presetcolorvalDodgerBlue ; SetRGBA(30,144,255); }
+                if      ( (L"darkBlue")			== sValue ) { this->m_eValue = presetcolorvalDarkBlue ; SetRGBA(0,0,139); }
+                else if ( (L"darkCyan")			== sValue ) { this->m_eValue = presetcolorvalDarkCyan ; SetRGBA(0,139,139); }
+                else if ( (L"darkGoldenrod")		== sValue ) { this->m_eValue = presetcolorvalDarkGoldenrod ; SetRGBA(184,134,11); }
+                else if ( (L"darkGray")			== sValue ) { this->m_eValue = presetcolorvalDarkGray ; SetRGBA(169,169,169); }
+                else if ( (L"darkGreen")			== sValue ) { this->m_eValue = presetcolorvalDarkGreen ; SetRGBA(0,100,0); }
+                else if ( (L"darkGrey")			== sValue ) { this->m_eValue = presetcolorvalDarkGrey ; SetRGBA(169,169,169); }
+                else if ( (L"darkKhaki")			== sValue ) { this->m_eValue = presetcolorvalDarkKhaki ; SetRGBA(189,183,107); }
+                else if ( (L"darkMagenta")			== sValue ) { this->m_eValue = presetcolorvalDarkMagenta ; SetRGBA(139,0,139); }
+                else if ( (L"darkOliveGreen")		== sValue ) { this->m_eValue = presetcolorvalDarkOliveGreen ; SetRGBA(85,107,47); }
+                else if ( (L"darkOrange")			== sValue ) { this->m_eValue = presetcolorvalDarkOrange ; SetRGBA(255,140,0); }
+                else if ( (L"darkOrchid")			== sValue ) { this->m_eValue = presetcolorvalDarkOrchid ; SetRGBA(153,50,204); }
+                else if ( (L"darkRed")				== sValue ) { this->m_eValue = presetcolorvalDarkRed ; SetRGBA(139,0,0); }
+                else if ( (L"darkSalmon")			== sValue ) { this->m_eValue = presetcolorvalDarkSalmon ; SetRGBA(233,150,122); }
+                else if ( (L"darkSeaGreen")		== sValue ) { this->m_eValue = presetcolorvalDarkSeaGreen ; SetRGBA(143,188,143); }
+                else if ( (L"darkSlateBlue")		== sValue ) { this->m_eValue = presetcolorvalDarkSlateBlue ; SetRGBA(72,61,139); }
+                else if ( (L"darkSlateGray")		== sValue ) { this->m_eValue = presetcolorvalDarkSlateGray ; SetRGBA(47,79,79); }
+                else if ( (L"darkSlateGrey")		== sValue ) { this->m_eValue = presetcolorvalDarkSlateGrey ; SetRGBA(47,79,79); }
+                else if ( (L"darkTurquoise")		== sValue ) { this->m_eValue = presetcolorvalDarkTurquoise ; SetRGBA(0,206,209); }
+                else if ( (L"darkViolet")			== sValue ) { this->m_eValue = presetcolorvalDarkViolet ; SetRGBA(148,0,211); }
+                else if ( (L"deepPink")			== sValue ) { this->m_eValue = presetcolorvalDeepPink ; SetRGBA(255,20,147); }
+                else if ( (L"deepSkyBlue")			== sValue ) { this->m_eValue = presetcolorvalDeepSkyBlue ; SetRGBA(0,191,255); }
+                else if ( (L"dimGray")				== sValue ) { this->m_eValue = presetcolorvalDimGray ; SetRGBA(105,105,105); }
+                else if ( (L"dimGrey")				== sValue ) { this->m_eValue = presetcolorvalDimGrey ; SetRGBA(105,105,105); }
+                else if ( (L"dkBlue")				== sValue ) { this->m_eValue = presetcolorvalDkBlue ; SetRGBA(0,0,139); }
+                else if ( (L"dkCyan")				== sValue ) { this->m_eValue = presetcolorvalDkCyan ; SetRGBA(0,139,139); }
+                else if ( (L"dkGoldenrod")			== sValue ) { this->m_eValue = presetcolorvalDkGoldenrod ; SetRGBA(184,134,11); }
+                else if ( (L"dkGray")				== sValue ) { this->m_eValue = presetcolorvalDkGray ; SetRGBA(169,169,169); }
+                else if ( (L"dkGreen")				== sValue ) { this->m_eValue = presetcolorvalDkGreen ; SetRGBA(0,100,0); }
+                else if ( (L"dkGrey")				== sValue ) { this->m_eValue = presetcolorvalDkGrey ; SetRGBA(169,169,169); }
+                else if ( (L"dkKhaki")				== sValue ) { this->m_eValue = presetcolorvalDkKhaki ; SetRGBA(189,183,107); }
+                else if ( (L"dkMagenta")			== sValue ) { this->m_eValue = presetcolorvalDkMagenta ; SetRGBA(139,0,139); }
+                else if ( (L"dkOliveGreen")		== sValue ) { this->m_eValue = presetcolorvalDkOliveGreen ; SetRGBA(85,107,47); }
+                else if ( (L"dkOrange")			== sValue ) { this->m_eValue = presetcolorvalDkOrange ; SetRGBA(255,140,0); }
+                else if ( (L"dkOrchid")			== sValue ) { this->m_eValue = presetcolorvalDkOrchid ; SetRGBA(153,50,204); }
+                else if ( (L"dkRed")				== sValue ) { this->m_eValue = presetcolorvalDkRed ; SetRGBA(139,0,0); }
+                else if ( (L"dkSalmon")			== sValue ) { this->m_eValue = presetcolorvalDkSalmon ; SetRGBA(233,150,122); }
+                else if ( (L"dkSeaGreen")			== sValue ) { this->m_eValue = presetcolorvalDkSeaGreen ; SetRGBA(143,188,139); }
+                else if ( (L"dkSlateBlue")			== sValue ) { this->m_eValue = presetcolorvalDkSlateBlue ; SetRGBA(72,61,139); }
+                else if ( (L"dkSlateGray")			== sValue ) { this->m_eValue = presetcolorvalDkSlateGray ; SetRGBA(47,79,79); }
+                else if ( (L"dkSlateGrey")			== sValue ) { this->m_eValue = presetcolorvalDkSlateGrey ; SetRGBA(47,79,79); }
+                else if ( (L"dkTurquoise")			== sValue ) { this->m_eValue = presetcolorvalDkTurquoise ; SetRGBA(0,206,209); }
+                else if ( (L"dkViolet")			== sValue ) { this->m_eValue = presetcolorvalDkViolet ; SetRGBA(148,0,211); }
+                else if ( (L"dodgerBlue")			== sValue ) { this->m_eValue = presetcolorvalDodgerBlue ; SetRGBA(30,144,255); }
 				break;
 			case 'f':
-                if      ( (L"firebrick")			== sValue ) { m_eValue = presetcolorvalFirebrick ; SetRGBA(178,34,34); }
-                else if ( (L"floralWhite")			== sValue ) { m_eValue = presetcolorvalFloralWhite ; SetRGBA(255,250,240); }
-                else if ( (L"forestGreen")			== sValue ) { m_eValue = presetcolorvalForestGreen ; SetRGBA(34,139,34); }
-                else if ( (L"fuchsia")				== sValue ) { m_eValue = presetcolorvalFuchsia ; SetRGBA(255,0,255); }
+                if      ( (L"firebrick")			== sValue ) { this->m_eValue = presetcolorvalFirebrick ; SetRGBA(178,34,34); }
+                else if ( (L"floralWhite")			== sValue ) { this->m_eValue = presetcolorvalFloralWhite ; SetRGBA(255,250,240); }
+                else if ( (L"forestGreen")			== sValue ) { this->m_eValue = presetcolorvalForestGreen ; SetRGBA(34,139,34); }
+                else if ( (L"fuchsia")				== sValue ) { this->m_eValue = presetcolorvalFuchsia ; SetRGBA(255,0,255); }
 				break;
 			case 'g':
-                if      ( (L"gainsboro")			== sValue ) { m_eValue = presetcolorvalGainsboro ; SetRGBA(220,220,220); }
-                else if ( (L"ghostWhite")			== sValue ) { m_eValue = presetcolorvalGhostWhite ; SetRGBA(248,248,255); }
-                else if ( (L"gold")				== sValue ) { m_eValue = presetcolorvalGold ; SetRGBA(255,215,0); }
-                else if ( (L"goldenrod")			== sValue ) { m_eValue = presetcolorvalGoldenrod ; SetRGBA(218,165,32); }
-                else if ( (L"gray")				== sValue ) { m_eValue = presetcolorvalGray ; SetRGBA(128,128,128); }
-                else if ( (L"green")				== sValue ) { m_eValue = presetcolorvalGreen ; SetRGBA(0,128,0); }
-                else if ( (L"greenYellow")			== sValue ) { m_eValue = presetcolorvalGreenYellow ; SetRGBA(173,255,47); }
-                else if ( (L"grey")				== sValue ) { m_eValue = presetcolorvalGrey ; SetRGBA(128,128,128); }
+                if      ( (L"gainsboro")			== sValue ) { this->m_eValue = presetcolorvalGainsboro ; SetRGBA(220,220,220); }
+                else if ( (L"ghostWhite")			== sValue ) { this->m_eValue = presetcolorvalGhostWhite ; SetRGBA(248,248,255); }
+                else if ( (L"gold")				== sValue ) { this->m_eValue = presetcolorvalGold ; SetRGBA(255,215,0); }
+                else if ( (L"goldenrod")			== sValue ) { this->m_eValue = presetcolorvalGoldenrod ; SetRGBA(218,165,32); }
+                else if ( (L"gray")				== sValue ) { this->m_eValue = presetcolorvalGray ; SetRGBA(128,128,128); }
+                else if ( (L"green")				== sValue ) { this->m_eValue = presetcolorvalGreen ; SetRGBA(0,128,0); }
+                else if ( (L"greenYellow")			== sValue ) { this->m_eValue = presetcolorvalGreenYellow ; SetRGBA(173,255,47); }
+                else if ( (L"grey")				== sValue ) { this->m_eValue = presetcolorvalGrey ; SetRGBA(128,128,128); }
 				break;
 			case 'h':
-                if      ( (L"honeydew")			== sValue ) { m_eValue = presetcolorvalHoneydew ; SetRGBA(240,255,240); }
-                else if ( (L"hotPink")				== sValue ) { m_eValue = presetcolorvalHotPink ; SetRGBA(255,105,180); }
+                if      ( (L"honeydew")			== sValue ) { this->m_eValue = presetcolorvalHoneydew ; SetRGBA(240,255,240); }
+                else if ( (L"hotPink")				== sValue ) { this->m_eValue = presetcolorvalHotPink ; SetRGBA(255,105,180); }
 				break;
 			case 'i':
-                if      ( (L"indianRed")			== sValue ) { m_eValue = presetcolorvalIndianRed ; SetRGBA(205,92,92); }
-                else if ( (L"indigo")				== sValue ) { m_eValue = presetcolorvalIndigo ; SetRGBA(75,0,130); }
-                else if ( (L"ivory")				== sValue ) { m_eValue = presetcolorvalIvory ; SetRGBA(255,255,240); }
+                if      ( (L"indianRed")			== sValue ) { this->m_eValue = presetcolorvalIndianRed ; SetRGBA(205,92,92); }
+                else if ( (L"indigo")				== sValue ) { this->m_eValue = presetcolorvalIndigo ; SetRGBA(75,0,130); }
+                else if ( (L"ivory")				== sValue ) { this->m_eValue = presetcolorvalIvory ; SetRGBA(255,255,240); }
 				break;
 			case 'k':
-                if      ( (L"khaki")				== sValue ) { m_eValue = presetcolorvalKhaki ; SetRGBA(240,230,140); }
+                if      ( (L"khaki")				== sValue ) { this->m_eValue = presetcolorvalKhaki ; SetRGBA(240,230,140); }
 				break;
 			case 'l':
-                if      ( (L"lavender")			== sValue ) { m_eValue = presetcolorvalLavender ; SetRGBA(230,230,250); }
-                else if ( (L"lavenderBlush")		== sValue ) { m_eValue = presetcolorvalLavenderBlush ; SetRGBA(255,240,245); }
-                else if ( (L"lawnGreen")			== sValue ) { m_eValue = presetcolorvalLawnGreen ; SetRGBA(124,252,0); }
-                else if ( (L"lemonChiffon")		== sValue ) { m_eValue = presetcolorvalLemonChiffon ; SetRGBA(255,250,205); }
-                else if ( (L"lightBlue")			== sValue ) { m_eValue = presetcolorvalLightBlue ; SetRGBA(173,216,230); }
-                else if ( (L"lightCoral")			== sValue ) { m_eValue = presetcolorvalLightCoral ; SetRGBA(240,128,128); }
-                else if ( (L"lightCyan")			== sValue ) { m_eValue = presetcolorvalLightCyan ; SetRGBA(224,255,255); }
-                else if ( (L"lightGoldenrodYellow")== sValue ) { m_eValue = presetcolorvalLightGoldenrodYellow; SetRGBA(250,250,210); }
-                else if ( (L"lightGray")			== sValue ) { m_eValue = presetcolorvalLightGray ; SetRGBA(211,211,211); }
-                else if ( (L"lightGreen")			== sValue ) { m_eValue = presetcolorvalLightGreen ; SetRGBA(144,238,144); }
-                else if ( (L"lightGrey")			== sValue ) { m_eValue = presetcolorvalLightGrey ; SetRGBA(211,211,211); }
-                else if ( (L"lightPink")			== sValue ) { m_eValue = presetcolorvalLightPink ; SetRGBA(255,182,193); }
-                else if ( (L"lightSalmon")			== sValue ) { m_eValue = presetcolorvalLightSalmon ; SetRGBA(255,160,122); }
-                else if ( (L"lightSeaGreen")		== sValue ) { m_eValue = presetcolorvalLightSeaGreen ; SetRGBA(32,178,170); }
-                else if ( (L"lightSkyBlue")		== sValue ) { m_eValue = presetcolorvalLightSkyBlue ; SetRGBA(135,206,250); }
-                else if ( (L"lightSlateGray")		== sValue ) { m_eValue = presetcolorvalLightSlateGray ; SetRGBA(119,136,153); }
-                else if ( (L"lightSlateGrey")		== sValue ) { m_eValue = presetcolorvalLightSlateGrey ; SetRGBA(119,136,153); }
-                else if ( (L"lightSteelBlue")		== sValue ) { m_eValue = presetcolorvalLightSteelBlue ; SetRGBA(176,196,222); }
-                else if ( (L"lightYellow")			== sValue ) { m_eValue = presetcolorvalLightYellow ; SetRGBA(255,255,224); }
-                else if ( (L"lime")				== sValue ) { m_eValue = presetcolorvalLime ; SetRGBA(0,255,0); }
-                else if ( (L"limeGreen")			== sValue ) { m_eValue = presetcolorvalLimeGreen ; SetRGBA(50,205,50); }
-                else if ( (L"linen")				== sValue ) { m_eValue = presetcolorvalLinen; SetRGBA(250,240,230); }
-                else if ( (L"ltBlue")				== sValue ) { m_eValue = presetcolorvalLtBlue ; SetRGBA(173,216,230); }
-                else if ( (L"ltCoral")				== sValue ) { m_eValue = presetcolorvalLtCoral ; SetRGBA(240,128,128); }
-                else if ( (L"ltCyan")				== sValue ) { m_eValue = presetcolorvalLtCyan ; SetRGBA(224,255,255); }
-                else if ( (L"ltGoldenrodYellow")	== sValue ) { m_eValue = presetcolorvalLtGoldenrodYellow; SetRGBA(250,250,120); }
-                else if ( (L"ltGray")				== sValue ) { m_eValue = presetcolorvalLtGray ; SetRGBA(211,211,211); }
-                else if ( (L"ltGreen")				== sValue ) { m_eValue = presetcolorvalLtGreen ; SetRGBA(144,238,144); }
-                else if ( (L"ltGrey")				== sValue ) { m_eValue = presetcolorvalLtGrey ; SetRGBA(211,211,211); }
-                else if ( (L"ltPink")				== sValue ) { m_eValue = presetcolorvalLtPink ; SetRGBA(255,182,193); }
-                else if ( (L"ltSalmon")			== sValue ) { m_eValue = presetcolorvalLtSalmon ; SetRGBA(255,160,122); }
-                else if ( (L"ltSeaGreen")			== sValue ) { m_eValue = presetcolorvalLtSeaGreen ; SetRGBA(32,178,170); }
-                else if ( (L"ltSkyBlue")			== sValue ) { m_eValue = presetcolorvalLtSkyBlue ; SetRGBA(135,206,250); }
-                else if ( (L"ltSlateGray")			== sValue ) { m_eValue = presetcolorvalLtSlateGray ; SetRGBA(119,136,153); }
-                else if ( (L"ltSlateGrey")			== sValue ) { m_eValue = presetcolorvalLtSlateGrey ; SetRGBA(119,136,153); }
-                else if ( (L"ltSteelBlue")			== sValue ) { m_eValue = presetcolorvalLtSteelBlue ; SetRGBA(176,196,222); }
-                else if ( (L"ltYellow")			== sValue ) { m_eValue = presetcolorvalLtYellow ; SetRGBA(255,255,224); }
+                if      ( (L"lavender")			== sValue ) { this->m_eValue = presetcolorvalLavender ; SetRGBA(230,230,250); }
+                else if ( (L"lavenderBlush")		== sValue ) { this->m_eValue = presetcolorvalLavenderBlush ; SetRGBA(255,240,245); }
+                else if ( (L"lawnGreen")			== sValue ) { this->m_eValue = presetcolorvalLawnGreen ; SetRGBA(124,252,0); }
+                else if ( (L"lemonChiffon")		== sValue ) { this->m_eValue = presetcolorvalLemonChiffon ; SetRGBA(255,250,205); }
+                else if ( (L"lightBlue")			== sValue ) { this->m_eValue = presetcolorvalLightBlue ; SetRGBA(173,216,230); }
+                else if ( (L"lightCoral")			== sValue ) { this->m_eValue = presetcolorvalLightCoral ; SetRGBA(240,128,128); }
+                else if ( (L"lightCyan")			== sValue ) { this->m_eValue = presetcolorvalLightCyan ; SetRGBA(224,255,255); }
+                else if ( (L"lightGoldenrodYellow")== sValue ) { this->m_eValue = presetcolorvalLightGoldenrodYellow; SetRGBA(250,250,210); }
+                else if ( (L"lightGray")			== sValue ) { this->m_eValue = presetcolorvalLightGray ; SetRGBA(211,211,211); }
+                else if ( (L"lightGreen")			== sValue ) { this->m_eValue = presetcolorvalLightGreen ; SetRGBA(144,238,144); }
+                else if ( (L"lightGrey")			== sValue ) { this->m_eValue = presetcolorvalLightGrey ; SetRGBA(211,211,211); }
+                else if ( (L"lightPink")			== sValue ) { this->m_eValue = presetcolorvalLightPink ; SetRGBA(255,182,193); }
+                else if ( (L"lightSalmon")			== sValue ) { this->m_eValue = presetcolorvalLightSalmon ; SetRGBA(255,160,122); }
+                else if ( (L"lightSeaGreen")		== sValue ) { this->m_eValue = presetcolorvalLightSeaGreen ; SetRGBA(32,178,170); }
+                else if ( (L"lightSkyBlue")		== sValue ) { this->m_eValue = presetcolorvalLightSkyBlue ; SetRGBA(135,206,250); }
+                else if ( (L"lightSlateGray")		== sValue ) { this->m_eValue = presetcolorvalLightSlateGray ; SetRGBA(119,136,153); }
+                else if ( (L"lightSlateGrey")		== sValue ) { this->m_eValue = presetcolorvalLightSlateGrey ; SetRGBA(119,136,153); }
+                else if ( (L"lightSteelBlue")		== sValue ) { this->m_eValue = presetcolorvalLightSteelBlue ; SetRGBA(176,196,222); }
+                else if ( (L"lightYellow")			== sValue ) { this->m_eValue = presetcolorvalLightYellow ; SetRGBA(255,255,224); }
+                else if ( (L"lime")				== sValue ) { this->m_eValue = presetcolorvalLime ; SetRGBA(0,255,0); }
+                else if ( (L"limeGreen")			== sValue ) { this->m_eValue = presetcolorvalLimeGreen ; SetRGBA(50,205,50); }
+                else if ( (L"linen")				== sValue ) { this->m_eValue = presetcolorvalLinen; SetRGBA(250,240,230); }
+                else if ( (L"ltBlue")				== sValue ) { this->m_eValue = presetcolorvalLtBlue ; SetRGBA(173,216,230); }
+                else if ( (L"ltCoral")				== sValue ) { this->m_eValue = presetcolorvalLtCoral ; SetRGBA(240,128,128); }
+                else if ( (L"ltCyan")				== sValue ) { this->m_eValue = presetcolorvalLtCyan ; SetRGBA(224,255,255); }
+                else if ( (L"ltGoldenrodYellow")	== sValue ) { this->m_eValue = presetcolorvalLtGoldenrodYellow; SetRGBA(250,250,120); }
+                else if ( (L"ltGray")				== sValue ) { this->m_eValue = presetcolorvalLtGray ; SetRGBA(211,211,211); }
+                else if ( (L"ltGreen")				== sValue ) { this->m_eValue = presetcolorvalLtGreen ; SetRGBA(144,238,144); }
+                else if ( (L"ltGrey")				== sValue ) { this->m_eValue = presetcolorvalLtGrey ; SetRGBA(211,211,211); }
+                else if ( (L"ltPink")				== sValue ) { this->m_eValue = presetcolorvalLtPink ; SetRGBA(255,182,193); }
+                else if ( (L"ltSalmon")			== sValue ) { this->m_eValue = presetcolorvalLtSalmon ; SetRGBA(255,160,122); }
+                else if ( (L"ltSeaGreen")			== sValue ) { this->m_eValue = presetcolorvalLtSeaGreen ; SetRGBA(32,178,170); }
+                else if ( (L"ltSkyBlue")			== sValue ) { this->m_eValue = presetcolorvalLtSkyBlue ; SetRGBA(135,206,250); }
+                else if ( (L"ltSlateGray")			== sValue ) { this->m_eValue = presetcolorvalLtSlateGray ; SetRGBA(119,136,153); }
+                else if ( (L"ltSlateGrey")			== sValue ) { this->m_eValue = presetcolorvalLtSlateGrey ; SetRGBA(119,136,153); }
+                else if ( (L"ltSteelBlue")			== sValue ) { this->m_eValue = presetcolorvalLtSteelBlue ; SetRGBA(176,196,222); }
+                else if ( (L"ltYellow")			== sValue ) { this->m_eValue = presetcolorvalLtYellow ; SetRGBA(255,255,224); }
 				break;
 			case 'm':
-                if      ( (L"magenta")				== sValue ) { m_eValue = presetcolorvalMagenta ; SetRGBA(255,0,255); }
-                else if ( (L"maroon")				== sValue ) { m_eValue = presetcolorvalMaroon ; SetRGBA(128,0,0); }
-                else if ( (L"medAquamarine")		== sValue ) { m_eValue = presetcolorvalMedAquamarine ; SetRGBA(102,205,170); }
-                else if ( (L"medBlue")				== sValue ) { m_eValue = presetcolorvalMedBlue ; SetRGBA(0,0,205); }
-                else if ( (L"mediumAquamarine")	== sValue ) { m_eValue = presetcolorvalMediumAquamarine; SetRGBA(102,205,170); }
-                else if ( (L"mediumBlue")			== sValue ) { m_eValue = presetcolorvalMediumBlue ; SetRGBA(0,0,205); }
-                else if ( (L"mediumOrchid")		== sValue ) { m_eValue = presetcolorvalMediumOrchid ; SetRGBA(186,85,211); }
-                else if ( (L"mediumPurple")		== sValue ) { m_eValue = presetcolorvalMediumPurple ; SetRGBA(147,112,219); }
-                else if ( (L"mediumSeaGreen")		== sValue ) { m_eValue = presetcolorvalMediumSeaGreen ; SetRGBA(60,179,113); }
-                else if ( (L"mediumSlateBlue")		== sValue ) { m_eValue = presetcolorvalMediumSlateBlue ; SetRGBA(123,104,238); }
-                else if ( (L"mediumSpringGreen")	== sValue ) { m_eValue = presetcolorvalMediumSpringGreen; SetRGBA(0,250,154); }
-                else if ( (L"mediumTurquoise")		== sValue ) { m_eValue = presetcolorvalMediumTurquoise ; SetRGBA(72,209,204); }
-                else if ( (L"mediumVioletRed")		== sValue ) { m_eValue = presetcolorvalMediumVioletRed ; SetRGBA(199,21,133); }
-                else if ( (L"medOrchid")			== sValue ) { m_eValue = presetcolorvalMedOrchid ; SetRGBA(186,85,211); }
-                else if ( (L"medPurple")			== sValue ) { m_eValue = presetcolorvalMedPurple ; SetRGBA(147,112,219); }
-                else if ( (L"medSeaGreen")			== sValue ) { m_eValue = presetcolorvalMedSeaGreen ; SetRGBA(60,179,113); }
-                else if ( (L"medSlateBlue")		== sValue ) { m_eValue = presetcolorvalMedSlateBlue ; SetRGBA(123,104,238); }
-                else if ( (L"medSpringGreen")		== sValue ) { m_eValue = presetcolorvalMedSpringGreen ; SetRGBA(0,250,154); }
-                else if ( (L"medTurquoise")		== sValue ) { m_eValue = presetcolorvalMedTurquoise ; SetRGBA(72,209,204); }
-                else if ( (L"medVioletRed")		== sValue ) { m_eValue = presetcolorvalMedVioletRed ; SetRGBA(199,21,133); }
-                else if ( (L"midnightBlue")		== sValue ) { m_eValue = presetcolorvalMidnightBlue ; SetRGBA(25,25,112); }
-                else if ( (L"mintCream")			== sValue ) { m_eValue = presetcolorvalMintCream ; SetRGBA(245,255,250); }
-                else if ( (L"mistyRose")			== sValue ) { m_eValue = presetcolorvalMistyRose ; SetRGBA(255,228,225); }
-                else if ( (L"moccasin")			== sValue ) { m_eValue = presetcolorvalMoccasin ; SetRGBA(255,228,181); }
+                if      ( (L"magenta")				== sValue ) { this->m_eValue = presetcolorvalMagenta ; SetRGBA(255,0,255); }
+                else if ( (L"maroon")				== sValue ) { this->m_eValue = presetcolorvalMaroon ; SetRGBA(128,0,0); }
+                else if ( (L"medAquamarine")		== sValue ) { this->m_eValue = presetcolorvalMedAquamarine ; SetRGBA(102,205,170); }
+                else if ( (L"medBlue")				== sValue ) { this->m_eValue = presetcolorvalMedBlue ; SetRGBA(0,0,205); }
+                else if ( (L"mediumAquamarine")	== sValue ) { this->m_eValue = presetcolorvalMediumAquamarine; SetRGBA(102,205,170); }
+                else if ( (L"mediumBlue")			== sValue ) { this->m_eValue = presetcolorvalMediumBlue ; SetRGBA(0,0,205); }
+                else if ( (L"mediumOrchid")		== sValue ) { this->m_eValue = presetcolorvalMediumOrchid ; SetRGBA(186,85,211); }
+                else if ( (L"mediumPurple")		== sValue ) { this->m_eValue = presetcolorvalMediumPurple ; SetRGBA(147,112,219); }
+                else if ( (L"mediumSeaGreen")		== sValue ) { this->m_eValue = presetcolorvalMediumSeaGreen ; SetRGBA(60,179,113); }
+                else if ( (L"mediumSlateBlue")		== sValue ) { this->m_eValue = presetcolorvalMediumSlateBlue ; SetRGBA(123,104,238); }
+                else if ( (L"mediumSpringGreen")	== sValue ) { this->m_eValue = presetcolorvalMediumSpringGreen; SetRGBA(0,250,154); }
+                else if ( (L"mediumTurquoise")		== sValue ) { this->m_eValue = presetcolorvalMediumTurquoise ; SetRGBA(72,209,204); }
+                else if ( (L"mediumVioletRed")		== sValue ) { this->m_eValue = presetcolorvalMediumVioletRed ; SetRGBA(199,21,133); }
+                else if ( (L"medOrchid")			== sValue ) { this->m_eValue = presetcolorvalMedOrchid ; SetRGBA(186,85,211); }
+                else if ( (L"medPurple")			== sValue ) { this->m_eValue = presetcolorvalMedPurple ; SetRGBA(147,112,219); }
+                else if ( (L"medSeaGreen")			== sValue ) { this->m_eValue = presetcolorvalMedSeaGreen ; SetRGBA(60,179,113); }
+                else if ( (L"medSlateBlue")		== sValue ) { this->m_eValue = presetcolorvalMedSlateBlue ; SetRGBA(123,104,238); }
+                else if ( (L"medSpringGreen")		== sValue ) { this->m_eValue = presetcolorvalMedSpringGreen ; SetRGBA(0,250,154); }
+                else if ( (L"medTurquoise")		== sValue ) { this->m_eValue = presetcolorvalMedTurquoise ; SetRGBA(72,209,204); }
+                else if ( (L"medVioletRed")		== sValue ) { this->m_eValue = presetcolorvalMedVioletRed ; SetRGBA(199,21,133); }
+                else if ( (L"midnightBlue")		== sValue ) { this->m_eValue = presetcolorvalMidnightBlue ; SetRGBA(25,25,112); }
+                else if ( (L"mintCream")			== sValue ) { this->m_eValue = presetcolorvalMintCream ; SetRGBA(245,255,250); }
+                else if ( (L"mistyRose")			== sValue ) { this->m_eValue = presetcolorvalMistyRose ; SetRGBA(255,228,225); }
+                else if ( (L"moccasin")			== sValue ) { this->m_eValue = presetcolorvalMoccasin ; SetRGBA(255,228,181); }
 				break;
 			case 'n':
-                if      ( (L"navajoWhite")			== sValue ) { m_eValue = presetcolorvalNavajoWhite ; SetRGBA(255,222,173); }
-                else if ( (L"navy")				== sValue ) { m_eValue = presetcolorvalNavy ; SetRGBA(0,0,128); }
+                if      ( (L"navajoWhite")			== sValue ) { this->m_eValue = presetcolorvalNavajoWhite ; SetRGBA(255,222,173); }
+                else if ( (L"navy")				== sValue ) { this->m_eValue = presetcolorvalNavy ; SetRGBA(0,0,128); }
 				break;
 			case 'o':
-                if      ( (L"oldLace")				== sValue ) { m_eValue = presetcolorvalOldLace ; SetRGBA(253,245,230); }
-                else if ( (L"olive")				== sValue ) { m_eValue = presetcolorvalOlive ; SetRGBA(128,128,0); }
-                else if ( (L"oliveDrab")			== sValue ) { m_eValue = presetcolorvalOliveDrab ; SetRGBA(107,142,35); }
-                else if ( (L"orange")				== sValue ) { m_eValue = presetcolorvalOrange ; SetRGBA(255,165,0); }
-                else if ( (L"orangeRed")			== sValue ) { m_eValue = presetcolorvalOrangeRed ; SetRGBA(255,69,0); }
-                else if ( (L"orchid")				== sValue ) { m_eValue = presetcolorvalOrchid ; SetRGBA(218,112,214); }
+                if      ( (L"oldLace")				== sValue ) { this->m_eValue = presetcolorvalOldLace ; SetRGBA(253,245,230); }
+                else if ( (L"olive")				== sValue ) { this->m_eValue = presetcolorvalOlive ; SetRGBA(128,128,0); }
+                else if ( (L"oliveDrab")			== sValue ) { this->m_eValue = presetcolorvalOliveDrab ; SetRGBA(107,142,35); }
+                else if ( (L"orange")				== sValue ) { this->m_eValue = presetcolorvalOrange ; SetRGBA(255,165,0); }
+                else if ( (L"orangeRed")			== sValue ) { this->m_eValue = presetcolorvalOrangeRed ; SetRGBA(255,69,0); }
+                else if ( (L"orchid")				== sValue ) { this->m_eValue = presetcolorvalOrchid ; SetRGBA(218,112,214); }
 				break;
 			case 'p':
-                if      ( (L"paleGoldenrod")		== sValue ) { m_eValue = presetcolorvalPaleGoldenrod ; SetRGBA(238,232,170); }
-                else if ( (L"paleGreen")			== sValue ) { m_eValue = presetcolorvalPaleGreen ; SetRGBA(152,251,152); }
-                else if ( (L"paleTurquoise")		== sValue ) { m_eValue = presetcolorvalPaleTurquoise ; SetRGBA(175,238,238); }
-                else if ( (L"paleVioletRed")		== sValue ) { m_eValue = presetcolorvalPaleVioletRed ; SetRGBA(219,112,147); }
-                else if ( (L"papayaWhip")			== sValue ) { m_eValue = presetcolorvalPapayaWhip ; SetRGBA(255,239,213); }
-                else if ( (L"peachPuff")			== sValue ) { m_eValue = presetcolorvalPeachPuff ; SetRGBA(255,218,185); }
-                else if ( (L"peru")				== sValue ) { m_eValue = presetcolorvalPeru ; SetRGBA(205,133,63); }
-                else if ( (L"pink")				== sValue ) { m_eValue = presetcolorvalPink ; SetRGBA(255,192,203); }
-                else if ( (L"plum")				== sValue ) { m_eValue = presetcolorvalPlum ; SetRGBA(221,160,221); }
-                else if ( (L"powderBlue")			== sValue ) { m_eValue = presetcolorvalPowderBlue ; SetRGBA(176,224,230); }
-                else if ( (L"purple")				== sValue ) { m_eValue = presetcolorvalPurple ; SetRGBA(128,0,128); }
+                if      ( (L"paleGoldenrod")		== sValue ) { this->m_eValue = presetcolorvalPaleGoldenrod ; SetRGBA(238,232,170); }
+                else if ( (L"paleGreen")			== sValue ) { this->m_eValue = presetcolorvalPaleGreen ; SetRGBA(152,251,152); }
+                else if ( (L"paleTurquoise")		== sValue ) { this->m_eValue = presetcolorvalPaleTurquoise ; SetRGBA(175,238,238); }
+                else if ( (L"paleVioletRed")		== sValue ) { this->m_eValue = presetcolorvalPaleVioletRed ; SetRGBA(219,112,147); }
+                else if ( (L"papayaWhip")			== sValue ) { this->m_eValue = presetcolorvalPapayaWhip ; SetRGBA(255,239,213); }
+                else if ( (L"peachPuff")			== sValue ) { this->m_eValue = presetcolorvalPeachPuff ; SetRGBA(255,218,185); }
+                else if ( (L"peru")				== sValue ) { this->m_eValue = presetcolorvalPeru ; SetRGBA(205,133,63); }
+                else if ( (L"pink")				== sValue ) { this->m_eValue = presetcolorvalPink ; SetRGBA(255,192,203); }
+                else if ( (L"plum")				== sValue ) { this->m_eValue = presetcolorvalPlum ; SetRGBA(221,160,221); }
+                else if ( (L"powderBlue")			== sValue ) { this->m_eValue = presetcolorvalPowderBlue ; SetRGBA(176,224,230); }
+                else if ( (L"purple")				== sValue ) { this->m_eValue = presetcolorvalPurple ; SetRGBA(128,0,128); }
 				break;
 			case 'r':
-                if      ( (L"red")					== sValue ) { m_eValue = presetcolorvalRed ; SetRGBA(255,0,0); }
-                else if ( (L"rosyBrown")			== sValue ) { m_eValue = presetcolorvalRosyBrown ; SetRGBA(188,143,143); }
-                else if ( (L"royalBlue")			== sValue ) { m_eValue = presetcolorvalRoyalBlue ; SetRGBA(65,105,225); }
+                if      ( (L"red")					== sValue ) { this->m_eValue = presetcolorvalRed ; SetRGBA(255,0,0); }
+                else if ( (L"rosyBrown")			== sValue ) { this->m_eValue = presetcolorvalRosyBrown ; SetRGBA(188,143,143); }
+                else if ( (L"royalBlue")			== sValue ) { this->m_eValue = presetcolorvalRoyalBlue ; SetRGBA(65,105,225); }
 				break;
 			case 's':
-                if      ( (L"saddleBrown")			== sValue ) { m_eValue = presetcolorvalSaddleBrown ; SetRGBA(139,69,19); }
-                else if ( (L"salmon")				== sValue ) { m_eValue = presetcolorvalSalmon ; SetRGBA(250,128,114); }
-                else if ( (L"sandyBrown")			== sValue ) { m_eValue = presetcolorvalSandyBrown ; SetRGBA(244,164,96); }
-                else if ( (L"seaGreen")			== sValue ) { m_eValue = presetcolorvalSeaGreen ; SetRGBA(46,139,87); }
-                else if ( (L"seaShell")			== sValue ) { m_eValue = presetcolorvalSeaShell ; SetRGBA(255,245,238); }
-                else if ( (L"sienna")				== sValue ) { m_eValue = presetcolorvalSienna ; SetRGBA(160,82,45); }
-                else if ( (L"silver")				== sValue ) { m_eValue = presetcolorvalSilver ; SetRGBA(192,192,192); }
-                else if ( (L"skyBlue")				== sValue ) { m_eValue = presetcolorvalSkyBlue ; SetRGBA(135,206,235); }
-                else if ( (L"slateBlue")			== sValue ) { m_eValue = presetcolorvalSlateBlue ; SetRGBA(106,90,205); }
-                else if ( (L"slateGray")			== sValue ) { m_eValue = presetcolorvalSlateGray ; SetRGBA(112,128,144); }
-                else if ( (L"slateGrey")			== sValue ) { m_eValue = presetcolorvalSlateGrey ; SetRGBA(112,128,144); }
-                else if ( (L"snow")				== sValue ) { m_eValue = presetcolorvalSnow ; SetRGBA(255,250,250); }
-                else if ( (L"springGreen")			== sValue ) { m_eValue = presetcolorvalSpringGreen ; SetRGBA(0,255,127); }
-                else if ( (L"steelBlue")			== sValue ) { m_eValue = presetcolorvalSteelBlue ; SetRGBA(70,130,180); }
+                if      ( (L"saddleBrown")			== sValue ) { this->m_eValue = presetcolorvalSaddleBrown ; SetRGBA(139,69,19); }
+                else if ( (L"salmon")				== sValue ) { this->m_eValue = presetcolorvalSalmon ; SetRGBA(250,128,114); }
+                else if ( (L"sandyBrown")			== sValue ) { this->m_eValue = presetcolorvalSandyBrown ; SetRGBA(244,164,96); }
+                else if ( (L"seaGreen")			== sValue ) { this->m_eValue = presetcolorvalSeaGreen ; SetRGBA(46,139,87); }
+                else if ( (L"seaShell")			== sValue ) { this->m_eValue = presetcolorvalSeaShell ; SetRGBA(255,245,238); }
+                else if ( (L"sienna")				== sValue ) { this->m_eValue = presetcolorvalSienna ; SetRGBA(160,82,45); }
+                else if ( (L"silver")				== sValue ) { this->m_eValue = presetcolorvalSilver ; SetRGBA(192,192,192); }
+                else if ( (L"skyBlue")				== sValue ) { this->m_eValue = presetcolorvalSkyBlue ; SetRGBA(135,206,235); }
+                else if ( (L"slateBlue")			== sValue ) { this->m_eValue = presetcolorvalSlateBlue ; SetRGBA(106,90,205); }
+                else if ( (L"slateGray")			== sValue ) { this->m_eValue = presetcolorvalSlateGray ; SetRGBA(112,128,144); }
+                else if ( (L"slateGrey")			== sValue ) { this->m_eValue = presetcolorvalSlateGrey ; SetRGBA(112,128,144); }
+                else if ( (L"snow")				== sValue ) { this->m_eValue = presetcolorvalSnow ; SetRGBA(255,250,250); }
+                else if ( (L"springGreen")			== sValue ) { this->m_eValue = presetcolorvalSpringGreen ; SetRGBA(0,255,127); }
+                else if ( (L"steelBlue")			== sValue ) { this->m_eValue = presetcolorvalSteelBlue ; SetRGBA(70,130,180); }
 				break;
 			case 't':
-                if      ( (L"tan")					== sValue ) { m_eValue = presetcolorvalTan ; SetRGBA(210,180,140); }
-                else if ( (L"teal")				== sValue ) { m_eValue = presetcolorvalTeal ; SetRGBA(0,128,128); }
-                else if ( (L"thistle")				== sValue ) { m_eValue = presetcolorvalThistle ; SetRGBA(216,191,216); }
-                else if ( (L"tomato")				== sValue ) { m_eValue = presetcolorvalTomato ; SetRGBA(255,99,71); }
-                else if ( (L"turquoise")			== sValue ) { m_eValue = presetcolorvalTurquoise ; SetRGBA(64,224,208); }
+                if      ( (L"tan")					== sValue ) { this->m_eValue = presetcolorvalTan ; SetRGBA(210,180,140); }
+                else if ( (L"teal")				== sValue ) { this->m_eValue = presetcolorvalTeal ; SetRGBA(0,128,128); }
+                else if ( (L"thistle")				== sValue ) { this->m_eValue = presetcolorvalThistle ; SetRGBA(216,191,216); }
+                else if ( (L"tomato")				== sValue ) { this->m_eValue = presetcolorvalTomato ; SetRGBA(255,99,71); }
+                else if ( (L"turquoise")			== sValue ) { this->m_eValue = presetcolorvalTurquoise ; SetRGBA(64,224,208); }
 				break;
 			case 'v':
-                if      ( (L"violet")				== sValue ) { m_eValue = presetcolorvalViolet ; SetRGBA(238,130,238); }
+                if      ( (L"violet")				== sValue ) { this->m_eValue = presetcolorvalViolet ; SetRGBA(238,130,238); }
 				break;
 			case 'w':
-                if      ( (L"wheat")				== sValue ) { m_eValue = presetcolorvalWheat ; SetRGBA(245,222,179); }
-                else if ( (L"white")				== sValue ) { m_eValue = presetcolorvalWhite ; SetRGBA(255,255,255); }
-                else if ( (L"whiteSmoke")			== sValue ) { m_eValue = presetcolorvalWhiteSmoke ; SetRGBA(245,245,245); }
+                if      ( (L"wheat")				== sValue ) { this->m_eValue = presetcolorvalWheat ; SetRGBA(245,222,179); }
+                else if ( (L"white")				== sValue ) { this->m_eValue = presetcolorvalWhite ; SetRGBA(255,255,255); }
+                else if ( (L"whiteSmoke")			== sValue ) { this->m_eValue = presetcolorvalWhiteSmoke ; SetRGBA(245,245,245); }
 				break;
 			case 'y':
-                if      ( (L"yellow")				== sValue ) { m_eValue = presetcolorvalYellow ; SetRGBA(255,255,0); }
-                else if ( (L"yellowGreen")			== sValue ) { m_eValue = presetcolorvalYellowGreen ; SetRGBA(154,205,50); }
+                if      ( (L"yellow")				== sValue ) { this->m_eValue = presetcolorvalYellow ; SetRGBA(255,255,0); }
+                else if ( (L"yellowGreen")			== sValue ) { this->m_eValue = presetcolorvalYellowGreen ; SetRGBA(154,205,50); }
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring         ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetcolorvalAliceBlue:			return (L"aliceBlue");			
 			case presetcolorvalAntiqueWhite:		return (L"antiqueWhite");		
@@ -3149,39 +3148,39 @@ namespace SimpleTypes
 
         virtual EPresetLineDashVal FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'd':
-                if      ( (L"dash")          == sValue ) m_eValue = presetlinedashvalDash;
-                else if ( (L"dashDot")       == sValue ) m_eValue = presetlinedashvalDashDot;
-                else if ( (L"dot")           == sValue ) m_eValue = presetlinedashvalDot;
+                if      ( (L"dash")          == sValue ) this->m_eValue = presetlinedashvalDash;
+                else if ( (L"dashDot")       == sValue ) this->m_eValue = presetlinedashvalDashDot;
+                else if ( (L"dot")           == sValue ) this->m_eValue = presetlinedashvalDot;
 				break;
 			case 'l':
-                if      ( (L"lgDash")        == sValue ) m_eValue = presetlinedashvalLgDash;
-                else if ( (L"lgDashDot")     == sValue ) m_eValue = presetlinedashvalLgDashDot;
-                else if ( (L"lgDashDotDot")  == sValue ) m_eValue = presetlinedashvalLgDashDotDot;
+                if      ( (L"lgDash")        == sValue ) this->m_eValue = presetlinedashvalLgDash;
+                else if ( (L"lgDashDot")     == sValue ) this->m_eValue = presetlinedashvalLgDashDot;
+                else if ( (L"lgDashDotDot")  == sValue ) this->m_eValue = presetlinedashvalLgDashDotDot;
 				break;
 			case 's':
-                if      ( (L"solid")         == sValue ) m_eValue = presetlinedashvalSolid;
-                else if ( (L"sysDash")       == sValue ) m_eValue = presetlinedashvalSysDash;
-                else if ( (L"sysDashDot")    == sValue ) m_eValue = presetlinedashvalSysDashDot;
-                else if ( (L"sysDashDotDot") == sValue ) m_eValue = presetlinedashvalSysDashDotDot;
-                else if ( (L"sysDot")        == sValue ) m_eValue = presetlinedashvalSysDot;
+                if      ( (L"solid")         == sValue ) this->m_eValue = presetlinedashvalSolid;
+                else if ( (L"sysDash")       == sValue ) this->m_eValue = presetlinedashvalSysDash;
+                else if ( (L"sysDashDot")    == sValue ) this->m_eValue = presetlinedashvalSysDashDot;
+                else if ( (L"sysDashDotDot") == sValue ) this->m_eValue = presetlinedashvalSysDashDotDot;
+                else if ( (L"sysDot")        == sValue ) this->m_eValue = presetlinedashvalSysDot;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring            ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetlinedashvalDash:          return (L"dash");			
 			case presetlinedashvalDashDot:       return (L"dashDot");			
@@ -3233,55 +3232,55 @@ namespace SimpleTypes
 
         virtual EPresetMaterialType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"clear")             == sValue ) m_eValue = presetmaterialtypeClear;
+                if      ( (L"clear")             == sValue ) this->m_eValue = presetmaterialtypeClear;
 				break;
 			case 'd':
-                if      ( (L"dkEdge")            == sValue ) m_eValue = presetmaterialtypeDkEdge;
+                if      ( (L"dkEdge")            == sValue ) this->m_eValue = presetmaterialtypeDkEdge;
 				break;
 			case 'f':
-                if      ( (L"flat")              == sValue ) m_eValue = presetmaterialtypeFlat;
+                if      ( (L"flat")              == sValue ) this->m_eValue = presetmaterialtypeFlat;
 				break;
 			case 'l':
-                if      ( (L"legacyMatte")       == sValue ) m_eValue = presetmaterialtypeLegacyMatte;
-                else if ( (L"legacyMetal")       == sValue ) m_eValue = presetmaterialtypeLegacyMetal;
-                else if ( (L"legacyPlastic")     == sValue ) m_eValue = presetmaterialtypeLegacyPlastic;
-                else if ( (L"legacyWireframe")   == sValue ) m_eValue = presetmaterialtypeLegacyWireframe;
+                if      ( (L"legacyMatte")       == sValue ) this->m_eValue = presetmaterialtypeLegacyMatte;
+                else if ( (L"legacyMetal")       == sValue ) this->m_eValue = presetmaterialtypeLegacyMetal;
+                else if ( (L"legacyPlastic")     == sValue ) this->m_eValue = presetmaterialtypeLegacyPlastic;
+                else if ( (L"legacyWireframe")   == sValue ) this->m_eValue = presetmaterialtypeLegacyWireframe;
 				break;
 			case 'm':
-                if      ( (L"matte")             == sValue ) m_eValue = presetmaterialtypeMatte;
-                else if ( (L"metal")             == sValue ) m_eValue = presetmaterialtypeMetal;
+                if      ( (L"matte")             == sValue ) this->m_eValue = presetmaterialtypeMatte;
+                else if ( (L"metal")             == sValue ) this->m_eValue = presetmaterialtypeMetal;
 				break;
 			case 'p':
-                if      ( (L"plastic")           == sValue ) m_eValue = presetmaterialtypePlastic;
-                else if ( (L"powder")            == sValue ) m_eValue = presetmaterialtypePowder;
+                if      ( (L"plastic")           == sValue ) this->m_eValue = presetmaterialtypePlastic;
+                else if ( (L"powder")            == sValue ) this->m_eValue = presetmaterialtypePowder;
 				break;
 			case 's':
-                if      ( (L"softEdge")          == sValue ) m_eValue = presetmaterialtypeSoftEdge;
-                else if ( (L"softmetal")         == sValue ) m_eValue = presetmaterialtypeSoftmetal;
+                if      ( (L"softEdge")          == sValue ) this->m_eValue = presetmaterialtypeSoftEdge;
+                else if ( (L"softmetal")         == sValue ) this->m_eValue = presetmaterialtypeSoftmetal;
 				break;
 			case 't':
-                if      ( (L"translucentPowder") == sValue ) m_eValue = presetmaterialtypeTranslucentPowder;
+                if      ( (L"translucentPowder") == sValue ) this->m_eValue = presetmaterialtypeTranslucentPowder;
 				break;
 			case 'w':
-                if      ( (L"warmMatte")         == sValue ) m_eValue = presetmaterialtypeWarmMatte;
+                if      ( (L"warmMatte")         == sValue ) this->m_eValue = presetmaterialtypeWarmMatte;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring             ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetmaterialtypeClear             : return (L"clear");
 			case presetmaterialtypeDkEdge            : return (L"dkEdge");
@@ -3373,102 +3372,102 @@ namespace SimpleTypes
 		CPresetPatternVal() {}
         virtual EPresetPatternVal FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"cross")      == sValue ) m_eValue = presetpatternvalCross;
+                if      ( (L"cross")      == sValue ) this->m_eValue = presetpatternvalCross;
 				break;
 			case 'd':
-                if      ( (L"dashDnDiag") == sValue ) m_eValue = presetpatternvalDashDnDiag;
-                else if ( (L"dashHorz")   == sValue ) m_eValue = presetpatternvalDashHorz;
-                else if ( (L"dashUpDiag") == sValue ) m_eValue = presetpatternvalDashUpDiag;
-                else if ( (L"dashVert")   == sValue ) m_eValue = presetpatternvalDashVert;
-                else if ( (L"diagBrick")  == sValue ) m_eValue = presetpatternvalDiagBrick;
-                else if ( (L"diagCross")  == sValue ) m_eValue = presetpatternvalDiagCross;
-                else if ( (L"divot")      == sValue ) m_eValue = presetpatternvalDivot;
-                else if ( (L"dkDnDiag")   == sValue ) m_eValue = presetpatternvalDkDnDiag;
-                else if ( (L"dkHorz")     == sValue ) m_eValue = presetpatternvalDkHorz;
-                else if ( (L"dkUpDiag")   == sValue ) m_eValue = presetpatternvalDkUpDiag;
-                else if ( (L"dkVert")     == sValue ) m_eValue = presetpatternvalDkVert;
-                else if ( (L"dnDiag")     == sValue ) m_eValue = presetpatternvalDnDiag;
-                else if ( (L"dotDmnd")    == sValue ) m_eValue = presetpatternvalDotDmnd;
-                else if ( (L"dotGrid")    == sValue ) m_eValue = presetpatternvalDotGrid;
+                if      ( (L"dashDnDiag") == sValue ) this->m_eValue = presetpatternvalDashDnDiag;
+                else if ( (L"dashHorz")   == sValue ) this->m_eValue = presetpatternvalDashHorz;
+                else if ( (L"dashUpDiag") == sValue ) this->m_eValue = presetpatternvalDashUpDiag;
+                else if ( (L"dashVert")   == sValue ) this->m_eValue = presetpatternvalDashVert;
+                else if ( (L"diagBrick")  == sValue ) this->m_eValue = presetpatternvalDiagBrick;
+                else if ( (L"diagCross")  == sValue ) this->m_eValue = presetpatternvalDiagCross;
+                else if ( (L"divot")      == sValue ) this->m_eValue = presetpatternvalDivot;
+                else if ( (L"dkDnDiag")   == sValue ) this->m_eValue = presetpatternvalDkDnDiag;
+                else if ( (L"dkHorz")     == sValue ) this->m_eValue = presetpatternvalDkHorz;
+                else if ( (L"dkUpDiag")   == sValue ) this->m_eValue = presetpatternvalDkUpDiag;
+                else if ( (L"dkVert")     == sValue ) this->m_eValue = presetpatternvalDkVert;
+                else if ( (L"dnDiag")     == sValue ) this->m_eValue = presetpatternvalDnDiag;
+                else if ( (L"dotDmnd")    == sValue ) this->m_eValue = presetpatternvalDotDmnd;
+                else if ( (L"dotGrid")    == sValue ) this->m_eValue = presetpatternvalDotGrid;
 				break;
 			case 'h':
-                if      ( (L"horz")       == sValue ) m_eValue = presetpatternvalHorz;
-                else if ( (L"horzBrick")  == sValue ) m_eValue = presetpatternvalHorzBrick;
+                if      ( (L"horz")       == sValue ) this->m_eValue = presetpatternvalHorz;
+                else if ( (L"horzBrick")  == sValue ) this->m_eValue = presetpatternvalHorzBrick;
 				break;
 			case 'l':
-                if      ( (L"lgCheck")    == sValue ) m_eValue = presetpatternvalLgCheck;
-                else if ( (L"lgConfetti") == sValue ) m_eValue = presetpatternvalLgConfetti;
-                else if ( (L"lgGrid")     == sValue ) m_eValue = presetpatternvalLgGrid;
-                else if ( (L"ltDnDiag")   == sValue ) m_eValue = presetpatternvalLtDnDiag;
-                else if ( (L"ltHorz")     == sValue ) m_eValue = presetpatternvalLtHorz;
-                else if ( (L"ltUpDiag")   == sValue ) m_eValue = presetpatternvalLtUpDiag;
-                else if ( (L"ltVert")     == sValue ) m_eValue = presetpatternvalLtVert;
+                if      ( (L"lgCheck")    == sValue ) this->m_eValue = presetpatternvalLgCheck;
+                else if ( (L"lgConfetti") == sValue ) this->m_eValue = presetpatternvalLgConfetti;
+                else if ( (L"lgGrid")     == sValue ) this->m_eValue = presetpatternvalLgGrid;
+                else if ( (L"ltDnDiag")   == sValue ) this->m_eValue = presetpatternvalLtDnDiag;
+                else if ( (L"ltHorz")     == sValue ) this->m_eValue = presetpatternvalLtHorz;
+                else if ( (L"ltUpDiag")   == sValue ) this->m_eValue = presetpatternvalLtUpDiag;
+                else if ( (L"ltVert")     == sValue ) this->m_eValue = presetpatternvalLtVert;
 				break;
 			case 'n':
-                if      ( (L"narHorz")    == sValue ) m_eValue = presetpatternvalNarHorz;
-                else if ( (L"narVert")    == sValue ) m_eValue = presetpatternvalNarVert;
+                if      ( (L"narHorz")    == sValue ) this->m_eValue = presetpatternvalNarHorz;
+                else if ( (L"narVert")    == sValue ) this->m_eValue = presetpatternvalNarVert;
 				break;
 			case 'o':
-                if      ( (L"openDmnd")   == sValue ) m_eValue = presetpatternvalOpenDmnd;
+                if      ( (L"openDmnd")   == sValue ) this->m_eValue = presetpatternvalOpenDmnd;
 				break;
 			case 'p':
-                if      ( (L"pct10")      == sValue ) m_eValue = presetpatternvalPct10;
-                else if ( (L"pct20")      == sValue ) m_eValue = presetpatternvalPct20;
-                else if ( (L"pct25")      == sValue ) m_eValue = presetpatternvalPct25;
-                else if ( (L"pct30")      == sValue ) m_eValue = presetpatternvalPct30;
-                else if ( (L"pct40")      == sValue ) m_eValue = presetpatternvalPct40;
-                else if ( (L"pct5")       == sValue ) m_eValue = presetpatternvalPct5;
-                else if ( (L"pct50")      == sValue ) m_eValue = presetpatternvalPct50;
-                else if ( (L"pct60")      == sValue ) m_eValue = presetpatternvalPct60;
-                else if ( (L"pct70")      == sValue ) m_eValue = presetpatternvalPct70;
-                else if ( (L"pct75")      == sValue ) m_eValue = presetpatternvalPct75;
-                else if ( (L"pct80")      == sValue ) m_eValue = presetpatternvalPct80;
-                else if ( (L"pct90")      == sValue ) m_eValue = presetpatternvalPct90;
-                else if ( (L"plaid")      == sValue ) m_eValue = presetpatternvalPlaid;
+                if      ( (L"pct10")      == sValue ) this->m_eValue = presetpatternvalPct10;
+                else if ( (L"pct20")      == sValue ) this->m_eValue = presetpatternvalPct20;
+                else if ( (L"pct25")      == sValue ) this->m_eValue = presetpatternvalPct25;
+                else if ( (L"pct30")      == sValue ) this->m_eValue = presetpatternvalPct30;
+                else if ( (L"pct40")      == sValue ) this->m_eValue = presetpatternvalPct40;
+                else if ( (L"pct5")       == sValue ) this->m_eValue = presetpatternvalPct5;
+                else if ( (L"pct50")      == sValue ) this->m_eValue = presetpatternvalPct50;
+                else if ( (L"pct60")      == sValue ) this->m_eValue = presetpatternvalPct60;
+                else if ( (L"pct70")      == sValue ) this->m_eValue = presetpatternvalPct70;
+                else if ( (L"pct75")      == sValue ) this->m_eValue = presetpatternvalPct75;
+                else if ( (L"pct80")      == sValue ) this->m_eValue = presetpatternvalPct80;
+                else if ( (L"pct90")      == sValue ) this->m_eValue = presetpatternvalPct90;
+                else if ( (L"plaid")      == sValue ) this->m_eValue = presetpatternvalPlaid;
 				break;
 			case 's':
-                if      ( (L"shingle")    == sValue ) m_eValue = presetpatternvalShingle;
-                else if ( (L"smCheck")    == sValue ) m_eValue = presetpatternvalSmCheck;
-                else if ( (L"smConfetti") == sValue ) m_eValue = presetpatternvalSmConfetti;
-                else if ( (L"smGrid")     == sValue ) m_eValue = presetpatternvalSmGrid;
-                else if ( (L"solidDmnd")  == sValue ) m_eValue = presetpatternvalSolidDmnd;
-                else if ( (L"sphere")     == sValue ) m_eValue = presetpatternvalSphere;
+                if      ( (L"shingle")    == sValue ) this->m_eValue = presetpatternvalShingle;
+                else if ( (L"smCheck")    == sValue ) this->m_eValue = presetpatternvalSmCheck;
+                else if ( (L"smConfetti") == sValue ) this->m_eValue = presetpatternvalSmConfetti;
+                else if ( (L"smGrid")     == sValue ) this->m_eValue = presetpatternvalSmGrid;
+                else if ( (L"solidDmnd")  == sValue ) this->m_eValue = presetpatternvalSolidDmnd;
+                else if ( (L"sphere")     == sValue ) this->m_eValue = presetpatternvalSphere;
 				break;
 			case 't':
-                if      ( (L"trellis")    == sValue ) m_eValue = presetpatternvalTrellis;
+                if      ( (L"trellis")    == sValue ) this->m_eValue = presetpatternvalTrellis;
 				break;
 			case 'u':
-                if      ( (L"upDiag")     == sValue ) m_eValue = presetpatternvalUpDiag;
+                if      ( (L"upDiag")     == sValue ) this->m_eValue = presetpatternvalUpDiag;
 				break;
 			case 'v':
-                if      ( (L"vert")       == sValue ) m_eValue = presetpatternvalVert;
+                if      ( (L"vert")       == sValue ) this->m_eValue = presetpatternvalVert;
 				break;
 			case 'w':
-                if      ( (L"wave")       == sValue ) m_eValue = presetpatternvalWave;
-                else if ( (L"wdDnDiag")   == sValue ) m_eValue = presetpatternvalWdDnDiag;
-                else if ( (L"wdUpDiag")   == sValue ) m_eValue = presetpatternvalWdUpDiag;
-                else if ( (L"weave")      == sValue ) m_eValue = presetpatternvalWeave;
+                if      ( (L"wave")       == sValue ) this->m_eValue = presetpatternvalWave;
+                else if ( (L"wdDnDiag")   == sValue ) this->m_eValue = presetpatternvalWdDnDiag;
+                else if ( (L"wdUpDiag")   == sValue ) this->m_eValue = presetpatternvalWdUpDiag;
+                else if ( (L"weave")      == sValue ) this->m_eValue = presetpatternvalWeave;
 				break;
 			case 'z':
-                if      ( (L"zigZag")     == sValue ) m_eValue = presetpatternvalZigZag;
+                if      ( (L"zigZag")     == sValue ) this->m_eValue = presetpatternvalZigZag;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring           ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetpatternvalCross:      return (L"cross");
 			case presetpatternvalDashDnDiag: return (L"dashDnDiag");
@@ -3567,34 +3566,34 @@ namespace SimpleTypes
 		CPresetShadowVal() {}
         virtual EPresetShadowVal FromString(std::wstring &sValue)
 		{
-            if      ( (L"shdw1")  == sValue ) m_eValue = presetshadowvalShdw1;
-            else if ( (L"shdw10") == sValue ) m_eValue = presetshadowvalShdw10;
-            else if ( (L"shdw11") == sValue ) m_eValue = presetshadowvalShdw11;
-            else if ( (L"shdw12") == sValue ) m_eValue = presetshadowvalShdw12;
-            else if ( (L"shdw13") == sValue ) m_eValue = presetshadowvalShdw13;
-            else if ( (L"shdw14") == sValue ) m_eValue = presetshadowvalShdw14;
-            else if ( (L"shdw15") == sValue ) m_eValue = presetshadowvalShdw15;
-            else if ( (L"shdw16") == sValue ) m_eValue = presetshadowvalShdw16;
-            else if ( (L"shdw17") == sValue ) m_eValue = presetshadowvalShdw17;
-            else if ( (L"shdw18") == sValue ) m_eValue = presetshadowvalShdw18;
-            else if ( (L"shdw19") == sValue ) m_eValue = presetshadowvalShdw19;
-            else if ( (L"shdw2")  == sValue ) m_eValue = presetshadowvalShdw2;
-            else if ( (L"shdw20") == sValue ) m_eValue = presetshadowvalShdw20;
-            else if ( (L"shdw3")  == sValue ) m_eValue = presetshadowvalShdw3;
-            else if ( (L"shdw4")  == sValue ) m_eValue = presetshadowvalShdw4;
-            else if ( (L"shdw5")  == sValue ) m_eValue = presetshadowvalShdw5;
-            else if ( (L"shdw6")  == sValue ) m_eValue = presetshadowvalShdw6;
-            else if ( (L"shdw7")  == sValue ) m_eValue = presetshadowvalShdw7;
-            else if ( (L"shdw8")  == sValue ) m_eValue = presetshadowvalShdw8;
-            else if ( (L"shdw9")  == sValue ) m_eValue = presetshadowvalShdw9;
-            else                               m_eValue = eDefValue;
+            if      ( (L"shdw1")  == sValue ) this->m_eValue = presetshadowvalShdw1;
+            else if ( (L"shdw10") == sValue ) this->m_eValue = presetshadowvalShdw10;
+            else if ( (L"shdw11") == sValue ) this->m_eValue = presetshadowvalShdw11;
+            else if ( (L"shdw12") == sValue ) this->m_eValue = presetshadowvalShdw12;
+            else if ( (L"shdw13") == sValue ) this->m_eValue = presetshadowvalShdw13;
+            else if ( (L"shdw14") == sValue ) this->m_eValue = presetshadowvalShdw14;
+            else if ( (L"shdw15") == sValue ) this->m_eValue = presetshadowvalShdw15;
+            else if ( (L"shdw16") == sValue ) this->m_eValue = presetshadowvalShdw16;
+            else if ( (L"shdw17") == sValue ) this->m_eValue = presetshadowvalShdw17;
+            else if ( (L"shdw18") == sValue ) this->m_eValue = presetshadowvalShdw18;
+            else if ( (L"shdw19") == sValue ) this->m_eValue = presetshadowvalShdw19;
+            else if ( (L"shdw2")  == sValue ) this->m_eValue = presetshadowvalShdw2;
+            else if ( (L"shdw20") == sValue ) this->m_eValue = presetshadowvalShdw20;
+            else if ( (L"shdw3")  == sValue ) this->m_eValue = presetshadowvalShdw3;
+            else if ( (L"shdw4")  == sValue ) this->m_eValue = presetshadowvalShdw4;
+            else if ( (L"shdw5")  == sValue ) this->m_eValue = presetshadowvalShdw5;
+            else if ( (L"shdw6")  == sValue ) this->m_eValue = presetshadowvalShdw6;
+            else if ( (L"shdw7")  == sValue ) this->m_eValue = presetshadowvalShdw7;
+            else if ( (L"shdw8")  == sValue ) this->m_eValue = presetshadowvalShdw8;
+            else if ( (L"shdw9")  == sValue ) this->m_eValue = presetshadowvalShdw9;
+            else                               this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring          ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case presetshadowvalShdw1:  return (L"shdw1");			
 			case presetshadowvalShdw2:  return (L"shdw2");		
@@ -3649,23 +3648,23 @@ namespace SimpleTypes
 
         virtual ERectAlignment FromString(std::wstring &sValue)
 		{
-            if      ( (L"b")   == sValue ) m_eValue = rectalignmentB;
-            else if ( (L"bl")  == sValue ) m_eValue = rectalignmentBL;
-            else if ( (L"br")  == sValue ) m_eValue = rectalignmentBR;
-            else if ( (L"ctr") == sValue ) m_eValue = rectalignmentCtr;
-            else if ( (L"l")   == sValue ) m_eValue = rectalignmentL;
-            else if ( (L"r")   == sValue ) m_eValue = rectalignmentR;
-            else if ( (L"t")   == sValue ) m_eValue = rectalignmentT;
-            else if ( (L"tl")  == sValue ) m_eValue = rectalignmentTL;
-            else if ( (L"tr")  == sValue ) m_eValue = rectalignmentTR;
-            else                            m_eValue = eDefValue;
+            if      ( (L"b")   == sValue ) this->m_eValue = rectalignmentB;
+            else if ( (L"bl")  == sValue ) this->m_eValue = rectalignmentBL;
+            else if ( (L"br")  == sValue ) this->m_eValue = rectalignmentBR;
+            else if ( (L"ctr") == sValue ) this->m_eValue = rectalignmentCtr;
+            else if ( (L"l")   == sValue ) this->m_eValue = rectalignmentL;
+            else if ( (L"r")   == sValue ) this->m_eValue = rectalignmentR;
+            else if ( (L"t")   == sValue ) this->m_eValue = rectalignmentT;
+            else if ( (L"tl")  == sValue ) this->m_eValue = rectalignmentTL;
+            else if ( (L"tr")  == sValue ) this->m_eValue = rectalignmentTR;
+            else                            this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring        ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case rectalignmentB  : return (L"b");
 			case rectalignmentBL : return (L"bl");
@@ -3717,54 +3716,54 @@ namespace SimpleTypes
 
         virtual EShemeColorVal FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( (L"accent1") == sValue ) m_eValue = shemecolorvalAccent1;
-                else if ( (L"accent2") == sValue ) m_eValue = shemecolorvalAccent2;
-                else if ( (L"accent3") == sValue ) m_eValue = shemecolorvalAccent3;
-                else if ( (L"accent4") == sValue ) m_eValue = shemecolorvalAccent4;
-                else if ( (L"accent5") == sValue ) m_eValue = shemecolorvalAccent5;
-                else if ( (L"accent6") == sValue ) m_eValue = shemecolorvalAccent6;
+                if      ( (L"accent1") == sValue ) this->m_eValue = shemecolorvalAccent1;
+                else if ( (L"accent2") == sValue ) this->m_eValue = shemecolorvalAccent2;
+                else if ( (L"accent3") == sValue ) this->m_eValue = shemecolorvalAccent3;
+                else if ( (L"accent4") == sValue ) this->m_eValue = shemecolorvalAccent4;
+                else if ( (L"accent5") == sValue ) this->m_eValue = shemecolorvalAccent5;
+                else if ( (L"accent6") == sValue ) this->m_eValue = shemecolorvalAccent6;
 				break;
 			case 'b':
-                if      ( (L"bg1") == sValue ) m_eValue = shemecolorvalBg1;
-                else if ( (L"bg2") == sValue ) m_eValue = shemecolorvalBg2;
+                if      ( (L"bg1") == sValue ) this->m_eValue = shemecolorvalBg1;
+                else if ( (L"bg2") == sValue ) this->m_eValue = shemecolorvalBg2;
 				break;
 			case 'd':
-                if      ( (L"dk1") == sValue ) m_eValue = shemecolorvalDk1;
-                else if ( (L"dk2") == sValue ) m_eValue = shemecolorvalDk2;
+                if      ( (L"dk1") == sValue ) this->m_eValue = shemecolorvalDk1;
+                else if ( (L"dk2") == sValue ) this->m_eValue = shemecolorvalDk2;
 				break;
 			case 'f':
-                if      ( (L"folHlink") == sValue ) m_eValue = shemecolorvalFolHlink;
+                if      ( (L"folHlink") == sValue ) this->m_eValue = shemecolorvalFolHlink;
 				break;
 			case 'h':
-                if      ( (L"hlink") == sValue ) m_eValue = shemecolorvalHlink;
+                if      ( (L"hlink") == sValue ) this->m_eValue = shemecolorvalHlink;
 				break;
 			case 'l':
-                if      ( (L"lt1") == sValue ) m_eValue = shemecolorvalLt1;
-                else if ( (L"lt2") == sValue ) m_eValue = shemecolorvalLt2;
+                if      ( (L"lt1") == sValue ) this->m_eValue = shemecolorvalLt1;
+                else if ( (L"lt2") == sValue ) this->m_eValue = shemecolorvalLt2;
 				break;
 			case 'p':
-                if      ( (L"phClr") == sValue ) m_eValue = shemecolorvalPhClr;
+                if      ( (L"phClr") == sValue ) this->m_eValue = shemecolorvalPhClr;
 				break;
 			case 't':
-                if      ( (L"tx1") == sValue ) m_eValue = shemecolorvalTx1;
-                else if ( (L"tx2") == sValue ) m_eValue = shemecolorvalTx2;
+                if      ( (L"tx1") == sValue ) this->m_eValue = shemecolorvalTx1;
+                else if ( (L"tx2") == sValue ) this->m_eValue = shemecolorvalTx2;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring        ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case shemecolorvalAccent1:  return (L"accent1");			
 			case shemecolorvalAccent2:  return (L"accent2");		
@@ -4024,301 +4023,301 @@ namespace SimpleTypes
 
         virtual EShapeType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
 
-                if      ( (L"accentBorderCallout1")	== sValue ) m_eValue = shapetypeAccentBorderCallout1;
-                else if ( (L"accentBorderCallout2")	== sValue ) m_eValue = shapetypeAccentBorderCallout2;
-                else if ( (L"accentBorderCallout3")	== sValue ) m_eValue = shapetypeAccentBorderCallout3;
-                else if ( (L"accentCallout1")			== sValue ) m_eValue = shapetypeAccentCallout1;
-                else if ( (L"accentCallout2")			== sValue ) m_eValue = shapetypeAccentCallout2;
-                else if ( (L"accentCallout3")			== sValue ) m_eValue = shapetypeAccentCallout3;
-                else if ( (L"actionButtonBackPrevious")== sValue ) m_eValue = shapetypeActionButtonBackPrevious;
-                else if ( (L"actionButtonBeginning")	== sValue ) m_eValue = shapetypeActionButtonBeginning;
-                else if ( (L"actionButtonBlank")		== sValue ) m_eValue = shapetypeActionButtonBlank;
-                else if ( (L"actionButtonDocument")	== sValue ) m_eValue = shapetypeActionButtonDocument;
-                else if ( (L"actionButtonEnd")			== sValue ) m_eValue = shapetypeActionButtonEnd;
-                else if ( (L"actionButtonForwardNext")	== sValue ) m_eValue = shapetypeActionButtonForwardNext;
-                else if ( (L"actionButtonHelp")		== sValue ) m_eValue = shapetypeActionButtonHelp;
-                else if ( (L"actionButtonHome")		== sValue ) m_eValue = shapetypeActionButtonHome;
-                else if ( (L"actionButtonInformation")	== sValue ) m_eValue = shapetypeActionButtonInformation;
-                else if ( (L"actionButtonMovie")		== sValue ) m_eValue = shapetypeActionButtonMovie;
-                else if ( (L"actionButtonReturn")		== sValue ) m_eValue = shapetypeActionButtonReturn;
-                else if ( (L"actionButtonSound")		== sValue ) m_eValue = shapetypeActionButtonSound;
-                else if ( (L"arc")						== sValue ) m_eValue = shapetypeArc;
+                if      ( (L"accentBorderCallout1")	== sValue ) this->m_eValue = shapetypeAccentBorderCallout1;
+                else if ( (L"accentBorderCallout2")	== sValue ) this->m_eValue = shapetypeAccentBorderCallout2;
+                else if ( (L"accentBorderCallout3")	== sValue ) this->m_eValue = shapetypeAccentBorderCallout3;
+                else if ( (L"accentCallout1")			== sValue ) this->m_eValue = shapetypeAccentCallout1;
+                else if ( (L"accentCallout2")			== sValue ) this->m_eValue = shapetypeAccentCallout2;
+                else if ( (L"accentCallout3")			== sValue ) this->m_eValue = shapetypeAccentCallout3;
+                else if ( (L"actionButtonBackPrevious")== sValue ) this->m_eValue = shapetypeActionButtonBackPrevious;
+                else if ( (L"actionButtonBeginning")	== sValue ) this->m_eValue = shapetypeActionButtonBeginning;
+                else if ( (L"actionButtonBlank")		== sValue ) this->m_eValue = shapetypeActionButtonBlank;
+                else if ( (L"actionButtonDocument")	== sValue ) this->m_eValue = shapetypeActionButtonDocument;
+                else if ( (L"actionButtonEnd")			== sValue ) this->m_eValue = shapetypeActionButtonEnd;
+                else if ( (L"actionButtonForwardNext")	== sValue ) this->m_eValue = shapetypeActionButtonForwardNext;
+                else if ( (L"actionButtonHelp")		== sValue ) this->m_eValue = shapetypeActionButtonHelp;
+                else if ( (L"actionButtonHome")		== sValue ) this->m_eValue = shapetypeActionButtonHome;
+                else if ( (L"actionButtonInformation")	== sValue ) this->m_eValue = shapetypeActionButtonInformation;
+                else if ( (L"actionButtonMovie")		== sValue ) this->m_eValue = shapetypeActionButtonMovie;
+                else if ( (L"actionButtonReturn")		== sValue ) this->m_eValue = shapetypeActionButtonReturn;
+                else if ( (L"actionButtonSound")		== sValue ) this->m_eValue = shapetypeActionButtonSound;
+                else if ( (L"arc")						== sValue ) this->m_eValue = shapetypeArc;
 				break;
 
 			case 'b':
-                if      ( (L"bentArrow")				== sValue ) m_eValue = shapetypeBentArrow;
-                else if ( (L"bentConnector2")			== sValue ) m_eValue = shapetypeBentConnector2;
-                else if ( (L"bentConnector3")			== sValue ) m_eValue = shapetypeBentConnector3;
-                else if ( (L"bentConnector4")			== sValue ) m_eValue = shapetypeBentConnector4;
-                else if ( (L"bentConnector5")			== sValue ) m_eValue = shapetypeBentConnector5;
-                else if ( (L"bentUpArrow")				== sValue ) m_eValue = shapetypeBentUpArrow;
-                else if ( (L"bevel")					== sValue ) m_eValue = shapetypeBevel;
-                else if ( (L"blockArc")				== sValue ) m_eValue = shapetypeBlockArc;
-                else if ( (L"borderCallout1")			== sValue ) m_eValue = shapetypeBorderCallout1;
-                else if ( (L"borderCallout2")			== sValue ) m_eValue = shapetypeBorderCallout2;
-                else if ( (L"borderCallout3")			== sValue ) m_eValue = shapetypeBorderCallout3;
-                else if ( (L"bracePair")				== sValue ) m_eValue = shapetypeBracePair;
-                else if ( (L"bracketPair")				== sValue ) m_eValue = shapetypeBracketPair;
+                if      ( (L"bentArrow")				== sValue ) this->m_eValue = shapetypeBentArrow;
+                else if ( (L"bentConnector2")			== sValue ) this->m_eValue = shapetypeBentConnector2;
+                else if ( (L"bentConnector3")			== sValue ) this->m_eValue = shapetypeBentConnector3;
+                else if ( (L"bentConnector4")			== sValue ) this->m_eValue = shapetypeBentConnector4;
+                else if ( (L"bentConnector5")			== sValue ) this->m_eValue = shapetypeBentConnector5;
+                else if ( (L"bentUpArrow")				== sValue ) this->m_eValue = shapetypeBentUpArrow;
+                else if ( (L"bevel")					== sValue ) this->m_eValue = shapetypeBevel;
+                else if ( (L"blockArc")				== sValue ) this->m_eValue = shapetypeBlockArc;
+                else if ( (L"borderCallout1")			== sValue ) this->m_eValue = shapetypeBorderCallout1;
+                else if ( (L"borderCallout2")			== sValue ) this->m_eValue = shapetypeBorderCallout2;
+                else if ( (L"borderCallout3")			== sValue ) this->m_eValue = shapetypeBorderCallout3;
+                else if ( (L"bracePair")				== sValue ) this->m_eValue = shapetypeBracePair;
+                else if ( (L"bracketPair")				== sValue ) this->m_eValue = shapetypeBracketPair;
 		/////new
-                else if ( (L"Balloon") 				== sValue ) m_eValue = shapetypeBallon;
+                else if ( (L"Balloon") 				== sValue ) this->m_eValue = shapetypeBallon;
 				break;
 
 			case 'c':
-                if      ( (L"callout1")				== sValue ) m_eValue = shapetypeCallout1;
-                else if ( (L"callout2")				== sValue ) m_eValue = shapetypeCallout2;
-                else if ( (L"callout3")				== sValue ) m_eValue = shapetypeCallout3;
-                else if ( (L"can")						== sValue ) m_eValue = shapetypeCan;
-                else if ( (L"chartPlus")				== sValue ) m_eValue = shapetypeChartPlus;
-                else if ( (L"chartStar")				== sValue ) m_eValue = shapetypeChartStar;
-                else if ( (L"chartX")					== sValue ) m_eValue = shapetypeChartX;
-                else if ( (L"chevron")					== sValue ) m_eValue = shapetypeChevron;
-                else if ( (L"chord")					== sValue ) m_eValue = shapetypeChord;
-                else if ( (L"circularArrow")			== sValue ) m_eValue = shapetypeCircularArrow;
-                else if ( (L"cloud")					== sValue ) m_eValue = shapetypeCloud;
-                else if ( (L"cloudCallout")			== sValue ) m_eValue = shapetypeCloudCallout;
-                else if ( (L"corner")					== sValue ) m_eValue = shapetypeCorner;
-                else if ( (L"cornerTabs")				== sValue ) m_eValue = shapetypeCornerTabs;
-                else if ( (L"cube")					== sValue ) m_eValue = shapetypeCube;
-                else if ( (L"curvedConnector2")		== sValue ) m_eValue = shapetypeCurvedConnector2;
-                else if ( (L"curvedConnector3")		== sValue ) m_eValue = shapetypeCurvedConnector3;
-                else if ( (L"curvedConnector4")		== sValue ) m_eValue = shapetypeCurvedConnector4;
-                else if ( (L"curvedConnector5")		== sValue ) m_eValue = shapetypeCurvedConnector5;
-                else if ( (L"curvedDownArrow")			== sValue ) m_eValue = shapetypeCurvedDownArrow;
-                else if ( (L"curvedLeftArrow")			== sValue ) m_eValue = shapetypeCurvedLeftArrow;
-                else if ( (L"curvedRightArrow")		== sValue ) m_eValue = shapetypeCurvedRightArrow;
-                else if ( (L"curvedUpArrow")			== sValue ) m_eValue = shapetypeCurvedUpArrow;
+                if      ( (L"callout1")				== sValue ) this->m_eValue = shapetypeCallout1;
+                else if ( (L"callout2")				== sValue ) this->m_eValue = shapetypeCallout2;
+                else if ( (L"callout3")				== sValue ) this->m_eValue = shapetypeCallout3;
+                else if ( (L"can")						== sValue ) this->m_eValue = shapetypeCan;
+                else if ( (L"chartPlus")				== sValue ) this->m_eValue = shapetypeChartPlus;
+                else if ( (L"chartStar")				== sValue ) this->m_eValue = shapetypeChartStar;
+                else if ( (L"chartX")					== sValue ) this->m_eValue = shapetypeChartX;
+                else if ( (L"chevron")					== sValue ) this->m_eValue = shapetypeChevron;
+                else if ( (L"chord")					== sValue ) this->m_eValue = shapetypeChord;
+                else if ( (L"circularArrow")			== sValue ) this->m_eValue = shapetypeCircularArrow;
+                else if ( (L"cloud")					== sValue ) this->m_eValue = shapetypeCloud;
+                else if ( (L"cloudCallout")			== sValue ) this->m_eValue = shapetypeCloudCallout;
+                else if ( (L"corner")					== sValue ) this->m_eValue = shapetypeCorner;
+                else if ( (L"cornerTabs")				== sValue ) this->m_eValue = shapetypeCornerTabs;
+                else if ( (L"cube")					== sValue ) this->m_eValue = shapetypeCube;
+                else if ( (L"curvedConnector2")		== sValue ) this->m_eValue = shapetypeCurvedConnector2;
+                else if ( (L"curvedConnector3")		== sValue ) this->m_eValue = shapetypeCurvedConnector3;
+                else if ( (L"curvedConnector4")		== sValue ) this->m_eValue = shapetypeCurvedConnector4;
+                else if ( (L"curvedConnector5")		== sValue ) this->m_eValue = shapetypeCurvedConnector5;
+                else if ( (L"curvedDownArrow")			== sValue ) this->m_eValue = shapetypeCurvedDownArrow;
+                else if ( (L"curvedLeftArrow")			== sValue ) this->m_eValue = shapetypeCurvedLeftArrow;
+                else if ( (L"curvedRightArrow")		== sValue ) this->m_eValue = shapetypeCurvedRightArrow;
+                else if ( (L"curvedUpArrow")			== sValue ) this->m_eValue = shapetypeCurvedUpArrow;
 				break;
 
 			case 'd':
-                if      ( (L"decagon")					== sValue ) m_eValue = shapetypeDecagon;
-                else if ( (L"diagStripe")				== sValue ) m_eValue = shapetypeDiagStripe;
-                else if ( (L"diamond")					== sValue ) m_eValue = shapetypeDiamond;
-                else if ( (L"dodecagon")				== sValue ) m_eValue = shapetypeDodecagon;
-                else if ( (L"donut")					== sValue ) m_eValue = shapetypeDonut;
-                else if ( (L"doubleWave")				== sValue ) m_eValue = shapetypeDoubleWave;
-                else if ( (L"downArrow")				== sValue ) m_eValue = shapetypeDownArrow;
-                else if ( (L"downArrowCallout")		== sValue ) m_eValue = shapetypeDownArrowCallout;
+                if      ( (L"decagon")					== sValue ) this->m_eValue = shapetypeDecagon;
+                else if ( (L"diagStripe")				== sValue ) this->m_eValue = shapetypeDiagStripe;
+                else if ( (L"diamond")					== sValue ) this->m_eValue = shapetypeDiamond;
+                else if ( (L"dodecagon")				== sValue ) this->m_eValue = shapetypeDodecagon;
+                else if ( (L"donut")					== sValue ) this->m_eValue = shapetypeDonut;
+                else if ( (L"doubleWave")				== sValue ) this->m_eValue = shapetypeDoubleWave;
+                else if ( (L"downArrow")				== sValue ) this->m_eValue = shapetypeDownArrow;
+                else if ( (L"downArrowCallout")		== sValue ) this->m_eValue = shapetypeDownArrowCallout;
 				break;
 
 			case 'e':
-                if      ( (L"ellipse")					== sValue ) m_eValue = shapetypeEllipse;
-                else if ( (L"ellipseRibbon")			== sValue ) m_eValue = shapetypeEllipseRibbon;
-                else if ( (L"ellipseRibbon2")			== sValue ) m_eValue = shapetypeEllipseRibbon2;
+                if      ( (L"ellipse")					== sValue ) this->m_eValue = shapetypeEllipse;
+                else if ( (L"ellipseRibbon")			== sValue ) this->m_eValue = shapetypeEllipseRibbon;
+                else if ( (L"ellipseRibbon2")			== sValue ) this->m_eValue = shapetypeEllipseRibbon2;
 				break;
 
 			case 'f':
-                if      ( (L"flowChartAlternateProcess")	== sValue ) m_eValue = shapetypeFlowChartAlternateProcess;
-                else if ( (L"flowChartCollate")			== sValue ) m_eValue = shapetypeFlowChartCollate;
-                else if ( (L"flowChartConnector")			== sValue ) m_eValue = shapetypeFlowChartConnector;
-                else if ( (L"flowChartDecision")			== sValue ) m_eValue = shapetypeFlowChartDecision;
-                else if ( (L"flowChartDelay")				== sValue ) m_eValue = shapetypeFlowChartDelay;
-                else if ( (L"flowChartDisplay")			== sValue ) m_eValue = shapetypeFlowChartDisplay;
-                else if ( (L"flowChartDocument")			== sValue ) m_eValue = shapetypeFlowChartDocument;
-                else if ( (L"flowChartExtract")			== sValue ) m_eValue = shapetypeFlowChartExtract;
-                else if ( (L"flowChartInputOutput")		== sValue ) m_eValue = shapetypeFlowChartInputOutput;
-                else if ( (L"flowChartInternalStorage")	== sValue ) m_eValue = shapetypeFlowChartInternalStorage;
-                else if ( (L"flowChartMagneticDisk")		== sValue ) m_eValue = shapetypeFlowChartMagneticDisk;
-                else if ( (L"flowChartMagneticDrum")		== sValue ) m_eValue = shapetypeFlowChartMagneticDrum;
-                else if ( (L"flowChartMagneticTape")		== sValue ) m_eValue = shapetypeFlowChartMagneticTape;
-                else if ( (L"flowChartManualInput")		== sValue ) m_eValue = shapetypeFlowChartManualInput;
-                else if ( (L"flowChartManualOperation")	== sValue ) m_eValue = shapetypeFlowChartManualOperation;
-                else if ( (L"flowChartMerge")				== sValue ) m_eValue = shapetypeFlowChartMerge;
-                else if ( (L"flowChartMultidocument")		== sValue ) m_eValue = shapetypeFlowChartMultidocument;
-                else if ( (L"flowChartOfflineStorage")		== sValue ) m_eValue = shapetypeFlowChartOfflineStorage;
-                else if ( (L"flowChartOffpageConnector")	== sValue ) m_eValue = shapetypeFlowChartOffpageConnector;
-                else if ( (L"flowChartOnlineStorage")		== sValue ) m_eValue = shapetypeFlowChartOnlineStorage;
-                else if ( (L"flowChartOr")					== sValue ) m_eValue = shapetypeFlowChartOr;
-                else if ( (L"flowChartPredefinedProcess")	== sValue ) m_eValue = shapetypeFlowChartPredefinedProcess;
-                else if ( (L"flowChartPreparation")		== sValue ) m_eValue = shapetypeFlowChartPreparation;
-                else if ( (L"flowChartProcess")			== sValue ) m_eValue = shapetypeFlowChartProcess;
-                else if ( (L"flowChartPunchedCard")		== sValue ) m_eValue = shapetypeFlowChartPunchedCard;
-                else if ( (L"flowChartPunchedTape")		== sValue ) m_eValue = shapetypeFlowChartPunchedTape;
-                else if ( (L"flowChartSort")				== sValue ) m_eValue = shapetypeFlowChartSort;
-                else if ( (L"flowChartSummingJunction")	== sValue ) m_eValue = shapetypeFlowChartSummingJunction;
-                else if ( (L"flowChartTerminator")			== sValue ) m_eValue = shapetypeFlowChartTerminator;
-                else if ( (L"foldedCorner")				== sValue ) m_eValue = shapetypeFoldedCorner;
-                else if ( (L"frame")						== sValue ) m_eValue = shapetypeFrame;
-                else if ( (L"funnel")						== sValue ) m_eValue = shapetypeFunnel;
+                if      ( (L"flowChartAlternateProcess")	== sValue ) this->m_eValue = shapetypeFlowChartAlternateProcess;
+                else if ( (L"flowChartCollate")			== sValue ) this->m_eValue = shapetypeFlowChartCollate;
+                else if ( (L"flowChartConnector")			== sValue ) this->m_eValue = shapetypeFlowChartConnector;
+                else if ( (L"flowChartDecision")			== sValue ) this->m_eValue = shapetypeFlowChartDecision;
+                else if ( (L"flowChartDelay")				== sValue ) this->m_eValue = shapetypeFlowChartDelay;
+                else if ( (L"flowChartDisplay")			== sValue ) this->m_eValue = shapetypeFlowChartDisplay;
+                else if ( (L"flowChartDocument")			== sValue ) this->m_eValue = shapetypeFlowChartDocument;
+                else if ( (L"flowChartExtract")			== sValue ) this->m_eValue = shapetypeFlowChartExtract;
+                else if ( (L"flowChartInputOutput")		== sValue ) this->m_eValue = shapetypeFlowChartInputOutput;
+                else if ( (L"flowChartInternalStorage")	== sValue ) this->m_eValue = shapetypeFlowChartInternalStorage;
+                else if ( (L"flowChartMagneticDisk")		== sValue ) this->m_eValue = shapetypeFlowChartMagneticDisk;
+                else if ( (L"flowChartMagneticDrum")		== sValue ) this->m_eValue = shapetypeFlowChartMagneticDrum;
+                else if ( (L"flowChartMagneticTape")		== sValue ) this->m_eValue = shapetypeFlowChartMagneticTape;
+                else if ( (L"flowChartManualInput")		== sValue ) this->m_eValue = shapetypeFlowChartManualInput;
+                else if ( (L"flowChartManualOperation")	== sValue ) this->m_eValue = shapetypeFlowChartManualOperation;
+                else if ( (L"flowChartMerge")				== sValue ) this->m_eValue = shapetypeFlowChartMerge;
+                else if ( (L"flowChartMultidocument")		== sValue ) this->m_eValue = shapetypeFlowChartMultidocument;
+                else if ( (L"flowChartOfflineStorage")		== sValue ) this->m_eValue = shapetypeFlowChartOfflineStorage;
+                else if ( (L"flowChartOffpageConnector")	== sValue ) this->m_eValue = shapetypeFlowChartOffpageConnector;
+                else if ( (L"flowChartOnlineStorage")		== sValue ) this->m_eValue = shapetypeFlowChartOnlineStorage;
+                else if ( (L"flowChartOr")					== sValue ) this->m_eValue = shapetypeFlowChartOr;
+                else if ( (L"flowChartPredefinedProcess")	== sValue ) this->m_eValue = shapetypeFlowChartPredefinedProcess;
+                else if ( (L"flowChartPreparation")		== sValue ) this->m_eValue = shapetypeFlowChartPreparation;
+                else if ( (L"flowChartProcess")			== sValue ) this->m_eValue = shapetypeFlowChartProcess;
+                else if ( (L"flowChartPunchedCard")		== sValue ) this->m_eValue = shapetypeFlowChartPunchedCard;
+                else if ( (L"flowChartPunchedTape")		== sValue ) this->m_eValue = shapetypeFlowChartPunchedTape;
+                else if ( (L"flowChartSort")				== sValue ) this->m_eValue = shapetypeFlowChartSort;
+                else if ( (L"flowChartSummingJunction")	== sValue ) this->m_eValue = shapetypeFlowChartSummingJunction;
+                else if ( (L"flowChartTerminator")			== sValue ) this->m_eValue = shapetypeFlowChartTerminator;
+                else if ( (L"foldedCorner")				== sValue ) this->m_eValue = shapetypeFoldedCorner;
+                else if ( (L"frame")						== sValue ) this->m_eValue = shapetypeFrame;
+                else if ( (L"funnel")						== sValue ) this->m_eValue = shapetypeFunnel;
 				break;
 
 			case 'g':
-                if      ( (L"gear6")					== sValue ) m_eValue = shapetypeGear6;
-                else if ( (L"gear9")					== sValue ) m_eValue = shapetypeGear9;
+                if      ( (L"gear6")					== sValue ) this->m_eValue = shapetypeGear6;
+                else if ( (L"gear9")					== sValue ) this->m_eValue = shapetypeGear9;
 				break;
 
 			case 'h':
-                if      ( (L"halfFrame")				== sValue ) m_eValue = shapetypeHalfFrame;
-                else if ( (L"heart")					== sValue ) m_eValue = shapetypeHeart;
-                else if ( (L"heptagon")				== sValue ) m_eValue = shapetypeHeptagon;
-                else if ( (L"hexagon")					== sValue ) m_eValue = shapetypeHexagon;
-                else if ( (L"homePlate")				== sValue ) m_eValue = shapetypeHomePlate;
-                else if ( (L"horizontalScroll")		== sValue ) m_eValue = shapetypeHorizontalScroll;
+                if      ( (L"halfFrame")				== sValue ) this->m_eValue = shapetypeHalfFrame;
+                else if ( (L"heart")					== sValue ) this->m_eValue = shapetypeHeart;
+                else if ( (L"heptagon")				== sValue ) this->m_eValue = shapetypeHeptagon;
+                else if ( (L"hexagon")					== sValue ) this->m_eValue = shapetypeHexagon;
+                else if ( (L"homePlate")				== sValue ) this->m_eValue = shapetypeHomePlate;
+                else if ( (L"horizontalScroll")		== sValue ) this->m_eValue = shapetypeHorizontalScroll;
 				break;
 
 			case 'i':
-                if      ( (L"irregularSeal1")			== sValue ) m_eValue = shapetypeIrregularSeal1;
-                else if ( (L"irregularSeal2")			== sValue ) m_eValue = shapetypeIrregularSeal2;
+                if      ( (L"irregularSeal1")			== sValue ) this->m_eValue = shapetypeIrregularSeal1;
+                else if ( (L"irregularSeal2")			== sValue ) this->m_eValue = shapetypeIrregularSeal2;
 				break;
 
 			case 'l':
-                if      ( (L"leftArrow")				== sValue ) m_eValue = shapetypeLeftArrow;
-                else if ( (L"leftArrowCallout")		== sValue ) m_eValue = shapetypeLeftArrowCallout;
-                else if ( (L"leftBrace")				== sValue ) m_eValue = shapetypeLeftBrace;
-                else if ( (L"leftBracket")				== sValue ) m_eValue = shapetypeLeftBracket;
-                else if ( (L"leftCircularArrow")		== sValue ) m_eValue = shapetypeLeftCircularArrow;
-                else if ( (L"leftRightArrow")			== sValue ) m_eValue = shapetypeLeftRightArrow;
-                else if ( (L"leftRightArrowCallout")	== sValue ) m_eValue = shapetypeLeftRightArrowCallout;
-                else if ( (L"leftRightCircularArrow")	== sValue ) m_eValue = shapetypeLeftRightCircularArrow;
-                else if ( (L"leftRightRibbon")			== sValue ) m_eValue = shapetypeLeftRightRibbon;
-                else if ( (L"leftRightUpArrow")		== sValue ) m_eValue = shapetypeLeftRightUpArrow;
-                else if ( (L"leftUpArrow")				== sValue ) m_eValue = shapetypeLeftUpArrow;
-                else if ( (L"lightningBolt")			== sValue ) m_eValue = shapetypeLightningBolt;
-                else if ( (L"line")					== sValue ) m_eValue = shapetypeLine;
-                else if ( (L"lineInv")					== sValue ) m_eValue = shapetypeLineInv;
+                if      ( (L"leftArrow")				== sValue ) this->m_eValue = shapetypeLeftArrow;
+                else if ( (L"leftArrowCallout")		== sValue ) this->m_eValue = shapetypeLeftArrowCallout;
+                else if ( (L"leftBrace")				== sValue ) this->m_eValue = shapetypeLeftBrace;
+                else if ( (L"leftBracket")				== sValue ) this->m_eValue = shapetypeLeftBracket;
+                else if ( (L"leftCircularArrow")		== sValue ) this->m_eValue = shapetypeLeftCircularArrow;
+                else if ( (L"leftRightArrow")			== sValue ) this->m_eValue = shapetypeLeftRightArrow;
+                else if ( (L"leftRightArrowCallout")	== sValue ) this->m_eValue = shapetypeLeftRightArrowCallout;
+                else if ( (L"leftRightCircularArrow")	== sValue ) this->m_eValue = shapetypeLeftRightCircularArrow;
+                else if ( (L"leftRightRibbon")			== sValue ) this->m_eValue = shapetypeLeftRightRibbon;
+                else if ( (L"leftRightUpArrow")		== sValue ) this->m_eValue = shapetypeLeftRightUpArrow;
+                else if ( (L"leftUpArrow")				== sValue ) this->m_eValue = shapetypeLeftUpArrow;
+                else if ( (L"lightningBolt")			== sValue ) this->m_eValue = shapetypeLightningBolt;
+                else if ( (L"line")					== sValue ) this->m_eValue = shapetypeLine;
+                else if ( (L"lineInv")					== sValue ) this->m_eValue = shapetypeLineInv;
 				break;
 
 			case 'm':
-                if      ( (L"mathDivide")				== sValue ) m_eValue = shapetypeMathDivide;
-                else if ( (L"mathEqual")				== sValue ) m_eValue = shapetypeMathEqual;
-                else if ( (L"mathMinus")				== sValue ) m_eValue = shapetypeMathMinus;
-                else if ( (L"mathMultiply")			== sValue ) m_eValue = shapetypeMathMultiply;
-                else if ( (L"mathNotEqual")			== sValue ) m_eValue = shapetypeMathNotEqual;
-                else if ( (L"mathPlus")				== sValue ) m_eValue = shapetypeMathPlus;
-                else if ( (L"moon")					== sValue ) m_eValue = shapetypeMoon;
+                if      ( (L"mathDivide")				== sValue ) this->m_eValue = shapetypeMathDivide;
+                else if ( (L"mathEqual")				== sValue ) this->m_eValue = shapetypeMathEqual;
+                else if ( (L"mathMinus")				== sValue ) this->m_eValue = shapetypeMathMinus;
+                else if ( (L"mathMultiply")			== sValue ) this->m_eValue = shapetypeMathMultiply;
+                else if ( (L"mathNotEqual")			== sValue ) this->m_eValue = shapetypeMathNotEqual;
+                else if ( (L"mathPlus")				== sValue ) this->m_eValue = shapetypeMathPlus;
+                else if ( (L"moon")					== sValue ) this->m_eValue = shapetypeMoon;
 				break;
 
 			case 'n':
-                if      ( (L"nonIsoscelesTrapezoid")	== sValue ) m_eValue = shapetypeNonIsoscelesTrapezoid;
-                else if ( (L"noSmoking")				== sValue ) m_eValue = shapetypeNoSmoking;
-                else if ( (L"notchedRightArrow")		== sValue ) m_eValue = shapetypeNotchedRightArrow;
+                if      ( (L"nonIsoscelesTrapezoid")	== sValue ) this->m_eValue = shapetypeNonIsoscelesTrapezoid;
+                else if ( (L"noSmoking")				== sValue ) this->m_eValue = shapetypeNoSmoking;
+                else if ( (L"notchedRightArrow")		== sValue ) this->m_eValue = shapetypeNotchedRightArrow;
 				break;
 
 			case 'o':
-                if      ( (L"octagon")					== sValue ) m_eValue = shapetypeOctagon;
+                if      ( (L"octagon")					== sValue ) this->m_eValue = shapetypeOctagon;
 				break;
 
 			case 'p':
-                if      ( (L"parallelogram")			== sValue ) m_eValue = shapetypeParallelogram;
-                else if ( (L"pentagon")				== sValue ) m_eValue = shapetypePentagon;
-                else if ( (L"pie")						== sValue ) m_eValue = shapetypePie;
-                else if ( (L"pieWedge")				== sValue ) m_eValue = shapetypePieWedge;
-                else if ( (L"plaque")					== sValue ) m_eValue = shapetypePlaque;
-                else if ( (L"plaqueTabs")				== sValue ) m_eValue = shapetypePlaqueTabs;
-                else if ( (L"plus")					== sValue ) m_eValue = shapetypePlus;
+                if      ( (L"parallelogram")			== sValue ) this->m_eValue = shapetypeParallelogram;
+                else if ( (L"pentagon")				== sValue ) this->m_eValue = shapetypePentagon;
+                else if ( (L"pie")						== sValue ) this->m_eValue = shapetypePie;
+                else if ( (L"pieWedge")				== sValue ) this->m_eValue = shapetypePieWedge;
+                else if ( (L"plaque")					== sValue ) this->m_eValue = shapetypePlaque;
+                else if ( (L"plaqueTabs")				== sValue ) this->m_eValue = shapetypePlaqueTabs;
+                else if ( (L"plus")					== sValue ) this->m_eValue = shapetypePlus;
 				break;
 
 			case 'q':
-                if      ( (L"quadArrow")				== sValue ) m_eValue = shapetypeQuadArrow;
-                else if ( (L"quadArrowCallout")		== sValue ) m_eValue = shapetypeQuadArrowCallout;
+                if      ( (L"quadArrow")				== sValue ) this->m_eValue = shapetypeQuadArrow;
+                else if ( (L"quadArrowCallout")		== sValue ) this->m_eValue = shapetypeQuadArrowCallout;
 				break;
 
 			case 'r':
-                if      ( (L"rect")					== sValue ) m_eValue = shapetypeRect;
-                else if ( (L"ribbon")					== sValue ) m_eValue = shapetypeRibbon;
-                else if ( (L"ribbon2")					== sValue ) m_eValue = shapetypeRibbon2;
-                else if ( (L"rightArrow")				== sValue ) m_eValue = shapetypeRightArrow;
-                else if ( (L"rightArrowCallout")		== sValue ) m_eValue = shapetypeRightArrowCallout;
-                else if ( (L"rightBrace")				== sValue ) m_eValue = shapetypeRightBrace;
-                else if ( (L"rightBracket")			== sValue ) m_eValue = shapetypeRightBracket;
-                else if ( (L"round1Rect")				== sValue ) m_eValue = shapetypeRound1Rect;
-                else if ( (L"round2DiagRect")			== sValue ) m_eValue = shapetypeRound2DiagRect;
-                else if ( (L"round2SameRect")			== sValue ) m_eValue = shapetypeRound2SameRect;
-                else if ( (L"roundRect")				== sValue ) m_eValue = shapetypeRoundRect;
-                else if ( (L"rtTriangle")				== sValue ) m_eValue = shapetypeRtTriangle;
+                if      ( (L"rect")					== sValue ) this->m_eValue = shapetypeRect;
+                else if ( (L"ribbon")					== sValue ) this->m_eValue = shapetypeRibbon;
+                else if ( (L"ribbon2")					== sValue ) this->m_eValue = shapetypeRibbon2;
+                else if ( (L"rightArrow")				== sValue ) this->m_eValue = shapetypeRightArrow;
+                else if ( (L"rightArrowCallout")		== sValue ) this->m_eValue = shapetypeRightArrowCallout;
+                else if ( (L"rightBrace")				== sValue ) this->m_eValue = shapetypeRightBrace;
+                else if ( (L"rightBracket")			== sValue ) this->m_eValue = shapetypeRightBracket;
+                else if ( (L"round1Rect")				== sValue ) this->m_eValue = shapetypeRound1Rect;
+                else if ( (L"round2DiagRect")			== sValue ) this->m_eValue = shapetypeRound2DiagRect;
+                else if ( (L"round2SameRect")			== sValue ) this->m_eValue = shapetypeRound2SameRect;
+                else if ( (L"roundRect")				== sValue ) this->m_eValue = shapetypeRoundRect;
+                else if ( (L"rtTriangle")				== sValue ) this->m_eValue = shapetypeRtTriangle;
 		////new
-                else if ( (L"rightUpArrow")			== sValue ) m_eValue = 	 shapetypeRightUpArrow;
+                else if ( (L"rightUpArrow")			== sValue ) this->m_eValue = 	 shapetypeRightUpArrow;
 				break;
 
 			case 's':
-                if      ( (L"smileyFace")				== sValue ) m_eValue = shapetypeSmileyFace;
-                else if ( (L"snip1Rect")				== sValue ) m_eValue = shapetypeSnip1Rect;
-                else if ( (L"snip2DiagRect")			== sValue ) m_eValue = shapetypeSnip2DiagRect;
-                else if ( (L"snip2SameRect")			== sValue ) m_eValue = shapetypeSnip2SameRect;
-                else if ( (L"snipRoundRect")			== sValue ) m_eValue = shapetypeSnipRoundRect;
-                else if ( (L"squareTabs")				== sValue ) m_eValue = shapetypeSquareTabs;
-                else if ( (L"star10")					== sValue ) m_eValue = shapetypeStar10;
-                else if ( (L"star12")					== sValue ) m_eValue = shapetypeStar12;
-                else if ( (L"star16")					== sValue ) m_eValue = shapetypeStar16;
-                else if ( (L"star24")					== sValue ) m_eValue = shapetypeStar24;
-                else if ( (L"star32")					== sValue ) m_eValue = shapetypeStar32;
-                else if ( (L"star4")					== sValue ) m_eValue = shapetypeStar4;
-                else if ( (L"star5")					== sValue ) m_eValue = shapetypeStar5;
-                else if ( (L"star6")					== sValue ) m_eValue = shapetypeStar6;
-                else if ( (L"star7")					== sValue ) m_eValue = shapetypeStar7;
-                else if ( (L"star8")					== sValue ) m_eValue = shapetypeStar8;
-                else if ( (L"straightConnector1")		== sValue ) m_eValue = shapetypeStraightConnector1;
-                else if ( (L"stripedRightArrow")		== sValue ) m_eValue = shapetypeStripedRightArrow;
-                else if ( (L"sun")						== sValue ) m_eValue = shapetypeSun;
-                else if ( (L"swooshArrow")				== sValue ) m_eValue = shapetypeSwooshArrow;
+                if      ( (L"smileyFace")				== sValue ) this->m_eValue = shapetypeSmileyFace;
+                else if ( (L"snip1Rect")				== sValue ) this->m_eValue = shapetypeSnip1Rect;
+                else if ( (L"snip2DiagRect")			== sValue ) this->m_eValue = shapetypeSnip2DiagRect;
+                else if ( (L"snip2SameRect")			== sValue ) this->m_eValue = shapetypeSnip2SameRect;
+                else if ( (L"snipRoundRect")			== sValue ) this->m_eValue = shapetypeSnipRoundRect;
+                else if ( (L"squareTabs")				== sValue ) this->m_eValue = shapetypeSquareTabs;
+                else if ( (L"star10")					== sValue ) this->m_eValue = shapetypeStar10;
+                else if ( (L"star12")					== sValue ) this->m_eValue = shapetypeStar12;
+                else if ( (L"star16")					== sValue ) this->m_eValue = shapetypeStar16;
+                else if ( (L"star24")					== sValue ) this->m_eValue = shapetypeStar24;
+                else if ( (L"star32")					== sValue ) this->m_eValue = shapetypeStar32;
+                else if ( (L"star4")					== sValue ) this->m_eValue = shapetypeStar4;
+                else if ( (L"star5")					== sValue ) this->m_eValue = shapetypeStar5;
+                else if ( (L"star6")					== sValue ) this->m_eValue = shapetypeStar6;
+                else if ( (L"star7")					== sValue ) this->m_eValue = shapetypeStar7;
+                else if ( (L"star8")					== sValue ) this->m_eValue = shapetypeStar8;
+                else if ( (L"straightConnector1")		== sValue ) this->m_eValue = shapetypeStraightConnector1;
+                else if ( (L"stripedRightArrow")		== sValue ) this->m_eValue = shapetypeStripedRightArrow;
+                else if ( (L"sun")						== sValue ) this->m_eValue = shapetypeSun;
+                else if ( (L"swooshArrow")				== sValue ) this->m_eValue = shapetypeSwooshArrow;
 				break;
 
 			case 't':
-                if      ( (L"teardrop")				== sValue ) m_eValue = shapetypeTeardrop;
-                else if ( (L"trapezoid")				== sValue ) m_eValue = shapetypeTrapezoid;
-                else if ( (L"triangle")				== sValue ) m_eValue = shapetypeTriangle;
+                if      ( (L"teardrop")				== sValue ) this->m_eValue = shapetypeTeardrop;
+                else if ( (L"trapezoid")				== sValue ) this->m_eValue = shapetypeTrapezoid;
+                else if ( (L"triangle")				== sValue ) this->m_eValue = shapetypeTriangle;
 		/////new
-                else if ( (L"textArchDownPour")		== sValue ) m_eValue = 	 shapetypeTextArchDownPour;
-                else if ( (L"textArchUpPour")			== sValue ) m_eValue = 	 shapetypeTextArchUpPour;
-                else if ( (L"textCanDown")				== sValue ) m_eValue = 	 shapetypeTextCanDown;
-                else if ( (L"textCanUp")				== sValue ) m_eValue = 	 shapetypeTextCanUp;
-                else if ( (L"textCirclePour")			== sValue ) m_eValue = 	 shapetypeTextCirclePour;
-                else if ( (L"textCurveDown")			== sValue ) m_eValue = 	 shapetypeTextCurveDown;
-                else if ( (L"textCurveUp")				== sValue ) m_eValue = 	 shapetypeTextCurveUp;
-                else if ( (L"textDeflate")				== sValue ) m_eValue = 	 shapetypeTextDeflate;
-                else if ( (L"textDeflateBottom")		== sValue ) m_eValue = 	 shapetypeTextDeflateBottom;
-                else if ( (L"textDeflateInflate")		== sValue ) m_eValue = 	 shapetypeTextDeflateInflate;
-                else if ( (L"textDeflateInflateDeflate")	== sValue ) m_eValue = 	 shapetypeTextDeflateInflateDeflat;
-                else if ( (L"textDeflateTop")			== sValue ) m_eValue = 	 shapetypeTextDeflateTop;
-                else if ( (L"textDoubleWave1")			== sValue ) m_eValue = 	 shapetypeTextDoubleWave1;
-                else if ( (L"textFadeDown")			== sValue ) m_eValue = 	 shapetypeTextFadeDown;
-                else if ( (L"textFadeLeft")			== sValue ) m_eValue = 	 shapetypeTextFadeLeft;
-                else if ( (L"textFadeRight")			== sValue ) m_eValue = 	 shapetypeTextFadeRight;
-                else if ( (L"textFadeUp")				== sValue ) m_eValue = 	 shapetypeTextFadeUp;
-                else if ( (L"textInflateBottom")		== sValue ) m_eValue = 	 shapetypeTextInflateBottom;
-                else if ( (L"textInflateTop")			== sValue ) m_eValue = 	 shapetypeTextInflateTop;
-                else if ( (L"textRingInside")			== sValue ) m_eValue = 	 shapetypeTextRingInside;
-                else if ( (L"textRingOutside")			== sValue ) m_eValue = 	 shapetypeTextRingOutside;
-                else if ( (L"textWave1")				== sValue ) m_eValue = 	 shapetypeTextWave1;
-                else if ( (L"textWave2")				== sValue ) m_eValue = 	 shapetypeTextWave2;
-                else if ( (L"textWave4")				== sValue ) m_eValue = 	 shapetypeTextWave4;
-                else if ( (L"thickArrow")				== sValue ) m_eValue = 	 shapetypeThickArrow;
+                else if ( (L"textArchDownPour")		== sValue ) this->m_eValue = 	 shapetypeTextArchDownPour;
+                else if ( (L"textArchUpPour")			== sValue ) this->m_eValue = 	 shapetypeTextArchUpPour;
+                else if ( (L"textCanDown")				== sValue ) this->m_eValue = 	 shapetypeTextCanDown;
+                else if ( (L"textCanUp")				== sValue ) this->m_eValue = 	 shapetypeTextCanUp;
+                else if ( (L"textCirclePour")			== sValue ) this->m_eValue = 	 shapetypeTextCirclePour;
+                else if ( (L"textCurveDown")			== sValue ) this->m_eValue = 	 shapetypeTextCurveDown;
+                else if ( (L"textCurveUp")				== sValue ) this->m_eValue = 	 shapetypeTextCurveUp;
+                else if ( (L"textDeflate")				== sValue ) this->m_eValue = 	 shapetypeTextDeflate;
+                else if ( (L"textDeflateBottom")		== sValue ) this->m_eValue = 	 shapetypeTextDeflateBottom;
+                else if ( (L"textDeflateInflate")		== sValue ) this->m_eValue = 	 shapetypeTextDeflateInflate;
+                else if ( (L"textDeflateInflateDeflate")	== sValue ) this->m_eValue = 	 shapetypeTextDeflateInflateDeflat;
+                else if ( (L"textDeflateTop")			== sValue ) this->m_eValue = 	 shapetypeTextDeflateTop;
+                else if ( (L"textDoubleWave1")			== sValue ) this->m_eValue = 	 shapetypeTextDoubleWave1;
+                else if ( (L"textFadeDown")			== sValue ) this->m_eValue = 	 shapetypeTextFadeDown;
+                else if ( (L"textFadeLeft")			== sValue ) this->m_eValue = 	 shapetypeTextFadeLeft;
+                else if ( (L"textFadeRight")			== sValue ) this->m_eValue = 	 shapetypeTextFadeRight;
+                else if ( (L"textFadeUp")				== sValue ) this->m_eValue = 	 shapetypeTextFadeUp;
+                else if ( (L"textInflateBottom")		== sValue ) this->m_eValue = 	 shapetypeTextInflateBottom;
+                else if ( (L"textInflateTop")			== sValue ) this->m_eValue = 	 shapetypeTextInflateTop;
+                else if ( (L"textRingInside")			== sValue ) this->m_eValue = 	 shapetypeTextRingInside;
+                else if ( (L"textRingOutside")			== sValue ) this->m_eValue = 	 shapetypeTextRingOutside;
+                else if ( (L"textWave1")				== sValue ) this->m_eValue = 	 shapetypeTextWave1;
+                else if ( (L"textWave2")				== sValue ) this->m_eValue = 	 shapetypeTextWave2;
+                else if ( (L"textWave4")				== sValue ) this->m_eValue = 	 shapetypeTextWave4;
+                else if ( (L"thickArrow")				== sValue ) this->m_eValue = 	 shapetypeThickArrow;
 				break;
 			case 'u':
-                if      ( (L"upArrow")					== sValue ) m_eValue = shapetypeUpArrow;
-                else if ( (L"upArrowCallout")			== sValue ) m_eValue = shapetypeUpArrowCallout;
-                else if ( (L"upDownArrow")				== sValue ) m_eValue = shapetypeUpDownArrow;
-                else if ( (L"upDownArrowCallout")		== sValue ) m_eValue = shapetypeUpDownArrowCallout;
-                else if ( (L"uturnArrow")				== sValue ) m_eValue = shapetypeUturnArrow;
+                if      ( (L"upArrow")					== sValue ) this->m_eValue = shapetypeUpArrow;
+                else if ( (L"upArrowCallout")			== sValue ) this->m_eValue = shapetypeUpArrowCallout;
+                else if ( (L"upDownArrow")				== sValue ) this->m_eValue = shapetypeUpDownArrow;
+                else if ( (L"upDownArrowCallout")		== sValue ) this->m_eValue = shapetypeUpDownArrowCallout;
+                else if ( (L"uturnArrow")				== sValue ) this->m_eValue = shapetypeUturnArrow;
 				break;
 
 			case 'v':
-                if      ( (L"verticalScroll")			== sValue ) m_eValue = shapetypeVerticalScroll;
+                if      ( (L"verticalScroll")			== sValue ) this->m_eValue = shapetypeVerticalScroll;
 				break;
 
 			case 'w':
-                if      ( (L"wave")					== sValue ) m_eValue = shapetypeWave;
-                else if ( (L"wedgeEllipseCallout")		== sValue ) m_eValue = shapetypeWedgeEllipseCallout;
-                else if ( (L"wedgeRectCallout")		== sValue ) m_eValue = shapetypeWedgeRectCallout;
-                else if ( (L"wedgeRoundRectCallout")	== sValue ) m_eValue = shapetypeWedgeRoundRectCallout;
+                if      ( (L"wave")					== sValue ) this->m_eValue = shapetypeWave;
+                else if ( (L"wedgeEllipseCallout")		== sValue ) this->m_eValue = shapetypeWedgeEllipseCallout;
+                else if ( (L"wedgeRectCallout")		== sValue ) this->m_eValue = shapetypeWedgeRectCallout;
+                else if ( (L"wedgeRoundRectCallout")	== sValue ) this->m_eValue = shapetypeWedgeRoundRectCallout;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring    ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case shapetypeAccentBorderCallout1:			return (L"accentBorderCallout1");
 			case shapetypeAccentBorderCallout2:			return (L"accentBorderCallout2");
@@ -4545,7 +4544,7 @@ namespace SimpleTypes
 		
 		EShapeType GetValue() const
 		{
-            return m_eValue;
+            return this->m_eValue;
 		}
 	};
 
@@ -4598,73 +4597,73 @@ namespace SimpleTypes
 
         virtual ESystemColorVal FromString(std::wstring &sValue)
 		{
-            m_eValue = systemcolorvalWindow;
+            this->m_eValue = systemcolorvalWindow;
 			SetRGBA( 0, 0, 0, 255 );
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case '3':
-                if      ( (L"3dDkShadow")              == sValue ) { m_eValue = systemcolorval3dDkShadow; SetRGBASys( COLOR_3DDKSHADOW ); }
-                else if ( (L"3dLight")                 == sValue ) { m_eValue = systemcolorval3dLight; SetRGBASys( COLOR_3DLIGHT ); }
+                if      ( (L"3dDkShadow")              == sValue ) { this->m_eValue = systemcolorval3dDkShadow; SetRGBASys( COLOR_3DDKSHADOW ); }
+                else if ( (L"3dLight")                 == sValue ) { this->m_eValue = systemcolorval3dLight; SetRGBASys( COLOR_3DLIGHT ); }
 				break;
 			case 'a':
-                if      ( (L"activeBorder")            == sValue ) { m_eValue = systemcolorvalActiveBorder; SetRGBASys( COLOR_ACTIVEBORDER ); }
-                else if ( (L"activeCaption")           == sValue ) { m_eValue = systemcolorvalActiveCaption; SetRGBASys( COLOR_ACTIVECAPTION ); }
-                else if ( (L"appWorkspace")            == sValue ) { m_eValue = systemcolorvalAppWorkspace; SetRGBASys( COLOR_APPWORKSPACE ); }
+                if      ( (L"activeBorder")            == sValue ) { this->m_eValue = systemcolorvalActiveBorder; SetRGBASys( COLOR_ACTIVEBORDER ); }
+                else if ( (L"activeCaption")           == sValue ) { this->m_eValue = systemcolorvalActiveCaption; SetRGBASys( COLOR_ACTIVECAPTION ); }
+                else if ( (L"appWorkspace")            == sValue ) { this->m_eValue = systemcolorvalAppWorkspace; SetRGBASys( COLOR_APPWORKSPACE ); }
 				break;
 			case 'b':
-                if      ( (L"background")              == sValue ) { m_eValue = systemcolorvalBackground; SetRGBASys( COLOR_BACKGROUND ); }
-                else if ( (L"btnFace")                 == sValue ) { m_eValue = systemcolorvalBtnFace ; SetRGBASys( COLOR_BTNFACE ); }
-                else if ( (L"btnHighlight")            == sValue ) { m_eValue = systemcolorvalBtnHighlight ; SetRGBASys( COLOR_BTNHIGHLIGHT ); }
-                else if ( (L"btnShadow")               == sValue ) { m_eValue = systemcolorvalBtnShadow ; SetRGBASys( COLOR_BTNSHADOW ); }
-                else if ( (L"btnText")                 == sValue ) { m_eValue = systemcolorvalBtnText ; SetRGBASys( COLOR_BTNTEXT ); }
+                if      ( (L"background")              == sValue ) { this->m_eValue = systemcolorvalBackground; SetRGBASys( COLOR_BACKGROUND ); }
+                else if ( (L"btnFace")                 == sValue ) { this->m_eValue = systemcolorvalBtnFace ; SetRGBASys( COLOR_BTNFACE ); }
+                else if ( (L"btnHighlight")            == sValue ) { this->m_eValue = systemcolorvalBtnHighlight ; SetRGBASys( COLOR_BTNHIGHLIGHT ); }
+                else if ( (L"btnShadow")               == sValue ) { this->m_eValue = systemcolorvalBtnShadow ; SetRGBASys( COLOR_BTNSHADOW ); }
+                else if ( (L"btnText")                 == sValue ) { this->m_eValue = systemcolorvalBtnText ; SetRGBASys( COLOR_BTNTEXT ); }
 				break;
 			case 'c':
-                if      ( (L"captionText")             == sValue ) { m_eValue = systemcolorvalCaptionText ; SetRGBASys( COLOR_CAPTIONTEXT ); }
+                if      ( (L"captionText")             == sValue ) { this->m_eValue = systemcolorvalCaptionText ; SetRGBASys( COLOR_CAPTIONTEXT ); }
 				break;
 			case 'g':
-                if      ( (L"gradientActiveCaption")   == sValue ) { m_eValue = systemcolorvalGradientActiveCaption ; SetRGBASys( COLOR_GRADIENTACTIVECAPTION ); }
-                else if ( (L"gradientInactiveCaption") == sValue ) { m_eValue = systemcolorvalGradientInactiveCaption ; SetRGBASys( COLOR_GRADIENTINACTIVECAPTION ); }
-                else if ( (L"grayText")                == sValue ) { m_eValue = systemcolorvalGrayText ; SetRGBASys( COLOR_GRAYTEXT ); }
+                if      ( (L"gradientActiveCaption")   == sValue ) { this->m_eValue = systemcolorvalGradientActiveCaption ; SetRGBASys( COLOR_GRADIENTACTIVECAPTION ); }
+                else if ( (L"gradientInactiveCaption") == sValue ) { this->m_eValue = systemcolorvalGradientInactiveCaption ; SetRGBASys( COLOR_GRADIENTINACTIVECAPTION ); }
+                else if ( (L"grayText")                == sValue ) { this->m_eValue = systemcolorvalGrayText ; SetRGBASys( COLOR_GRAYTEXT ); }
 				break;
 			case 'h':
-                if      ( (L"highlight")               == sValue ) { m_eValue = systemcolorvalHighlight ; SetRGBASys( COLOR_HIGHLIGHT ); }
-                else if ( (L"highlightText")           == sValue ) { m_eValue = systemcolorvalHighlightText ; SetRGBASys( COLOR_HIGHLIGHTTEXT ); }
-                else if ( (L"hotLight")                == sValue ) { m_eValue = systemcolorvalHotLight ; SetRGBASys( COLOR_HOTLIGHT ); }
+                if      ( (L"highlight")               == sValue ) { this->m_eValue = systemcolorvalHighlight ; SetRGBASys( COLOR_HIGHLIGHT ); }
+                else if ( (L"highlightText")           == sValue ) { this->m_eValue = systemcolorvalHighlightText ; SetRGBASys( COLOR_HIGHLIGHTTEXT ); }
+                else if ( (L"hotLight")                == sValue ) { this->m_eValue = systemcolorvalHotLight ; SetRGBASys( COLOR_HOTLIGHT ); }
 				break;
 			case 'i':
-                if      ( (L"inactiveBorder")          == sValue ) { m_eValue = systemcolorvalInactiveBorder ; SetRGBASys( COLOR_INACTIVEBORDER ); }
-                else if ( (L"inactiveCaption")         == sValue ) { m_eValue = systemcolorvalInactiveCaption ; SetRGBASys( COLOR_INACTIVECAPTION ); }
-                else if ( (L"inactiveCaptionText")     == sValue ) { m_eValue = systemcolorvalInactiveCaptionText ; SetRGBASys( COLOR_INACTIVECAPTIONTEXT ); }
-                else if ( (L"infoBk")                  == sValue ) { m_eValue = systemcolorvalInfoBk ; SetRGBASys( COLOR_INFOBK ); }
-                else if ( (L"infoText")                == sValue ) { m_eValue = systemcolorvalInfoText ; SetRGBASys( COLOR_INFOTEXT ); }
+                if      ( (L"inactiveBorder")          == sValue ) { this->m_eValue = systemcolorvalInactiveBorder ; SetRGBASys( COLOR_INACTIVEBORDER ); }
+                else if ( (L"inactiveCaption")         == sValue ) { this->m_eValue = systemcolorvalInactiveCaption ; SetRGBASys( COLOR_INACTIVECAPTION ); }
+                else if ( (L"inactiveCaptionText")     == sValue ) { this->m_eValue = systemcolorvalInactiveCaptionText ; SetRGBASys( COLOR_INACTIVECAPTIONTEXT ); }
+                else if ( (L"infoBk")                  == sValue ) { this->m_eValue = systemcolorvalInfoBk ; SetRGBASys( COLOR_INFOBK ); }
+                else if ( (L"infoText")                == sValue ) { this->m_eValue = systemcolorvalInfoText ; SetRGBASys( COLOR_INFOTEXT ); }
 				break;
 			case 'm':
-                if      ( (L"menu")                    == sValue ) { m_eValue = systemcolorvalMenu ; SetRGBASys( COLOR_MENU ); }
-                else if ( (L"menuBar")                 == sValue ) { m_eValue = systemcolorvalMenuBar ; SetRGBASys( COLOR_MENUBAR ); }
-                else if ( (L"menuHighlight")           == sValue ) { m_eValue = systemcolorvalMenuHighlight ; SetRGBASys( COLOR_MENUHILIGHT ); }
-                else if ( (L"menuText")                == sValue ) { m_eValue = systemcolorvalMenuText ; SetRGBASys( COLOR_MENUTEXT ); }
+                if      ( (L"menu")                    == sValue ) { this->m_eValue = systemcolorvalMenu ; SetRGBASys( COLOR_MENU ); }
+                else if ( (L"menuBar")                 == sValue ) { this->m_eValue = systemcolorvalMenuBar ; SetRGBASys( COLOR_MENUBAR ); }
+                else if ( (L"menuHighlight")           == sValue ) { this->m_eValue = systemcolorvalMenuHighlight ; SetRGBASys( COLOR_MENUHILIGHT ); }
+                else if ( (L"menuText")                == sValue ) { this->m_eValue = systemcolorvalMenuText ; SetRGBASys( COLOR_MENUTEXT ); }
 				break;
 			case 's':
-                if      ( (L"scrollBar")               == sValue ) { m_eValue = systemcolorvalScrollBar ; SetRGBASys( COLOR_SCROLLBAR ); }
+                if      ( (L"scrollBar")               == sValue ) { this->m_eValue = systemcolorvalScrollBar ; SetRGBASys( COLOR_SCROLLBAR ); }
 				break;
 			case 'w':
-                if      ( (L"window")                  == sValue ) { m_eValue = systemcolorvalWindow ; SetRGBASys( COLOR_WINDOW ); }
-                else if ( (L"windowFrame")             == sValue ) { m_eValue = systemcolorvalWindowFrame ; SetRGBASys( COLOR_WINDOWFRAME ); }
-                else if ( (L"windowText")              == sValue ) { m_eValue = systemcolorvalWindowText ; SetRGBASys( COLOR_WINDOWTEXT ); }
+                if      ( (L"window")                  == sValue ) { this->m_eValue = systemcolorvalWindow ; SetRGBASys( COLOR_WINDOW ); }
+                else if ( (L"windowFrame")             == sValue ) { this->m_eValue = systemcolorvalWindowFrame ; SetRGBASys( COLOR_WINDOWFRAME ); }
+                else if ( (L"windowText")              == sValue ) { this->m_eValue = systemcolorvalWindowText ; SetRGBASys( COLOR_WINDOWTEXT ); }
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring         ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case systemcolorval3dDkShadow:              return (L"3dDkShadow");
 			case systemcolorval3dLight:                 return (L"3dLight");
@@ -4766,37 +4765,37 @@ namespace SimpleTypes
 
         virtual ETextAlignmentType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'l':
-                if      ( (L"l")    == sValue ) m_eValue = textalignmenttypeL;
+                if      ( (L"l")    == sValue ) this->m_eValue = textalignmenttypeL;
 				break;
 			case 'c':
-                if      ( (L"ctr")  == sValue ) m_eValue = textalignmenttypeCtr;
+                if      ( (L"ctr")  == sValue ) this->m_eValue = textalignmenttypeCtr;
 				break;
 			case 'd':
-                if      ( (L"dist") == sValue ) m_eValue = textalignmenttypeDist;
+                if      ( (L"dist") == sValue ) this->m_eValue = textalignmenttypeDist;
 				break;
 			case 'j':
-                if      ( (L"just") == sValue ) m_eValue = textalignmenttypeJust;
+                if      ( (L"just") == sValue ) this->m_eValue = textalignmenttypeJust;
 				break;
 			case 'r':
-                if      ( (L"r")    == sValue ) m_eValue = textalignmenttypeR;
+                if      ( (L"r")    == sValue ) this->m_eValue = textalignmenttypeR;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring            ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textalignmenttypeR   : return (L"r");			
 			case textalignmenttypeCtr : return (L"ctr");		
@@ -4832,37 +4831,37 @@ namespace SimpleTypes
 
         virtual ETextAnchoringType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'b':
-                if      ( (L"b")    == sValue ) m_eValue = textanchoringtypeB;
+                if      ( (L"b")    == sValue ) this->m_eValue = textanchoringtypeB;
 				break;
 			case 'c':
-                if      ( (L"ctr")  == sValue ) m_eValue = textanchoringtypeCtr;
+                if      ( (L"ctr")  == sValue ) this->m_eValue = textanchoringtypeCtr;
 				break;
 			case 'd':
-                if      ( (L"dist") == sValue ) m_eValue = textanchoringtypeDist;
+                if      ( (L"dist") == sValue ) this->m_eValue = textanchoringtypeDist;
 				break;
 			case 'j':
-                if      ( (L"just") == sValue ) m_eValue = textanchoringtypeJust;
+                if      ( (L"just") == sValue ) this->m_eValue = textanchoringtypeJust;
 				break;
 			case 't':
-                if      ( (L"t")    == sValue ) m_eValue = textanchoringtypeT;
+                if      ( (L"t")    == sValue ) this->m_eValue = textanchoringtypeT;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring            ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textanchoringtypeB   : return (L"b");			
 			case textanchoringtypeCtr : return (L"ctr");		
@@ -4889,23 +4888,23 @@ namespace SimpleTypes
 
 		virtual void    SetValue  (unsigned char unValue)
 		{
-            m_eValue = (std::min)( 16, (std::max)( 1, (int) unValue ) );
+            this->m_eValue = (std::min)( 16, (std::max)( 1, (int) unValue ) );
 		}
         virtual unsigned char FromString(std::wstring &sValue)
         {
-            m_eValue = (unsigned char)_wtoi( sValue.c_str() );
+            this->m_eValue = (unsigned char)_wtoi( sValue.c_str() );
 
-            if (m_eValue < 1)
-                m_eValue = 1;
-            if (m_eValue > 16)
-                m_eValue = 16;
+            if (this->m_eValue < 1)
+                this->m_eValue = 1;
+            if (this->m_eValue > 16)
+                this->m_eValue = 16;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring       ToString  () const
         {
-            std::wstring sResult = std::to_wstring(m_eValue);
+            std::wstring sResult = std::to_wstring(this->m_eValue);
 
             return sResult;
         }
@@ -4933,35 +4932,35 @@ namespace SimpleTypes
 
         virtual ETextFontAlignType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'a':
-                if      ( (L"a")    == sValue ) m_eValue = textfontaligntypeAuto;
+                if      ( (L"a")    == sValue ) this->m_eValue = textfontaligntypeAuto;
 				break;
 			case 'c':
-                if      ( (L"ctr")  == sValue ) m_eValue = textfontaligntypeCtr;
+                if      ( (L"ctr")  == sValue ) this->m_eValue = textfontaligntypeCtr;
 				break;
 			case 'b':
-                if      ( (L"base") == sValue ) m_eValue = textfontaligntypeBase;
-                if      ( (L"b")    == sValue ) m_eValue = textfontaligntypeB;
+                if      ( (L"base") == sValue ) this->m_eValue = textfontaligntypeBase;
+                if      ( (L"b")    == sValue ) this->m_eValue = textfontaligntypeB;
 			break;
 			case 't':
-                if      ( (L"just") == sValue ) m_eValue = textfontaligntypeT;
+                if      ( (L"just") == sValue ) this->m_eValue = textfontaligntypeT;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring            ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textfontaligntypeB   : return (L"b");			
 			case textfontaligntypeCtr : return (L"ctr");		
@@ -5048,28 +5047,28 @@ namespace SimpleTypes
 
         virtual ETextHorzOverflowType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"clip")     == sValue ) m_eValue = texthorzoverflowtypeClip;
+                if      ( (L"clip")     == sValue ) this->m_eValue = texthorzoverflowtypeClip;
 				break;
 			case 'o':
-                if      ( (L"overflow") == sValue ) m_eValue = texthorzoverflowtypeOverflow;
+                if      ( (L"overflow") == sValue ) this->m_eValue = texthorzoverflowtypeOverflow;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring               ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case texthorzoverflowtypeClip     : return (L"clip");			
 			case texthorzoverflowtypeOverflow : return (L"overflow");		
@@ -5093,18 +5092,18 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
         {
-            m_eValue = _wtoi64( sValue.c_str() );
-            if (m_eValue < -51206400)
-                m_eValue = -51206400;
-            if (m_eValue > 51206400)
-                m_eValue = 51206400;
+            this->m_eValue = _wtoi64( sValue.c_str() );
+            if (this->m_eValue < -51206400)
+                this->m_eValue = -51206400;
+            if (this->m_eValue > 51206400)
+                this->m_eValue = 51206400;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5114,16 +5113,16 @@ namespace SimpleTypes
 
         double ToPoints()
         {
-            return  Emu_To_Pt(m_eValue);
+            return  Emu_To_Pt(this->m_eValue);
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
         }
         double ToCm()
         {
-            return Emu_To_Cm( m_eValue );
+            return Emu_To_Cm( this->m_eValue );
         }
     };
 	//--------------------------------------------------------------------------------
@@ -5137,18 +5136,18 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
         {
-            m_eValue = _wtoi64( sValue.c_str() );
-            if (m_eValue < 0)
-                m_eValue = 0;
-            if (m_eValue > 51206400)
-                m_eValue = 51206400;
+            this->m_eValue = _wtoi64( sValue.c_str() );
+            if (this->m_eValue < 0)
+                this->m_eValue = 0;
+            if (this->m_eValue > 51206400)
+                this->m_eValue = 51206400;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5158,16 +5157,16 @@ namespace SimpleTypes
 
         double ToPoints()
         {
-            return  Emu_To_Pt(m_eValue);
+            return  Emu_To_Pt(this->m_eValue);
         }
 
         double ToInches()
         {
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
         }
         double ToCm()
         {
-            return Emu_To_Cm( m_eValue );
+            return Emu_To_Cm( this->m_eValue );
         }
     };
 //	//--------------------------------------------------------------------------------
@@ -5183,18 +5182,18 @@ namespace SimpleTypes
 //
 //        virtual __int64 FromString(std::wstring &sValue)
 //        {
-//            m_eValue = _wtoi64( sValue );
-//            if (m_eValue < 0)
-//                m_eValue = 0;
-//            if (m_eValue > 51206400)
-//                m_eValue = 51206400;
+//            this->m_eValue = _wtoi64( sValue );
+//            if (this->m_eValue < 0)
+//                this->m_eValue = 0;
+//            if (this->m_eValue > 51206400)
+//                this->m_eValue = 51206400;
 //
-//            return m_eValue;
+//            return this->m_eValue;
 //        }
 //
 //        virtual std::wstring ToString  () const
 //        {
-//            std::wstring sResult = std::to_wstring( m_eValue);
+//            std::wstring sResult = std::to_wstring( this->m_eValue);
 //
 //            return sResult;
 //        }
@@ -5204,16 +5203,16 @@ namespace SimpleTypes
 //
 //        double ToPoints()
 //        {
-//            return  Emu_To_Pt(m_eValue);
+//            return  Emu_To_Pt(this->m_eValue);
 //        }
 //
 //        double ToInches()
 //        {
-//            return Emu_To_Inch( m_eValue );
+//            return Emu_To_Inch( this->m_eValue );
 //        }
 //        double ToCm()
 //        {
-//            return Emu_To_Cm( m_eValue );
+//            return Emu_To_Cm( this->m_eValue );
 //        }
 //    };
 	//--------------------------------------------------------------------------------
@@ -5272,107 +5271,107 @@ namespace SimpleTypes
 
         virtual ETextShapeType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 5 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[4];
 			switch ( wChar )
 			{
 			case 'A':
 
-                if      ( (L"textArchDown")		== sValue ) m_eValue = textshapetypeTextArchDown;
-                else if ( (L"textArchDownPour")	== sValue ) m_eValue = textshapetypeTextArchDownPour;
-                else if ( (L"textArchUp")			== sValue ) m_eValue = textshapetypeTextArchUp;
-                else if ( (L"textArchUpPour")		== sValue ) m_eValue = textshapetypeTextArchUpPour;
+                if      ( (L"textArchDown")		== sValue ) this->m_eValue = textshapetypeTextArchDown;
+                else if ( (L"textArchDownPour")	== sValue ) this->m_eValue = textshapetypeTextArchDownPour;
+                else if ( (L"textArchUp")			== sValue ) this->m_eValue = textshapetypeTextArchUp;
+                else if ( (L"textArchUpPour")		== sValue ) this->m_eValue = textshapetypeTextArchUpPour;
 				break;
 
 			case 'B':
 
-                if      ( (L"textButton")			== sValue ) m_eValue = textshapetypeTextButton;
-                else if ( (L"textButtonPour")		== sValue ) m_eValue = textshapetypeTextButtonPour;
+                if      ( (L"textButton")			== sValue ) this->m_eValue = textshapetypeTextButton;
+                else if ( (L"textButtonPour")		== sValue ) this->m_eValue = textshapetypeTextButtonPour;
 				break;
 
 			case 'C':
 
-                if      ( (L"textCanDown")			== sValue ) m_eValue = textshapetypeTextCanDown;
-                else if ( (L"textCanUp")			== sValue ) m_eValue = textshapetypeTextCanUp;
-                else if ( (L"textCascadeDown")		== sValue ) m_eValue = textshapetypeTextCascadeDown;
-                else if ( (L"textCascadeUp")		== sValue ) m_eValue = textshapetypeTextCascadeUp;
-                else if ( (L"textChevron")			== sValue ) m_eValue = textshapetypeTextChevron;
-                else if ( (L"textChevronInverted")	== sValue ) m_eValue = textshapetypeTextChevronInverted;
-                else if ( (L"textCircle")			== sValue ) m_eValue = textshapetypeTextCircle;
-                else if ( (L"textCirclePour")		== sValue ) m_eValue = textshapetypeTextCirclePour;
-                else if ( (L"textCurveDown")		== sValue ) m_eValue = textshapetypeTextCurveDown;
-                else if ( (L"textCurveUp")			== sValue ) m_eValue = textshapetypeTextCurveUp;
+                if      ( (L"textCanDown")			== sValue ) this->m_eValue = textshapetypeTextCanDown;
+                else if ( (L"textCanUp")			== sValue ) this->m_eValue = textshapetypeTextCanUp;
+                else if ( (L"textCascadeDown")		== sValue ) this->m_eValue = textshapetypeTextCascadeDown;
+                else if ( (L"textCascadeUp")		== sValue ) this->m_eValue = textshapetypeTextCascadeUp;
+                else if ( (L"textChevron")			== sValue ) this->m_eValue = textshapetypeTextChevron;
+                else if ( (L"textChevronInverted")	== sValue ) this->m_eValue = textshapetypeTextChevronInverted;
+                else if ( (L"textCircle")			== sValue ) this->m_eValue = textshapetypeTextCircle;
+                else if ( (L"textCirclePour")		== sValue ) this->m_eValue = textshapetypeTextCirclePour;
+                else if ( (L"textCurveDown")		== sValue ) this->m_eValue = textshapetypeTextCurveDown;
+                else if ( (L"textCurveUp")			== sValue ) this->m_eValue = textshapetypeTextCurveUp;
 				break;
 
 			case 'D':
-                if      ( (L"textDeflate")			== sValue ) m_eValue = textshapetypeTextDeflate;
-                else if ( (L"textDeflateBottom")	== sValue ) m_eValue = textshapetypeTextDeflateBottom;
-                else if ( (L"textDeflateInflate")	== sValue ) m_eValue = textshapetypeTextDeflateInflate;
-                else if ( (L"textDeflateInflateDeflate") == sValue ) m_eValue = textshapetypeTextDeflateInflateDeflate;
-                else if ( (L"textDeflateTop")		== sValue ) m_eValue = textshapetypeTextDeflateTop;
-                else if ( (L"textDoubleWave1")		== sValue ) m_eValue = textshapetypeTextDoubleWave1;
+                if      ( (L"textDeflate")			== sValue ) this->m_eValue = textshapetypeTextDeflate;
+                else if ( (L"textDeflateBottom")	== sValue ) this->m_eValue = textshapetypeTextDeflateBottom;
+                else if ( (L"textDeflateInflate")	== sValue ) this->m_eValue = textshapetypeTextDeflateInflate;
+                else if ( (L"textDeflateInflateDeflate") == sValue ) this->m_eValue = textshapetypeTextDeflateInflateDeflate;
+                else if ( (L"textDeflateTop")		== sValue ) this->m_eValue = textshapetypeTextDeflateTop;
+                else if ( (L"textDoubleWave1")		== sValue ) this->m_eValue = textshapetypeTextDoubleWave1;
 				break;
 
 			case 'F':
-                if      ( (L"textFadeDown")		== sValue ) m_eValue = textshapetypeTextFadeDown;
-                else if ( (L"textFadeLeft")		== sValue ) m_eValue = textshapetypeTextFadeLeft;
-                else if ( (L"textFadeRight")		== sValue ) m_eValue = textshapetypeTextFadeRight;
-                else if ( (L"textFadeUp")			== sValue ) m_eValue = textshapetypeTextFadeUp;
+                if      ( (L"textFadeDown")		== sValue ) this->m_eValue = textshapetypeTextFadeDown;
+                else if ( (L"textFadeLeft")		== sValue ) this->m_eValue = textshapetypeTextFadeLeft;
+                else if ( (L"textFadeRight")		== sValue ) this->m_eValue = textshapetypeTextFadeRight;
+                else if ( (L"textFadeUp")			== sValue ) this->m_eValue = textshapetypeTextFadeUp;
 				break;
 
 			case 'I':
 
-                if      ( (L"textInflate")			== sValue ) m_eValue = textshapetypeTextInflate;
-                else if ( (L"textInflateBottom")	== sValue ) m_eValue = textshapetypeTextInflateBottom;
-                else if ( (L"textInflateTop")		== sValue ) m_eValue = textshapetypeTextInflateTop;
+                if      ( (L"textInflate")			== sValue ) this->m_eValue = textshapetypeTextInflate;
+                else if ( (L"textInflateBottom")	== sValue ) this->m_eValue = textshapetypeTextInflateBottom;
+                else if ( (L"textInflateTop")		== sValue ) this->m_eValue = textshapetypeTextInflateTop;
 				break;
 
 			case 'N':
-                if      ( (L"textNoShape")			== sValue ) m_eValue = textshapetypeTextNoShape;
+                if      ( (L"textNoShape")			== sValue ) this->m_eValue = textshapetypeTextNoShape;
 				break;
 
 			case 'P':
 
-                if      ( (L"textPlain")			== sValue ) m_eValue = textshapetypeTextPlain;
+                if      ( (L"textPlain")			== sValue ) this->m_eValue = textshapetypeTextPlain;
 				break;
 
 			case 'R':
 
-                if		( (L"textRingInside")		== sValue ) m_eValue = textshapetypeTextRingInside;
-                else if ( (L"textRingOutside")		== sValue ) m_eValue = textshapetypeTextRingOutside;
+                if		( (L"textRingInside")		== sValue ) this->m_eValue = textshapetypeTextRingInside;
+                else if ( (L"textRingOutside")		== sValue ) this->m_eValue = textshapetypeTextRingOutside;
 				break;
 
 			case 'S':
 
-                if      ( (L"textSlantDown")		== sValue ) m_eValue = textshapetypeTextSlantDown;
-                else if ( (L"textSlantUp")			== sValue ) m_eValue = textshapetypeTextSlantUp;
-                else if ( (L"textStop")			== sValue ) m_eValue = textshapetypeTextStop;
+                if      ( (L"textSlantDown")		== sValue ) this->m_eValue = textshapetypeTextSlantDown;
+                else if ( (L"textSlantUp")			== sValue ) this->m_eValue = textshapetypeTextSlantUp;
+                else if ( (L"textStop")			== sValue ) this->m_eValue = textshapetypeTextStop;
 				break;
 
 			case 'T':
 				
-                if      ( (L"textTriangle")		== sValue ) m_eValue = textshapetypeTextTriangle;
-                else if ( (L"textTriangleInverted")== sValue ) m_eValue = textshapetypeTextTriangleInverted;
+                if      ( (L"textTriangle")		== sValue ) this->m_eValue = textshapetypeTextTriangle;
+                else if ( (L"textTriangleInverted")== sValue ) this->m_eValue = textshapetypeTextTriangleInverted;
 				break;
 
 			case 'W':
 				
-                if      ( (L"textWave1")			== sValue ) m_eValue = textshapetypeTextWave1;
-                else if ( (L"textWave2")			== sValue ) m_eValue = textshapetypeTextWave2;
-                else if ( (L"textWave4")			== sValue ) m_eValue = textshapetypeTextWave4;
+                if      ( (L"textWave1")			== sValue ) this->m_eValue = textshapetypeTextWave1;
+                else if ( (L"textWave2")			== sValue ) this->m_eValue = textshapetypeTextWave2;
+                else if ( (L"textWave4")			== sValue ) this->m_eValue = textshapetypeTextWave4;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring        ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textshapetypeTextArchDown:				return (L"textArchDown");
 			case textshapetypeTextArchDownPour:			return (L"textArchDownPour");
@@ -5488,18 +5487,18 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
         {
-            m_eValue = _wtoi64( sValue.c_str() );
-            if (m_eValue < 0)
-                m_eValue = 0;
-            if (m_eValue > 158400)
-                m_eValue = 158400;
+            this->m_eValue = _wtoi64( sValue.c_str() );
+            if (this->m_eValue < 0)
+                this->m_eValue = 0;
+            if (this->m_eValue > 158400)
+                this->m_eValue = 158400;
 
-            return m_eValue;
+            return this->m_eValue;
         }
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
             return sResult;
         }
@@ -5509,16 +5508,16 @@ namespace SimpleTypes
 
         double ToPoints()
         {
-            return  m_eValue;
+            return  this->m_eValue;
         }
 
         double ToInches()
         {
-            return Pt_To_Inch( m_eValue );
+            return Pt_To_Inch( this->m_eValue );
         }
         double ToCm()
         {
-            return Pt_To_Cm( m_eValue );
+            return Pt_To_Cm( this->m_eValue );
         }
     };
 	//--------------------------------------------------------------------------------
@@ -5582,39 +5581,39 @@ namespace SimpleTypes
 
         virtual ETextVerticalType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'e':
-                if      ( (L"eaVert")         == sValue ) m_eValue = textverticaltypeEaVert;
+                if      ( (L"eaVert")         == sValue ) this->m_eValue = textverticaltypeEaVert;
 				break;
 			case 'h':
-                if      ( (L"horz")           == sValue ) m_eValue = textverticaltypeHorz;
+                if      ( (L"horz")           == sValue ) this->m_eValue = textverticaltypeHorz;
 				break;
 			case 'm':
-                if      ( (L"mongolianVert")  == sValue ) m_eValue = textverticaltypeMongolianVert;
+                if      ( (L"mongolianVert")  == sValue ) this->m_eValue = textverticaltypeMongolianVert;
 				break;
 			case 'v':
-                if      ( (L"vert")           == sValue ) m_eValue = textverticaltypeVert;
-                else if ( (L"vert270")        == sValue ) m_eValue = textverticaltypeVert270;
+                if      ( (L"vert")           == sValue ) this->m_eValue = textverticaltypeVert;
+                else if ( (L"vert270")        == sValue ) this->m_eValue = textverticaltypeVert270;
 				break;
 			case 'w':
-                if      ( (L"wordArtVert")    == sValue ) m_eValue = textverticaltypeWordArtVert;
-                else if ( (L"wordArtVertRtl") == sValue ) m_eValue = textverticaltypeWordArtVertRtl;
+                if      ( (L"wordArtVert")    == sValue ) this->m_eValue = textverticaltypeWordArtVert;
+                else if ( (L"wordArtVertRtl") == sValue ) this->m_eValue = textverticaltypeWordArtVertRtl;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring           ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textverticaltypeEaVert         : return (L"eaVert");			
 			case textverticaltypeHorz           : return (L"horz");		
@@ -5650,31 +5649,31 @@ namespace SimpleTypes
 
         virtual ETextVertOverflowType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'c':
-                if      ( (L"clip")     == sValue ) m_eValue = textvertoverflowtypeClip;
+                if      ( (L"clip")     == sValue ) this->m_eValue = textvertoverflowtypeClip;
 				break;
 			case 'e':
-                if      ( (L"ellipsis") == sValue ) m_eValue = textvertoverflowtypeEllipsis;
+                if      ( (L"ellipsis") == sValue ) this->m_eValue = textvertoverflowtypeEllipsis;
 				break;
 			case 'o':
-                if      ( (L"overflow") == sValue ) m_eValue = textvertoverflowtypeOverflow;
+                if      ( (L"overflow") == sValue ) this->m_eValue = textvertoverflowtypeOverflow;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring              ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textvertoverflowtypeClip     : return (L"clip");			
 			case textvertoverflowtypeEllipsis : return (L"ellipsis");		
@@ -5705,28 +5704,28 @@ namespace SimpleTypes
 
         virtual ETextWrappingType FromString(std::wstring &sValue)
 		{
-            m_eValue = eDefValue;
+            this->m_eValue = eDefValue;
 
             if ( sValue.length() <= 0 )
-                return m_eValue;
+                return this->m_eValue;
 
 			wchar_t wChar = sValue[0];
 			switch ( wChar )
 			{
 			case 'n':
-                if      ( (L"none")   == sValue ) m_eValue = textwrappingtypeNone;
+                if      ( (L"none")   == sValue ) this->m_eValue = textwrappingtypeNone;
 				break;
 			case 's':
-                if      ( (L"square") == sValue ) m_eValue = textwrappingtypeSquare;
+                if      ( (L"square") == sValue ) this->m_eValue = textwrappingtypeSquare;
 				break;
 			}
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring           ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case textwrappingtypeNone   : return (L"none");			
 			case textwrappingtypeSquare : return (L"square");		
@@ -5758,18 +5757,18 @@ namespace SimpleTypes
 
         virtual ETileFlipMode FromString(std::wstring &sValue)
 		{
-            if      ( (L"none") == sValue ) m_eValue = tileflipmodeNone;
-            else if ( (L"x")    == sValue ) m_eValue = tileflipmodeX;
-            else if ( (L"xy")   == sValue ) m_eValue = tileflipmodeXY;
-            else if ( (L"y")    == sValue ) m_eValue = tileflipmodeY;
-            else                             m_eValue = eDefValue;
+            if      ( (L"none") == sValue ) this->m_eValue = tileflipmodeNone;
+            else if ( (L"x")    == sValue ) this->m_eValue = tileflipmodeX;
+            else if ( (L"xy")   == sValue ) this->m_eValue = tileflipmodeXY;
+            else if ( (L"y")    == sValue ) this->m_eValue = tileflipmodeY;
+            else                             this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring       ToString  () const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case tileflipmodeNone: return (L"none");
 			case tileflipmodeX   : return (L"x");
@@ -5811,19 +5810,19 @@ namespace SimpleTypes
 
         virtual EAlignH FromString(std::wstring &sValue)
 		{
-            if       ( (L"center")  == sValue ) m_eValue = alignhCenter;
-            else if  ( (L"inside")  == sValue ) m_eValue = alignhInside;
-            else if  ( (L"left")    == sValue ) m_eValue = alignhLeft;
-            else if  ( (L"outside") == sValue ) m_eValue = alignhOutside;
-            else if  ( (L"right")   == sValue ) m_eValue = alignhRight;
-            else                                 m_eValue = eDefValue;
+            if       ( (L"center")  == sValue ) this->m_eValue = alignhCenter;
+            else if  ( (L"inside")  == sValue ) this->m_eValue = alignhInside;
+            else if  ( (L"left")    == sValue ) this->m_eValue = alignhLeft;
+            else if  ( (L"outside") == sValue ) this->m_eValue = alignhOutside;
+            else if  ( (L"right")   == sValue ) this->m_eValue = alignhRight;
+            else                                 this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case alignhCenter  : return (L"center");
 			case alignhInside  : return (L"inside");
@@ -5862,19 +5861,19 @@ namespace SimpleTypes
 
         virtual EAlignV FromString(std::wstring &sValue)
 		{
-            if       ( (L"bottom")  == sValue ) m_eValue = alignvBottom;
-            else if  ( (L"center")  == sValue ) m_eValue = alignvCenter;
-            else if  ( (L"inside")  == sValue ) m_eValue = alignvInside;
-            else if  ( (L"outside") == sValue ) m_eValue = alignvOutside;
-            else if  ( (L"top")     == sValue ) m_eValue = alignvTop;
-            else                                 m_eValue = eDefValue;
+            if       ( (L"bottom")  == sValue ) this->m_eValue = alignvBottom;
+            else if  ( (L"center")  == sValue ) this->m_eValue = alignvCenter;
+            else if  ( (L"inside")  == sValue ) this->m_eValue = alignvInside;
+            else if  ( (L"outside") == sValue ) this->m_eValue = alignvOutside;
+            else if  ( (L"top")     == sValue ) this->m_eValue = alignvTop;
+            else                                 this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString() const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case alignvBottom  : return (L"bottom");
 			case alignvCenter  : return (L"center");
@@ -5903,14 +5902,14 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
 		{
-            m_eValue = _wtoi64( sValue.c_str() );
+            this->m_eValue = _wtoi64( sValue.c_str() );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -5921,19 +5920,19 @@ namespace SimpleTypes
 
 		double ToPoints()
 		{
-            return Emu_To_Pt( m_eValue );
+            return Emu_To_Pt( this->m_eValue );
 		}
 		double ToMM() const
 		{
-            return Emu_To_Mm( m_eValue );
+            return Emu_To_Mm( this->m_eValue );
 		}
 		double ToInches()
 		{
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
 		}
 		double ToTwips()
 		{
-            return Emu_To_Twips( m_eValue );
+            return Emu_To_Twips( this->m_eValue );
 		}	
 	};
 
@@ -5962,22 +5961,22 @@ namespace SimpleTypes
 
         virtual ERelFromH FromString(std::wstring &sValue)
 		{
-            if       ( (L"character")     == sValue ) m_eValue = relfromhCharacter;
-            else if  ( (L"column")        == sValue ) m_eValue = relfromhColumn;
-            else if  ( (L"insideMargin")  == sValue ) m_eValue = relfromhInsideMargin;
-            else if  ( (L"leftMargin")    == sValue ) m_eValue = relfromhLeftMargin;
-            else if  ( (L"margin")        == sValue ) m_eValue = relfromhMargin;
-            else if  ( (L"outsideMargin") == sValue ) m_eValue = relfromhOutsideMargin;
-            else if  ( (L"page")          == sValue ) m_eValue = relfromhPage;
-            else if  ( (L"rightMargin")   == sValue ) m_eValue = relfromhRightMargin;
-            else                                       m_eValue = eDefValue;
+            if       ( (L"character")     == sValue ) this->m_eValue = relfromhCharacter;
+            else if  ( (L"column")        == sValue ) this->m_eValue = relfromhColumn;
+            else if  ( (L"insideMargin")  == sValue ) this->m_eValue = relfromhInsideMargin;
+            else if  ( (L"leftMargin")    == sValue ) this->m_eValue = relfromhLeftMargin;
+            else if  ( (L"margin")        == sValue ) this->m_eValue = relfromhMargin;
+            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = relfromhOutsideMargin;
+            else if  ( (L"page")          == sValue ) this->m_eValue = relfromhPage;
+            else if  ( (L"rightMargin")   == sValue ) this->m_eValue = relfromhRightMargin;
+            else                                       this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case relfromhCharacter     : return (L"character");
 			case relfromhColumn        : return (L"column");
@@ -6023,22 +6022,22 @@ namespace SimpleTypes
 
         virtual ERelFromV FromString(std::wstring &sValue)
 		{
-            if       ( (L"bottomMargin")  == sValue ) m_eValue = relfromvBottomMargin;
-            else if  ( (L"insideMargin")  == sValue ) m_eValue = relfromvInsideMargin;
-            else if  ( (L"line")          == sValue ) m_eValue = relfromvLine;
-            else if  ( (L"margin")        == sValue ) m_eValue = relfromvMargin;
-            else if  ( (L"outsideMargin") == sValue ) m_eValue = relfromvOutsideMargin;
-            else if  ( (L"page")          == sValue ) m_eValue = relfromvPage;
-            else if  ( (L"paragraph")     == sValue ) m_eValue = relfromvParagraph;
-            else if  ( (L"topMargin")     == sValue ) m_eValue = relfromvTopMargin;
-            else                                       m_eValue = eDefValue;
+            if       ( (L"bottomMargin")  == sValue ) this->m_eValue = relfromvBottomMargin;
+            else if  ( (L"insideMargin")  == sValue ) this->m_eValue = relfromvInsideMargin;
+            else if  ( (L"line")          == sValue ) this->m_eValue = relfromvLine;
+            else if  ( (L"margin")        == sValue ) this->m_eValue = relfromvMargin;
+            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = relfromvOutsideMargin;
+            else if  ( (L"page")          == sValue ) this->m_eValue = relfromvPage;
+            else if  ( (L"paragraph")     == sValue ) this->m_eValue = relfromvParagraph;
+            else if  ( (L"topMargin")     == sValue ) this->m_eValue = relfromvTopMargin;
+            else                                       this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case relfromvBottomMargin  : return (L"bottomMargin");
 			case relfromvInsideMargin  : return (L"insideMargin");
@@ -6075,20 +6074,20 @@ namespace SimpleTypes
 
         virtual ESizeRelFromH FromString(std::wstring &sValue)
 		{
-			if       ( (L"margin")     == sValue ) m_eValue = sizerelfromhMargin;
-			else if  ( (L"page")        == sValue ) m_eValue = sizerelfromhPage;
-			else if  ( (L"leftMargin")  == sValue ) m_eValue = sizerelfromhLeftMargin;
-			else if  ( (L"rightMargin")    == sValue ) m_eValue = sizerelfromhRightMargin;
-			else if  ( (L"insideMargin")        == sValue ) m_eValue = sizerelfromhInsideMargin;
-			else if  ( (L"outsideMargin") == sValue ) m_eValue = sizerelfromhOutsideMargin;
-			else                                       m_eValue = eDefValue;
+            if       ( (L"margin")     == sValue ) this->m_eValue = sizerelfromhMargin;
+            else if  ( (L"page")        == sValue ) this->m_eValue = sizerelfromhPage;
+            else if  ( (L"leftMargin")  == sValue ) this->m_eValue = sizerelfromhLeftMargin;
+            else if  ( (L"rightMargin")    == sValue ) this->m_eValue = sizerelfromhRightMargin;
+            else if  ( (L"insideMargin")        == sValue ) this->m_eValue = sizerelfromhInsideMargin;
+            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = sizerelfromhOutsideMargin;
+            else                                       this->m_eValue = eDefValue;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case sizerelfromhMargin     : return (L"margin");
 			case sizerelfromhPage        : return (L"page");
@@ -6122,20 +6121,20 @@ namespace SimpleTypes
 
         virtual ESizeRelFromV FromString(std::wstring &sValue)
 		{
-			if       ( (L"margin")     == sValue ) m_eValue = sizerelfromvMargin;
-			else if  ( (L"page")        == sValue ) m_eValue = sizerelfromvPage;
-			else if  ( (L"topMargin")  == sValue ) m_eValue = sizerelfromvTopMargin;
-			else if  ( (L"bottomMargin")    == sValue ) m_eValue = sizerelfromvBottomMargin;
-			else if  ( (L"insideMargin")        == sValue ) m_eValue = sizerelfromvInsideMargin;
-			else if  ( (L"outsideMargin") == sValue ) m_eValue = sizerelfromvOutsideMargin;
-			else                                       m_eValue = eDefValue;
+            if       ( (L"margin")     == sValue ) this->m_eValue = sizerelfromvMargin;
+            else if  ( (L"page")        == sValue ) this->m_eValue = sizerelfromvPage;
+            else if  ( (L"topMargin")  == sValue ) this->m_eValue = sizerelfromvTopMargin;
+            else if  ( (L"bottomMargin")    == sValue ) this->m_eValue = sizerelfromvBottomMargin;
+            else if  ( (L"insideMargin")        == sValue ) this->m_eValue = sizerelfromvInsideMargin;
+            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = sizerelfromvOutsideMargin;
+            else                                       this->m_eValue = eDefValue;
 
-			return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-			switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case sizerelfromvMargin     : return (L"margin");
 			case sizerelfromvPage        : return (L"page");
@@ -6162,14 +6161,14 @@ namespace SimpleTypes
 
         virtual __int64 FromString(std::wstring &sValue)
 		{
-            m_eValue = wcstoul( sValue.c_str(), NULL, 10 );
+            this->m_eValue = wcstoul( sValue.c_str(), NULL, 10 );
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring ToString  () const
 		{
-			return XmlUtils::IntToString(m_eValue, L"%lu"); 
+            return XmlUtils::IntToString(this->m_eValue, L"%lu");
 		}
 
 
@@ -6178,20 +6177,20 @@ namespace SimpleTypes
 
 		double ToPoints()
 		{
-            return Emu_To_Pt( m_eValue );
+            return Emu_To_Pt( this->m_eValue );
 		}
 		double ToMM() const 
 		{
-            return Emu_To_Mm( m_eValue );
+            return Emu_To_Mm( this->m_eValue );
 		}
 
 		double ToInches()
 		{
-            return Emu_To_Inch( m_eValue );
+            return Emu_To_Inch( this->m_eValue );
 		}
 		double ToTwips()
 		{
-            return Emu_To_Twips( m_eValue );
+            return Emu_To_Twips( this->m_eValue );
 		}
 	};
 
@@ -6217,18 +6216,18 @@ namespace SimpleTypes
 
         virtual EWrapText FromString(std::wstring &sValue)
 		{
-            if       ( (L"bothSides") == sValue ) m_eValue = wraptextBothSides;
-            else if  ( (L"largest")   == sValue ) m_eValue = wraptextLargest;
-            else if  ( (L"left")      == sValue ) m_eValue = wraptextLeft;
-            else if  ( (L"right")     == sValue ) m_eValue = wraptextRight;
-            else                                   m_eValue = eDefValue;
+            if       ( (L"bothSides") == sValue ) this->m_eValue = wraptextBothSides;
+            else if  ( (L"largest")   == sValue ) this->m_eValue = wraptextLargest;
+            else if  ( (L"left")      == sValue ) this->m_eValue = wraptextLeft;
+            else if  ( (L"right")     == sValue ) this->m_eValue = wraptextRight;
+            else                                   this->m_eValue = eDefValue;
 
-            return m_eValue;
+            return this->m_eValue;
 		}
 
         virtual std::wstring   ToString() const
 		{
-            switch(m_eValue)
+            switch(this->m_eValue)
 			{
 			case wraptextBothSides : return (L"bothSides");
 			case wraptextLargest   : return (L"largest");

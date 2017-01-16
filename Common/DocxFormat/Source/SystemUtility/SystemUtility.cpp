@@ -53,7 +53,7 @@ namespace OOX
 		if (bIsNorm)
 			Normalize();
     }
-	CPath::CPath(LPCSTR& sName, bool bIsNorm)
+    CPath::CPath(const char*& sName, bool bIsNorm)
     {
 		std::string s(sName);
 		m_strFilename = std::wstring(s.begin(), s.end());
@@ -61,7 +61,7 @@ namespace OOX
 		if (bIsNorm)
 			Normalize();
     }
-    CPath::CPath(LPCWSTR& sName, bool bIsNorm) : m_strFilename(sName)
+    CPath::CPath(const wchar_t*& sName, bool bIsNorm) : m_strFilename(sName)
     {
 		CheckIsRoot();
 		if (bIsNorm)
@@ -89,14 +89,14 @@ namespace OOX
 		Normalize();
         return *this;
     }
-    CPath& CPath::operator=(LPCSTR oSrc)
+    CPath& CPath::operator=(const char* oSrc)
     {
 		std::string s(oSrc);
 		m_strFilename = std::wstring(s.begin(), s.end());
         Normalize();
         return *this;
     }
-    CPath& CPath::operator=(LPCWSTR oSrc)
+    CPath& CPath::operator=(const wchar_t* oSrc)
     {
         m_strFilename = oSrc;
         Normalize();
@@ -243,7 +243,7 @@ namespace OOX
         
         return true;
 #else
-        std::string path_string = stringWstingToUtf8String(strFileName);
+        std::string path_string = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName);
         FILE * pFile = fopen (path_string.c_str(), "wb");
         if (NULL != pFile)
         {

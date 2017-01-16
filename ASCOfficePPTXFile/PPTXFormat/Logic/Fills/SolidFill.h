@@ -60,7 +60,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
+                m_namespace = XmlUtils::GetNamespace(node.GetName());
 				Color.GetColorFrom(node);
 				FillParentPointersForChilds();
 			}

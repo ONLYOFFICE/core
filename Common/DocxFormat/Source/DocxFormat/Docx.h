@@ -103,8 +103,8 @@ namespace OOX
 
 	public:
 
-                bool Read(const CPath& oFilePath);
-                bool Write(const CPath& oFilePath)
+        bool Read(const CPath& oFilePath);
+        bool Write(const CPath& oFilePath)
 		{
 
 			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
@@ -115,7 +115,7 @@ namespace OOX
 #if defined(_WIN32) || defined (_WIN64)
 			CreateDirectoryW( oFilePath.GetPath().c_str(), NULL );
 #else
-            std::string sFileParthUtf8 = stringWstingToUtf8String (oFilePath.GetPath());
+            std::string sFileParthUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oFilePath.GetPath());
             mkdir (sFileParthUtf8.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
 
@@ -126,7 +126,7 @@ namespace OOX
 			oRels.Write( oFilePath / FILE_SEPARATOR_STR );
 			oContent.Write( oFilePath );
 
-                        return true;
+            return true;
 		}
 
 

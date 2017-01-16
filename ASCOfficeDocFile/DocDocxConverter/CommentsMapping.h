@@ -54,16 +54,16 @@ namespace DocFileFormat
 
 				int index = 0; 
 
-				m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-				m_pXmlWriter->WriteNodeBegin( _T( "w:comments" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
+                m_pXmlWriter->WriteNodeBegin( L"w:comments", TRUE );
 
 				//write namespaces
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:v" ), OpenXmlNamespaces::VectorML );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:o" ), OpenXmlNamespaces::Office );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:w10" ), OpenXmlNamespaces::OfficeWord );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:r" ), OpenXmlNamespaces::Relationships );
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+                m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
+                m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
+                m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
@@ -72,11 +72,11 @@ namespace DocFileFormat
 				{   
 					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
 
-					m_pXmlWriter->WriteNodeBegin( _T( "w:comment" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( index ));
-					m_pXmlWriter->WriteAttribute( _T( "w:author" ),
+                    m_pXmlWriter->WriteNodeBegin( L"w:comment", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( index ));
+                    m_pXmlWriter->WriteAttribute( L"w:author",
 						FormatUtils::XmlEncode(m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ) ));
-					m_pXmlWriter->WriteAttribute( _T( "w:initials" ), atrdPre10->GetUserInitials());
+                    m_pXmlWriter->WriteAttribute( L"w:initials", atrdPre10->GetUserInitials());
 
 					//!!!TODO!!!
 					/*//ATRDpost10 is optional and not saved in all files
@@ -87,7 +87,7 @@ namespace DocFileFormat
 					atrdPost10.Date.Convert(new DateMapping(_writer));
 					}*/
 
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpHdr ) < (*m_document->IndividualCommentsPlex)[index + 1] )
 					{
@@ -111,12 +111,12 @@ namespace DocFileFormat
 						}
 					}
 
-					m_pXmlWriter->WriteNodeEnd(_T( "w:comment" ));
+                    m_pXmlWriter->WriteNodeEnd(L"w:comment" );
 
 					++index;
 				}
 
-				m_pXmlWriter->WriteNodeEnd( _T( "w:comments" ) );
+                m_pXmlWriter->WriteNodeEnd( L"w:comments" );
 				m_context->_docx->CommentsXML = std::wstring(m_pXmlWriter->GetXmlString()); 
 			}
 		}

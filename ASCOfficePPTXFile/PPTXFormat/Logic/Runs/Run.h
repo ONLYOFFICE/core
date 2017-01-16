@@ -35,7 +35,6 @@
 
 #include "RunBase.h"
 #include "./../RunProperties.h"
-//#include "../../../../Common/DocxFormat/Source/Utility/Encoding.h"
 
 namespace PPTX
 {

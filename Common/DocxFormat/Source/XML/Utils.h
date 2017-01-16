@@ -47,10 +47,9 @@ using namespace NSCommon;
 namespace XmlUtils
 {
     static std::wstring strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
-    //static _bstr_t g_cpszXML_TextExt	= L"./text()";
 
 	// common
-	AVSINLINE static int     GetDigit   (TCHAR c)
+    AVSINLINE static int     GetDigit   (wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return (int)(c - '0');
@@ -61,7 +60,7 @@ namespace XmlUtils
 
 		return 0;
 	}
-	AVSINLINE static bool     IsDigit   (TCHAR c)
+    AVSINLINE static bool     IsDigit   (wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return true;
@@ -388,13 +387,13 @@ namespace XmlUtils
 
 		}
 
-        AVSINLINE void AddCharSafe(const TCHAR& _c)
+        AVSINLINE void AddCharSafe(const wchar_t& _c)
 		{
 			AddSize(1);
 			*m_pDataCur++ = _c;
 			++m_lSizeCur;
 		}
-        AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+        AVSINLINE void AddChar2Safe(const wchar_t _c1, const wchar_t& _c2)
 		{
 			AddSize(2);
 			*m_pDataCur++ = _c1;

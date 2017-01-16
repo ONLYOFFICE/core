@@ -953,8 +953,8 @@ void NSPresentationEditor::CShapeWriter::WriteTextInfo()
 			NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 			int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
 
-			if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 )) ||
-				((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (TCHAR)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (TCHAR)13 ))))
+            if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 )) ||
+                ((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (wchar_t)13 ))))
 			{
 				continue;
 			}

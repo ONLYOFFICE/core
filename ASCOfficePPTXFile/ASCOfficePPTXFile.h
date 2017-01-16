@@ -52,8 +52,8 @@ class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
 	PPTX::Folder*					m_pFolder;
-    std::wstring                         m_strTempDir;
-	std::wstring							m_strDirectory;
+    std::wstring                    m_strTempDir;
+    std::wstring					m_strDirectory;
 
 	// writer to ppty
 	std::wstring		m_strFontDirectory;

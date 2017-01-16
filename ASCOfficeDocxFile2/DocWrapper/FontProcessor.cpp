@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "FontProcessor.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"

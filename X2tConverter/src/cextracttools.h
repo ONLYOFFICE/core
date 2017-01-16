@@ -750,7 +750,7 @@ namespace NExtractTools
 #if defined(_WIN32) || defined (_WIN64)
         options_stream.open(xmlFileName.c_str());
 #else
-        options_stream.open(stringWstingToUtf8String(xmlFileName));
+        options_stream.open(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xmlFileName));
 #endif
 		if (options_stream.is_open())
 		{		

@@ -69,7 +69,7 @@ namespace NSCustomShapesConvert
 	};	
 
 	#define VML_GUIDE_COUNT 18
-	const LPSTR VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
+    static const char* VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
 		"sum",
 		"prod",
 		"mid",

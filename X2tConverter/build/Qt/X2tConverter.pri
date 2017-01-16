@@ -70,6 +70,9 @@ core_mac {
     INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
 
+INCLUDEPATH += ../../../DesktopEditor/xml/build/qt
+
+
 INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../../DesktopEditor/agg-2.4/include
@@ -91,13 +94,15 @@ DEPENDPATH += $$PWD/../../../ASCOfficeDocxFile2
 
 ##############################################################################################################
 
-SOURCES += ../../src/cextracttools.cpp \
-    ../../../Common/OfficeFileFormatChecker2.cpp \
-	../../src/ASCConverters.cpp
-HEADERS += ../../src/cextracttools.h \
-    ../../../Common/OfficeFileFormatChecker.h \
-	../../src/ASCConverters.h \
-	../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
+SOURCES +=  ../../src/cextracttools.cpp \
+            ../../../Common/OfficeFileFormatChecker2.cpp \
+            ../../src/ASCConverters.cpp \
+            ../../../DesktopEditor/xml/src/xmllight.cpp \
+    ../../../DesktopEditor/xml/src/xmldom.cpp
+HEADERS +=  ../../src/cextracttools.h \
+            ../../../Common/OfficeFileFormatChecker.h \
+            ../../src/ASCConverters.h \
+            ../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
 
 
 #Xls file

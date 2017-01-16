@@ -68,3 +68,4 @@
 #include "../Source/Common/Wrap.cpp"
 #include "../Source/Common/ZIndex.cpp"
 #include "../Source/Common/SimpleTypes_Word.cpp"
+#include "../Source/SystemUtility/SystemUtility.cpp"

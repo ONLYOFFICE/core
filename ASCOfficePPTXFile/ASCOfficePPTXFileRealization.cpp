@@ -58,11 +58,10 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
     GetLongPathName(m_strTempDir.c_str(), buffer, 4096);
     m_strTempDir = std::wstring(buffer) + std::wstring(L"_PPTX\\");
 #else
-    m_strTempDir = NSDirectory::GetTempPath();
-    m_strTempDir = NSDirectory::GetLongPathName_(m_strTempDir) + std::wstring("_PPTX/");
+    m_strTempDir = NSDirectory::GetTempPath() + L"_PPTX/";
 #endif
 	//
-	m_strFontDirectory = _T("");
+    m_strFontDirectory  = _T("");
 	m_strMediaDirectory = _T("");
     m_bIsUseSystemFonts = false;
 	m_strEmbeddedFontsDirectory = _T("");
@@ -70,18 +69,14 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
     m_strFolderThemes = _T("");
 
 	//m_fCallbackResource = fCallbackResource;
-	m_fCallbackExtract = fCallbackExtract;
+    m_fCallbackExtract  = fCallbackExtract;
 	m_fCallbackCompress = fCallbackCompress;
 	m_fCallbackProgress = fCallbackProgress;
-	m_pCallbackArg = pCallbackArg;
+    m_pCallbackArg      = pCallbackArg;
 
 	m_pFolder		= NULL;
-	//m_pOfficeUtils	= NULL;
-
-	//if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
-	//	return S_FALSE;
-
 }
+
 CPPTXFile::~CPPTXFile()
 {
 	RELEASEOBJECT(m_pFolder);
@@ -93,33 +88,16 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 	{
         bool res = NSDirectory::CreateDirectory(localTempDir);
         if (res == false) return S_FALSE;
-        //int res = SHCreateDirectoryExW(NULL, localTempDir.GetString(), NULL);
-        //if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-        //	return S_FALSE;
+
 		put_TempDirectory(sDstPath);
 	}
 	else
 	{
         bool res = NSDirectory::CreateDirectory(m_strTempDir);
         if (res == false) return S_FALSE;
-    //	int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-    //	if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-    //		return S_FALSE;
 	}
 	localTempDir = m_strTempDir;
 
-	/*
-	SHFILEOPSTRUCTW shfos;
-	ZeroMemory(&shfos, sizeof(shfos));
-	shfos.wFunc = FO_DELETE;
-    std::wstring _local = localTempDir + std::wstring(L"*.*");
-	_local.AppendChar(0);
-	_local.AppendChar(0);
-	shfos.pFrom = _local.GetString();
-	shfos.fFlags = FOF_SILENT + FOF_NOCONFIRMATION;
-	if(SHFileOperationW(&shfos) != 0)
-	return S_FALSE;
-	*/
 	std::wstring srcFileName = sSrcFileName;
 	if (m_pCallbackArg)
 	{
@@ -192,8 +170,8 @@ HRESULT CPPTXFile::put_TempDirectory(std::wstring newVal)
 #else
     if(NSDirectory::PathIsDirectory(TempStr))
     {
-        if(TempStr.Right(1) != _T("/"))
-            TempStr += _T("/");
+        if(TempStr[TempStr.length() - 1] != L'/')
+            TempStr += L"/";
         m_strTempDir = TempStr;
     }
 #endif
@@ -336,7 +314,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 
     NSDirectory::CreateDirectory(m_strMediaDirectory);
 
-	if (_T("") != m_strEmbeddedFontsDirectory)
+    if (!m_strEmbeddedFontsDirectory.empty())
 	{
         NSDirectory::CreateDirectory(m_strEmbeddedFontsDirectory);
 

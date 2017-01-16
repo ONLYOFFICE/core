@@ -127,7 +127,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            std::string __str_ppty((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            std::string __str_ppty((char*)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -137,7 +137,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            std::string __str_version((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            std::string __str_version((char*)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -147,7 +147,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            std::string __str_decode_len_ansi((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            std::string __str_decode_len_ansi((char*)(pBuffer + start_pos), cur_pos - start_pos);
             std::wstring  __str_decode_len = std::wstring(__str_decode_len_ansi.begin(), __str_decode_len_ansi.end());
 			start_pos = cur_pos + 1;
 
@@ -158,7 +158,7 @@ namespace NSBinPptxRW
 
 			BYTE* pDstBuffer = new BYTE[dstLenTemp];
 			int dstLen = dstLenTemp;
-            Base64::Base64Decode((LPCSTR)pBuffer, len, pDstBuffer, &dstLen);
+            Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
 
 			m_oReader.m_strContentTypes = _T("");
 			m_oReader.Init(pDstBuffer, 0, dstLen);

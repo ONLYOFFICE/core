@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,20 +41,20 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString Hyperlink::GetFullHyperlinkName(FileContainer* pRels)const
+		std::wstring Hyperlink::GetFullHyperlinkName(FileContainer* pRels)const
 		{
 			if(id.IsInit() && *id != _T(""))
 			{
 				PPTX::RId rid(*id);
 
-				CString sLink = _T("");
+				std::wstring sLink = _T("");
 				if (pRels != NULL)
 				{
 					smart_ptr<PPTX::HyperLink> p = pRels->hyperlink(rid);
 					if (p.is_init())
 						sLink = p->Uri().m_strFilename;
 				}
-				if(sLink.IsEmpty())
+                if(sLink.empty())
 				{
 					if(parentFileIs<Slide>())
 						sLink = parentFileAs<Slide>().GetFullHyperlinkNameFromRId(rid);
@@ -65,13 +65,13 @@ namespace PPTX
 					else if(parentFileIs<Theme>())
 						sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
 				}
-				
-				sLink.Replace(TCHAR('\\'), TCHAR('/'));
-				sLink.Replace(_T("//"), _T("/"));
-				sLink.Replace(_T("http:/"), _T("http://"));
-				sLink.Replace(_T("https:/"), _T("https://"));
-				sLink.Replace(_T("ftp:/"), _T("ftp://"));
-				sLink.Replace(_T("file:/"), _T("file://"));
+
+                boost::algorithm::replace_all(sLink, L"\\",     L"/");
+                boost::algorithm::replace_all(sLink, L"//",     L"/");
+                boost::algorithm::replace_all(sLink, L"http:/", L"http://");
+                boost::algorithm::replace_all(sLink, L"https:/",L"https://");
+                boost::algorithm::replace_all(sLink, L"ftp:/",  L"ftp://");
+                boost::algorithm::replace_all(sLink, L"file:/", L"file://");
 
 				return sLink;
 			}

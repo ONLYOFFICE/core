@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,12 +61,11 @@ namespace PPTX
 				node.ReadAttributeBase(L"rad", rad);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (rad.IsInit())
 				{
-					CString str = _T("");
-					str.Format(_T("<a:alphaOutset rad=\"%u\" />"), *rad);
+                    std::wstring str = L"<a:alphaOutset rad=\"" + std::to_wstring(*rad) + L"\"/>";
 					return str;
 				}
 

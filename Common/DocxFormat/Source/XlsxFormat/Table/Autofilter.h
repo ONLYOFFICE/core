@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -63,7 +63,7 @@ namespace OOX
 					writer.WriteString(L"<sortCondition");
 					WritingStringNullableAttrString(L"sortBy", m_oSortBy, m_oSortBy->ToString());
 					WritingStringNullableAttrBool(L"descending", m_oDescending);
-					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
 					writer.WriteString(L"/>");
 				}
@@ -112,7 +112,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -121,7 +121,7 @@ namespace OOX
 				if(m_oRef.IsInit() && m_arrItems.size() > 0)
 				{
 					writer.WriteString(L"<sortState");
-					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString2());
+					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString());
 					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
 					writer.WriteString(L">");
 
@@ -182,7 +182,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -237,7 +237,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -294,7 +294,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -349,7 +349,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -413,7 +413,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -462,7 +462,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -531,7 +531,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -598,7 +598,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -660,7 +660,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -753,7 +753,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -762,7 +762,7 @@ namespace OOX
 				if(m_oRef.IsInit())
 				{
 					writer.WriteString(L"<autoFilter");
-					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString2());
+					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					writer.WriteString(L">");
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);

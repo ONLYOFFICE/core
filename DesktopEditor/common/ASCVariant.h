@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,9 @@
 #pragma once
 
 #include "Types.h"
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+
+#include <string>
 
 enum ASC_VARENUM
     {
@@ -56,11 +58,12 @@ typedef unsigned short ASC_VARTYPE;
 
 struct ASC_VARIANT
 {
-	ASC_VARIANT() : vt(ASC_VT_EMPTY), llVal(0), lVal(0), bVal(0), iVal(0), fltVal(0), dblVal(0), boolVal(false) {}
+    ASC_VARIANT() : vt(ASC_VT_EMPTY), llVal(0), lVal(0), bVal(0), iVal(0), fltVal(0), dblVal(0), boolVal(false) {}
+
     ASC_VARTYPE     vt;
 
-    LONG64          llVal;
-    LONG            lVal;
+    _INT64          llVal;
+    _INT32          lVal;
     BYTE            bVal;
     SHORT           iVal;
     FLOAT           fltVal;

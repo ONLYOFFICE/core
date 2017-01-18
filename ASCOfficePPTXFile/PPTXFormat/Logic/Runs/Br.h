@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,7 +61,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rPr);
@@ -88,7 +88,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 
-			virtual CString GetText()const{return _T("\n");};
+			virtual std::wstring GetText()const{return _T("\n");};
 		public:
 			nullable<RunProperties> rPr;
 		protected:

@@ -29,6 +29,7 @@ DEFINES +=  UNICODE \
 INCLUDEPATH += ../include
 INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
+INCLUDEPATH += ../../DesktopEditor/xml/build/qt
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -89,7 +89,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("path") == strName)
 						{
@@ -112,7 +112,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("flip"), flip);
@@ -124,14 +124,14 @@ namespace PPTX
 				oValue.WriteNullable(lin);
 				oValue.WriteNullable(tileRect);
 
-				CString strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sAttrNamespace;
-				CString strName;
+				std::wstring sAttrNamespace;
+				std::wstring strName;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sAttrNamespace = _T("w14:");
@@ -230,7 +230,7 @@ namespace PPTX
 			nullable<Path>				path;
 			nullable<Rect>				tileRect;
 
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

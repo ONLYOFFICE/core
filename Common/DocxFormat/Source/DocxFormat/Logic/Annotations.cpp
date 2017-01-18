@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -143,10 +143,10 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		CString CIns::toXML() const
+		std::wstring CIns::toXML() const
 		{
 			//todo
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 		void CDel::fromXML(XmlUtils::CXmlNode& oNode)
@@ -239,10 +239,10 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		CString CDel::toXML() const
+		std::wstring CDel::toXML() const
 		{
 			//todo
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 	} // namespace Logic

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,6 @@
 #ifndef DOCX_SERIALIZER
 #define DOCX_SERIALIZER
 
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 namespace Writers
@@ -52,32 +51,32 @@ namespace BinDocxRW
 	class CDocxSerializer
 	{
 	public:
-		CString m_sFontDir;
-		CString m_sEmbeddedFontsDir;
+        std::wstring m_sFontDir;
+        std::wstring m_sEmbeddedFontsDir;
 		bool m_bIsNoBase64Save;
 		bool m_bSaveChartAsImg;
 		ParamsWriter* m_pParamsWriter;
 		Writers::FileWriter* m_pCurFileWriter;
 	public:
 		CDocxSerializer();
-		bool ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions);
-        bool ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions);
+        bool ConvertDocxToDoct(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
+        bool ConvertDoctToDocx(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
 		
-		bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath, const CString& sEmbedPath);
-		bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
+        bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
+        bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 
-		bool CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath);
+        bool CreateDocxFolders(std::wstring strDirectory, std::wstring& sThemePath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
-		bool getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml);
-		bool getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+        bool getXmlContent      (NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, std::wstring& sOutputXml);
+        bool getBinaryContent   (const std::wstring& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
 		
-		bool getBinaryContentElem(OOX::EElementType eElemType, void* pElem, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-		bool getXmlContentElem(OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sOutputXml);
+        bool getBinaryContentElem   (OOX::EElementType eElemType, void* pElem, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+        bool getXmlContentElem      (OOX::EElementType eType, NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::wstring& sOutputXml);
 
-		void setFontDir(const CString& sFontDir);
-		void setEmbeddedFontsDir(const CString& sEmbeddedFontsDir);
-		void setIsNoBase64Save(bool bIsNoBase64Save);
-		void setSaveChartAsImg(bool bSaveChartAsImg);
+        void setFontDir         (const std::wstring& sFontDir);
+        void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
+        void setIsNoBase64Save  (bool bIsNoBase64Save);
+        void setSaveChartAsImg  (bool bSaveChartAsImg);
 	};
 }
 #endif	// #ifndef DOCX_SERIALIZER

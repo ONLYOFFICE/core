@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace PPTX
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
-                CString sSndNodeName = _T("snd");
+                std::wstring sSndNodeName = _T("snd");
                 snd	= node.ReadNodeNoNS(sSndNodeName);
 
 				node.ReadAttributeBase(L"r:id", id);
@@ -64,7 +64,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"highlightClick", highlightClick);
 				node.ReadAttributeBase(L"endSnd", endSnd);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:id"), id);
@@ -92,7 +92,7 @@ namespace PPTX
 					if (pWriter->m_pCommonRels->is_init())
 						pRels = pWriter->m_pCommonRels->operator ->();
 
-					CString str = GetFullHyperlinkName(pRels);
+					std::wstring str = GetFullHyperlinkName(pRels);
 					pWriter->WriteString1(0, str);
 				}
 
@@ -116,7 +116,7 @@ namespace PPTX
 				pReader->Skip(1); // start attributes
 
 				bool bIsPresentUrl = false;
-				CString strUrl = _T("");
+				std::wstring strUrl = _T("");
 
 				while (true)
 				{
@@ -180,9 +180,7 @@ namespace PPTX
 					{
 						LONG lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
 
-						CString strRid = _T("");
-						strRid.Format(_T("rId%d"), lId);
-						id = strRid;
+						id = L"rId" + std::to_wstring(lId);
 					}
 				}
 
@@ -222,7 +220,7 @@ namespace PPTX
 			nullable_bool			endSnd;//default="false"
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -230,7 +228,7 @@ namespace PPTX
 					snd->SetParentPointer(this);
 			}
 
-			virtual CString GetFullHyperlinkName(FileContainer* pRels)const;
+			virtual std::wstring GetFullHyperlinkName(FileContainer* pRels)const;
 		};
 	} // namespace Logic
 } // namespace PPTX

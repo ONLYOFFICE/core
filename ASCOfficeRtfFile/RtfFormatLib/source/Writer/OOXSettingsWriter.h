@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 class OOXSettingsWriter
 {
 private:
-	CString m_sFileXml; 
+    std::wstring m_sFileXml;
 	OOXWriter& m_oWriter;
 
 	std::wstring CreateXml()
@@ -56,15 +56,15 @@ public:
 		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("settings.xml"), oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
-	void AddContent( CString sText )
+    void AddContent( std::wstring sText )
 	{
 		m_sFileXml += sText;
 	}
-	bool Save( CString sFolder )
+    bool Save( std::wstring sFolder )
 	{
-		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+        std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 
-		if( false == m_sFileXml.IsEmpty() )
+		if( false == m_sFileXml.empty() )
 		{
 			//генерируем свою xml
 			 std::wstring sXml = CreateXml();
@@ -72,7 +72,7 @@ public:
 			//todoooo ПЕРЕПИСАТЬ
 
 			////берем xml из шаблона
-			//CString sFilename = sFolder +  _T("\\word\\settings.xml");
+            //std::wstring sFilename = sFolder +  _T("\\word\\settings.xml");
 			//if( true == RtfUtility:: SaveResourceToFile( IDR_SETTINGS, L"XML", sFilename ) )
 			//{
 			//	XmlUtils::CXmlLiteReader oXmlReader1;
@@ -113,6 +113,6 @@ public:
 
 	bool IsEmpty()
 	{
-		return m_sFileXml.IsEmpty();
+		return m_sFileXml.empty();
 	}
 };

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,12 +75,12 @@ namespace OOX
 				if (m_oRid.IsInit())
 				{
 					writer.WriteString(L" r:id=\"");
-					writer.WriteString(m_oRid->ToString2());
+					writer.WriteString(m_oRid->ToString());
 					writer.WriteString(L"\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
 				}
 				writer.WriteString(L"/>");
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				NSStringUtils::CStringBuilder writer;
 				toXML(writer);
@@ -169,9 +169,9 @@ namespace OOX
 				
 				sXml.WriteString(_T("</externalLink>"));
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace SimpleTypes
 
 		CBreakBin() {} 
 
-		virtual EBreakBin FromString(CString &sValue)
+		virtual EBreakBin FromString(std::wstring &sValue)
 		{
             if       ( _T("after")  == sValue ) this->m_eValue = breakBinAfter;
             else if  ( _T("before") == sValue ) this->m_eValue = breakBinBefore;
@@ -63,7 +63,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -96,7 +96,7 @@ namespace SimpleTypes
 
 		CBreakBinSub() {} 
 
-		virtual EBreakBinSub FromString(CString &sValue)
+		virtual EBreakBinSub FromString(std::wstring &sValue)
 		{
             if       ( _T("+-")  == sValue )	this->m_eValue = breakBinPlusMinus;
             else if  ( _T("-+")  == sValue )	this->m_eValue = breakBinMinusPlus;
@@ -105,7 +105,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -129,35 +129,35 @@ namespace SimpleTypes
     public:
         CMChar() {}
 
-        CString GetValue() const
+        std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+		void    SetValue(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+		std::wstring FromString(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+		std::wstring ToString  () const 
 		{
 			return m_sValue;
 		}
 
-        SimpleType_FromString     (CString)
+        SimpleType_FromString     (std::wstring)
         SimpleType_Operator_Equal (CMChar)
 
 	private:
 
-		CString m_sValue;
+		std::wstring m_sValue;
     };
 
 	//--------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ namespace SimpleTypes
 
 		CFType() {} 
 
-		virtual EFType FromString(CString &sValue)
+		virtual EFType FromString(std::wstring &sValue)
 		{
             if       ( _T("bar")	== sValue )	this->m_eValue = fTypeBar;
             else if  ( _T("lin")	== sValue )	this->m_eValue = fTypeLin;
@@ -189,7 +189,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -215,9 +215,9 @@ namespace SimpleTypes
 	public:
 		CInteger2() {}
 
-		virtual int FromString(CString &sValue)
+		virtual int FromString(std::wstring &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
             if (this->m_eValue < -2)
                 this->m_eValue = -2;
@@ -227,9 +227,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            CString sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -249,9 +249,9 @@ namespace SimpleTypes
 	public:
 		CInteger255() {}
 
-		virtual int FromString(CString &sValue)
+		virtual int FromString(std::wstring &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
             if (this->m_eValue < 1)
                 this->m_eValue = 1;
@@ -261,9 +261,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            CString sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -292,7 +292,7 @@ namespace SimpleTypes
 
 		CMJc() {} 
 
-		virtual EMJc FromString(CString &sValue)
+		virtual EMJc FromString(std::wstring &sValue)
 		{
             if       ( _T("center")		 == sValue ) this->m_eValue = mjcCenter;
             else if  ( _T("centerGroup") == sValue ) this->m_eValue = mjcCenterGroup;
@@ -302,7 +302,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -335,7 +335,7 @@ namespace SimpleTypes
 
 		CLimLoc() {} 
 
-		virtual ELimLoc FromString(CString &sValue)
+		virtual ELimLoc FromString(std::wstring &sValue)
 		{
             if       ( _T("subSup")		 == sValue ) this->m_eValue = limLocSubSup;
             else									 this->m_eValue = limLocUndOvr;
@@ -343,7 +343,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -378,7 +378,7 @@ namespace SimpleTypes
 
 		CScript() {} 
 
-		virtual EScript FromString(CString &sValue)
+		virtual EScript FromString(std::wstring &sValue)
 		{
             if       ( _T("double-struck")		== sValue ) this->m_eValue = scriptDoubleStruck;
             else if  ( _T("fraktur")			== sValue ) this->m_eValue = scriptFraktur;
@@ -390,7 +390,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -425,7 +425,7 @@ namespace SimpleTypes
 
 		CShp() {} 
 
-		virtual EShp FromString(CString &sValue)
+		virtual EShp FromString(std::wstring &sValue)
 		{
             if       ( _T("centered")	== sValue )	 this->m_eValue = shpCentered;
             else									 this->m_eValue = shpMatch;
@@ -433,7 +433,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -457,9 +457,9 @@ namespace SimpleTypes
 	public:
 		CSpacingRule() {}
 
-		virtual int FromString(CString &sValue)
+		virtual int FromString(std::wstring &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
             if (this->m_eValue < 0)
                 this->m_eValue = 0;
@@ -469,9 +469,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+		virtual std::wstring ToString  () const 
 		{
-            CString sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -499,7 +499,7 @@ namespace SimpleTypes
 
 		CStyle() {} 
 
-		virtual EStyle FromString(CString &sValue)
+		virtual EStyle FromString(std::wstring &sValue)
 		{
             if       ( _T("b")			== sValue ) this->m_eValue = styleBold;
             else if  ( _T("bi")			== sValue ) this->m_eValue = styleBoldItalic;
@@ -509,7 +509,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -542,7 +542,7 @@ namespace SimpleTypes
 
 		CTopBot() {} 
 
-		virtual ETopBot FromString(CString &sValue)
+		virtual ETopBot FromString(std::wstring &sValue)
 		{
             if       ( _T("bot")	== sValue )	this->m_eValue = tbBot;
 			else if  ( _T("bottom")	== sValue )	this->m_eValue = tbBot;
@@ -551,7 +551,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString() const 
+		virtual std::wstring ToString() const 
 		{
             switch(this->m_eValue)
 			{
@@ -575,16 +575,16 @@ namespace SimpleTypes
 	public:
 		CUnSignedInteger() {}
 
-		virtual unsigned int FromString(CString &sValue)
+		virtual unsigned int FromString(std::wstring &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = _wtoi( sValue.c_str() );
 
             return this->m_eValue;
 		}
 
-		virtual CString      ToString  () const 
+		virtual std::wstring      ToString  () const 
 		{
-            CString sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,7 +68,7 @@ namespace PPTX
 
 		void UniColor::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("srgbClr"))
 				Color.reset(new Logic::SrgbClr(node));
@@ -252,7 +252,7 @@ namespace PPTX
 			}
 		}
 
-		CString UniColor::toXML() const
+		std::wstring UniColor::toXML() const
 		{
 			if (Color.IsInit())
 				return Color->toXML();

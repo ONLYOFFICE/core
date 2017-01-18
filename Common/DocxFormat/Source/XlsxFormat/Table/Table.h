@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -126,13 +126,13 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				CString sRoot;
+                std::wstring sRoot;
 				writer.WriteString(L"<tableColumn");
 				WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue());
 				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
@@ -219,7 +219,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -282,7 +282,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -297,7 +297,7 @@ namespace OOX
 					WritingStringAttrInt(L"id", nIndex);
 					WritingStringAttrEncodeXmlString(L"name", m_oDisplayName.get());
 					WritingStringAttrEncodeXmlString(L"displayName", m_oDisplayName.get());
-					WritingStringAttrString(L"ref", m_oRef->ToString2());
+					WritingStringAttrString(L"ref", m_oRef->ToString());
 					if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 						writer.WriteString(L" headerRowCount=\"0\"");
 					if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
@@ -385,7 +385,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -394,7 +394,7 @@ namespace OOX
 				if(m_oRId.IsInit())
 				{
 					writer.WriteString(L"<tablePart");
-					WritingStringAttrString(L"r:id", m_oRId->ToString2());
+					WritingStringAttrString(L"r:id", m_oRId->ToString());
 					writer.WriteString(L"/>");
 				}
 			}
@@ -436,7 +436,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -534,9 +534,9 @@ namespace OOX
 
 					m_oTable->toXML2(sXml, nGlobalNumber);
 
-					CString sPath = oPath.GetPath();
-					NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-					sPath.ReleaseBuffer();
+                    std::wstring sPath = oPath.GetPath();
+                    NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
 					oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 					IFileContainer::Write( oPath, oDirectory, oContent );
 				}

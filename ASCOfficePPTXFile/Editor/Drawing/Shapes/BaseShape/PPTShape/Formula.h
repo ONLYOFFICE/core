@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,379 +38,376 @@
 #include <math.h>
 #include "./../Common.h"
 
-#include "../../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../../../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../../../../../DesktopEditor/graphics/aggplustypes.h"
 namespace NSGuidesVML
 {
-	enum FormulaType
-	{
-		// VML
-		ftSum			= 0,	// a + b - c  
-		ftProduct		= 1,	// a * b / c  
-		ftMid			= 2,	// (a + b) / 2  
-		ftAbsolute		= 3,	// abs(a)  
-		ftMin			= 4,	// min(a,b)  
-		ftMax			= 5,	// max(a,b)  
-		ftIf			= 6,	// if  a > 0 ? b : c  
-		ftMod			= 7,	// sqrt(a*a + b*b + c*c)  
-		ftAtan2			= 8,	// atan2(b,a)  
-		ftSin			= 9,	// a * sin(b)  
-		ftCos			= 10,	// a * cos(b)  
-		ftCosatan2		= 11,	// a * cos(atan2(c,b))
-		ftSinatan2		= 12,	// a * sin(atan2(c,b))  
-		ftSqrt			= 13,	// sqrt(a)
-		ftSumangle		= 14,	// a + b° - c°
-		ftEllipse		= 15,	// c * sqrt(1-(a/b)2)  
-		ftTan			= 16,	// a * tan(b)  
-		ftVal			= 17	// a
-	};	
+    enum FormulaType
+    {
+        // VML
+        ftSum			= 0,	// a + b - c
+        ftProduct		= 1,	// a * b / c
+        ftMid			= 2,	// (a + b) / 2
+        ftAbsolute		= 3,	// abs(a)
+        ftMin			= 4,	// min(a,b)
+        ftMax			= 5,	// max(a,b)
+        ftIf			= 6,	// if  a > 0 ? b : c
+        ftMod			= 7,	// sqrt(a*a + b*b + c*c)
+        ftAtan2			= 8,	// atan2(b,a)
+        ftSin			= 9,	// a * sin(b)
+        ftCos			= 10,	// a * cos(b)
+        ftCosatan2		= 11,	// a * cos(atan2(c,b))
+        ftSinatan2		= 12,	// a * sin(atan2(c,b))
+        ftSqrt			= 13,	// sqrt(a)
+        ftSumangle		= 14,	// a + b° - c°
+        ftEllipse		= 15,	// c * sqrt(1-(a/b)2)
+        ftTan			= 16,	// a * tan(b)
+        ftVal			= 17	// a
+    };
 
-	#define VML_GUIDE_COUNT 18
-	const LPSTR VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
-		"sum",
-		"prod",
-		"mid",
-		"abs",
-		"min",
-		"max",
-		"if",
-		"mod",
-		"atan2",
-		"sin",
-		"cos",
-		"cosatan2",
-		"sinatan2",
-		"sqrt",
-		"sumangle",
-		"ellipse",
-		"tan",
-		"val"
-	};
+    #define VML_GUIDE_COUNT 18
+    static const wchar_t* VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
+        L"sum",
+        L"prod",
+        L"mid",
+        L"abs",
+        L"min",
+        L"max",
+        L"if",
+        L"mod",
+        L"atan2",
+        L"sin",
+        L"cos",
+        L"cosatan2",
+        L"sinatan2",
+        L"sqrt",
+        L"sumangle",
+        L"ellipse",
+        L"tan",
+        L"val"
+    };
 
-	const BYTE VML_GUIDE_PARAM_COUNT[VML_GUIDE_COUNT] = {
-		3,
-		3,
-		2,
-		1,
-		2,
-		2,
-		3,
-		3,
-		2,
-		2,
-		2,
-		3,
-		3,
-		1,
-		3,
-		3,
-		2,
-		1
-	};
+    const BYTE VML_GUIDE_PARAM_COUNT[VML_GUIDE_COUNT] = {
+        3,
+        3,
+        2,
+        1,
+        2,
+        2,
+        3,
+        3,
+        2,
+        2,
+        2,
+        3,
+        3,
+        1,
+        3,
+        3,
+        2,
+        1
+    };
 
-	enum ParamType
-	{
-		ptFormula			= 0,
-		ptAdjust			= 1,
-		ptValue				= 2
-	};
-	
-	static long GetValue(CString strParam, ParamType& ptType, bool& bRes, 
-				long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
-	{
-		ptType		= ptValue;
-		bRes		= true;
-		long val	= 0;
+    enum ParamType
+    {
+        ptFormula			= 0,
+        ptAdjust			= 1,
+        ptValue				= 2
+    };
 
-		if ('#' == strParam[0])
-		{
-			ptType = ptAdjust;
-			val = XmlUtils::GetInteger(strParam.Mid(1));
-		}
-		else if ('@' == strParam[0])
-		{
-			ptType = ptFormula;
-			val = XmlUtils::GetInteger(strParam.Mid(1));
-		}
-		else if (!NSStringUtils::IsNumber(strParam))
-		{
-			if (_T("width") == strParam)
-			{
-				val = lShapeWidth;
-			}
-			else if (_T("height") == strParam)
-			{
-				val = lShapeHeight;
-			}
-			else if (_T("pixelWidth") == strParam)
-			{
-				val = lShapeWidth;
-			}
-			else if (_T("pixelHeight") == strParam)
-			{
-				val = lShapeHeight;
-			}
-			else if (_T("pixelLineWidth") == strParam || _T("lineDrawn") == strParam)
-			{
-				val = 1;
-			}
-			else
-			{
-				bRes = false;
-				return 0;
-			}
-		}	
-		else
-		{
-			ptType = ptValue;
-			val = XmlUtils::GetInteger(strParam);
-		}
-		return val;
-	}
-	
-	static FormulaType GetFormula(CString strName, bool& bRes)
-	{
-		bRes = true;
-		if		(_T("sum") == strName)									return ftSum;
-		else if ((_T("prod") == strName) || (_T("product") == strName)) return ftProduct;
-		else if (_T("mid") == strName)									return ftMid;
-		else if ((_T("absolute") == strName) || (_T("abs") == strName)) return ftAbsolute;
-		else if (_T("min") == strName)									return ftMin;
-		else if (_T("max") == strName)									return ftMax;
-		else if (_T("if") == strName)									return ftIf;
-		else if (_T("sqrt") == strName)									return ftSqrt;
-		else if (_T("mod") == strName)									return ftMod;
-		else if (_T("sin") == strName)									return ftSin;
-		else if (_T("cos") == strName)									return ftCos;
-		else if (_T("tan") == strName)									return ftTan;
-		else if (_T("atan2") == strName)								return ftAtan2;
-		else if (_T("sinatan2") == strName)								return ftSinatan2;
-		else if (_T("cosatan2") == strName)								return ftCosatan2;
-		else if (_T("sumangle") == strName)								return ftSumangle;
-		else if (_T("ellipse") == strName)								return ftEllipse;
-		else if (_T("val") == strName)									return ftVal;
-		else bRes = false;
+    static long GetValue(std::wstring strParam, ParamType& ptType, bool& bRes,
+                         long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
+    {
+        ptType		= ptValue;
+        bRes		= true;
+        long val	= 0;
 
-		return ftVal;
-	}
-}
+        if ('#' == strParam[0])
+        {
+            ptType = ptAdjust;
+            val = XmlUtils::GetInteger(strParam.substr(1));
+        }
+        else if ('@' == strParam[0])
+        {
+            ptType = ptFormula;
+            val = XmlUtils::GetInteger(strParam.substr(1));
+        }
+        else if (!NSStringUtils::IsNumber(strParam))
+        {
+            if (_T("width") == strParam)
+            {
+                val = lShapeWidth;
+            }
+            else if (_T("height") == strParam)
+            {
+                val = lShapeHeight;
+            }
+            else if (_T("pixelWidth") == strParam)
+            {
+                val = lShapeWidth;
+            }
+            else if (_T("pixelHeight") == strParam)
+            {
+                val = lShapeHeight;
+            }
+            else if (_T("pixelLineWidth") == strParam || _T("lineDrawn") == strParam)
+            {
+                val = 1;
+            }
+            else
+            {
+                bRes = false;
+                return 0;
+            }
+        }
+        else
+        {
+            ptType = ptValue;
+            val = XmlUtils::GetInteger(strParam);
+        }
+        return val;
+    }
 
-namespace NSGuidesVML
-{
-	struct SPointType
-	{
-			ParamType x;
-			ParamType y;
-	};
-	struct SPointExist
-	{
-                        bool x;
-                        bool y;
+    static FormulaType GetFormula(std::wstring strName, bool& bRes)
+    {
+        bRes = true;
+        if		(_T("sum") == strName)									return ftSum;
+        else if ((_T("prod") == strName) || (_T("product") == strName)) return ftProduct;
+        else if (_T("mid") == strName)									return ftMid;
+        else if ((_T("absolute") == strName) || (_T("abs") == strName)) return ftAbsolute;
+        else if (_T("min") == strName)									return ftMin;
+        else if (_T("max") == strName)									return ftMax;
+        else if (_T("if") == strName)									return ftIf;
+        else if (_T("sqrt") == strName)									return ftSqrt;
+        else if (_T("mod") == strName)									return ftMod;
+        else if (_T("sin") == strName)									return ftSin;
+        else if (_T("cos") == strName)									return ftCos;
+        else if (_T("tan") == strName)									return ftTan;
+        else if (_T("atan2") == strName)								return ftAtan2;
+        else if (_T("sinatan2") == strName)								return ftSinatan2;
+        else if (_T("cosatan2") == strName)								return ftCosatan2;
+        else if (_T("sumangle") == strName)								return ftSumangle;
+        else if (_T("ellipse") == strName)								return ftEllipse;
+        else if (_T("val") == strName)									return ftVal;
+        else bRes = false;
 
-			SPointExist()
-			{
-				x = false;
-				y = false;
-			}
-	};
+        return ftVal;
+    }
+    struct SPointType
+    {
+        ParamType x;
+        ParamType y;
+    };
+    struct SPointExist
+    {
+        bool x;
+        bool y;
 
-	struct SHandle
-	{
-            Aggplus::POINT gdRef;
-			SPointType gdRefType;
-			SPointExist bRefExist;
-			SPointExist bRefPolarExist;
+        SPointExist()
+        {
+            x = false;
+            y = false;
+        }
+    };
 
-            Aggplus::POINT Max;
-			SPointType MaxType;
-			SPointExist bMaxExist;
-			SPointExist bMaxPolarExist;
+    struct SHandle
+    {
+        Aggplus::POINT gdRef;
+        SPointType gdRefType;
+        SPointExist bRefExist;
+        SPointExist bRefPolarExist;
 
-            Aggplus::POINT Min;
-			SPointType MinType;
-			SPointExist bMinExist;
-			SPointExist bMinPolarExist;
+        Aggplus::POINT Max;
+        SPointType MaxType;
+        SPointExist bMaxExist;
+        SPointExist bMaxPolarExist;
 
-            Aggplus::POINT Pos;
-			SPointType PosType;
+        Aggplus::POINT Min;
+        SPointType MinType;
+        SPointExist bMinExist;
+        SPointExist bMinPolarExist;
 
-            Aggplus::POINT PolarCentre;
-			SPointType PolarCentreType;
+        Aggplus::POINT Pos;
+        SPointType PosType;
 
-	};
-	class CFormulasManager;
-	class CFormula
-	{
-	public:
-		FormulaType m_eFormulaType;
-		int m_lIndex;
-		
-		LONG m_lParam1;
-		ParamType m_eType1;
+        Aggplus::POINT PolarCentre;
+        SPointType PolarCentreType;
 
-		LONG m_lParam2;
-		ParamType m_eType2;
+    };
+    class CFormulasManager;
+    class CFormula
+    {
+    public:
+        FormulaType m_eFormulaType;
+        int m_lIndex;
 
-		LONG m_lParam3;
-		ParamType m_eType3;
+        LONG m_lParam1;
+        ParamType m_eType1;
 
-private:
-		long m_lCountRecurs;
+        LONG m_lParam2;
+        ParamType m_eType2;
 
-	public:
-		CFormula()
-		{
-			m_eFormulaType = ftSum;
-			m_lIndex = 0;
-			m_lParam1 = 0;	m_eType1 = ptValue;
-			m_lParam2 = 0;	m_eType2 = ptValue;
-			m_lParam3 = 0;	m_eType3 = ptValue;
+        LONG m_lParam3;
+        ParamType m_eType3;
 
-			m_lCountRecurs = 0;
-		}
+    private:
+        long m_lCountRecurs;
 
-		CFormula(int nIndex)
-		{
-			m_eFormulaType = ftSum;
-			m_lIndex = nIndex;
-			m_lParam1 = 0;	m_eType1 = ptValue;
-			m_lParam2 = 0;	m_eType2 = ptValue;
-			m_lParam3 = 0;	m_eType3 = ptValue;
+    public:
+        CFormula()
+        {
+            m_eFormulaType = ftSum;
+            m_lIndex = 0;
+            m_lParam1 = 0;	m_eType1 = ptValue;
+            m_lParam2 = 0;	m_eType2 = ptValue;
+            m_lParam3 = 0;	m_eType3 = ptValue;
 
-			m_lCountRecurs = 0;
-		}
+            m_lCountRecurs = 0;
+        }
 
-		CFormula& operator =(const CFormula& oSrc)
-		{
-			m_eFormulaType	= oSrc.m_eFormulaType;
-			m_lIndex		= oSrc.m_lIndex;
+        CFormula(int nIndex)
+        {
+            m_eFormulaType = ftSum;
+            m_lIndex = nIndex;
+            m_lParam1 = 0;	m_eType1 = ptValue;
+            m_lParam2 = 0;	m_eType2 = ptValue;
+            m_lParam3 = 0;	m_eType3 = ptValue;
 
-			m_lParam1		= oSrc.m_lParam1;
-			m_eType1		= oSrc.m_eType1;
-			
-			m_lParam2		= oSrc.m_lParam2;
-			m_eType2		= oSrc.m_eType2;
-			
-			m_lParam3		= oSrc.m_lParam3;
-			m_eType3		= oSrc.m_eType3;
+            m_lCountRecurs = 0;
+        }
 
-			m_lCountRecurs = 0;
-			return (*this);
-		}
+        CFormula& operator =(const CFormula& oSrc)
+        {
+            m_eFormulaType	= oSrc.m_eFormulaType;
+            m_lIndex		= oSrc.m_lIndex;
 
-		void FromString(CString strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
-		{
-			std::vector<CString> oArrayParams;
-			NSStringUtils::ParseString(_T(" "), strFormula, &oArrayParams);
-			int nCount = oArrayParams.size();
-			if (0 >= nCount)
-				return;
+            m_lParam1		= oSrc.m_lParam1;
+            m_eType1		= oSrc.m_eType1;
 
-			bool bRes = true;
-			m_eFormulaType = GetFormula(oArrayParams[0], bRes);
+            m_lParam2		= oSrc.m_lParam2;
+            m_eType2		= oSrc.m_eType2;
 
-			ParamType ptType = ptValue;
-			if (1 < nCount)
-			{
-				m_lParam1 = GetValue(oArrayParams[1], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType1 = ptType;		
-			}
-			if (2 < nCount)
-			{
-				m_lParam2 = GetValue(oArrayParams[2], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType2 = ptType;		
-			}
-			if (3 < nCount)
-			{
-				m_lParam3 = GetValue(oArrayParams[3], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType3 = ptType;		
-			}
-		}
-		LONG Calculate(CFormulasManager* pManager);
-	};
+            m_lParam3		= oSrc.m_lParam3;
+            m_eType3		= oSrc.m_eType3;
 
-	class CFormulasManager
-	{
-	public:
-		std::vector<LONG>* m_pAdjustments;
-		std::vector<LONG> m_arResults;
+            m_lCountRecurs = 0;
+            return (*this);
+        }
 
-		std::vector<CFormula> m_arFormulas;
+        void FromString(std::wstring strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
+        {
+            std::vector<std::wstring> oArrayParams;
+            boost::algorithm::split(oArrayParams, strFormula, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-		long m_lShapeWidth;
-		long m_lShapeHeight;
+            int nCount = oArrayParams.size();
+            if (0 >= nCount)
+                return;
 
-	public:
-		CFormulasManager() : m_arFormulas(), m_arResults()
-		{
-			m_pAdjustments	= NULL;
-			m_lShapeWidth	= ShapeSizeVML;
-			m_lShapeHeight	= ShapeSizeVML;
-		}
-		CFormulasManager& operator =(const CFormulasManager& oSrc)
-		{
-			m_pAdjustments	= oSrc.m_pAdjustments;
-			m_lShapeWidth	= oSrc.m_lShapeWidth;
-			m_lShapeHeight	= oSrc.m_lShapeHeight;
+            bool bRes = true;
+            m_eFormulaType = GetFormula(oArrayParams[0], bRes);
 
-			m_arResults.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
-			{
-				m_arResults.push_back(oSrc.m_arResults[nIndex]);
-			}
-			m_arFormulas.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
-			{
-				m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
-			}
-			
-			return (*this);
-		}
+            ParamType ptType = ptValue;
+            if (1 < nCount)
+            {
+                m_lParam1 = GetValue(oArrayParams[1], ptType, bRes, lShapeWidth, lShapeHeight);
+                m_eType1 = ptType;
+            }
+            if (2 < nCount)
+            {
+                m_lParam2 = GetValue(oArrayParams[2], ptType, bRes, lShapeWidth, lShapeHeight);
+                m_eType2 = ptType;
+            }
+            if (3 < nCount)
+            {
+                m_lParam3 = GetValue(oArrayParams[3], ptType, bRes, lShapeWidth, lShapeHeight);
+                m_eType3 = ptType;
+            }
+        }
+        LONG Calculate(CFormulasManager* pManager);
+    };
 
-		void Clear()
-		{
-			m_pAdjustments	= NULL;
-			m_lShapeWidth	= ShapeSizeVML;
-			m_lShapeHeight	= ShapeSizeVML;
+    class CFormulasManager
+    {
+    public:
+        std::vector<LONG>* m_pAdjustments;
+        std::vector<LONG> m_arResults;
 
-			m_arFormulas.clear();
-			m_arResults.clear();
-		}
+        std::vector<CFormula> m_arFormulas;
 
-		void Clear(std::vector<LONG>* pAdjusts)
-		{
-			m_pAdjustments = pAdjusts;
-			
-			//m_arFormulas.clear();
-			//m_arResults.clear();
-			for (int nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
-			{
-				m_arResults[nIndex] = 0xFFFFFFFF;
-			}
-		}
-		void AddFormula(CString strFormula)
-		{
-			CFormula oFormula(m_arFormulas.size());
-			oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
-			m_arFormulas.push_back(oFormula);
-			m_arResults.push_back(0xFFFFFFFF);
-		}
-		void AddFormula(CFormula oFormula)
-		{
-			oFormula.m_lIndex = m_arFormulas.size();
-			m_arFormulas.push_back(oFormula);
-			m_arResults.push_back(0xFFFFFFFF);
-		}
-		void CalculateResults()
-		{
-			for (int index = 0; index < m_arFormulas.size(); ++index)
-			{
+        long m_lShapeWidth;
+        long m_lShapeHeight;
+
+    public:
+        CFormulasManager() : m_arFormulas(), m_arResults()
+        {
+            m_pAdjustments	= NULL;
+            m_lShapeWidth	= ShapeSizeVML;
+            m_lShapeHeight	= ShapeSizeVML;
+        }
+        CFormulasManager& operator =(const CFormulasManager& oSrc)
+        {
+            m_pAdjustments	= oSrc.m_pAdjustments;
+            m_lShapeWidth	= oSrc.m_lShapeWidth;
+            m_lShapeHeight	= oSrc.m_lShapeHeight;
+
+            m_arResults.clear();
+            for (int nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
+            {
+                m_arResults.push_back(oSrc.m_arResults[nIndex]);
+            }
+            m_arFormulas.clear();
+            for (int nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
+            {
+                m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
+            }
+
+            return (*this);
+        }
+
+        void Clear()
+        {
+            m_pAdjustments	= NULL;
+            m_lShapeWidth	= ShapeSizeVML;
+            m_lShapeHeight	= ShapeSizeVML;
+
+            m_arFormulas.clear();
+            m_arResults.clear();
+        }
+
+        void Clear(std::vector<LONG>* pAdjusts)
+        {
+            m_pAdjustments = pAdjusts;
+
+            //m_arFormulas.clear();
+            //m_arResults.clear();
+            for (int nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
+            {
+                m_arResults[nIndex] = 0xFFFFFFFF;
+            }
+        }
+        void AddFormula(std::wstring strFormula)
+        {
+            CFormula oFormula(m_arFormulas.size());
+            oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
+            m_arFormulas.push_back(oFormula);
+            m_arResults.push_back(0xFFFFFFFF);
+        }
+        void AddFormula(CFormula oFormula)
+        {
+            oFormula.m_lIndex = m_arFormulas.size();
+            m_arFormulas.push_back(oFormula);
+            m_arResults.push_back(0xFFFFFFFF);
+        }
+        void CalculateResults()
+        {
+            for (int index = 0; index < m_arFormulas.size(); ++index)
+            {
                 LONG lResult = m_arFormulas[index].Calculate(this);
-			}
+            }
 
-			//m_pAdjustments = NULL;
-			//m_arFormulas.clear();
-		}
-	};
+            //m_pAdjustments = NULL;
+            //m_arFormulas.clear();
+        }
+    };
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,7 +75,7 @@ namespace PPTX
 			nullable<PPTX::RId> id_drawing;
 
 			XmlUtils::CXmlNode oNode;
-			if (oNode.FromXmlFile2(strDataPath) == false) return;
+			if (oNode.FromXmlFile(strDataPath) == false) return;
 
             XmlUtils::CXmlNode oNode2 = oNode.ReadNode(L"dgm:extLst");
 			if (oNode2.IsValid())
@@ -115,7 +115,7 @@ namespace PPTX
                 if (!strDWPath.empty())
 				{
 					XmlUtils::CXmlNode oNodeDW;
-					if (oNodeDW.FromXmlFile2(strDWPath))
+                    if (oNodeDW.FromXmlFile(strDWPath))
 					{
                         XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
 
@@ -147,7 +147,7 @@ namespace PPTX
 			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
 
 			XmlUtils::CXmlNode oNodeDW;
-			if (oNodeDW.FromXmlFile2(pathDiagramDrawing.GetPath()))//todooo ... сделать отдельно .. повтор
+            if (oNodeDW.FromXmlFile(pathDiagramDrawing.GetPath()))//todooo ... сделать отдельно .. повтор
 			{
                 XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
 
@@ -172,7 +172,7 @@ namespace PPTX
 			if (pWriter->m_pCommonRels->is_init())
 				pRels = pWriter->m_pCommonRels->operator ->();
 
-			CString strDataPath = _T("");
+			std::wstring strDataPath = _T("");
 			if(id_data.IsInit())
 			{
 				if(parentFileIs<Slide>())
@@ -239,13 +239,13 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
             std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-            int nPos = strDstChart.rfind(TCHAR('m'));
+            int nPos = strDstChart.rfind(wchar_t('m'));
 			if (-1 != nPos)
                 strDstChart = strDstChart.substr(0, nPos);
 
             strDstChart += L"charts";
         //на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
-			FileSystem::Directory::CreateDirectory(strDstChart);			
+            NSDirectory::CreateDirectory(strDstChart);
 
             std::wstring* sContentTypes = NULL;
 

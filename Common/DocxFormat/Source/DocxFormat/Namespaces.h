@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,6 @@
 #define OOX_NAMESPACES_INCLUDE_H_
 
 #include "../Base/Base.h"
-#include "../Base/ASCString.h"
 
 
 namespace OOX
@@ -42,8 +41,8 @@ namespace OOX
 	class Namespace
 	{
 	public:
-		CString m_strName;
-		CString m_strLink;
+		std::wstring m_strName;
+		std::wstring m_strLink;
 
 	public:
 		Namespace(LPCSTR sName, LPCSTR sLink) : m_strName(sName), m_strLink(sLink)
@@ -57,40 +56,40 @@ namespace OOX
 	class Namespaces
 	{
 	public:
-		Namespaces() : a("a", "http://schemas.openxmlformats.org/drawingml/2006/main"),
-			b("b", "http://schemas.openxmlformats.org/officeDocument/2006/bibliography"),
-			cdr("cdr", "http://schemas.openxmlformats.org/drawingml/2006/chartDrawing"),
-			cp("cp", "http://schemas.openxmlformats.org/package/2006/metadata/core-properties"),
-			dc("dc", "http://purl.org/dc/elements/1.1/"),
-			dchrt("dchrt", "http://schemas.openxmlformats.org/drawingml/2006/chart"),
-			dcmitype("dcmitype", "http://purl.org/dc/dcmitype/"),
-			dcterms("dcterms", "http://purl.org/dc/terms/"),
-			ddgrm("ddgrm", "http://schemas.openxmlformats.org/drawingml/2006/diagram"),
-			dgm("dgm", "http://schemas.openxmlformats.org/drawingml/2006/diagram"),
-			dlckcnv("dlckcnv", "http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas"),
-			dpct("dpct", "http://schemas.openxmlformats.org/drawingml/2006/picture"),
-			ds("ds", "http://schemas.openxmlformats.org/officeDocument/2006/customXml"),
-			m("m", "http://schemas.openxmlformats.org/officeDocument/2006/math"),
-			o("o", "urn:schemas-microsoft-com:office:office"),
-			p("p", "http://schemas.openxmlformats.org/presentationml/2006/main"),
-			pic("pic", "http://schemas.openxmlformats.org/drawingml/2006/picture"),
-			pvml("pvml", "urn:schemas-microsoft-com:office:powerpoint"),
-			r("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships"),
-			s("s", "http://schemas.openxmlformats.org/officeDocument/2006/sharedTypes"),
-			sl("sl", "http://schemas.openxmlformats.org/schemaLibrary/2006/main"),
-			v("v", "urn:schemas-microsoft-com:vml"),
-			ve("ve", "http://schemas.openxmlformats.org/markup-compatibility/2006"),
-			vp("vp", "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
-			vt("vt", "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"),
-			w("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
-			w10("w10", "urn:schemas-microsoft-com:office:word"),
-			wne("wne", "http://schemas.microsoft.com/office/word/2006/wordml"),
-			wp("wp", "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
-			x("x", "urn:schemas-microsoft-com:office:excel"),
-			xdr("xdr", "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"),
-			xmlns("xmlns",  "http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"),
-			xsd("xsd", "http://www.w3.org/2001/XMLSchema"),
-			xsi("xsi", "http://www.w3.org/2001/XMLSchema-instance")
+		Namespaces() : a(L"a", L"http://schemas.openxmlformats.org/drawingml/2006/main"),
+			b(L"b", L"http://schemas.openxmlformats.org/officeDocument/2006/bibliography"),
+			cdr(L"cdr", L"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing"),
+			cp(L"cp", L"http://schemas.openxmlformats.org/package/2006/metadata/core-properties"),
+			dc(L"dc", L"http://purl.org/dc/elements/1.1/"),
+			dchrt(L"dchrt", L"http://schemas.openxmlformats.org/drawingml/2006/chart"),
+			dcmitype(L"dcmitype", L"http://purl.org/dc/dcmitype/"),
+			dcterms(L"dcterms", L"http://purl.org/dc/terms/"),
+			ddgrm(L"ddgrm", L"http://schemas.openxmlformats.org/drawingml/2006/diagram"),
+			dgm(L"dgm", L"http://schemas.openxmlformats.org/drawingml/2006/diagram"),
+			dlckcnv(L"dlckcnv", L"http://schemas.openxmlformats.org/drawingml/2006/lockedCanvas"),
+			dpct(L"dpct", L"http://schemas.openxmlformats.org/drawingml/2006/picture"),
+			ds(L"ds", L"http://schemas.openxmlformats.org/officeDocument/2006/customXml"),
+			m(L"m", L"http://schemas.openxmlformats.org/officeDocument/2006/math"),
+			o(L"o", L"urn:schemas-microsoft-com:office:office"),
+			p(L"p", L"http://schemas.openxmlformats.org/presentationml/2006/main"),
+			pic(L"pic", L"http://schemas.openxmlformats.org/drawingml/2006/picture"),
+			pvml(L"pvml", L"urn:schemas-microsoft-com:office:powerpoint"),
+			r(L"r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"),
+			s(L"s", L"http://schemas.openxmlformats.org/officeDocument/2006/sharedTypes"),
+			sl(L"sl", L"http://schemas.openxmlformats.org/schemaLibrary/2006/main"),
+			v(L"v", L"urn:schemas-microsoft-com:vml"),
+			ve(L"ve", L"http://schemas.openxmlformats.org/markup-compatibility/2006"),
+			vp(L"vp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
+			vt(L"vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"),
+			w(L"w", L"http://schemas.openxmlformats.org/wordprocessingml/2006/main"),
+			w10(L"w10", L"urn:schemas-microsoft-com:office:word"),
+			wne(L"wne", L"http://schemas.microsoft.com/office/word/2006/wordml"),
+			wp(L"wp", L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"),
+			x(L"x", L"urn:schemas-microsoft-com:office:excel"),
+			xdr(L"xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"),
+			xmlns(L"xmlns",  L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"),
+			xsd(L"xsd", L"http://www.w3.org/2001/XMLSchema"),
+			xsi(L"xsi", L"http://www.w3.org/2001/XMLSchema-instance")
 		{
 		}
 

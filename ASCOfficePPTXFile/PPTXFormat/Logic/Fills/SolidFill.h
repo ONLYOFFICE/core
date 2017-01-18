@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,13 +60,13 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
+                m_namespace = XmlUtils::GetNamespace(node.GetName());
 				Color.GetColorFrom(node);
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(Color);
@@ -75,7 +75,7 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName;
+				std::wstring strName;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 					strName = _T("w14:solidFill");
 				else
@@ -107,7 +107,7 @@ namespace PPTX
 		public:
 			UniColor Color;
 
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

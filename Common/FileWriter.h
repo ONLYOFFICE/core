@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -90,7 +90,7 @@ namespace NFileWriter
 	public :
 
 		// Конструктор ( от имени файла, сам контрол открывает файл )
-		CBufferedFileWriter ( CString & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
+                CBufferedFileWriter ( std::wstring & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
 		{
 			if (m_oFile.CreateFile(sFileName) != S_OK)
 			// Если не получилось открыть файл

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -114,7 +114,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("lnSpc") == strName)
 							lnSpc = oNode;
@@ -139,7 +139,7 @@ namespace PPTX
 							
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("marL"), marL);
@@ -483,7 +483,7 @@ namespace PPTX
 			nullable_bool						rtl;			// (Right To Left)
 		//private:
 		public:
-			mutable CString m_name;
+			mutable std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

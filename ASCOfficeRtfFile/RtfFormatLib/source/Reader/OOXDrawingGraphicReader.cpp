@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,7 +61,7 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 				OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
 				if ( (picture) && (picture->m_oBlipFill.m_oBlip.IsInit()))
 				{
-					CString sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
+					std::wstring sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
 
 					if (oParam.oReader->m_currentContainer)
 					{
@@ -71,7 +71,7 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 						{
 							OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-							CString sImagePath = pImage->filename().GetPath();
+							std::wstring sImagePath = pImage->filename().GetPath();
 							bTryPicture = WriteDataToPicture( sImagePath, *oOutput.m_oPicture, L"" );
 						}
 					}

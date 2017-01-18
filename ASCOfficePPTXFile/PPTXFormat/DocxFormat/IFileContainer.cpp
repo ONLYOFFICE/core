@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -89,8 +89,8 @@ namespace PPTX
 
 	void IFileContainer::write(Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-        std::map<CString, size_t> namepair;
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        std::map<std::wstring, size_t> namepair;
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             smart_ptr<PPTX::File>     pFile = it->second;
             smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
@@ -100,7 +100,7 @@ namespace PPTX
 				OOX::CPath defdir	= pFile->DefaultDirectory();
 				OOX::CPath name		= pFile->DefaultFileName();
 
-                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                std::map<std::wstring, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
                 if ( pNamePair == namepair.end())
                     namepair [name.m_strFilename] = 1;
                 else
@@ -122,8 +122,8 @@ namespace PPTX
 
 	void IFileContainer::Commit(const OOX::CPath& path)
 	{
-        std::map<CString, size_t> namepair;
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        std::map<std::wstring, size_t> namepair;
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             smart_ptr<PPTX::File>     pFile = it->second;
             smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
@@ -133,7 +133,7 @@ namespace PPTX
                 OOX::CPath defdir	= pFile->DefaultDirectory();
                 OOX::CPath name		= pFile->DefaultFileName();
 
-                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                std::map<std::wstring, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
                 if ( pNamePair == namepair.end())
                     namepair [name.m_strFilename] = 1;
                 else
@@ -160,8 +160,8 @@ namespace PPTX
 	
 	void IFileContainer::Finalize(Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, ContentTypes::File& content)
 	{
-        std::map<CString, size_t> namepair;
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        std::map<std::wstring, size_t> namepair;
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             smart_ptr<PPTX::File>     pFile = it->second;
             smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
@@ -171,7 +171,7 @@ namespace PPTX
                 OOX::CPath defdir	= pFile->DefaultDirectory();
                 OOX::CPath name		= pFile->DefaultFileName();
 
-                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                std::map<std::wstring, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
                 if ( pNamePair == namepair.end())
                     namepair [name.m_strFilename] = 1;
                 else
@@ -202,7 +202,7 @@ namespace PPTX
 
 	void IFileContainer::extractPictures(const OOX::CPath& path) const
 	{
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             smart_ptr<PPTX::File> pFile  = it->second;
 
@@ -225,7 +225,7 @@ namespace PPTX
 
 	smart_ptr<Image> IFileContainer::image(const RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
         if (pPair == m_container.end ())
             return smart_ptr<Image>();
         return pPair->second.smart_dynamic_cast<Image>();
@@ -233,7 +233,7 @@ namespace PPTX
 
 	smart_ptr<HyperLink> IFileContainer::hyperlink(const RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
         if (pPair == m_container.end ())
             return smart_ptr<HyperLink>();
         return pPair->second.smart_dynamic_cast<HyperLink>();
@@ -241,21 +241,21 @@ namespace PPTX
 
 	smart_ptr<OleObject> IFileContainer::oleObject(const RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
         if (pPair == m_container.end ())
             return smart_ptr<OleObject>();
         return pPair->second.smart_dynamic_cast<OleObject>();
 	}
 	smart_ptr<LegacyDiagramText> IFileContainer::legacyDiagramText(const RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
         if (pPair == m_container.end ())
             return smart_ptr<LegacyDiagramText>();
         return pPair->second.smart_dynamic_cast<LegacyDiagramText>();
 	}
 	const bool IFileContainer::exist(const FileType& type) const
 	{
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             if (type == it->second->type())
                 return true;
@@ -267,19 +267,19 @@ namespace PPTX
 
 	const bool IFileContainer::exist(const RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
         return (it != m_container.end());
 	}
 
 
 	const bool IFileContainer::isExternal(const PPTX::RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
 
         if (it != m_container.end())
         {
-            CString type = it->second->type().RelationType();
-            CString name = it->second->type().DefaultFileName().m_strFilename;
+            std::wstring type = it->second->type().RelationType();
+            std::wstring name = it->second->type().DefaultFileName().m_strFilename;
 
             return (((type == PPTX::FileTypes::ExternalAudio) || (type == PPTX::FileTypes::ExternalImage)
                 || (type == PPTX::FileTypes::ExternalVideo)) && (name == _T("")));
@@ -290,7 +290,7 @@ namespace PPTX
 
 	smart_ptr<PPTX::File> IFileContainer::get(const FileType& type)
 	{
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             if (type == it->second->type())
                 return it->second;
@@ -317,7 +317,7 @@ namespace PPTX
 
 	smart_ptr<PPTX::File> IFileContainer::find(const FileType& type) const
 	{
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
         {
             if (type == it->second->type())
                 return it->second;
@@ -329,7 +329,7 @@ namespace PPTX
 
 	smart_ptr<PPTX::File> IFileContainer::find(const PPTX::RId& rId) const
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
 
         if (it != m_container.end())
             return it->second;
@@ -341,7 +341,7 @@ namespace PPTX
 
 	smart_ptr<PPTX::File> IFileContainer::operator [](const PPTX::RId rId)
 	{
-        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+        std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
 
         if (it != m_container.end())
             return it->second;

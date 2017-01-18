@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,7 +61,7 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("id"), id);
@@ -79,7 +79,7 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-                CString namespace_;
+                std::wstring namespace_;
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
                     namespace_= _T("pic");
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
@@ -90,7 +90,7 @@ namespace PPTX
                 toXmlWriter2(namespace_, pWriter);
 
 			}
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				//if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && id == -1)
 				//	return;
@@ -193,7 +193,7 @@ namespace PPTX
 
 		public:
 			int					id;
-			CString				name;
+			std::wstring				name;
 			nullable_string		descr;
 			nullable_bool		hidden;
 			nullable_string		title;

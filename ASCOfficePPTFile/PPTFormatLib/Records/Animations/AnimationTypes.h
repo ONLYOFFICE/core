@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -194,20 +194,22 @@ namespace Animations
 
 			double	X[3];
 			double	Y[3];
-			WCHAR	TYPE;	// // M = move to // L = line to // C = curve to // Z = close loop // E = end 
+            wchar_t	TYPE;	// // M = move to // L = line to // C = curve to // Z = close loop // E = end
 		};
 
 	public:
 
-		inline bool Create ( CStringW MovePath )
+        inline bool Create ( std::wstring MovePath )
 		{
 			m_Points.clear ();
 
-			int Pos = 0;
-			while ( Pos < MovePath.GetLength () )
+            std::vector<std::wstring> arMovePath;
+            boost::algorithm::split(arMovePath, MovePath, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+            for (int i = 0 ; i < arMovePath.size(); i++)
 			{
 				ActionPoint	aPoint;
-				aPoint.TYPE		=	MovePath.Tokenize ( L" ", Pos )[0];
+                aPoint.TYPE		=	arMovePath[i++][0];
 
 				if ( L'm' == aPoint.TYPE )	aPoint.TYPE =	MOVE_TO;
 				if ( L'l' == aPoint.TYPE )	aPoint.TYPE =	LINE_TO;
@@ -217,20 +219,20 @@ namespace Animations
 
 				if ( MOVE_TO == aPoint.TYPE || LINE_TO == aPoint.TYPE )
 				{
-					aPoint.X[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[0]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[0]	=	_wtof (	arMovePath[i++].c_str() );
 				}
 
 				if ( CURVE_TO == aPoint.TYPE )
 				{
-					aPoint.X[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[0]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[0]	=	_wtof (	arMovePath[i++].c_str() );
 
-					aPoint.X[1]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[1]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[1]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[1]	=	_wtof (	arMovePath[i++].c_str() );
 
-					aPoint.X[2]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[2]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[2]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[2]	=	_wtof (	arMovePath[i++].c_str() );
 				}
 
 				m_Points.push_back ( aPoint ); 
@@ -239,52 +241,37 @@ namespace Animations
 			return ( m_Points.size() >= 2 );
 		}
 
-		inline CStringW Recalculate ( double ScaleX, double ScaleY )
+        inline std::wstring Recalculate ( double ScaleX, double ScaleY )
 		{
-			CStringW	MovePath;
+            std::wstring	MovePath;
 
 			for ( int i = 0; i < m_Points.size(); ++i )
 			{
-				CStringW NextPoint;
+                std::wstring NextPoint;
 
-				if ( MOVE_TO ==	m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"M %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY );
+                if ( MOVE_TO ==	m_Points[i].TYPE )      NextPoint = L"M";
+                if ( LINE_TO ==	m_Points[i].TYPE )      NextPoint = L"L";
+                if ( CURVE_TO   == m_Points[i].TYPE )   NextPoint = L"C";
+                if ( CLOSE_LOOP == m_Points[i].TYPE )	NextPoint = L"Z";
+                if ( END        == m_Points[i].TYPE )   NextPoint = L"E";
 
-					MovePath += NextPoint;
-				}
+                if ( CURVE_TO   == m_Points[i].TYPE ||
+                     MOVE_TO    ==	m_Points[i].TYPE ||
+                     LINE_TO    ==	m_Points[i].TYPE)
+                {
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[0] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[0] * ScaleY);
+                }
 
-				if ( LINE_TO ==	m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"L %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY );
+                if ( CURVE_TO == m_Points[i].TYPE )
+                {
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[1] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[1] * ScaleY);
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[2] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[2] * ScaleY);
+                }
+                MovePath += NextPoint;
 
-					MovePath += NextPoint;
-				}
-
-				if ( CURVE_TO == m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"C %f %f %f %f %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY,
-						m_Points[i].X[1] * ScaleX, m_Points[i].Y[1] * ScaleY,
-						m_Points[i].X[2] * ScaleX, m_Points[i].Y[2] * ScaleY );
-
-					MovePath += NextPoint;
-				}
-
-				if ( CLOSE_LOOP == m_Points[i].TYPE )
-				{
-					MovePath	+=	CStringW ( L"Z" );
-				}
-
-				if ( END == m_Points[i].TYPE )
-				{
-					MovePath	+=	CStringW ( L"E" );
-				}
 
 				if ( i != m_Points.size() - 1 ) 
-					MovePath += CStringW ( L" ");
+                    MovePath += std::wstring ( L" ");
 			}
 
 			return MovePath;
@@ -305,27 +292,27 @@ namespace Animations
 	class Helpers
 	{
 	public:
-		static CString GetTimePropertyID4TimeNode			( TimePropertyID4TimeNode Value );
-		static CString GetTimeVariantTypeEnum				( TimeVariantTypeEnum Value );
-		static CString GetTimeNodeTypeEnum					( TimeNodeTypeEnum Value );
-		static CString GetTriggerObjectEnum					( TriggerObjectEnum Value );
-		static CString GetTimeVisualElementEnum				( TimeVisualElementEnum Value );
-		static CString GetElementTypeEnum					( ElementTypeEnum Value );
-		static CString GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
-		static CString IntToHexString						( DWORD Value );
-        static CString DoubleToString						( double Value );
-		static CString IntToString							( int Value );
-		static CString GetAnimationClassName				( AnimationsClassType Value );
+        static std::wstring GetTimePropertyID4TimeNode			( TimePropertyID4TimeNode Value );
+        static std::wstring GetTimeVariantTypeEnum				( TimeVariantTypeEnum Value );
+        static std::wstring GetTimeNodeTypeEnum					( TimeNodeTypeEnum Value );
+        static std::wstring GetTriggerObjectEnum				( TriggerObjectEnum Value );
+        static std::wstring GetTimeVisualElementEnum			( TimeVisualElementEnum Value );
+        static std::wstring GetElementTypeEnum					( ElementTypeEnum Value );
+        static std::wstring GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
+        static std::wstring IntToHexString						( DWORD Value );
+        static std::wstring DoubleToString						( double Value );
+        static std::wstring IntToString							( int Value );
+        static std::wstring GetAnimationClassName				( AnimationsClassType Value );
 
-		static CString GetEffectTypeOfGroup					( DWORD Value );
+        static std::wstring GetEffectTypeOfGroup				( DWORD Value );
 		//	the corresponding effect type is an entrance or an exit effect
-		static CString GetEffectEntranceOrExitNameByID		( DWORD EffectID );
+        static std::wstring GetEffectEntranceOrExitNameByID		( DWORD EffectID );
 		//	the corresponding effect type is an emphasis effect
-		static CString GetEffectEmphasisNameByID			( DWORD EffectID );
+        static std::wstring GetEffectEmphasisNameByID			( DWORD EffectID );
 		//	the corresponding effect type is a motion path effect
-		static CString GetEffectMotionPathNameByID			( DWORD EffectID );
+        static std::wstring GetEffectMotionPathNameByID			( DWORD EffectID );
 
-		static CString GetEffectNameByID					( DWORD EffectType, DWORD EffectID );
+        static std::wstring GetEffectNameByID					( DWORD EffectType, DWORD EffectID );
 	};
 }
 
@@ -699,7 +686,7 @@ namespace Animations
 						//todoooo
 					}
 					else
-						stringValue		=	CStringW ( pString );
+                        stringValue		=	std::wstring ( pString );
 				}
 
 				RELEASEARRAYOBJECTS ( pString ); 
@@ -716,7 +703,7 @@ namespace Animations
 	public:
 
 		TimeVariantTypeEnum		m_Type;
-		CStringW				stringValue;
+        std::wstring				stringValue;
 	};
 
 	struct TimeStringListContainer : public IRecord
@@ -3273,10 +3260,10 @@ namespace Animations
 			if (pTimeNode->haveSetBehavior)
 			{
 				if (9 == oEffect.m_nEffectID)		//	TransparencyEffect	=	9,	// временная прозрачность
-					oEffect.m_dTransparency		=	_tstof (pTimeNode->timeSetBehavior->varTo.stringValue);
+                    oEffect.m_dTransparency		=	_tstof (pTimeNode->timeSetBehavior->varTo.stringValue.c_str());
 			}
 
-			if (m_ComposeEffectMothionPath.GetLength())
+            if (m_ComposeEffectMothionPath.length())
 			{
 				oEffect.m_MotionPath			=	m_ComposeEffectMothionPath;		//	составной эффект может иметь траекторию для движения
 			}
@@ -3754,7 +3741,7 @@ namespace Animations
 		TimeArray			m_arDurations;
 		TimeArray			m_arBeginTimes;
 
-		CString				m_ComposeEffectMothionPath;
+        std::wstring				m_ComposeEffectMothionPath;
         bool				m_HaveAfterEffect;
 
 		EffectsMap			m_oAnimation;
@@ -3877,9 +3864,9 @@ public:
 			pStream->read ((unsigned char*) Name, 16 );
 			Name[8]	=	L'\0';
 
-			tagName	=	CStringW ( Name );
+            tagName	=	std::wstring ( Name );
 
-			if ( CStringW ( L"___PPT10" ) == tagName )
+            if ( std::wstring ( L"___PPT10" ) == tagName )
 			{
 				SRecordHeader rhData;
 				rhData.ReadFromStream(pStream) ;	
@@ -3915,7 +3902,7 @@ public:
 
 public:
 
-	CStringW					tagName;
+    std::wstring					tagName;
 
 	PP10SlideBinaryTagExtension	m_PP10SlideBinaryTagExtension;
 

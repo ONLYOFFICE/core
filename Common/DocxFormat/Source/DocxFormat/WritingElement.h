@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include "../XML/xmlutils.h"
-#include <vector>
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
+
 
 namespace OOX
 {
@@ -752,8 +752,8 @@ namespace OOX
 		WritingElement(){}
 		virtual ~WritingElement() {}
 
-		virtual void         fromXML(XmlUtils::CXmlNode& node)          = 0;
-        virtual CString      toXML() const                              = 0;
+		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
+        virtual std::wstring	toXML() const						= 0;
 		virtual EElementType getType() const
 		{
 			return OOX::et_Unknown;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -106,7 +106,7 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-    void WriteFromXlsxToCsv(const CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
+    void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(sFileDst);
@@ -172,10 +172,10 @@ namespace CSVWriter
 					std::wstring sDelimiter = _T(""); sDelimiter += wcDelimiter;
 					std::wstring sEscape = _T("\"\n");
 					sEscape += wcDelimiter;
-					std::wstring sEndJson = CString(_T("]"));
+                    std::wstring sEndJson = std::wstring(_T("]"));
 					std::wstring sQuote = _T("\"");
 					std::wstring sDoubleQuote = _T("\"\"");
-					std::wstring sBkt = CString(_T("["));
+                    std::wstring sBkt = std::wstring(_T("["));
 					std::wstring sBktComma = _T(",[");
                     
 					if (bJSON)
@@ -259,7 +259,7 @@ namespace CSVWriter
 								oBuilder.WriteString(_T("\""));
 								escapeJson(sCellValue, oBuilder);
 								oBuilder.WriteString(_T("\""));
-								sCellValue = CString(oBuilder.GetBuffer(), oBuilder.GetCurSize());
+                                sCellValue = std::wstring(oBuilder.GetBuffer(), oBuilder.GetCurSize());
 							}
 							else if (std::wstring::npos != sCellValue.find_first_of(sEscape))
 							{

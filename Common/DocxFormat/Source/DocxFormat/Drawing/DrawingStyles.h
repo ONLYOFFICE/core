@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -128,9 +128,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				switch ( m_eType )
 				{
@@ -252,9 +252,9 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:bgFillStyleLst>"); 
+				std::wstring sResult = _T("<a:bgFillStyleLst>"); 
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -305,9 +305,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:custClr name=\"") + m_sName + _T("\">");
+				std::wstring sResult = _T("<a:custClr name=\"") + m_sName + _T("\">");
 
 				sResult += CColor::toXML();
 
@@ -331,7 +331,7 @@ namespace OOX
 
 		public:
 
-			CString m_sName;
+			std::wstring m_sName;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -383,9 +383,9 @@ namespace OOX
 						m_oSp3D = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:effectStyle>"); 
+				std::wstring sResult = _T("<a:effectStyle>"); 
 
 				switch ( m_eEffectType )
 				{
@@ -473,9 +473,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:effectStyleLst>"); 
+				std::wstring sResult = _T("<a:effectStyleLst>"); 
 
 				for (unsigned int nIndex = 0; nIndex < m_arrEffectStyle.size(); nIndex++ )
 				{
@@ -567,9 +567,9 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:fillStyleLst>"); 
+				std::wstring sResult = _T("<a:fillStyleLst>"); 
 
 				for (unsigned  int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -619,9 +619,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:font script=\"") + m_sScript + _T("\" typeface=\"") + m_oTypeFace.ToString() + _T("\"/>");
+				std::wstring sResult = _T("<a:font script=\"") + m_sScript + _T("\" typeface=\"") + m_oTypeFace.ToString() + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -669,7 +669,7 @@ namespace OOX
 			EElementType m_eType;
 
 			// Attributes
-			CString                    m_sScript;
+			std::wstring                    m_sScript;
 			SimpleTypes::CTextTypeface m_oTypeFace;
 		};
 		//--------------------------------------------------------------------------------
@@ -726,9 +726,9 @@ namespace OOX
 						m_oStyle = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				switch ( m_eType )
 				{
@@ -818,9 +818,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:lnStyleLst>"); 
+				std::wstring sResult = _T("<a:lnStyleLst>"); 
 
 				for (unsigned int nIndex = 0; nIndex < m_arrLn.size(); nIndex++ )
 				{
@@ -907,9 +907,9 @@ namespace OOX
 						m_oLatin = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				switch ( m_eType )
 				{
@@ -998,9 +998,9 @@ namespace OOX
 						m_oLineStyleLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:fmtScheme name=\">") + m_sName + _T("\">"); 
+				std::wstring sResult = _T("<a:fmtScheme name=\">") + m_sName + _T("\">"); 
 
 				sResult += m_oFillStyleLst.toXML();
 				sResult += m_oLineStyleLst.toXML();
@@ -1044,7 +1044,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			CString                                m_sName;
+			std::wstring                                m_sName;
 
 			// Childs
 			OOX::Drawing::CBackgroundFillStyleList m_oBgFillStyleLst;
@@ -1093,9 +1093,9 @@ namespace OOX
 						m_oMinorFont = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:fontScheme name=\">") + m_sName + _T("\">"); 
+				std::wstring sResult = _T("<a:fontScheme name=\">") + m_sName + _T("\">"); 
 
 				sResult += m_oMajorFont.toXML();
 				sResult += m_oMinorFont.toXML();
@@ -1140,7 +1140,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			CString                                         m_sName;
+			std::wstring                                         m_sName;
 
 			// Childs
 			OOX::Drawing::CFontCollection                   m_oMajorFont;

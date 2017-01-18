@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace BinDocxRW
 		OOX::CTheme* m_poTheme;
 
 		OOX::IFileContainer* m_pCurRels;
-		CString m_sCurDocumentPath;
+        std::wstring m_sCurDocumentPath;
 		std::map<int, bool> m_mapIgnoreComments;
 	public: ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
 				m_pCBufferedStream(pCBufferedStream),m_pFontProcessor(pFontProcessor),m_pOfficeDrawingConverter(pOfficeDrawingConverter),m_pEmbeddedFontsManager(pEmbeddedFontsManager)
@@ -67,9 +67,9 @@ namespace BinDocxRW
 	class ParamsDocumentWriter {
 	public:
 		OOX::IFileContainer* m_pRels;
-		CString m_sDocumentPath;
+        std::wstring m_sDocumentPath;
 	public:
-		ParamsDocumentWriter(OOX::IFileContainer* pRels, const CString& sDocumentPath):m_pRels(pRels), m_sDocumentPath(sDocumentPath)
+        ParamsDocumentWriter(OOX::IFileContainer* pRels, const std::wstring& sDocumentPath):m_pRels(pRels), m_sDocumentPath(sDocumentPath)
 		{
 		}
 	};
@@ -77,8 +77,8 @@ namespace BinDocxRW
 	protected:
 		int m_nType;
 	public:
-		CString m_sFld;
-	public: FldStruct(CString sFld, int nType):m_sFld(sFld),m_nType(nType){}
+        std::wstring m_sFld;
+    public: FldStruct(std::wstring sFld, int nType):m_sFld(sFld),m_nType(nType){}
 	public: int GetType()
 			{
 				return m_nType;
@@ -381,9 +381,9 @@ namespace BinDocxRW
 				m_oStream.WriteDouble(bottom.get().ToMm());
 			}
 		}
-		void WriteFont(CString& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor)
+        void WriteFont(std::wstring& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor)
 		{
-			if(!sFontName.IsEmpty())
+            if(!sFontName.empty())
 			{
 				//Подбор шрифтов
 				sFontName = m_oFontProcessor.getFont(sFontName);
@@ -407,7 +407,7 @@ namespace BinDocxRW
 			if(elem.m_sAuthor.IsInit())
 			{
 				nCurPos = WriteItemStart(c_oSerProp_RevisionType::Author);
-				m_oStream.WriteStringW3(elem.m_sAuthor.get());
+                m_oStream.WriteStringW3(elem.m_sAuthor->c_str());
 				WriteItemWithLengthEnd(nCurPos);
 			}
 			if(elem.m_oDate.IsInit())
@@ -425,7 +425,7 @@ namespace BinDocxRW
             if(elem.m_sUserId.IsInit())
             {
                 nCurPos = WriteItemStart(c_oSerProp_RevisionType::UserId);
-                m_oStream.WriteStringW3(elem.m_sUserId.get());
+                m_oStream.WriteStringW3(elem.m_sUserId->c_str());
                 WriteItemWithLengthEnd(nCurPos);
             }
 		}
@@ -520,10 +520,10 @@ namespace BinDocxRW
 				//FontFamily
 				if(false != rPr.m_oRFonts.IsInit())
 				{
-					CString sFontAscii;
-					CString sFontHAnsi;
-					CString sFontAE;
-					CString sFontCS;
+                    std::wstring sFontAscii;
+                    std::wstring sFontHAnsi;
+                    std::wstring sFontAE;
+                    std::wstring sFontCS;
 					const ComplexTypes::Word::CFonts& oFont = rPr.m_oRFonts.get();
 					if(NULL != m_poTheme && oFont.m_oAsciiTheme.IsInit())
 					{
@@ -776,10 +776,11 @@ namespace BinDocxRW
 				}
 				if (false != rPr.m_sTextOutline.IsInit())
 				{
-					CString sTextOutline = rPr.m_sTextOutline.get2();
+                    std::wstring sTextOutline = rPr.m_sTextOutline.get2();
 					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-					sTextOutline.Replace(_T("w14:"), _T(""));
-					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
+                    boost::algorithm::replace_all(sTextOutline, L"w14:", L"");
+
+                    m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, sTextOutline);
@@ -787,10 +788,11 @@ namespace BinDocxRW
 				}
 				if (false != rPr.m_sTextFill.IsInit())
 				{
-					CString sTextFill = rPr.m_sTextFill.get2();
+                    std::wstring sTextFill = rPr.m_sTextFill.get2();
 					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-					sTextFill.Replace(_T("w14:"), _T(""));
-					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextFill);
+                    boost::algorithm::replace_all(sTextFill, L"w14:", L"");
+
+                    m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextFill);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_FILL, sTextFill);
@@ -849,7 +851,7 @@ namespace BinDocxRW
 				int nCurPos = 0;
 				//Стили надо писать первыми, потому что применение стиля при открытии уничтажаются настройки параграфа
 		//ParaStyle
-				CString sStyleId;
+                std::wstring sStyleId;
 				if(false != pPr.m_oPStyle.IsInit())
 				{
 					sStyleId = pPr.m_oPStyle.get().ToString2();
@@ -1716,8 +1718,8 @@ namespace BinDocxRW
 				}
 				if(oNumFmt.m_sFormat.IsInit())
 				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::NumFmtFormat);
-					m_oBcw.m_oStream.WriteStringW3(oNumFmt.m_sFormat.get());
+					nCurPos = m_oBcw.WriteItemStart	(c_oSerNumTypes::NumFmtFormat);
+                    m_oBcw.m_oStream.WriteStringW3	(*oNumFmt.m_sFormat);
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
 			}
@@ -2364,7 +2366,7 @@ namespace BinDocxRW
 				OOX::Logic::CRunProperty oWordDefTextPr;
 				oWordDefTextPr.m_oRFonts.Init();
 				oWordDefTextPr.m_oRFonts->m_sAscii.Init();
-				CString sAscii = brPrs.m_oFontProcessor.getFont(CString(_T("Times New Roman")));
+                std::wstring sAscii = brPrs.m_oFontProcessor.getFont(std::wstring(_T("Times New Roman")));
 				oWordDefTextPr.m_oRFonts->m_sAscii = sAscii;
 				if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 					m_oBcw.m_pEmbeddedFontsManager->CheckFont(sAscii, brPrs.m_oFontProcessor.getFontManager());
@@ -2407,11 +2409,11 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteStringW(style.m_sStyleId.get2());
 			}
 			//Name
-			CString sName;
+            std::wstring sName;
 			if(false != style.m_oName.IsInit())
 				sName = style.m_oName->ToString2();
 			else
-				sName.Format(_T("StGen%d"), m_nReaderGenName++);
+                sName = L"StGen" + std::to_wstring( m_nReaderGenName++ );
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_sts::Style_Name);
 			m_oBcw.m_oStream.WriteStringW(sName);
 			//Type
@@ -2840,10 +2842,10 @@ namespace BinDocxRW
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
-		void WriteLevelText(const CString& text)
+        void WriteLevelText(const std::wstring& text)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = text.GetLength(); i < length; ++i)
+            for(int i = 0, length = text.length(); i < length; ++i)
 			{
 				if('%' == text[i] && i + 1 < length && '0' <= text[i + 1] && text[i + 1] <= '9')
 				{
@@ -2865,8 +2867,7 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::lvl_LvlTextItem);
 
 					m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_LvlTextItemText);
-					CString strChar;
-					strChar.AppendChar(text[i]);
+                    std::wstring strChar (text.c_str() + i, 1);
 					m_oBcw.m_oStream.WriteStringW(strChar);
 					if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 						m_oBcw.m_pEmbeddedFontsManager->CheckString(strChar);
@@ -2888,7 +2889,7 @@ namespace BinDocxRW
 			{
 				m_oStream.WriteBYTE(btVal);
 			}
-		public: void WriteString(CString& sVal)
+        public: void WriteString(std::wstring& sVal)
 			{
 				m_oStream.WriteStringW2(sVal);
 			}
@@ -2939,13 +2940,13 @@ namespace BinDocxRW
 		BinaryCommonWriter		m_oBcw;
 		Binary_pPrWriter		bpPrs;
 		Binary_rPrWriter		brPrs;
-		CString					m_sCurParStyle;
+        std::wstring					m_sCurParStyle;
 		OOX::CSettings*			m_oSettings;
 
 		//для fldChar
 		//todo в документации описан случай если нет fldchartypeEnd, у нас работает не так.
 		std::vector<FldStruct*>			m_aFldChars;
-		CString							m_sFldChar;
+        std::wstring							m_sFldChar;
 		SimpleTypes::EFldCharType		m_eFldState;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
@@ -2971,12 +2972,12 @@ namespace BinDocxRW
 				RELEASEOBJECT(m_aFldChars[i]);
 			}
 		}
-		void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sDocumentPath, std::vector<CString>& aShapeTypes)
+        void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, std::wstring& sDocumentPath, std::vector<std::wstring>& aShapeTypes)
 		{
 			pOfficeDrawingConverter->SetRelsPath(sDocumentPath);
 			for(int i = 0, length = aShapeTypes.size(); i < length; ++i)
 			{
-				CString& sShapeType = aShapeTypes[i];
+                std::wstring& sShapeType = aShapeTypes[i];
 				pOfficeDrawingConverter->AddShapeType(sShapeType);
 			}
 		}
@@ -3057,7 +3058,7 @@ namespace BinDocxRW
 		{
 			if (pBackground == NULL) return;
 
-			CString sXml;
+            std::wstring sXml;
 			if (pBackground->m_oDrawing.IsInit())
 			{
 				sXml = pBackground->m_oDrawing->m_sXml.get2();
@@ -3077,7 +3078,7 @@ namespace BinDocxRW
                 m_oBcw.WriteThemeColor(c_oSerBackgroundType::ColorTheme, pBackground->m_oColor, pBackground->m_oThemeColor, pBackground->m_oThemeTint, pBackground->m_oThemeShade);
             }
 
-            if (!sXml.IsEmpty())
+            if (!sXml.empty())
 			{
                 m_oBcw.m_oStream.WriteBYTE(c_oSerBackgroundType::pptxDrawing);
                 m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -3105,16 +3106,18 @@ namespace BinDocxRW
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 		}
-		FldStruct* ParseField(const CString& sFld)
+        FldStruct* ParseField(const std::wstring& sFld)
 		{
-			CString sFldCopy = sFld;
-			sFldCopy.Trim();
-			sFldCopy.MakeUpper();
-			FldStruct* pRes = NULL;
+            std::wstring sFldCopy = sFld;
+
+            boost::algorithm::trim      (sFldCopy);
+            boost::algorithm::to_upper  (sFldCopy);
+
+            FldStruct* pRes = NULL;
 			int nIndex = 0;
-			if(-1 != (nIndex = sFldCopy.Find(_T("TOC"))))
+            if(-1 != (nIndex = sFldCopy.find(_T("TOC"))))
 				pRes = new FldStruct(sFldCopy, fieldstruct_toc);
-			else if(-1 != (nIndex = sFldCopy.Find(_T("HYPERLINK"))))
+            else if(-1 != (nIndex = sFldCopy.find(_T("HYPERLINK"))))
 				pRes = new FldStruct(sFldCopy, fieldstruct_hyperlink);
 			else
 				pRes = new FldStruct(sFldCopy, fieldstruct_none);
@@ -3261,7 +3264,7 @@ namespace BinDocxRW
 		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple)
 		{
 			int nCurPos = 0;
-			if(pFldSimple->m_sInstr.IsInit() && !pFldSimple->m_sInstr->IsEmpty())
+            if(pFldSimple->m_sInstr.IsInit() && !pFldSimple->m_sInstr->empty())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::FldSimple);
 					WriteFldSimpleContent(pFldSimple);
@@ -3276,7 +3279,7 @@ namespace BinDocxRW
 			//порядок записи важен
 			//Instr
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
-				m_oBcw.m_oStream.WriteStringW3(pFldSimple->m_sInstr.get());
+                m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sInstr);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			//Content
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
@@ -3287,8 +3290,8 @@ namespace BinDocxRW
 		void WriteHyperlink(OOX::Logic::CHyperlink* pHyperlink)
 		{
 			int nCurPos = 0;
-			CString sField;
-			CString sLink;
+            std::wstring sField;
+            std::wstring sLink;
 			if(pHyperlink->m_oId.IsInit())
 			{
 				OOX::Rels::CRelationShip* oRels = NULL;
@@ -3300,7 +3303,7 @@ namespace BinDocxRW
 				}
 			}
 			
-			if(!sLink.IsEmpty())
+            if(!sLink.empty())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Hyperlink);
 					WriteHyperlinkContent(sLink, pHyperlink);
@@ -3311,7 +3314,7 @@ namespace BinDocxRW
 				WriteParagraphContent(pHyperlink->m_arrItems, true);
 			}
 		}
-		void WriteHyperlinkContent(CString& sLink, OOX::Logic::CHyperlink* pHyperlink)
+        void WriteHyperlinkContent(std::wstring& sLink, OOX::Logic::CHyperlink* pHyperlink)
 		{
 			int nCurPos = 0;
 	//Link
@@ -3945,7 +3948,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				CString str = pChr.m_val->GetValue();
+                std::wstring str = pChr.m_val->GetValue();
 				m_oBcw.m_oStream.WriteStringW(pChr.m_val->GetValue());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -4929,11 +4932,11 @@ namespace BinDocxRW
 		void WriteMathText(const OOX::Logic::CMText &pMText)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MText);
-			if(!pMText.m_sText.IsEmpty())
+            if(!pMText.m_sText.empty())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringW(pMText.m_sText);
+                m_oBcw.m_oStream.WriteStringW(pMText.m_sText.c_str());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -5059,19 +5062,19 @@ namespace BinDocxRW
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(pRun->m_arrItems[nIndexStart]);
 				if(oSym->m_oFont.IsInit())
 				{
-					const CString& sFont = oSym->m_oFont.get();
+                    const std::wstring& sFont = oSym->m_oFont.get();
 					if(NULL == oCur_rPr)
 						oCur_rPr = new OOX::Logic::CRunProperty();
 					
 					oCur_rPr->m_oRFonts.Init();
 					oCur_rPr->m_oRFonts->m_sAscii.Init();
-					oCur_rPr->m_oRFonts->m_sAscii->Append(sFont);
+                    oCur_rPr->m_oRFonts->m_sAscii->append(sFont);
 					oCur_rPr->m_oRFonts->m_sCs.Init();
-					oCur_rPr->m_oRFonts->m_sCs->Append(sFont);
+                    oCur_rPr->m_oRFonts->m_sCs->append(sFont);
 					oCur_rPr->m_oRFonts->m_sEastAsia.Init();
-					oCur_rPr->m_oRFonts->m_sEastAsia->Append(sFont);
+                    oCur_rPr->m_oRFonts->m_sEastAsia->append(sFont);
 					oCur_rPr->m_oRFonts->m_sHAnsi.Init();
-					oCur_rPr->m_oRFonts->m_sHAnsi->Append(sFont);
+                    oCur_rPr->m_oRFonts->m_sHAnsi->append(sFont);
 				}
 			}
 	//пишем rPr
@@ -5132,7 +5135,7 @@ namespace BinDocxRW
 							if(SimpleTypes::fldchartypeBegin == pFldChar->m_oFldCharType.get().GetValue())
 							{
 								m_eFldState = SimpleTypes::fldchartypeBegin;
-								m_sFldChar.Empty();
+                                m_sFldChar.clear();
 							}
 							else if(SimpleTypes::fldchartypeEnd == pFldChar->m_oFldCharType.get().GetValue())
 							{
@@ -5167,7 +5170,7 @@ namespace BinDocxRW
 							m_sFldChar += pInstrText->m_sText;
 						else
 						{
-							if(!pInstrText->m_sText.IsEmpty())
+                            if(!pInstrText->m_sText.empty())
 							{
 								WriteText(pInstrText->m_sText);
 							}
@@ -5201,15 +5204,15 @@ namespace BinDocxRW
 				case OOX::et_w_sym:
 					{
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
-						CString sText;
-						sText.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
+                        wchar_t ch = 0x0FFF & oSym->m_oChar->GetValue();
+                        std::wstring sText(&ch, 1);
 						WriteText(sText);
 						break;
 					}
 				case OOX::et_w_delText:
 					{
-						CString& sText = static_cast<OOX::Logic::CDelText*>(item)->m_sText;
-						if(!sText.IsEmpty())
+                        std::wstring& sText = static_cast<OOX::Logic::CDelText*>(item)->m_sText;
+                        if(!sText.empty())
 						{
 							WriteDelText(sText);
 						}
@@ -5217,8 +5220,8 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_t:
 					{
-						CString& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
-						if(!sText.IsEmpty())
+                        std::wstring& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
+                        if(!sText.empty())
 						{
 							WriteText(sText);
 						}
@@ -5252,12 +5255,12 @@ namespace BinDocxRW
 					{
 						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
 						
-						CString* pXml = pObject ? pObject->m_sXml.GetPointer() : NULL;
+                        std::wstring* pXml = pObject ? pObject->m_sXml.GetPointer() : NULL;
 						int nPosObject = m_oBcw.WriteItemStart(c_oSerRunType::object);
 
 						if(pObject && pObject->m_oOleObject.IsInit() && pObject->m_oOleObject->m_sProgId.IsInit() && pObject->m_oOleObject->m_oId.IsInit())
 						{
-							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
+                            std::wstring sProgID = pObject->m_oOleObject->m_sProgId.get();
 							if ( _T("Word.Document") == sProgID)
 							{
 								int nPosEmbedded = m_oBcw.WriteItemStart(c_oSerImageType2::Embedded);
@@ -5265,7 +5268,7 @@ namespace BinDocxRW
 								OOX::Rels::CRelationShip* oRels = NULL;
 								smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
 
-								CString sLink;
+                                std::wstring sLink;
 								if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
 								{
 									OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
@@ -5282,7 +5285,7 @@ namespace BinDocxRW
 								OOX::Rels::CRelationShip* oRels = NULL;
 								smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
 
-								CString sLink;
+                                std::wstring sLink;
 								if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
 								{
 									OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
@@ -5290,7 +5293,7 @@ namespace BinDocxRW
 								}
 								MathEquation::BinaryEquationWriter oBinEqWriter(m_oBcw.m_oStream);
 
-								MathEquation::CEquationReader oReader(sLink);
+                                MathEquation::CEquationReader oReader(sLink.c_str());
 								oReader.SetOutputDev(&oBinEqWriter);
 								oReader.Parse();
 							}
@@ -5350,24 +5353,24 @@ namespace BinDocxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteDelText(const CString& text)
+        void WriteDelText(const std::wstring& text)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::delText);
-			m_oBcw.m_oStream.WriteStringW(text);
+            m_oBcw.m_oStream.WriteStringW(text.c_str());
 			if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 				m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
 		}
-		void WriteText(const CString& text)
+        void WriteText(const std::wstring& text)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::run);
-			m_oBcw.m_oStream.WriteStringW(text);
+            m_oBcw.m_oStream.WriteStringW(text);
 			if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 				m_oBcw.m_pEmbeddedFontsManager->CheckString(text);
 		}
 		void WriteDrawingPptx(OOX::WritingElement* item)
 		{
 			OOX::EElementType		pElementType	= item->getType();
-			CString*				pXml			= NULL;
+            std::wstring*				pXml			= NULL;
 			OOX::Logic::CDrawing*	pChartDrawing	= NULL;
 			OOX::Drawing::CGraphic* pGraphic		= NULL;
 			
@@ -5437,8 +5440,8 @@ namespace BinDocxRW
 						if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
 						{
 							OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
-							CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
-							CString sChartPath = pChartFile->GetReadPath().GetPath();
+                            std::wstring sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
+                            std::wstring sChartPath = pChartFile->GetReadPath().GetPath();
 							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
 							int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
@@ -5457,14 +5460,14 @@ namespace BinDocxRW
 				}
 			}
 		}
-        void WriteDrawing(CString* pXml, OOX::Logic::CDrawing* pDrawing, OOX::Spreadsheet::CChartSpace* pChart)
+        void WriteDrawing(std::wstring* pXml, OOX::Logic::CDrawing* pDrawing, OOX::Spreadsheet::CChartSpace* pChart)
 		{
 			int nCurPos = 0;
 			bool bDeleteDrawing = false;
 	//pptxdata
 			if(NULL != pXml)
 			{
-				CString* bstrOutputXml = NULL;
+                std::wstring* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::PptxData);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 
@@ -5474,10 +5477,10 @@ namespace BinDocxRW
 
                 if(S_OK == hRes && NULL != bstrOutputXml)
                 {                   
-                    CString sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>"));
+                    std::wstring sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\"><w:drawing>"));
                     
-                    CString sEnd(_T("</w:drawing></root>"));
-                    CString sDrawingXml = sBegin +  *bstrOutputXml + sEnd;
+                    std::wstring sEnd(_T("</w:drawing></root>"));
+                    std::wstring sDrawingXml = sBegin +  *bstrOutputXml + sEnd;
                     
                     
 					XmlUtils::CXmlLiteReader oReader;
@@ -5789,7 +5792,7 @@ namespace BinDocxRW
 			if(oDocPr.m_sName.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Name);
-				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sName.get());
+                m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sName.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(oDocPr.m_oHidden.IsInit())
@@ -5801,13 +5804,13 @@ namespace BinDocxRW
 			if(oDocPr.m_sTitle.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Title);
-				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sTitle.get());
+                m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sTitle.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(oDocPr.m_sDescr.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Descr);
-				m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sDescr.get());
+                m_oBcw.m_oStream.WriteStringW3(oDocPr.m_sDescr.get());
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 		}
@@ -6459,7 +6462,7 @@ namespace BinDocxRW
 		public:
 			OOX::CComment* pComment;
 			nullable<bool> bDone;
-			nullable<CString> sUserId;
+            nullable<std::wstring> sUserId;
 			std::vector<CCommentWriteTemp*> aReplies;
 		};
 		BinaryCommonWriter m_oBcw;
@@ -6475,7 +6478,7 @@ namespace BinDocxRW
 		}
 		void WriteCommentsContent(OOX::CComments& oComments, OOX::CCommentsExt* pCommentsExt, OOX::CPeople* pPeople, std::map<int, bool>& mapIgnoreComments)
 		{
-			std::map<CString, CString> mapAuthorToUserId;
+            std::map<std::wstring, std::wstring> mapAuthorToUserId;
 			std::map<int, CCommentWriteTemp*> mapParaIdToComment;
 			std::map<int, bool> mapCommentsIgnore;
 			std::vector<CCommentWriteTemp*> aCommentsToWrite;
@@ -6497,7 +6500,7 @@ namespace BinDocxRW
 				pNewCommentWriteTemp->pComment = pComment;
 				if(pComment->m_oAuthor.IsInit())
 				{
-					std::map<CString, CString>::const_iterator pPair = mapAuthorToUserId.find(pComment->m_oAuthor.get2());
+                    std::map<std::wstring, std::wstring>::const_iterator pPair = mapAuthorToUserId.find(pComment->m_oAuthor.get2());
 					if(mapAuthorToUserId.end() != pPair)
 						pNewCommentWriteTemp->sUserId = pPair->second;
 				}
@@ -7003,7 +7006,7 @@ namespace BinDocxRW
 			WriteNotes(oEndnotes.m_arrEndnote, oParamsDocumentWriter, oEndnotes.m_arrShapeTypes);
 			m_oBcw.WriteItemWithLengthEnd(nStart);
 		}
-		void WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNotes, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<CString>& arrShapeTypes)
+        void WriteNotes(const std::vector<OOX::CFtnEdn*>& arrNotes, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<std::wstring>& arrShapeTypes)
 		{
 			int nCurPos = 0;
 			for(size_t i = 0 ; i < arrNotes.size(); ++i)
@@ -7013,7 +7016,7 @@ namespace BinDocxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		void WriteNote(const OOX::CFtnEdn& oFtnEdn, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<CString>& arrShapeTypes)
+        void WriteNote(const OOX::CFtnEdn& oFtnEdn, ParamsDocumentWriter& oParamsDocumentWriter, std::vector<std::wstring>& arrShapeTypes)
 		{
 			int nCurPos = 0;
 			if(oFtnEdn.m_oType.IsInit())
@@ -7050,10 +7053,9 @@ namespace BinDocxRW
 				m_nLastFilePos = 0;
 				m_nRealTableCount = 0;
 			}
-			static CString WriteFileHeader(long nDataSize)
+            static std::wstring WriteFileHeader(long nDataSize)
 			{
-				CString sHeader;
-                sHeader.Format(_T("%ls;v%d;%d;"), g_sFormatSignature, g_nFormatVersion, nDataSize);
+                std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(g_nFormatVersion) + L";" + std::to_wstring(nDataSize) + L";";
 				return sHeader;
 			}
 			void WriteMainTableStart()
@@ -7113,7 +7115,7 @@ namespace BinDocxRW
 				//Seek вобратно в MainTable
 				m_oBcw.m_oStream.SetPosition(nCurPos);
 			}
-			void intoBindoc(const CString& sDir) {
+            void intoBindoc(const std::wstring& sDir) {
 				NSBinPptxRW::CBinaryFileWriter& oBufferedStream = m_oBcw.m_oStream;
 				OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sDir));
 				

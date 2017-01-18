@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -94,7 +94,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_fldSimple;
@@ -117,7 +117,7 @@ namespace OOX
 			// Attributes
 			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
 			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
-			nullable<CString >                           m_sInstr;
+			nullable<std::wstring >                           m_sInstr;
 
 			// Childs
 		};

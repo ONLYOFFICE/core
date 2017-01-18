@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -837,20 +837,19 @@ namespace BinXlsxRW
 
 	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
-	std::wstring* BinaryChartReader::GetRecordXml(long length, int nRecordType)
+
+    std::wstring* BinaryChartReader::GetRecordXml(long length, int nRecordType)
 	{
 		std::wstring* pNewElem = new std::wstring;
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
-			CString* bstrXml = NULL;
-			HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, &bstrXml);
-			if (S_OK == hRes && NULL != bstrXml)
+            std::wstring sXml;
+            HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, sXml);
+            if (S_OK == hRes)
 			{
-				*pNewElem = bstrXml->GetBuffer();
-				bstrXml->ReleaseBuffer();
+                *pNewElem = sXml;
 			}
-			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		return pNewElem;
@@ -861,14 +860,12 @@ namespace BinXlsxRW
 		if(length > 0)
 		{
 			long nCurPos = m_oBufferedStream.GetPos();
-			CString* bstrXml = NULL;
-			HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(nCurPos, length, &bstrXml);
-			if (S_OK == hRes && NULL != bstrXml)
+            std::wstring sXml;
+            HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyXml(nCurPos, sXml);
+            if (S_OK == hRes)
 			{
-				*pNewElem = bstrXml->GetBuffer();
-				bstrXml->ReleaseBuffer();
+                *pNewElem = sXml;
 			}
-			RELEASEOBJECT(bstrXml);
 			m_oBufferedStream.Seek(nCurPos + length);
 		}
 		return pNewElem;
@@ -991,15 +988,13 @@ namespace BinXlsxRW
 			m_oBufferedStream.Seek(nCurPos + length);
 
 			long rId;
-			m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, CString(), &rId);
+            m_pOfficeDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, std::wstring(), &rId);
 
-			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
-
-            int nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR);
-                nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
+            int nIndex = m_oSaveParams.sThemePath.rfind(FILE_SEPARATOR_CHAR); 
+                nIndex = m_oSaveParams.sThemePath.rfind(FILE_SEPARATOR_CHAR, nIndex - 1);
 			if(-1 != nIndex)
 			{
-                std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex);
+                std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex + 1);
                 boost::algorithm::replace_all(sContentTypesPath, L"\\", L"/");
 
                 std::wstring strType = L"<Override PartName=\"/";
@@ -5987,15 +5982,15 @@ namespace BinXlsxRW
 		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	void BinaryChartWriter::GetTxBodyBinary(int nType, std::wstring& sXml)
+    void BinaryChartWriter::GetTxBodyBinary(int nType, std::wstring& sXml_)
 	{
 		int nCurPos = m_oBcw.WriteItemStart(nType);
 		
-		std::wstring	bstrXml = L"<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">";
-						bstrXml += sXml;
-						bstrXml += L"</c:rich>";
+        std::wstring	sXml = L"<c:rich xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">";
+                        sXml += sXml_;
+                        sXml += L"</c:rich>";
 
-		HRESULT hRes = m_pOfficeDrawingConverter->GetTxBodyBinary(bstrXml);
+        m_pOfficeDrawingConverter->GetTxBodyBinary(sXml);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)

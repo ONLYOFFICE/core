@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,7 +75,7 @@ namespace PPTX
 			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
 			OOX::CPath normPath = path / pRelation->target();
 
-            std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.find(normPath);
+            std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.find(normPath);
 
 			if (bIsSlide && (pRelation->type() == PPTX::FileTypes::Slide))
 			{
@@ -141,8 +141,8 @@ namespace PPTX
 
 	void FileContainer::write(PPTX::Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const
 	{
-		std::map<CString, size_t> mNamePair;
-		for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
+		std::map<std::wstring, size_t> mNamePair;
+		for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
 		{
 			smart_ptr<PPTX::File>     pFile = pPair->second;
 			smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
@@ -190,7 +190,7 @@ namespace PPTX
 
 	void FileContainer::WrittenSetFalse()
 	{
-		for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
+		for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
 		{
 			smart_ptr<PPTX::File> pFile = pPair->second;
 

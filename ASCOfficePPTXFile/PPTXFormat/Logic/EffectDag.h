@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,7 +64,7 @@ namespace PPTX
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
 
-            virtual CString toXML() const;
+            virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -93,7 +93,7 @@ namespace PPTX
 			std::vector<UniEffect>						Effects;
 			nullable_string								name;
 			nullable_limit<Limit::EffectContainerType>	type;
-			CString										m_name;
+			std::wstring										m_name;
 		protected:
             virtual void FillParentPointersForChilds();
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,16 +45,16 @@ namespace DocFileFormat
 		m_document = static_cast<WordDocument*>( visited );
 
 		//start the document
-		m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-		m_pXmlWriter->WriteNodeBegin( _T( "w:ftr" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+        m_pXmlWriter->WriteNodeBegin( L"w:ftr", TRUE );
 
 		//write namespaces
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:v" ), OpenXmlNamespaces::VectorML );
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:o" ), OpenXmlNamespaces::Office );
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:w10" ), OpenXmlNamespaces::OfficeWord );
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:r" ), OpenXmlNamespaces::Relationships );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+        m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
+        m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
+        m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
+        m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 		//convert the footer text
 		_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
@@ -93,7 +93,7 @@ namespace DocFileFormat
 			}
 		}
 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:ftr" ) );
+        m_pXmlWriter->WriteNodeEnd( L"w:ftr" );
 
 		m_context->_docx->FooterXMLList.push_back( std::wstring( m_pXmlWriter->GetXmlString() ) );
 	}

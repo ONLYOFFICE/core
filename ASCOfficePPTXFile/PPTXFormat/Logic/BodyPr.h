@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -91,7 +91,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rot"), rot);
@@ -445,7 +445,7 @@ namespace PPTX
 			nullable_limit<Limit::TextWrap>			wrap;
 		//private:
 		public:
-			mutable CString									m_namespace;
+			mutable std::wstring									m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

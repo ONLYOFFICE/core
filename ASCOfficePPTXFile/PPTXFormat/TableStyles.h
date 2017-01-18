@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,7 +58,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			oNode.ReadAttributeBase(L"def", def);
 
@@ -75,18 +75,18 @@ namespace PPTX
 				oNodes.GetAt(i, oMem);
 
 				Style = oMem;
-				Styles.insert(std::pair<CString, Logic::TableStyle>(Style.styleId, Style));
+				Styles.insert(std::pair<std::wstring, Logic::TableStyle>(Style.styleId, Style));
 			}
 
-			for (std::map<CString, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			for (std::map<std::wstring, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
 				pPair->second.SetParentFilePointer(this);
 			}
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
-			CString strValue = _T("");
-			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			std::wstring strValue = _T("");
+			for (std::map<std::wstring, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
 				pPair->second.toXML();
 			}
@@ -125,7 +125,7 @@ namespace PPTX
 
 			pWriter->StartRecord(0);
 
-			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			for (std::map<std::wstring, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
 				pWriter->WriteRecord1(1, pPair->second);
 			}
@@ -164,7 +164,7 @@ namespace PPTX
 			pReader->Skip(4); // len
 
 			LONG lPos = pReader->GetPos();
-			std::vector<CString> arrIds;
+			std::vector<std::wstring> arrIds;
 
 			while (pReader->GetPos() < _end_rec)
 			{
@@ -188,7 +188,7 @@ namespace PPTX
 						}
 						case 1:
 						{
-							CString styleName = pReader->GetString2();
+							std::wstring styleName = pReader->GetString2();
 							break;
 						}
 						default:
@@ -207,9 +207,9 @@ namespace PPTX
 				pReader->Skip(1);
 	
 				Logic::TableStyle _style;
-				Styles.insert(std::pair<CString, Logic::TableStyle>(arrIds[nIndex], _style));
+				Styles.insert(std::pair<std::wstring, Logic::TableStyle>(arrIds[nIndex], _style));
 
-				std::map<CString, Logic::TableStyle>::iterator pPair = Styles.find(arrIds[nIndex]);
+				std::map<std::wstring, Logic::TableStyle>::iterator pPair = Styles.find(arrIds[nIndex]);
 				
 				if (Styles.end() != pPair)
 				{
@@ -234,7 +234,7 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			for (std::map<std::wstring, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
 				pPair->second.toXmlWriter(pWriter);
 			}
@@ -243,41 +243,41 @@ namespace PPTX
 		}
 
 	public:
-		CString def;
-		std::map<CString, Logic::TableStyle> Styles;
+		std::wstring def;
+		std::map<std::wstring, Logic::TableStyle> Styles;
 
 		void SetTheme(const smart_ptr<PPTX::Theme> theme)
 		{
 			m_Theme = theme;
 
-			for (std::map<CString, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			for (std::map<std::wstring, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
 				pPair->second.SetTheme(m_Theme);
 			}
 		}
 
-		virtual DWORD GetRGBAFromMap(const CString& str)const
+		virtual DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			if(m_Theme.IsInit())
 				return m_Theme->GetRGBAFromMap(str);
 			return 0;
 		}
 
-		virtual DWORD GetARGBFromMap(const CString& str)const
+		virtual DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			if(m_Theme.IsInit())
 				return m_Theme->GetARGBFromMap(str);
 			return 0;
 		}
 
-		virtual DWORD GetBGRAFromMap(const CString& str)const
+		virtual DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			if(m_Theme.IsInit())
 				return m_Theme->GetBGRAFromMap(str);
 			return 0;
 		}
 
-		virtual DWORD GetABGRFromMap(const CString& str)const
+		virtual DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			if(m_Theme.IsInit())
 				return m_Theme->GetABGRFromMap(str);

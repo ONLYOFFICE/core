@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -768,7 +768,7 @@ namespace NSDoctRenderer
                                     _LOGGING_ERROR_(L"change", strException);
 
                                     char buffer[50];
-                                    sprintf(buffer, "index=\"%d\"", pNative->m_nCurrentChangesNumber);
+                                    sprintf(buffer, "index=\"%d\"", pNative->m_nCurrentChangesNumber - 1);
                                     std::string s(buffer);
                                     strError = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)s.c_str(), (LONG)s.length());
                                     bIsBreak = true;

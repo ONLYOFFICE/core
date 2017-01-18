@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -101,7 +101,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+            std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><a:themeOverride xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" >");
 
 			if ( m_oClrScheme.IsInit() )
@@ -115,7 +115,7 @@ namespace OOX
 
 			sXml += _T("</a:themeOverride>");
 
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), sXml );
 			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
 		}
 
@@ -135,14 +135,14 @@ namespace OOX
 
 	public:
 
-		const CString GetMajorFont() const
+        const std::wstring GetMajorFont() const
 		{
 			if ( m_oFontScheme.IsInit() &&  m_oFontScheme->m_oMajorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oFontScheme->m_oMajorFont.m_oLatin.m_oTypeFace->GetValue();
 			else
 				return _T("Times New Roman");
 		}		
-		const CString GetMinorFont() const
+        const std::wstring GetMinorFont() const
 		{
 			if ( m_oFontScheme.IsInit() &&  m_oFontScheme->m_oMinorFont.m_oLatin.m_oTypeFace.IsInit() )
 				return m_oFontScheme->m_oMinorFont.m_oLatin.m_oTypeFace->GetValue();

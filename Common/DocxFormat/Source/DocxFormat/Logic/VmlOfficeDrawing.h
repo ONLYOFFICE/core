@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -93,9 +93,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				switch( m_eType )
 				{
@@ -185,7 +185,7 @@ namespace OOX
 			EElementType                                m_eType;
 
 			// Attributes
-			nullable<CString>                           m_sAlthref;
+			nullable<std::wstring>                           m_sAlthref;
 			nullable<SimpleTypes::CColorType<>>         m_oColor;
 			nullable<SimpleTypes::CColorType<>>         m_oColor2;
 			nullable<SimpleTypes::Vml::CVmlDashStyle<>> m_oDashStyle;
@@ -196,22 +196,22 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>               m_oExt;
 			nullable<SimpleTypes::CFillType<>>          m_oFillType;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oForceDash;
-			nullable<CString>                           m_sHref;
+			nullable<std::wstring>                           m_sHref;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oImageAlignShape;
 			nullable<SimpleTypes::CImageAspect<>>       m_oImageAspect;
-			nullable<CString>                           m_sImageSize;
+			nullable<std::wstring>                           m_sImageSize;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle<>>   m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle<>>   m_oLineStyle;
 			nullable<SimpleTypes::CDecimalNumber<8>>    m_oMiterLimit;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oOn;
-			nullable<CString>                           m_sOpacity;
-			nullable<CString>                           m_sSrc;
+			nullable<std::wstring>                           m_sOpacity;
+			nullable<std::wstring>                           m_sSrc;
 			nullable<SimpleTypes::CStrokeArrowType<>>   m_oStartArrow;
 			nullable<SimpleTypes::CStrokeArrowLength<>> m_oStartArrowLength;
 			nullable<SimpleTypes::CStrokeArrowWidth<>>  m_oStartArrowWidth;
-			nullable<CString>                           m_sTitle;
-			nullable<CString>                           m_sWeight;
+			nullable<std::wstring>                           m_sTitle;
+			nullable<std::wstring>                           m_sWeight;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -241,9 +241,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:callout ");
+				std::wstring sResult = _T("<o:callout ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),           m_oExt )
 				ComplexTypes_WriteAttribute ( _T("on=\""),              m_oOn )
@@ -337,9 +337,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:clippath o:v=\"") + m_oV.ToString() + _T("\"/>");
+				std::wstring sResult = _T("<o:clippath o:v=\"") + m_oV.ToString() + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -389,9 +389,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:colormenu ");
+				std::wstring sResult = _T("<o:colormenu ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),           m_oExt );
 
@@ -469,9 +469,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:colormru ");
+				std::wstring sResult = _T("<o:colormru ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 				sResult += _T("colors=\"");
@@ -498,7 +498,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Устанавливаем значения по умолчанию
-				CString sColors;
+				std::wstring sColors;
 
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
@@ -510,10 +510,10 @@ namespace OOX
 				{
 					int nStartPos = 0;
 					int nEndPos = -1;
-					CString sColor;
-					while ( -1 != ( nEndPos = sColors.Find( _T(","), nStartPos )  ) )
+					std::wstring sColor;
+                    while ( -1 != ( nEndPos = sColors.find( _T(","), nStartPos )  ) )
 					{
-						sColor = sColors.Mid( nStartPos, nEndPos - nStartPos );
+                        sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
 						SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
 						if (oColor)
 						{
@@ -523,8 +523,8 @@ namespace OOX
 						nStartPos = nEndPos + 1;
 					}
 
-					nEndPos = sColors.GetLength();
-					sColor = sColors.Mid( nStartPos, nEndPos - nStartPos );
+					nEndPos = sColors.length();
+					sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
 					SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
 					if (oColor )
 					{
@@ -567,9 +567,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:complex ");
+				std::wstring sResult = _T("<o:complex ");
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
 				sResult += _T("\"/>");
 
@@ -622,9 +622,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:rel ");
+				std::wstring sResult = _T("<o:rel ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
 				ComplexTypes_WriteAttribute2( _T("idcntr=\""), m_sIdCntr );
@@ -657,9 +657,9 @@ namespace OOX
 
 			// Attributes
 			nullable<SimpleTypes::CExt<>> m_oExt;
-			nullable<CString>             m_sIdCntr;
-			nullable<CString>             m_sIdDest;
-			nullable<CString>             m_sIdSrc;
+			nullable<std::wstring>             m_sIdCntr;
+			nullable<std::wstring>             m_sIdDest;
+			nullable<std::wstring>             m_sIdSrc;
 		};
 		//--------------------------------------------------------------------------------
 		// CRelationTable 14.2.2.25 (Part 4)
@@ -705,9 +705,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:relationtable ");
+				std::wstring sResult = _T("<o:relationtable ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
 
@@ -783,9 +783,9 @@ namespace OOX
 						m_oRelationTable = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:diagram ");
+				std::wstring sResult = _T("<o:diagram ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),            m_oExt )
 				ComplexTypes_WriteAttribute ( _T("dgmstyle=\""),         m_oDmgStyle )
@@ -836,7 +836,7 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoFormat;
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoLayout;
-			nullable<CString>                       m_sConstrainbounds;
+			nullable<std::wstring>                       m_sConstrainbounds;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgBaseTextScale;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgFontSize;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgScaleX;
@@ -877,9 +877,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:entry ");
+				std::wstring sResult = _T("<o:entry ");
 
 				ComplexTypes_WriteAttribute ( _T("new=\""), m_oNew );
 				ComplexTypes_WriteAttribute ( _T("old=\""), m_oOld );
@@ -945,9 +945,9 @@ namespace OOX
 					// TO DO: Сделать чтение формул OOMML и Wc3MathML
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:equationXml ");
+				std::wstring sResult = _T("<o:equationXml ");
 				ComplexTypes_WriteAttribute ( _T("contentType=\""), m_oContentType );
 				sResult += _T("\">");
 
@@ -1002,9 +1002,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:extrusion ");
+				std::wstring sResult = _T("<o:extrusion ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -1237,9 +1237,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:FieldCodes>") + m_sText + _T("</o:FieldCodes>");
+				std::wstring sResult = _T("<o:FieldCodes>") + m_sText + _T("</o:FieldCodes>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1250,7 +1250,7 @@ namespace OOX
 		public:
 
 			// Text
-			CString m_sText;
+			std::wstring m_sText;
 		};
 		//--------------------------------------------------------------------------------
 		// CFill 14.2.2.13 (Part 4)
@@ -1279,9 +1279,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:fill ");
+				std::wstring sResult = _T("<o:fill ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 				ComplexTypes_WriteAttribute ( _T("type=\""),  m_oType );
@@ -1339,9 +1339,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:idmap ");
+				std::wstring sResult = _T("<o:idmap ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 				ComplexTypes_WriteAttribute2( _T("data=\""),  m_sData );
@@ -1369,7 +1369,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString>             m_sData;
+			nullable<std::wstring>             m_sData;
 			nullable<SimpleTypes::CExt<>> m_oExt;
 		};
 		//--------------------------------------------------------------------------------
@@ -1399,9 +1399,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:ink ");
+				std::wstring sResult = _T("<o:ink ");
 
 				ComplexTypes_WriteAttribute2( _T("i=\""),           m_sI );
 				ComplexTypes_WriteAttribute ( _T("annotation=\""),  m_oAnnotation );
@@ -1433,7 +1433,7 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>> m_oAnnotation;
 			nullable<SimpleTypes::CContentType> m_oContentType;
-			nullable<CString>                   m_sI;
+			nullable<std::wstring>                   m_sI;
 		};
 		//--------------------------------------------------------------------------------
 		// CLinkType 14.2.2.17 (Part 4)
@@ -1460,12 +1460,12 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				CString sText = oReader.GetText2();
+				std::wstring sText = oReader.GetText2();
 				m_oValue = sText;
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:LinkType>") + m_oValue.ToString() + _T("</o:LinkType>");
+				std::wstring sResult = _T("<o:LinkType>") + m_oValue.ToString() + _T("</o:LinkType>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1505,9 +1505,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:lock ");
+				std::wstring sResult = _T("<o:lock ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -1615,12 +1615,12 @@ namespace OOX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-				CString sText = oReader.GetText2();
+				std::wstring sText = oReader.GetText2();
 				m_oValue = sText;
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:LockedField>") + m_oValue.ToString() + _T("</o:LockedField>");
+				std::wstring sResult = _T("<o:LockedField>") + m_oValue.ToString() + _T("</o:LockedField>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1684,9 +1684,9 @@ namespace OOX
 						m_oLockedField = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:OLEObject ");
+				std::wstring sResult = _T("<o:OLEObject ");
 
 				ComplexTypes_WriteAttribute ( _T("Type=\""),       m_oType )
 				ComplexTypes_WriteAttribute2( _T("ProgID=\""),     m_sProgId )
@@ -1737,9 +1737,9 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::COLEDrawAspect<>> m_oDrawAspect;
 			nullable<SimpleTypes::CRelationshipId>  m_oId;
-			nullable<CString>                       m_sObjectId;
-			nullable<CString>                       m_sProgId;
-			nullable<CString>                       m_sShapeId;
+			nullable<std::wstring>                       m_sObjectId;
+			nullable<std::wstring>                       m_sProgId;
+			nullable<std::wstring>                       m_sShapeId;
 			nullable<SimpleTypes::COLEType<>>       m_oType;
 			nullable<SimpleTypes::COLEUpdateMode<>> m_oUpdateMode;
 
@@ -1775,9 +1775,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:proxy ");
+				std::wstring sResult = _T("<o:proxy ");
 
 				sResult += _T("start=\"")      + m_oStart.ToString()      + _T("\" ");
 				sResult += _T("end=\"")        + m_oEnd.ToString()        + _T("\" ");
@@ -1809,7 +1809,7 @@ namespace OOX
 			// Attributes
 			SimpleTypes::CDecimalNumber<0>                     m_oConnectLoc;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oEnd;
-			CString                                            m_sIdRef;
+			std::wstring                                            m_sIdRef;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oStart;
 		};
 		//--------------------------------------------------------------------------------
@@ -1856,9 +1856,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:r id=\"") + m_sId + _T("\" ");
+				std::wstring sResult = _T("<o:r id=\"") + m_sId + _T("\" ");
 
 				ComplexTypes_WriteAttribute ( _T("type=\""),  m_oType )
 				ComplexTypes_WriteAttribute ( _T("how=\""),   m_oHow )
@@ -1898,8 +1898,8 @@ namespace OOX
 
 			// Attributes
 			nullable<SimpleTypes::CHow<>>			m_oHow;
-			CString									m_sId;
-			nullable<CString>						m_sIdRef;
+			std::wstring									m_sId;
+			nullable<std::wstring>						m_sIdRef;
 			nullable<SimpleTypes::CRType<>>			m_oType;
 			
 			// Childs
@@ -1949,9 +1949,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:regrouptable ");
+				std::wstring sResult = _T("<o:regrouptable ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -2034,9 +2034,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:rules ");
+				std::wstring sResult = _T("<o:rules ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -2114,9 +2114,9 @@ namespace OOX
 						m_oRules = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:shapelayout ");
+				std::wstring sResult = _T("<o:shapelayout ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -2187,9 +2187,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:signatureline ");
+				std::wstring sResult = _T("<o:signatureline ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 
@@ -2249,19 +2249,19 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString>                                  m_sAddXml;
+			nullable<std::wstring>                                  m_sAddXml;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oAllowComments;
 			nullable<SimpleTypes::CExt<>>                      m_oExt;
 			nullable<SimpleTypes::CGuid>                       m_oId;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>  m_oIsSignatureLine;
 			nullable<SimpleTypes::CGuid>                       m_oProvId;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>  m_oShowSignDate;
-			nullable<CString>                                  m_sSigningInstructions;
+			nullable<std::wstring>                                  m_sSigningInstructions;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oSigningInstructionsSet;
-			nullable<CString>                                  m_sSigProvUrl;
-			nullable<CString>                                  m_sSuggestedSigner;
-			nullable<CString>                                  m_sSuggestedSigner2;
-			nullable<CString>                                  m_sSuggestedSignerEmail;
+			nullable<std::wstring>                                  m_sSigProvUrl;
+			nullable<std::wstring>                                  m_sSuggestedSigner;
+			nullable<std::wstring>                                  m_sSuggestedSigner2;
+			nullable<std::wstring>                                  m_sSuggestedSignerEmail;
 		};
 		//--------------------------------------------------------------------------------
 		// CSkew 14.2.2.31 (Part 4)
@@ -2290,9 +2290,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<o:skew ");
+				std::wstring sResult = _T("<o:skew ");
 
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
 				ComplexTypes_WriteAttribute2( _T("id=\""),    m_sId );
@@ -2334,11 +2334,11 @@ namespace OOX
 
 			// Attributes
 			nullable<SimpleTypes::CExt<>>                      m_oExt;
-			nullable<CString>                                  m_sId;
-			nullable<CString>                                  m_sMatrix;
-			nullable<CString>                                  m_sOffset;
+			nullable<std::wstring>                                  m_sId;
+			nullable<std::wstring>                                  m_sMatrix;
+			nullable<std::wstring>                                  m_sOffset;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oOn;
-			nullable<CString>                                  m_sOrigin;
+			nullable<std::wstring>                                  m_sOrigin;
 		};
 	} // namespace Vml
 } // namespace OOX

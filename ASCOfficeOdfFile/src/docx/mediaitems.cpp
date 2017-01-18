@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,8 +41,8 @@
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
+#include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace cpdoccore { 
@@ -58,7 +58,7 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 
 	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
 
-	return FileSystem::Directory::IsExist(resultPath) || FileSystem::Directory::IsExist(mediaPath);
+    return NSDirectory::Exists(resultPath) || NSDirectory::Exists(mediaPath);
 }
 
 mediaitems::item::item(	std::wstring const & _href,

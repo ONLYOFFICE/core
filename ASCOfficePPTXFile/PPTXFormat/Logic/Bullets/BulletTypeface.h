@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,7 +59,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = node.GetName();
+				std::wstring strName = node.GetName();
 
 				if (strName == _T("a:buFontTx"))
 					m_Typeface.reset(new Logic::BuFontTx(node));
@@ -85,7 +85,7 @@ namespace PPTX
 			template<class T> AVSINLINE T&			as()		{ return m_Typeface.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Typeface.as<T>(); }
 
-			virtual CString toXML()const
+			virtual std::wstring toXML()const
 			{
 				if (m_Typeface.IsInit())
 					return m_Typeface->toXML();

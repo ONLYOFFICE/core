@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,129 +40,129 @@
 namespace OpenXmlContentTypes
 {
 	// default content types
-	static const TCHAR* Xml						=	_T("application/xml");
+    static const wchar_t* Xml					=	L"application/xml";
 
 	// package content types
-	static const TCHAR* Relationships			=	_T("application/vnd.openxmlformats-package.relationships+xml");
+    static const wchar_t* Relationships			=	L"application/vnd.openxmlformats-package.relationships+xml";
 
-	static const TCHAR* CoreProperties			=	_T("application/vnd.openxmlformats-package.core-properties+xml");
+    static const wchar_t* CoreProperties		=	L"application/vnd.openxmlformats-package.core-properties+xml";
 
 	// general office document content types
-	static const TCHAR* ExtendedProperties		=	_T("application/vnd.openxmlformats-officedocument.extended-properties+xml");
-	static const TCHAR* Theme					=	_T("application/vnd.openxmlformats-officedocument.theme+xml");
+    static const wchar_t* ExtendedProperties	=	L"application/vnd.openxmlformats-officedocument.extended-properties+xml";
+    static const wchar_t* Theme					=	L"application/vnd.openxmlformats-officedocument.theme+xml";
 
-	static const TCHAR* CustomXmlProperties		=	_T("application/vnd.openxmlformats-officedocument.customXmlProperties+xml");
+    static const wchar_t* CustomXmlProperties	=	L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml";
 
-	static const TCHAR* OleObject				=	_T("application/vnd.openxmlformats-officedocument.oleObject");
-	static const TCHAR* Vml						=	_T("application/vnd.openxmlformats-officedocument.vmlDrawing");
-	static const TCHAR* Drawing					=	_T("application/vnd.openxmlformats-officedocument.drawing+xml");
+    static const wchar_t* OleObject				=	L"application/vnd.openxmlformats-officedocument.oleObject";
+    static const wchar_t* Vml					=	L"application/vnd.openxmlformats-officedocument.vmlDrawing";
+    static const wchar_t* Drawing				=	L"application/vnd.openxmlformats-officedocument.drawing+xml";
 	
-	static const TCHAR* MSWordDocx				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    static const wchar_t* MSWordDocx			=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
-	static const TCHAR* MSExcel					=	_T("application/vnd.ms-excel");
-	static const TCHAR* MSWord					=	_T("application/msword");
-	static const TCHAR* MSPowerpoint			=	_T("application/vnd.ms-powerpoint");
+    static const wchar_t* MSExcel				=	L"application/vnd.ms-excel";
+    static const wchar_t* MSWord				=	L"application/msword";
+    static const wchar_t* MSPowerpoint			=	L"application/vnd.ms-powerpoint";
 
-	static const TCHAR* Emf						=	_T("image/x-emf");
-	static const TCHAR* Jpeg					=	_T("image/jpeg");
-	static const TCHAR* Png						=	_T("image/png");
-	static const TCHAR* Tiff					=	_T("image/tiff");
-	static const TCHAR* Wmf						=	_T("image/x-wmf");
-	static const TCHAR* Bmp						=	_T("image/bmp");
+    static const wchar_t* Emf					=	L"image/x-emf";
+    static const wchar_t* Jpeg					=	L"image/jpeg";
+    static const wchar_t* Png					=	L"image/png";
+    static const wchar_t* Tiff					=	L"image/tiff";
+    static const wchar_t* Wmf					=	L"image/x-wmf";
+    static const wchar_t* Bmp					=	L"image/bmp";
 }
 
 namespace WordprocessingMLContentTypes
 {
 	// WordprocessingML content types
-	static const TCHAR* MainDocument			=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
-	static const TCHAR* MainDocumentMacro		=	_T("application/vnd.ms-word.document.macroEnabled.main+xml");
-	static const TCHAR* MainDocumentTemplate	=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");
-	static const TCHAR* MainDocumentMacroTemplate =	_T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");
+    static const wchar_t* MainDocument			=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+    static const wchar_t* MainDocumentMacro		=	L"application/vnd.ms-word.document.macroEnabled.main+xml";
+    static const wchar_t* MainDocumentTemplate	=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+    static const wchar_t* MainDocumentMacroTemplate =	L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
 
-	static const TCHAR* Styles					=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
-	static const TCHAR* Numbering				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml");
-	static const TCHAR* FontTable				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
-	static const TCHAR* WebSettings				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
-	static const TCHAR* Settings				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+    static const wchar_t* Styles				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
+    static const wchar_t* Numbering				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";
+    static const wchar_t* FontTable				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml";
+    static const wchar_t* WebSettings			=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml";
+    static const wchar_t* Settings				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml";
 
-	static const TCHAR* Comments				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+    static const wchar_t* Comments				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml";
 
-	static const TCHAR* Footnotes				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"); 
-	static const TCHAR* Endnotes				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml");
+    static const wchar_t* Footnotes				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml";
+    static const wchar_t* Endnotes				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml";
 
-	static const TCHAR* Header					=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml");
-	static const TCHAR* Footer					=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml");
+    static const wchar_t* Header				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
+    static const wchar_t* Footer				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
 
-	static const TCHAR* Glossary				=	_T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml");
+    static const wchar_t* Glossary				=	L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml";
 }
 
 namespace MicrosoftWordContentTypes
 {
-	static const TCHAR* KeyMapCustomization		=	_T("application/vnd.ms-word.keyMapCustomizations+xml");
-	static const TCHAR* VbaProject				=	_T("application/vnd.ms-office.vbaProject");
-	static const TCHAR* VbaData					=	_T("application/vnd.ms-word.vbaData+xml");
-	static const TCHAR* Toolbars				=	_T("application/vnd.ms-word.attachedToolbars");
+    static const wchar_t* KeyMapCustomization	=	L"application/vnd.ms-word.keyMapCustomizations+xml";
+    static const wchar_t* VbaProject			=	L"application/vnd.ms-office.vbaProject";
+    static const wchar_t* VbaData				=	L"application/vnd.ms-word.vbaData+xml";
+    static const wchar_t* Toolbars				=	L"application/vnd.ms-word.attachedToolbars";
 }
 
 namespace OpenXmlNamespaces
 {
 	// package namespaces
-	static const TCHAR* ContentTypes			=	_T("http://schemas.openxmlformats.org/package/2006/content-types");
-	static const TCHAR* RelationshipsPackage	=	_T("http://schemas.openxmlformats.org/package/2006/relationships");
-	static const TCHAR* Relationships			=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+    static const wchar_t* ContentTypes			=	L"http://schemas.openxmlformats.org/package/2006/content-types";
+    static const wchar_t* RelationshipsPackage	=	L"http://schemas.openxmlformats.org/package/2006/relationships";
+    static const wchar_t* Relationships			=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
 	// Drawing ML namespaces
-	static const TCHAR* DrawingML				=	_T("http://schemas.openxmlformats.org/drawingml/2006/main");
-	static const TCHAR* DrawingMLPicture		=	_T("http://schemas.openxmlformats.org/drawingml/2006/picture");
+    static const wchar_t* DrawingML				=	L"http://schemas.openxmlformats.org/drawingml/2006/main";
+    static const wchar_t* DrawingMLPicture		=	L"http://schemas.openxmlformats.org/drawingml/2006/picture";
 
 	// WordprocessingML namespaces
-	static const TCHAR* WordprocessingML		=	_T("http://schemas.openxmlformats.org/wordprocessingml/2006/main");
-	static const TCHAR* WordprocessingDrawingML =	_T("http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
-	static const TCHAR* VectorML				=	_T("urn:schemas-microsoft-com:vml");
-	static const TCHAR* MicrosoftWordML			=	_T("http://schemas.microsoft.com/office/word/2006/wordml");
+    static const wchar_t* WordprocessingML		=	L"http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+    static const wchar_t* WordprocessingDrawingML =	L"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+    static const wchar_t* VectorML				=	L"urn:schemas-microsoft-com:vml";
+    static const wchar_t* MicrosoftWordML		=	L"http://schemas.microsoft.com/office/word/2006/wordml";
 
 	// PresentationML namespaces
-	static const TCHAR* PresentationML			=	_T("http://schemas.openxmlformats.org/presentationml/2006/main");
+    static const wchar_t* PresentationML		=	L"http://schemas.openxmlformats.org/presentationml/2006/main";
 
 	// SpreadsheetML Namespaces
-	static const TCHAR* SharedStringML			=	_T("http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-	static const TCHAR* WorkBookML				=	_T("http://schemas.openxmlformats.org/spreadsheetml/2006/main");
-	static const TCHAR* StylesML				=	_T("http://schemas.openxmlformats.org/spreadsheetml/2006/main"); 
+    static const wchar_t* SharedStringML		=	L"http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+    static const wchar_t* WorkBookML			=	L"http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+    static const wchar_t* StylesML				=	L"http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
 	//Office
-	static const TCHAR* Office					=	_T("urn:schemas-microsoft-com:office:office");
-	static const TCHAR* OfficeWord				=	_T("urn:schemas-microsoft-com:office:word");
+    static const wchar_t* Office				=	L"urn:schemas-microsoft-com:office:office";
+    static const wchar_t* OfficeWord			=	L"urn:schemas-microsoft-com:office:word";
 }
 
 namespace OpenXmlRelationshipTypes
 {
-	static const TCHAR* CoreProperties			=	_T("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
-	static const TCHAR* ExtendedProperties		=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties");
+    static const wchar_t* CoreProperties		=	L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";
+    static const wchar_t* ExtendedProperties	=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties";
 
-	static const TCHAR* Theme					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
-	static const TCHAR* OfficeDocument			=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
-	static const TCHAR* Styles					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
-	static const TCHAR* FontTable				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable");
-	static const TCHAR* Numbering				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"); 
-	static const TCHAR* WebSettings				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings");
-	static const TCHAR* Settings				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings");
-	static const TCHAR* CustomXml				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml");
-	static const TCHAR* CustomXmlProperties		=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps");
-	static const TCHAR* Comments				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments");
-	static const TCHAR* Footnotes				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes");
-	static const TCHAR* Endnotes				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes");
-	static const TCHAR* Header					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header");
-	static const TCHAR* Footer					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer");
-	static const TCHAR* Image					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-	static const TCHAR* OleObject				=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
-	static const TCHAR* GlossaryDocument		=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
-	static const TCHAR* Package					=	_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/package");
+    static const wchar_t* Theme					=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme";
+    static const wchar_t* OfficeDocument		=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
+    static const wchar_t* Styles				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
+    static const wchar_t* FontTable				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable";
+    static const wchar_t* Numbering				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering";
+    static const wchar_t* WebSettings			=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings";
+    static const wchar_t* Settings				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings";
+    static const wchar_t* CustomXml				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml";
+    static const wchar_t* CustomXmlProperties	=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps";
+    static const wchar_t* Comments				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+    static const wchar_t* Footnotes				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes";
+    static const wchar_t* Endnotes				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes";
+    static const wchar_t* Header				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header";
+    static const wchar_t* Footer				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer";
+    static const wchar_t* Image					=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
+    static const wchar_t* OleObject				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
+    static const wchar_t* GlossaryDocument		=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument";
+    static const wchar_t* Package				=	L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
 }
 
 namespace MicrosoftWordRelationshipTypes
 {
-	static const TCHAR* KeyMapCustomizations	=	_T("http://schemas.microsoft.com/office/2006/relationships/keyMapCustomizations");
-	static const TCHAR* VbaProject				=	_T("http://schemas.microsoft.com/office/2006/relationships/vbaProject");
-	static const TCHAR* VbaData					=	_T("http://schemas.microsoft.com/office/2006/relationships/wordVbaData");
-	static const TCHAR* Toolbars				=	_T("http://schemas.microsoft.com/office/2006/relationships/attachedToolbars");
+    static const wchar_t* KeyMapCustomizations	=	L"http://schemas.microsoft.com/office/2006/relationships/keyMapCustomizations";
+    static const wchar_t* VbaProject			=	L"http://schemas.microsoft.com/office/2006/relationships/vbaProject";
+    static const wchar_t* VbaData				=	L"http://schemas.microsoft.com/office/2006/relationships/wordVbaData";
+    static const wchar_t* Toolbars				=	L"http://schemas.microsoft.com/office/2006/relationships/attachedToolbars";
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,18 +46,18 @@ namespace NSFontCutter
 		class CEmbeddedFontInfo
 		{
 		public:
-			CString	Name;
+			std::wstring	Name;
 
-			CString PathRegular;
+			std::wstring PathRegular;
 			LONG	FaceRegular;
 
-			CString PathBold;
+			std::wstring PathBold;
 			LONG	FaceBold;
 
-			CString PathItalic;
+			std::wstring PathItalic;
 			LONG	FaceItalic;
 
-			CString PathBoldItalic;
+			std::wstring PathBoldItalic;
 			LONG	FaceBoldItalic;
 
 		public:
@@ -103,11 +103,11 @@ namespace NSFontCutter
 			}
 		};
 
-		std::map<CString, CEmbeddedFontInfo> m_mapFontsEmbeddded;
+		std::map<std::wstring, CEmbeddedFontInfo> m_mapFontsEmbeddded;
         std::map<WCHAR, bool> m_CharMap;
 		
 	public:
-		CString m_strEmbeddedFontsFolder;
+		std::wstring m_strEmbeddedFontsFolder;
 
 	public:
 		CEmbeddedFontsManager()
@@ -115,37 +115,37 @@ namespace NSFontCutter
 			m_strEmbeddedFontsFolder = _T("");
 		}
 
-		void CheckFont(const CString& strName, CFontManager* pManager)
+		void CheckFont(const std::wstring& strName, CFontManager* pManager)
 		{
-			std::map<CString, CEmbeddedFontInfo>::const_iterator pPair = m_mapFontsEmbeddded.find(strName);
+			std::map<std::wstring, CEmbeddedFontInfo>::const_iterator pPair = m_mapFontsEmbeddded.find(strName);
 			if (pPair != m_mapFontsEmbeddded.end())
 				return;
 
 			CEmbeddedFontInfo oInfo;
 			oInfo.Name = strName;
 
-			CArray<CFontInfo*> aFontInfos = pManager->GetAllStylesByFontName(std::wstring(strName.GetString()));
+			CArray<CFontInfo*> aFontInfos = pManager->GetAllStylesByFontName(strName);
 			for(int i = 0; i < aFontInfos.GetCount(); ++i)
 			{
 				CFontInfo* pFontInfo = aFontInfos[i];
                 if(0 != pFontInfo->m_bBold && 0 != pFontInfo->m_bItalic)
 				{
-					oInfo.PathBoldItalic = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.PathBoldItalic = std::wstring(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceBoldItalic = pFontInfo->m_lIndex;
 				}
                 else if(0 != pFontInfo->m_bBold)
 				{
-					oInfo.PathBold = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.PathBold = std::wstring(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceBold = pFontInfo->m_lIndex;
 				}
                 else if(0 != pFontInfo->m_bItalic)
 				{
-					oInfo.PathItalic = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.PathItalic = std::wstring(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceItalic = pFontInfo->m_lIndex;
 				}
 				else
 				{
-					oInfo.PathRegular = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.PathRegular = std::wstring(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceRegular = pFontInfo->m_lIndex;
 				}
 			}
@@ -158,23 +158,17 @@ namespace NSFontCutter
 			if (val.is_init())
 				CheckString(*val);
 		}
-		void CheckString(const CString& val)
+		void CheckString(const std::wstring& val)
 		{
-			int len = val.GetLength();
+			int len = val.length();
 
-            CString str_lower = val;            str_lower.MakeLower();
-            CString str_upper = val;            str_upper.MakeUpper();
+			std::wstring str_lower = XmlUtils::GetLower(val);
+			std::wstring str_upper = XmlUtils::GetUpper(val);
 
 			for (int i = 0; i < len; ++i)
 			{
-#if defined(_WIN32) || defined (_WIN64)
-                m_CharMap [str_lower.GetBuffer()[i]] = true;
-                m_CharMap [str_upper.GetBuffer()[i]] = true;
-
-#else
-                m_CharMap [str_lower.c_str()[i]] = true;
-                m_CharMap [str_upper.c_str()[i]] = true;
-#endif
+                m_CharMap [str_lower[i]] = true;
+                m_CharMap [str_upper[i]] = true;
 			}
 		}
 
@@ -184,7 +178,7 @@ namespace NSFontCutter
 #if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
 			ULONG nCount = 0;
 
-			for(std::map<CString, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
+			for(std::map<std::wstring, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
 			{
 				CEmbeddedFontInfo& oInfo = pPair->second;
 
@@ -203,12 +197,12 @@ namespace NSFontCutter
 
 			pWriter->WriteULONG(nCount);
 
-			CString strFileWrite = m_strEmbeddedFontsFolder + _T("\\fonts.js");
+			std::wstring strFileWrite = m_strEmbeddedFontsFolder + _T("\\fonts.js");
 			CFile oFile;
 			oFile.CreateFile(strFileWrite);
 
-			CStringA strWrite = "var embedded_fonts = [\n";
-			oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+			std::string strWrite = "var embedded_fonts = [\n";
+			oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 
 			strWrite = ",\n";
 			bool bIsFirst = true;
@@ -224,14 +218,14 @@ namespace NSFontCutter
 			Fonts::IFontConverter* pFontConverter = NULL;
 			CoCreateInstance(__uuidof(Fonts::CFontConverter), NULL, CLSCTX_ALL, __uuidof(Fonts::IFontConverter), (void**)&pFontConverter);
 
-			for(std::map<CString, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
+			for(std::map<std::wstring, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
 			{
 				CEmbeddedFontInfo& oInfo = pPair->second;
 
 				if (_T("") != oInfo.PathRegular)
 				{
 					if (!bIsFirst)
-						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+						oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 					
 					bIsFirst = false;
                     WriteFont(oInfo.Name, oInfo.FaceRegular, oInfo.PathRegular, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
@@ -258,7 +252,7 @@ namespace NSFontCutter
 				if (_T("") != oInfo.PathBold)
 				{
 					if (!bIsFirst)
-						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+						oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 
 					bIsFirst = false;
                     WriteFont(oInfo.Name, oInfo.FaceBold, oInfo.PathBold, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
@@ -285,7 +279,7 @@ namespace NSFontCutter
 				if (_T("") != oInfo.PathItalic)
 				{
 					if (!bIsFirst)
-						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+						oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 
 					bIsFirst = false;
                     WriteFont(oInfo.Name, oInfo.FaceItalic, oInfo.PathItalic, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
@@ -312,7 +306,7 @@ namespace NSFontCutter
 				if (_T("") != oInfo.PathBoldItalic)
 				{
 					if (!bIsFirst)
-						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+						oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 
 					bIsFirst = false;
                     WriteFont(oInfo.Name, oInfo.FaceBoldItalic, oInfo.PathBoldItalic, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
@@ -338,7 +332,7 @@ namespace NSFontCutter
 			}
 
 			strWrite = "\n];";
-			oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
+			oFile.WriteFile(strWrite.GetBuffer(), strWrite.length());
 
 			oFile.CloseFile();
 
@@ -380,13 +374,13 @@ namespace NSFontCutter
 		}
 
 #if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
-        void WriteFont(CString& strName, LONG& lFaceIndex, CString& strFontPath, CFile* pFile, USHORT* pArrayUnicodes, size_t pArrayUnicodesLength, Fonts::IFontConverter* pFontConverter)
+        void WriteFont(std::wstring& strName, LONG& lFaceIndex, std::wstring& strFontPath, CFile* pFile, USHORT* pArrayUnicodes, size_t pArrayUnicodesLength, Fonts::IFontConverter* pFontConverter)
 		{	
 			LONG lFontConverterFlag = 16; // truetype only
 
 			BSTR bsFontIn = strFontPath.AllocSysString();
 						
-			CString _strName = strName + _T("_Embedded");
+			std::wstring _strName = strName + _T("_Embedded");
             //BSTR bsName = _strName.AllocSysString();
 
 			SAFEARRAYBOUND rgsab_ArrayUnicodes;
@@ -409,12 +403,12 @@ namespace NSFontCutter
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
             if (true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
-				CStringA s = "\"";
-				pFile->WriteFile(s.GetBuffer(), s.GetLength());
+				std::string s = "\"";
+				pFile->WriteFile(s.GetBuffer(), s.length());
 
 				pFile->WriteFile(pbBase64Buffer, nBase64BufferLen);
 
-				pFile->WriteFile(s.GetBuffer(), s.GetLength());
+				pFile->WriteFile(s.GetBuffer(), s.length());
 			}
 
 			RELEASEARRAYOBJECTS(pbBase64Buffer);

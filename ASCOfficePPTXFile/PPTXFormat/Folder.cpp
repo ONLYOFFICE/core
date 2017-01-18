@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,7 +76,7 @@ namespace PPTX
 			_presentation->commentAuthors = _presentation->get(PPTX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
 		}
 
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
             const PPTX::FileType& curType = pPair->second->type();
 
@@ -88,7 +88,7 @@ namespace PPTX
             }
         }
 
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
             const PPTX::FileType& curType = pPair->second->type();
 
@@ -102,7 +102,7 @@ namespace PPTX
         }
 
 
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
             const PPTX::FileType& curType = pPair->second->type();
 
@@ -115,7 +115,7 @@ namespace PPTX
 
         }
 
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
             const PPTX::FileType& curType = pPair->second->type();
 
@@ -128,7 +128,7 @@ namespace PPTX
         }
 
 
-        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
             const PPTX::FileType& curType = pPair->second->type();
             if (PPTX::FileTypes::NotesMaster == curType)

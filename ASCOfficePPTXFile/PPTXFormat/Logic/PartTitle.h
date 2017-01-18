@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ namespace PPTX
 			{
 				m_title = node.GetTextExt();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<vt:lpstr>") + m_title + _T("</vt:lpstr>");
 			}
@@ -59,7 +59,7 @@ namespace PPTX
 			}
 
 		public:
-			CString	m_title;
+			std::wstring	m_title;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

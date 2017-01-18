@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,7 +38,7 @@ class CPPTDocumentInfo
 public:
 	CCurrentUser					m_oCurrentUser;
 	std::vector<CPPTUserInfo*>		m_arUsers;
-	CString							m_strFileDirectory;
+    std::wstring					m_strFileDirectory;
 	std::map<int, std::wstring>		m_mapStoreImageFile;
 
 public:
@@ -66,7 +66,7 @@ public:
 		} 
 	}
 
-	void ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, CStringW strFolderMem)
+    void ReadFromStream(CRecordCurrentUserAtom* pCurrentUser, POLE::Stream* pStream, std::wstring strFolderMem)
 	{
 		m_oCurrentUser.FromAtom(pCurrentUser);
 

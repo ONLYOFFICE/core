@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,17 +53,17 @@ public:
 	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool Parse2( ReaderParameter oParam , RtfShapePtr& oOutput);
 	
-	void ParseAdjustment(RtfShape& oShape, CString sAdjustment);
+	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
 private:
 	OOX::Vml::CVmlCommonElements						*m_vmlElement;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement;
 
-	bool ParseStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssProperty*> & props)
+	bool ParseStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (long i=0; i< props.size(); i++)
 		{
-			ParseStyle( pShape.get(), props[i]);
+			ParseStyle( pShape.get(), props[i].get());
 		}
 		return true;
 	}
@@ -80,11 +80,11 @@ public:
 		m_vmlGroup = vmlGroup;
 	}
 
-	bool ParseStyles(RtfShapeGroupPtr pGroupShape, std::vector<SimpleTypes::Vml::CCssProperty*> & props)
+	bool ParseStyles(RtfShapeGroupPtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (long i=0; i< props.size(); i++)
 		{
-			ParseStyle( dynamic_cast<RtfShape*>(pGroupShape.get()), props[i]);
+			ParseStyle( dynamic_cast<RtfShape*>(pGroupShape.get()), props[i].get());
 		}
 		return true;
 	}

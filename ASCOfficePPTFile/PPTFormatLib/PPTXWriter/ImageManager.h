@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,18 +52,18 @@ namespace NSPresentationEditor
 		~CImageManager()
 		{
 		}
-		AVSINLINE void Clear()
+        inline void Clear()
 		{
 			m_mapImages.clear();
 			m_lIndexNextImage = 0;
 		}
-		AVSINLINE void SetDstMedia(const CString& strDst)
+        inline void SetDstMedia(const std::wstring& strDst)
 		{
 			m_strDstMedia = strDst;
 		}
 
 	public:
-		AVSINLINE std::wstring GenerateImage(const std::wstring& strInput)
+        inline std::wstring GenerateImage(const std::wstring& strInput)
 		{
 			std::map<std::wstring, std::wstring>::iterator pPair = m_mapImages.find(strInput);
 			if (m_mapImages.end() != pPair)
@@ -75,7 +75,7 @@ namespace NSPresentationEditor
 				return DownloadImage(strInput);
 
 			std::wstring strExts = _T(".jpg");
-			int nIndexExt = strInput.rfind(TCHAR('.'));
+            int nIndexExt = strInput.rfind(wchar_t('.'));
 			if (-1 != nIndexExt)
 				strExts = strInput.substr(nIndexExt);
 
@@ -98,7 +98,7 @@ namespace NSPresentationEditor
 			return strImage;
 		}
 
-		AVSINLINE bool IsNeedDownload(const std::wstring& strFile)
+        inline bool IsNeedDownload(const std::wstring& strFile)
 		{
 			int n1 = strFile.find(L"www");
 			int n2 = strFile.find(L"http");
@@ -108,7 +108,7 @@ namespace NSPresentationEditor
 				return true;
 			return false;
 		}
-		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
+        inline std::wstring DownloadImage(const std::wstring& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
             CFileDownloader oDownloader(strFile, TRUE);
@@ -155,7 +155,7 @@ namespace NSPresentationEditor
 		~CRelsGenerator()
 		{
 		}
-		AVSINLINE void Clear()
+        inline void Clear()
 		{
 			m_oWriter.ClearNoAttack();
 			m_lNextRelsID = 1;
@@ -163,9 +163,9 @@ namespace NSPresentationEditor
 			m_mapHyperlinks.clear();
 		}
 
-		AVSINLINE void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
+        inline void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
 		{
-			CString str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+            std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
 			m_oWriter.WriteString(str1);
@@ -173,58 +173,52 @@ namespace NSPresentationEditor
 			int nCurrent = nStartLayoutIndex;
 			for (int i = 0; i < nCountLayouts; ++i)
 			{
-				CString str = _T("");
-				str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout%d.xml\"/>"), 
-					m_lNextRelsID++, nCurrent + 1);
+                std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
+                        + std::to_wstring(nCurrent + 1) + L".xml\"/>";
 				++nCurrent;
 				m_oWriter.WriteString(str);
 			}
 
-			CString s = _T("");
-			s.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme%d.xml\"/>" ),
-				m_lNextRelsID++, nIndexTheme + 1);
+            std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme"
+                    + std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 			m_oWriter.WriteString(s);
 		}
-		AVSINLINE void StartLayout(int nIndexTheme)
+        inline void StartLayout(int nIndexTheme)
 		{
-			CString str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+            std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
 			m_oWriter.WriteString(str1);
 
-			CString str = _T("");
-			str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster%d.xml\"/>"), 
-				m_lNextRelsID++, nIndexTheme + 1);
+            std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                    L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster"
+                    + std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
+
 			m_oWriter.WriteString(str);
 		}
-		AVSINLINE void StartSlide(int nIndexLayout, int nIndexSlide)
+        inline void StartSlide(int nIndexLayout, int nIndexSlide)
 		{
-			CString str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+            m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+                                  <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
-			m_oWriter.WriteString(str1);
+            m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
+                                  + std::to_wstring(nIndexLayout + 1) + L".xml\"/>");
 
-			CString str = _T("");
-			str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout%d.xml\"/>"), 
-				m_lNextRelsID++, nIndexLayout + 1);
-			m_oWriter.WriteString(str);
-
-			str = _T("");
-			str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide%d.xml\"/>"), m_lNextRelsID++, nIndexSlide + 1);
-			m_oWriter.WriteString(str);
+            m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                                  L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide"
+                                  + std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
 		}
-		static AVSINLINE void StartNotes(int nIndexSlide, CString strDirectory, std::wstring strComment)
+        static inline void StartNotes(int nIndexSlide, std::wstring strDirectory, std::wstring strComment)
 		{
-			CString sNum = _T("");
-			sNum.Format(_T("%d"), nIndexSlide + 1);
+            std::wstring sNum = std::to_wstring( nIndexSlide + 1);
 
-			CString strNoteSlideRels = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+            std::wstring strNoteSlideRels = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide") + sNum + _T(".xml\"/>\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>\
 </Relationships>");
 
-			CString strNoteRels = strDirectory	+ FILE_SEPARATOR_STR + _T("ppt") +
+            std::wstring strNoteRels = strDirectory	+ FILE_SEPARATOR_STR + _T("ppt") +
 												+ FILE_SEPARATOR_STR + _T("notesSlides")
 												+ FILE_SEPARATOR_STR + _T("_rels")
 												+ FILE_SEPARATOR_STR + _T("notesSlide") + sNum + _T(".xml.rels");
@@ -233,18 +227,18 @@ namespace NSPresentationEditor
 			oFile.WriteStringUTF8(strNoteSlideRels);
 			oFile.CloseFile();
 
-			CString strNoteSlide = strDirectory + FILE_SEPARATOR_STR + _T("ppt") +
+            std::wstring strNoteSlide = strDirectory + FILE_SEPARATOR_STR + _T("ppt") +
 												+ FILE_SEPARATOR_STR + _T("notesSlides")
 												+ FILE_SEPARATOR_STR + _T("notesSlide") + sNum + _T(".xml");
 			oFile.CreateFile(strNoteSlide);
 
-			CString strW1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+            std::wstring strW1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <p:notes xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
 <p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x=\"0\" y=\"0\"/>\
 <a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id=\"100000\" name=\"\"/>\
 <p:cNvSpPr><a:spLocks noGrp=\"1\" noChangeArrowheads=\"1\"/></p:cNvSpPr><p:nvPr><p:ph type=\"body\" idx=\"1\"/></p:nvPr></p:nvSpPr><p:spPr/>\
 <p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr smtClean=\"0\"/><a:t>");
-			CString strW2 = _T("</a:t></a:r><a:endParaRPr/></a:p></p:txBody></p:sp></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>");
+            std::wstring strW2 = _T("</a:t></a:r><a:endParaRPr/></a:p></p:txBody></p:sp></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>");
 
 			CorrectXmlString(strComment);
 
@@ -254,33 +248,31 @@ namespace NSPresentationEditor
 
 			oFile.CloseFile();
 		}
-		AVSINLINE void CloseRels()
+        inline void CloseRels()
 		{
-			CString str = _T("</Relationships>");
+            std::wstring str = _T("</Relationships>");
 			m_oWriter.WriteString(str);
 		}
-		AVSINLINE void SaveRels(const CString& strFile)
+        inline void SaveRels(const std::wstring& strFile)
 		{
 			CFile oFile;
 			oFile.CreateFile(strFile);
-			CString strMem = m_oWriter.GetData();
+            std::wstring strMem = m_oWriter.GetData();
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();
 		}
-		AVSINLINE CString WriteHyperlink(const std::wstring& strHyperlink)
+        inline std::wstring WriteHyperlink(const std::wstring& strHyperlink)
 		{
 			std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
 
 			if (m_mapHyperlinks.end() != pPair)
 			{
-				CString strRid = _T("");
-				strRid.Format(_T("rId%d"), pPair->second);
+                std::wstring strRid = L"rId" + pPair->second;
 				return strRid;
 			}
 			m_mapHyperlinks[strHyperlink] = m_lNextRelsID;
 
-			CString strRid;
-			strRid.Format(L"rId%d", m_lNextRelsID++);
+            std::wstring strRid = L"rId" + std::to_wstring( m_lNextRelsID++);
 
 			std::wstring strRels = L"<Relationship Id=\"";
 
@@ -288,16 +280,17 @@ namespace NSPresentationEditor
             strRels += strHyperlink + L"\"/>";
 
 			m_oWriter.WriteString(strRels);
-		}
+		
+            return strRid;
+        }
 
-		AVSINLINE CString WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
+        inline std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
 		{
 			std::map<std::wstring, int>::iterator pPair = m_mapImages.find(strImage);
 
 			if (m_mapImages.end() != pPair)
 			{
-				CString strRid = _T("");
-				strRid.Format(_T("rId%d"), pPair->second);
+                std::wstring strRid = L"rId" + std::to_wstring(pPair->second);
 				return strRid;
 			}
 
@@ -317,7 +310,7 @@ namespace NSPresentationEditor
 
 			return strRid;
 		}
-		AVSINLINE CString WriteImage(const std::wstring& strImagePath)
+        inline std::wstring WriteImage(const std::wstring& strImagePath)
 		{
 			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,9 +75,9 @@ namespace PPTX
 			}
 		}
 
-		virtual CString toXML() const
+		virtual std::wstring toXML() const
 		{
-			CString strResult = _T("");
+			std::wstring strResult = _T("");
 			size_t nCount = m_items.size();
 
 			for (size_t i = 0; i < nCount; ++i)

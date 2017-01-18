@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,7 +74,7 @@ public:
     RtfLex              m_oLex;
     int                 m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
     int                 m_nDefFont;
-    CString             m_sTempFolder;
+    std::wstring             m_sTempFolder;
 
 	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
 	~RtfReader()
@@ -136,7 +136,7 @@ public:
 						break;
 				case RtfToken::Keyword:
 						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-                        if( m_oTok.Key ==  "u")
+                        if( m_oTok.Key == "u")
 						{
 							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars) );
 							break;
@@ -145,12 +145,12 @@ public:
 						{
 							if( true == m_bSkip )
 							{
-								if( false ==  ExecuteCommand( oDocument, oReader, CString(m_oTok.Key.c_str()), m_oTok.HasParameter, m_oTok.Parameter ) )
+                                if( false ==  ExecuteCommand( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter ) )
 									Skip( oDocument, oReader );
 								m_bSkip = false;
 							}
 							else
-								ExecuteCommand( oDocument, oReader, CString(m_oTok.Key.c_str()), m_oTok.HasParameter, m_oTok.Parameter );
+                                ExecuteCommand( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter );
 						}
 						if( true == m_bCanStartNewReader )
 							m_bCanStartNewReader = false;
@@ -221,11 +221,11 @@ public:
 		}
 		PopState( oDocument, oReader );
 	}
-	virtual bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, CString sKey, bool bHasPar, int nPar )
+    virtual bool ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar )
 	{
 		return true;
 	}
-	virtual void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, CString oText )
+    virtual void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText )
 	{
 	}
 	virtual void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
@@ -234,14 +234,14 @@ public:
 	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 	{
 	}
-    /*static */CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
+    /*static */std::wstring ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
 	{
-		CString sResult;
+        std::wstring sResult;
 
         if( "u" == sKey )
 		{
 			if( true == bHasPar )
-				sResult.AppendChar( nPar );
+                sResult += wchar_t( nPar );
 		}
 		else
 		{
@@ -264,9 +264,9 @@ public:
 	{
         if(oReader.m_oState->m_sCurText.length() > 0)
 		{
-			CString sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
+            std::wstring sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
             oReader.m_oState->m_sCurText.erase();
-			if(sResult.GetLength() > 0)
+            if(sResult.length() > 0)
 			{
                 std::string str;
                 ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars);
@@ -274,20 +274,20 @@ public:
 			}
 		}
 	}
-    /*static */void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+    /*static */void ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
 		//удаляем символы вслед за юникодом
 		if( nSkipChars > 0 )
 		{
-			int nLength = sResult.GetLength();
+            int nLength = sResult.length();
 			if( nSkipChars >= nLength )
 			{
 				nSkipChars -= nLength;
-                sResult.Empty();
+                sResult.clear();
 			}
 			else
 			{
-				sResult = sResult.Right( nLength - nSkipChars );
+                sResult = sResult.substr( nSkipChars );
 				nSkipChars = 0;
 			}
 		}
@@ -297,7 +297,7 @@ public:
 			nSkipChars = oReader.m_oState->m_nUD;
 		}
 	}
-    /*static */CString ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
+    /*static */std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
 	
 	bool		m_bUseGlobalCodepage;
 

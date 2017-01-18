@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,19 +42,19 @@ namespace DocFileFormat
 {
   static const wchar_t FontFamily[6][11] =
   {
-    _T( "auto" ),
-    _T( "roman" ),
-    _T( "swiss" ),
-    _T( "modern" ),
-    _T( "script" ),
-    _T( "decorative" )
+    L"auto",
+    L"roman",
+    L"swiss",
+    L"modern",
+    L"script",
+    L"decorative"
   };
 
   static const wchar_t FontPitch[3][9] =
   {
-    _T( "default" ),
-    _T( "fixed" ),
-    _T( "variable" )
+    L"default",
+    L"fixed",
+    L"variable"
   };
 
   class FontTableMapping: public AbstractOpenXmlMapping, public IMapping

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("moveTo"))
 					Path2D.reset(new Logic::MoveTo(node));
@@ -90,7 +90,7 @@ namespace PPTX
 				else Path2D.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (Path2D.IsInit())
 					return Path2D->toXML();
@@ -125,7 +125,7 @@ namespace PPTX
 					Path2D->SetParentPointer(pParent);
 			};
 
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				return Path2D->GetODString();
 			}

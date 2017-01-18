@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -91,11 +91,11 @@ namespace OOX
 						m_oExtLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				if ( et_a_clrMap == m_eType )
 				{
-					CString sResult = _T("<a:clrMap bg1=\"")     + m_oBg1.ToString()     +
+					std::wstring sResult = _T("<a:clrMap bg1=\"")     + m_oBg1.ToString()     +
 						_T("\" tx1=\"")     + m_oTx1.ToString()     + 
 						_T("\" bg2=\"")     + m_oBg2.ToString()     +
 						_T("\" tx2=\"")     + m_oTx2.ToString()     +
@@ -119,7 +119,7 @@ namespace OOX
 				}
 				else if ( et_a_overrideClrMapping == m_eType )
 				{
-					CString sResult = _T("<a:overrideClrMapping bg1=\"")     + m_oBg1.ToString()     +
+					std::wstring sResult = _T("<a:overrideClrMapping bg1=\"")     + m_oBg1.ToString()     +
 						_T("\" tx1=\"")     + m_oTx1.ToString()     + 
 						_T("\" bg2=\"")     + m_oBg2.ToString()     +
 						_T("\" tx2=\"")     + m_oTx2.ToString()     +
@@ -287,9 +287,9 @@ namespace OOX
 						m_oLt2 = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:clrScheme name=\"") + m_sName + _T("\">");
+				std::wstring sResult = _T("<a:clrScheme name=\"") + m_sName + _T("\">");
 
 				sResult += m_oDk1.toXML();
 				sResult += m_oLt1.toXML();
@@ -328,7 +328,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			CString                                         m_sName;
+			std::wstring                                         m_sName;
 
 			// Childs
 			OOX::Drawing::CStyleColor                       m_oAccent1;
@@ -388,9 +388,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:custClrLst>");
+				std::wstring sResult = _T("<a:custClrLst>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrCustClr.size(); nIndex++ )
 				{
@@ -448,9 +448,9 @@ namespace OOX
 						m_oClrMap = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:extraClrScheme>");
+				std::wstring sResult = _T("<a:extraClrScheme>");
 
 				sResult += m_oClrScheme.toXML();
 
@@ -515,9 +515,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:extraClrSchemeLst>");
+				std::wstring sResult = _T("<a:extraClrSchemeLst>");
 
 				for (unsigned  int nIndex = 0; nIndex < m_arrExtraClrScheme.size(); nIndex++ )
 				{
@@ -564,7 +564,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("<a:masterClrMapping/>");
 			}
@@ -612,9 +612,9 @@ namespace OOX
 						m_oTxDef = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:objectDefaults>");
+				std::wstring sResult = _T("<a:objectDefaults>");
 
 				if ( m_oSpDef.IsInit() )
 					sResult += m_oSpDef->toXML();
@@ -682,9 +682,9 @@ namespace OOX
 						m_oFontScheme = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:themeElements>");
+				std::wstring sResult = _T("<a:themeElements>");
 
 				sResult += m_oClrScheme.toXML();
 				sResult += m_oFontScheme.toXML();

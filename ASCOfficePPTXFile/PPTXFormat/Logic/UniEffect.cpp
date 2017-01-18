@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -89,7 +89,7 @@ namespace PPTX
 
 		void UniEffect::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("")) 
 				return;
@@ -264,7 +264,7 @@ namespace PPTX
 			else Effect.reset();
 		}
 
-		CString UniEffect::toXML() const
+		std::wstring UniEffect::toXML() const
 		{
 			if (Effect.IsInit())
 				return Effect->toXML();

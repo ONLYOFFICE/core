@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -395,7 +395,7 @@ void OoxConverter::convert(OOX::Drawing::CFontReference *style_font_ref)
 	OOX::CTheme *theme = oox_theme();
 	if (!theme) return;
 
-	CString color;
+    std::wstring color;
 	
 	if (style_font_ref->m_eType == OOX::Drawing::colorSheme)
 	{
@@ -411,9 +411,9 @@ void OoxConverter::convert(OOX::Drawing::CFontReference *style_font_ref)
 		convert(&theme->m_oThemeElements.m_oFontScheme.m_oMinorFont, &color);
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CFontCollection *style_font, CString *sheme_color)
+void OoxConverter::convert(OOX::Drawing::CFontCollection *style_font, std::wstring *sheme_color)
 {
-	if ((sheme_color) && (sheme_color->GetLength() >0))
+    if ((sheme_color) && (sheme_color->length() >0))
 	{
 		std::wstring hexColor;
 		_CP_OPT(double) opacity;
@@ -445,7 +445,7 @@ void OoxConverter::convert(OOX::Drawing::CStyleMatrixReference *style_matrix_ref
 	OOX::CTheme *theme = oox_theme();
 	if (!theme || fmt_index <0) return;
 
-	CString color = style_matrix_ref->m_oShemeClr.m_oVal.ToString();
+    std::wstring color = style_matrix_ref->m_oShemeClr.m_oVal.ToString();
 	
 	if (style_matrix_ref->getType() == OOX::et_a_fillRef)
 	{
@@ -599,9 +599,9 @@ void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
 		odf_context()->drawing_context()->set_name(name);
 	}
 
-	//nullable<CString>                               m_sDescr;
+    //nullable<std::wstring>                               m_sDescr;
 	//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
-	//nullable<CString>                               m_sTitle;
+    //nullable<std::wstring>                               m_sTitle;
 }
 
 void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
@@ -613,7 +613,7 @@ void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString *change_sheme_color )
+void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, std::wstring *change_sheme_color )
 {
 	if (!oox_line_prop)return;
 	
@@ -704,7 +704,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 
 }
 //-----------------------------------------------------------------------------------------------------------------
-void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, std::wstring *change_sheme_color)
 {
 	if (oox_effect_list == NULL) return;
 
@@ -735,21 +735,21 @@ void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, CString *
 		}
 	}
 }
-void OoxConverter::convert(OOX::Drawing::COuterShadowEffect *oox_shadow, CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::COuterShadowEffect *oox_shadow, std::wstring *change_sheme_color)
 {
 	if (oox_shadow == NULL) return; 
 
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
 
-	CString keep_sheme_color;
+    std::wstring keep_sheme_color;
 	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
 	{
 		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
 		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 	}
 	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
-	if (keep_sheme_color.GetLength() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
+    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
 
 	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
 
@@ -764,27 +764,27 @@ void OoxConverter::convert(OOX::Drawing::COuterShadowEffect *oox_shadow, CString
 	//SimpleTypes::CPercentage                                 m_oSy;
 
 }
-void OoxConverter::convert(OOX::Drawing::CInnerShadowEffect *oox_shadow, CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CInnerShadowEffect *oox_shadow, std::wstring *change_sheme_color)
 {
 	if (oox_shadow == NULL) return;
 
 	std::wstring hexColor;
 	_CP_OPT(double) opacity;
 
-	CString keep_sheme_color;
+    std::wstring keep_sheme_color;
 	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
 	{
 		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
 		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 	}
 	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
-	if (keep_sheme_color.GetLength() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
+    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
 
 	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
 
 }
 //-----------------------------------------------------------------------------------------------------------------
-void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	std::wstring *change_sheme_color)
 {
 	if (oox_bitmap_fill == NULL)return;
 
@@ -793,13 +793,13 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 		double Width=0, Height = 0;
 		if (oox_bitmap_fill->m_oBlip.IsInit())
 		{
-			CString sID = oox_bitmap_fill->m_oBlip->m_oEmbed.GetValue();
-			CString pathImage = find_link_by_id(sID,1);
+            std::wstring sID = oox_bitmap_fill->m_oBlip->m_oEmbed.GetValue();
+            std::wstring pathImage = find_link_by_id(sID,1);
 
-			if (pathImage.GetLength() > 0)
+            if (pathImage.length() > 0)
 			{
 				odf_context()->drawing_context()->set_bitmap_link(pathImage);
-                _graphics_utils_::GetResolution(pathImage, Width, Height);
+                _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 			}
 			else
 			{
@@ -852,7 +852,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 	odf_context()->drawing_context()->end_bitmap_style();
 }
 
-void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,	CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,	std::wstring *change_sheme_color)
 {
 	if (!oox_grad_fill)return;
 
@@ -935,7 +935,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 	}
 	odf_context()->drawing_context()->end_gradient_style();
 }
-void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill,	CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill,	std::wstring *change_sheme_color)
 {
 	if (!oox_pattern_fill)return;
 	
@@ -992,7 +992,7 @@ void OoxConverter::convert(OOX::Drawing::CColor *oox_color,std::wstring & hexCol
 		case OOX::Drawing::colorSys:	convert(&oox_color->m_oSysClr,		hexColor, opacity);		break;		
 	}	
 }
-void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,	CString *change_sheme_color)
+void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,	std::wstring *change_sheme_color)
 {
 	if (!oox_solid_fill)return;
 
@@ -1019,9 +1019,9 @@ void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform     *oox_Clr,	s
 	oox_Clr->GetRGBA(ucR,ucG,ucB,ucA);
 
 	SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
-	if (oRgbColor)
+    if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB ))
 	{		
-		hexString = oRgbColor->ToString().Right(6);
+        hexString = oRgbColor->ToString().substr(2);//.Right(6);
 		delete oRgbColor;
 	}
 	if (ucA !=255)opacity = (ucA/255.)* 100.;
@@ -1074,9 +1074,9 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 		oox_ShemeClr->GetRGBA(ucR,ucG,ucB,ucA);
 
 		SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB> *oRgbColor = new SimpleTypes::CHexColor<SimpleTypes::hexcolorRGB>(ucR,ucG,ucB);
-		if (oRgbColor)
+        if (oRgbColor)
 		{		
-			hexString = oRgbColor->ToString().Right(6);
+            hexString = oRgbColor->ToString().substr(2);//.Right(6);
 			delete oRgbColor;
 		}
 		if (ucA !=255)opacity = (ucA/255.)* 100.;
@@ -1244,16 +1244,16 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 	}
 	if (oox_run_pr->m_oLanguage.IsInit())
 	{
-		CString oox_language =  oox_run_pr->m_oLanguage->GetValue(), oox_country;
-		int res = oox_language.Find(L"-");
-		if (res  >=0)
+        std::wstring oox_language =  oox_run_pr->m_oLanguage->GetValue(), oox_country;
+        int res = oox_language.find(L"-");
+        if (res >= 0)
 		{
-			oox_country = oox_language.Right(oox_language.GetLength() - res -1);
-			oox_language = oox_language.Left(res);
+            oox_country = oox_language.substr(res);
+            oox_language = oox_language.substr(0, res);
 		}
 		
 		text_properties->content().fo_language_ = oox_language;
-		if (oox_country.GetLength() > 0)
+        if (oox_country.length() > 0)
 			text_properties->content().fo_country_ = oox_country;
 
 	}

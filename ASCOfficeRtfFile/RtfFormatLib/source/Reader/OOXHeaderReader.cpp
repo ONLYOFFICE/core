@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,7 @@
 #include "OOXTextItemReader.h"
 #include "OOXRelsReader.h"
 
-bool OOXHeaderReader::Parse( ReaderParameter oParam, CString sRID, TextItemContainerPtr& oOutput, bool bHeader )
+bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItemContainerPtr& oOutput, bool bHeader )
 {
 	if (m_ref == NULL) return false;
 	if (m_ref->m_oId.IsInit() == false ) return false;

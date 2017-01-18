@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,7 @@ namespace PPTX
 				if (OOX::CSystemUtility::IsFileExist(strFile))
 				{
 					XmlUtils::CXmlNode oNode;
-					if (oNode.FromXmlFile2(strFile.GetPath()))
+					if (oNode.FromXmlFile(strFile.GetPath()))
 						Relations = oNode;
 				}
 			}
@@ -80,7 +80,7 @@ namespace PPTX
 				if (OOX::CSystemUtility::IsFileExist(strFile))
 				{
 					XmlUtils::CXmlNode oNode;
-					if (oNode.FromXmlFile2(strFile.GetPath()))
+					if (oNode.FromXmlFile(strFile.GetPath()))
 						Relations = oNode;
 				}
 			}
@@ -113,8 +113,8 @@ namespace PPTX
 			{
 				if(!(type == FileTypes::Unknow))
 				{
-					CString strFileName	= filename.m_strFilename;
-					CString strDir		= filename.GetDirectory() + _T("");
+					std::wstring strFileName	= filename.m_strFilename;
+					std::wstring strDir		= filename.GetDirectory() + _T("");
 					if (_T("") == filename.GetExtention())
 					{
                         if (type.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"))
@@ -142,7 +142,7 @@ namespace PPTX
 		private:
 			const OOX::CPath createFileName(const OOX::CPath& filename) const
 			{
-                CString strTemp = filename.GetDirectory() +  FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
+                std::wstring strTemp = filename.GetDirectory() +  FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
 
                 if (filename.GetFilename() == _T(""))	strTemp += _T(".rels");
 				else									strTemp += (filename.GetFilename() + _T(".rels"));

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,7 +64,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(/*defPPr*/  levels[9]);
@@ -116,7 +116,7 @@ namespace PPTX
 			{
 				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
-				CString arr_names[10] = {_T("a:lvl1pPr"), _T("a:lvl2pPr"), _T("a:lvl3pPr"), _T("a:lvl4pPr"), _T("a:lvl5pPr"), 
+				std::wstring arr_names[10] = {_T("a:lvl1pPr"), _T("a:lvl2pPr"), _T("a:lvl3pPr"), _T("a:lvl4pPr"), _T("a:lvl5pPr"), 
 					_T("a:lvl6pPr"), _T("a:lvl7pPr"), _T("a:lvl8pPr"), _T("a:lvl9pPr"), _T("a:defPPr")};
 
 				while (pReader->GetPos() < _end_rec)
@@ -142,7 +142,7 @@ namespace PPTX
 			nullable<TextParagraphPr> levels[10];
 		//private:
 		public:
-			mutable CString m_name;
+			mutable std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

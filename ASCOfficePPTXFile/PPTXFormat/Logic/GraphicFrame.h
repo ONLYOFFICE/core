@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,7 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -79,7 +79,7 @@ namespace PPTX
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;
 
-			CString		 GetVmlXmlBySpid(CString & rels)	const;
+			std::wstring		 GetVmlXmlBySpid(std::wstring & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

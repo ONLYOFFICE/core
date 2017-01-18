@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,17 +55,17 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				
 				if (spcPct.is_init())
 				{
-					oValue.m_strValue.Format(_T("<a:spcPct val=\"%d\" />"), *spcPct);
+                    oValue.m_strValue = L"<a:spcPct val=\"" + std::to_wstring(*spcPct) + L"\">";
 				}
 				else
 				{
-					oValue.m_strValue.Format(_T("<a:spcPct val=\"%d\" />"), spcPts.get_value_or(0));
+                    oValue.m_strValue = L"<a:spcPts val=\"" + std::to_wstring(spcPts.get_value_or(0)) + L"\"/>";
 				}
 
 				return XmlUtils::CreateNode(m_name, oValue);
@@ -148,7 +148,7 @@ namespace PPTX
 			}
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,9 +52,9 @@ namespace DocFileFormat
 
 	static const wchar_t LevelJustificationMap[3][7] =
 	{
-		_T("left"),
-		_T("center"),
-		_T("right")
+        L"left",
+        L"center",
+        L"right"
 	};
 
 	class NumberingMapping: public AbstractOpenXmlMapping, public IMapping

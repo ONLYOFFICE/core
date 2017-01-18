@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,8 +42,8 @@ namespace DocFileFormat
 		m_document		=	document;
 		m_context		=	context;
 	
-        _pPr			= new XMLTools::XMLElement( _T( "w:pPr" ) );
-        _framePr		= new XMLTools::XMLElement( _T( "w:framePr" ) );
+        _pPr			= new XMLTools::XMLElement( L"w:pPr" );
+        _framePr		= new XMLTools::XMLElement( L"w:framePr" );
 
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
@@ -57,8 +57,8 @@ namespace DocFileFormat
 		m_document		=	document;
 		m_context		=	context;
 		
-        _pPr			= new XMLTools::XMLElement( _T( "w:pPr" ) );
-        _framePr		= new XMLTools::XMLElement( _T( "w:framePr" ) );
+        _pPr			= new XMLTools::XMLElement( L"w:pPr" );
+        _framePr		= new XMLTools::XMLElement( L"w:framePr" );
 		
 		_paraEndChpx		= paraEndChpx;
 		_isBidi				= isBidi;
@@ -82,17 +82,17 @@ namespace DocFileFormat
 	{
 		ParagraphPropertyExceptions* papx = static_cast<ParagraphPropertyExceptions*>( visited );
 
-        XMLTools::XMLElement ind		( _T( "w:ind" ) );
-        XMLTools::XMLElement numPr		( _T( "w:numPr" ) );
-        XMLTools::XMLElement pBdr		( _T( "w:pBdr" ) );
-        XMLTools::XMLElement spacing	( _T( "w:spacing" ) );
+        XMLTools::XMLElement ind		( L"w:ind" );
+        XMLTools::XMLElement numPr		( L"w:numPr" );
+        XMLTools::XMLElement pBdr		( L"w:pBdr" );
+        XMLTools::XMLElement spacing	( L"w:spacing" );
         XMLTools::XMLElement* jc = NULL;
 
 		if ( _isParagraphStyleNeeded )
 		{
 			//append style id , do not append "Normal" style (istd 0)
-            XMLTools::XMLElement  pStyle( _T( "w:pStyle" ) );
-            XMLTools::XMLAttribute styleId( _T( "w:val" ), StyleIdentifierMap[0] );
+            XMLTools::XMLElement  pStyle( L"w:pStyle" );
+            XMLTools::XMLAttribute styleId( L"w:val",  StyleIdentifierMap[0] );
 
 			if ( papx->istd < m_document->Styles->Styles->size() )
 			{
@@ -106,7 +106,7 @@ namespace DocFileFormat
 		//append formatting of paragraph end mark
 		if ( _paraEndChpx != NULL )
 		{
-            XMLTools::XMLElement* rPr = new XMLTools::XMLElement( _T( "w:rPr" ) );
+            XMLTools::XMLElement* rPr = new XMLTools::XMLElement( L"w:rPr" );
 
 			//append properties
 			RevisionData* rev = new RevisionData( _paraEndChpx );
@@ -116,7 +116,7 @@ namespace DocFileFormat
 			//append delete infos
 			if ( rev->Type == Deleted )
 			{
-                XMLTools::XMLElement del( _T( "w:del" ) );
+                XMLTools::XMLElement del( L"w:del" );
 				rPr->AppendChild( del );
 			}
 
@@ -139,76 +139,76 @@ namespace DocFileFormat
 			{
 				case sprmPIpgp:
 				{
-					appendValueElement(_pPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize)), true);
+                    appendValueElement(_pPr, L"divId", FormatUtils::IntToWideString( FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize)), true);
 				}break;			
 
 				case sprmPFAutoSpaceDE:
 				{
-					appendFlagElement(_pPr, *iter, _T( "autoSpaceDE" ), true);
+                    appendFlagElement(_pPr, *iter, L"autoSpaceDE", true);
 				}break;				
 
 				case sprmPFAutoSpaceDN:
 				{
-					appendFlagElement( _pPr, *iter, _T( "autoSpaceDN" ), true );
+                    appendFlagElement( _pPr, *iter, L"autoSpaceDN", true );
 				}break;				
 
 				case sprmPFBiDi:
 				{
 					bool val = iter->argumentsSize > 0 ? iter->Arguments[0] : true;
-					appendFlagElement( _pPr, *iter, _T( "bidi" ), val);
+                    appendFlagElement( _pPr, *iter, L"bidi", val);
 					_isBidi = val;
 				}break;			
 
 				case sprmPFContextualSpacing:
 				{
-					appendFlagElement( _pPr, *iter, _T( "contextualSpacing" ), true );
+                    appendFlagElement( _pPr, *iter, L"contextualSpacing", true );
 				}break;			
 
 				case sprmOldPFKeep:
 				case sprmPFKeep:
 				{
-					appendFlagElement( _pPr, *iter, _T( "keepLines" ), true );
+                    appendFlagElement( _pPr, *iter, L"keepLines", true );
 				}break;
 
 				case sprmOldPFKeepFollow:
 				case sprmPFKeepFollow:
-					appendFlagElement( _pPr, *iter, _T( "keepNext" ), true );
+                    appendFlagElement( _pPr, *iter, L"keepNext", true );
 					break;
 
 				case sprmPFKinsoku:
-					appendFlagElement( _pPr, *iter, _T( "kinsoku" ), true );
+                    appendFlagElement( _pPr, *iter, L"kinsoku", true );
 					break;
 
 				case sprmPFOverflowPunct:
-					appendFlagElement( _pPr, *iter, _T( "overflowPunct" ), true );
+                    appendFlagElement( _pPr, *iter, L"overflowPunct", true );
 					break;
 
 				case sprmPFPageBreakBefore:
-					appendFlagElement( _pPr, *iter, _T( "pageBreakBefore" ), true );
+                    appendFlagElement( _pPr, *iter, L"pageBreakBefore", true );
 					break;
 
 				case sprmPFNoAutoHyph:
-					appendFlagElement( _pPr, *iter, _T( "suppressAutoHyphens" ), true );
+                    appendFlagElement( _pPr, *iter, L"suppressAutoHyphens", true );
 					break;
 
 				case sprmPFNoLineNumb:
-					appendFlagElement( _pPr, *iter, _T( "suppressLineNumbers" ), true );
+                    appendFlagElement( _pPr, *iter, L"suppressLineNumbers", true );
 					break;
 
 				case sprmPFNoAllowOverlap:
-					appendFlagElement( _pPr, *iter, _T( "suppressOverlap" ), true );
+                    appendFlagElement( _pPr, *iter, L"suppressOverlap", true );
 					break;
 
 				case sprmPFTopLinePunct:
-					appendFlagElement( _pPr, *iter, _T( "topLinePunct" ), true );
+                    appendFlagElement( _pPr, *iter, L"topLinePunct", true );
 					break;
 
 				case sprmPFWidowControl:
-					appendFlagElement( _pPr, *iter, _T( "widowControl" ), true );
+                    appendFlagElement( _pPr, *iter, L"widowControl", true );
 					break;
 
 				case sprmPFWordWrap:
-					appendFlagElement( _pPr, *iter, _T( "wordWrap" ), true );
+                    appendFlagElement( _pPr, *iter, L"wordWrap", true );
 					break;
 
 					//indentation
@@ -218,11 +218,11 @@ namespace DocFileFormat
 				case sprmPDxaLeft80:
 				case sprmPNest:
 				case sprmPNest80:
-					appendValueAttribute( &ind, _T( "w:left" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &ind, L"w:left", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmPDxcLeft:
-					appendValueAttribute( &ind, _T( "w:leftChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &ind, L"w:leftChars", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDxaLeft1:
@@ -234,11 +234,11 @@ namespace DocFileFormat
 
 					if ( flValue >= 0 )
 					{
-						flName = std::wstring( _T( "w:firstLine" ) );
+                        flName = std::wstring( L"w:firstLine" );
 					}
 					else
 					{
-						flName = std::wstring( _T( "w:hanging" ) );
+                        flName = std::wstring( L"w:hanging" );
 						flValue *= -1;
 					}
 
@@ -246,36 +246,36 @@ namespace DocFileFormat
 				}break;				
 
 				case sprmPDxcLeft1:
-					appendValueAttribute( &ind, _T( "w:firstLineChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &ind, L"w:firstLineChars", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDxaRight:
 				case sprmPDxaRight:
 				case sprmPDxaRight80:
-					appendValueAttribute( &ind, _T( "w:right" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &ind, L"w:right", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmPDxcRight:
-					appendValueAttribute( &ind, _T( "w:rightChars" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &ind, L"w:rightChars", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 					//spacing
 				case sprmOldPDyaBefore:
 				case sprmPDyaBefore:
-					appendValueAttribute( &spacing, _T( "w:before" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &spacing, L"w:before", FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDyaAfter:
 				case sprmPDyaAfter:
-					appendValueAttribute( &spacing, _T( "w:after" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( &spacing, L"w:after", FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmPFDyaAfterAuto:
-					appendValueAttribute( &spacing, _T( "w:afterAutospacing" ), iter->Arguments[0] );
+                    appendValueAttribute( &spacing, L"w:afterAutospacing", iter->Arguments[0] );
 					break;
 
 				case sprmPFDyaBeforeAuto:
-					appendValueAttribute( &spacing, _T( "w:beforeAutospacing" ), iter->Arguments[0] );
+                    appendValueAttribute( &spacing, L"w:beforeAutospacing", iter->Arguments[0] );
 					break;
 
 				case sprmOldPDyaLine:
@@ -283,18 +283,18 @@ namespace DocFileFormat
 				{
 					LineSpacingDescriptor lspd( iter->Arguments, iter->argumentsSize );
 
-                    XMLTools::XMLAttribute line( _T( "w:line" ), FormatUtils::IntToWideString( abs( lspd.dyaLine ) ));
+                    XMLTools::XMLAttribute line( L"w:line", FormatUtils::IntToWideString( abs( lspd.dyaLine ) ));
 					spacing.AppendAttribute( line );
 
-                    XMLTools::XMLAttribute lineRule( _T( "w:lineRule" ), _T( "auto" ) );
+                    XMLTools::XMLAttribute lineRule( L"w:lineRule", L"auto" );
 
 					if( ( !lspd.fMultLinespace ) && ( lspd.dyaLine < 0 ) )
 					{
-						lineRule.SetValue( _T( "exact" ) );
+                        lineRule.SetValue( L"exact" );
 					}
 					else if( ( !lspd.fMultLinespace ) && ( lspd.dyaLine >= 0 ) )
 					{
-						lineRule.SetValue( _T( "atLeast" ) );
+                        lineRule.SetValue( L"atLeast" );
 					}
 
 					//no line rule means auto
@@ -325,7 +325,7 @@ namespace DocFileFormat
 					//case 0x4424:
 				case sprmPBrcTop80:
 				{
-                    XMLTools::XMLElement topBorder( _T( "w:top" ) );
+                    XMLTools::XMLElement topBorder( L"w:top" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -340,7 +340,7 @@ namespace DocFileFormat
 					//case 0x4425:
 				case sprmPBrcLeft80:
 				{
-                    XMLTools::XMLElement leftBorder( _T( "w:left" ) );
+                    XMLTools::XMLElement leftBorder( L"w:left" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -355,7 +355,7 @@ namespace DocFileFormat
 					//case 0x4426:
 				case sprmPBrcBottom80:
 				{
-                    XMLTools::XMLElement bottomBorder( _T( "w:bottom" ) );
+                    XMLTools::XMLElement bottomBorder( L"w:bottom" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -370,7 +370,7 @@ namespace DocFileFormat
 					//case 0x4427:
 				case sprmPBrcRight80:
 				{
-                    XMLTools::XMLElement rightBorder( _T( "w:right" ) );
+                    XMLTools::XMLElement rightBorder( L"w:right" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -385,7 +385,7 @@ namespace DocFileFormat
 					//case 0x4428:
 				case sprmPBrcBetween80:
 				{
-                    XMLTools::XMLElement betweenBorder( _T( "w:between" ) );
+                    XMLTools::XMLElement betweenBorder( L"w:between" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -400,7 +400,7 @@ namespace DocFileFormat
 					//case 0x4629:
 				case sprmPBrcBar80:
 				{
-                    XMLTools::XMLElement barBorder( _T( "w:bar" ) );
+                    XMLTools::XMLElement barBorder( L"w:bar" );
 
 					BorderCode bc( iter->Arguments, iter->argumentsSize );
 
@@ -428,7 +428,7 @@ namespace DocFileFormat
 					{
 						m_document->listTable->appendNumbering(  desc );
 						short numId = m_document->listTable->listNumbering.size();
-						appendValueElement( &numPr, _T( "numId" ), numId, true );
+                        appendValueElement( &numPr, L"numId", numId, true );
 					}
 				}break;
 
@@ -441,7 +441,7 @@ namespace DocFileFormat
 				{					
 					short level = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize) - 1;
 					if (level > 0 && level < 10) 					
-						appendValueElement( _pPr, _T( "outlineLvl" ), level, false );		
+                        appendValueElement( _pPr, L"outlineLvl", level, false );
 				}break;				
 				
 				case sprmOldPFNoLineNumb:
@@ -451,7 +451,7 @@ namespace DocFileFormat
 				case sprmPIlvl:
 				{
 					if(NULL != m_document->listTable && false == m_document->listTable->listData.empty())
-						appendValueElement( &numPr, _T( "ilvl" ), iter->Arguments[0], true );				
+                        appendValueElement( &numPr, L"ilvl", iter->Arguments[0], true );
 				}break;
 
 				case sprmPIlfo:
@@ -460,7 +460,7 @@ namespace DocFileFormat
 					//Todo разобраться с закоментированным кодом
 					if (NULL != m_document->listTable && false == m_document->listTable->listData.empty())
 					{
-						appendValueElement( &numPr, _T( "numId" ), FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
+                        appendValueElement( &numPr, L"numId", FormatUtils::BytesToUInt16( iter->Arguments, 0, iter->argumentsSize ), true );
 					}
 
 					//check if there is a ilvl reference, if not, check the count of LVLs.
@@ -483,7 +483,7 @@ namespace DocFileFormat
 				case sprmPChgTabsPapx:
 				case sprmPChgTabs:
 				{
-                    XMLTools::XMLElement tabs( _T( "w:tabs" ) );
+                    XMLTools::XMLElement tabs( L"w:tabs" );
 
 					int pos = 0;
 
@@ -494,14 +494,14 @@ namespace DocFileFormat
 
 					for( int i=0; i < itbdDelMax; i++ )
 					{
-                        XMLTools::XMLElement tab( _T( "w:tab" ) );
+                        XMLTools::XMLElement tab( L"w:tab" );
 
 						//clear
-                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), _T( "clear" ) );
+                        XMLTools::XMLAttribute tabsVal( L"w:val", L"clear" );
 						tab.AppendAttribute( tabsVal );
 
 						//position
-                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ) );
+                        XMLTools::XMLAttribute tabsPos( L"w:pos", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, pos, iter->argumentsSize ) ) );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -526,18 +526,18 @@ namespace DocFileFormat
 					{
 						TabDescriptor tbd( iter->Arguments[pos + ( itbdAddMax * 2 ) + i] );
 
-                        XMLTools::XMLElement tab( _T( "w:tab" ) );
+                        XMLTools::XMLElement tab( L"w:tab" );
 
 						//justification
-                        XMLTools::XMLAttribute tabsVal( _T( "w:val" ), FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ) );
+                        XMLTools::XMLAttribute tabsVal( L"w:val", FormatUtils::MapValueToWideString( tbd.jc, &Global::TabStop[0][0], 7, 8 ) );
 						tab.AppendAttribute( tabsVal );
 
 						//tab leader type
-                        XMLTools::XMLAttribute leader( _T( "w:leader" ), FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ) );
+                        XMLTools::XMLAttribute leader( L"w:leader", FormatUtils::MapValueToWideString( tbd.tlc, &Global::TabLeader[0][0], 8, 11 ) );
 						tab.AppendAttribute( leader );
 
 						//position
-                        XMLTools::XMLAttribute tabsPos( _T( "w:pos" ), FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ) );
+                        XMLTools::XMLAttribute tabsPos( L"w:pos", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, ( pos + (i * 2) ), iter->argumentsSize ) ) );
 						tab.AppendAttribute( tabsPos );
 
 						tabs.AppendChild( tab );
@@ -554,43 +554,43 @@ namespace DocFileFormat
 					//position code
 					unsigned char flag = iter->Arguments[0];
 
-					appendValueAttribute (_framePr, _T( "w:hAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0xC0 ) >> 6 ), &Global::HorizontalPositionCode[0][0], 4, 7 ) );
-					appendValueAttribute (_framePr, _T( "w:vAnchor" ), FormatUtils::MapValueToWideString( ( ( flag & 0x30 ) >> 4 ), &Global::VerticalPositionCode[0][0], 4, 7 ) );
+                    appendValueAttribute (_framePr, L"w:hAnchor", FormatUtils::MapValueToWideString( ( ( flag & 0xC0 ) >> 6 ), &Global::HorizontalPositionCode[0][0], 4, 7 ) );
+                    appendValueAttribute (_framePr, L"w:vAnchor", FormatUtils::MapValueToWideString( ( ( flag & 0x30 ) >> 4 ), &Global::VerticalPositionCode[0][0], 4, 7 ) );
 				}
 				break;
 
 				case sprmOldPWr:
 				case sprmPWr:
-					appendValueAttribute( _framePr, _T( "w:wrap" ), FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextFrameWrapping[0][0], 6, 10 ) );
+                    appendValueAttribute( _framePr, L"w:wrap", FormatUtils::MapValueToWideString( iter->Arguments[0], &Global::TextFrameWrapping[0][0], 6, 10 ) );
 					break;
 
 				case sprmOldPDxaAbs:
 				case sprmPDxaAbs:
-					appendValueAttribute( _framePr, _T( "w:x" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:x", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDyaAbs:
 				case sprmPDyaAbs:
-					appendValueAttribute( _framePr, _T( "w:y" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:y", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmPWHeightAbs:
-					appendValueAttribute( _framePr, _T( "w:h" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:h", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDxaWidth:
 				case sprmPDxaWidth:
-					appendValueAttribute( _framePr, _T( "w:w" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:w", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDxaFromText:
 				case sprmPDxaFromText:
-					appendValueAttribute( _framePr, _T( "w:hSpace" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:hSpace", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDyaFromText:
 				case sprmPDyaFromText:
-					appendValueAttribute( _framePr, _T( "w:vSpace" ), FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
+                    appendValueAttribute( _framePr, L"w:vSpace", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
 					break;
 
 				case sprmOldPDcs:
@@ -598,9 +598,9 @@ namespace DocFileFormat
 				{
 					short pDcs = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
 
-					appendValueAttribute( _framePr, _T( "w:dropCap" ), FormatUtils::MapValueToWideString( ( pDcs & 0x07 ), &Global::TextFrameDropCapLocation[0][0], 3, 7 ) );
+                    appendValueAttribute( _framePr, L"w:dropCap", FormatUtils::MapValueToWideString( ( pDcs & 0x07 ), &Global::TextFrameDropCapLocation[0][0], 3, 7 ) );
 
-					appendValueAttribute( _framePr, _T( "w:lines" ), (unsigned char)( ( pDcs & 0xF8 ) >> 3 ) );
+                    appendValueAttribute( _framePr, L"w:lines", (unsigned char)( ( pDcs & 0xF8 ) >> 3 ) );
 				}
 				break;
 
@@ -608,7 +608,7 @@ namespace DocFileFormat
 				case sprmOldPIncLvl: //????
 				case sprmPOutLvl:
 				{
-					appendValueElement( _pPr, _T( "outlineLvl" ), iter->Arguments[0], false );
+                    appendValueElement( _pPr, L"outlineLvl", iter->Arguments[0], false );
 				}break;
 
 				default:
@@ -635,7 +635,7 @@ namespace DocFileFormat
 		//append section properties
 		if ( _sepx != NULL )
 		{
-            XMLTools::XMLElement sectPr( _T( "w:sectPr" ) );
+            XMLTools::XMLElement sectPr( L"w:sectPr" );
 			SectionPropertiesMapping* sectionPropertiesMapping = new SectionPropertiesMapping( &sectPr, m_context, _sectionNr );
 			_sepx->Convert( sectionPropertiesMapping );
 

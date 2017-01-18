@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,18 +60,18 @@ namespace DocFileFormat
 		this->_ctx->_docx->RegisterStyleSheet();
 
 		//start the document
-		m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );    
-		m_pXmlWriter->WriteNodeBegin( _T( "w:styles" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+        m_pXmlWriter->WriteNodeBegin( L"w:styles", TRUE );
 
 		//write namespaces
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 		//document defaults
-		m_pXmlWriter->WriteNodeBegin( _T( "w:docDefaults" ) );    
+        m_pXmlWriter->WriteNodeBegin( L"w:docDefaults" );
 		writeRunDefaults( sheet );
 		writeParagraphDefaults( sheet );
-		m_pXmlWriter->WriteNodeEnd( _T( "w:docDefaults" ) );
+        m_pXmlWriter->WriteNodeEnd( L"w:docDefaults" );
 
 		//write the default styles
 		if ( (sheet->Styles->size() < 12) || (sheet->Styles->at( 11 ) == NULL ))
@@ -84,68 +84,68 @@ namespace DocFileFormat
 		{
 			if ( *iter != NULL )
 			{
-				m_pXmlWriter->WriteNodeBegin( _T( "w:style" ), TRUE );  
+                m_pXmlWriter->WriteNodeBegin( L"w:style", TRUE );
 
-				m_pXmlWriter->WriteAttribute( _T( "w:type" ), FormatUtils::MapValueToWideString( (*iter)->stk, &StyleKindMap[0][0], 5, 10 ));
+                m_pXmlWriter->WriteAttribute( L"w:type", FormatUtils::MapValueToWideString( (*iter)->stk, &StyleKindMap[0][0], 5, 10 ));
 
 				//!!!TODO: There is NO default styles in DOC file. So, we can't choose one of them!!!
 				/*if ( ( (*iter)->sti != Null ) && ( (*iter)->sti != User ) )
 				{
 				//it's a default style
-				m_pXmlWriter->WriteAttribute( _T( "w:default" ), _T( "1" ) );
+                m_pXmlWriter->WriteAttribute( L"w:default", L"1" );
 				}*/
 
-				m_pXmlWriter->WriteAttribute( _T( "w:styleId" ), FormatUtils::XmlEncode(MakeStyleId( *iter )));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteAttribute( L"w:styleId", FormatUtils::XmlEncode(MakeStyleId( *iter )));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				// <w:name val="" />
-				m_pXmlWriter->WriteNodeBegin( _T( "w:name" ), TRUE );  
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(getStyleName( *iter ), true ));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:name", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(getStyleName( *iter ), true ));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				// <w:basedOn val="" />
 				if ( ( (*iter)->istdBase != 4095 ) && ( (*iter)->istdBase < sheet->Styles->size() ) )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:basedOn" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdBase ) )));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:basedOn", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdBase ) )));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 				}
 
 				// <w:next val="" />
 				if ( (*iter)->istdNext < sheet->Styles->size() )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:next" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdNext ) )));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:next", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdNext ) )));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 				}
 
 				// <w:link val="" />
 				if ( (*iter)->istdLink < sheet->Styles->size() )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:link" ), TRUE );  
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdLink ) )));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:link", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdLink ) )));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 				}
 
 				// <w:locked/>
 				if ( (*iter)->fLocked )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:locked" ) );  
-					m_pXmlWriter->WriteNodeEnd( _T( "w:locked" ) );
+                    m_pXmlWriter->WriteNodeBegin( L"w:locked" );
+                    m_pXmlWriter->WriteNodeEnd( L"w:locked" );
 				}
 
 				// <w:hidden/>
 				if ( (*iter)->fHidden )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:hidden" ) );  
-					m_pXmlWriter->WriteNodeEnd( _T( "w:hidden" ) );
+                    m_pXmlWriter->WriteNodeBegin( L"w:hidden" );
+                    m_pXmlWriter->WriteNodeEnd( L"w:hidden" );
 				}
 
 				// <w:semiHidden/>
 				if ( (*iter)->fSemiHidden )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:semiHidden" ) );  
-					m_pXmlWriter->WriteNodeEnd( _T( "w:semiHidden" ) );
+                    m_pXmlWriter->WriteNodeBegin( L"w:semiHidden" );
+                    m_pXmlWriter->WriteNodeEnd( L"w:semiHidden" );
 				}
 
 				//write paragraph properties
@@ -176,11 +176,11 @@ namespace DocFileFormat
 					RELEASEOBJECT( tpMapping );
 				}
 
-				m_pXmlWriter->WriteNodeEnd( _T( "w:style" ) );
+                m_pXmlWriter->WriteNodeEnd( L"w:style" );
 			}
 		}
 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:styles" ) );
+        m_pXmlWriter->WriteNodeEnd( L"w:styles" );
 
 		this->_ctx->_docx->StyleSheetXML = std::wstring( m_pXmlWriter->GetXmlString() );
 	}
@@ -219,7 +219,7 @@ namespace DocFileFormat
 					//genarate new
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
-					ret = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
+                    ret = L"UserStyle_" + FormatUtils::IntToWideString( nIndex );
 					std::pair< std::wstring, std::wstring > p( std->xstzName, ret);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
@@ -234,41 +234,41 @@ namespace DocFileFormat
 
 	void StyleSheetMapping::writeRunDefaults( StyleSheet* sheet )
 	{
-		m_pXmlWriter->WriteNodeBegin( _T( "w:rPrDefault" ) );
-		m_pXmlWriter->WriteNodeBegin( _T( "w:rPr" ) );
+        m_pXmlWriter->WriteNodeBegin( L"w:rPrDefault" );
+        m_pXmlWriter->WriteNodeBegin( L"w:rPr" );
 
 		//write default fonts
-		m_pXmlWriter->WriteNodeBegin( _T( "w:rFonts" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
 
 		FontFamilyName* ffnAscii = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[0] ) );
 		if (ffnAscii)
-			m_pXmlWriter->WriteAttribute( _T( "w:ascii" ), FormatUtils::XmlEncode(ffnAscii->xszFtn, true));
+            m_pXmlWriter->WriteAttribute( L"w:ascii", FormatUtils::XmlEncode(ffnAscii->xszFtn, true));
 
 		FontFamilyName* ffnAsia = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[1] ) );
 		if (ffnAsia)
-			m_pXmlWriter->WriteAttribute( _T( "w:eastAsia" ), FormatUtils::XmlEncode(ffnAsia->xszFtn, true));
+            m_pXmlWriter->WriteAttribute( L"w:eastAsia", FormatUtils::XmlEncode(ffnAsia->xszFtn, true));
 
 		FontFamilyName* ffnAnsi = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[2] ) );
 		if (ffnAnsi)
-			m_pXmlWriter->WriteAttribute( _T( "w:hAnsi" ), FormatUtils::XmlEncode(ffnAnsi->xszFtn, true));
+            m_pXmlWriter->WriteAttribute( L"w:hAnsi", FormatUtils::XmlEncode(ffnAnsi->xszFtn, true));
 
 		FontFamilyName* ffnComplex = static_cast<FontFamilyName*>( m_document->FontTable->operator [] ( sheet->stshi->rgftcStandardChpStsh[3] ) );
 		if (ffnComplex)
-			m_pXmlWriter->WriteAttribute( _T( "w:cs" ), FormatUtils::XmlEncode(ffnComplex->xszFtn, true));
+            m_pXmlWriter->WriteAttribute( L"w:cs", FormatUtils::XmlEncode(ffnComplex->xszFtn, true));
 
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-		m_pXmlWriter->WriteNodeEnd( _T( "w:rFonts" ) );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+        m_pXmlWriter->WriteNodeEnd( L"w:rFonts" );
 
 		LanguageId langid(this->m_document->FIB->m_FibBase.lid);
 		std::wstring langcode = LanguageIdMapping::getLanguageCode( &langid );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:lang" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), langcode);
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-		m_pXmlWriter->WriteNodeEnd( _T( "w:lang" ) );
+        m_pXmlWriter->WriteNodeBegin( L"w:lang", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", langcode);
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+        m_pXmlWriter->WriteNodeEnd( L"w:lang" );
 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:rPr" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "w:rPrDefault" ) );
+        m_pXmlWriter->WriteNodeEnd( L"w:rPr" );
+        m_pXmlWriter->WriteNodeEnd( L"w:rPrDefault" );
 	}
 
 	/*========================================================================================================*/
@@ -277,9 +277,9 @@ namespace DocFileFormat
 	{
 		//if there is no pPrDefault, Word will not used the default paragraph settings.
 		//writing an empty pPrDefault will cause Word to load the default paragraph settings.
-		m_pXmlWriter->WriteNodeBegin( _T( "w:pPrDefault" ) );
+        m_pXmlWriter->WriteNodeBegin( L"w:pPrDefault" );
 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:pPrDefault" ) );
+        m_pXmlWriter->WriteNodeEnd( L"w:pPrDefault" );
 	}
 
 	/*========================================================================================================*/
@@ -320,7 +320,7 @@ namespace DocFileFormat
 					//genarate new
 					m_mapStyleIdLock.Enter();
 					int nIndex = m_mapStyleId.size();
-					id = _T("UserStyle_") + FormatUtils::IntToWideString( nIndex );
+                    id = L"UserStyle_" + FormatUtils::IntToWideString( nIndex );
 					std::pair< std::wstring, std::wstring > p( name, id);
 					m_mapStyleId.insert(p);
 					m_mapStyleIdLock.Leave();
@@ -338,61 +338,61 @@ namespace DocFileFormat
 	/// Writes the "NormalTable" default style
 	void StyleSheetMapping::writeNormalTableStyle()
 	{
-		m_pXmlWriter->WriteNodeBegin( _T( "w:style" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:style", TRUE );
 
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "table" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:default" ), _T( "1" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:styleId" ), _T( "TableNormal" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"table" );
+        m_pXmlWriter->WriteAttribute( L"w:default", L"1" );
+        m_pXmlWriter->WriteAttribute( L"w:styleId", L"TableNormal" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:name" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "Normal Table" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:name", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", L"Normal Table" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:uiPriority" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "99" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:uiPriority", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", L"99" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:semiHidden" ), TRUE );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:semiHidden", TRUE );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:unhideWhenUsed" ), TRUE );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:unhideWhenUsed", TRUE );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:qFormat" ), TRUE );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:qFormat", TRUE );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:tblPr" ) );
+        m_pXmlWriter->WriteNodeBegin( L"w:tblPr" );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:tblInd" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:w" ), _T( "0" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "dxa" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:tblInd", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:w", L"0" );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"dxa" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:tblCellMar" ) );
+        m_pXmlWriter->WriteNodeBegin( L"w:tblCellMar" );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:top" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:w" ), _T( "0" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "dxa" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:top", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:w", L"0" );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"dxa" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:left" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:w" ), _T( "108" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "dxa" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:left", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:w", L"108" );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"dxa" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:bottom" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:w" ), _T( "0" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "dxa" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:bottom", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:w", L"0" );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"dxa" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:right" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:w" ), _T( "108" ) );
-		m_pXmlWriter->WriteAttribute( _T( "w:type" ), _T( "dxa" ) );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:right", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:w", L"108" );
+        m_pXmlWriter->WriteAttribute( L"w:type", L"dxa" );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:tblCellMar" ) ); 
-		m_pXmlWriter->WriteNodeEnd( _T( "w:tblPr" ) );  
-		m_pXmlWriter->WriteNodeEnd( _T( "w:style" ) );  
+        m_pXmlWriter->WriteNodeEnd( L"w:tblCellMar" );
+        m_pXmlWriter->WriteNodeEnd( L"w:tblPr" );
+        m_pXmlWriter->WriteNodeEnd( L"w:style" );
 	}
 }

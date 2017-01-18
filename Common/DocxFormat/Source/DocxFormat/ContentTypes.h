@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,40 +49,40 @@ namespace OOX
 		public:
 			CExtensionTable()
 			{
-                m_mTable.insert( std::pair<CString,CString>( _T("bmp"),  _T("image/bmp")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("gif"),  _T("image/gif")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("png"),  _T("image/png")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("tif"),  _T("image/tiff")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("tiff"), _T("image/tiff")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("jpeg"), _T("image/jpeg")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("jpg"),  _T("image/jpeg")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("jpe"),  _T("image/jpeg")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("jfif"), _T("image/jpeg")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("xml"),  _T("application/xml")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("emf"),  _T("image/x-emf")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("emz"),  _T("image/x-emz")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("wmf"),  _T("image/x-wmf")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("svm"),  _T("image/svm")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("wav"),  _T("audio/wav")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("xls"),  _T("application/vnd.ms-excel")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("ppt"),  _T("application/vnd.ms-powerpoint")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("doc"),  _T("application/msword")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
-                m_mTable.insert( std::pair<CString,CString>(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>( _T("bmp"),  _T("image/bmp")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("gif"),  _T("image/gif")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("png"),  _T("image/png")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("tif"),  _T("image/tiff")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("tiff"), _T("image/tiff")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("jpeg"), _T("image/jpeg")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("jpg"),  _T("image/jpeg")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("jpe"),  _T("image/jpeg")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("jfif"), _T("image/jpeg")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("rels"), _T("application/vnd.openxmlformats-package.relationships+xml")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("bin"),  _T("application/vnd.openxmlformats-officedocument.oleObject")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xml"),  _T("application/xml")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("emf"),  _T("image/x-emf")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("emz"),  _T("image/x-emz")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wmf"),  _T("image/x-wmf")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("svm"),  _T("image/svm")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("wav"),  _T("audio/wav")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xls"),  _T("application/vnd.ms-excel")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsm"), _T("application/vnd.ms-excel.sheet.macroEnabled.12")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsb"), _T("application/vnd.ms-excel.sheet.binary.macroEnabled.12")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("xlsx"), _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("ppt"),  _T("application/vnd.ms-powerpoint")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("pptm"), _T("application/vnd.ms-powerpoint.presentation.macroEnabled.12")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("pptx"), _T("application/vnd.openxmlformats-officedocument.presentationml.presentation")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("sldm"), _T("application/vnd.ms-powerpoint.slide.macroEnabled.12")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("sldx"), _T("application/vnd.openxmlformats-officedocument.presentationml.slide")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("doc"),  _T("application/msword")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("docm"), _T("aapplication/vnd.ms-word.document.macroEnabled.12")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("docx"), _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document")));
+                m_mTable.insert( std::pair<std::wstring,std::wstring>(  _T("vml"),  _T("application/vnd.openxmlformats-officedocument.vmlDrawing")));
 			}
-			const CString operator[] (const CString& sExtension) const
+            const std::wstring operator[] (const std::wstring& sExtension) const
 			{
-                std::map<CString, CString>::const_iterator it = m_mTable.find(sExtension);
+                std::map<std::wstring, std::wstring>::const_iterator it = m_mTable.find(sExtension);
                 if (it == m_mTable.end())
                     return _T("");
 
@@ -90,7 +90,7 @@ namespace OOX
 			}
 
 		private:
-            std::map <CString, CString> m_mTable;
+            std::map <std::wstring, std::wstring> m_mTable;
 		};
 		class CDefault : public WritingElement
 		{
@@ -100,7 +100,7 @@ namespace OOX
 			{
 				m_sExtension = _T("");
 			}
-			CDefault(const CString& sExtension) : m_sExtension(sExtension)
+            CDefault(const std::wstring& sExtension) : m_sExtension(sExtension)
 			{
 			}
 			virtual ~CDefault()
@@ -119,7 +119,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				static const CExtensionTable oTable;
 				
@@ -134,7 +134,7 @@ namespace OOX
 				return et_Default;
 			}
 
-			CString	m_sExtension;
+            std::wstring	m_sExtension;
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -154,7 +154,7 @@ namespace OOX
 			COverride()
 			{
 			}
-			COverride(const CString& sType, const CPath& oPath) : m_sType(sType), m_oPart(oPath)
+            COverride(const std::wstring& sType, const CPath& oPath) : m_sType(sType), m_oPart(oPath)
 			{
 			}
 			virtual ~COverride()
@@ -175,11 +175,13 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				CString sPartName = m_oPart.m_strFilename;
-				sPartName.Replace(_T("\\"), _T("/"));
+                std::wstring sPartName = m_oPart.m_strFilename;
+
+				boost::algorithm::replace_all(sPartName, L"\\", L"/");
+
 				oAttr.Write( _T("PartName"), _T("/") + sPartName);
 				oAttr.Write( _T("ContentType"), m_sType );
 
@@ -203,18 +205,18 @@ namespace OOX
 
 		public:
 
-			AVSINLINE const CString type() const
+             const std::wstring type() const
 			{
 				return m_sType;
 			}
-			AVSINLINE const OOX::CPath filename() const
+			 const OOX::CPath filename() const
 			{
 				return m_oPart;
 			}
 
 		private:
 
-			CString						m_sType;
+            std::wstring				m_sType;
 			OOX::CPath					m_oPart;
 
 		};
@@ -268,7 +270,7 @@ namespace OOX
                                 return false;
 			return ReadFromReader(oReader);
 		}
-		bool ReadFromString (CString& sXml)
+        bool ReadFromString (std::wstring& sXml)
 		{
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromString( sXml ) )
@@ -277,7 +279,7 @@ namespace OOX
 		}
 		bool Write(const CPath& oDirPath) const
 		{
-			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
+            std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
 			for (unsigned  int nIndex = 0; nIndex < m_arrDefault.size(); nIndex++ )
 			{
@@ -288,7 +290,7 @@ namespace OOX
 			}
 
 
-            for (std::map<CString, ContentTypes::COverride>::const_iterator it = m_arrOverride.begin(); it != m_arrOverride.end(); ++it)
+            for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = m_arrOverride.begin(); it != m_arrOverride.end(); ++it)
             {
                 sXml += it->second.toXML();
             }
@@ -302,7 +304,7 @@ namespace OOX
 		}
 
 	public:
-		void Registration(const CString& sType, const CPath& oDirectory, const CPath& oFilename)
+        void Registration(const std::wstring& sType, const CPath& oDirectory, const CPath& oFilename)
 		{
             OOX::CPath oFullPath = oDirectory / oFilename;
 
@@ -312,8 +314,8 @@ namespace OOX
 
 		void AddDefault(const OOX::CPath& oPath)
 		{
-			CString sExt(oPath.GetExtention().c_str());
-			const CString sExtension = sExt.Mid( 1 );
+            std::wstring sExt(oPath.GetExtention().c_str());
+            const std::wstring sExtension = sExt.substr( 1 );
 
 			size_t nCount = m_arrDefault.size();
 			size_t nIndex = 0;	
@@ -355,22 +357,20 @@ namespace OOX
 			}
 			return true;
 		}
-        void AddOverride(const CString& sType, CString sPath)
+        void AddOverride(const std::wstring& sType, std::wstring sPath)
 		{
-#if !defined(_WIN32) && !defined (_WIN64)
             if (sPath[0] ==  FILE_SEPARATOR_CHAR)
             {
-                sPath.Delete(0);
+				sPath.erase(0, 1);
             }
-#endif
 			ContentTypes::COverride oOverride( sType, sPath );
             m_arrOverride [oOverride.filename().GetPath()] = oOverride;
 		}
 
 	public:
 
-		std::vector<ContentTypes::CDefault*>		m_arrDefault;
-        std::map<CString, ContentTypes::COverride>	m_arrOverride;
+		std::vector<ContentTypes::CDefault*>			m_arrDefault;
+        std::map<std::wstring, ContentTypes::COverride>	m_arrOverride;
 	};
 } // namespace OOX
 

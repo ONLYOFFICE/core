@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -134,9 +134,9 @@ bool OOXReader::Parse()
 
 	return true;
 }
-CString OOXReader::GetFolder( CString sDocPath )
+std::wstring OOXReader::GetFolder( std::wstring sDocPath )
 {
-	int nLastSlash = sDocPath.ReverseFind('\\');
-	CString sLeft = sDocPath.Left(nLastSlash  );
+    int nLastSlash = sDocPath.rfind('\\');
+    std::wstring sLeft = sDocPath.substr(0, nLastSlash  );
 	return sLeft;
 }

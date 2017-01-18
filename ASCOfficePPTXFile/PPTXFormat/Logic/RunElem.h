@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if(name == _T("r"))
 					Elem.reset(new Logic::Run(node));
@@ -64,7 +64,7 @@ namespace PPTX
 					Elem.reset(new Logic::MathParaWrapper(node));
 				else Elem.reset();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (is_init())
 					return Elem->toXML();
@@ -89,7 +89,7 @@ namespace PPTX
 			}
 
 			virtual bool is_init() const {return (Elem.IsInit());};
-			virtual CString GetText() const{return Elem->GetText();}
+			virtual std::wstring GetText() const{return Elem->GetText();}
 
 			template<class T> AVSINLINE const bool	is() const	{ return Elem.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Elem.as<T>(); }

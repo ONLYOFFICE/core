@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -87,9 +87,9 @@ namespace OOX
 						m_oCNvPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				if ( et_pic_nvPicPr == m_eType )
 					sResult = _T("<pic:nvPicPr>");
@@ -154,9 +154,9 @@ namespace OOX
 						m_oSpPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<pic:pic>");
+                std::wstring sResult = _T("<pic:pic>");
 				sResult += m_oNvPicPr.toXML();
 				sResult += m_oBlipFill.toXML();
 				sResult += m_oSpPr.toXML();
@@ -201,7 +201,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

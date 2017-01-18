@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,6 @@
 
 #include "RunBase.h"
 #include "./../RunProperties.h"
-//#include "../../../../Common/DocxFormat/Source/Utility/Encoding.h"
 
 namespace PPTX
 {
@@ -69,7 +68,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("rPr") == strName)
 						{
@@ -86,19 +85,14 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rPr);
 				
 				if (text.IsInit())
                 {
-                    CString s = *text;
-                    s.Replace(_T("&"),	_T("&amp;"));
-                    s.Replace(_T("'"),	_T("&apos;"));
-                    s.Replace(_T("<"),	_T("&lt;"));
-                    s.Replace(_T(">"),	_T("&gt;"));
-                    s.Replace(_T("\""),	_T("&quot;"));
+                    std::wstring s = XmlUtils::EncodeXmlString(*text);
 
                     oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
                 }
@@ -142,8 +136,8 @@ namespace PPTX
 					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
 			}
 
-			virtual CString GetText()const{return text.get_value_or(_T(""));};
-			void SetText(const CString& srcText)
+			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
+			void SetText(const std::wstring& srcText)
 			{
 				text = srcText;
 			}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,9 +35,9 @@
 
 #include "../../Common/3dParty/pole/pole.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 

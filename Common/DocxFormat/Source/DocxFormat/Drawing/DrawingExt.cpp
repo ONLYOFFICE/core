@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,8 @@ namespace OOX
 		{
 			ReadAttributes( oReader );
 
-			if ((m_oUri.IsInit()) && (*m_oUri == _T("{63B3BB69-23CF-44E3-9099-C40C66FF867C}") || *m_oUri == _T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}")))//2.2.6.2 Legacy Object Wrapper
+            if ((m_sUri.IsInit()) && (*m_sUri == _T("{63B3BB69-23CF-44E3-9099-C40C66FF867C}") ||
+                                      *m_sUri == _T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}")))     //2.2.6.2 Legacy Object Wrapper
 			{
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -62,21 +63,21 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 		}
-        CString COfficeArtExtension::toXML() const
+        std::wstring COfficeArtExtension::toXML() const
         {
             return toXMLWithNS(_T("a:"));
         }
-        CString COfficeArtExtension::toXMLWithNS(const CString& sNamespace) const
+        std::wstring COfficeArtExtension::toXMLWithNS(const std::wstring& sNamespace) const
 		{
-            CString sResult = _T("<");
+            std::wstring sResult = _T("<");
             sResult += sNamespace;
             sResult += _T("ext");
             sResult += m_sAdditionalNamespace;
 
-			if ( m_oUri.IsInit() )
+            if ( m_sUri.IsInit() )
 			{
                 sResult += _T(" uri=\"");
-				sResult += m_oUri->GetString();
+                sResult += m_sUri.get2();
 				sResult += _T("\">");
 			}
 			else

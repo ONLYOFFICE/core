@@ -69,27 +69,16 @@ SOURCES += \
     ../Source/Common/Utils.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
-    ../Source/Common/SimpleTypes_Word.cpp
-}
-
-core_windows {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/Directory.cpp \
-        ../Source/SystemUtility/FileSystem/File.cpp \
-} else {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-        ../Source/SystemUtility/FileSystem/FilePosix.cpp \
+    ../Source/Common/SimpleTypes_Word.cpp \
+    ../Source/SystemUtility/SystemUtility.cpp
 }
 
 
 SOURCES += docxformatlib.cpp \
-    ../Source/XML/libxml2/libxml2.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../Source/SystemUtility/SystemUtility.cpp \
     ../../3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
@@ -101,7 +90,6 @@ HEADERS += docxformatlib.h \
     ../Source/Common/Color.h \
     ../Source/Common/Common.h \
     ../Source/Common/ComplexTypes.h \
-    ../Source/Common/Encoding.h \
     ../Source/Common/Index.h \
     ../Source/Common/NumFormat.h \
     ../Source/Common/Point.h \
@@ -269,12 +257,9 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
-    ../Source/XML/libxml2/libxml2.h \
     ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
-    ../Source/XML/xmlutils.h \
-    ../Source/Base/ASCString.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
     ../Source/DocxFormat/Drawing/DrawingText.h \
     ../Source/DocxFormat/Drawing/DrawingTextProperties.h \

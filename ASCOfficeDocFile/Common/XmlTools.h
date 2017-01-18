@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -406,34 +406,12 @@ namespace XMLTools
 
 		void WriteInteger(int Value, int Base = 10)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            wchar_t buff[33] ={};
-            _itow(Value, buff, Base);
-            m_str += std::wstring(buff);
-#else
             m_str += std::to_wstring(Value);
-#endif
 		}
 
 		void WriteDouble(double Value)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            int *dec = NULL, *sign = NULL;
-			char *str = _fcvt( Value , 4, dec, sign);
-
-			if (str)
-			{
-				std::string sA(str);
-				delete []str;	
-				m_str += std::wstring(sA.begin(), sA.end());
-			}
-			else
-			{
-				m_str += L"0";
-			}
-#else
             m_str += std::to_wstring(Value);
-#endif
         }
 		void WriteBoolean(bool Value)
 		{

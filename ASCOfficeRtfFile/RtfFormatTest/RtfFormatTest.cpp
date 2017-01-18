@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #include <tchar.h>
 #include "../RtfFormatLib/source/ConvertationManager.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include <algorithm>
@@ -48,8 +48,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
 	
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstFileName);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
@@ -76,7 +76,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		rtfConvert.ConvertOOXToRtf(dstFileName, dstTempPath);
 	}
 
-	FileSystem::Directory::DeleteDirectory(dstTempPath);	
+	NSDirectory::DeleteDirectory(dstTempPath);	
 
 	return 0;
 }

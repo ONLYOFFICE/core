@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -160,7 +160,7 @@ namespace OOX
 			//nullable<SimpleTypes::Spreadsheet::CFontFamily<> >				m_oFamily;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			nullable<ComplexTypes::Word::CString_ >							m_oRFont;
+			nullable<ComplexTypes::Word::String >							m_oRFont;
 			//nullable<SimpleTypes::Spreadsheet::CFontScheme<> >				m_oScheme;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,7 +71,7 @@ namespace Writers
 			if(false == IsEmpty())
 			{
                 OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("charts");
-				FileSystem::Directory::CreateDirectory(pathChartDir.GetPath());
+                NSDirectory::CreateDirectory(pathChartDir.GetPath());
 
                 for(int i = 0, length = m_aCharts.size(); i < length; ++i)
 				{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,9 +73,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:anchor x=\"") + m_oX.ToString()
+				std::wstring sResult = _T("<a:anchor x=\"") + m_oX.ToString()
 									   + _T("\" y=\"") + m_oY.ToString()
 									   + _T("\" z=\"") + m_oZ.ToString()
 									   + _T("\"/>");
@@ -145,9 +145,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( et_a_norm == m_eType )
 					sResult = _T("<a:norm dx=\"") + m_oDx.ToString()
@@ -228,9 +228,9 @@ namespace OOX
 						m_oUp = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:backdrop>");
+				std::wstring sResult = _T("<a:backdrop>");
 				
 				sResult += m_oAnchor.toXML();
 				sResult += m_oNorm.toXML();
@@ -298,9 +298,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( et_a_bevel == m_eType )
 					sResult = _T("<a:bevel h=\"")    + m_oH.ToString()
@@ -374,9 +374,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:rot lat=\"") + m_oLat.ToString()
+				std::wstring sResult = _T("<a:rot lat=\"") + m_oLat.ToString()
 									+ _T("\" lon=\"") + m_oLon.ToString()
 									+ _T("\" rev=\"") + m_oRev.ToString()
 									+ _T("\"/>");
@@ -442,9 +442,9 @@ namespace OOX
 						m_oRot = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:camera prst=\"") + m_oPrst.ToString() + _T("\" zoom=\"") + m_oZoom.ToString();
+				std::wstring sResult = _T("<a:camera prst=\"") + m_oPrst.ToString() + _T("\" zoom=\"") + m_oZoom.ToString();
 
 				if ( m_oFov.IsInit() )
 				{
@@ -518,9 +518,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:contourClr>");
+				std::wstring sResult = _T("<a:contourClr>");
 
 				sResult += CColor::toXML();
 
@@ -559,9 +559,9 @@ namespace OOX
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:extrusionClr>");
+				std::wstring sResult = _T("<a:extrusionClr>");
 
 				sResult += CColor::toXML();
 
@@ -602,9 +602,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:flatTx z=\"") + m_oZ.ToString() + _T("\"/>");
+				std::wstring sResult = _T("<a:flatTx z=\"") + m_oZ.ToString() + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -667,9 +667,9 @@ namespace OOX
 						m_oRot = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:lightRig dir=\"") + m_oDir.ToString() + _T("\" rig=\"") + m_oRig.ToString() + _T("\">");
+				std::wstring sResult = _T("<a:lightRig dir=\"") + m_oDir.ToString() + _T("\" rig=\"") + m_oRig.ToString() + _T("\">");
 
 				if ( m_oRot.IsInit() )
 					sResult += m_oRot->toXML();
@@ -748,9 +748,9 @@ namespace OOX
 						m_oExtrusionClr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:sp3d contourW=\"")     + m_oContourW.ToString() 
+				std::wstring sResult = _T("<a:sp3d contourW=\"")     + m_oContourW.ToString() 
 					                 + _T("\" extrusionH=\"")   + m_oExtrusionH.ToString() 
 					                 + _T("\" prstMaterial=\"") + m_oPrstMaterial.ToString() 
 					                 + _T("\" z=\"")            + m_oZ.ToString() 

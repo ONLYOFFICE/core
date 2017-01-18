@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -342,7 +342,7 @@ public:
             _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
         else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
             _formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
-        else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
+        else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
             _formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 
         v8::Context::Scope context_scope(m_context);
@@ -1408,10 +1408,12 @@ namespace NSDoctRenderer
                         nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
                     else if (L"pdf" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+                    else if (L"image" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
                     else if (L"jpg" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
                     else if (L"png" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
 
                     if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
                     {

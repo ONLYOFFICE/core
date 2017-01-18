@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,9 +51,9 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString EffectLst::toXML() const
+		std::wstring EffectLst::toXML() const
 		{
-			CString str = _T("<a:effectLst>");
+			std::wstring str = _T("<a:effectLst>");
 			if (blur.IsInit())			str += blur->toXML();
 			if (fillOverlay.IsInit())	str += fillOverlay->toXML();
 			if (glow.IsInit())			str += glow->toXML();

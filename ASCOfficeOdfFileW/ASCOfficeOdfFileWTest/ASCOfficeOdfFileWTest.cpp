@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,8 +42,8 @@
 #include <string>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/File.h"
 
 #include "../source/Oox2OdfConverter/Oox2OdfConverter.h"
 
@@ -57,16 +57,16 @@ std::wstring DetectTypeDocument(const std::wstring & pathOOX)
 {
 	std::wstring sRes;
 
-	CFile file;
+	NSFile::CFileBinary file;
 
-	CString fileContentType = std_string2string(pathOOX + FILE_SEPARATOR_STR + L"[Content_Types].xml");
+	std::wstring fileContentType = pathOOX + FILE_SEPARATOR_STR + L"[Content_Types].xml";
 
-	if (file.OpenFile(fileContentType) != S_OK) return sRes;
+	if (file.OpenFile(fileContentType) ==false) return sRes;
 
-	int nBufferSize = min (file.GetFileSize(), 10000);
+	DWORD nBufferSize = min (file.GetFileSize(), 10000);
 	BYTE *pBuffer = new BYTE[nBufferSize];
 
-	file.ReadFile(pBuffer, nBufferSize);
+	file.ReadFile(pBuffer, nBufferSize, nBufferSize);
 	file.CloseFile();
 
 	if (pBuffer != NULL)
@@ -128,10 +128,10 @@ int _tmain(int argc, _TCHAR* argv[])
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstPath		= argv[2];
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	
-	std::wstring srcTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
     // распаковываем исходник во временную директорию
 	COfficeUtils oCOfficeUtils(NULL);
@@ -145,14 +145,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	converter.convert();
 	converter.write(dstTempPath);
 
-	FileSystem::Directory::DeleteDirectory(srcTempPath);
+	NSDirectory::DeleteDirectory(srcTempPath);
 
 	if (hr != S_OK)  return hr;
    
 	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
         return hr;
 	
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
+	NSDirectory::DeleteDirectory(dstTempPath);
 
 ////////////////////////////////////////////////////////////////////////
     std::cout << "\n\nTime : " << t1.elapsed() << "\n";   

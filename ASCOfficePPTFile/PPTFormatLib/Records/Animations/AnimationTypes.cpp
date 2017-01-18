@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,206 +73,200 @@ static const wchar_t EffectBehaviorWipeDown				[]	=	L"wipe(down)";
 
 #pragma region _MACROSES_
 
-#define GET_ENUM_STRING(NAMEE,VALUEE)											\
-	case  TL_##NAMEE##VALUEE:													\
-	return CString(_T("TL_")) + CString(_T(#NAMEE)) + CString(#VALUEE);		\
-	break;
+#define GET_ENUM_STRING(NAMEE, VALUEE)\
+    case  TL_##NAMEE##VALUEE: 	\
+    return std::wstring(_T("TL_")) + std::wstring(_T(#NAMEE)) + std::wstring(_T(#VALUEE)); \
+    break;
 
 #if defined(_WIN32) || defined (_WIN64)
     #define GET_EFFECT_NAME_BY_ID(VALUE,DESCRIPTION)							\
-	case (##VALUE) : return CString(_T(#DESCRIPTION)); break;
+    case (##VALUE) : return std::wstring(_T(#DESCRIPTION)); break;
 #else
     #define GET_EFFECT_NAME_BY_ID(VALUE,DESCRIPTION)							\
-    case ##VALUE : return CString(_T(#DESCRIPTION)); break;
+    case ##VALUE : return std::wstring(_T(#DESCRIPTION)); break;
 #endif
 #pragma endregion
 
 namespace Animations
 {
-	CString Helpers::GetTimePropertyID4TimeNode ( TimePropertyID4TimeNode Value )
+    std::wstring Helpers::GetTimePropertyID4TimeNode ( TimePropertyID4TimeNode Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TPID_, Display );
-			GET_ENUM_STRING ( TPID_, MasterPos );
-			GET_ENUM_STRING ( TPID_, SlaveType );
-			GET_ENUM_STRING ( TPID_, EffectID );
-			GET_ENUM_STRING ( TPID_, EffectDir );
-			GET_ENUM_STRING ( TPID_, AfterEffect );
-			GET_ENUM_STRING ( TPID_, SlideCount );
-			GET_ENUM_STRING ( TPID_, TimeFilter );
-			GET_ENUM_STRING ( TPID_, EventFilter );
-			GET_ENUM_STRING ( TPID_, HideWhenStopped );
-			GET_ENUM_STRING ( TPID_, GroupID );
-			GET_ENUM_STRING ( TPID_, EffectNodeType );
-			GET_ENUM_STRING ( TPID_, PlaceholderNode );
-			GET_ENUM_STRING ( TPID_, MediaVolume );
-			GET_ENUM_STRING ( TPID_, MediaMute );
-			GET_ENUM_STRING ( TPID_, ZoomToFullScreen );
+            GET_ENUM_STRING( TPID_, Display );
+            GET_ENUM_STRING( TPID_, MasterPos );
+            GET_ENUM_STRING( TPID_, SlaveType );
+            GET_ENUM_STRING( TPID_, EffectID );
+            GET_ENUM_STRING( TPID_, EffectDir );
+            GET_ENUM_STRING( TPID_, AfterEffect );
+            GET_ENUM_STRING( TPID_, SlideCount );
+            GET_ENUM_STRING( TPID_, TimeFilter );
+            GET_ENUM_STRING( TPID_, EventFilter );
+            GET_ENUM_STRING( TPID_, HideWhenStopped );
+            GET_ENUM_STRING( TPID_, GroupID );
+            GET_ENUM_STRING( TPID_, EffectNodeType );
+            GET_ENUM_STRING( TPID_, PlaceholderNode );
+            GET_ENUM_STRING( TPID_, MediaVolume );
+            GET_ENUM_STRING( TPID_, MediaMute );
+            GET_ENUM_STRING( TPID_, ZoomToFullScreen );
 
 		default: 
-			return CString ( _T("TimePropertyID4TimeNode : Unknown Enum") );
+            return std::wstring ( _T("TimePropertyID4TimeNode : Unknown Enum") );
 		}
 	};
 
-	CString Helpers::GetTimeVariantTypeEnum ( TimeVariantTypeEnum Value )
+    std::wstring Helpers::GetTimeVariantTypeEnum ( TimeVariantTypeEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TVT_, Bool );
-			GET_ENUM_STRING ( TVT_, Int );
-			GET_ENUM_STRING ( TVT_, Float );
-			GET_ENUM_STRING ( TVT_, String );
+            GET_ENUM_STRING( TVT_, Bool );
+            GET_ENUM_STRING( TVT_, Int );
+            GET_ENUM_STRING( TVT_, Float );
+            GET_ENUM_STRING( TVT_, String );
 
 		default: 
-			return CString ( _T("TimeVariantTypeEnum : Unknown Enum") );
+            return std::wstring ( _T("TimeVariantTypeEnum : Unknown Enum") );
 		}
 	};
 
-	CString Helpers::GetTimeNodeTypeEnum ( TimeNodeTypeEnum Value )
+    std::wstring Helpers::GetTimeNodeTypeEnum ( TimeNodeTypeEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TNT_, Parallel );
-			GET_ENUM_STRING ( TNT_, Sequential );
-			GET_ENUM_STRING ( TNT_, Behavior );
-			GET_ENUM_STRING ( TNT_, Media );
+            GET_ENUM_STRING( TNT_, Parallel );
+            GET_ENUM_STRING( TNT_, Sequential );
+            GET_ENUM_STRING( TNT_, Behavior );
+            GET_ENUM_STRING( TNT_, Media );
 
 		default: 
-			return CString ( _T("TimeNodeTypeEnum : Unknown Enum") );
+            return std::wstring ( _T("TimeNodeTypeEnum : Unknown Enum") );
 		}
 	};
 
-	CString Helpers::GetTriggerObjectEnum ( TriggerObjectEnum Value )
+    std::wstring Helpers::GetTriggerObjectEnum ( TriggerObjectEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TOT_, None );				//	None
-			GET_ENUM_STRING ( TOT_, VisualElement );	//	An animatable object. 
-			GET_ENUM_STRING ( TOT_, TimeNode );			//	A time node.  
-			GET_ENUM_STRING ( TOT_, RuntimeNodeRef );	//	Runtime child time nodes. 
+            GET_ENUM_STRING( TOT_, None );				//	None
+            GET_ENUM_STRING( TOT_, VisualElement );	//	An animatable object.
+            GET_ENUM_STRING( TOT_, TimeNode );			//	A time node.
+            GET_ENUM_STRING( TOT_, RuntimeNodeRef );	//	Runtime child time nodes.
 
 		default: 
-			return CString ( _T("TriggerObjectEnum : Unknown Enum") );
+            return std::wstring ( _T("TriggerObjectEnum : Unknown Enum") );
 		}
 	}
 
-	CString Helpers::GetTimeVisualElementEnum ( TimeVisualElementEnum Value )
+    std::wstring Helpers::GetTimeVisualElementEnum ( TimeVisualElementEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TVET_, Shape );			
-			GET_ENUM_STRING ( TVET_, Page );	
-			GET_ENUM_STRING ( TVET_, TextRange );		
-			GET_ENUM_STRING ( TVET_, Audio );	
-			GET_ENUM_STRING ( TVET_, Video );			
-			GET_ENUM_STRING ( TVET_, ChartElement );	
-			GET_ENUM_STRING ( TVET_, ShapeOnly );		
-			GET_ENUM_STRING ( TVET_, AllTextRange );	
+            GET_ENUM_STRING( TVET_, Shape );
+            GET_ENUM_STRING( TVET_, Page );
+            GET_ENUM_STRING( TVET_, TextRange );
+            GET_ENUM_STRING( TVET_, Audio );
+            GET_ENUM_STRING( TVET_, Video );
+            GET_ENUM_STRING( TVET_, ChartElement );
+            GET_ENUM_STRING( TVET_, ShapeOnly );
+            GET_ENUM_STRING( TVET_, AllTextRange );
 
 		default: 
-			return CString ( _T("TimeVisualElementEnum : Unknown Enum") );
+            return std::wstring ( _T("TimeVisualElementEnum : Unknown Enum") );
 		}
 	}
 
-	CString Helpers::GetElementTypeEnum ( ElementTypeEnum Value )
+    std::wstring Helpers::GetElementTypeEnum ( ElementTypeEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( ET_, ShapeType );			
-			GET_ENUM_STRING ( ET_, SoundType );	
+			GET_ENUM_STRING( ET_, ShapeType );			
+			GET_ENUM_STRING( ET_, SoundType );	
 
 		default: 
-			return CString ( _T("ElementTypeEnum : Unknown Enum") );
+            return std::wstring ( _T("ElementTypeEnum : Unknown Enum") );
 		}
 	}
 
-	CString Helpers::GetTimeAnimateBehaviorValueTypeEnum ( TimeAnimateBehaviorValueTypeEnum Value )
+    std::wstring Helpers::GetTimeAnimateBehaviorValueTypeEnum ( TimeAnimateBehaviorValueTypeEnum Value )
 	{
 		switch ( Value )
 		{
-			GET_ENUM_STRING ( TABVT_, String );			
-			GET_ENUM_STRING ( TABVT_, Number );	
-			GET_ENUM_STRING ( TABVT_, Color );	
+			GET_ENUM_STRING( TABVT_, String );			
+			GET_ENUM_STRING( TABVT_, Number );	
+			GET_ENUM_STRING( TABVT_, Color );	
 
 		default: 
-			return CString ( _T("TimeAnimateBehaviorValueTypeEnum : Unknown Enum") );
+            return std::wstring ( _T("TimeAnimateBehaviorValueTypeEnum : Unknown Enum") );
 		}
 	}
 
-	CString Helpers::IntToHexString ( DWORD dwValue )
+    std::wstring Helpers::IntToHexString ( DWORD dwValue )
 	{
-		CString sFormat;
-		sFormat.Format (_T("0x%.8x"), dwValue);
-		return sFormat;
+        return XmlUtils::IntToString(dwValue, L"0x%.8x");
 	}
 
-	CString Helpers::DoubleToString ( double dValue )
+    std::wstring Helpers::DoubleToString ( double dValue )
 	{
-		CString sFormat;
-		sFormat.Format (_T("%f"), dValue);
-		return sFormat;
+        return std::to_wstring(dValue);
 	}
-	CString Helpers::IntToString ( int nValue )
+    std::wstring Helpers::IntToString ( int nValue )
 	{
-		CString sFormat;
-		sFormat.Format (_T("%d"), nValue);
-		return sFormat;
+        return std::to_wstring(nValue);
 	}
-	CString Helpers::GetAnimationClassName ( AnimationsClassType Value )
+    std::wstring Helpers::GetAnimationClassName ( AnimationsClassType Value )
 	{
 		switch ( Value )
 		{
 		case Animations::RT_TimeNode:
-			return CString (_T("TimeNodeAtom") );
+            return std::wstring (_T("TimeNodeAtom") );
 
 		case Animations::RT_TimePropertyList:	//	Specifies a TimePropertyList4TimeNodeContainer or TimePropertyList4TimeBehavior.  
-			return CString (_T("TimePropertyList4TimeNodeContainer"));
+            return std::wstring (_T("TimePropertyList4TimeNodeContainer"));
 
 		case Animations::RT_TimeExtTimeNodeContainer:
-			return CString (_T("ExtTimeNodeContainer"));
+            return std::wstring (_T("ExtTimeNodeContainer"));
 
 		case Animations::RT_SlideTime10Atom	:
-			return CString (_T("SlideTime10Atom"));
+            return std::wstring (_T("SlideTime10Atom"));
 
 		case Animations::RT_SlideFlags10Atom:
-			return CString (_T("SlideFlags10Atom"));
+            return std::wstring (_T("SlideFlags10Atom"));
 
 		case Animations::RT_HashCodeAtom:
-			return CString (_T("HashCode10Atom"));
+            return std::wstring (_T("HashCode10Atom"));
 
 		case Animations::RT_TimeSequenceData:
-			return CString (_T("TimeSequenceDataAtom"));
+            return std::wstring (_T("TimeSequenceDataAtom"));
 
 		case Animations::RT_TimeConditionContainer:
-			return CString (_T("TimeConditionContainer")); 
+            return std::wstring (_T("TimeConditionContainer"));
 
 		case Animations::RT_TimeCondition:
-			return CString (_T("TimeConditionAtom")); 
+            return std::wstring (_T("TimeConditionAtom"));
 		}
 
-		return CString (_T(""));
+        return std::wstring (_T(""));
 	}
 
-	CString Helpers::GetEffectTypeOfGroup ( DWORD Value )
+    std::wstring Helpers::GetEffectTypeOfGroup ( DWORD Value )
 	{
 		if ( 0x00000001	==	Value )
-			return CString ( _T("Entrance") );
+            return std::wstring ( _T("Entrance") );
 		if ( 0x00000002	==	Value )
-			return CString ( _T("Exit") );
+            return std::wstring ( _T("Exit") );
 		if ( 0x00000003	==	Value )
-			return CString ( _T("Emphasis") );
+            return std::wstring ( _T("Emphasis") );
 		if ( 0x00000004	==	Value )
-			return CString ( _T("MotionPath") );
+            return std::wstring ( _T("MotionPath") );
 		if ( 0x00000005	==	Value )
-			return CString ( _T("ActionVerb") );
+            return std::wstring ( _T("ActionVerb") );
 		if ( 0x00000006	==	Value )
-			return CString ( _T("MediaCommand") );
+            return std::wstring ( _T("MediaCommand") );
 
-		return CString ( _T("") );
+        return std::wstring ( _T("") );
 	}
 	//	the corresponding effect type is an entrance or an exit effect
-	CString Helpers::GetEffectEntranceOrExitNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectEntranceOrExitNameByID ( DWORD EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -338,11 +332,11 @@ namespace Animations
 		default :			  
 			break;
 		}
-		return CString(_T("Unknown EffectID"));
+        return std::wstring(_T("Unknown EffectID"));
 	}
 
 	//	the corresponding effect type is an emphasis effect
-	CString Helpers::GetEffectEmphasisNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectEmphasisNameByID ( DWORD EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -385,10 +379,10 @@ namespace Animations
 		default :			  
 			break;
 		}
-		return CString(_T("Unknown EffectID"));
+        return std::wstring(_T("Unknown EffectID"));
 	}
 	//	the corresponding effect type is a motion path effect
-	CString Helpers::GetEffectMotionPathNameByID ( DWORD EffectID )
+    std::wstring Helpers::GetEffectMotionPathNameByID ( DWORD EffectID )
 	{
 		switch ( EffectID )
 		{
@@ -460,10 +454,10 @@ namespace Animations
 		default :			  
 			break;
 		}
-		return CString(_T("Unknown EffectID"));
+        return std::wstring(_T("Unknown EffectID"));
 	}
 
-	CString Helpers::GetEffectNameByID ( DWORD EffectType, DWORD EffectID )
+    std::wstring Helpers::GetEffectNameByID ( DWORD EffectType, DWORD EffectID )
 	{
 		switch ( EffectType )
 		{
@@ -483,7 +477,7 @@ namespace Animations
 			break;
 		}
 
-		return CString ( _T("") );
+        return std::wstring ( _T("") );
 	}
 }
 

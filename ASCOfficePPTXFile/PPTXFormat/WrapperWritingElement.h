@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -103,7 +103,7 @@ namespace PPTX
 		virtual WrapperWritingElement const* const	GetParentPointer()const		{return parentElement;}
 		virtual WrapperFile const* const			GetParentFilePointer()const {return parentFile;}
 
-		virtual void fromXMLString(CString strXml)
+		virtual void fromXMLString(std::wstring strXml)
 		{
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlString(strXml);

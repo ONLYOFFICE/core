@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -67,7 +67,7 @@ public:
 
 		if(m_ooxTableProps->m_oTblStyle.IsInit() && m_ooxTableProps->m_oTblStyle->m_sVal.IsInit())
 		{
-			CString sStyle = m_ooxTableProps->m_oTblStyle->m_sVal.get2();
+			std::wstring sStyle = m_ooxTableProps->m_oTblStyle->m_sVal.get2();
 			RtfStylePtr oStyle;
 			if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyle, oStyle) )
 			{

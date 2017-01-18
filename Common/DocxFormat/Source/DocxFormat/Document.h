@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -100,9 +100,9 @@ namespace OOX
 						m_oBackground = oReader;
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<w:background ");
+				std::wstring sResult = _T("<w:background ");
 
 				if ( m_oColor.IsInit() )
 				{
@@ -453,7 +453,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+			std::wstring sXml;
 
 			if ( SimpleTypes::conformanceclassTransitional != m_oConformance.GetValue() )
 			{
@@ -529,7 +529,7 @@ namespace OOX
 
 			//m_arrItems.push_back( pPara );
 		}
-		void AddImage(const CPath& oImagePath, const long lEmuX, const CString& sHRelativeFrom, const long lEmuY, const CString& sVRelativeFrom, const long lWidthEmu, const long lHeightEmu)
+		void AddImage(const CPath& oImagePath, const long lEmuX, const std::wstring& sHRelativeFrom, const long lEmuY, const std::wstring& sVRelativeFrom, const long lWidthEmu, const long lHeightEmu)
 		{
 			//// TO DO: Сделать добавление Image
 
@@ -576,7 +576,7 @@ namespace OOX
 
 			m_arrItems.push_back( pNewElement );
 		}
-		void AddText(CString& sText)
+		void AddText(std::wstring& sText)
 		{
 			WritingElement *pNewElement = new Logic::CParagraph();
 			if ( !pNewElement )
@@ -587,7 +587,7 @@ namespace OOX
 
 			m_arrItems.push_back( pNewElement );
 		}
-		void AddTextToLast(CString& sText)
+		void AddTextToLast(std::wstring& sText)
 		{
 			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
 			{
@@ -595,7 +595,7 @@ namespace OOX
 				pPara->AddText( sText );
 			}
 		}
-		void AddHyperlink (CString& sNameHref, CString& sText)
+		void AddHyperlink (std::wstring& sNameHref, std::wstring& sText)
 		{
 			WritingElement *pNewElement = new Logic::CParagraph;
 			if ( !pNewElement )
@@ -611,7 +611,7 @@ namespace OOX
 
 			m_arrItems.push_back( pNewElement );
 		}
-		void AddHyperlinkToLast(CString& sNameHref, CString& sText)
+		void AddHyperlinkToLast(std::wstring& sNameHref, std::wstring& sText)
 		{
 			if ( m_arrItems.size() > 0 && et_w_p == m_arrItems[m_arrItems.size() - 1]->getType() )
 			{
@@ -643,7 +643,7 @@ namespace OOX
 		nullable<OOX::Logic::CBackground     > m_oBackground;
 
 		std::vector<WritingElement *>			m_arrItems;
-		std::vector<CString>					m_arrShapeTypes;
+		std::vector<std::wstring>					m_arrShapeTypes;
 
 	};
 

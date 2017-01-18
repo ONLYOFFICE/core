@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,9 +32,8 @@
 #ifndef SERIALIZER_COMMON
 #define SERIALIZER_COMMON
 
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-
 #include "../../DesktopEditor/common/File.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include <string>
 #include <vector>

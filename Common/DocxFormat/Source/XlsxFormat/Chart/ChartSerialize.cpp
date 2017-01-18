@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1535,8 +1535,8 @@ namespace OOX{
 				if(_T("paperSize") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_paperSize = pNewElem;
 				}
 				else if(_T("paperHeight") == wsName)
@@ -1556,8 +1556,8 @@ namespace OOX{
 				else if(_T("firstPageNumber") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_firstPageNumber = pNewElem;
 				}
 				else if(_T("orientation") == wsName)
@@ -1609,22 +1609,22 @@ namespace OOX{
 				else if(_T("horizontalDpi") == wsName)
 				{
 					long* pNewElem = new long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_horizontalDpi = pNewElem;
 				}
 				else if(_T("verticalDpi") == wsName)
 				{
 					long* pNewElem = new long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_verticalDpi = pNewElem;
 				}
 				else if(_T("copies") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_copies = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -1694,43 +1694,43 @@ namespace OOX{
 				if(_T("l") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_l = pNewElem;
 				}
 				else if(_T("r") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_r = pNewElem;
 				}
 				else if(_T("t") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_t = pNewElem;
 				}
 				else if(_T("b") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_b = pNewElem;
 				}
 				else if(_T("header") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_header = pNewElem;
 				}
 				else if(_T("footer") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_footer = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -2258,8 +2258,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -2837,8 +2837,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -3383,8 +3383,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -3899,8 +3899,8 @@ namespace OOX{
 				if(_T("idx") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_idx = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -4127,8 +4127,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -4610,8 +4610,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -6247,8 +6247,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -6419,8 +6419,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					double* pNewElem = new double;
-					CString sVal = oReader.GetText();
-					*pNewElem = _tstof(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _tstof(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -7685,8 +7685,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -7726,8 +7726,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -8328,8 +8328,8 @@ namespace OOX{
 				if(_T("idx") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_idx = pNewElem;
 				}
 				else if(_T("formatCode") == wsName)
@@ -10774,8 +10774,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -13823,8 +13823,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -13905,8 +13905,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -13987,8 +13987,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					signed char* pNewElem = new signed char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -14672,8 +14672,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )
@@ -14708,8 +14708,8 @@ namespace OOX{
 				if(_T("val") == wsName)
 				{
 					unsigned char* pNewElem = new unsigned char;
-					CString sVal = oReader.GetText();
-					*pNewElem = _ttoi(sVal);
+                    std::wstring sVal = oReader.GetText();
+                    *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End( oReader )

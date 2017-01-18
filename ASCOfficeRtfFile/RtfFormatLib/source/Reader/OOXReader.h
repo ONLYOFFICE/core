@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,30 +41,30 @@ class OOXReader
 public: 
 
     RtfConvertationManager*						m_convertationManager;
-	CString										m_sPath;
+	std::wstring										m_sPath;
 
 	int											m_nCurItap;			//для определение вложенности таблицы
 
 	int											m_nCurFittextId;
-	std::map<int, CString>						m_aBookmarks;
+	std::map<int, std::wstring>						m_aBookmarks;
 
 	std::map<int, int>							m_mapPictureBullet;
 	std::map<int, TextItemContainerPtr>			m_mapFootnotes;
 	std::map<int, TextItemContainerPtr>			m_mapEndnotes;
 
-	std::map<CString, OOX::Vml::CShapeType*>	m_mapShapeTypes;	
+	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapShapeTypes;	
 //------------------------------------------------------------------------
 	OOXIdGenerator			m_oOOXIdGenerator;
 
 //Theme Fonts
-	CString					m_smajorAscii;
-	CString					m_smajorBidi;
-	CString					m_smajorEastAsia;
-	CString					m_smajorHAnsi;
-	CString					m_sminorAscii;
-	CString					m_sminorBidi;
-	CString					m_sminorEastAsia;
-	CString					m_sminorHAnsi;
+	std::wstring					m_smajorAscii;
+	std::wstring					m_smajorBidi;
+	std::wstring					m_smajorEastAsia;
+	std::wstring					m_smajorHAnsi;
+	std::wstring					m_sminorAscii;
+	std::wstring					m_sminorBidi;
+	std::wstring					m_sminorEastAsia;
+	std::wstring					m_sminorHAnsi;
 
 //defaultStyles
 	RtfCharStylePtr			m_oDefCharStyle;
@@ -72,7 +72,7 @@ public:
 	RtfTableStylePtr		m_oDefTableStyle;
 
 //TempFolder
-	CString m_sTempFolder;
+	std::wstring m_sTempFolder;
 
 	OOXReader( RtfDocument& oDocument, std::wstring  path );
 	bool Parse();
@@ -80,6 +80,6 @@ public:
 	OOX::IFileContainer		*m_currentContainer;
 private: 
 	void ParseColorTable( RtfDocument& oDocument );
-	CString GetFolder	( CString sDocPath );
+	std::wstring GetFolder	( std::wstring sDocPath );
 	RtfDocument &		m_oDocument;
 };

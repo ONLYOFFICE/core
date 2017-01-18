@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -190,9 +190,9 @@ namespace OOX
                     m_arrEffects.push_back( pEffect );
 			}
 		}
-		CString CBlip::toXML() const
+		std::wstring CBlip::toXML() const
 		{
-			CString sResult = _T("<a:blip ");
+			std::wstring sResult = _T("<a:blip ");
 
 			sResult += _T("cstate=\"") + m_oCState.ToString() + _T("\" ");
 			if ( _T("") != m_oEmbed.GetValue() )
@@ -258,9 +258,9 @@ namespace OOX
 				}
 			}
 		}
-		CString CBlipFillProperties::toXML() const
+		std::wstring CBlipFillProperties::toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			if ( et_a_blipFill == m_eType )
 				sResult = _T("<a:blipFill ");
@@ -539,9 +539,9 @@ namespace OOX
 			}
 		}
 
-		CString CEffectContainer::toXML() const
+		std::wstring CEffectContainer::toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			if ( et_a_cont == m_eType )
 				sResult = _T("<a:cont ");
@@ -553,7 +553,7 @@ namespace OOX
 			if ( m_sName.IsInit() )
 			{
 				sResult += _T("name=\"");
-				sResult += m_sName->GetString();
+                sResult += m_sName.get2();
 				sResult += _T("\" ");
 			}
 
@@ -679,9 +679,9 @@ namespace OOX
 			}
 		}
 
-		CString CEffectList::toXML() const
+		std::wstring CEffectList::toXML() const
 		{
-			CString sResult = _T("<a:effectLst>");
+			std::wstring sResult = _T("<a:effectLst>");
 
             for ( unsigned int nIndex = 0; nIndex < m_arrEffects.size(); nIndex++ )
 				sResult += m_arrEffects[nIndex]->toXML();
@@ -730,9 +730,9 @@ namespace OOX
 					m_oTileRect = oReader;
 			}
 		}
-		CString CGradientFillProperties::toXML() const
+		std::wstring CGradientFillProperties::toXML() const
 		{
-			CString sResult = _T("<a:gradFill ");
+			std::wstring sResult = _T("<a:gradFill ");
 
 			if ( m_oFlip.IsInit() )
 			{

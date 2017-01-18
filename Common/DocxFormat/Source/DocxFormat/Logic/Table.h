@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,9 +66,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oW.IsInit() )
 				{
@@ -119,7 +119,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tblGridChange;
@@ -221,9 +221,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:tblGrid>");
+				std::wstring sResult = _T("<w:tblGrid>");
 
 				if ( !m_bTblGridChange && m_oTblGridChange.IsInit() )
 					sResult += m_oTblGridChange->toXML();
@@ -271,7 +271,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tblPrExChange;
@@ -284,10 +284,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString                       > m_sAuthor;
+			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString					   > m_sUserId;
+			nullable<std::wstring					   > m_sUserId;
 
 			// Childs
 			nullable<CTblPrEx                      > m_pTblPrEx;
@@ -371,9 +371,9 @@ namespace OOX
 					else if ( _T("w:tblW")           == sName ) m_oTblW = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:tblPrEx>");
+				std::wstring sResult = _T("<w:tblPrEx>");
 
 				WritingElement_WriteNode_1( _T("<w:jc "),             m_oJc );
 				WritingElement_WriteNode_1( _T("<w:shd "),            m_oShd );
@@ -470,7 +470,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tbl;
@@ -543,7 +543,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tr;
@@ -633,7 +633,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tc;
@@ -648,7 +648,7 @@ namespace OOX
 			int                            m_nNumCol; // Номер колонки
 
 			// Attributes
-			nullable<CString >             m_sId;
+			nullable<std::wstring >             m_sId;
 
 			// Childs
 			OOX::Logic::CTableCellProperties*		m_oTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>

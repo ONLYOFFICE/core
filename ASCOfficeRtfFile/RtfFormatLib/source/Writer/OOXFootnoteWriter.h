@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,11 +42,11 @@ public:
 		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("footnotes.xml"), oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
-	void AddFootnoteBegin( CString sType, int nID, CString sText )
+    void AddFootnoteBegin( std::wstring sType, int nID, std::wstring sText )
 	{
-		CString sFootnote;
+        std::wstring sFootnote;
 		sFootnote += _T("<w:footnote");
-		if( false == sType.IsEmpty() )
+		if( false == sType.empty() )
 		{
 			sFootnote += _T(" w:type=\"");
 			sFootnote += sType;
@@ -54,33 +54,31 @@ public:
 
 		}
 		if( PROP_DEF != nID )
-			sFootnote.AppendFormat( _T(" w:id=\"%d\""), nID );
+            sFootnote += L" w:id=\"" + std::to_wstring(nID) + L"\"";
 		sFootnote += _T(">");
 		sFootnote += sText;
 		sFootnote += _T("</w:footnote>");
 
-		m_sFootnotes.Insert( 0 , sFootnote );
+        m_sFootnotes.insert( m_sFootnotes.begin() , sFootnote.begin(), sFootnote.end() );
 	}
-	void AddFootnote( CString sType, int nID, CString sText )
+    void AddFootnote( std::wstring sType, int nID, std::wstring sText )
 	{
 		m_sFootnotes += _T("<w:footnote");
-		if( !sType.IsEmpty() )
+		if( !sType.empty() )
 		{
 			m_sFootnotes += _T(" w:type=\"");
 			m_sFootnotes += sType;
 			m_sFootnotes += _T("\"");
 		}
 		if( PROP_DEF != nID )
-		{
-			m_sFootnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
-		}
+            m_sFootnotes += L" w:id=\"" + std::to_wstring(nID) + L"\"";
 		m_sFootnotes += _T(">");
 		m_sFootnotes += sText;
 		m_sFootnotes += _T("</w:footnote>");
 	}
-	bool Save( CString sFolder )
+    bool Save( std::wstring sFolder )
 	{
-		if(  m_sFootnotes.IsEmpty() ) return false;
+		if(  m_sFootnotes.empty() ) return false;
 
 		CFile file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
@@ -88,9 +86,9 @@ public:
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"), _T("/word/footnotes.xml") );
 
-		 CString sXml = CreateXml();
+         std::wstring sXml = CreateXml();
 		
-         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
          file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
@@ -101,13 +99,13 @@ private:
 	RtfDocument& m_oDocument;
 	OOXWriter& m_oWriter;
 
-    CString m_sFootnotes;
+    std::wstring m_sFootnotes;
 
-    CString CreateXml()
+    std::wstring CreateXml()
 	{
-		CString sResult;
-		sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-		sResult.AppendChar('\n');
+        std::wstring sResult;
+        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+
 		sResult += _T("<w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2009/2/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingShape\" >");
 		sResult += m_sFootnotes;
 		sResult += _T("</w:footnotes>");
@@ -124,28 +122,28 @@ public:
 		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("endnotes.xml"), oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
-	void AddEndnoteBegin( CString sType, int nID, CString sText )
+    void AddEndnoteBegin( std::wstring sType, int nID, std::wstring sText )
 	{
-		CString sEndnote;
+        std::wstring sEndnote;
 		sEndnote += _T("<w:endnote");
-		if( false == sType.IsEmpty() )
+		if( false == sType.empty() )
 		{
 			sEndnote += _T(" w:type=\"");
 			sEndnote += sType;
 			sEndnote += _T("\"");
 		}
 		if( -2 != nID )
-			sEndnote.AppendFormat( _T(" w:id=\"%d\""), nID );
+            sEndnote += L" w:id=\"" + std::to_wstring(nID) + L"\"";
 		sEndnote += _T(">");
 		sEndnote += sText;
 		sEndnote += _T("</w:endnote>");
 
-		m_sEndnotes.Insert( 0 , sEndnote );
+        m_sEndnotes.insert( m_sEndnotes.begin() , sEndnote.begin(), sEndnote.end() );
 	}
-	void AddEndnote( CString sType, int nID, CString sText )
+    void AddEndnote( std::wstring sType, int nID, std::wstring sText )
 	{
 		m_sEndnotes += _T("<w:endnote");
-		if( false == sType.IsEmpty() )
+		if( false == sType.empty() )
 		{
 			m_sEndnotes += _T(" w:type=\"");
 			m_sEndnotes += sType;
@@ -153,14 +151,14 @@ public:
 
 		}
 		if( -2 != nID )
-			m_sEndnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
+            m_sEndnotes += L" w:id=\"" + std::to_wstring(nID) + L"\"";
 		m_sEndnotes += _T(">");
 		m_sEndnotes += sText;
 		m_sEndnotes += _T("</w:endnote>");
 	}
-	bool Save( CString sFolder )
+    bool Save( std::wstring sFolder )
 	{
-		if( m_sEndnotes.IsEmpty() ) return false;
+		if( m_sEndnotes.empty() ) return false;
 
 		CFile file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
@@ -177,7 +175,7 @@ public:
 private: 
 	RtfDocument& m_oDocument;
 	OOXWriter& m_oWriter;
-	CString m_sEndnotes;
+    std::wstring m_sEndnotes;
 
     std::string CreateXml()
 	{

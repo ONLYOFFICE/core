@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,9 +34,9 @@ namespace OOX
 {
 	namespace Logic
 	{
-		CString      CAcc::toXML() const
+		std::wstring      CAcc::toXML() const
 			{
-				CString sResult = _T("<m:acc>");
+				std::wstring sResult = _T("<m:acc>");
 
 				if (  m_oAccPr.IsInit())
 					sResult += m_oAccPr->toXML();
@@ -49,9 +49,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CAccPr::toXML() const
+			 std::wstring      CAccPr::toXML() const
 			 {
-				CString sResult = _T("<m:accPr>");
+				std::wstring sResult = _T("<m:accPr>");
 				
 				if ( m_oChr.IsInit() )
 					sResult += m_oChr->toXML();
@@ -64,9 +64,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CBar::toXML() const
+			 std::wstring      CBar::toXML() const
 			{
-				CString sResult = _T("<m:bar>");
+				std::wstring sResult = _T("<m:bar>");
 				
 				if ( m_oBarPr.IsInit() )
 					sResult += m_oBarPr->toXML();
@@ -79,9 +79,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CBarPr::toXML() const
+			 std::wstring      CBarPr::toXML() const
 			{
-				CString sResult = _T("<m:barPr>");
+				std::wstring sResult = _T("<m:barPr>");
 				
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -94,9 +94,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CBorderBox::toXML() const
+			 std::wstring      CBorderBox::toXML() const
 			{
-				CString sResult = _T("<m:borderBox>");
+				std::wstring sResult = _T("<m:borderBox>");
 				
 				if ( m_oBorderBoxPr.IsInit() )
 					sResult += m_oBorderBoxPr->toXML();
@@ -109,9 +109,9 @@ namespace OOX
 				return sResult;
 			}
 
-			  CString      CBorderBoxPr::toXML() const
+			  std::wstring      CBorderBoxPr::toXML() const
 			{
-				CString sResult = _T("<m:borderBoxPr>");
+				std::wstring sResult = _T("<m:borderBoxPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -145,9 +145,9 @@ namespace OOX
 				return sResult;
 			}
 
-			  CString      CBox::toXML() const
+			  std::wstring      CBox::toXML() const
 			{
-				CString sResult = _T("<m:box>");
+				std::wstring sResult = _T("<m:box>");
 
 				if ( m_oBoxPr.IsInit() )
 					sResult += m_oBoxPr->toXML();
@@ -160,9 +160,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CBoxPr::toXML() const
+			 std::wstring      CBoxPr::toXML() const
 			{
-				CString sResult = _T("<m:boxPr>");
+				std::wstring sResult = _T("<m:boxPr>");
 				
 				if ( m_oAln.IsInit() )
 					sResult += m_oAln->toXML();
@@ -187,9 +187,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CFraction::toXML() const
+			 std::wstring      CFraction::toXML() const
 			{
-				CString sResult = _T("<m:f>");
+				std::wstring sResult = _T("<m:f>");
 
 				if ( m_oDen.IsInit() )
 					sResult += m_oDen->toXML();
@@ -205,9 +205,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CFunc::toXML() const
+			 std::wstring      CFunc::toXML() const
 			{
-				CString sResult = _T("<m:func>");
+				std::wstring sResult = _T("<m:func>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -223,9 +223,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CGroupChr::toXML() const
+			 std::wstring      CGroupChr::toXML() const
 			{
-				CString sResult = _T("<m:groupChr>");
+				std::wstring sResult = _T("<m:groupChr>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -238,9 +238,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CLimLow::toXML() const
+			 std::wstring      CLimLow::toXML() const
 			{
-				CString sResult = _T("<m:limLow>");
+				std::wstring sResult = _T("<m:limLow>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -256,9 +256,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CLimUpp::toXML() const
+			 std::wstring      CLimUpp::toXML() const
 			{
-				CString sResult = _T("<m:limUpp>");
+				std::wstring sResult = _T("<m:limUpp>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -274,9 +274,9 @@ namespace OOX
 				return sResult;
 			}			
 
-			  CString      CMc::toXML() const
+			  std::wstring      CMc::toXML() const
 			{
-				CString sResult = _T("<m:mc>");
+				std::wstring sResult = _T("<m:mc>");
 
 				if ( m_oMcPr.IsInit() )
 					sResult += m_oMcPr->toXML();
@@ -286,9 +286,9 @@ namespace OOX
 				return sResult;
 			}
 
-			  CString      CNary::toXML() const
+			  std::wstring      CNary::toXML() const
 			{
-				CString sResult = _T("<m:nary>");
+				std::wstring sResult = _T("<m:nary>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -307,9 +307,9 @@ namespace OOX
 				return sResult;
 			}
 
-			  CString      CPhant::toXML() const
+			  std::wstring      CPhant::toXML() const
 			{
-				CString sResult = _T("<m:phant>");
+				std::wstring sResult = _T("<m:phant>");
 
 				if ( m_oElement.IsInit() )
 					sResult += m_oElement->toXML();
@@ -322,9 +322,9 @@ namespace OOX
 				return sResult;
 			}
 
-			 CString      CMRun::toXML() const
+			 std::wstring      CMRun::toXML() const
 			{
-				CString sResult = _T("<m:r>");
+				std::wstring sResult = _T("<m:r>");
 
 				sResult += toXMLInner();
 				
@@ -332,9 +332,9 @@ namespace OOX
 
 				return sResult;
 			}
-			 CString      CMRun::toXMLInner() const
+			 std::wstring      CMRun::toXMLInner() const
 			 {
-				 CString sResult;
+				 std::wstring sResult;
 
 				 if ( m_oAnnotationRef.IsInit() )
 					 sResult += m_oAnnotationRef->toXML();

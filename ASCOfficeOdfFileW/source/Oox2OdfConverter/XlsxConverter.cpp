@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,7 @@ namespace Oox2Odf
  
 XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* CallBack) 
 {
-	const OOX::CPath oox_path(CString(path.c_str()));			
+    const OOX::CPath oox_path(std::wstring(path.c_str()));
 
     xlsx_document   = new OOX::Spreadsheet::CXlsx(oox_path);
 
@@ -95,9 +95,9 @@ OOX::CTheme* XlsxConverter::oox_theme()
 		return NULL;
 }
 
-CString	XlsxConverter::find_link_by_id (CString sId, int type)
+std::wstring	XlsxConverter::find_link_by_id (std::wstring sId, int type)
 {
-	CString ref;
+    std::wstring ref;
 	if (type==1)
 	{
 		if (xlsx_current_drawing)
@@ -110,7 +110,7 @@ CString	XlsxConverter::find_link_by_id (CString sId, int type)
 				ref = pImage->filename().GetPath();
 			}
 		}
-		if (ref.GetLength() < 1 && oox_current_child_document)
+        if (ref.empty() && oox_current_child_document)
 		{
 			smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
@@ -120,7 +120,7 @@ CString	XlsxConverter::find_link_by_id (CString sId, int type)
 				ref = pImage->filename().GetPath();
 			}
 		}
-		if (ref.GetLength() < 1 && oox_current_child_document_spreadsheet)
+        if (ref.empty() && oox_current_child_document_spreadsheet)
 		{
 			smart_ptr<OOX::File> oFile = oox_current_child_document_spreadsheet->Find(sId);
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
@@ -180,7 +180,7 @@ void XlsxConverter::convert_sheets()
 				
 			if(pSheet->m_oRid.IsInit())
 			{
-				CString sSheetRId = pSheet->m_oRid.get2().ToString();
+                std::wstring sSheetRId = pSheet->m_oRid.get2().ToString();
 				std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::iterator pItWorksheet = arrWorksheets.find(sSheetRId);
 				
 				if (pItWorksheet->second)
@@ -741,8 +741,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFormula *oox_formula)
 				//nullable<SimpleTypes::COnOff<>>							m_oDt2D;
 				//nullable<SimpleTypes::COnOff<>>							m_oDtr;
 
-				//nullable<CString>										m_oR1;
-				//nullable<CString>										m_oR2;
+                //nullable<std::wstring>										m_oR1;
+                //nullable<std::wstring>										m_oR2;
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 {
@@ -802,12 +802,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCol *oox_column)
 void XlsxConverter::convert(OOX::Spreadsheet::CSheetPr *oox_sheet_pr)
 {
 	if (!oox_sheet_pr)return;
-			//nullable<CString>					m_oCodeName;
+            //nullable<std::wstring>					m_oCodeName;
 			//nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
 			//nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
 			//nullable<SimpleTypes::COnOff<>>		m_oPublished;
 			//nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
-			//nullable<CString>					m_oSyncRef;
+            //nullable<std::wstring>					m_oSyncRef;
 			//nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
 			//nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
 			//nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
@@ -902,7 +902,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		ods_context->settings_context()->add_property(L"ZoomType", L"short", L"0");
 		if (sheet_view->m_oZoomScale.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"ZoomValue", L"int", sheet_view->m_oZoomScale->ToString().GetBuffer());
+            ods_context->settings_context()->add_property(L"ZoomValue", L"int", sheet_view->m_oZoomScale->ToString());
 		}else
 		{
 			ods_context->settings_context()->add_property(L"ZoomValue", L"int", L"100");
@@ -910,7 +910,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 		if (sheet_view->m_oColorId.IsInit() && !sheet_view->m_oDefaultGridColor.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"GridColor", L"int", sheet_view->m_oColorId->ToString().GetBuffer());
+            ods_context->settings_context()->add_property(L"GridColor", L"int", sheet_view->m_oColorId->ToString());
 		}
 		bool bPaneX			= false;
 		bool bPaneY			= false;
@@ -997,12 +997,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		}
 		if (sheet_view->m_oZoomScalePageLayoutView.IsInit())
 		{
-			ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", sheet_view->m_oZoomScalePageLayoutView->ToString().GetBuffer());
+            ods_context->settings_context()->add_property(L"PageViewZoomValue", L"int", sheet_view->m_oZoomScalePageLayoutView->ToString());
 		}
 		//nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
 		//nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-		//nullable<CString>										m_oTopLeftCell;
+        //nullable<std::wstring>										m_oTopLeftCell;
 		//nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>	m_oView;
 		//nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
 		//nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
@@ -1923,7 +1923,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 			if (oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
 			{
 				//диаграмма
-				CString sId = oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue();
+                std::wstring sId = oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue();
 				
 				smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
 				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Charts == oFile->type())
@@ -2009,20 +2009,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 
 	ods_context->drawing_context()->start_drawing();
 
-	CString pathImage;
+    std::wstring pathImage;
 	double Width=0, Height = 0;
 
 	if (oox_picture->m_oBlipFill->m_oBlip.IsInit())
 	{
-		CString sID = oox_picture->m_oBlipFill->m_oBlip->m_oEmbed.GetValue();		
+        std::wstring sID = oox_picture->m_oBlipFill->m_oBlip->m_oEmbed.GetValue();
 		pathImage = find_link_by_id(sID,1);
 		
-		if (pathImage.GetLength() < 1)
+        if (pathImage.empty())
 		{
 			sID = oox_picture->m_oBlipFill->m_oBlip->m_oLink.GetValue();	
 			//???
 		}
-        _graphics_utils_::GetResolution(pathImage, Width, Height);
+        _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 	}
 	ods_context->start_image(pathImage);
 	{

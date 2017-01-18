@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,7 +70,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return m_eType;
@@ -117,7 +117,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual void		 toXML(XmlUtils::CStringWriter& writer) const;
 			virtual EElementType getType() const
 			{
@@ -144,11 +144,11 @@ namespace OOX
 			EElementType m_eType;
 
 			// Attributes
-			nullable<CString>                               m_sDescr;
+            nullable<std::wstring>                          m_sDescr;
 			nullable<SimpleTypes::COnOff<>>                 m_oHidden;
 			nullable<SimpleTypes::CDrawingElementId<>>      m_oId;
-			nullable<CString>                               m_sName;
-			nullable<CString>                               m_sTitle;
+            nullable<std::wstring>                          m_sName;
+            nullable<std::wstring>                          m_sTitle;
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
@@ -190,9 +190,9 @@ namespace OOX
 						m_oExtLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ");
+				std::wstring sResult = _T("<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ");
 				if (m_oNoChangeAspect.IsInit())
 				{
 					sResult += _T("noChangeAspect=\"") + m_oNoChangeAspect->ToString2(SimpleTypes::onofftostring1) + _T("\" ");
@@ -280,7 +280,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return m_eType;
@@ -308,14 +308,14 @@ namespace OOX
 			EElementType                                           m_eType;
 
 			// Attributes
-			nullable<CString                                     > m_sAction;
+			nullable<std::wstring                                     > m_sAction;
 			nullable<SimpleTypes::COnOff<>                       > m_oEndSnd;
 			nullable<SimpleTypes::COnOff<>                       > m_oHighlightClick;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue> > m_oHistory;
 			nullable<SimpleTypes::CRelationshipId                > m_oId;
-			nullable<CString                                     > m_sInvalidUrl;
-			nullable<CString                                     > m_sTgtFrame;
-			nullable<CString                                     > m_sTooltip;
+			nullable<std::wstring                                     > m_sInvalidUrl;
+			nullable<std::wstring                                     > m_sTgtFrame;
+			nullable<std::wstring                                     > m_sTooltip;
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList       > m_oExtLst;
@@ -425,9 +425,9 @@ namespace OOX
 						m_oTailEnd = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( et_a_ln == m_eType )
 					sResult = _T("<a:ln ");
@@ -637,9 +637,9 @@ namespace OOX
 						m_oExtLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:picLocks ");
+				std::wstring sResult = _T("<a:picLocks ");
 
 				if ( m_oNoAdjustHandles.GetValue() != SimpleTypes::onoffFalse )
 					sResult += _T("noAdjustHandles=\"true\" ");
@@ -758,15 +758,15 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:snd ");
+				std::wstring sResult = _T("<a:snd ");
 
 				if ( m_oEmbed.IsInit() ) sResult += _T("r:embed=\"") + m_oEmbed->ToString() + _T("\" ");
 				if ( m_sName.IsInit()  ) 
 				{
 					sResult += _T("name=\"");
-					sResult += m_sName->GetString();
+                    sResult += m_sName.get2();
 					sResult += _T("\" ");
 				}
 
@@ -793,8 +793,8 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CRelationshipId> m_oEmbed;
-			nullable<CString                     > m_sName;
+            nullable<SimpleTypes::CRelationshipId>  m_oEmbed;
+            nullable<std::wstring>                  m_sName;
 
 		};
         //-----------------------------------------------------------------------
@@ -920,9 +920,9 @@ namespace OOX
 						m_oXfrm = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_eType == et_a_spPr )
 					sResult = _T("<a:spPr ");
@@ -1127,7 +1127,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -1297,9 +1297,9 @@ namespace OOX
 						m_oLnRef = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:style>");
+				std::wstring sResult = _T("<a:style>");
 
 				sResult += m_oLnRef.toXML();
 				sResult += m_oFillRef.toXML();

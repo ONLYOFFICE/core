@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -90,7 +90,7 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 {
     if (m_strTempDirectory.length() < 1)
     {
-        m_strTempDirectory = FileSystem::Directory::GetTempPath().GetBuffer();
+        m_strTempDirectory = NSDirectory::GetTempPath();
     }
 
     bool bRes = OpenFile(sSrcFileName);
@@ -113,14 +113,12 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	return S_OK;
 }
 
-
-
-CString COfficePPTFile::GetDirectory(CString strFileName)
+std::wstring COfficePPTFile::GetDirectory(std::wstring strFileName)
 {
-	int nIndex = strFileName.ReverseFind(FILE_SEPARATOR_CHAR);
+    int nIndex = strFileName.rfind(FILE_SEPARATOR_CHAR);
 	if (-1 != nIndex)
 	{
-		return strFileName.Mid(0, nIndex + 1);
+        return strFileName.substr(0, nIndex + 1);
 	}
 	return strFileName;
 }

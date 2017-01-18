@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,46 +50,46 @@ namespace NSPresentationEditor
 		PARAM = oSrc.##PARAM;					\
 	}
 
-	static CString ToNode(const NSCommon::nullable_base<WORD>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<WORD>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
 		int n = (int)prop.get();
-		CString strVal = XmlUtils::IntToString(n);
+        std::wstring strVal = XmlUtils::IntToString(n);
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<LONG>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<LONG>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
 		int n = (int)prop.get();
-		CString strVal = XmlUtils::IntToString(n);
+        std::wstring strVal = XmlUtils::IntToString(n);
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<DWORD>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::UIntToString((size_t)prop.get());
+        std::wstring strVal = XmlUtils::UIntToString((size_t)prop.get());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<double>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<double>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::DoubleToString(prop.get());
+        std::wstring strVal = XmlUtils::DoubleToString(prop.get());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
-	static CString ToNode(const NSCommon::nullable_base<CColor>& prop, const CString& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
 	{
 		if (!prop.is_init())
 			return _T("");
 		
-		CString strVal = XmlUtils::UIntToString(prop->GetLONG());
+        std::wstring strVal = XmlUtils::UIntToString(prop->GetLONG());
 		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
 	}
 
@@ -407,7 +407,7 @@ namespace NSPresentationEditor
 			if (!oSrc.tabStops.empty())				tabStops		= oSrc.tabStops;
 		}
 
-		CString ToString(LONG lCount)
+        std::wstring ToString(LONG lCount)
 		{
 			return L"";
 		}
@@ -495,7 +495,7 @@ namespace NSPresentationEditor
 			if (!tabsStops.empty())					tabsStops = oSrc.tabsStops;
 		}
 
-		CString ToString()
+        std::wstring ToString()
 		{
 			return L"";
 		}
@@ -627,7 +627,7 @@ namespace NSPresentationEditor
 			}
 		}
 
-		CString ToString()
+        std::wstring ToString()
 		{
 			return L"";
 		}
@@ -848,7 +848,7 @@ namespace NSPresentationEditor
 			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
-				std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (TCHAR)(11), (TCHAR)(13)); 
+                std::replace( m_arSpans[i].m_strText.begin(), m_arSpans[i].m_strText.end(), (wchar_t)(11), (wchar_t)(13));
 			}
 		}
 		AVSINLINE bool IsEmpty()
@@ -861,7 +861,7 @@ namespace NSPresentationEditor
 				if (nLen > 1)
 					return false;
 
-				if ((nLen == 1) && ((TCHAR)(13) != m_arSpans[i].m_strText[0]))
+                if ((nLen == 1) && ((wchar_t)(13) != m_arSpans[i].m_strText[0]))
 					return false;
 			}
 			return true;

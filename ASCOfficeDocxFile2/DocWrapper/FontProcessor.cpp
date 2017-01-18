@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "stdafx.h"
 #include "FontProcessor.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
@@ -37,8 +36,8 @@
 #include "../../Common/ASCUtils.h"
 
 namespace DocWrapper {
-	TCHAR* gc_sNoNameFont = _T("NoNameFont");
-	TCHAR* gc_sDefaultFontName = _T("Arial");
+    wchar_t* gc_sNoNameFont         = _T("NoNameFont");
+    wchar_t* gc_sDefaultFontName    = _T("Arial");
 
 	FontProcessor::FontProcessor() : m_pFontManager(NULL)
 	{
@@ -63,11 +62,11 @@ namespace DocWrapper {
 			addToFontMap(*fontTable->m_arrFonts[i]);
 	}
 	
-	CString FontProcessor::getFont(const CString& name)
+    std::wstring FontProcessor::getFont(const std::wstring& name)
 	{
 		//подбор перенесен в js
 		return name;
-		CString fontName = gc_sDefaultFontName;
+        std::wstring fontName = gc_sDefaultFontName;
 		if (fontMap.find(name) != fontMap.end())
 			fontName = fontMap[name];
 		else
@@ -81,10 +80,10 @@ namespace DocWrapper {
 		return fontName;
 	}
 	
-	CString FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::CString_>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme)
+    std::wstring FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme)
 	{
 		CFontSelectFormat oFontSelectFormat;
-		CString sFontName;
+        std::wstring sFontName;
 		if(NULL != pTheme && oScheme.IsInit() && oScheme->m_oFontScheme.IsInit())
 		{
 			//берем шрифт из темы
@@ -94,10 +93,10 @@ namespace DocWrapper {
 			else if(SimpleTypes::Spreadsheet::fontschemeMinor == eFontScheme)
 				sFontName = pTheme->GetMinorFont();
 		}
-		if(sFontName.IsEmpty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
+        if(sFontName.empty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
 			sFontName = oRFont->ToString2();
-		if(sFontName.IsEmpty())
-			sFontName = CString(gc_sNoNameFont);
+        if(sFontName.empty())
+            sFontName = std::wstring(gc_sNoNameFont);
 		//подбор перенесен в js
 		return  sFontName;
 		
@@ -119,7 +118,7 @@ namespace DocWrapper {
 			*oFontSelectFormat.wsFamilyClass = oFamily->m_oFontFamily->ToStringWord();
 		}
 
-		CString sRes;
+        std::wstring sRes;
 		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 		if(NULL != pFontInfo)
 			sRes = pFontInfo->m_wsFontName;
@@ -131,15 +130,16 @@ namespace DocWrapper {
 	void FontProcessor::addToFontMap(OOX::CFont& font)
 	{
 		CFontSelectFormat oFontSelectFormat;
-		CString sFontName;
-		if(font.m_sName.IsEmpty())
-			sFontName = CString(gc_sNoNameFont);
+        std::wstring sFontName;
+
+        if(font.m_sName.empty())
+            sFontName = std::wstring(gc_sNoNameFont);
 		else
 			sFontName = font.m_sName;
 		
 		oFontSelectFormat.wsName = new std::wstring(sFontName);
 
-		if (font.m_oAltName.IsInit() && font.m_oAltName->GetLength() > 0)
+        if (font.m_oAltName.IsInit() && font.m_oAltName->length() > 0)
 		{
 			oFontSelectFormat.wsAltName = new std::wstring(*font.m_oAltName);
 		}

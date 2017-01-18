@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ namespace PPTX
         public:
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
-            virtual CString toXML() const;
+            virtual std::wstring toXML() const;
 
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -94,7 +94,7 @@ namespace PPTX
 					pWriter->WriteString(_T("</p:cNvGrpSpPr>"));
 			}
 
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (!noChangeAspect.is_init() &&
 					!noGrp.is_init() &&

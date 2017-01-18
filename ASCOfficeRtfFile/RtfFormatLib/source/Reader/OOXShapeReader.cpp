@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -197,7 +197,7 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 			}break;
 		case SimpleTypes::Vml::cssptFontFamily:
 			{
-				pShape->m_sGtextFont = CString(prop->get_Value().wsValue);
+				pShape->m_sGtextFont = std::wstring(prop->get_Value().wsValue);
 			}break;
 		case SimpleTypes::Vml::cssptFontSize:
 			{
@@ -290,19 +290,19 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CFill* fill = dynamic_cast<OOX::Vml::CFill*>(m_arrElement->m_arrItems[i]); 
 				if (!fill) break;
 				
-				CString srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
+				std::wstring srId = fill->m_sId.IsInit() ? fill->m_sId.get2() : L"" ;
 
-				if (srId.IsEmpty())
+				if (srId.empty())
                     srId = fill->m_rId.IsInit() ? fill->m_rId->GetValue() : L"" ;
 				
-				if (!srId.IsEmpty() && oParam.oReader->m_currentContainer)
+				if (!srId.empty() && oParam.oReader->m_currentContainer)
 				{        
 					smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(srId);
 				
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-						CString sImagePath = pImage->filename().GetPath();
+						std::wstring sImagePath = pImage->filename().GetPath();
 
 						oOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
 						//todooo проверить что за путь тут выставляется
@@ -361,9 +361,9 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				OOX::Vml::CImageData* image_data = dynamic_cast<OOX::Vml::CImageData*>(m_arrElement->m_arrItems[i]);
 				if (!image_data) break;
 
-				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
+				std::wstring srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : L"" ;
 
-				if (srId.IsEmpty())
+				if (srId.empty())
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : L"" ;
 
 				if (oParam.oReader->m_currentContainer)
@@ -378,7 +378,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 
-						CString sImagePath = pImage->filename().GetPath();
+						std::wstring sImagePath = pImage->filename().GetPath();
 						
 						//todooo проверить что за путь тут выставляется
 						OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
@@ -556,7 +556,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 				oParam.oReader->m_mapShapeTypes.end())
 			{
 				oParam.oReader->m_mapShapeTypes.insert(oParam.oReader->m_mapShapeTypes.begin(), 
-					std::pair<CString, OOX::Vml::CShapeType*>(shape_type->m_sId.get(), shape_type));
+					std::pair<std::wstring, OOX::Vml::CShapeType*>(shape_type->m_sId.get(), shape_type));
 
 				return false;//add type but bot add object
 			}
@@ -565,8 +565,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	}
 	if (OOX::Vml::CShape* shape = dynamic_cast<OOX::Vml::CShape*>(m_vmlElement))
 	{
-		if (shape->m_oAdj.IsInit())
-			ParseAdjustment( *oOutput, shape->m_oAdj.get() );
+        if (shape->m_sAdj.IsInit())
+            ParseAdjustment( *oOutput, shape->m_sAdj.get() );
 		
 		if (shape->m_oSpt.IsInit())
 		{
@@ -574,8 +574,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 		}
 		if (shape->m_sType.IsInit())
 		{
-			CString type = shape->m_sType.get().Mid(1);//without #
-			std::map<CString, OOX::Vml::CShapeType*>::iterator it = oParam.oReader->m_mapShapeTypes.find(type);
+            std::wstring type = shape->m_sType.get().substr(1);//without #
+			std::map<std::wstring, OOX::Vml::CShapeType*>::iterator it = oParam.oReader->m_mapShapeTypes.find(type);
 			
 			if ( it != oParam.oReader->m_mapShapeTypes.end())
 			{
@@ -584,10 +584,10 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 			}
 			if (oOutput->m_nShapeType == PROP_DEF)
 			{
-				int pos = shape->m_sType->Find( L"#_x0000_t" );
+                int pos = shape->m_sType->find( L"#_x0000_t" );
 				if (pos >= 0)
 				{				
-					oOutput->m_nShapeType = _wtoi(shape->m_sType->Mid(pos + 9, shape->m_sType->GetLength() - pos - 9).GetString());
+                    oOutput->m_nShapeType = _wtoi(shape->m_sType->substr(pos + 9, shape->m_sType->length() - pos - 9).c_str());
 				}
 			}
 		}
@@ -676,7 +676,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 			oOutput->m_nWrapType = 2;
 		
 		int nPosition = 0;
-		CString sPoint =  L"start";
+		std::wstring sPoint =  L"start";
 		for (long i =0 ;i < m_vmlElement->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlElement->m_oWrapCoords->GetX(i),
@@ -743,7 +743,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	{
 		if (oOutput->m_nWrapType == 3 && oOutput->m_nZOrderRelative == PROP_DEF) oOutput->m_nWrapType =2;
 		int nPosition = 0;
-		CString sPoint =  L"start";
+		std::wstring sPoint =  L"start";
 		for (long i =0 ;i < m_vmlGroup->m_oWrapCoords->GetSize(); i++)
 		{
 			oOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlGroup->m_oWrapCoords->GetX(i),
@@ -803,12 +803,11 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOut
 	return true;
 }
 
-void OOXShapeReader::ParseAdjustment(RtfShape& oShape, CString sAdjustment)
+void OOXShapeReader::ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment)
 {
-	std::wstring sValue_(sAdjustment.GetBuffer());
 	std::vector< std::wstring > splitted;
 	
-	boost::algorithm::split(splitted, sValue_, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+    boost::algorithm::split(splitted, sAdjustment, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
 	for (int i = 0; i < splitted.size(); i++)
 	{

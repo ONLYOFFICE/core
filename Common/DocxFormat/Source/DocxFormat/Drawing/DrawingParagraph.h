@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,23 +70,16 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<a:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<a:t>");
 
-                CString s = m_sText;
-                s.Replace(_T("&"),	_T("&amp;"));
-                s.Replace(_T("'"),	_T("&apos;"));
-                s.Replace(_T("<"),	_T("&lt;"));
-                s.Replace(_T(">"),	_T("&gt;"));
-                s.Replace(_T("\""),	_T("&quot;"));
-
-                sResult += s;
+                sResult += XmlUtils::EncodeXmlString(m_sText);
 
 				sResult += _T("</a:t>");
 
@@ -131,7 +124,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -218,7 +211,7 @@ namespace OOX
 				}			
 
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -358,7 +351,7 @@ namespace OOX
 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -415,7 +408,7 @@ namespace OOX
 						m_oRunProperty = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -480,7 +473,7 @@ namespace OOX
 						m_oBeforeSpacing = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -585,7 +578,7 @@ namespace OOX
 						//m_oEndParagraphProperty = oReader; 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,7 +38,7 @@ public:
 	void AddWriter()
 	{
 	}
-	void AddContent( CString sType, CString sTarget )
+    void AddContent( std::wstring sType, std::wstring sTarget )
 	{
 		for( int i = 0 ;i < (int)m_aTargets.size(); i++ )
 			if( sTarget == m_aTargets[i] )
@@ -46,7 +46,7 @@ public:
 		m_aTargets.push_back( sTarget );
 		m_aTypes.push_back( sType );
 	}
-	void AddExtension( CString sType, CString sTarget )
+    void AddExtension( std::wstring sType, std::wstring sTarget )
 	{
 		for( int i = 0 ;i < (int)m_aExtensions.size(); i++ )
 			if( sTarget == m_aExtensions[i] )
@@ -54,15 +54,15 @@ public:
 		m_aExtensions.push_back( sTarget );
 		m_aExtTypes.push_back( sType );
 	}
-	bool Save(CString sFolder)
+    bool Save(std::wstring sFolder)
 	{
 		CFile file;
 
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
 
-		 CString sXml = CreateXml();
+         std::wstring sXml = CreateXml();
 
-         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
          file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		 
@@ -71,17 +71,17 @@ public:
 	}
 
 private: 
-	std::vector< CString > m_aTargets;
-	std::vector< CString > m_aTypes;
+    std::vector< std::wstring > m_aTargets;
+    std::vector< std::wstring > m_aTypes;
 
-	std::vector< CString > m_aExtensions;
-	std::vector< CString > m_aExtTypes;
+    std::vector< std::wstring > m_aExtensions;
+    std::vector< std::wstring > m_aExtTypes;
 
-	CString CreateXml()
+    std::wstring CreateXml()
 	{
-		CString sResult;
-		sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
-		sResult.AppendChar('\n');
+        std::wstring sResult;
+        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
+
 		sResult += _T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
 		sResult += _T("<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");

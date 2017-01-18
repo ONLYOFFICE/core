@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 				int lCountCFs	= m_arParagraphs[i].m_arSpans.size();
 				int s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
 				
-				int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)13);
+                int lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
 
 				if( !split_paragraph && lFoundEnter >= 0 && (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
 				{
@@ -73,7 +73,7 @@ namespace NSPresentationEditor
 						m_arParagraphs.insert(m_arParagraphs.begin() +i + 1, oNewPar);	
 				}
 
-				int lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((TCHAR)11);
+                int lFoundBreak = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)11);
 				if( lFoundBreak >= 0)
 				{
 					// разбиваем span

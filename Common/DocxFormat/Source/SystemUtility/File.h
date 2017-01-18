@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../XML/xmlutils.h"
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/File.h"
 
 #include "../../../3dParty/pole/pole.h"
@@ -392,7 +392,7 @@ namespace StreamUtils
     }
     static std::wstring ReadStringW(POLE::Stream* pStream, LONG lLen)
     {
-        if (pStream == NULL) return _T("");
+        if (pStream == NULL) return (L"");
 
         unsigned char* pData = new unsigned char[2 * (lLen + 1)];
         memset (pData, 0, 2 * (lLen + 1));
@@ -418,7 +418,7 @@ namespace StreamUtils
             if (conversionOK != eUnicodeConversionResult)
             {
                 delete [] pStrUtf32;
-                return _T("");
+                return (L"");
             }
             std::wstring res((wchar_t*)pStrUtf32, lLen);
             if (pStrUtf32) delete [] pStrUtf32;
@@ -523,7 +523,7 @@ namespace CDirectory
     static void WriteValueToNode(std::wstring strName, bool value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
-        std::wstring str = (true == value) ? _T("1") : _T("0");
+        std::wstring str = (true == value) ? (L"1") : (L"0");
         pWriter->WriteString(str);
         pWriter->WriteNodeEnd(strName);
     }
@@ -548,7 +548,7 @@ namespace CDirectory
                 str += (char)(arr[index]);
         }
         if (str.length() == 0)
-            str = _T("0");
+            str = (L"0");
         return str;
     }
 
@@ -562,7 +562,7 @@ namespace CDirectory
             str += pArr[index];
         }
         if (str.length() == 0)
-            str = _T("0");
+            str = (L"0");
         return str;
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,7 @@ namespace PPTX
 			Override()
 			{
 			}
-			Override(const CString& type, const OOX::CPath& path) : m_type(type), m_part(path)
+			Override(const std::wstring& type, const OOX::CPath& path) : m_type(type), m_part(path)
 			{
 			}
 			virtual ~Override()
@@ -68,7 +68,7 @@ namespace PPTX
 				m_part	= node.GetAttribute(_T("PartName"));
 				m_type	= node.GetAttribute(_T("ContentType"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("PartName"), _T("/") + m_part.m_strFilename);
@@ -82,7 +82,7 @@ namespace PPTX
 			}
 
 		public:
-			AVSINLINE const CString type() const
+			AVSINLINE const std::wstring type() const
 			{
 				return m_type;
 			}
@@ -92,7 +92,7 @@ namespace PPTX
 			}
 
 		private:
-			CString						m_type;
+			std::wstring						m_type;
 			OOX::CPath					m_part;
 		};
 	} // namespace ContentTypes

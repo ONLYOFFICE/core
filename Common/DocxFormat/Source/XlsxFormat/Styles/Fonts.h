@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -142,9 +142,9 @@ namespace OOX
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					writer.WriteString(L"<vertAlign val=\"");
-					CString sAlign = m_oVertAlign->m_oVerticalAlign->ToString();
-					writer.WriteString(sAlign.GetBuffer());
-					sAlign.ReleaseBuffer();
+                    std::wstring sAlign = m_oVertAlign->m_oVerticalAlign->ToString();
+                    writer.WriteString(sAlign.c_str());
+
 					writer.WriteString(L"\"/>");
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
@@ -216,7 +216,7 @@ namespace OOX
 			nullable<CFontFamily >											m_oFamily;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			nullable<ComplexTypes::Spreadsheet::CString_>							m_oRFont;
+			nullable<ComplexTypes::Spreadsheet::String>							m_oRFont;
 			nullable<CFontScheme>											m_oScheme;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
@@ -236,7 +236,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

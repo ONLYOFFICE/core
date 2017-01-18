@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,12 +75,12 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 		convert(vml_shape_type->m_arrItems[i]);
 	}
 
-	if (vml_shape_type->m_oAdj.IsInit())//настройка дл фигуры заданной формулами
+    if (vml_shape_type->m_sAdj.IsInit())//настройка дл фигуры заданной формулами
 	{
 	}
 
 	//o:spt
-		//nullable<CString>                                  m_oAdj;
+        //nullable<std::wstring>                                  m_oAdj;
 		//nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
 		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oMaster;
 	//m_arrItems
@@ -336,18 +336,19 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 {
 	if (vml_image_data == NULL) return;
 		
-	CString pathImage;
+    std::wstring pathImage;
 	double Width=0, Height = 0;
 
 	if (vml_image_data->m_rId.IsInit())
 	{
-		CString sID = vml_image_data->m_rId->GetValue();		
+        std::wstring sID = vml_image_data->m_rId->GetValue();
 		pathImage = find_link_by_id(sID,1);
 	}
 		
 	//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
-	if (pathImage.GetLength() < 1)return;
-    _graphics_utils_::GetResolution(pathImage, Width, Height);
+    if (pathImage.empty())return;
+
+    _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 
 	odf_context()->drawing_context()->start_area_properties();
 		odf_context()->drawing_context()->start_bitmap_style();
@@ -400,13 +401,13 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		odf_context()->drawing_context()->start_bitmap_style();
 		{
 			double Width=0, Height = 0;
-			CString sID = vml_fill->m_rId->GetValue();
-			CString pathImage = find_link_by_id(sID,1);
+            std::wstring sID = vml_fill->m_rId->GetValue();
+            std::wstring pathImage = find_link_by_id(sID,1);
 
-			if (pathImage.GetLength() > 0)
+            if (!pathImage.empty())
 			{
 				odf_context()->drawing_context()->set_bitmap_link(pathImage);
-                _graphics_utils_::GetResolution(pathImage, Width, Height);
+                _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 			}
 			odf_context()->drawing_context()->set_image_style_repeat(1);
 		}
@@ -508,13 +509,13 @@ void OoxConverter::convert(OOX::Vml::CPath	*vml_path)
 	if (vml_path == NULL) return;
 	
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oArrowOk;
-	//nullable<CString>                                         m_oConnectAngles;
-	//nullable<CString>                                         m_oConnectLocs;
+    //nullable<std::wstring>                                         m_oConnectAngles;
+    //nullable<std::wstring>                                         m_oConnectLocs;
 	//SimpleTypes::CConnectType<SimpleTypes::connecttypeNone>   m_oConnectType;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oExtrusionOk;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oFillOk;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGradientShapeOk;
-	//nullable<CString>                                         m_oId;
+    //nullable<std::wstring>                                         m_oId;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oInsetPenOk;
 	//SimpleTypes::Vml::CVml_Vector2D_Units                     m_oLimo;
 	//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oShadowOk;
@@ -792,10 +793,11 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 				ucR = vml_common->m_oStrokeColor->Get_R(); 
 				ucB = vml_common->m_oStrokeColor->Get_B(); 
 				ucG = vml_common->m_oStrokeColor->Get_G(); 
-				SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-				if (oRgbColor)
+
+                SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+                if (oRgbColor)
 				{		
-					odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().Right(6));
+                    odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().substr(2));//.Right(6));
 					delete oRgbColor;
 				}			
 			}
@@ -808,11 +810,13 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 		ucR = vml_common->m_oFillColor->Get_R(); 
 		ucB = vml_common->m_oFillColor->Get_B(); 
 		ucG = vml_common->m_oFillColor->Get_G(); 
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-		if (oRgbColor)
+
+        SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+
+        if (oRgbColor)
 		{		
 			odf_context()->drawing_context()->start_area_properties();
-				odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().Right(6));
+                odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().substr(2));//.Right(6));
 			odf_context()->drawing_context()->end_area_properties();
 			delete oRgbColor;
 		}

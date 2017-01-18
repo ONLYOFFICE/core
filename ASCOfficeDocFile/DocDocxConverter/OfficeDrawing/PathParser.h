@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -146,15 +146,15 @@ namespace DocFileFormat
 			{
 				for (size_t i = 0; i < m_arPoints.size(); ++i)
 				{
-					strVmlPath += _T( "l" );
+                    strVmlPath += L"l";
 					strVmlPath += FormatUtils::IntToWideString(m_arPoints[i].x);
-					strVmlPath += _T( "," );
+                    strVmlPath += L",";
 					strVmlPath += FormatUtils::IntToWideString(m_arPoints[i].y);
 					
 					++valuePointer;
 				}
 
-				strVmlPath += _T( "xe" );
+                strVmlPath += L"xe";
 
 				return strVmlPath;
 			}
@@ -175,9 +175,9 @@ namespace DocFileFormat
 								{
 									break;
 
-									strVmlPath += _T( "l" );
+                                    strVmlPath += L"l";
 									strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].x);
-									strVmlPath += _T( "," );
+                                    strVmlPath += L",";
 									strVmlPath += FormatUtils::IntToWideString(m_arPoints[0].y);
 									
 									++valuePointer;
@@ -186,9 +186,9 @@ namespace DocFileFormat
 								}
 								else
 								{
-									strVmlPath += _T( "l" );
+                                    strVmlPath += L"l";
 									strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
-									strVmlPath += _T( "," );
+                                    strVmlPath += L",";
 									strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
 									
 									++valuePointer;
@@ -201,17 +201,17 @@ namespace DocFileFormat
 						{
 							for (int i = 0; i < iter->Count; ++i)
 							{
-								strVmlPath += _T( "c" );
+                                strVmlPath += L"c";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
-								strVmlPath += _T( "," );
+                                strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
-								strVmlPath += _T( "," );
+                                strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].x );
-								strVmlPath += _T( "," );
+                                strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 1].y );
-								strVmlPath += _T( "," );
+                                strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].x );
-								strVmlPath += _T( "," );
+                                strVmlPath += L",";
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer + 2].y );
 								valuePointer += 3;
 							}
@@ -220,9 +220,9 @@ namespace DocFileFormat
 
 					case PathSegment::msopathMoveTo:
 						{
-							strVmlPath += _T( "m" );
+                            strVmlPath += L"m";
 							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );
-							strVmlPath += _T( "," );
+                            strVmlPath += L",";
 							strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].y );
 							
 							++valuePointer;
@@ -231,23 +231,23 @@ namespace DocFileFormat
 
 					case PathSegment::msopathClose:
 						{
-							strVmlPath += _T( "x" );
+                            strVmlPath += L"x";
 						}
 						break;
 
 					case PathSegment::msopathEnd:
 						{
-							strVmlPath += _T( "e" );
+                            strVmlPath += L"e";
 						}
 						break;
 
 					case PathSegment::msopathEscape:
 						{
 							if (PathSegment::msopathEscapeNoFill == iter->EscapeCode)
-								strVmlPath += _T( "nf" );
+                                strVmlPath += L"nf";
 							
 							if (PathSegment::msopathEscapeNoLine == iter->EscapeCode)
-								strVmlPath += _T( "ns" );
+                                strVmlPath += L"ns";
 						}
 					case PathSegment::msopathClientEscape:
 					case PathSegment::msopathInvalid:
@@ -266,8 +266,8 @@ namespace DocFileFormat
 			}
 
 			// end the path
-			if ( !strVmlPath.empty() && ( strVmlPath[strVmlPath.size() - 1] != _T( 'e' ) ) )
-				strVmlPath += _T("e");
+            if ( !strVmlPath.empty() && ( strVmlPath[strVmlPath.size() - 1] != L'e' ) )
+                strVmlPath +=L"e";
 
 			return strVmlPath;
 		}

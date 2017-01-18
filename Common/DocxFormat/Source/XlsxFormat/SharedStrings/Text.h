@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ namespace OOX
 			virtual ~CText() {}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -92,7 +92,7 @@ namespace OOX
 					
 					for(int i = nStartIndex; i < nLength; ++i)
 					{
-						TCHAR cElem = m_sText[i];
+                        wchar_t cElem = m_sText[i];
 						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
 							nStartIndex++;
 						else
@@ -100,7 +100,7 @@ namespace OOX
 					}
 					for(int i = nEndIndex; i > nStartIndex; --i)
 					{
-						TCHAR cElem = m_sText[i];
+                        wchar_t cElem = m_sText[i];
 						if(' ' == cElem || '\n' == cElem || '\r' == cElem)
 							nEndIndex--;
 						else

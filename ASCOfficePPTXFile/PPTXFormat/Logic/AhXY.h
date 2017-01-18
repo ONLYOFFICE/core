@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,7 +61,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"minY", minY);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("gdRefX"), gdRefX);
@@ -121,8 +121,8 @@ namespace PPTX
 			}
 
 		public:
-			CString								x;
-			CString								y;
+			std::wstring								x;
+			std::wstring								y;
 
 			nullable_string					gdRefX;
 			nullable_string					gdRefY;
@@ -134,7 +134,7 @@ namespace PPTX
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("gdRefX"), gdRefX);

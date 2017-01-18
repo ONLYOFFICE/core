@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,8 +35,10 @@
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
+
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/common/Path.h"
@@ -48,8 +50,8 @@
 
 namespace NExtractTools
 {
-    static const TCHAR* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
-    static const TCHAR* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
+    static const wchar_t* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
+    static const wchar_t* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
 
     typedef enum tagTConversionDirection
     {
@@ -222,10 +224,11 @@ namespace NExtractTools
                         XmlUtils::CXmlNode oXmlNode;
                         if(oXmlNodes.GetAt(i, oXmlNode))
                         {
-                            CString sValue;
+                            std::wstring sValue;
                             if(oXmlNode.GetTextIfExist(sValue))
                             {
                                 std::wstring sName = oXmlNode.GetName();
+
                                 if(_T("fileName") == sName)
                                     fileName = new std::wstring(sValue);
                                 else if(_T("from") == sName)
@@ -293,7 +296,7 @@ namespace NExtractTools
 					XmlUtils::CXmlNode oXmlNode;
 					if(oXmlNodes.GetAt(i, oXmlNode))
 					{
-						CString sValue;
+                        std::wstring sValue;
 						if(oXmlNode.GetTextIfExist(sValue))
 						{
 							std::wstring sName = oXmlNode.GetName();
@@ -387,7 +390,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlFile2(sFilename))
+            if(TRUE == oRoot.FromXmlFile(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -431,7 +434,7 @@ namespace NExtractTools
 						}
 						else
 						{
-							CString sValue;
+                            std::wstring sValue;
 							if(oXmlNode.GetTextIfExist(sValue))
 							{
 								if(_T("m_sKey") == sName)
@@ -747,7 +750,7 @@ namespace NExtractTools
 #if defined(_WIN32) || defined (_WIN64)
         options_stream.open(xmlFileName.c_str());
 #else
-        options_stream.open(stringWstingToUtf8String(xmlFileName));
+        options_stream.open(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xmlFileName));
 #endif
 		if (options_stream.is_open())
 		{		
@@ -876,10 +879,12 @@ namespace NExtractTools
 		}
         return true;
 	}
+#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
+#endif
 }
 #endif // CEXTRACTTOOLS_H

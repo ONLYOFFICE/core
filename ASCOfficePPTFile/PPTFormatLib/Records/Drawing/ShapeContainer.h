@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1867,12 +1867,12 @@ public:
 		return etShape;
 	}
 
-	AVSINLINE CString GetFileName(CString strFilePath)
+    AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
 	{
-		int nIndex = strFilePath.ReverseFind(TCHAR('\\'));
+        int nIndex = strFilePath.rfind(wchar_t('\\'));
 		if (-1 != nIndex)
 		{
-			return strFilePath.Mid(nIndex + 1);
+            return strFilePath.substr(nIndex + 1);
 		}
 		return strFilePath;
 	}

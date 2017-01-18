@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-        AVSINLINE WORD GetTextAnchorFromStr(const CString& str)
+        AVSINLINE WORD GetTextAnchorFromStr(const std::wstring& str)
 		{
 			if (str == _T("t"))		return 0;
 			if (str == _T("ctr"))	return 1;
@@ -50,7 +50,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE WORD GetTextAlignFromStr(const CString& str)
+        AVSINLINE WORD GetTextAlignFromStr(const std::wstring& str)
 		{
 			if (str == _T("l"))			return 0;
 			if (str == _T("ctr"))		return 1;
@@ -62,7 +62,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE WORD GetFontAlignFromStr(const CString& str)
+        AVSINLINE WORD GetFontAlignFromStr(const std::wstring& str)
 		{
 			if (str == _T("auto"))	return 0;
 			if (str == _T("base"))	return 0;
@@ -72,7 +72,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE int GetIntegerFromHex(const CString& string)
+        AVSINLINE int GetIntegerFromHex(const std::wstring& string)
 		{
 			return XmlUtils::GetInteger(string);
 		}
@@ -389,7 +389,7 @@ namespace PPTX
 			if (pRun.is_init())
 				if (pRun->cap.is_init())
 				{
-					CString str = pRun->cap->get();
+					std::wstring str = pRun->cap->get();
 					if (_T("all") == str)
 						prop = (WORD)1;
 					else if (_T("small") == str)
@@ -403,7 +403,7 @@ namespace PPTX
 				if(pParagraph->defRPr.is_init())
 					if(pParagraph->defRPr->cap.is_init())
 					{
-						CString str = pParagraph->defRPr->cap->get();
+						std::wstring str = pParagraph->defRPr->cap->get();
 						if (_T("all") == str)
 							prop = (WORD)1;
 						else if (_T("small") == str)

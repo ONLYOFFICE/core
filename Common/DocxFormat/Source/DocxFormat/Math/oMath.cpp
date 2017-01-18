@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,7 +41,7 @@ namespace OOX
 	{
 		void    CMathArgNodes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			sNodeName = CString(oReader.GetName().c_str());				
+            sNodeName = std::wstring(oReader.GetName().c_str());
 			if(sNodeName == _T("m:deg"))
 					eType = et_m_deg;
 				else if (sNodeName == _T("m:den"))

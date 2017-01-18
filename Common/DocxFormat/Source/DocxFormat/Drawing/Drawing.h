@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 #include "../../Base/Nullable.h"
 #include "../../Common/SimpleTypes_Drawing.h"
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/Encoding.h"
 
 #include "../WritingElement.h"
 #include "../RId.h"
@@ -88,9 +87,9 @@ namespace OOX
 						m_oGraphicFrameLocks = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:cNvGraphicFramePr>");
+                std::wstring sResult = _T("<wp:cNvGraphicFramePr>");
 
 				if ( m_oExtLst.IsInit() )
 					sResult += m_oExtLst->toXML();
@@ -142,9 +141,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:effectExtent ");
+                std::wstring sResult = _T("<wp:effectExtent ");
 
 				sResult += _T("l=\"") + m_oL.ToString() + _T("\" ");
 				sResult += _T("t=\"") + m_oT.ToString() + _T("\" ");
@@ -214,24 +213,24 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
-						m_oAlign = oReader.GetText2().GetString();
+                        m_oAlign = oReader.GetText2();
 						m_bAlign = true;
 					}
 					else if ( _T("wp:posOffset") == sName )
 					{
-						m_oPosOffset = oReader.GetText2().GetString();
+                        m_oPosOffset = oReader.GetText2();
 						m_bAlign = false;
 					}
 					else if ( _T("wp14:pctPosHOffset") == sName )
 					{//Cuaderno del maestro.docx
-						m_oPctOffset = oReader.GetText2().GetString();
+                        m_oPctOffset = oReader.GetText2();
 						m_bAlign = false;
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:positionH ");
+                std::wstring sResult = _T("<wp:positionH ");
 
 				if ( m_oRelativeFrom.IsInit() )
 					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
@@ -321,24 +320,24 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					if ( _T("wp:align") == sName )
 					{
-						m_oAlign = oReader.GetText2().GetString();
+                        m_oAlign = oReader.GetText2();
 						m_bAlign = true;
 					}
 					else if ( _T("wp:posOffset") == sName )
 					{
-						m_oPosOffset = oReader.GetText2().GetString();
+                        m_oPosOffset = oReader.GetText2();
 						m_bAlign = false;
 					}
 					else if ( _T("wp14:pctPosVOffset") == sName )
 					{
-						m_oPctOffset = oReader.GetText2().GetString();
+                        m_oPctOffset = oReader.GetText2();
 						m_bAlign = false;
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:positionV ");
+                std::wstring sResult = _T("<wp:positionV ");
 
 				if ( m_oRelativeFrom.IsInit() )
 					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
@@ -425,13 +424,13 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					if ( _T("wp14:pctWidth") == sName )
 					{
-						m_oPctWidth = oReader.GetText2().GetString();
+                        m_oPctWidth = oReader.GetText2();
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp14:sizeRelH ");
+                std::wstring sResult = _T("<wp14:sizeRelH ");
 
 				if ( m_oRelativeFrom.IsInit() )
 					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
@@ -497,13 +496,13 @@ namespace OOX
 					std::wstring sName = oReader.GetName();
 					if ( _T("wp14:pctHeight") == sName )
 					{
-						m_oPctHeight = oReader.GetText2().GetString();
+                        m_oPctHeight = oReader.GetText2();
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp14:sizeRelV ");
+                std::wstring sResult = _T("<wp14:sizeRelV ");
 
 				if ( m_oRelativeFrom.IsInit() )
 					sResult += _T("relativeFrom=\"") + m_oRelativeFrom->ToString() + _T("\">");
@@ -561,7 +560,7 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -605,9 +604,9 @@ namespace OOX
 						m_oEffectExtent = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:wrapSquare ");
+                std::wstring sResult = _T("<wp:wrapSquare ");
 				if(m_oWrapText.IsInit())
 					sResult += _T("wrapText=\"") + m_oWrapText->ToString() + _T("\" ");
 
@@ -705,10 +704,10 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("");
-				//CString sResult = _T("<wp:wrapPolygon ");
+                std::wstring sResult = _T("");
+                //std::wstring sResult = _T("<wp:wrapPolygon ");
 				//
 				//if ( m_oEdited.IsInit() ) sResult += _T("edited=\"") + m_oEdited->ToString() + _T("\">");
 				//else                      sResult += _T(">");
@@ -781,9 +780,9 @@ namespace OOX
 						m_oWrapPolygon = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:wrapThrough ");
+                std::wstring sResult = _T("<wp:wrapThrough ");
 				
 				if ( m_oDistL.IsInit()    ) sResult += _T("distL=\"")    + m_oDistL->ToString()    + _T("\" ");
 				if ( m_oDistR.IsInit()    ) sResult += _T("distR=\"")    + m_oDistR->ToString()    + _T("\" ");
@@ -858,9 +857,9 @@ namespace OOX
 						m_oWrapPolygon = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:wrapTight ");
+                std::wstring sResult = _T("<wp:wrapTight ");
 				
 				if ( m_oDistL.IsInit()    ) sResult += _T("distL=\"")    + m_oDistL->ToString()    + _T("\" ");
 				if ( m_oDistR.IsInit()    ) sResult += _T("distR=\"")    + m_oDistR->ToString()    + _T("\" ");
@@ -893,12 +892,12 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CWrapDistance<> >  m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<> >  m_oDistR;
-			nullable<SimpleTypes::CWrapText<>     >  m_oWrapText;
+            nullable<SimpleTypes::CWrapDistance<> > m_oDistL;
+            nullable<SimpleTypes::CWrapDistance<> > m_oDistR;
+            nullable<SimpleTypes::CWrapText<>     > m_oWrapText;
 
 			// Childs
-			nullable<OOX::Drawing::CWrapPath>                  m_oWrapPolygon;
+            nullable<OOX::Drawing::CWrapPath>       m_oWrapPolygon;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapTopBottom 20.4.2.20 (Part 1)
@@ -935,9 +934,9 @@ namespace OOX
 						m_oEffectExtent = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:wrapTopAndBottom ");
+                std::wstring sResult = _T("<wp:wrapTopAndBottom ");
 				
 				if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
 				if ( m_oDistT.IsInit() ) sResult += _T("distT=\"") + m_oDistT->ToString() + _T("\" ");
@@ -1050,7 +1049,7 @@ namespace OOX
 							std::wstring sName = oReader.GetName();
 							if ( _T("mc:Fallback") == sName || _T("mc:Choice") == sName )
 							{
-								CString strXml = _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+                                std::wstring strXml = _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 									strXml += oReader.GetOuterXml();
 									strXml += _T("</root>");
 								
@@ -1099,10 +1098,10 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("");
-				//CString sResult = _T("<wp:anchor ");
+                std::wstring sResult = _T("");
+                //std::wstring sResult = _T("<wp:anchor ");
 				//
 				//sResult += _T("allowOverlap=\"") + m_oAllowOverlap.ToString()   + _T("\" ");
 				//sResult += _T("behindDoc=\"")    + m_oBehindDoc.ToString()      + _T("\" ");
@@ -1315,9 +1314,9 @@ namespace OOX
 						m_oGraphic = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<wp:inline ");
+                std::wstring sResult = _T("<wp:inline ");
 				
 				if ( m_oDistB.IsInit() ) sResult += _T("distB=\"") + m_oDistB->ToString() + _T("\" ");
 				if ( m_oDistL.IsInit() ) sResult += _T("distL=\"") + m_oDistL->ToString() + _T("\" ");
@@ -1444,7 +1443,7 @@ namespace OOX
 			//	if ( !m_oInline->m_oDocPr->m_oId.Init() ) return;
 			//	m_oInline->m_oDocPr->m_oId->SetValue( 1 );
 			//	m_oInline->m_oDocPr->m_sName  = _T("Image 0");
-			//	m_oInline->m_oDocPr->m_sDescr = CStringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
+            //	m_oInline->m_oDocPr->m_sDescr = std::wstringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
 
 			//	if ( !m_oInline->m_oCNvGraphicFramePr.Init() ) return;
 			//	if ( !m_oInline->m_oCNvGraphicFramePr->m_oGraphicFrameLocks.Init() ) return;
@@ -1516,7 +1515,7 @@ namespace OOX
 
 			//	m_oAnchor->m_oDocPr->m_oId->SetValue( 1 );
 			//	m_oAnchor->m_oDocPr->m_sName  = _T("Image 0");
-			//	m_oAnchor->m_oDocPr->m_sDescr = CStringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
+            //	m_oAnchor->m_oDocPr->m_sDescr = std::wstringW( Encoding::unicode2utf8( oFileName.m_strFilename ) );
 
 			//	if ( !m_oAnchor->m_oCNvGraphicFramePr.Init() ) return;
 			//	if ( !m_oAnchor->m_oCNvGraphicFramePr->m_oGraphicFrameLocks.Init() ) return;
@@ -1573,14 +1572,12 @@ namespace OOX
 				else
 				{
                     m_sXml.Init();
-                    m_sXml->Append(oReader.GetOuterXml());
-                    //					CString sXml;
-                    //					sXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%ls</root>"), m_sXml.get());
+                    *m_sXml= oReader.GetOuterXml();
+
+                    std::wstring sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
                     
-                    CString sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
-                    
-                    CString sEnd(_T("</root>"));
-                    CString sXml = sBegin + m_sXml.get() + sEnd;
+                    std::wstring sEnd(_T("</root>"));
+                    std::wstring sXml = sBegin + m_sXml.get() + sEnd;
                     
 					pReader = new XmlUtils::CXmlLiteReader();
 					pReader->FromString(sXml);
@@ -1608,9 +1605,9 @@ namespace OOX
 					delete pReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:drawing>");
+                std::wstring sResult = _T("<w:drawing>");
 
 				if ( m_bAnchor && m_oAnchor.IsInit() )
 					sResult += m_oAnchor->toXML();
@@ -1641,7 +1638,7 @@ namespace OOX
 
 			bool                            m_bAnchor; // используем Anchor или Inline
 
-			nullable<CString> m_sXml;
+            nullable<std::wstring> m_sXml;
 			// Childs
 			nullable<OOX::Drawing::CAnchor> m_oAnchor;
 			nullable<OOX::Drawing::CInline> m_oInline;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,14 +38,14 @@ namespace Writers
 {
 	class DocumentRelsWriter
 	{
-		CString	m_sDir;
+        std::wstring	m_sDir;
 	public:
-		DocumentRelsWriter(CString sDir):m_sDir(sDir)
+        DocumentRelsWriter(std::wstring sDir):m_sDir(sDir)
 		{
 		}
 		void Write()
 		{
-			CString s_Common;
+            std::wstring s_Common;
 
 			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \

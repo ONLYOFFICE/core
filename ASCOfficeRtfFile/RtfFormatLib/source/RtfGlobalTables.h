@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,7 +51,7 @@ public:
 				}
 			 return false;
 	 }
-	bool GetFont( CString sName, RtfFont& oFont )
+    bool GetFont( std::wstring sName, RtfFont& oFont )
 	 {
 		 for( int i = 0; i < (int)m_aArray.size(); i++ )
 			 if( sName == m_aArray[i].m_sName )
@@ -61,10 +61,10 @@ public:
 				}
 			 return false;
 	 }
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		if( !m_aArray.empty())
 		{
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
@@ -109,7 +109,7 @@ public:
 		}
 		return false;
 	}
-	bool GetColor( CString sTheme, RtfColor& oColor)
+    bool GetColor( std::wstring sTheme, RtfColor& oColor)
 	{
 		 RtfColor::_ThemeColor oTheme = RtfColor::TC_NONE;
 		
@@ -138,9 +138,9 @@ public:
 		 }
 		 return false;
 	 }
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		if( m_aArray.size() > 0 )
 		{
 			sResult += _T("{\\colortbl;");
@@ -156,7 +156,7 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return _T("");
 	}
@@ -174,7 +174,7 @@ public:
 				}
 			 return false;
 	 }
-	bool GetStyle( CString sName, RtfStylePtr& oStyle )
+    bool GetStyle( std::wstring sName, RtfStylePtr& oStyle )
 	 {
 		 for( int i = 0; i < (int)m_aArray.size(); i++ )
 			 if( sName == m_aArray[i]->m_sID )
@@ -240,16 +240,16 @@ public:
 
 		return oResultStyle;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		if( m_aArray.size() > 0 )
 		{
 			sResult += _T("{\\stylesheet");
 			
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
             {
-                CString str = m_aArray[i]->RenderToRtf( oRenderParameter );
+                std::wstring str = m_aArray[i]->RenderToRtf( oRenderParameter );
                 sResult += str + _T("\n\n");
             }
 			
@@ -257,9 +257,9 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		for( int i = 0; i < (int)m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
@@ -284,7 +284,7 @@ public:
 //            m_nQFormat = PROP_DEF;
 //            m_nPriority = PROP_DEF;
 //		}
-//		bool GetException( CString sName, RtfStyleException& oListProperty )
+//		bool GetException( std::wstring sName, RtfStyleException& oListProperty )
 //		 {
 //			 for( int i = 0; i < (int)m_aArray.size(); i++ )
 //				 if( sName == m_aArray[i].m_sName )
@@ -294,9 +294,9 @@ public:
 //				 }
 //			 return false;
 //		 }
-//		CString RenderToRtf(RenderParameter oRenderParameter)
+//		std::wstring RenderToRtf(RenderParameter oRenderParameter)
 //		{
-//			CString sResult;
+//			std::wstring sResult;
 //			if( m_aArray.size() > 0 )
 //			{
 //				sResult += _T("{\\*\\latentstyles"));
@@ -320,7 +320,7 @@ public:
 //			}
 //			return sResult;
 //		}
-//		CString RenderToOOX(RenderParameter oRenderParameter)
+//		std::wstring RenderToOOX(RenderParameter oRenderParameter)
 //		{
 //			XmlUtils::CXmlWriter oXmlWriter;
 //			if( m_aArray.size() > 0 )
@@ -353,7 +353,7 @@ class RtfListTable : public IDocumentElement, public ItemContainer<RtfListProper
 {
 public:
 	ItemContainer<RtfShapePtr> m_aPictureList;
-	bool GetList( CString sName, RtfListProperty& oListProperty )
+    bool GetList( std::wstring sName, RtfListProperty& oListProperty )
 	 {
 		 for( int i = 0; i < (int)m_aArray.size(); i++ )
 			 if( sName == m_aArray[i].m_sName )
@@ -373,9 +373,9 @@ public:
 			 }
 		 return false;
 	 }
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		if( m_aArray.size() > 0 )
 		{
 			sResult += _T("{\\*\\listtable ");
@@ -398,7 +398,7 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfListOverrideTable : public IDocumentElement, public ItemContainer<RtfListOverrideProperty>
 {
@@ -413,9 +413,9 @@ public:
 			 }
 		return false;
 	}
-		CString RenderToRtf(RenderParameter oRenderParameter)
+        std::wstring RenderToRtf(RenderParameter oRenderParameter)
 		{
-			CString sResult;
+            std::wstring sResult;
 			if( m_aArray.size() > 0 )
 			{
 				sResult += _T("{\\*\\listoverridetable");
@@ -429,17 +429,17 @@ public:
 			}
 			return sResult;
 		}
-		CString RenderToOOX(RenderParameter oRenderParameter);
+        std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
-class RtfRevisionTable : public IDocumentElement, public ItemContainer<CString>
+class RtfRevisionTable : public IDocumentElement, public ItemContainer<std::wstring>
 {
 public:
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
 		if (m_aArray.empty()) return L"";
 
-		CString sResult;
+        std::wstring sResult;
 
 		sResult += _T("{\\*\\revtbl ");
 
@@ -454,19 +454,19 @@ public:
 
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return L"";
 	}
 
-	int AddAuthor(CString author)
+    int AddAuthor(std::wstring author)
 	{
 		int i = Find(author);
 		if (i < 0)
 			i = AddItem(author);
 		return i;
 	}
-	CString GetAuthor(int ind)
+    std::wstring GetAuthor(int ind)
 	{
 		if (ind == PROP_DEF || ind > m_aArray.size())
 			return L"";
@@ -480,9 +480,9 @@ public:
 //{
 //public:
 //
-//	CString RenderToRtf(RenderParameter oRenderParameter)
+//	std::wstring RenderToRtf(RenderParameter oRenderParameter)
 //	{
-//		CString sResult;
+//		std::wstring sResult;
 //		if( m_aArray.size() > 0 )
 //		{
 //			sResult += _T("{\\*\\rsidtbl ");
@@ -497,7 +497,7 @@ public:
 //		}
 //		return sResult;
 //	}
-//	CString RenderToOOX(RenderParameter oRenderParameter)
+//	std::wstring RenderToOOX(RenderParameter oRenderParameter)
 //	{
 //	}
 //};

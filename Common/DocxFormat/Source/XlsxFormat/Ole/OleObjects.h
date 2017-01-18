@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString	  toXML() const
+            virtual std::wstring	  toXML() const
 			{
 				return _T("");
 			}
@@ -134,7 +134,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString	  toXML() const
+            virtual std::wstring	  toXML() const
 			{
 				return _T("");
 			}
@@ -148,7 +148,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"dde", m_oDde);
 				WritingStringNullableAttrBool(L"defaultSize", m_oDefaultSize);
 				WritingStringNullableAttrBool(L"disabled", m_oDisabled);
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				WritingStringNullableAttrBool(L"locked", m_oLocked);
 				WritingStringNullableAttrEncodeXmlString(L"macro", m_oMacro, m_oMacro.get());
 				WritingStringNullableAttrBool(L"print", m_oPrint);
@@ -234,7 +234,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString	  toXML() const
+            virtual std::wstring	  toXML() const
 			{
 				return _T("");
 			}
@@ -263,7 +263,7 @@ namespace OOX
 				WritingStringNullableAttrString(L"oleUpdate", m_oOleUpdate, m_oOleUpdate->ToString());
 				WritingStringNullableAttrBool(L"autoLoad", m_oAutoLoad);
 				WritingStringNullableAttrInt(L"shapeId", m_oShapeId, m_oShapeId->GetValue());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				if (ObjectPr && m_oObjectPr.IsInit())
 				{
 					writer.WriteString(L">");
@@ -275,9 +275,9 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			void toXMLPptx(NSStringUtils::CStringBuilder& writer, CString qqq) const
+            void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq) const
 			{
-				CString sRoot;
+                std::wstring sRoot;
 				writer.WriteString(L"<o:OLEObject");
 				if(m_oDvAspect.IsInit())
 				{
@@ -288,7 +288,7 @@ namespace OOX
 						writer.WriteString(L"Icon");
 					writer.WriteString(L"\"");
 				}
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
 				WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
 				writer.WriteString(L" Type=\"Embed\"");
@@ -303,7 +303,7 @@ namespace OOX
 				}
 				WritingStringNullableAttrEncodeXmlString(L"pathbin", m_oFilepathBin, m_oFilepathBin.get());
 				WritingStringNullableAttrEncodeXmlString(L"pathimg", m_oFilepathImg, m_oFilepathImg.get());
-				WritingStringNullableAttrString(L"idimg", m_oRidImg, m_oRidImg->ToString2());
+				WritingStringNullableAttrString(L"idimg", m_oRidImg, m_oRidImg->ToString());
 
 				writer.WriteString(L"/>");
 			}
@@ -382,7 +382,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString	  toXML() const
+            virtual std::wstring	  toXML() const
 			{
 				return _T("");
 			}

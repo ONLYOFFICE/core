@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="DocxFormat"
 	ProjectGUID="{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	RootNamespace="DocxFormat"
@@ -1339,22 +1339,6 @@
 				Name="FileSys"
 				>
 				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\Directory.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\Directory.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\File.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\File.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Source\SystemUtility\SystemUtility.cpp"
 					>
 				</File>
@@ -1884,10 +1868,6 @@
 			Name="Base"
 			>
 			<File
-				RelativePath="..\Source\Base\ASCString.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\Base\Base.h"
 				>
 			</File>
@@ -1921,10 +1901,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\XML\XmlSimple.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\xmlutils.h"
 				>
 			</File>
 		</Filter>

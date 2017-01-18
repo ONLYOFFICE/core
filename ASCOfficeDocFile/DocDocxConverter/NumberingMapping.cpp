@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,17 +63,17 @@ namespace DocFileFormat
 			m_xmldocument->RegisterNumbering();
 
 			//start the document
-			m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) ); 
-			m_pXmlWriter->WriteNodeBegin( _T( "w:numbering" ), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+            m_pXmlWriter->WriteNodeBegin( L"w:numbering", TRUE );
 
 			//write namespaces
-			m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-			m_pXmlWriter->WriteAttribute( _T( "xmlns:v" ), OpenXmlNamespaces::VectorML );
-			m_pXmlWriter->WriteAttribute( _T( "xmlns:o" ), OpenXmlNamespaces::Office );
-			m_pXmlWriter->WriteAttribute( _T( "xmlns:w10" ), OpenXmlNamespaces::OfficeWord );
-			m_pXmlWriter->WriteAttribute( _T( "xmlns:r" ), OpenXmlNamespaces::Relationships );
+            m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+            m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
+            m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
+            m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
+            m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
 
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 			PictureBulletsMapping();
 
@@ -82,37 +82,37 @@ namespace DocFileFormat
 			for (std::list<ListData*>::iterator iter = rglst->listData.begin(); iter != rglst->listData.end(); ++iter, ++i)
 			{
 				//start abstractNum
-				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i ));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				//nsid
-				m_pXmlWriter->WriteNodeBegin( _T( "w:nsid" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:nsid", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->lsid, L"%08x" ));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//multiLevelType
-				m_pXmlWriter->WriteNodeBegin( _T( "w:multiLevelType" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:multiLevelType", TRUE );
 
 				if ( (*iter)->fHybrid )
 				{
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "hybridMultilevel" ) );
+                    m_pXmlWriter->WriteAttribute( L"w:val", L"hybridMultilevel" );
 				}
 				else if ( (*iter)->fSimpleList )
 				{
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "singleLevel" ) );
+                    m_pXmlWriter->WriteAttribute( L"w:val", L"singleLevel" );
 				}
 				else
 				{
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "multilevel" ) );
+                    m_pXmlWriter->WriteAttribute( L"w:val", L"multilevel" );
 				}
 
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//template
-				m_pXmlWriter->WriteNodeBegin( _T( "w:tmpl" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->tplc, _T( "%08x" ) ));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:tmpl", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->tplc, L"%08x"));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				// writes the levels
 				size_t length = (*iter)->rglvl->size();
@@ -124,33 +124,33 @@ namespace DocFileFormat
 				}
 
 				//end abstractNum
-				m_pXmlWriter->WriteNodeEnd( _T( "w:abstractNum" ) );
+                m_pXmlWriter->WriteNodeEnd( L"w:abstractNum" );
 			}
 			//write old style numbering (сложносоставных не сущестует)
 			for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
 			{
 				//start abstractNum
-				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNum" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:abstractNumId" ), FormatUtils::IntToWideString( i ));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteNodeBegin( L"w:abstractNum", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:abstractNumId", FormatUtils::IntToWideString( i ));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				////nsid
-				//m_pXmlWriter->WriteNodeBegin( _T( "w:nsid" ), TRUE );
-				//m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( (*iter)->lsid, _T( "%08x" ) ));
-				//m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                //m_pXmlWriter->WriteNodeBegin( L"w:nsid", TRUE );
+                //m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( (*iter)->lsid, L"%08x" ) ));
+                //m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				//multiLevelType
-				m_pXmlWriter->WriteNodeBegin( _T( "w:multiLevelType" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:multiLevelType", TRUE );
 				{
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "singleLevel" ) );
+                    m_pXmlWriter->WriteAttribute( L"w:val", L"singleLevel" );
 				}
 
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				LevelMapping(*iter, 0);
 
 				//end abstractNum
-				m_pXmlWriter->WriteNodeEnd( _T( "w:abstractNum" ) );
+                m_pXmlWriter->WriteNodeEnd( L"w:abstractNum" );
 			}
 
 			//write the overrides
@@ -159,36 +159,36 @@ namespace DocFileFormat
 				ListFormatOverride* lfo = m_document->listFormatOverrideTable->at(i);
 
 				//start num
-				m_pXmlWriter->WriteNodeBegin( _T( "w:num" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i + 1));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteNodeBegin( L"w:num", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(i + 1));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int index = FindIndexbyId( rglst->listData, lfo->lsid );
 
-				m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNumId" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( index ) );
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:abstractNumId", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( index ) );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 				for (std::vector<ListFormatOverrideLevel*>::const_iterator iter = lfo->rgLfoLvl.begin(); iter != lfo->rgLfoLvl.end(); ++iter)
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:lvlOverride" ), TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:lvlOverride", TRUE );
 
-					m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString( (*iter)->ilvl ));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                    m_pXmlWriter->WriteAttribute( L"w:ilvl", FormatUtils::IntToWideString( (*iter)->ilvl ));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 					if ( ( (*iter)->fStartAt ) && ( !(*iter)->fFormatting ) )
 					{
-						m_pXmlWriter->WriteNodeBegin( _T( "w:startOverride" ), TRUE );
-						m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( (*iter)->iStartAt ));
-						m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                        m_pXmlWriter->WriteNodeBegin( L"w:startOverride", TRUE );
+                        m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( (*iter)->iStartAt ));
+                        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 					}
 
 					LevelMapping((*iter)->lvl, 0, ListData::ISTD_NIL);
 
-					m_pXmlWriter->WriteNodeEnd(_T("w:lvlOverride"));
+                    m_pXmlWriter->WriteNodeEnd(L"w:lvlOverride");
 				}
 
-				m_pXmlWriter->WriteNodeEnd(_T( "w:num"));
+                m_pXmlWriter->WriteNodeEnd(L"w:num");
 			}
 
 			if (m_document->listFormatOverrideTable->empty() &&  !rglst->listNumbering.empty())
@@ -196,20 +196,20 @@ namespace DocFileFormat
 				i = 0;
 				for (std::list<NumberingDescriptor>::iterator iter = rglst->listNumbering.begin(); iter != rglst->listNumbering.end(); ++iter, ++i)
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:num" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:numId" ), FormatUtils::IntToWideString(i+1));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:num", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:numId", FormatUtils::IntToWideString(i+1));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 
-					m_pXmlWriter->WriteNodeBegin( _T( "w:abstractNumId" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString( i ));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:abstractNumId", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString( i ));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-					m_pXmlWriter->WriteNodeEnd(_T( "w:num"));
+                    m_pXmlWriter->WriteNodeEnd(L"w:num");
 				}
 			}
 
-			m_pXmlWriter->WriteNodeEnd(_T("w:numbering"));
+            m_pXmlWriter->WriteNodeEnd(L"w:numbering");
 
 			m_xmldocument->NumberingXML = std::wstring(m_pXmlWriter->GetXmlString());
 		}
@@ -277,7 +277,7 @@ namespace DocFileFormat
 				{
 					newResult = find_if((result + 1), lvl->xst.end(), &NumberingMapping::IsPlaceholder);
 
-					ret += _T( "%" );
+                    ret += L"%";
 					ret += FormatUtils::IntToWideString(*result + 1);
 					ret += std::wstring((result + 1), newResult);
 					result = newResult;
@@ -321,7 +321,7 @@ namespace DocFileFormat
 			std::wstring strBefore		=	lvl.xst.substr(0, Before);
 			std::wstring strAfter		=	lvl.xst.substr(Before, After);
 
-			ret = strBefore + _T( "%1" ) + strAfter ;
+            ret = strBefore + L"%1" + strAfter ;
 		}
 
 		return ret;
@@ -344,134 +344,134 @@ namespace DocFileFormat
 	{
 		if (bOlderVersion && nfc > 5)
 		{
-			if (nfc == 0xff)	return std::wstring( _T( "bullet" ) );
-			else				return std::wstring( _T( "none" ) );
+            if (nfc == 0xff)	return std::wstring( L"bullet");
+            else				return std::wstring( L"none");
 		}
 		
 		switch ( nfc )
 		{
 		case 0:
-			return std::wstring( _T( "decimal" ) );
+            return std::wstring( L"decimal" );
 		case 1:
-			return std::wstring( _T( "upperRoman" ) );
+            return std::wstring( L"upperRoman" );
 		case 2:
-			return std::wstring( _T( "lowerRoman" ) );
+            return std::wstring( L"lowerRoman" );
 		case 3:
-			return std::wstring( _T( "upperLetter" ) );
+            return std::wstring( L"upperLetter");
 		case 4:
-			return std::wstring( _T( "lowerLetter" ) );
+            return std::wstring( L"lowerLetter");
 		case 5:
-			return std::wstring( _T( "ordinal" ) );
+            return std::wstring( L"ordinal" );
 		case 6:
-			return std::wstring( _T( "cardinalText" ) );
+            return std::wstring( L"cardinalText" );
 		case 7:
-			return std::wstring( _T( "ordinalText" ) );
+            return std::wstring( L"ordinalText" );
 		case 8:
-			return std::wstring( _T( "hex" ) );
+            return std::wstring( L"hex" );
 		case 9:
-			return std::wstring( _T( "chicago" ) );
+            return std::wstring( L"chicago" );
 		case 10:
-			return std::wstring( _T( "ideographDigital" ) );
+            return std::wstring( L"ideographDigital" );
 		case 11:
-			return std::wstring( _T( "japaneseCounting" ) );
+            return std::wstring( L"japaneseCounting" );
 		case 12:
-			return std::wstring( _T( "aiueo" ) );
+            return std::wstring( L"aiueo" );
 		case 13:
-			return std::wstring( _T( "iroha" ) );
+            return std::wstring( L"iroha" );
 		case 14:
-			return std::wstring( _T( "decimalFullWidth" ) );
+            return std::wstring( L"decimalFullWidth" );
 		case 15:
-			return std::wstring( _T( "decimalHalfWidth" ) );
+            return std::wstring( L"decimalHalfWidth" );
 		case 16:
-			return std::wstring( _T( "japaneseLegal" ) );
+            return std::wstring( L"japaneseLegal" );
 		case 17:
-			return std::wstring( _T( "japaneseDigitalTenThousand" ) );
+            return std::wstring( L"japaneseDigitalTenThousand" );
 		case 18:
-			return std::wstring( _T( "decimalEnclosedCircle" ) );
+            return std::wstring( L"decimalEnclosedCircle" );
 		case 19:
-			return std::wstring( _T( "decimalFullWidth2" ) );
+            return std::wstring( L"decimalFullWidth2" );
 		case 20:
-			return std::wstring( _T( "aiueoFullWidth" ) );
+            return std::wstring( L"aiueoFullWidth" );
 		case 21:
-			return std::wstring( _T( "irohaFullWidth" ) );
+            return std::wstring( L"irohaFullWidth" );
 		case 22:
-			return std::wstring( _T( "decimalZero" ) );
+            return std::wstring( L"decimalZero" );
 		case 23:
-			return std::wstring( _T( "bullet" ) );
+            return std::wstring( L"bullet" );
 		case 24:
-			return std::wstring( _T( "ganada" ) );
+            return std::wstring( L"ganada" );
 		case 25:
-			return std::wstring( _T( "chosung" ) );
+            return std::wstring( L"chosung" );
 		case 26:
-			return std::wstring( _T( "decimalEnclosedFullstop" ) );
+            return std::wstring( L"decimalEnclosedFullstop" );
 		case 27:
-			return std::wstring( _T( "decimalEnclosedParen" ) );
+            return std::wstring( L"decimalEnclosedParen" );
 		case 28:
-			return std::wstring( _T( "decimalEnclosedCircleChinese" ) );
+            return std::wstring( L"decimalEnclosedCircleChinese" );
 		case 29:
-			return std::wstring( _T( "ideographEnclosedCircle" ) );
+            return std::wstring( L"ideographEnclosedCircle" );
 		case 30:
-			return std::wstring( _T( "ideographTraditional" ) );
+            return std::wstring( L"ideographTraditional" );
 		case 31:
-			return std::wstring( _T( "ideographZodiac" ) );
+            return std::wstring( L"ideographZodiac" );
 		case 32:
-			return std::wstring( _T( "ideographZodiacTraditional" ) );
+            return std::wstring( L"ideographZodiacTraditional" );
 		case 33:
-			return std::wstring( _T( "taiwaneseCounting" ) );
+            return std::wstring( L"taiwaneseCounting" );
 		case 34:
-			return std::wstring( _T( "ideographLegalTraditional" ) );
+            return std::wstring( L"ideographLegalTraditional" );
 		case 35:
-			return std::wstring( _T( "taiwaneseCountingThousand" ) );
+            return std::wstring( L"taiwaneseCountingThousand" );
 		case 36:
-			return std::wstring( _T( "taiwaneseDigital" ) );
+            return std::wstring( L"taiwaneseDigital" );
 		case 37:
-			return std::wstring( _T( "chineseCounting" ) );
+            return std::wstring( L"chineseCounting" );
 		case 38:
-			return std::wstring( _T( "chineseLegalSimplified" ) );
+            return std::wstring( L"chineseLegalSimplified" );
 		case 39:
-			return std::wstring( _T( "chineseCountingThousand" ) );
+            return std::wstring( L"chineseCountingThousand" );
 		case 40:
-			return std::wstring( _T( "koreanDigital" ) );
+            return std::wstring( L"koreanDigital" );
 		case 41:
-			return std::wstring( _T( "koreanCounting" ) );
+            return std::wstring( L"koreanCounting" );
 		case 42:
-			return std::wstring( _T( "koreanLegal" ) );
+            return std::wstring( L"koreanLegal" );
 		case 43:
-			return std::wstring( _T( "koreanDigital2" ) );
+            return std::wstring( L"koreanDigital2" );
 		case 44:
-			return std::wstring( _T( "vietnameseCounting" ) );
+            return std::wstring( L"vietnameseCounting" );
 		case 45:
-			return std::wstring( _T( "russianLower" ) );
+            return std::wstring( L"russianLower" );
 		case 46:
-			return std::wstring( _T( "russianUpper" ) );
+            return std::wstring( L"russianUpper" );
 		case 47:
-			return std::wstring( _T( "none" ) );
+            return std::wstring( L"none" );
 		case 48:
-			return std::wstring( _T( "numberInDash" ) );
+            return std::wstring( L"numberInDash" );
 		case 49:
-			return std::wstring( _T( "hebrew1" ) );
+            return std::wstring( L"hebrew1" );
 		case 50:
-			return std::wstring( _T( "hebrew2" ) );
+            return std::wstring( L"hebrew2" );
 		case 51:
-			return std::wstring( _T( "arabicAlpha" ) );
+            return std::wstring( L"arabicAlpha" );
 		case 52:
-			return std::wstring( _T( "arabicAbjad" ) );
+            return std::wstring( L"arabicAbjad" );
 		case 53:
-			return std::wstring( _T( "hindiVowels" ) );
+            return std::wstring( L"hindiVowels" );
 		case 54:
-			return std::wstring( _T( "hindiConsonants" ) );
+            return std::wstring( L"hindiConsonants" );
 		case 55:
-			return std::wstring( _T( "hindiNumbers" ) );
+            return std::wstring( L"hindiNumbers" );
 		case 56:
-			return std::wstring( _T( "hindiCounting" ) );
+            return std::wstring( L"hindiCounting" );
 		case 57:
-			return std::wstring( _T( "thaiLetters" ) );
+            return std::wstring( L"thaiLetters" );
 		case 58:
-			return std::wstring( _T( "thaiNumbers" ) );
+            return std::wstring( L"thaiNumbers" );
 		case 59:
-			return std::wstring( _T( "thaiCounting" ) );
+            return std::wstring( L"thaiCounting" );
 		default:
-			return std::wstring( _T( "decimal" ) );
+            return std::wstring( L"decimal" );
 		}
 	}
 
@@ -488,22 +488,22 @@ namespace DocFileFormat
 		}
 
 //--------------------------------------------------------------------------------
-		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteNodeBegin( L"w:lvl", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:ilvl", FormatUtils::IntToWideString(level));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl.iStartAt));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:start", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString(lvl.iStartAt));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl.nfc, true));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:numFmt", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", GetNumberFormatWideString(lvl.nfc, true));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 //// suffix
-//		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
-//		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8));
-//		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+//		m_pXmlWriter->WriteNodeBegin( L"w:suff", TRUE );
+//		m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl.ixchFollow, &FollowingCharMap[0][0], 3, 8));
+//		m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 // Number level text
 		std::wstring lvlText = GetLvlText(lvl, isSymbol, lvl.cbTextBefore, lvl.cbTextAfter);
@@ -517,33 +517,33 @@ namespace DocFileFormat
 		//}
 		if (!lvlText.empty())
 		{
-			m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:val"), lvlText);
-			m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
+            m_pXmlWriter->WriteNodeBegin(L"w:lvlText",TRUE);
+                m_pXmlWriter->WriteAttribute(L"w:val",lvlText);
+            m_pXmlWriter->WriteNodeEnd(L"", TRUE);
 		}
 
 // jc
-		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:lvlJc", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl.jc, &LevelJustificationMap[0][0], 3, 7));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 // pPr
-		m_pXmlWriter->WriteNodeBegin( _T( "w:pPr" ), FALSE );
-		m_pXmlWriter->WriteNodeEnd(_T("w:pPr"));
+        m_pXmlWriter->WriteNodeBegin( L"w:pPr", FALSE );
+        m_pXmlWriter->WriteNodeEnd(L"w:pPr");
 
 //  rPr
-		m_pXmlWriter->WriteNodeBegin( _T( "w:rPr" ), FALSE );
+        m_pXmlWriter->WriteNodeBegin( L"w:rPr", FALSE );
 
 		if (!fontFamily.empty())
 		{
-			m_pXmlWriter->WriteNodeBegin( _T( "w:rFonts" ), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"w:rFonts", TRUE );
 				// w:hint="default"
-				m_pXmlWriter->WriteAttribute(_T("w:hAnsi"), fontFamily);
-				m_pXmlWriter->WriteAttribute(_T("w:ascii"), fontFamily);
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+                m_pXmlWriter->WriteAttribute(L"w:hAnsi",fontFamily);
+                m_pXmlWriter->WriteAttribute(L"w:ascii",fontFamily);
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 		}
-		m_pXmlWriter->WriteNodeEnd(_T("w:rPr"));
+        m_pXmlWriter->WriteNodeEnd(L"w:rPr");
 		
-		m_pXmlWriter->WriteNodeEnd(_T("w:lvl"));
+        m_pXmlWriter->WriteNodeEnd(L"w:lvl");
 	}
 
 	void NumberingMapping::LevelMapping(const ListLevel* lvl, unsigned int level, short styleIndex)
@@ -558,27 +558,27 @@ namespace DocFileFormat
 
 // Проверяем шрифт
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:lvl" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:ilvl" ), FormatUtils::IntToWideString(level));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteNodeBegin( L"w:lvl", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:ilvl", FormatUtils::IntToWideString(level));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 // starts at
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:start" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToWideString(lvl->iStartAt));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:start", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToWideString(lvl->iStartAt));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 // number format
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:numFmt" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), GetNumberFormatWideString(lvl->nfc));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:numFmt", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", GetNumberFormatWideString(lvl->nfc));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 // suffix
 
-		m_pXmlWriter->WriteNodeBegin( _T( "w:suff" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:suff", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl->ixchFollow, &FollowingCharMap[0][0], 3, 8));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
 // style
 // The style id is used for a reverse reference. 
@@ -586,30 +586,30 @@ namespace DocFileFormat
 
 		if (styleIndex != ListData::ISTD_NIL)
 		{
-			m_pXmlWriter->WriteNodeBegin( _T( "w:pStyle" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"w:pStyle", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(StyleSheetMapping::MakeStyleId(m_document->Styles->Styles->at(styleIndex))));
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 		}
 
 // Number level text
 
-		m_pXmlWriter->WriteNodeBegin(_T("w:lvlText"), TRUE);
-		m_pXmlWriter->WriteAttribute(_T("w:val"), GetLvlText(lvl, cpMapping.CheckIsSymbolFont()));
-		m_pXmlWriter->WriteNodeEnd(_T( ""), TRUE);
+        m_pXmlWriter->WriteNodeBegin(L"w:lvlText",TRUE);
+        m_pXmlWriter->WriteAttribute(L"w:val",GetLvlText(lvl, cpMapping.CheckIsSymbolFont()));
+        m_pXmlWriter->WriteNodeEnd(L"",TRUE);
 
 		WriteLevelPictureBullet(lvl->grpprlChpx);
 
 // legacy
 		if (lvl->fWord6)
 		{
-			m_pXmlWriter->WriteNodeBegin( _T( "w:legacy" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:legacy" ), _T( "1" ) );
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"w:legacy", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:legacy", L"1" );
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 		}
 // jc
-		m_pXmlWriter->WriteNodeBegin( _T( "w:lvlJc" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7));
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE );
+        m_pXmlWriter->WriteNodeBegin( L"w:lvlJc", TRUE );
+        m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString(lvl->jc, &LevelJustificationMap[0][0], 3, 7));
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 // pPr
 		bool isBidi = false;
 		ParagraphPropertiesMapping oppMapping(m_pXmlWriter, m_context, m_document, NULL, isBidi);
@@ -619,7 +619,7 @@ namespace DocFileFormat
 
 		m_pXmlWriter->WriteString(oWriterTemp.GetXmlString());
 
-		m_pXmlWriter->WriteNodeEnd(_T("w:lvl"));
+        m_pXmlWriter->WriteNodeEnd(L"w:lvl");
 	}
 
 	void NumberingMapping::PictureBulletsMapping()
@@ -639,10 +639,10 @@ namespace DocFileFormat
 
 				if ((pict.mfp.mm > 98) && (pict.shapeContainer != NULL))
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:numPicBullet" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:numPicBulletId" ), FormatUtils::IntToWideString( iter->first ));
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-					m_pXmlWriter->WriteNodeBegin( _T( "w:pict" ) );
+                    m_pXmlWriter->WriteNodeBegin( L"w:numPicBullet", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:numPicBulletId", FormatUtils::IntToWideString( iter->first ));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:pict" );
 
 					//inline picture + bullete props
 					if (pict.blipStoreEntry != NULL)
@@ -659,8 +659,8 @@ namespace DocFileFormat
 						pict.shapeContainer->Convert(&oShape);
 					}
 
-					m_pXmlWriter->WriteNodeEnd(_T("w:pict"));
-					m_pXmlWriter->WriteNodeEnd(_T("w:numPicBullet"));
+                    m_pXmlWriter->WriteNodeEnd(L"w:pict");
+                    m_pXmlWriter->WriteNodeEnd(L"w:numPicBullet");
 				}  
 			}
 
@@ -693,9 +693,9 @@ namespace DocFileFormat
 
 			if (isPictureBullet)
 			{
-				m_pXmlWriter->WriteNodeBegin(_T("w:lvlPicBulletId"), TRUE);
-				m_pXmlWriter->WriteAttribute(_T("w:val"), FormatUtils::IntToWideString(index));
-				m_pXmlWriter->WriteNodeEnd(_T(""), TRUE);  
+                m_pXmlWriter->WriteNodeBegin(L"w:lvlPicBulletId",TRUE);
+                m_pXmlWriter->WriteAttribute(L"w:val",FormatUtils::IntToWideString(index));
+                m_pXmlWriter->WriteNodeEnd(L"",TRUE);
 			}
 		}
 	}

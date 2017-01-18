@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -88,7 +88,7 @@ namespace PPTX
 			}
 
 		public:
-			void registration(const CString& type, const OOX::CPath& directory, const OOX::CPath& filename)
+			void registration(const std::wstring& type, const OOX::CPath& directory, const OOX::CPath& filename)
 			{
 				Override.add(type, directory / filename.m_strFilename);
 				Default.add(directory / filename.m_strFilename);

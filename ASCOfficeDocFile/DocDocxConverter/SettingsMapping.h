@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,17 +41,17 @@ namespace DocFileFormat
 {
   static const wchar_t FootnotePositionMap[4][12] =
   {
-    _T( "beneathText" ),
-    _T( "docEnd" ),
-    _T( "pageBottom" ),
-    _T( "sectEnd" )
+    L"beneathText",
+    L"docEnd",
+    L"pageBottom",
+    L"sectEnd"
   };
 
   static const wchar_t ZoomTypeMap[3][9] =
   {
-    _T( "none" ),
-    _T( "fullPage" ),
-    _T( "bestFit" )
+    L"none",
+    L"fullPage",
+    L"bestFit"
   };
 	
   class SettingsMapping: public PropertiesMapping, public IMapping

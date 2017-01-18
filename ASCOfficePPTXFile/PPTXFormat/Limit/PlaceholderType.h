@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		AVSINLINE int GetPhType(const CString& strType)
+		AVSINLINE int GetPhType(const std::wstring& strType)
 		{
 			if (_T("body") == strType)
 				return 0;
@@ -87,7 +87,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const CString& strValue)
+			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("body") == strValue) ||
 					(_T("chart") == strValue) ||

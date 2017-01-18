@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,20 +38,19 @@
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../Common/DocxFormat/Source/Base/ASCString.h"
 
 #include <boost/algorithm/string.hpp>
 
 namespace NSBinPptxRW
 {
-    static std::wstring	g_bstr_nodeopen			= L"<";
-    static std::wstring	g_bstr_nodeclose		= L">";
+    static std::wstring	g_bstr_nodeopen		= L"<";
+    static std::wstring	g_bstr_nodeclose	= L">";
     static std::wstring	g_bstr_nodeopen_slash	= L"</";
     static std::wstring	g_bstr_nodeclose_slash	= L"/>";
-    static std::wstring	g_bstr_node_space		= L" ";
-    static std::wstring	g_bstr_node_equal		= L"=";
-    static std::wstring	g_bstr_node_quote		= L"\"";
-    static std::wstring	g_bstr_boolean_true		= L"true";
+    static std::wstring	g_bstr_node_space	= L" ";
+    static std::wstring	g_bstr_node_equal	= L"=";
+    static std::wstring	g_bstr_node_quote	= L"\"";
+    static std::wstring	g_bstr_boolean_true	= L"true";
     static std::wstring	g_bstr_boolean_false	= L"false";
     static std::wstring	g_bstr_boolean_true2	= L"1";
     static std::wstring	g_bstr_boolean_false2	= L"0";
@@ -319,36 +318,32 @@ namespace NSBinPptxRW
         AVSINLINE void WriteStringXML(std::wstring strValue)
         {
             std::wstring s = strValue;
-            boost::algorithm::replace_all( s, L"&",		L"&amp;");
-            boost::algorithm::replace_all( s, L"'",		L"&apos;");
-            boost::algorithm::replace_all( s, L"<",		L"&lt;");
-			boost::algorithm::replace_all( s, L">",		L"&gt;");
+            boost::algorithm::replace_all( s, L"&",	L"&amp;");
+            boost::algorithm::replace_all( s, L"'",	L"&apos;");
+            boost::algorithm::replace_all( s, L"<",	L"&lt;");
+            boost::algorithm::replace_all( s, L">",	L"&gt;");
             boost::algorithm::replace_all( s, L"\"",	L"&quot;");
             m_oWriter.WriteString(s);
         }
         AVSINLINE void WriteDouble(const double& val)
         {
-			m_oWriter.WriteString(std::to_wstring(val));
+            m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteLONG(const long& val)
         {
-			m_oWriter.WriteString(std::to_wstring(val));
-
+            m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteINT(const int& val)
         {
-			m_oWriter.WriteString(std::to_wstring(val));
+            m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteDWORD(const DWORD& val)
         {
-			m_oWriter.WriteString(std::to_wstring(val));
-
+            m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteDWORD_hex(const DWORD& val)
         {
-            CString str;
-            str.Format(L"%x", val);
-            m_oWriter.WriteString(str);
+            m_oWriter.WriteString(XmlUtils::IntToString(val, L"%x"));
         }
         AVSINLINE void WriteBool(const bool& val)
         {
@@ -378,8 +373,7 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(15);
-            CString s;
-			s.Format(L"%.1lf", val);
+            std::wstring s = XmlUtils::DoubleToString(val, L"%.1lf");
             m_oWriter.AddCharNoCheck(WCHAR(':'));
             m_oWriter.WriteString(s);
             m_oWriter.AddCharNoCheck(WCHAR(';'));
@@ -398,8 +392,7 @@ namespace NSBinPptxRW
         {
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.AddSize(20);
-            CString s;
-            s.Format(L"%.1lf", val);
+            std::wstring s = XmlUtils::DoubleToString(val, L"%.1lf");
             m_oWriter.AddCharNoCheck(WCHAR(':'));
             m_oWriter.WriteString(s);
             m_oWriter.AddCharNoCheck(WCHAR('p'));

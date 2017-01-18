@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,7 +72,7 @@ namespace PPTX
 			//FileContainer::read(filename, map);
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			oNode.ReadAttributeBase(L"autoCompressPictures", attrAutoCompressPictures);
 			oNode.ReadAttributeBase(L"bookmarkIdSeed", attrBookmarkIdSeed);
@@ -461,19 +461,19 @@ namespace PPTX
 		void SetClrMap(Logic::ClrMap map)				{m_clrMap = map;};
 		void SetClrScheme(nsTheme::ClrScheme scheme)	{m_clrScheme = scheme;};
 
-		DWORD GetRGBAFromMap(const CString& str)const
+		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			return m_clrScheme.GetRGBAFromScheme(m_clrMap.GetColorSchemeIndex(str));
 		}
-		DWORD GetARGBFromMap(const CString& str)const
+		DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			return m_clrScheme.GetARGBFromScheme(m_clrMap.GetColorSchemeIndex(str));
 		}
-		DWORD GetBGRAFromMap(const CString& str)const
+		DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			return m_clrScheme.GetBGRAFromScheme(m_clrMap.GetColorSchemeIndex(str));
 		}
-		DWORD GetABGRFromMap(const CString& str)const
+		DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			return m_clrScheme.GetABGRFromScheme(m_clrMap.GetColorSchemeIndex(str));
 		}

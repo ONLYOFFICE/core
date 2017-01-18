@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString Blip::toXML() const
+		std::wstring Blip::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 
@@ -68,7 +68,7 @@ namespace PPTX
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteArray(Effects);
 
-			CString strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
 			return XmlUtils::CreateNode(strName, oAttr, oValue);
 		}
 
@@ -79,7 +79,7 @@ namespace PPTX
 				Effects[i].SetParentPointer(this);
 		}
 
-		CString Blip::GetFullPicName(FileContainer* pRels)const
+		std::wstring Blip::GetFullPicName(FileContainer* pRels)const
 		{
 			if(embed.IsInit())
 			{
@@ -121,7 +121,7 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		CString Blip::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
 		{
 			if (pRels != NULL)
 			{

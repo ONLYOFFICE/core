@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,8 @@
 #define OOX_RID_INCLUDE_H_
 
 #include "../Base/Base.h"
-#include "../XML/xmlutils.h"
+#include "../XML/Utils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace OOX
 {
@@ -47,7 +48,7 @@ namespace OOX
 		RId(const size_t id) : m_id(id)
 		{
 		}
-		RId(const CString& rid)
+		RId(const std::wstring& rid)
 		{
 			(*this) = rid;
 		}
@@ -62,16 +63,16 @@ namespace OOX
 		//	m_id = id;
 		//	return *this;
 		//}		
-		const RId& operator= (const CString& rid)
+		const RId& operator= (const std::wstring& rid)
 		{
 			//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
 			//Tогда не будет проблем с добавление новый id, мы всегда будем генерировать их с префиксом rId
-			CString sFindString(_T("rId"));
-			int nFindStringLength = sFindString.GetLength();
-			if(0 == rid.Find(sFindString) && rid.GetLength() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
+			std::wstring sFindString(_T("rId"));
+			int nFindStringLength = sFindString.length();
+			if(0 == rid.find(sFindString) && rid.length() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
 			{
-				CString strParam = rid.Mid(nFindStringLength);
-				m_id = XmlUtils::GetUInteger(strParam.GetBuffer());
+				std::wstring strParam = rid.substr(nFindStringLength);
+				m_id = XmlUtils::GetUInteger(strParam);
 			}
 			else
 			{
@@ -81,14 +82,7 @@ namespace OOX
 			
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		const RId& operator= (const BSTR& rid)
-		{
-			(*this) = (CString)rid;
-			
-			return *this;
-		}
-#endif
+
 		const RId& operator= (const RId& oSrc)
 		{
 			m_id = oSrc.m_id;
@@ -122,7 +116,7 @@ namespace OOX
 		//	return m_id >= lhs.m_id;
 		//}
 
-		AVSINLINE CString get() const 
+		AVSINLINE std::wstring get() const 
 		{
 			return ToString();
 		}
@@ -134,17 +128,17 @@ namespace OOX
 		}
 		
 	public:
-		const CString ToString() const
+		const std::wstring ToString() const
 		{
-			if(!m_sId.IsEmpty())
+			if(!m_sId.empty())
 				return m_sId;
 			else
-				return _T("rId") + XmlUtils::UIntToString(m_id);
+				return _T("rId") + std::to_wstring(m_id);
 		}
 
 	private:
 		size_t m_id;
-		CString m_sId;
+		std::wstring m_sId;
 	};
 } // namespace OOX
 

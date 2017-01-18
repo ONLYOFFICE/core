@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,7 +59,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = node.GetName();
+				std::wstring strName = node.GetName();
 
 				if (strName == _T("a:buClrTx"))
 					m_Color.reset(new Logic::BuClrTx(node));
@@ -147,7 +147,7 @@ namespace PPTX
 				return 0;
 			}
 
-			virtual CString toXML()const
+			virtual std::wstring toXML()const
 			{
 				if (m_Color.IsInit())
 					return m_Color->toXML();

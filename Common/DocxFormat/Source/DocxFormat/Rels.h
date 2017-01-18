@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,13 +55,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRelationShip)
-			CRelationShip(const OOX::RId& rId, const CString& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
+            CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
 				boost::algorithm::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
 			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
 			{
-				m_sMode = new CString( _T("External") );
+                m_sMode = new std::wstring( _T("External") );
 			}
 			virtual ~CRelationShip()
 			{
@@ -83,13 +83,14 @@ namespace OOX
 				oNode.ReadAttributeBase( _T("Type"),       m_sType );
 				oNode.ReadAttributeBase( _T("TargetMode"), m_sMode );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write( _T("Id"),         m_rId.ToString() );
 				oAttr.Write( _T("Type"),       m_sType );
-				CString sTarget = m_oTarget.m_strFilename;
-				sTarget.Replace(_T("\\"), _T("/"));
+                std::wstring sTarget = m_oTarget.m_strFilename;
+
+                boost::algorithm::replace_all(sTarget, _T("\\"), _T("/"));
 				sTarget = XmlUtils::EncodeXmlString(sTarget);
 				oAttr.Write( _T("Target"), sTarget);
 				if(m_sMode.IsInit())
@@ -107,7 +108,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				CString sTempTarget;
+                std::wstring sTempTarget;
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("Id"),         m_rId )
@@ -132,7 +133,7 @@ namespace OOX
 
 		public:
 
-			const CString Type() const
+            const std::wstring Type() const
 			{
 				return m_sType;
 			}
@@ -158,8 +159,8 @@ namespace OOX
 		private:
 			RId						m_rId;
 			CPath					m_oTarget;
-			CString					m_sType;
-			nullable<CString>       m_sMode;
+            std::wstring            m_sType;
+            nullable<std::wstring>  m_sMode;
 		};
 
 	} // namespace Rels
@@ -281,8 +282,8 @@ namespace OOX
 		{
 			if( !( FileTypes::Unknow == oType ) )
 			{
-				CString strFileName	= oPath.m_strFilename;
-				CString strDir		= oPath.GetDirectory() + _T("");
+                std::wstring strFileName	= oPath.m_strFilename;
+                std::wstring strDir		= oPath.GetDirectory() + _T("");
 
 				if ( _T("") == oPath.GetExtention() )
 				{
@@ -324,7 +325,7 @@ namespace OOX
 
 		const CPath CreateFileName(const CPath& oFilePath) const
 		{
-            CString strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
+            std::wstring strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
 
 			if ( _T("") == oFilePath.GetFilename() )	strTemp += _T(".rels");
 			else										strTemp += ( oFilePath.GetFilename() + _T(".rels") );

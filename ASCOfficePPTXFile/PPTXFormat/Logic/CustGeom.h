@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -91,7 +91,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(_T("a:avLst"), avLst);
@@ -191,9 +191,9 @@ namespace PPTX
 					rect->SetParentPointer(this);
 			}
 		public:
-			virtual CString GetODString() const
+			virtual std::wstring GetODString() const
 			{
-				CString strXml = _T("");
+				std::wstring strXml = _T("");
 
 				size_t nCount  = 0;
 				

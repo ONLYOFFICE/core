@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+/*
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,6 +41,7 @@
     #include "windows.h"
     #include "windef.h"
     #include <shlobj.h>
+    #include <Rpc.h>
 #elif __linux__
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -436,6 +437,67 @@ namespace NSDirectory
 		}
 		return wsFolderPath.substr(0, n1);
 	}
+        static std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
+        {
+            return NSFile::CFileBinary::CreateTempFileWithUniqueName(strFolderPathRoot, Prefix);
+        }
+        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot)
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            UUID uuid;
+            RPC_WSTR str_uuid;
+            UuidCreate (&uuid);
+            UuidToStringW (&uuid, &str_uuid);
+                    std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+            pcTemplate += (wchar_t *) str_uuid;
+            RpcStringFreeW (&str_uuid);
+
+            int attemps = 10;
+            while (!CreateDirectory(pcTemplate))
+            {
+                UuidCreate (&uuid);
+                UuidToStringW (&uuid, &str_uuid);
+                pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+                pcTemplate += (wchar_t *) str_uuid;
+                RpcStringFreeW (&str_uuid);
+                attemps--;
+
+                if (0 == attemps)
+                {
+                    pcTemplate = L"";
+                }
+            }
+            return pcTemplate;
+#else
+            std::string pcTemplate = U_TO_UTF8(strFolderPathRoot) + "/ascXXXXXX";
+            char *pcRes = mkdtemp(const_cast <char *> (pcTemplate.c_str()));
+            if (NULL == pcRes)
+                return L"";
+
+            std::string sRes = pcRes;
+            return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), (LONG)sRes.length());
+#endif
+        }
+        static std::wstring GetTempPath()
+        {
+            return NSFile::CFileBinary::GetTempPath();
+        }
+
+        static int GetFilesCount(const std::wstring& path, const bool& recursive)
+        {
+            CArray<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
+#if defined(_WIN32) || defined (_WIN64)
+            return arrFiles.GetCount();
+#endif
+            return arrFiles.GetCount() + 1;
+            // ???
+        }
+#if !defined(_WIN32) && !defined (_WIN64)
+        static bool PathIsDirectory(const std::wstring& pathName)
+        {
+            return Exists(pathName);
+        }
+#endif
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

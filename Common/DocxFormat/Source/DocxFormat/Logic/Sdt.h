@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,21 +66,21 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_sDisplayText.IsInit() )
 				{
 					sResult += _T("w:displayText=\"");
-					sResult += m_sDisplayText->GetString();
+                    sResult += m_sDisplayText.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sValue.IsInit() )
 				{
 					sResult += _T("w:value=\"");
-					sResult += m_sValue->GetString();
+                    sResult += m_sValue.get2();
 					sResult += _T("\" ");
 				}
 
@@ -100,8 +100,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<CString > m_sDisplayText;
-			nullable<CString > m_sValue;
+			nullable<std::wstring > m_sDisplayText;
+			nullable<std::wstring > m_sValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -131,28 +131,28 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_sPrefixMappings.IsInit() )
 				{
 					sResult += _T("w:prefixMappings=\"");
-					sResult += m_sPrefixMappings->GetString();
+                    sResult += m_sPrefixMappings.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sStoreItemID.IsInit() )
 				{
 					sResult += _T("w:storeItemID=\"");
-					sResult += m_sStoreItemID->GetString();
+                    sResult += m_sStoreItemID.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sXPath.IsInit() )
 				{
 					sResult += _T("w:xpath=\"");
-					sResult += m_sXPath->GetString();
+                    sResult += m_sXPath.get2();
 					sResult += _T("\" ");
 				}
 
@@ -172,9 +172,9 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<CString > m_sPrefixMappings;
-			nullable<CString > m_sStoreItemID;
-			nullable<CString > m_sXPath;
+			nullable<std::wstring > m_sPrefixMappings;
+			nullable<std::wstring > m_sStoreItemID;
+			nullable<std::wstring > m_sXPath;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -202,9 +202,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
+				std::wstring sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 				return sResult;
 			}
 		private:
@@ -247,9 +247,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
+				std::wstring sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 				return sResult;
 			}
 		private:
@@ -292,9 +292,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
+				std::wstring sResult = _T("w:val=\"") + m_oVal.ToString() + _T("\"");
 
 				return sResult;
 			}
@@ -338,9 +338,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult = _T("w:multiLine=\"") + m_oMultiLine.ToString() + _T("\"");
+				std::wstring sResult = _T("w:multiLine=\"") + m_oMultiLine.ToString() + _T("\"");
 
 				return sResult;
 			}
@@ -428,14 +428,14 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				if ( m_sLastValue.IsInit() )
 				{
 					sResult = _T("<w:comboBox w:lastValue=\"");
-					sResult += m_sLastValue->GetString();
+                    sResult += m_sLastValue.get2();
 					sResult += _T("\">");
 				}
 				else
@@ -472,7 +472,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString >                             m_sLastValue;
+			nullable<std::wstring >                             m_sLastValue;
 
 			// Nodes
 			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
@@ -527,9 +527,9 @@ namespace OOX
 						m_oStoreMappedDataAs = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				if ( m_oFullDate.IsInit() )
 				{
@@ -571,7 +571,7 @@ namespace OOX
 
 			// Nodes
 			nullable<ComplexTypes::Word::CCalendarType      > m_oCalendar;
-			nullable<ComplexTypes::Word::CString_           > m_oDateFormat;
+			nullable<ComplexTypes::Word::String           > m_oDateFormat;
 			nullable<ComplexTypes::Word::CLang              > m_oLid;
 			nullable<ComplexTypes::Word::CSdtDateMappingType> m_oStoreMappedDataAs;
 		};
@@ -618,9 +618,9 @@ namespace OOX
 						m_oDocPartUnique = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:docPartList>");
+				std::wstring sResult = _T("<w:docPartList>");
 
 				WritingElement_WriteNode_1( _T("<w:docPartCategory "), m_oDocPartCategory );
 				WritingElement_WriteNode_1( _T("<w:docPartGallery "),  m_oDocPartGallery );
@@ -637,8 +637,8 @@ namespace OOX
 			}
 		public:
 
- 			nullable<ComplexTypes::Word::CString_                       > m_oDocPartCategory;
-			nullable<ComplexTypes::Word::CString_                       > m_oDocPartGallery;
+ 			nullable<ComplexTypes::Word::String                       > m_oDocPartCategory;
+			nullable<ComplexTypes::Word::String                       > m_oDocPartGallery;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDocPartUnique;
 		};
 
@@ -704,14 +704,14 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				if ( m_sLastValue.IsInit() )
 				{
 					sResult = _T("<w:dropDownList w:lastValue=\"");
-					sResult += m_sLastValue->GetString();
+                    sResult += m_sLastValue.get2();
 					sResult += _T("\">");
 				}
 				else
@@ -747,7 +747,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString >                             m_sLastValue;
+			nullable<std::wstring >                             m_sLastValue;
 			// Nodes
 			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
 		};
@@ -788,9 +788,9 @@ namespace OOX
 						m_oDocPart = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:placeholder>");
+				std::wstring sResult = _T("<w:placeholder>");
 
 				WritingElement_WriteNode_1( _T("<w:docPart "), m_oDocPart );
 
@@ -806,7 +806,7 @@ namespace OOX
 		public:
 
 			// Nodes
-			nullable<ComplexTypes::Word::CString_> m_oDocPart;
+			nullable<ComplexTypes::Word::String> m_oDocPart;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -846,9 +846,9 @@ namespace OOX
 						m_oRPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:sdtEndPr>");
+				std::wstring sResult = _T("<w:sdtEndPr>");
 
 				if ( m_oRPr.IsInit() )
 					sResult += m_oRPr->toXML();
@@ -1073,9 +1073,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:sdtPr>");
+				std::wstring sResult = _T("<w:sdtPr>");
 
 				WritingElement_WriteNode_2( m_oRPr );
 				WritingElement_WriteNode_1( _T("<w:alias "),         m_oAlias );
@@ -1182,7 +1182,7 @@ namespace OOX
 			ESdtType                                                      m_eType;
 
 			// Nodes
-			nullable<ComplexTypes::Word::CString_                       > m_oAlias;
+			nullable<ComplexTypes::Word::String                       > m_oAlias;
 			nullable<OOX::Logic::CSdtComboBox                           > m_oComboBox;
 			nullable<ComplexTypes::Word::CDataBinding                   > m_oDataBinding;
 			nullable<OOX::Logic::CDate                                  > m_oDate;
@@ -1196,7 +1196,7 @@ namespace OOX
 			nullable<OOX::Logic::CRunProperty                           > m_oRPr;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowingPlcHdr;
 			nullable<ComplexTypes::Word::CUnsignedDecimalNumber         > m_oTabIndex;
-			nullable<ComplexTypes::Word::CString_                       > m_oTag;
+			nullable<ComplexTypes::Word::String                       > m_oTag;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText                       > m_oText;
 		};
@@ -1240,7 +1240,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_sdtContent;
@@ -1297,9 +1297,9 @@ namespace OOX
 						m_oSdtPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:sdt>");
+				std::wstring sResult = _T("<w:sdt>");
 
 				if ( m_oSdtPr.IsInit() )
 					sResult += m_oSdtPr->toXML();

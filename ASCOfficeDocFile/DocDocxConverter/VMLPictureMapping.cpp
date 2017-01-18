@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -139,8 +139,8 @@ namespace DocFileFormat
 	bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
 	{
 		newXmlString.clear();
-		std::wstring sTempXmlFile = FileSystem::Directory::CreateTempFileWithUniqueName(
-                                                    FileSystem::Directory::GetTempPath(), L"emb");
+        std::wstring sTempXmlFile = NSDirectory::CreateTempFileWithUniqueName(
+                                                    NSDirectory::GetTempPath(), L"emb");
 
 		sTempXmlFile += L".xml";
 		
@@ -164,7 +164,7 @@ namespace DocFileFormat
 					if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMath)
 					{
 						res = true;
-						newXmlString = paragraph->m_arrItems[j]->toXML().GetBuffer();
+                        newXmlString = paragraph->m_arrItems[j]->toXML();
 						break;
 					}
 					else if (paragraph->m_arrItems[j]->getType() == OOX::et_m_oMathPara)
@@ -176,7 +176,7 @@ namespace DocFileFormat
 							if (mathPara->m_arrItems[k]->getType() == OOX::et_m_oMath)
 							{
 								res = true;
-								newXmlString = mathPara->m_arrItems[k]->toXML().GetBuffer();
+                                newXmlString = mathPara->m_arrItems[k]->toXML();
 								break;
 							}
 						}

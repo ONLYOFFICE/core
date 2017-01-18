@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,7 @@ namespace SimpleTypes
 
 		COptimizeForBrowserTarget() {} 
 
-		virtual EOptimizeForBrowserTarget FromString(CString &sValue)
+        virtual EOptimizeForBrowserTarget FromString(std::wstring &sValue)
 		{
             if       ( _T("W3C XHTML+CSS1") == sValue ) this->m_eValue = optforbrowserXhtmlCSS1;
             else if  ( _T("W3C HTML4+CSS1") == sValue ) this->m_eValue = optforbrowserHtml4CSS1;
@@ -68,7 +68,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString                   ToString() const 
+        virtual std::wstring                   ToString() const
 		{
             switch(this->m_eValue)
 			{
@@ -117,9 +117,9 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:target"), m_oTarget )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			virtual CString ToString() const
+            virtual std::wstring ToString() const
 			{
-				CString sResult;
+                std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:val=\""),    m_oVal );
 				ComplexTypes_WriteAttribute( _T("w:target=\""), m_oTarget );
@@ -201,7 +201,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+            std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
 
 			if ( m_oAllowPNG.IsInit() )

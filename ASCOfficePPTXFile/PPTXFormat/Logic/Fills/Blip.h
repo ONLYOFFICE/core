@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,11 +69,11 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
 				pWriter->StartNode(strName);
 
 				pWriter->StartAttributes();
@@ -135,18 +135,18 @@ namespace PPTX
 					pRels = pWriter->m_pCommonRels->operator ->();
 
 
-				CString olePath;
-				if(!oleFilepathBin.IsEmpty())
+				std::wstring olePath;
+				if(!oleFilepathBin.empty())
 				{
 					olePath = oleFilepathBin;
 				}
-				else if(!oleRid.IsEmpty())
+				else if(!oleRid.empty())
 				{
 					olePath= this->GetFullOleName(PPTX::RId(oleRid), pRels);
 				}
 
 				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), olePath, dX, dY, dW, dH);
-				CString s = oId.GetPath2();
+				std::wstring s = oId.GetPath2();
 
 				pWriter->StartRecord(3);
 
@@ -157,8 +157,8 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			virtual CString GetFullPicName(FileContainer* pRels = NULL)const;
-			virtual CString GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
 
 		public:
 			std::vector<UniEffect> Effects;
@@ -168,12 +168,12 @@ namespace PPTX
 			nullable<PPTX::RId> link;
 		//private:
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		//internal
-			CString oleRid;
-			CString oleFilepathBin;
-			CString oleFilepathImg;
-			CString oleRidImg;
+			std::wstring oleRid;
+			std::wstring oleFilepathBin;
+			std::wstring oleFilepathImg;
+			std::wstring oleRidImg;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

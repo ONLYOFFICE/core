@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -91,7 +91,7 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rot"), rot);
@@ -116,7 +116,7 @@ namespace PPTX
 				oAttr4.Write(_T("cx"), chExtX);
 				oAttr4.Write(_T("cy"), chExtY);
 
-				CString strValue = _T("");
+				std::wstring strValue = _T("");
 				
 				if (_T("") != oAttr1.m_strValue)
 					strValue += XmlUtils::CreateNode(_T("a:off"), oAttr1);
@@ -183,7 +183,7 @@ namespace PPTX
 				pWriter->EndNode(m_ns + _T(":xfrm"));
 			}
 
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(strNS + _T(":xfrm"));
 
@@ -372,7 +372,7 @@ namespace PPTX
 			nullable_bool		flipV;
 			nullable_int		rot;
 		public:
-			CString m_ns;
+			std::wstring m_ns;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

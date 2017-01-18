@@ -34,6 +34,17 @@
 		69415FEF1CB5248F003E771B /* libjpeg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FCE1CB5243F003E771B /* libjpeg_ios.a */; };
 		69415FF21CB5249A003E771B /* libjbig_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FCB1CB5243F003E771B /* libjbig_ios.a */; };
 		69415FF51CB524A3003E771B /* libjasper_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FC81CB5243F003E771B /* libjasper_ios.a */; };
+		6967AFB01E2793A500A129E2 /* cextracttools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967AFAE1E2793A500A129E2 /* cextracttools.cpp */; };
+		6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967AFAF1E2793A500A129E2 /* cextracttools.h */; };
+		6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967AFB31E27940600A129E2 /* ASCConverters.h */; };
+		6967AFDF1E279B3600A129E2 /* libTxtXmlFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967AFDC1E279B2300A129E2 /* libTxtXmlFormatLib.a */; };
+		6967B0B31E27A07100A129E2 /* libPPTFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B0961E27A03800A129E2 /* libPPTFormatLib.a */; };
+		6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B0D11E27A35F00A129E2 /* libHtmlFile.a */; };
+		6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B1091E27A41400A129E2 /* libPdfWriter.a */; };
+		6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 6967B10D1E27A65600A129E2 /* OfficeFileFormatChecker.h */; };
+		6967B1101E27A65600A129E2 /* OfficeFileFormatChecker2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B10E1E27A65600A129E2 /* OfficeFileFormatChecker2.cpp */; };
+		6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */; };
+		6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */; };
 		698AF4C31C0745980080D889 /* libicu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 698AF4C01C0740960080D889 /* libicu.a */; };
 		69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA323D1CEE092A00E10AF0 /* libagg_ios.a */; };
 		69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69DA322B1CEE087D00E10AF0 /* libcximage_ios.a */; };
@@ -201,6 +212,76 @@
 			proxyType = 1;
 			remoteGlobalIDString = 17C100911ACC4D64006B99B3;
 			remoteInfo = jasper;
+		};
+		6967AFDB1E279B2300A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6967AFBF1E2798B900A129E2;
+			remoteInfo = TxtXmlFormatLib;
+		};
+		6967AFDD1E279B2D00A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6967AFBE1E2798B900A129E2;
+			remoteInfo = TxtXmlFormatLib;
+		};
+		6967B0951E27A03800A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6967AFFB1E279D3900A129E2;
+			remoteInfo = PPTFormatLib;
+		};
+		6967B0B01E27A06900A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6967AFFA1E279D3900A129E2;
+			remoteInfo = PPTFormatLib;
+		};
+		6967B0D01E27A35F00A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6967B0BD1E27A22E00A129E2;
+			remoteInfo = HtmlFile;
+		};
+		6967B0D21E27A36800A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6967B0BC1E27A22E00A129E2;
+			remoteInfo = HtmlFile;
+		};
+		6967B1081E27A41400A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7C560F6F1AA71A91000E5860;
+			remoteInfo = PdfWriter;
+		};
+		6967B10B1E27A42500A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C560F6E1AA71A91000E5860;
+			remoteInfo = PdfWriter;
+		};
+		6967B1CD1E27B9C500A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6967B1291E27B44D00A129E2;
+			remoteInfo = RtfFormatLib;
+		};
+		6967B1CF1E27B9D000A129E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6967B1281E27B44D00A129E2;
+			remoteInfo = RtfFormatLib;
 		};
 		698AF4BF1C0740960080D889 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -373,6 +454,17 @@
 		69415FBD1CB5243F003E771B /* jpeg.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jpeg.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jpeg/jpeg.xcodeproj; sourceTree = "<group>"; };
 		69415FC01CB5243F003E771B /* jbig.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jbig.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jbig/jbig.xcodeproj; sourceTree = "<group>"; };
 		69415FC31CB5243F003E771B /* jasper.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jasper.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/jasper/jasper.xcodeproj; sourceTree = "<group>"; };
+		6967AFAE1E2793A500A129E2 /* cextracttools.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cextracttools.cpp; path = ../../../../src/cextracttools.cpp; sourceTree = "<group>"; };
+		6967AFAF1E2793A500A129E2 /* cextracttools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cextracttools.h; path = ../../../../src/cextracttools.h; sourceTree = "<group>"; };
+		6967AFB31E27940600A129E2 /* ASCConverters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCConverters.h; path = ../../../../src/ASCConverters.h; sourceTree = "<group>"; };
+		6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TxtXmlFormatLib.xcodeproj; path = ../../../../ASCOfficeTxtFile/TxtXmlFormatLib/Mac/TxtXmlFormatLib/TxtXmlFormatLib.xcodeproj; sourceTree = "<group>"; };
+		6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTFormatLib.xcodeproj; path = ../../../../ASCOfficePPTFile/PPTFormatLib/Mac/PPTFormatLib.xcodeproj; sourceTree = "<group>"; };
+		6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HtmlFile.xcodeproj; path = ../../../../HtmlFile/Mac/HtmlFile/HtmlFile.xcodeproj; sourceTree = "<group>"; };
+		6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PdfWriter.xcodeproj; path = ../../../../DesktopEditor/ios_projects/PdfWriter/PdfWriter.xcodeproj; sourceTree = "<group>"; };
+		6967B10D1E27A65600A129E2 /* OfficeFileFormatChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OfficeFileFormatChecker.h; path = ../../../../../Common/OfficeFileFormatChecker.h; sourceTree = "<group>"; };
+		6967B10E1E27A65600A129E2 /* OfficeFileFormatChecker2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OfficeFileFormatChecker2.cpp; path = ../../../../../Common/OfficeFileFormatChecker2.cpp; sourceTree = "<group>"; };
+		6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RtfFormatLib.xcodeproj; path = ../../../../ASCOfficeRtfFile/RtfFormatLib/Mac/RtfFormatLib.xcodeproj; sourceTree = "<group>"; };
+		6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCConverters_ios.cpp; path = ../../../../src/ASCConverters_ios.cpp; sourceTree = "<group>"; };
 		698AF4BB1C0740960080D889 /* icu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = icu.xcodeproj; path = ../../../../UnicodeConverter/icubuilds/mac/icu/icu.xcodeproj; sourceTree = "<group>"; };
 		69DA32261CEE087D00E10AF0 /* cximage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cximage.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/cximage.xcodeproj; sourceTree = "<group>"; };
 		69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = ../../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<group>"; };
@@ -391,6 +483,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
+				6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */,
+				6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */,
+				6967B0B31E27A07100A129E2 /* libPPTFormatLib.a in Frameworks */,
+				6967AFDF1E279B3600A129E2 /* libTxtXmlFormatLib.a in Frameworks */,
 				69EC66D91E01775B003527E2 /* libUnicodeConverter.a in Frameworks */,
 				69DA32F11CEE100E00E10AF0 /* libagg_ios.a in Frameworks */,
 				69DA32F21CEE100E00E10AF0 /* libcximage_ios.a in Frameworks */,
@@ -430,6 +527,11 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
+				6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */,
+				6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */,
+				6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */,
+				6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */,
 				69EC66CD1E01770C003527E2 /* UnicodeConverter.xcodeproj */,
 				69415FAE1CB5243F003E771B /* mng.xcodeproj */,
 				69415FB11CB5243F003E771B /* png.xcodeproj */,
@@ -468,6 +570,7 @@
 		17C27A161AC2DB3C00E1D003 /* SDK */ = {
 			isa = PBXGroup;
 			children = (
+				6967AFA51E27918600A129E2 /* src */,
 				17C27A171AC2DB3D00E1D003 /* X2tConverter.h */,
 				17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */,
 			);
@@ -551,6 +654,67 @@
 			isa = PBXGroup;
 			children = (
 				69415FC81CB5243F003E771B /* libjasper_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967AFA51E27918600A129E2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */,
+				6967BEAF1E27D16A00A129E2 /* ASCConverters_ios.cpp */,
+				6967AFB31E27940600A129E2 /* ASCConverters.h */,
+				6967AFAE1E2793A500A129E2 /* cextracttools.cpp */,
+				6967AFAF1E2793A500A129E2 /* cextracttools.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		6967AFD81E279B2300A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967AFDC1E279B2300A129E2 /* libTxtXmlFormatLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967B0921E27A03800A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0961E27A03800A129E2 /* libPPTFormatLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967B0CD1E27A35E00A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0D11E27A35F00A129E2 /* libHtmlFile.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967B1041E27A41300A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967B1091E27A41400A129E2 /* libPdfWriter.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967B1181E27A9D500A129E2 /* OfficeFileFormatChecker */ = {
+			isa = PBXGroup;
+			children = (
+				6967B10D1E27A65600A129E2 /* OfficeFileFormatChecker.h */,
+				6967B10E1E27A65600A129E2 /* OfficeFileFormatChecker2.cpp */,
+			);
+			name = OfficeFileFormatChecker;
+			sourceTree = "<group>";
+		};
+		6967B1CA1E27B9C400A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -650,6 +814,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6967AFB11E2793A500A129E2 /* cextracttools.h in Headers */,
+				6967B10F1E27A65600A129E2 /* OfficeFileFormatChecker.h in Headers */,
+				6967AFB51E27940600A129E2 /* ASCConverters.h in Headers */,
 				17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -668,8 +835,14 @@
 			buildRules = (
 			);
 			dependencies = (
+				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
+				6967B10C1E27A42500A129E2 /* PBXTargetDependency */,
+				6967B0D31E27A36800A129E2 /* PBXTargetDependency */,
+				6967B0B11E27A06900A129E2 /* PBXTargetDependency */,
+				6967AFDE1E279B2D00A129E2 /* PBXTargetDependency */,
 				69EC66D81E01774D003527E2 /* PBXTargetDependency */,
 				69DA32F01CEE100700E10AF0 /* PBXTargetDependency */,
+				69415F261CB51C32003E771B /* PBXTargetDependency */,
 				69DA32E81CEE0FFD00E10AF0 /* PBXTargetDependency */,
 				69DA32EC1CEE100200E10AF0 /* PBXTargetDependency */,
 				69DA32EA1CEE0FFF00E10AF0 /* PBXTargetDependency */,
@@ -685,7 +858,6 @@
 				69415FE51CB5246B003E771B /* PBXTargetDependency */,
 				69415FE21CB5245A003E771B /* PBXTargetDependency */,
 				69415FDF1CB5244D003E771B /* PBXTargetDependency */,
-				69415F261CB51C32003E771B /* PBXTargetDependency */,
 				698AF4C21C0745930080D889 /* PBXTargetDependency */,
 				177C43311AD7C0E400055DD7 /* PBXTargetDependency */,
 				69DA32EE1CEE100400E10AF0 /* PBXTargetDependency */,
@@ -745,6 +917,10 @@
 					ProjectRef = 69DA324A1CEE095000E10AF0 /* graphics.xcodeproj */;
 				},
 				{
+					ProductGroup = 6967B0CD1E27A35E00A129E2 /* Products */;
+					ProjectRef = 6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */;
+				},
+				{
 					ProductGroup = 698AF4BC1C0740960080D889 /* Products */;
 					ProjectRef = 698AF4BB1C0740960080D889 /* icu.xcodeproj */;
 				},
@@ -781,8 +957,16 @@
 					ProjectRef = 69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */;
 				},
 				{
+					ProductGroup = 6967B1041E27A41300A129E2 /* Products */;
+					ProjectRef = 6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */;
+				},
+				{
 					ProductGroup = 69415FB21CB5243F003E771B /* Products */;
 					ProjectRef = 69415FB11CB5243F003E771B /* png.xcodeproj */;
+				},
+				{
+					ProductGroup = 6967B0921E27A03800A129E2 /* Products */;
+					ProjectRef = 6967B0911E27A03800A129E2 /* PPTFormatLib.xcodeproj */;
 				},
 				{
 					ProductGroup = 69DA325D1CEE09BB00E10AF0 /* Products */;
@@ -797,8 +981,16 @@
 					ProjectRef = 69415FB41CB5243F003E771B /* raw.xcodeproj */;
 				},
 				{
+					ProductGroup = 6967B1CA1E27B9C400A129E2 /* Products */;
+					ProjectRef = 6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */;
+				},
+				{
 					ProductGroup = 69415FB81CB5243F003E771B /* Products */;
 					ProjectRef = 69415FB71CB5243F003E771B /* tiff.xcodeproj */;
+				},
+				{
+					ProductGroup = 6967AFD81E279B2300A129E2 /* Products */;
+					ProjectRef = 6967AFD71E279B2300A129E2 /* TxtXmlFormatLib.xcodeproj */;
 				},
 				{
 					ProductGroup = 69EC66CE1E01770C003527E2 /* Products */;
@@ -889,6 +1081,41 @@
 			fileType = archive.ar;
 			path = libtiff_ios.a;
 			remoteRef = 69415FDC1CB5243F003E771B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		6967AFDC1E279B2300A129E2 /* libTxtXmlFormatLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTxtXmlFormatLib.a;
+			remoteRef = 6967AFDB1E279B2300A129E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		6967B0961E27A03800A129E2 /* libPPTFormatLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPPTFormatLib.a;
+			remoteRef = 6967B0951E27A03800A129E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		6967B0D11E27A35F00A129E2 /* libHtmlFile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libHtmlFile.a;
+			remoteRef = 6967B0D01E27A35F00A129E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		6967B1091E27A41400A129E2 /* libPdfWriter.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libPdfWriter.a;
+			remoteRef = 6967B1081E27A41400A129E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		6967B1CE1E27B9C500A129E2 /* libRtfFormatLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRtfFormatLib.a;
+			remoteRef = 6967B1CD1E27B9C500A129E2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		698AF4C01C0740960080D889 /* libicu.a */ = {
@@ -992,6 +1219,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */,
+				6967B1101E27A65600A129E2 /* OfficeFileFormatChecker2.cpp in Sources */,
+				6967BEB01E27D16A00A129E2 /* ASCConverters_ios.cpp in Sources */,
+				6967AFB01E2793A500A129E2 /* cextracttools.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1052,6 +1282,31 @@
 			isa = PBXTargetDependency;
 			name = jasper;
 			targetProxy = 69415FF31CB5249E003E771B /* PBXContainerItemProxy */;
+		};
+		6967AFDE1E279B2D00A129E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TxtXmlFormatLib;
+			targetProxy = 6967AFDD1E279B2D00A129E2 /* PBXContainerItemProxy */;
+		};
+		6967B0B11E27A06900A129E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PPTFormatLib;
+			targetProxy = 6967B0B01E27A06900A129E2 /* PBXContainerItemProxy */;
+		};
+		6967B0D31E27A36800A129E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = HtmlFile;
+			targetProxy = 6967B0D21E27A36800A129E2 /* PBXContainerItemProxy */;
+		};
+		6967B10C1E27A42500A129E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PdfWriter;
+			targetProxy = 6967B10B1E27A42500A129E2 /* PBXContainerItemProxy */;
+		};
+		6967B1D01E27B9D000A129E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RtfFormatLib;
+			targetProxy = 6967B1CF1E27B9D000A129E2 /* PBXContainerItemProxy */;
 		};
 		698AF4C21C0745930080D889 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1159,6 +1414,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1194,6 +1450,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -1223,14 +1480,16 @@
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 					unix,
 					MAC,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = X2tConverter;
@@ -1263,14 +1522,16 @@
 					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 					unix,
 					MAC,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = X2tConverter;
 				PUBLIC_HEADERS_FOLDER_PATH = ../include;

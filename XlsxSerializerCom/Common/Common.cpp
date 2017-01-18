@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,7 +80,7 @@ namespace SerializeCommon
 		INT nDstLength = lFileSize;
 		BYTE *pBuffer = new BYTE [lFileSize];
 		memset(pBuffer, 0, lFileSize);
-        Base64::Base64Decode ((LPCSTR)sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
+        Base64::Base64Decode (sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
 
 		// Пишем в файл
 		oFile.WriteFile(pBuffer, nDstLength);

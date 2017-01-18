@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,14 @@
 #ifndef READER_CLASSES
 #define READER_CLASSES
 
-#include "../../Common/ATLDefine.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace BinDocxRW {
 
 class SectPr
 {
 public: 
-	CString sHeaderFooterReference;
+    std::wstring sHeaderFooterReference;
 	double W;
 	double H;
 	BYTE cOrientation;
@@ -53,11 +53,11 @@ public:
 	bool EvenAndOddHeaders;
 	BYTE SectionType;
 	int PageNumStart;
-	CString sectPrChange;
-	CString cols;
-	CString pgBorders;
-	CString footnotePr;
-	CString endnotePr;
+    std::wstring sectPrChange;
+    std::wstring cols;
+    std::wstring pgBorders;
+    std::wstring footnotePr;
+    std::wstring endnotePr;
 
 	bool bHeader;
 	bool bFooter;
@@ -86,9 +86,9 @@ public:
 		bSectionType = false;
 		bPageNumStart = false;
 	}
-	CString Write()
+    std::wstring Write()
 	{
-		CString sRes = _T("");
+        std::wstring sRes = _T("");
 		long nWidth = SerializeCommon::Round(W * g_dKoef_mm_to_twips);
 		long nHeight = SerializeCommon::Round(H * g_dKoef_mm_to_twips);
 		long nMLeft = SerializeCommon::Round(Left * g_dKoef_mm_to_twips);
@@ -97,15 +97,16 @@ public:
 		long nMBottom = SerializeCommon::Round(Bottom * g_dKoef_mm_to_twips);
 		long nMHeader = SerializeCommon::Round(Header * g_dKoef_mm_to_twips);
 		long nMFooter = SerializeCommon::Round(Footer * g_dKoef_mm_to_twips);
-		if(!sHeaderFooterReference.IsEmpty())
+
+        if(!sHeaderFooterReference.empty())
             sRes += sHeaderFooterReference;
-		if(!footnotePr.IsEmpty())
+        if(!footnotePr.empty())
             sRes += footnotePr;
-		if(!endnotePr.IsEmpty())
+        if(!endnotePr.empty())
             sRes += endnotePr;
 		if(bSectionType)
 		{
-			CString sType;
+            std::wstring sType;
 			switch(SectionType)
 			{
 			case 0: sType = _T("continuous");break;
@@ -115,28 +116,35 @@ public:
 			case 4: sType = _T("oddPage");break;
 			default: sType = _T("nextPage");break;
 			}
-            sRes.AppendFormat(_T("<w:type w:val=\"%ls\"/>"), (const TCHAR *) sType);
+            sRes += L"<w:type w:val=\"" + sType + L"\"/>";
 		}
-		if(orientation_Portrait == cOrientation)
-			sRes.AppendFormat(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\"/>"), nWidth, nHeight);
-		else
-			sRes.AppendFormat(_T("<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"landscape\"/>"), nWidth, nHeight);
-		sRes.AppendFormat(_T("<w:pgMar w:top=\"%d\" w:right=\"%d\" w:bottom=\"%d\" w:left=\"%d\" w:gutter=\"0\""), nMTop, nMRight, nMBottom, nMLeft);
-		if(bHeader)
-			sRes.AppendFormat(_T(" w:header=\"%d\""), nMHeader);
+        sRes += L"<w:pgSz w:w=\"" + std::to_wstring(nWidth) + L"\" w:h=\"" + std::to_wstring(nHeight) + L"\"";
+		if(orientation_Portrait != cOrientation)
+            sRes += L" w:orient=\"landscape\"";
+		sRes += L"/>";
+
+        sRes += L"<w:pgMar w:top=\"" + std::to_wstring(nMTop) + L"\" w:right=\"" + std::to_wstring(nMRight) +
+                    L"\" w:bottom=\"" + std::to_wstring(nMBottom) + L"\" w:left=\"" + std::to_wstring(nMLeft) + L"\" w:gutter=\"0\"";
+
+        if(bHeader)
+            sRes += L" w:header=\"" + std::to_wstring(nMHeader) + L"\"";
 		if(bFooter)
-			sRes.AppendFormat(_T(" w:footer=\"%d\""), nMFooter);
+            sRes += L" w:footer=\"" + std::to_wstring(nMFooter) + L"\"";
         sRes += L"/>";
-		if(!pgBorders.IsEmpty())
+        if(!pgBorders.empty())
             sRes += pgBorders;
-		if(bPageNumStart)
-			sRes.AppendFormat(_T("<w:pgNumType w:start=\"%d\"/>"), PageNumStart);
-		if(!cols.IsEmpty())
+
+        if(bPageNumStart)
+            sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";
+
+        if(!cols.empty())
             sRes += cols;
         sRes += L"<w:docGrid w:linePitch=\"360\"/>";
-		if(bTitlePg && TitlePg)
+
+        if(bTitlePg && TitlePg)
             sRes += L"<w:titlePg/>";
-		if(!sectPrChange.IsEmpty())
+
+        if(!sectPrChange.empty())
             sRes += sectPrChange;
 		return sRes;
 	}
@@ -153,12 +161,9 @@ public:
 		G = 255;
 		B = 255;
 	}
-	CString ToString()
+    std::wstring ToString()
 	{
-		CString sR;sR.Format(_T("%02X"), R);
-		CString sG;sG.Format(_T("%02X"), G);
-		CString sB;sB.Format(_T("%02X"), B);
-		return sR + sG + sB;
+        return XmlUtils::IntToString(R, L"%02X") + XmlUtils::IntToString(G, L"%02X") + XmlUtils::IntToString(B, L"%02X");
 	}
 };
 class CThemeColor{
@@ -185,9 +190,9 @@ public:
 	{
 		return bShade || bTint || bColor || Auto;
 	}
-	CString ToStringColor()
+    std::wstring ToStringColor()
 	{
-		CString sRes;
+        std::wstring sRes;
 		if(bColor)
 		{
 			switch(Color)
@@ -214,27 +219,21 @@ public:
 		}
 		return sRes;
 	}
-	CString ToStringTint()
+    std::wstring ToStringTint()
 	{
-		CString sRes;
+        std::wstring sRes;
 		if(bTint)
 		{
-			if(Tint > 0xF)
-				sRes.AppendFormat(_T("%X"), Tint);
-			else
-				sRes.AppendFormat(_T("0%X"), Tint);
+            sRes = XmlUtils::IntToString(Tint, L"%02X");
 		}
 		return sRes;
 	}
-	CString ToStringShade()
+    std::wstring ToStringShade()
 	{
-		CString sRes;
+        std::wstring sRes;
 		if(bShade)
 		{
-			if(Shade > 0xF)
-				sRes.AppendFormat(_T("%X"), Shade);
-			else
-				sRes.AppendFormat(_T("0%X"), Shade);
+            sRes = XmlUtils::IntToString(Shade, L"%02X");
 		}
 		return sRes;
 	}
@@ -271,16 +270,16 @@ public:
     docRGB      Color;
     CThemeColor ThemeColor;
 
-    CString     sObject;
+    std::wstring     sObject;
 
     bool bColor;
     bool bThemeColor;
 
     Background() : bColor (false), bThemeColor(false) {}
 
-    CString Write()
+    std::wstring Write()
     {
-        CString sBackground =  L"<w:background";
+        std::wstring sBackground =  L"<w:background";
 
         if(bColor)
         {
@@ -325,26 +324,26 @@ public:
         bColor      = false;
 		bThemeColor = false;
 	}
-	CString ToString()
+    std::wstring ToString()
 	{
-		CString sShd;
+        std::wstring sShd;
 		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{
             sShd += L"<w:shd w:val=\"clear\" w:color=\"auto\"";
 			if(bColor)
-                sShd.AppendFormat(_T(" w:fill=\"%ls\""), (const TCHAR *) Color.ToString());
+                sShd += L" w:fill=\"" + Color.ToString() + L"\"";
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
 				if(ThemeColor.Auto && !bColor)
                     sShd += L" w:fill=\"auto\"";
 				if(ThemeColor.bColor)
-                    sShd.AppendFormat(_T(" w:themeFill=\"%ls\""), (const TCHAR *) ThemeColor.ToStringColor());
-				if(ThemeColor.bTint)
-                    sShd.AppendFormat(_T(" w:themeFillTint=\"%ls\""), (const TCHAR *) ThemeColor.ToStringTint());
+                    sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
+                if(ThemeColor.bTint)
+                    sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringColor() + L"\"";
 				if(ThemeColor.bShade)
-                    sShd.AppendFormat(_T(" w:themeFillShade=\"%ls\""), (const TCHAR *) ThemeColor.ToStringShade());
+                    sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringColor() + L"\"";
 			}
-            sShd += (_T("/>"));
+            sShd += L"/>";
 		}
 		return sShd;
 	}
@@ -368,22 +367,22 @@ public:
 class rPr
 {
 private:
-	std::map<CString, int>& m_mapFonts;
+    std::map<std::wstring, int>& m_mapFonts;
 public:
 	bool Bold;
 	bool Italic;
 	bool Underline;
 	bool Strikeout;
-	CString FontAscii;
-	CString FontHAnsi;
-	CString FontAE;
-	CString FontCS;
+    std::wstring FontAscii;
+    std::wstring FontHAnsi;
+    std::wstring FontAE;
+    std::wstring FontCS;
 	long FontSize;
 	docRGB Color;
 	BYTE VertAlign;
 	docRGB HighLight;
-	CString Shd;
-	CString RStyle;
+    std::wstring Shd;
+    std::wstring RStyle;
 	double Spacing;
 	bool DStrikeout;
 	bool Caps;
@@ -395,16 +394,16 @@ public:
 	long FontSizeCs;
 	bool Cs;
 	bool Rtl;
-	CString Lang;
-	CString LangBidi;
-	CString LangEA;
+    std::wstring Lang;
+    std::wstring LangBidi;
+    std::wstring LangEA;
 	CThemeColor ThemeColor;
 	bool Vanish;
-	CString Outline;
-	CString Fill;
-	CString Del;
-	CString Ins;
-	CString rPrChange;
+    std::wstring Outline;
+    std::wstring Fill;
+    std::wstring Del;
+    std::wstring Ins;
+    std::wstring rPrChange;
 
 	bool bBold;
 	bool bItalic;
@@ -439,7 +438,7 @@ public:
 
 	bool bDoNotWriteNullProp;
 public:
-	rPr(std::map<CString, int>& mapFonts) : m_mapFonts(mapFonts)
+    rPr(std::map<std::wstring, int>& mapFonts) : m_mapFonts(mapFonts)
 	{
 		Reset();
 
@@ -486,47 +485,47 @@ public:
 		bThemeColor = false;
 		ThemeColor.Reset();
 		bVanish = false;
-		Outline.Empty();
-		Fill.Empty();
-		Del.Empty();
-		Ins.Empty();
-		rPrChange.Empty();
+
+        Outline.clear();
+        Fill.clear();
+        Del.clear();
+        Ins.clear();
+        rPrChange.clear();
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
-			!Outline.IsEmpty() || !Fill.IsEmpty() || !Del.IsEmpty() || !Ins.IsEmpty() || !rPrChange.IsEmpty();
+            !Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !rPrChange.empty();
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
-		pCStringWriter->WriteString(CString(_T("<w:rPr>")));
+        pCStringWriter->WriteString(L"<w:rPr>");
 		if(bRStyle)
 		{
-            CString sRStyle;sRStyle.Format(_T("<w:rStyle w:val=\"%ls\" />"), RStyle);
-			pCStringWriter->WriteString(sRStyle);
+            pCStringWriter->WriteString(L"<w:rStyle w:val=\"" + RStyle + L"\"/>");
 		}
 		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint)
 		{
-			CString sFont = _T("<w:rFonts");
+            std::wstring sFont = _T("<w:rFonts");
 			if(bFontAscii)
 			{
-                sFont.AppendFormat(_T(" w:ascii=\"%ls\""), (const TCHAR *) FontAscii);
+                sFont += L" w:ascii=\"" + FontAscii + L"\"";
 				m_mapFonts[FontAscii] = 1;
 			}
 			if(bFontHAnsi)
 			{
-                sFont.AppendFormat(_T(" w:hAnsi=\"%ls\""), (const TCHAR *) FontHAnsi);
+                sFont += L" w:hAnsi=\"" + FontHAnsi + L"\"";
 				m_mapFonts[FontHAnsi] = 1;
 			}
 			if(bFontCS)
 			{
-                sFont.AppendFormat(_T(" w:cs=\"%ls\""), (const TCHAR *) FontCS);
+                sFont += L" w:cs=\"" + FontCS + L"\"";
 				m_mapFonts[FontCS] = 1;
 			}
 			if(bFontAE)
 			{
-                sFont.AppendFormat(_T(" w:eastAsia=\"%ls\""), (const TCHAR *) FontAE);
+                sFont += L" w:eastAsia=\"" + FontAE + L"\"";
 				m_mapFonts[FontAE] = 1;
 			}
 			if(bFontHint)
@@ -544,81 +543,81 @@ public:
 		if(bBold)
 		{
 			if(Bold)
-				pCStringWriter->WriteString(CString(_T("<w:b />")));
+                pCStringWriter->WriteString(L"<w:b/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:b w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:b w:val=\"false\"/>");
 		}
 		if(bBoldCs)
 		{
 			if(BoldCs)
-				pCStringWriter->WriteString(CString(_T("<w:bCs />")));
+                pCStringWriter->WriteString(L"<w:bCs/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:bCs w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:bCs w:val=\"false\"/>");
 		}
 		if(bItalic)
 		{
 			if(Italic)
-				pCStringWriter->WriteString(CString(_T("<w:i />")));
+                pCStringWriter->WriteString(L"<w:i/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:i w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:i w:val=\"false\"/>");
 		}
 		if(bItalicCs)
 		{
 			if(ItalicCs)
-				pCStringWriter->WriteString(CString(_T("<w:iCs />")));
+                pCStringWriter->WriteString(L"<w:iCs />");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:iCs w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:iCs w:val=\"false\"/>");
 		}
 		if(bCaps)
 		{
 			if(Caps)
-				pCStringWriter->WriteString(CString(_T("<w:caps />")));
+                pCStringWriter->WriteString(L"<w:caps/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:caps w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:caps w:val=\"false\"/>");
 		}
 		if(bSmallCaps)
 		{
 			if(SmallCaps)
-				pCStringWriter->WriteString(CString(_T("<w:smallCaps />")));
+                pCStringWriter->WriteString(L"<w:smallCaps/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:smallCaps w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:smallCaps w:val=\"false\"/>");
 		}
 		if(bStrikeout)
 		{
 			if(Strikeout)
-				pCStringWriter->WriteString(CString(_T("<w:strike/>")));
+                pCStringWriter->WriteString(L"<w:strike/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:strike w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:strike w:val=\"false\"/>");
 		}
 		if(bDStrikeout)
 		{
 			if(DStrikeout)
-				pCStringWriter->WriteString(CString(_T("<w:dstrike />")));
+                pCStringWriter->WriteString(L"<w:dstrike/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:dstrike w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:dstrike w:val=\"false\"/>");
 		}
 		if(bVanish)
 		{
 			if(Vanish)
-				pCStringWriter->WriteString(CString(_T("<w:vanish />")));
+                pCStringWriter->WriteString(L"<w:vanish/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:vanish w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:vanish w:val=\"false\"/>");
 		}
 		if(bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
 		{
-			CString sColor(_T("<w:color"));
+            std::wstring sColor(L"<w:color");
 			if(bColor)
-                sColor.AppendFormat(_T(" w:val=\"%ls\""), (const TCHAR *) Color.ToString());
+                sColor += L" w:val=\"" + Color.ToString() + L"\"";
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
 				if(ThemeColor.Auto && !bColor)
                     sColor += L" w:val=\"auto\"";
 				if(ThemeColor.bColor)
-                    sColor.AppendFormat(_T(" w:themeColor=\"%ls\""), (const TCHAR *) ThemeColor.ToStringColor());
+                    sColor += L" w:themeColor=\"" + ThemeColor.ToStringColor() + L"\"";
 				if(ThemeColor.bTint)
-                    sColor.AppendFormat(_T(" w:themeTint=\"%ls\""), (const TCHAR *) ThemeColor.ToStringTint());
+                    sColor += L" w:themeTint=\"" + ThemeColor.ToStringTint() + L"\"";
 				if(ThemeColor.bShade)
-                    sColor.AppendFormat(_T(" w:themeShade=\"%ls\""), (const TCHAR *) ThemeColor.ToStringShade());
+                    sColor += L" w:themeShade=\"" + ThemeColor.ToStringShade() + L"\"";
 			}
             sColor += L"/>";
 			pCStringWriter->WriteString(sColor);
@@ -626,29 +625,26 @@ public:
 		if(bSpacing)
 		{
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * Spacing);
-			CString sSpacing;sSpacing.Format(_T("<w:spacing w:val=\"%d\"/>"), nSpacing);
-			pCStringWriter->WriteString(sSpacing);
+            pCStringWriter->WriteString(L"<w:spacing w:val=\"" + std::to_wstring(nSpacing) + L"\"/>");
 		}
 		if(bPosition)
 		{
 			long nPosition = SerializeCommon::Round( g_dKoef_mm_to_hps * Position);
-			CString sPosition;sPosition.Format(_T("<w:position w:val=\"%d\"/>"), nPosition);
+            std::wstring sPosition = L"<w:position w:val=\"" + std::to_wstring(nPosition) + L"\"/>";
 			pCStringWriter->WriteString(sPosition);
 		}
 		if(bFontSize)
 		{
-			CString sFontSize;sFontSize.Format(_T("<w:sz w:val=\"%d\" />"), FontSize);
-			pCStringWriter->WriteString(sFontSize);
+            pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSize) + L"\"/>");
 		}
 		if(bFontSizeCs)
 		{
-			CString sFontSize;sFontSize.Format(_T("<w:szCs w:val=\"%d\" />"), FontSizeCs);
-			pCStringWriter->WriteString(sFontSize);
+            pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 		}
 		if(bHighLight)
 		{
 			docRGB& H = HighLight;
-			CString sColor;
+            std::wstring sColor;
 			if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
 				sColor = _T("black");
 			else if(0x00 == H.R && 0x00 == H.G && 0xFF == H.B )
@@ -681,26 +677,22 @@ public:
 				sColor = _T("white");
 			else if(0xFF == H.R && 0xFF == H.G && 0x00 == H.B )
 				sColor = _T("yellow");
-			if(!sColor.IsEmpty())
+            if(!sColor.empty())
 			{
-				CString sHighLight;
-                sHighLight.Format(_T("<w:highlight w:val=\"%ls\" />"), sColor);
-				pCStringWriter->WriteString(sHighLight);
+                pCStringWriter->WriteString(L"<w:highlight w:val=\"" + sColor + L"\"/>");
 			}
 			else if(g_nCurFormatVersion < 5)
 			{
 				//добавляем как shading
-				CString sShd;
-                sShd.Format(_T("<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"%ls\"/>"), H.ToString());
-				pCStringWriter->WriteString(sShd);
+                pCStringWriter->WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + H.ToString() + L"\"/>");
 			}
 		}
 		if(bUnderline)
 		{
 			if(Underline)
-				pCStringWriter->WriteString(CString(_T("<w:u w:val=\"single\"/>")));
+                pCStringWriter->WriteString(L"<w:u w:val=\"single\"/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:u w:val=\"none\"/>")));
+                pCStringWriter->WriteString(L"<w:u w:val=\"none\"/>");
 		}
 		if(bShd)
 			pCStringWriter->WriteString(Shd);
@@ -710,79 +702,76 @@ public:
 			{
 			case vertalign_Baseline:
 				if(false == bDoNotWriteNullProp)
-					pCStringWriter->WriteString(CString(_T("<w:vertAlign w:val=\"baseline\" /> ")));
+                    pCStringWriter->WriteString(L"<w:vertAlign w:val=\"baseline\"/>" );
 				break;
-			case vertalign_SuperScript:pCStringWriter->WriteString(CString(_T("<w:vertAlign w:val=\"superscript\" /> ")));break;
-			case vertalign_SubScript:pCStringWriter->WriteString(CString(_T("<w:vertAlign w:val=\"subscript\" /> ")));break;
+            case vertalign_SuperScript:pCStringWriter->WriteString(L"<w:vertAlign w:val=\"superscript\"/>" );break;
+            case vertalign_SubScript:pCStringWriter->WriteString(L"<w:vertAlign w:val=\"subscript\"/>" );break;
 			}
 		}
 		if(bRtl)
 		{
 			if(Rtl)
-				pCStringWriter->WriteString(CString(_T("<w:rtl />")));
+                pCStringWriter->WriteString(L"<w:rtl/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:rtl w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:rtl w:val=\"false\"/>");
 		}
 		if(bCs)
 		{
 			if(Cs)
-				pCStringWriter->WriteString(CString(_T("<w:cs />")));
+                pCStringWriter->WriteString(L"<w:cs/>");
 			else if(false == bDoNotWriteNullProp)
-				pCStringWriter->WriteString(CString(_T("<w:cs w:val=\"false\"/>")));
+                pCStringWriter->WriteString(L"<w:cs w:val=\"false\"/>");
 		}
 		if(bLang || bLangBidi || bLangEA)
 		{
-			pCStringWriter->WriteString(CString(_T("<w:lang")));
+            pCStringWriter->WriteString(L"<w:lang");
 			if(bLang)
 			{
-                CString sLang;sLang.Format(_T(" w:val=\"%ls\""), Lang);
-				pCStringWriter->WriteString(sLang);
+                pCStringWriter->WriteString(L" w:val=\"" + Lang + L"\"");
 			}
 			if(bLangBidi)
 			{
-                CString sLang;sLang.Format(_T(" w:bidi=\"%ls\""), LangBidi);
-				pCStringWriter->WriteString(sLang);
+                pCStringWriter->WriteString(L" w:bidi=\"" + LangBidi + L"\"");
 			}
 			if(bLangEA)
 			{
-                CString sLang;sLang.Format(_T(" w:eastAsia=\"%ls\""), LangEA);
-				pCStringWriter->WriteString(sLang);
+                pCStringWriter->WriteString(L" w:eastAsia=\"" + LangEA + L"\"");
 			}
-			pCStringWriter->WriteString(CString(_T("/>")));
+            pCStringWriter->WriteString(L"/>");
 		}
-		if (!Outline.IsEmpty())
+        if (!Outline.empty())
 			pCStringWriter->WriteString(Outline);
-		if (!Fill.IsEmpty())
+        if (!Fill.empty())
 			pCStringWriter->WriteString(Fill);
-		if (!Del.IsEmpty())
+        if (!Del.empty())
 			pCStringWriter->WriteString(Del);
-		if (!Ins.IsEmpty())
+        if (!Ins.empty())
 			pCStringWriter->WriteString(Ins);
-		if (!rPrChange.IsEmpty())
+        if (!rPrChange.empty())
 			pCStringWriter->WriteString(rPrChange);
-		pCStringWriter->WriteString(CString(_T("</w:rPr>")));
+        pCStringWriter->WriteString(L"</w:rPr>");
 	}
 };
 class docStyle
 {
 public:
-	CString Name;
-	CString Id;
+    std::wstring Name;
+    std::wstring Id;
 	BYTE byteType;
 	bool bDefault;
-	CString BasedOn;
-	CString NextId;
+    std::wstring BasedOn;
+    std::wstring NextId;
 	bool qFormat;
 	long uiPriority;
 	bool hidden;
 	bool semiHidden;
 	bool unhideWhenUsed;
-	CString TextPr;
-	CString ParaPr;
-	CString TablePr;
-	CString RowPr;
-	CString CellPr;
-	std::vector<CString> TblStylePr;
+    std::wstring TextPr;
+    std::wstring ParaPr;
+    std::wstring TablePr;
+    std::wstring RowPr;
+    std::wstring CellPr;
+    std::vector<std::wstring> TblStylePr;
 
 	bool bqFormat;
 	bool buiPriority;
@@ -803,7 +792,7 @@ public:
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
-		CString sType;
+        std::wstring sType;
 		switch(byteType)
 		{
 		case styletype_Character: sType = _T("character");break;
@@ -811,91 +800,87 @@ public:
 		case styletype_Table: sType = _T("table");break;
 		default: sType = _T("paragraph");break;
 		}
-		if(!Id.IsEmpty())
+        if(!Id.empty())
 		{
-			CString sStyle;
+            std::wstring sStyle = L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + Id + L"\"";
 			if(bDefault)
-                sStyle.Format(_T("<w:style w:type=\"%ls\" w:default=\"1\" w:styleId=\"%ls\">"), sType, Id);
-			else
-                sStyle.Format(_T("<w:style w:type=\"%ls\" w:styleId=\"%ls\">"), sType, Id);
-			pCStringWriter->WriteString(CString(sStyle));
-			if(!Name.IsEmpty())
+                sStyle += L" w:default=\"1\"";
+
+            sStyle += L">";
+            pCStringWriter->WriteString(sStyle);
+            if(!Name.empty())
 			{
-                sStyle.Format(_T("<w:name w:val=\"%ls\"/>"), Name);
-				pCStringWriter->WriteString(CString(sStyle));
+                pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
 			}
-			if(!BasedOn.IsEmpty())
+            if(!BasedOn.empty())
 			{
-                sStyle.Format(_T("<w:basedOn w:val=\"%ls\"/>"), BasedOn);
-				pCStringWriter->WriteString(CString(sStyle));
+                pCStringWriter->WriteString(L"<w:basedOn w:val=\"" + BasedOn + L"\"/>");
 			}
-			if(!NextId.IsEmpty())
+            if(!NextId.empty())
 			{
-                sStyle.Format(_T("<w:next w:val=\"%ls\"/>"), NextId);
-				pCStringWriter->WriteString(CString(sStyle));
+                pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
 			}
 			if(bqFormat)
 			{
 				if(qFormat)
-					pCStringWriter->WriteString(CString(_T("<w:qFormat/>")));
+                    pCStringWriter->WriteString(L"<w:qFormat/>");
 				else
-					pCStringWriter->WriteString(CString(_T("<w:qFormat val=\"false\"/>")));
+                    pCStringWriter->WriteString(L"<w:qFormat val=\"false\"/>");
 			}
 			if(buiPriority)
 			{
-				sStyle.Format(_T("<w:uiPriority w:val=\"%d\"/>"), uiPriority);
-				pCStringWriter->WriteString(CString(sStyle));
+                pCStringWriter->WriteString(L"<w:uiPriority w:val=\"" + std::to_wstring(uiPriority) + L"\"/>");
 			}
 			if(bhidden)
 			{
 				if(hidden)
-					pCStringWriter->WriteString(CString(_T("<w:hidden/>")));
+                    pCStringWriter->WriteString(L"<w:hidden/>");
 				else
-					pCStringWriter->WriteString(CString(_T("<w:hidden val=\"false\"/>")));
+                    pCStringWriter->WriteString(L"<w:hidden val=\"false\"/>");
 			}
 			if(bsemiHidden)
 			{
 				if(semiHidden)
-					pCStringWriter->WriteString(CString(_T("<w:semiHidden/>")));
+                    pCStringWriter->WriteString(L"<w:semiHidden/>");
 				else
-					pCStringWriter->WriteString(CString(_T("<w:semiHidden val=\"false\"/>")));
+                    pCStringWriter->WriteString(L"<w:semiHidden val=\"false\"/>");
 			}
 			if(bunhideWhenUsed)
 			{
 				if(unhideWhenUsed)
-					pCStringWriter->WriteString(CString(_T("<w:unhideWhenUsed/>")));
+                    pCStringWriter->WriteString(L"<w:unhideWhenUsed/>");
 				else
-					pCStringWriter->WriteString(CString(_T("<w:unhideWhenUsed val=\"false\"/>")));
+                    pCStringWriter->WriteString(L"<w:unhideWhenUsed val=\"false\"/>");
 			}
-			if(!TextPr.IsEmpty())
+            if(!TextPr.empty())
 			{
 				pCStringWriter->WriteString(TextPr);
 			}
-			if(!ParaPr.IsEmpty())
+            if(!ParaPr.empty())
 			{
-				pCStringWriter->WriteString(CString(_T("<w:pPr>")));
+                pCStringWriter->WriteString(L"<w:pPr>");
 				pCStringWriter->WriteString(ParaPr);
-				pCStringWriter->WriteString(CString(_T("</w:pPr>")));
+                pCStringWriter->WriteString(L"</w:pPr>");
 			}
-			if(!TablePr.IsEmpty())
+            if(!TablePr.empty())
 				pCStringWriter->WriteString(TablePr);
-			if(!RowPr.IsEmpty())
+            if(!RowPr.empty())
 			{
-				pCStringWriter->WriteString(CString(_T("<w:trPr>")));
+                pCStringWriter->WriteString(L"<w:trPr>");
 				pCStringWriter->WriteString(RowPr);
-				pCStringWriter->WriteString(CString(_T("</w:trPr>")));
+                pCStringWriter->WriteString(L"</w:trPr>");
 			}
-			if(!CellPr.IsEmpty())
+            if(!CellPr.empty())
 			{
-				pCStringWriter->WriteString(CString(_T("<w:tcPr>")));
+                pCStringWriter->WriteString(L"<w:tcPr>");
 				pCStringWriter->WriteString(CellPr);
-				pCStringWriter->WriteString(CString(_T("</w:tcPr>")));
+                pCStringWriter->WriteString(L"</w:tcPr>");
 			}
 			for(int i = 0, length = TblStylePr.size(); i < length; ++i)
 			{
 				pCStringWriter->WriteString(TblStylePr[i]);
 			}
-			pCStringWriter->WriteString(CString(_T("</w:style>")));
+            pCStringWriter->WriteString(L"</w:style>");
 		}
 	}
 };
@@ -950,7 +935,7 @@ public:
 	bool bWidth;
 	bool bHeight;
 	bool bPaddings;
-	CString srId;
+    std::wstring srId;
 	docImg(int nDocPr)
 	{
 		m_nDocPr = nDocPr;
@@ -972,9 +957,12 @@ public:
 				{
 					__int64 nWidth = (__int64)(g_dKoef_mm_to_emu * Width);
 					__int64 nHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-					CString sDrawing;
-                    sDrawing.Format(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:docPr id=\"%d\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"%ls\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>"), nWidth, nHeight, m_nDocPr, srId, nWidth, nHeight);
-					pCStringWriter->WriteString(sDrawing);
+                    std::wstring sDrawing = L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" +
+                            std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:docPr id=\"" +
+                            std::to_wstring(m_nDocPr) + L"\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"" +
+                            srId + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" +
+                            std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>";
+                    pCStringWriter->WriteString(sDrawing);
 				}
 			}
 			else if(c_oAscWrapStyle::Flow == Type)
@@ -997,8 +985,17 @@ public:
 						if(Paddings.bBottom)	nPaddingBottom	= (unsigned long)(g_dKoef_mm_to_emu * Paddings.Bottom);
 
 					}
-					CString sDrawing;
-                    sDrawing.Format(_T("<w:drawing><wp:anchor distT=\"%lu\" distB=\"%lu\" distL=\"%lu\" distR=\"%lu\" simplePos=\"0\" relativeHeight=\"1\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\"><wp:simplePos x=\"0\" y=\"0\"/><wp:positionH relativeFrom=\"page\"><wp:posOffset>%lld</wp:posOffset></wp:positionH><wp:positionV relativeFrom=\"page\"><wp:posOffset>%lld</wp:posOffset></wp:positionV><wp:extent cx=\"%lld\" cy=\"%lld\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:wrapSquare wrapText=\"bothSides\"/><wp:docPr id=\"%d\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"%ls\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"%lld\" cy=\"%lld\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing>"), nPaddingTop, nPaddingBottom, nPaddingLeft, nPaddingRight, nX, nY, nWidth, nHeight, m_nDocPr, srId, nWidth, nHeight);
+                    std::wstring sDrawing = L"<w:drawing><wp:anchor distT=\"" + std::to_wstring(nPaddingTop) + L"\" distB=\"" + std::to_wstring(nPaddingBottom)
+                            + L"\" distL=\"" + std::to_wstring(nPaddingLeft) + L"\" distR=\"" + std::to_wstring(nPaddingRight)
+                            + L"\" simplePos=\"0\" relativeHeight=\"1\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\"><wp:simplePos x=\"0\" y=\"0\"/><wp:positionH relativeFrom=\"page\"><wp:posOffset>"
+                            + std::to_wstring(nX) + L"</wp:posOffset></wp:positionH><wp:positionV relativeFrom=\"page\"><wp:posOffset>"
+                            + std::to_wstring(nY) + L"</wp:posOffset></wp:positionV><wp:extent cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight)
+                            + L"\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:wrapSquare wrapText=\"bothSides\"/><wp:docPr id=\""
+                            + std::to_wstring(m_nDocPr) + L"\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>\
+</wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\""
+                            + srId + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill>\
+<pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing>";
+
 					pCStringWriter->WriteString(sDrawing);
 				}
 			}
@@ -1031,16 +1028,16 @@ public:
 		bW = false;
 		bWDocx = false;
 	}
-	void Write(XmlUtils::CStringWriter& pCStringWriter, const CString& sName)
+    void Write(XmlUtils::CStringWriter& pCStringWriter, const std::wstring& sName)
 	{
 		pCStringWriter.WriteString(Write(sName));
 	}
-	CString Write(const CString& sName)
+    std::wstring Write(const std::wstring& sName)
 	{
-		CString sXml;
+        std::wstring sXml;
 		if(bW || (bType && bWDocx))
 		{
-			CString sType;
+            std::wstring sType;
 			int nVal;
 			if(bW)
 			{
@@ -1051,14 +1048,14 @@ public:
 			{
 				switch(Type)
 				{
-				case 0: sType = _T("auto");break;
-				case 1: sType = _T("dxa");break;
-				case 2: sType = _T("nil");break;
-				case 3: sType = _T("pct");break;
+                case 0: sType = _T("auto"); break;
+                case 1: sType = _T("dxa");  break;
+                case 2: sType = _T("nil");  break;
+                case 3: sType = _T("pct");  break;
 				}
 				nVal = WDocx;
 			}
-            sXml.Format(_T("<%ls w:w=\"%d\" w:type=\"%ls\"/>"), sName, nVal, sType );
+            sXml = L"<" + sName + L" w:w=\"" + std::to_wstring(nVal) + L"\" w:type=\"" + sType + L"\"/>";
 		}
 		return sXml;
 	}
@@ -1085,67 +1082,61 @@ public:
 		bValue = false;
 		bThemeColor = false;
 	}
-	void Write(CString sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
+    void Write(std::wstring sName, XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
 		if(bValue)
 		{
-			pCStringWriter->WriteString(CString(_T("<")));
+            pCStringWriter->WriteString(L"<");
 			pCStringWriter->WriteString(sName);
 			if(border_Single == Value)
-				pCStringWriter->WriteString(CString(_T(" w:val=\"single\"")));
+                pCStringWriter->WriteString(L" w:val=\"single\"");
 			else
-				pCStringWriter->WriteString(CString(_T(" w:val=\"none\"")));
+                pCStringWriter->WriteString(L" w:val=\"none\"");
 			if(bColor)
 			{
-                CString sColorAttr;sColorAttr.Format(_T(" w:color=\"%ls\""), Color.ToString());
-				pCStringWriter->WriteString(sColorAttr);
+                pCStringWriter->WriteString(L" w:color=\"" + Color.ToString() + L"\"");
 			}
 			if(bSize)
 			{
 				long nSize = SerializeCommon::Round(g_dKoef_mm_to_eightpoint * Size);
-				CString sSize;sSize.Format(_T(" w:sz=\"%d\""), nSize);
-				pCStringWriter->WriteString(sSize);
+                pCStringWriter->WriteString(L" w:sz=\"" + std::to_wstring(nSize) + L"\"");
 			}
 			if(bSpace)
 			{
 				long nSpace = SerializeCommon::Round(g_dKoef_mm_to_pt * Space);
-				CString sSpace;sSpace.Format(_T(" w:space=\"%d\""), nSpace);
-				pCStringWriter->WriteString(sSpace);
+                pCStringWriter->WriteString(L" w:space=\"" + std::to_wstring(nSpace) + L"\"");
 			}
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
 				if(ThemeColor.Auto && !bColor)
 				{
-					CString sAuto(_T(" w:color=\"auto\""));
+                    std::wstring sAuto(L" w:color=\"auto\"");
 					pCStringWriter->WriteString(sAuto);
 				}
 				if(ThemeColor.bColor)
 				{
-                    CString sThemeColor;sThemeColor.Format(_T(" w:themeColor=\"%ls\""), ThemeColor.ToStringColor());
-					pCStringWriter->WriteString(sThemeColor);
+                    pCStringWriter->WriteString(L" w:themeColor=\"" + ThemeColor.ToStringColor() + L"\"");
 				}
 				if(ThemeColor.bTint)
 				{
-                    CString sThemeTint;sThemeTint.Format(_T(" w:themeTint=\"%ls\""), ThemeColor.ToStringTint());
-					pCStringWriter->WriteString(sThemeTint);
+                    pCStringWriter->WriteString(L" w:themeTint=\"" + ThemeColor.ToStringTint() + L"\"");
 				}
 				if(ThemeColor.bShade)
 				{
-                    CString sThemeShade;sThemeShade.Format(_T(" w:themeShade=\"%ls\""), ThemeColor.ToStringShade());
-					pCStringWriter->WriteString(sThemeShade);
+                    pCStringWriter->WriteString(L" w:themeShade=\"" + ThemeColor.ToStringShade() + L"\"");
 				}
 			}
-			pCStringWriter->WriteString(CString(_T("/>")));
+            pCStringWriter->WriteString(L"/>");
 		}
 		else
 		{
-			pCStringWriter->WriteString(CString(_T("<")));
+            pCStringWriter->WriteString(L"<");
 			pCStringWriter->WriteString(sName);
 			if(false != bCell)
-				pCStringWriter->WriteString(CString(_T(" w:val=\"nil\"")));
+                pCStringWriter->WriteString(L" w:val=\"nil\"");
 			else
-				pCStringWriter->WriteString(CString(_T(" w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"")));
-			pCStringWriter->WriteString(CString(_T("/>")));
+                pCStringWriter->WriteString(L" w:val=\"none\" w:sz=\"0\" w:space=\"0\" w:color=\"auto\"");
+            pCStringWriter->WriteString(L"/>");
 		}
 	}
 };
@@ -1185,25 +1176,25 @@ public:
 	void Write(XmlUtils::CStringWriter*  pCStringWriter, bool bCell)
 	{
 		if(bLeft)
-			oLeft.Write(_T("w:left"), pCStringWriter, bCell);
+            oLeft.Write(L"w:left", pCStringWriter, bCell);
 		if(bTop)
-			oTop.Write(_T("w:top"), pCStringWriter, bCell);
+            oTop.Write(L"w:top", pCStringWriter, bCell);
 		if(bRight)
-			oRight.Write(_T("w:right"), pCStringWriter, bCell);
+            oRight.Write(L"w:right", pCStringWriter, bCell);
 		if(bBottom)
-			oBottom.Write(_T("w:bottom"), pCStringWriter, bCell);
+            oBottom.Write(L"w:bottom", pCStringWriter, bCell);
 		if(bInsideV)
-			oInsideV.Write(_T("w:insideV"), pCStringWriter, bCell);
+            oInsideV.Write(L"w:insideV", pCStringWriter, bCell);
 		if(bInsideH)
-			oInsideH.Write(_T("w:insideH"), pCStringWriter, bCell);
+            oInsideH.Write(L"w:insideH", pCStringWriter, bCell);
 		if(bBetween)
-			oBetween.Write(_T("w:between"), pCStringWriter, bCell);
+            oBetween.Write(L"w:between", pCStringWriter, bCell);
 	}
 };
 class docLvlText
 {
 public:
-	CString Text;
+    std::wstring Text;
 	BYTE Number;
 
 	bool bText;
@@ -1225,7 +1216,7 @@ public:
 	BYTE Suff;
 	XmlUtils::CStringWriter ParaPr;
 	XmlUtils::CStringWriter TextPr;
-	CString PStyle;
+    std::wstring PStyle;
 
 	bool bFormat;
 	bool bJc;
@@ -1257,16 +1248,14 @@ public:
 	}
 	void Write(XmlUtils::CStringWriter& oWriter, int index)
 	{
-		CString sILvl;sILvl.Format(_T("<w:lvl w:ilvl=\"%d\">"), index);
-		oWriter.WriteString(sILvl);
+        oWriter.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(index) + L"\">");
 		if(bStart)
 		{
-			CString sStart;sStart.Format(_T("<w:start w:val=\"%d\"/>"), Start);
-			oWriter.WriteString(sStart);
+            oWriter.WriteString(L"<w:start w:val=\"" + std::to_wstring(Start) + L"\"/>");
 		}
 		if(bFormat)
 		{
-			CString sFormat;
+            std::wstring sFormat;
 			switch(Format)
 			{
 			case numbering_numfmt_None:sFormat = _T("none");break;
@@ -1278,39 +1267,36 @@ public:
 			case numbering_numfmt_UpperLetter:sFormat = _T("upperLetter");break;
 			case numbering_numfmt_DecimalZero:sFormat = _T("decimalZero");break;
 			}
-			if(!sFormat.IsEmpty())
+            if(!sFormat.empty())
 			{
-                CString sFormatXml;sFormatXml.Format(_T("<w:numFmt w:val=\"%ls\"/>"), sFormat);
-				oWriter.WriteString(sFormatXml);
+                oWriter.WriteString(L"<w:numFmt w:val=\"" + sFormat + L"\"/>");
 			}
 		}
 		if(bRestart && 0 == Restart)
 		{
-			CString sRestart;sRestart.Format(_T("<w:lvlRestart w:val=\"%d\"/>"), Restart);
-			oWriter.WriteString(sRestart);
+            oWriter.WriteString(L"<w:lvlRestart w:val=\"" + std::to_wstring(Restart) + L"\"/>");
 		}
 		if(bPStyle)
 		{
-			CString sStyleName = XmlUtils::EncodeXmlString(PStyle);
-            CString sFormatXml;sFormatXml.Format(_T("<w:pStyle w:val=\"%ls\"/>"), sStyleName);
-			oWriter.WriteString(sFormatXml);
+            std::wstring sStyleName = XmlUtils::EncodeXmlString(PStyle);
+            oWriter.WriteString(L"<w:pStyle w:val=\"" + sStyleName + L"\"/>");
 		}
 		if(bSuff)
 		{
-			CString sSuff;
+            std::wstring sSuff;
 			switch(Suff)
 			{
 			case numbering_suff_Nothing: sSuff = _T("nothing");break;
 			case numbering_suff_Space: sSuff = _T("space");break;
 			default: sSuff = _T("tab");break;
 			}
-			oWriter.WriteString(CString(_T("<w:suff w:val=\"")));
+            oWriter.WriteString(L"<w:suff w:val=\"");
 			oWriter.WriteString(sSuff);
-			oWriter.WriteString(CString(_T("\" />")));
+            oWriter.WriteString(L"\"/>");
 		}
 		if(bText)
 		{
-			CString sText;
+            std::wstring sText;
 			for(int i = 0, length = Text.size(); i < length; ++i)
 			{
 				docLvlText* item = Text[i];
@@ -1320,14 +1306,14 @@ public:
 				}
 				else if(item->bNumber)
 				{
-					sText.AppendFormat(_T("%%%d"), (item->Number+1));
+                    sText += L"%" + std::to_wstring(item->Number+1);
 				}
 			}
 			sText = XmlUtils::EncodeXmlString(sText);
             
-            //CString sTextXml;sTextXml.Format(_T("<w:lvlText w:val=\"%ls\"/>"), sText);
+            //std::wstring sTextXml;sTextXml.Format(L"<w:lvlText w:val=\"%ls\"/>", sText);
           
-            CString sTextXml(_T("<w:lvlText w:val=\""));
+            std::wstring sTextXml(L"<w:lvlText w:val=\"");
             sTextXml += sText;
             sTextXml += _T("\"/>");
 
@@ -1335,7 +1321,7 @@ public:
 		}
 		if(bJc)
 		{
-			CString sJc;
+            std::wstring sJc;
 			switch(Jc)
 			{
 			case align_Right:sJc = _T("right");break;
@@ -1343,10 +1329,9 @@ public:
 			case align_Center:sJc = _T("center");break;
 			case align_Justify:sJc = _T("distribute");break;
 			}
-			if(!sJc.IsEmpty())
+            if(!sJc.empty())
 			{
-                CString sJcXml;sJcXml.Format(_T("<w:lvlJc w:val=\"%ls\"/>"), sJc);
-				oWriter.WriteString(sJcXml);
+                oWriter.WriteString(L"<w:lvlJc w:val=\"" + sJc + L"\"/>");
 			}
 		}
 		if(bParaPr)
@@ -1357,15 +1342,15 @@ public:
 		{
 			oWriter.Write(TextPr);
 		}
-		oWriter.WriteString(CString(_T("</w:lvl>")));
+        oWriter.WriteString(L"</w:lvl>");
 	}
 };
 class docANum
 {
 public:
 	long Id;
-	CString NumStyleLink;
-	CString StyleLink;
+    std::wstring NumStyleLink;
+    std::wstring StyleLink;
 	std::vector<docLvl*> Lvls;
 
 	bool bId;
@@ -1384,25 +1369,22 @@ public:
 	{
 		if(bId)
 		{
-			CString sANumId;sANumId.Format(_T("<w:abstractNum w:abstractNumId=\"%d\"><w:multiLevelType w:val=\"hybridMultilevel\"/>"), Id);
-			oWriterANum.WriteString(sANumId);
-			if(!StyleLink.IsEmpty())
+            oWriterANum.WriteString(L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(Id) + L"\"><w:multiLevelType w:val=\"hybridMultilevel\"/>");
+            if(!StyleLink.empty())
 			{
-				CString sCorrectStyleLink = XmlUtils::EncodeXmlString(StyleLink);
-                CString sXml;sXml.Format(_T("<w:styleLink w:val=\"%ls\"/>"), sCorrectStyleLink);
-				oWriterANum.WriteString(sXml);
+                std::wstring sCorrectStyleLink = XmlUtils::EncodeXmlString(StyleLink);
+                oWriterANum.WriteString(L"<w:styleLink w:val=\"" + sCorrectStyleLink + L"\"/>");
 			}
-			if(!NumStyleLink.IsEmpty())
+            if(!NumStyleLink.empty())
 			{
-				CString sCorrectNumStyleLink = XmlUtils::EncodeXmlString(NumStyleLink);
-                CString sXml;sXml.Format(_T("<w:numStyleLink w:val=\"%ls\"/>"), sCorrectNumStyleLink);
-				oWriterANum.WriteString(sXml);
+                std::wstring sCorrectNumStyleLink = XmlUtils::EncodeXmlString(NumStyleLink);
+                oWriterANum.WriteString(L"<w:numStyleLink w:val=\"" + sCorrectNumStyleLink + L"\"/>");
 			}
 			for(int i = 0, length = Lvls.size(); i < length; ++i)
 			{
 				Lvls[i]->Write(oWriterANum, i);
 			}
-			oWriterANum.WriteString(CString(_T("</w:abstractNum>")));
+            oWriterANum.WriteString(L"</w:abstractNum>");
 		}
 	}
 };
@@ -1423,19 +1405,19 @@ public:
 	{
 		if(bAId && bId)
 		{
-			CString sNumList;sNumList.Format(_T("<w:num w:numId=\"%d\"><w:abstractNumId w:val=\"%d\"/></w:num>"), Id, AId);
-			oWriterNumList.WriteString(sNumList);
+            oWriterNumList.WriteString(L"<w:num w:numId=\"" + std::to_wstring(Id) + L"\"><w:abstractNumId w:val=\"" +
+                                       std::to_wstring(AId) + L"\"/></w:num>");
 		}
 	}
 };
 class rowPrAfterBefore
 {
 public:
-	CString sName;
+    std::wstring sName;
 	long nGridAfter;
 	docW oAfterWidth;
 	bool bGridAfter;
-	rowPrAfterBefore(CString name)
+    rowPrAfterBefore(std::wstring name)
 	{
 		sName = name;
 		bGridAfter = false;
@@ -1444,8 +1426,7 @@ public:
 	{
 		if(bGridAfter && nGridAfter > 0)
 		{
-			CString sGridAfter;sGridAfter.Format(_T("<w:grid%ls w:val=\"%d\" />"), sName, nGridAfter);
-			writer.WriteString(sGridAfter);
+            writer.WriteString(L"<w:grid" + sName + L" w:val=\"" + std::to_wstring(nGridAfter) + L"\"/>");
 			if(oAfterWidth.bW)
 				oAfterWidth.Write(writer, _T("w:w") + sName);
 		}
@@ -1454,27 +1435,27 @@ public:
 class WriteHyperlink
 {
 public:
-	CString rId;
-	CString href;
-	CString anchor;
-	CString tooltip;
+    std::wstring rId;
+    std::wstring href;
+    std::wstring anchor;
+    std::wstring tooltip;
 	XmlUtils::CStringWriter writer;
-	static WriteHyperlink* Parse(CString fld)
+    static WriteHyperlink* Parse(std::wstring fld)
 	{
 		WriteHyperlink* res = NULL;
-		if(-1 != fld.Find(_T("HYPERLINK")))
+        if(-1 != fld.find(L"HYPERLINK"))
         {
-			CString sLink;
-			CString sTooltip;
+            std::wstring sLink;
+            std::wstring sTooltip;
             bool bNextLink = false;
             bool bNextTooltip = false;
             //разбиваем по пробелам, но с учетом кавычек
-			std::vector<CString> aItems;
-            CString sCurItem;
+            std::vector<std::wstring> aItems;
+            std::wstring sCurItem;
             bool bDQuot = false;
-			for(int i = 0, length = fld.GetLength(); i < length; ++i)
+            for(int i = 0, length = fld.length(); i < length; ++i)
             {
-                TCHAR sCurLetter = fld[i];
+                wchar_t sCurLetter = fld[i];
                 if('\"' == sCurLetter)
                     bDQuot = !bDQuot;
                 else if('\\' == sCurLetter && true == bDQuot && i + 1 < length && '\"' == fld[i + 1])
@@ -1484,7 +1465,7 @@ public:
                 }
                 else if(' ' == sCurLetter && false == bDQuot)
                 {
-                    if(sCurItem.GetLength() > 0)
+                    if(sCurItem.length() > 0)
                     {
 						aItems.push_back(sCurItem);
                         sCurItem = _T("");
@@ -1493,11 +1474,11 @@ public:
                 else
                     sCurItem += sCurLetter;
             }
-            if(sCurItem.GetLength() > 0)
+            if(sCurItem.length() > 0)
                 aItems.push_back(sCurItem);
 			for(int i = 0, length = aItems.size(); i < length; ++i)
             {
-                CString item = aItems[i];
+                std::wstring item = aItems[i];
 				if(bNextLink)
 				{
 					bNextLink = false;
@@ -1509,45 +1490,48 @@ public:
 					sTooltip = item;
 				}
 
-				if(_T("HYPERLINK") == item)
+                if(L"HYPERLINK" == item)
 					bNextLink = true;
-				else if(_T("\\o") == item)
+                else if(L"\\o" == item)
 					bNextTooltip = true;
             }
-			if(false == sLink.IsEmpty())
+            if(false == sLink.empty())
 			{
 				res = new WriteHyperlink();
-				sLink.Trim();
-				int nAnchorIndex = sLink.Find(_T("#"));
+                boost::algorithm::trim(sLink);
+
+                int nAnchorIndex = sLink.find(L"#");
 				if(-1 != nAnchorIndex)
 				{
-					res->href = sLink.Left(nAnchorIndex);
-					res->anchor = sLink.Right(sLink.GetLength() - nAnchorIndex - 1);
+                    res->href   = sLink.substr(0, nAnchorIndex);
+                    res->anchor = sLink.substr(nAnchorIndex);
 				}
 				else
 					res->href = sLink;
-				if(false == sTooltip.IsEmpty())
-					res->tooltip = sTooltip.Trim();
+                if(false == sTooltip.empty())
+                {
+                    res->tooltip = boost::algorithm::trim_copy(sTooltip);
+                }
 			}
         }
 		return res;
 	}
 	void Write(XmlUtils::CStringWriter& wr)
 	{
-		if(false == rId.IsEmpty())
+        if(false == rId.empty())
 		{
-			CString sCorrect_rId = XmlUtils::EncodeXmlString(rId);
-			CString sCorrect_tooltip = XmlUtils::EncodeXmlString(tooltip);
-			CString sCorrect_anchor = XmlUtils::EncodeXmlString(anchor);
-			CString sStart;
-            sStart.Format(_T("<w:hyperlink r:id=\"%ls\""), (const TCHAR *) sCorrect_rId);
-			if(false == tooltip.IsEmpty())
+            std::wstring sCorrect_rId = XmlUtils::EncodeXmlString(rId);
+            std::wstring sCorrect_tooltip = XmlUtils::EncodeXmlString(tooltip);
+            std::wstring sCorrect_anchor = XmlUtils::EncodeXmlString(anchor);
+            std::wstring sStart = L"<w:hyperlink r:id=\"" + sCorrect_rId + L"\"";
+
+            if(false == tooltip.empty())
 			{
                 sStart += L" w:tooltip=\"";
                 sStart += sCorrect_tooltip;
                 sStart += L"\"";
 			}
-			if(false == anchor.IsEmpty())
+            if(false == anchor.empty())
 			{
                 sStart += L" w:anchor=\"";
                 sStart += sCorrect_anchor;
@@ -1578,19 +1562,19 @@ public:
 };
 class CComment{
 private:
-	typedef CString (*funcArg)(CComment* pComment);
+    typedef std::wstring (*funcArg)(CComment* pComment);
 	IdCounter& m_oParaIdCounter;
 	IdCounter& m_oFormatIdCounter;
 public:
 	int IdOpen;
 	int IdFormat;
-	CString UserName;
-	CString UserId;
-	CString Date;
+    std::wstring UserName;
+    std::wstring UserId;
+    std::wstring Date;
 	bool Solved;
-	CString Text;
-	CString m_sParaId;
-	CString m_sParaIdParent;
+    std::wstring Text;
+    std::wstring m_sParaId;
+    std::wstring m_sParaIdParent;
 	std::vector<CComment*> replies;
 
 	bool bIdOpen;
@@ -1626,148 +1610,149 @@ public:
 			pComment->IdFormat = IdFormatStart + i + 1;
 		} 
 	}
-	CString writeRef(const CString& sBefore, const CString& sRef, const CString& sAfter)
+    std::wstring writeRef(const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
 	{
-		CString sRes;
+        std::wstring sRes;
         sRes += (writeRef(this, sBefore, sRef, sAfter));
 		for(int i = 0, length = replies.size(); i < length; ++i)
             sRes += (writeRef(replies[i], sBefore, sRef, sAfter));
 		return sRes;
 	}
-	CString writeTemplates(funcArg fReadFunction)
+    std::wstring writeTemplates(funcArg fReadFunction)
 	{
-		CString sRes;
+        std::wstring sRes;
         sRes += (fReadFunction(this));
 		for(int i = 0, length = replies.size(); i < length; ++i)
             sRes += (fReadFunction(replies[i]));
 		return sRes;
 	}
-	static CString writeRef(CComment* pComment, const CString& sBefore, const CString& sRef, const CString& sAfter)
+    static std::wstring writeRef(CComment* pComment, const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
 	{
-		CString sRes;
+        std::wstring sRes;
 		if(!pComment->bIdFormat)
 		{
 			pComment->bIdFormat = true;
 			pComment->IdFormat = pComment->m_oFormatIdCounter.getNextId();
 		}
         sRes += (sBefore);
-        sRes.AppendFormat(_T("<%ls w:id=\"%d\"/>"), (const TCHAR *) sRef, pComment->IdFormat);
+        sRes += L"<" + sRef + L" w:id=\"" + std::to_wstring(pComment->IdFormat) + L"\"/>";
         sRes += (sAfter);
 		return sRes;
 	}
-	static bool writeContentWritePart(CComment* pComment, CString& sText, int nPrevIndex, int nCurIndex, bool bFirst, CString& sRes)
+    static bool writeContentWritePart(CComment* pComment, std::wstring& sText, int nPrevIndex, int nCurIndex, bool bFirst, std::wstring& sRes)
 	{
-		CString sPart;
+        std::wstring sPart;
 		if(nPrevIndex < nCurIndex)
-            sPart = XmlUtils::EncodeXmlString(sText.Mid(nPrevIndex, nCurIndex - nPrevIndex));
+            sPart = XmlUtils::EncodeXmlString(sText.substr(nPrevIndex, nCurIndex - nPrevIndex));
 
         int nId = pComment->m_oParaIdCounter.getNextId();
 
-        CString sId;
-		sId.Format(_T("%08X"), nId);
+        std::wstring sId = XmlUtils::IntToString(nId, L"%08X");
 		if(bFirst)
 		{
 			bFirst = false;
 			pComment->m_sParaId = sId;
 		}
-		CString sFormat = _T("<w:p w14:paraId=\"%ls\" w14:textId=\"%ls\"><w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">");
-		sRes.AppendFormat((const TCHAR *) sFormat, (const TCHAR *) sId, (const TCHAR *) sId);
-        sRes += (sPart);
-        sRes += (_T("</w:t></w:r></w:p>"));
+        sRes += L"<w:p w14:paraId=\"" + sId + L"\" w14:textId=\"" + sId + L"\">";
+        sRes += L"<w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">";
+        sRes += sPart;
+        sRes += L"</w:t></w:r></w:p>";
 		return bFirst;
 	}
-	static CString writeContent(CComment* pComment)
+    static std::wstring writeContent(CComment* pComment)
 	{
-		CString sRes;
+        std::wstring sRes;
 		if(!pComment->bIdFormat)
 		{
 			pComment->bIdFormat = true;
 			pComment->IdFormat = pComment->m_oFormatIdCounter.getNextId();
 		}
-		sRes.AppendFormat(_T("<w:comment w:id=\"%d\""), pComment->IdFormat);
-		CString sInitials;
-		if(false == pComment->UserName.IsEmpty())
+        sRes += L"<w:comment w:id=\"" + std::to_wstring(pComment->IdFormat) + L"\"";
+        std::wstring sInitials;
+        if(false == pComment->UserName.empty())
 		{
-			CString sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
-            sRes += (_T(" w:author=\""));
+            std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
+            sRes += L" w:author=\"";
             sRes += (sUserName);
-            sRes += (_T("\""));
-			//делаем initials
-			int nTokenPos = 0;
-			CString strToken = pComment->UserName.Tokenize(_T(" "), nTokenPos);
-			while (!strToken.IsEmpty())
-			{
-				strToken.Trim();
-				if(strToken.GetLength() > 0)
-					sInitials.AppendChar(strToken[0]);
-				strToken = pComment->UserName.Tokenize(_T(" "), nTokenPos);
-			}
+            sRes += L"\"";
+    //делаем initials
+            std::vector<std::wstring> arSplit;
+            boost::algorithm::split(arSplit, pComment->UserName, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+            for (int i = 0; i < arSplit.size(); i++)
+            {
+                sInitials += arSplit[i][0];
+            }
+
 		}
-		if(false == pComment->Date.IsEmpty())
+        if(false == pComment->Date.empty())
 		{
-			CString sDate = XmlUtils::EncodeXmlString(pComment->Date);
-            sRes += (_T(" w:date=\""));
-            sRes += (sDate);
-            sRes += (_T("\""));
+            std::wstring sDate = XmlUtils::EncodeXmlString(pComment->Date);
+            sRes += L" w:date=\"";
+            sRes += sDate;
+            sRes += L"\"";
 		}
-		if(false == sInitials.IsEmpty())
+        if(false == sInitials.empty())
 		{
 			sInitials = XmlUtils::EncodeXmlString(sInitials);
-            sRes += (_T(" w:initials=\""));
-            sRes += (sInitials);
-            sRes += (_T("\""));
+            sRes += L" w:initials=\"";
+            sRes += sInitials;
+            sRes += L"\"";
 		}
-        sRes += (_T(">"));
-		if(false == pComment->Text.IsEmpty())
+        sRes += L">";
+        if(false == pComment->Text.empty())
 		{
-			CString sText = pComment->Text;
-			sText.Remove('\r');
-			bool bFirst = true;
+            std::wstring sText = pComment->Text;
+
+            boost::algorithm::replace_all(sText, L"\r", L"");
+
+            bool bFirst = true;
 			int nPrevIndex = 0;
-			for(int i = 0, length = sText.GetLength(); i < length; i++)
+            for(int i = 0, length = sText.length(); i < length; i++)
 			{
-				TCHAR cToken = sText[i];
+                wchar_t cToken = sText[i];
 				if('\n' == cToken)
 				{
 					bFirst = writeContentWritePart(pComment, sText, nPrevIndex, i, bFirst, sRes);
 					nPrevIndex = i + 1;
 				}
 			}
-			writeContentWritePart(pComment, sText, nPrevIndex, sText.GetLength(), bFirst, sRes);
+            writeContentWritePart(pComment, sText, nPrevIndex, sText.length(), bFirst, sRes);
 		}
-        sRes += (_T("</w:comment>"));
+        sRes += L"</w:comment>";
 		return sRes;
 	}
-	static CString writeContentExt(CComment* pComment)
+    static std::wstring writeContentExt(CComment* pComment)
 	{
-		CString sRes;
-		if(!pComment->m_sParaId.IsEmpty())
+        std::wstring sRes;
+        if(!pComment->m_sParaId.empty())
 		{
-			CString sDone(_T("0"));
+            std::wstring sDone(L"0");
 			if(pComment->bSolved && pComment->Solved)
 				sDone = _T("1");
-			if(!pComment->m_sParaIdParent.IsEmpty())
-                sRes.AppendFormat(_T("<w15:commentEx w15:paraId=\"%ls\" w15:paraIdParent=\"%ls\" w15:done=\"%ls\"/>"), (const TCHAR *) pComment->m_sParaId, (const TCHAR *) pComment->m_sParaIdParent, (const TCHAR *) sDone);
+            if(!pComment->m_sParaIdParent.empty())
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" \
+w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L"\"/>";
 			else
-                sRes.AppendFormat(_T("<w15:commentEx w15:paraId=\"%ls\" w15:done=\"%ls\"/>"), (const TCHAR *) pComment->m_sParaId, (const TCHAR *) sDone);
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
 			//расставляем paraIdParent
 			for(int i = 0, length = pComment->replies.size(); i < length; i++)
 				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
 		}
 		return sRes;
 	}
-	static CString writePeople(CComment* pComment)
+    static std::wstring writePeople(CComment* pComment)
 	{
-		CString sRes;
-		if(false == pComment->UserName.IsEmpty() && false == pComment->UserId.IsEmpty())
+        std::wstring sRes;
+        if(false == pComment->UserName.empty() && false == pComment->UserId.empty())
 		{
-			CString sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
-			CString sUserId = XmlUtils::EncodeXmlString(pComment->UserId);
-            sRes += (_T("<w15:person w15:author=\""));
-            sRes += (sUserName);
-            sRes += (_T("\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\""));
-            sRes += (sUserId);
-            sRes += (_T("\"/></w15:person>"));
+            std::wstring sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
+            std::wstring sUserId = XmlUtils::EncodeXmlString(pComment->UserId);
+            sRes += L"<w15:person w15:author=\"";
+            sRes += sUserName;
+            sRes += L"\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\"";
+            sRes += sUserId;
+            sRes += L"\"/></w15:person>";
 		}
 		return sRes;
 	}
@@ -1775,7 +1760,7 @@ public:
 class CComments
 {
 	std::map<int, CComment*> m_mapComments;
-	std::map<CString, CComment*> m_mapAuthors;
+    std::map<std::wstring, CComment*> m_mapAuthors;
 public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
@@ -1803,7 +1788,7 @@ public:
 	}
 	void addAuthor(CComment* pComment)
 	{
-		if(false == pComment->UserName.IsEmpty() && false == pComment->UserId.IsEmpty())
+        if(false == pComment->UserName.empty() && false == pComment->UserId.empty())
 			m_mapAuthors[pComment->UserName] = pComment;
 	}
 	CComment* get(int nInd)
@@ -1818,28 +1803,28 @@ public:
 	{
 		return m_oFormatIdCounter.getNextId(nCount);
 	}
-	CString writeContent()
+    std::wstring writeContent()
 	{
-		CString sRes;
+        std::wstring sRes;
 		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
             sRes += (it->second->writeTemplates(CComment::writeContent));
 		}
 		return sRes;
 	}
-	CString writeContentExt()
+    std::wstring writeContentExt()
 	{
-		CString sRes;
+        std::wstring sRes;
 		for (std::map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 		{
             sRes += (it->second->writeTemplates(CComment::writeContentExt));
 		}
 		return sRes;
 	}
-	CString writePeople()
+    std::wstring writePeople()
 	{
-		CString sRes;
-		for (std::map<CString, CComment*>::const_iterator it = m_mapAuthors.begin(); it != m_mapAuthors.end(); ++it)
+        std::wstring sRes;
+        for (std::map<std::wstring, CComment*>::const_iterator it = m_mapAuthors.begin(); it != m_mapAuthors.end(); ++it)
 		{
             sRes += (it->second->writePeople(it->second));
 		}
@@ -1916,12 +1901,12 @@ public:
     double  PositionVPctOffset;
     double  SimplePosX;
     double  SimplePosY;
-    CString sChartRels;
-    CString sSizeRelH;
-    CString sSizeRelV;
+    std::wstring sChartRels;
+    std::wstring sSizeRelH;
+    std::wstring sSizeRelV;
     int     m_nDocPr;
-    CString sGraphicFramePr;
-	CString sDocPr;
+    std::wstring sGraphicFramePr;
+    std::wstring sDocPr;
 
     CDrawingPropertyWrap DrawingPropertyWrap;
 
@@ -1988,13 +1973,13 @@ public:
 	}
 	bool IsChart()
 	{
-		return false == sChartRels.IsEmpty();
+        return false == sChartRels.empty();
 	}
-	CString Write()
+    std::wstring Write()
 	{
         if(!bType) return L"";
 
-        CString sXml;
+        std::wstring sXml;
 
         bool bChart = IsChart();
         if(c_oAscWrapStyle::Inline == Type)
@@ -2003,42 +1988,48 @@ public:
             {
                 __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
                 __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
+
                 if(false == bChart)
-                    sXml.AppendFormat(_T("<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+                    sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight) + L"\"/>";
                 else
-                    sXml.AppendFormat(_T("<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+                    sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
+<wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight) + L"\"/>";
+
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
                     __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
                     __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
                     __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
                     __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-                    sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
+                    sXml += L"<wp:effectExtent l=\"" + std::to_wstring(emuEffectExtentL) + L"\" t=\"" + std::to_wstring(emuEffectExtentT) +
+                             L"\" r=\"" + std::to_wstring(emuEffectExtentR) + L"\" b=\"" + std::to_wstring(emuEffectExtentB) + L"\"/>";
                 }
 
-				if(!sDocPr.IsEmpty())
+                if(!sDocPr.empty())
                 {
-                    sXml += (sDocPr);
+                    sXml += sDocPr;
                 }
                 else
                 {
-                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+                    sXml += L"<wp:docPr id=\"" + std::to_wstring(m_nDocPr) + L"\" name=\"\"/>";
                 }
-                if(!sGraphicFramePr.IsEmpty())
+                if(!sGraphicFramePr.empty())
                 {
                     sXml += (sGraphicFramePr);
                 }
                 else
                 {
-                    sXml += (_T("<wp:cNvGraphicFramePr/>"));
+                    sXml += L"<wp:cNvGraphicFramePr/>";
                 }
                 if(bChart)
                 {
-                    sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic></wp:inline></w:drawing>"), (const TCHAR *) sChartRels);
+                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
+                            + sChartRels + L"\"/></a:graphicData></a:graphic></wp:inline></w:drawing>";
                 }
                 else
                 {
-                    sXml += (_T("</wp:inline>"));
+                    sXml += L"</wp:inline>";
                 }
             }
         }
@@ -2075,20 +2066,29 @@ public:
                     nLayoutInCell = 0;
 
                 if(bChart)
-                    sXml += (_T("<w:drawing>"));
+                    sXml += L"<w:drawing>";
 
-                sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lld\" distB=\"%lld\" distL=\"%lld\" distR=\"%lld\" simplePos=\"%d\" relativeHeight=\"%u\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
+                sXml += L"<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"\
+                             distT=\""      + std::to_wstring(emuDistT) +
+                        L"\" distB=\""      + std::to_wstring(emuDistB) +
+                        L"\" distL=\""      + std::to_wstring(emuDistL) +
+                        L"\" distR=\""      + std::to_wstring(emuDistR) +
+                        L"\" simplePos=\""  + std::to_wstring(nSimplePos) +
+                        L"\" relativeHeight=\"" + std::to_wstring(nRelativeHeight) +
+                        L"\" behindDoc=\""  + std::to_wstring(nBehindDoc) +
+                        L"\" locked=\"0\" layoutInCell=\"" + std::to_wstring(nLayoutInCell) + L"\" allowOverlap=\"1\">";
+
                 __int64 emuX = 0;
                 if(bSimplePosX)
                     emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);
                 __int64 emuY = 0;
                 if(bSimplePosY)
                     emuY = (__int64)(g_dKoef_mm_to_emu * SimplePosY);
-                sXml.AppendFormat(_T("<wp:simplePos x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                sXml += L"<wp:simplePos x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
 
                 if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
                 {
-                    CString sRelativeFrom;
+                    std::wstring sRelativeFrom;
                     switch(PositionHRelativeFrom)
                     {
                     case 0: sRelativeFrom = _T("character");break;
@@ -2100,33 +2100,33 @@ public:
                     case 6: sRelativeFrom = _T("page");break;
                     case 7: sRelativeFrom = _T("rightMargin");break;
                     }
-                    CString sContent;
+                    std::wstring sContent;
                     if(bPositionHAlign)
                     {
                         switch(PositionHAlign)
                         {
-                        case 0: sContent = _T("<wp:align>center</wp:align>");break;
-                        case 1: sContent = _T("<wp:align>inside</wp:align>");break;
-                        case 2: sContent = _T("<wp:align>left</wp:align>");break;
-                        case 3: sContent = _T("<wp:align>outside</wp:align>");break;
-                        case 4: sContent = _T("<wp:align>right</wp:align>");break;
+                        case 0: sContent = _T("<wp:align>center</wp:align>");   break;
+                        case 1: sContent = _T("<wp:align>inside</wp:align>");   break;
+                        case 2: sContent = _T("<wp:align>left</wp:align>");     break;
+                        case 3: sContent = _T("<wp:align>outside</wp:align>");  break;
+                        case 4: sContent = _T("<wp:align>right</wp:align>");    break;
                         }
                     }
                     else if(bPositionHPosOffset)
                     {
                         __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionHPosOffset);
-                        sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
+                        sContent = L"<wp:posOffset>" + std::to_wstring(emuPosOffset) + L"</wp:posOffset>";
                     }
                     else if(bPositionHPctOffset)
                     {
                         long pctOffset = (long)(1000 * PositionHPctOffset);
-                        sContent.Format(_T("<wp14:pctPosHOffset>%d</wp14:pctPosHOffset>"), pctOffset);
+                        sContent = L"<wp14:pctPosHOffset>" + std::to_wstring(pctOffset) + L"</wp14:pctPosHOffset>";
                     }
-                    sXml.AppendFormat(_T("<wp:positionH relativeFrom=\"%ls\">%ls</wp:positionH>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
+                    sXml += L"<wp:positionH relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionH>";
                 }
                 if(bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
                 {
-                    CString sRelativeFrom;
+                    std::wstring sRelativeFrom;
                     switch(PositionVRelativeFrom)
                     {
                     case 0: sRelativeFrom = _T("bottomMargin");break;
@@ -2138,7 +2138,7 @@ public:
                     case 6: sRelativeFrom = _T("paragraph");break;
                     case 7: sRelativeFrom = _T("topMargin");break;
                     }
-                    CString sContent;
+                    std::wstring sContent;
                     if(bPositionVAlign)
                     {
                         switch(PositionVAlign)
@@ -2153,58 +2153,64 @@ public:
                     else if(bPositionVPosOffset)
                     {
                         __int64 emuPosOffset = (__int64)(g_dKoef_mm_to_emu * PositionVPosOffset);
-                        sContent.Format(_T("<wp:posOffset>%lld</wp:posOffset>"), emuPosOffset);
+                        sContent = L"<wp:posOffset>" + std::to_wstring(emuPosOffset) + L"</wp:posOffset>";
                     }
                     else if(bPositionVPctOffset)
                     {
                         long pctOffset = (long)(1000 * PositionVPctOffset);
-                        sContent.Format(_T("<wp14:pctPosVOffset>%d</wp14:pctPosVOffset>"), pctOffset);
+                        sContent = L"<wp14:pctPosVOffset>" + std::to_wstring(pctOffset) + L"</wp14:pctPosVOffset>";
                     }
-                    sXml.AppendFormat(_T("<wp:positionV relativeFrom=\"%ls\">%ls</wp:positionV>"), (const TCHAR *) sRelativeFrom, (const TCHAR *) sContent);
+                    sXml += L"<wp:positionV relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionV>";
                 }
                 __int64 emuWidth = (__int64)(g_dKoef_mm_to_emu * Width);
                 __int64 emuHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-                sXml.AppendFormat(_T("<wp:extent cx=\"%lld\" cy=\"%lld\"/>"), emuWidth, emuHeight);
+
+                sXml += L"<wp:extent cx=\"" + std::to_wstring(emuWidth) + L"\" cy=\"" + std::to_wstring(emuHeight)+ L"\"/>";
+
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
                     __int64 emuEffectExtentL = (__int64)(g_dKoef_mm_to_emu * EffectExtentL);
                     __int64 emuEffectExtentT = (__int64)(g_dKoef_mm_to_emu * EffectExtentT);
                     __int64 emuEffectExtentR = (__int64)(g_dKoef_mm_to_emu * EffectExtentR);
                     __int64 emuEffectExtentB = (__int64)(g_dKoef_mm_to_emu * EffectExtentB);
-                    sXml.AppendFormat(_T("<wp:effectExtent l=\"%lld\" t=\"%lld\" r=\"%lld\" b=\"%lld\"/>"), emuEffectExtentL, emuEffectExtentT, emuEffectExtentR, emuEffectExtentB);
+                    sXml += L"<wp:effectExtent l=\"" + std::to_wstring(emuEffectExtentL) +
+                                          L"\" t=\"" + std::to_wstring(emuEffectExtentT) + L"\" r=\"" + std::to_wstring(emuEffectExtentR) +
+                                          L"\" b=\"" + std::to_wstring(emuEffectExtentB) + L"\"/>";
                 }
                 if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
                 {
-                    CString sTagName;
+                    std::wstring sTagName;
                     switch(DrawingPropertyWrap.WrappingType)
                     {
-                    case c_oSerImageType2::WrapNone:sTagName = _T("wrapNone");break;
-                    case c_oSerImageType2::WrapSquare:sTagName = _T("wrapSquare");break;
-                    case c_oSerImageType2::WrapThrough:sTagName = _T("wrapThrough");break;
-                    case c_oSerImageType2::WrapTight:sTagName = _T("wrapTight");break;
-                    case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");break;
+                    case c_oSerImageType2::WrapNone:sTagName        = _T("wrapNone");           break;
+                    case c_oSerImageType2::WrapSquare:sTagName      = _T("wrapSquare");         break;
+                    case c_oSerImageType2::WrapThrough:sTagName     = _T("wrapThrough");        break;
+                    case c_oSerImageType2::WrapTight:sTagName       = _T("wrapTight");          break;
+                    case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");  break;
                     }
                     if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
                     {
                         if( c_oSerImageType2::WrapSquare	== DrawingPropertyWrap.WrappingType		||
-                                c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		||
-                                c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
+                            c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		||
+                            c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
                         {
-                            sXml.AppendFormat(_T("<wp:%ls wrapText=\"bothSides\">"), (const TCHAR *) sTagName);
+                            sXml += L"<wp:" + sTagName + L" wrapText=\"bothSides\">";
                         }
                         else
-                            sXml.AppendFormat(_T("<wp:%ls>"), (const TCHAR *) sTagName);
+                            sXml += L"<wp:" + sTagName + L">";
 
                         int nEdited = 0;
                         if(DrawingPropertyWrap.bEdited && DrawingPropertyWrap.Edited)
                             nEdited = 1;
-                        sXml.AppendFormat(_T("<wp:wrapPolygon edited=\"%d\">"), nEdited);
+                        sXml += L"<wp:wrapPolygon edited=\"" + std::to_wstring(nEdited) + L"\">";
+
                         if(DrawingPropertyWrap.bStart && DrawingPropertyWrap.Start.bX && DrawingPropertyWrap.Start.bY)
                         {
                             __int64 emuX = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.X);
                             __int64 emuY = (__int64)(g_dKoef_mm_to_emu * DrawingPropertyWrap.Start.Y);
-                            sXml.AppendFormat(_T("<wp:start x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                            sXml += L"<wp:start x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
                         }
+
                         for(int i = 0, length = DrawingPropertyWrap.Points.size(); i < length; ++i)
                         {
                             CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
@@ -2212,11 +2218,11 @@ public:
                             {
                                 __int64 emuX = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->X);
                                 __int64 emuY = (__int64)(g_dKoef_mm_to_emu * pWrapPoint->Y);
-                                sXml.AppendFormat(_T("<wp:lineTo x=\"%lld\" y=\"%lld\"/>"), emuX, emuY);
+                                sXml += L"<wp:lineTo x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
                             }
                         }
-                        sXml += (_T("</wp:wrapPolygon>"));
-                        sXml.AppendFormat(_T("</wp:%ls>"), (const TCHAR *) sTagName);
+                        sXml += L"</wp:wrapPolygon>";
+                        sXml += L"</wp:" + sTagName + L">";
                     }
                     else
                     {
@@ -2225,49 +2231,50 @@ public:
                                 c_oSerImageType2::WrapThrough	== DrawingPropertyWrap.WrappingType		||
                                 c_oSerImageType2::WrapTight		== DrawingPropertyWrap.WrappingType)
                         {
-                            sXml += (_T("<wp:wrapSquare wrapText=\"bothSides\"/>"));
+                            sXml += L"<wp:wrapSquare wrapText=\"bothSides\"/>";
                         }
                         else
-                            sXml.AppendFormat(_T("<wp:%ls/>"), (const TCHAR *) sTagName);
+                            sXml += L"<wp:" + sTagName + L"/>";
                     }
                 }
                 else
-                    sXml += (_T("<wp:wrapNone/>"));
+                    sXml += L"<wp:wrapNone/>";
 
-				if(!sDocPr.IsEmpty())
+                if(!sDocPr.empty())
 				{
-                    sXml += (sDocPr);
+                    sXml += sDocPr;
 				}
                 else
                 {
-                    sXml.AppendFormat(_T("<wp:docPr id=\"%d\" name=\"\"/>"), m_nDocPr);
+                    sXml += L"<wp:docPr id=\"" + std::to_wstring(m_nDocPr) + L"\" name=\"\"/>";
                 }
-                if(!sGraphicFramePr.IsEmpty())
+                if(!sGraphicFramePr.empty())
                 {
-                    sXml += (sGraphicFramePr);
+                    sXml += sGraphicFramePr;
                 }
                 else
                 {
-                    sXml += (_T("<wp:cNvGraphicFramePr/>"));
+                    sXml += L"<wp:cNvGraphicFramePr/>";
                 }
                 if(bChart)
                 {
-                    sXml.AppendFormat(_T("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%ls\"/></a:graphicData></a:graphic>"), (const TCHAR *) sChartRels);
+                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
+                         + sChartRels + L"\"/></a:graphicData></a:graphic>";
                 }
 
-                if(!sSizeRelH.IsEmpty())
+                if(!sSizeRelH.empty())
                 {
-                    sXml += (sSizeRelH);
+                    sXml += sSizeRelH;
                 }
-                if(!sSizeRelV.IsEmpty())
+                if(!sSizeRelV.empty())
                 {
-                    sXml += (sSizeRelV);
+                    sXml += sSizeRelV;
                 }
 
-                sXml += (_T("</wp:anchor>"));
+                sXml += L"</wp:anchor>";
 
                 if(bChart)
-                    sXml += (_T("</w:drawing>"));
+                    sXml += L"</w:drawing>";
             }
         }
 		return sXml;
@@ -2276,62 +2283,62 @@ public:
 class CWiterTblPr
 {
 public:
-	CString Jc;
-	CString TableInd;
-	CString TableW;
-	CString TableCellMar;
-	CString TableBorders;
-	CString Shd;
-	CString tblpPr;
-	CString Style;
-	CString RowBandSize;
-	CString ColBandSize;
-	CString Look;
-	CString Layout;
-	CString tblPrChange;
-	CString TableCellSpacing;
+    std::wstring Jc;
+    std::wstring TableInd;
+    std::wstring TableW;
+    std::wstring TableCellMar;
+    std::wstring TableBorders;
+    std::wstring Shd;
+    std::wstring tblpPr;
+    std::wstring Style;
+    std::wstring RowBandSize;
+    std::wstring ColBandSize;
+    std::wstring Look;
+    std::wstring Layout;
+    std::wstring tblPrChange;
+    std::wstring TableCellSpacing;
 	bool IsEmpty()
 	{
-		return Jc.IsEmpty() && TableInd.IsEmpty() && TableW.IsEmpty() && TableCellMar.IsEmpty() && TableBorders.IsEmpty() && Shd.IsEmpty() && tblpPr.IsEmpty()&& Style.IsEmpty() && Look.IsEmpty() && tblPrChange.IsEmpty() && TableCellSpacing.IsEmpty() && RowBandSize.IsEmpty() && ColBandSize.IsEmpty();
+        return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
 	}
-	CString Write(bool bBandSize, bool bLayout)
+    std::wstring Write(bool bBandSize, bool bLayout)
 	{
-		CString sRes;
-        sRes += (_T("<w:tblPr>"));
-		if(false == Style.IsEmpty())
+        std::wstring sRes;
+        sRes += L"<w:tblPr>";
+        if(false == Style.empty())
             sRes += (Style);
-		if(false == tblpPr.IsEmpty())
+        if(false == tblpPr.empty())
             sRes += (tblpPr);
-		if(!RowBandSize.IsEmpty())
+        if(!RowBandSize.empty())
             sRes += (RowBandSize);
-		if(!ColBandSize.IsEmpty())
+        if(!ColBandSize.empty())
             sRes += (ColBandSize);
-		if(false == TableW.IsEmpty())
+        if(false == TableW.empty())
             sRes += (TableW);
-		if(false == Jc.IsEmpty())
+        if(false == Jc.empty())
             sRes += (Jc);
-		if(false == TableCellSpacing.IsEmpty())
+        if(false == TableCellSpacing.empty())
             sRes += (TableCellSpacing);
-		if(false == TableInd.IsEmpty())
+        if(false == TableInd.empty())
             sRes += (TableInd);
-		if(false == TableBorders.IsEmpty())
+        if(false == TableBorders.empty())
             sRes += (TableBorders);
-		if(false == Shd.IsEmpty())
+        if(false == Shd.empty())
             sRes += (Shd);
 		if(bLayout)
 		{
-			if(false == Layout.IsEmpty())
+            if(false == Layout.empty())
                 sRes += (Layout);
 			else if(g_nCurFormatVersion < 4)
-                sRes += (_T("<w:tblLayout w:type=\"fixed\"/>"));
+                sRes += L"<w:tblLayout w:type=\"fixed\"/>";
 		}
-		if(false == TableCellMar.IsEmpty())
+        if(false == TableCellMar.empty())
             sRes += (TableCellMar);
-		if(false == Look.IsEmpty())
+        if(false == Look.empty())
             sRes += (Look);
-		if(!tblPrChange.IsEmpty())
+        if(!tblPrChange.empty())
             sRes += (tblPrChange);
-        sRes += (_T("</w:tblPr>"));
+        sRes += L"</w:tblPr>";
 		return sRes;
 	}
 };
@@ -2390,47 +2397,46 @@ public: CFramePr()
 	}
 	void Write(XmlUtils::CStringWriter& oStringWriter)
 	{
-		oStringWriter.WriteString(CString(_T("<w:framePr")));
+        oStringWriter.WriteString(L"<w:framePr");
 		if(bDropCap)
 		{
-			CString sDropCap(_T("none"));
+            std::wstring sDropCap(L"none");
 			switch(DropCap)
 			{
 			case 0: sDropCap = _T("none");break;
 			case 1: sDropCap = _T("drop");break;
 			case 2: sDropCap = _T("margin");break;
 			}
-            CString sXml;sXml.Format(_T(" w:dropCap=\"%ls\""), sDropCap);
+            std::wstring sXml = L" w:dropCap=\"" + sDropCap + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bLines)
 		{
-			CString sXml;sXml.Format(_T(" w:lines=\"%d\""), Lines);
-			oStringWriter.WriteString(sXml);
+            oStringWriter.WriteString(L" w:lines=\"" + std::to_wstring(Lines) + L"\"");
 		}
 		if(bW)
 		{
-			CString sXml;sXml.Format(_T(" w:w=\"%d\""), W);
+            std::wstring sXml = L" w:w=\"" + std::to_wstring(W) + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bH)
 		{
-			CString sXml;sXml.Format(_T(" w:h=\"%d\""), H);
+            std::wstring sXml = L" w:h=\"" + std::to_wstring(H) + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bVSpace)
 		{
-			CString sXml;sXml.Format(_T(" w:vSpace=\"%d\""), VSpace);
+            std::wstring sXml = L" w:vSpace=\"" + std::to_wstring(VSpace) + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bHSpace)
 		{
-			CString sXml;sXml.Format(_T(" w:hSpace=\"%d\""), HSpace);
+            std::wstring sXml = L" w:hSpace=\"" + std::to_wstring(HSpace) + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bWrap)
 		{
-			CString sWrap(_T("none"));
+            std::wstring sWrap(L"none");
 			switch(Wrap)
 			{
 			case 0: sWrap = _T("around");break;
@@ -2440,96 +2446,93 @@ public: CFramePr()
 			case 4: sWrap = _T("through");break;
 			case 5: sWrap = _T("tight");break;
 			}
-            CString sXml;sXml.Format(_T(" w:wrap=\"%ls\""), sWrap);
+            std::wstring sXml = L" w:wrap=\"" + sWrap + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bVAnchor)
 		{
-			CString sVAnchor(_T("margin"));
+            std::wstring sVAnchor(L"margin");
 			switch(VAnchor)
 			{
-			case 0: sVAnchor = _T("margin");break;
-			case 1: sVAnchor = _T("page");break;
-			case 2: sVAnchor = _T("text");break;
+                case 0: sVAnchor = _T("margin");break;
+                case 1: sVAnchor = _T("page");break;
+                case 2: sVAnchor = _T("text");break;
 			}
-            CString sXml;sXml.Format(_T(" w:vAnchor=\"%ls\""), sVAnchor);
+            std::wstring sXml = L" w:vAnchor=\"" + sVAnchor + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bHAnchor)
 		{
-			CString sHAnchor(_T("margin"));
+            std::wstring sHAnchor(L"margin");
 			switch(HAnchor)
 			{
-			case 0: sHAnchor = _T("margin");break;
-			case 1: sHAnchor = _T("page");break;
-			case 2: sHAnchor = _T("text");break;
+                case 0: sHAnchor = _T("margin");break;
+                case 1: sHAnchor = _T("page");  break;
+                case 2: sHAnchor = _T("text");  break;
 			}
-            CString sXml;sXml.Format(_T(" w:hAnchor=\"%ls\""), sHAnchor);
-			oStringWriter.WriteString(sXml);
+            oStringWriter.WriteString(L" w:hAnchor=\"" + sHAnchor + L"\"");
 		}
 		if(bX)
 		{
-			CString sXml;sXml.Format(_T(" w:x=\"%d\""), X);
-			oStringWriter.WriteString(sXml);
+            oStringWriter.WriteString(L" w:x=\"" + std::to_wstring(X) + L"\"");
 		}
 		if(bXAlign)
 		{
-			CString sXAlign(_T("left"));
+            std::wstring sXAlign(L"left");
 			switch(XAlign)
 			{
-			case 0: sXAlign = _T("center");break;
-			case 1: sXAlign = _T("inside");break;
-			case 2: sXAlign = _T("left");break;
-			case 3: sXAlign = _T("outside");break;
-			case 4: sXAlign = _T("right");break;
+            case 0: sXAlign = _T("center"); break;
+            case 1: sXAlign = _T("inside"); break;
+            case 2: sXAlign = _T("left");   break;
+            case 3: sXAlign = _T("outside");break;
+            case 4: sXAlign = _T("right");  break;
 			}
-            CString sXml;sXml.Format(_T(" w:xAlign=\"%ls\""), sXAlign);
-			oStringWriter.WriteString(sXml);
+            oStringWriter.WriteString(L" w:xAlign=\"" + sXAlign + L"\"");
 		}
 		if(bY)
 		{
-			CString sXml;sXml.Format(_T(" w:y=\"%d\""), Y);
-			oStringWriter.WriteString(sXml);
+            oStringWriter.WriteString(L" w:y=\"" + std::to_wstring(Y) + L"\"");
 		}
 		if(bYAlign)
 		{
-			CString sYAlign(_T("inline"));
+            std::wstring sYAlign(L"inline");
 			switch(YAlign)
 			{
-			case 0: sYAlign = _T("bottom");break;
-			case 1: sYAlign = _T("center");break;
-			case 2: sYAlign = _T("inline");break;
-			case 3: sYAlign = _T("inside");break;
-			case 4: sYAlign = _T("outside");break;
-			case 5: sYAlign = _T("top");break;
+                case 0: sYAlign = _T("bottom");break;
+                case 1: sYAlign = _T("center");break;
+                case 2: sYAlign = _T("inline");break;
+                case 3: sYAlign = _T("inside");break;
+                case 4: sYAlign = _T("outside");break;
+                case 5: sYAlign = _T("top");break;
 			}
-            CString sXml;sXml.Format(_T(" w:yAlign=\"%ls\""), sYAlign);
+            std::wstring sXml = L" w:yAlign=\"" + sYAlign + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
 		if(bHRule)
 		{
-			CString sHRule(_T(""));
+            std::wstring sHRule(L"");
 			switch(HRule)
 			{
-			case 0: sHRule = _T("atLeast");break;
-			case 1: sHRule = _T("auto");break;
-			case 2: sHRule = _T("exact");break;
+                case 0: sHRule = _T("atLeast"); break;
+                case 1: sHRule = _T("auto");    break;
+                case 2: sHRule = _T("exact");   break;
 			}
-            CString sXml;sXml.Format(_T(" w:hRule=\"%ls\""), sHRule);
+            std::wstring sXml = L" w:hRule=\"" + sHRule + L"\"";
 			oStringWriter.WriteString(sXml);
 		}
-		oStringWriter.WriteString(CString(_T("/>")));
+        oStringWriter.WriteString(L"/>");
 	}
 };
 class CHyperlink{
 public:
-	CString rId;
-	CString sLink;
-	CString sAnchor;
-	CString sTooltip;
-	bool History;
-	CString sDocLocation;
-	CString sTgtFrame;
+    std::wstring    rId;
+    std::wstring    sLink;
+    std::wstring    sAnchor;
+    std::wstring    sTooltip;
+    bool            History;
+    std::wstring    sDocLocation;
+    std::wstring    sTgtFrame;
+
 	XmlUtils::CStringWriter writer;
 
 	bool bHistory;
@@ -2540,35 +2543,35 @@ public:
 	}
 	void Write(XmlUtils::CStringWriter& wr)
 	{
-		if(false == rId.IsEmpty())
+        if(false == rId.empty())
 		{
-			CString sCorrect_rId = XmlUtils::EncodeXmlString(rId);
-			CString sCorrect_tooltip = XmlUtils::EncodeXmlString(sTooltip);
-			CString sCorrect_anchor = XmlUtils::EncodeXmlString(sAnchor);
-			CString sStart;
-            sStart.Format(_T("<w:hyperlink r:id=\"%ls\""), (const TCHAR *) sCorrect_rId);
-			if(false == sTooltip.IsEmpty())
+            std::wstring sCorrect_rId       = XmlUtils::EncodeXmlString(rId);
+            std::wstring sCorrect_tooltip   = XmlUtils::EncodeXmlString(sTooltip);
+            std::wstring sCorrect_anchor    = XmlUtils::EncodeXmlString(sAnchor);
+
+            std::wstring sStart = L"<w:hyperlink r:id=\"" + sCorrect_rId + L"\"";
+            if(false == sTooltip.empty())
 			{
-                sStart += (_T(" w:tooltip=\""));
-                sStart += (sCorrect_tooltip);
-                sStart += (_T("\""));
+                sStart += L" w:tooltip=\"";
+                sStart += sCorrect_tooltip;
+                sStart += L"\"";
 			}
-			if(false == sAnchor.IsEmpty())
+            if(false == sAnchor.empty())
 			{
-                sStart += (_T(" w:anchor=\""));
-                sStart += (sCorrect_anchor);
-                sStart += (_T("\""));
+                sStart += L" w:anchor=\"";
+                sStart += sCorrect_anchor;
+                sStart += L"\"";
 			}
-            sStart += (_T(" w:history=\"1\">"));
+            sStart += L" w:history=\"1\">";
 			wr.WriteString(sStart);
 			wr.Write(writer);
-			wr.WriteString(CString(_T("</w:hyperlink>")));
+            wr.WriteString(L"</w:hyperlink>");
 		}
 	}
 };
 class CFldSimple{
 public:
-	CString sInstr;
+    std::wstring sInstr;
 	XmlUtils::CStringWriter writer;
 public:
 	CFldSimple()
@@ -2576,25 +2579,25 @@ public:
 	}
 	void Write(XmlUtils::CStringWriter& wr)
 	{
-		if(false == sInstr.IsEmpty())
+        if(false == sInstr.empty())
 		{
-			CString sCorrect_Instr = XmlUtils::EncodeXmlString(sInstr);
-			CString sStart(_T("<w:fldSimple w:instr=\""));
-            sStart += (sCorrect_Instr);
-            sStart += (_T("\">"));
+            std::wstring sCorrect_Instr = XmlUtils::EncodeXmlString(sInstr);
+            std::wstring sStart(L"<w:fldSimple w:instr=\"");
+            sStart += sCorrect_Instr;
+            sStart += L"\">";
 			wr.WriteString(sStart);
 			wr.Write(writer);
-			wr.WriteString(CString(_T("</w:fldSimple>")));
+            wr.WriteString(L"</w:fldSimple>");
 		}
 	}
 };
 class TrackRevision
 {
 public:
-	CString Author;
-	CString Date;
+    std::wstring Author;
+    std::wstring Date;
 	long* Id;
-    CString UserId;
+    std::wstring UserId;
 	long* vMerge;
 	long* vMergeOrigin;
 
@@ -2639,71 +2642,68 @@ public:
 	}
 	bool IsNoEmpty()
 	{
-		return !Author.IsEmpty() || !Date.IsEmpty() || NULL != Id;
+        return !Author.empty() || !Date.empty() || NULL != Id;
 	}
-	CString ToString(CString sName)
+    std::wstring ToString(std::wstring sName)
 	{
 		XmlUtils::CStringWriter writer;
 		Write(&writer, sName);
 		return writer.GetData();
 	}
-	void Write(XmlUtils::CStringWriter*  pCStringWriter, CString sName)
+    void Write(XmlUtils::CStringWriter*  pCStringWriter, std::wstring sName)
 	{
 		if(IsNoEmpty())
 		{
-			pCStringWriter->WriteString(CString(_T("<")));
+            pCStringWriter->WriteString(L"<");
 			pCStringWriter->WriteString(sName);
             if(NULL != Id)
             {
-                CString sId;sId.Format(_T(" w:id=\"%d\""), *Id);
-                pCStringWriter->WriteString(sId);
+                pCStringWriter->WriteString(L" w:id=\"" + std::to_wstring(*Id) + L"\"");
             }
-            if(!Author.IsEmpty())
+            if(!Author.empty())
 			{
-				pCStringWriter->WriteString(_T(" w:author=\""));
+                pCStringWriter->WriteString(L" w:author=\"");
 				pCStringWriter->WriteEncodeXmlString(Author);
-				pCStringWriter->WriteString(_T("\""));
+                pCStringWriter->WriteString(L"\"");
 			}
-			if(!Date.IsEmpty())
+            if(!Date.empty())
 			{
-				pCStringWriter->WriteString(_T(" w:date=\""));
+                pCStringWriter->WriteString(L" w:date=\"");
 				pCStringWriter->WriteEncodeXmlString(Date);
-				pCStringWriter->WriteString(_T("\""));
+                pCStringWriter->WriteString(L"\"");
 			}
-            if(!UserId.IsEmpty())
+            if(!UserId.empty())
             {
-                pCStringWriter->WriteString(_T(" oouserid=\""));
+                pCStringWriter->WriteString(L" oouserid=\"");
                 pCStringWriter->WriteEncodeXmlString(UserId);
-                pCStringWriter->WriteString(_T("\""));
+                pCStringWriter->WriteString(L"\"");
             }
 			if(NULL != vMerge)
 			{
-				CString sId;sId.Format(_T(" w:vMerge=\"%d\""), *vMerge);
-				pCStringWriter->WriteString(sId);
+                pCStringWriter->WriteString(L" w:vMerge=\"" + std::to_wstring(*vMerge) + L"\"");
 			}
 			if(NULL != vMergeOrigin)
 			{
-				CString sId;sId.Format(_T(" w:vMergeOrig=\"%d\""), *vMergeOrigin);
-				pCStringWriter->WriteString(sId);
+                pCStringWriter->WriteString(L" w:vMergeOrig=\"" + std::to_wstring(*vMergeOrigin) + L"\"");
 			}
 			if(NULL != RPr || NULL != PPr || NULL != sectPr || NULL != tblPr || NULL != tblGridChange || NULL != trPr || NULL != tcPr || NULL != content|| NULL != contentRun)
 			{
-				pCStringWriter->WriteString(CString(_T(">")));
+                pCStringWriter->WriteString(L">");
 				if(NULL != RPr)
 				{
 					RPr->Write(pCStringWriter);
 				}
 				if(NULL != PPr)
 				{
-                    pCStringWriter->WriteString(_T("<w:pPr>"));
+                    pCStringWriter->WriteString(L"<w:pPr>");
 					pCStringWriter->Write(*PPr);
-                    pCStringWriter->WriteString(_T("</w:pPr>"));
+                    pCStringWriter->WriteString(L"</w:pPr>");
 				}
 				if(NULL != sectPr)
 				{
-					pCStringWriter->WriteString(_T("<w:sectPr>"));
+                    pCStringWriter->WriteString(L"<w:sectPr>");
 					pCStringWriter->WriteString(sectPr->Write());
-					pCStringWriter->WriteString(_T("</w:sectPr>"));
+                    pCStringWriter->WriteString(L"</w:sectPr>");
 				}
 				if(NULL != tblPr)
 				{
@@ -2711,21 +2711,21 @@ public:
 				}
                 if(NULL != tblGridChange)
                 {
-                    pCStringWriter->WriteString(CString(_T("<w:tblGrid>")));
+                    pCStringWriter->WriteString(L"<w:tblGrid>");
                     pCStringWriter->Write(*tblGridChange);
-                    pCStringWriter->WriteString(CString(_T("</w:tblGrid>")));
+                    pCStringWriter->WriteString(L"</w:tblGrid>");
                 }
 				if(NULL != trPr)
 				{
-                    pCStringWriter->WriteString(CString(_T("<w:trPr>")));
+                    pCStringWriter->WriteString(L"<w:trPr>");
 					pCStringWriter->Write(*trPr);
-                    pCStringWriter->WriteString(CString(_T("</w:trPr>")));
+                    pCStringWriter->WriteString(L"</w:trPr>");
 				}
 				if(NULL != tcPr)
 				{
-                    pCStringWriter->WriteString(CString(_T("<w:tcPr>")));
+                    pCStringWriter->WriteString(L"<w:tcPr>");
 					pCStringWriter->Write(*tcPr);
-                    pCStringWriter->WriteString(CString(_T("</w:tcPr>")));
+                    pCStringWriter->WriteString(L"</w:tcPr>");
 				}
 				if(NULL != content)
 				{
@@ -2736,13 +2736,13 @@ public:
 					pCStringWriter->Write(*contentRun);
 				}
 
-				pCStringWriter->WriteString(CString(_T("</")));
+                pCStringWriter->WriteString(L"</");
 				pCStringWriter->WriteString(sName);
-				pCStringWriter->WriteString(CString(_T(" >")));
+                pCStringWriter->WriteString(L" >");
 			}
 			else
 			{
-				pCStringWriter->WriteString(CString(_T(" />")));
+                pCStringWriter->WriteString(L" />");
 			}
 		}
 	}

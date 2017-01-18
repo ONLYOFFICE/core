@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,8 +71,8 @@ namespace PPTX
 		public:
 			void add(const OOX::CPath& path)
 			{
-				CString ext = path.GetExtention();
-				const CString extension = ext.Mid(1);
+				std::wstring ext = path.GetExtention();
+				const std::wstring extension = ext.substr(1);
 				
 				size_t nCount = m_items.size();
 				size_t nIndex = 0;	

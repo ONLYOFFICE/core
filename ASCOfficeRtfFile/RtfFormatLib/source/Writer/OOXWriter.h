@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@ class OOXWriter
 {
 public: 
 
-	CString			m_nCurFitId;
+    std::wstring	m_nCurFitId;
 	int				m_nCurFitWidth;
 	int				m_nCurTrackChangesId;
 
@@ -62,10 +62,10 @@ public:
 	void* m_poDocPropsCore;
 
 //TempFolder
-	CString m_sTempFolder;
-	CString m_sTargetFolder;
+    std::wstring m_sTempFolder;
+    std::wstring m_sTargetFolder;
 
-	std::map<CString, int> m_aBookmarksId;
+    std::map<std::wstring, int> m_aBookmarksId;
 	
 	OOXWriter	( RtfDocument& oDocument, std::wstring sPath );
 	~OOXWriter	();

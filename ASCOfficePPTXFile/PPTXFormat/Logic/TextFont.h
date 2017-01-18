@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,7 +56,7 @@ namespace PPTX
 
 				typeface = node.GetAttribute(_T("typeface"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("typeface"), typeface);
@@ -88,7 +88,7 @@ namespace PPTX
 				pWriter->WriteString1(3, typeface);
 				*/
 
-				CString sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
+				std::wstring sPick = pWriter->m_pCommon->m_pNativePicker->GetTypefacePick(*this);
 				pWriter->WriteString1(3, sPick);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -154,10 +154,10 @@ namespace PPTX
 			nullable_string charset;
 			nullable_string panose;
 			nullable_string pitchFamily;
-			CString typeface;
+			std::wstring typeface;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

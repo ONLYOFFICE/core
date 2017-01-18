@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -77,7 +77,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -197,7 +197,7 @@ namespace PPTX
 
 								pReader->Skip(1);
 
-								CString arr[6];
+								std::wstring arr[6];
 
 								while (true)
 								{
@@ -291,7 +291,7 @@ namespace PPTX
 					Paths[i].SetParentPointer(this);
 			}
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -300,7 +300,7 @@ namespace PPTX
 				oAttr.Write(_T("stroke"), stroke);
 				oAttr.Write(_T("extrusionOk"), extrusionOk);
 
-				CString strXml = _T("");
+				std::wstring strXml = _T("");
 				size_t nCount = Paths.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += Paths[i].GetODString();

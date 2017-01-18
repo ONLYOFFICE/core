@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,7 +66,8 @@ SerArPtr SerAr::createSerAr(const unsigned char type)
 		// EXCEPT::RT::WrongBiffRecord("Unsupported type of SerAr.", "SerAr container");
 		break;
 	}
-
+    
+    return NULL; // TODO: need fixed
 }
 
 

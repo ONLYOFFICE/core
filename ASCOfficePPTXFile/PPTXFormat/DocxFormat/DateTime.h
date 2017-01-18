@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,7 @@ namespace PPTX
 		DateTime()
 		{
 		}
-		explicit DateTime(const CString& value) : m_datetime(value, s_pattern)
+		explicit DateTime(const std::wstring& value) : m_datetime(value, s_pattern)
 		{
 		}
 		explicit DateTime(const ::DateTime& dt) : m_datetime(dt)
@@ -52,11 +52,11 @@ namespace PPTX
 		}
 
 	public:
-		CString ToString() const
+		std::wstring ToString() const
 		{
 			return m_datetime.ToString(s_pattern);
 		}
-		static DateTime Parse(const CString& value)
+		static DateTime Parse(const std::wstring& value)
 		{
 			return DateTime(value);
 		}
@@ -72,11 +72,11 @@ namespace PPTX
 		}
 
 	private:
-		static const CString s_pattern;
+		static const std::wstring s_pattern;
 		::DateTime m_datetime;
 	};
 
-    const CString DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
+    const std::wstring DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
 } // namespace PPTX
 
 #endif // PPTXOOX_DATE_TIME_INCLUDE_H_

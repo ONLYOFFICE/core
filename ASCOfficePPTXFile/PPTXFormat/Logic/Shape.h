@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,6 @@
 #include "UniFill.h"
 #include "Ln.h"
 
-//#include "../../../Common/DocxFormat/Source/Utility/Encoding.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 
 namespace PPTX
@@ -60,9 +59,9 @@ namespace PPTX
 
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 		public:
-			CString GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
+			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
 			void GetShapeFullDescription(Shape& shape, int level = 0)const;
 			void GetRect(Aggplus::RECT& pRect)const;
@@ -111,7 +110,7 @@ namespace PPTX
 					}
 					else if (txBody.is_init())
 					{
-						CString strContent = txBody->GetDocxTxBoxContent(pWriter, style);
+						std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);
 
                         long lDataSize = 0;
                         ULONG lPos = pWriter->GetPosition();
@@ -282,10 +281,10 @@ namespace PPTX
                                 LONG lSize_Reader = pReader->GetSize();
 								BYTE* pData_Reader = pReader->GetData();
 				
-								CString sXmlContent;
+								std::wstring sXmlContent;
 								pReader->m_pMainDocument->getXmlContent(*pReader, lLenRec, sXmlContent);
 
-								CString strC = _T("<w:txbxContent>");
+								std::wstring strC = _T("<w:txbxContent>");
 								strC += sXmlContent;
 								strC += _T("</w:txbxContent>");
 								TextBoxShape = strC;

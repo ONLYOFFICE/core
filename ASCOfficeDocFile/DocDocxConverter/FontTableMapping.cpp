@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,10 +54,10 @@ namespace DocFileFormat
 
 		this->_ctx->_docx->RegisterFontTable();
 
-		m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-		m_pXmlWriter->WriteNodeBegin( _T( "w:fonts" ), TRUE );
-		m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+        m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+        m_pXmlWriter->WriteNodeBegin( L"w:fonts", TRUE );
+        m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+        m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 		int sz_fonts	= table->Data.size();
 		int users_fonts = 0;
@@ -66,79 +66,79 @@ namespace DocFileFormat
 		{
 			FontFamilyName* font = dynamic_cast<FontFamilyName*>( *iter );
 
-			m_pXmlWriter->WriteNodeBegin( _T( "w:font" ), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"w:font", TRUE );
 
 			std::wstring name_ = FormatUtils::XmlEncode(font->xszFtn, true);
 			if (name_.empty()) 
 				name_ = L"UserFont_" + std::to_wstring(++users_fonts);
-			m_pXmlWriter->WriteAttribute( _T( "w:name" ), name_);
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+            m_pXmlWriter->WriteAttribute( L"w:name", name_);
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 			//alternative name
-			if ( ( font->xszAlt != std::wstring( _T( "" ) ) ) && ( font->xszAlt.length() > 0 ) )
+            if ( ( font->xszAlt != std::wstring( L"" ) ) && ( font->xszAlt.length() > 0 ) )
 			{
-				m_pXmlWriter->WriteNodeBegin( _T( "w:altName" ), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::XmlEncode(font->xszAlt, true));
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-				m_pXmlWriter->WriteNodeEnd( _T( "w:altName" ) );
+                m_pXmlWriter->WriteNodeBegin( L"w:altName", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(font->xszAlt, true));
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+                m_pXmlWriter->WriteNodeEnd( L"w:altName" );
 			}
 
 			//charset
-			m_pXmlWriter->WriteNodeBegin( _T("w:charset" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::IntToFormattedWideString( font->chs, _T( "%02x" ) ));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T( "w:charset" ) );
+            m_pXmlWriter->WriteNodeBegin( L"w:charset", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::IntToFormattedWideString( font->chs, L"%02x" ));
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"w:charset" );
 
 			//font family
-			m_pXmlWriter->WriteNodeBegin( _T("w:family"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->ff, &FontFamily[0][0], 6, 11 ));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T( "w:family" ) );
+            m_pXmlWriter->WriteNodeBegin( L"w:family", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString( font->ff, &FontFamily[0][0], 6, 11 ));
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"w:family" );
 
 			//panose
-			m_pXmlWriter->WriteNodeBegin( _T("w:panose1"), TRUE );
+            m_pXmlWriter->WriteNodeBegin( L"w:panose1", TRUE );
 
-			std::wstring wstr( _T( "" ) );
+            std::wstring wstr( L"" );
 
 			for ( unsigned int i = 0; i < font->panoseSize; i++ )
 			{
-				wstr += FormatUtils::IntToFormattedWideString( font->panose[i], _T( "%02x" ) );
+                wstr += FormatUtils::IntToFormattedWideString( font->panose[i], L"%02x" );
 			}
 
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), wstr);
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T( "w:panose1" ) );
+            m_pXmlWriter->WriteAttribute( L"w:val", wstr);
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"w:panose1" );
 
 			//pitch
-			m_pXmlWriter->WriteNodeBegin( _T("w:pitch"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:val" ), FormatUtils::MapValueToWideString( font->prq, &FontPitch[0][0], 3, 9 ));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T( "w:pitch" ) );
+            m_pXmlWriter->WriteNodeBegin( L"w:pitch", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::MapValueToWideString( font->prq, &FontPitch[0][0], 3, 9 ));
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"w:pitch" );
 
 			//truetype
 			if ( !font->fTrueType )
 			{
-				m_pXmlWriter->WriteNodeBegin( _T("w:notTrueType"), TRUE );
-				m_pXmlWriter->WriteAttribute( _T( "w:val" ), _T( "true" ) );
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-				m_pXmlWriter->WriteNodeEnd( _T( "w:notTrueType" ) );
+                m_pXmlWriter->WriteNodeBegin( L"w:notTrueType", TRUE );
+                m_pXmlWriter->WriteAttribute( L"w:val", L"true" );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+                m_pXmlWriter->WriteNodeEnd( L"w:notTrueType" );
 			}
 
 			//font signature
-			m_pXmlWriter->WriteNodeBegin( _T("w:sig"), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "w:usb0" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, _T( "%08x" ) ));
-			m_pXmlWriter->WriteAttribute( _T( "w:usb1" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, _T( "%08x" ) ));
-			m_pXmlWriter->WriteAttribute( _T( "w:usb2" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, _T( "%08x" ) ));
-			m_pXmlWriter->WriteAttribute( _T( "w:usb3" ), FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, _T( "%08x" ) ));
-			m_pXmlWriter->WriteAttribute( _T( "w:csb0" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, _T( "%08x" ) ));
-			m_pXmlWriter->WriteAttribute( _T( "w:csb1" ), FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, _T( "%08x" ) ));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T( "w:sig" ) );
+            m_pXmlWriter->WriteNodeBegin( L"w:sig", TRUE );
+            m_pXmlWriter->WriteAttribute( L"w:usb0", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield0, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb1", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield1, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb2", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield2, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:usb3", FormatUtils::IntToFormattedWideString( font->fs.UnicodeSubsetBitfield3, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:csb0", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield0, L"%08x" ));
+            m_pXmlWriter->WriteAttribute( L"w:csb1", FormatUtils::IntToFormattedWideString( font->fs.CodePageBitfield1, L"%08x" ));
+            m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+            m_pXmlWriter->WriteNodeEnd( L"w:sig" );
 
-			m_pXmlWriter->WriteNodeEnd( _T( "w:font" ) );
+            m_pXmlWriter->WriteNodeEnd( L"w:font" );
 		}
 
-		m_pXmlWriter->WriteNodeEnd( _T("w:fonts") );
+        m_pXmlWriter->WriteNodeEnd( L"w:fonts");
 
 		this->_ctx->_docx->FontTableXML = std::wstring( m_pXmlWriter->GetXmlString() );
 	}

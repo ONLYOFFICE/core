@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,11 +51,11 @@ namespace PPTX
 		}
 	public:
 
-        std::map<CString, smart_ptr<PPTX::File>> m_map;
+        std::map<std::wstring, smart_ptr<PPTX::File>> m_map;
 
 	public:
 
-        AVSINLINE std::map<CString, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
+        AVSINLINE std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
 		{
             return m_map.find(path.m_strFilename);
 		}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,19 +48,19 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString val = node.GetAttribute(_T("val"));
-				red		= HexString2Int(val.Mid(0, 2));
-				green	= HexString2Int(val.Mid(2, 2));
-				blue	= HexString2Int(val.Mid(4, 2));
+				std::wstring val = node.GetAttribute(_T("val"));
+				red		= HexString2Int(val.substr(0, 2));
+				green	= HexString2Int(val.substr(2, 2));
+				blue	= HexString2Int(val.substr(4, 2));
 
 				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
 			virtual void fromXMLScRgb(XmlUtils::CXmlNode& node)
 			{
-				int cred	= node.GetAttributeInt(CString(L"r"), 0);
-				int cgreen	= node.GetAttributeInt(CString(L"g"), 0);
-				int cblue	= node.GetAttributeInt(CString(L"b"), 0);
+				int cred	= node.GetAttributeInt(std::wstring(L"r"), 0);
+				int cgreen	= node.GetAttributeInt(std::wstring(L"g"), 0);
+				int cblue	= node.GetAttributeInt(std::wstring(L"b"), 0);
 
 				red		= (unsigned char)(255 * scRGB_to_sRGB(cred / 100000.0));
 				green	= (unsigned char)(255 * scRGB_to_sRGB(cgreen / 100000.0));
@@ -69,13 +69,13 @@ namespace PPTX
 				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str = _T("");
-				str.Format(_T("%.02X%.02X%.02X"), red, green, blue);
+				std::wstringstream sstream;
+				sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
 						
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("val"), str);
+				oAttr.Write(_T("val"), sstream.str());
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(Modifiers);
@@ -84,8 +84,8 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");
@@ -96,11 +96,11 @@ namespace PPTX
 
 				pWriter->StartNode(sNodeNamespace + _T("srgbClr"));
 				
-				CString str = _T("");
-				str.Format(_T("%.02X%.02X%.02X"), red, green, blue);
-						
+				std::wstringstream sstream;
+				sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
+
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + _T("val"), str);
+				pWriter->WriteAttribute(sAttrNamespace + _T("val"), sstream.str());
 				pWriter->EndAttributes();
 
 				size_t nCount = Modifiers.size();

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -94,14 +94,14 @@ namespace OOX
 					m_pRunPr->fromXML( oReader );
 			}
 		}
-		CString CRPrChange::toXML() const
+		std::wstring CRPrChange::toXML() const
 		{			
-			CString sResult = _T("<w:rPrChange ");
+			std::wstring sResult = _T("<w:rPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+                sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -122,7 +122,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+                sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 
@@ -255,7 +255,7 @@ namespace OOX
 				{
 					m_sTextFill = oReader.GetOuterXml();
 
-					CString strXml = _T("<xml xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" >");
+					std::wstring strXml = _T("<xml xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" >");
 							strXml += m_sTextFill.get();
 							strXml += _T("</xml>");
 							

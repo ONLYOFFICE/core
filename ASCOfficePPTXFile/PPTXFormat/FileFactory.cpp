@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -136,11 +136,11 @@ namespace PPTX
 	const smart_ptr<PPTX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& path, const PPTX::Rels::RelationShip& relation)
 	{
 		bool bIsDownload = false;
-		CString strFile = relation.filename().GetPath();
-		int n1 = strFile.Find(_T("www"));
-		int n2 = strFile.Find(_T("http"));
-		int n3 = strFile.Find(_T("ftp"));
-		int n4 = strFile.Find(_T("https://"));
+		std::wstring strFile = relation.filename().GetPath();
+		int n1 = strFile.find(_T("www"));
+		int n2 = strFile.find(_T("http"));
+		int n3 = strFile.find(_T("ftp"));
+		int n4 = strFile.find(_T("https://"));
 
         //если nI сранивать не с 0, то будут проблемы
         //потому что в инсталяции мы кладем файлы в /var/www...
@@ -152,7 +152,7 @@ namespace PPTX
 		if (bIsDownload)
 			filename = relation.filename();
 
-		CString strT = relation.type();
+		std::wstring strT = relation.type();
 
 		if (strT == PPTX::FileTypes::Image ||
 			strT == PPTX::FileTypes::Data ||

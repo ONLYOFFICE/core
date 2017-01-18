@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -130,7 +130,7 @@ namespace PPTX
 			return m_filename;
 		}
 
-		std::map<CString,CString>		m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
+		std::map<std::wstring,std::wstring>		m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
 
 	private:
 		OOX::CPath	m_filename;
@@ -157,7 +157,7 @@ namespace PPTX
 			{
 				//ReadAttributes( oReader );
 
-				CString elementContent;
+				std::wstring elementContent;
 				bool bReadyElement = false;//собираем все до нахождения собственно элемента
 
 				if ( !oReader.IsEmptyNode() )
@@ -165,9 +165,9 @@ namespace PPTX
 					int nStylesDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nStylesDepth ) )//
 					{
-						CString NodeContent = oReader.GetOuterXml();
+						std::wstring NodeContent = oReader.GetOuterXml();
 
-						CString strXml = _T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+						std::wstring strXml = _T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
  xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">");
                                 strXml += NodeContent;
                                 strXml += L"</xml>";
@@ -274,7 +274,7 @@ namespace PPTX
 							//m_arrItems.push_back( pItem );
 
 							OOX::Vml::CVmlCommonElements* common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pItem);
-							CString sSpid;
+							std::wstring sSpid;
 							
 							if (common)
 							{
@@ -292,11 +292,11 @@ namespace PPTX
 							}
 							if (bReadyElement)
 							{		
-								if (sSpid.GetLength() > 0)
+								if (sSpid.length() > 0)
 								{
-									//m_mapShapes.insert(std::pair<CString,int>(sSpid, m_arrItems.size()-1));		
+									//m_mapShapes.insert(std::pair<std::wstring,int>(sSpid, m_arrItems.size()-1));		
 								
-									m_mapShapesXml.insert(std::pair<CString,CString>(sSpid,elementContent));
+									m_mapShapesXml.insert(std::pair<std::wstring,std::wstring>(sSpid,elementContent));
 								}
 								elementContent = _T("");
 								bReadyElement = false;

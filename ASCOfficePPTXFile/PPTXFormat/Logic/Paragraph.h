@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,7 +75,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("pPr") == strName)
 							pPr = oNode;
@@ -90,7 +90,7 @@ namespace PPTX
 							if (oNode.GetNode(_T("mc:Choice"), oNodeChoice))
 							{
 								XmlUtils::CXmlNode oNodeFall;
-								CString sRequires;
+								std::wstring sRequires;
 								//todo better check (a14 can be math, slicer)
 								if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 								{
@@ -107,7 +107,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(pPr);
@@ -327,9 +327,9 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-			CString GetText()const
+			std::wstring GetText()const
 			{
-				CString result = _T("");
+				std::wstring result = _T("");
 				
 				size_t count = RunElems.size();
 				for (size_t i = 0; i < count; ++i)

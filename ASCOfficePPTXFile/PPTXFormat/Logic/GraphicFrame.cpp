@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,7 +72,7 @@ namespace PPTX
 				{
 					XmlUtils::CXmlNode oNode;
 					oNodes.GetAt(i, oNode);
-					CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("xfrm") == strName)
 						xfrm = oNode;
@@ -156,7 +156,7 @@ namespace PPTX
 
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			CString strNS = _T("");
+			std::wstring strNS = _T("");
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)
 			{
 				pWriter->StartNode(_T("wpg:graphicFrame"));
@@ -212,8 +212,8 @@ namespace PPTX
 			if (!smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init() ) 
 				return;
 
-			CString xml_object_vml;
-			CString xml_object_rels;
+			std::wstring xml_object_vml;
+			std::wstring xml_object_rels;
 
 			if (spid.is_init())
 			{
@@ -267,9 +267,9 @@ namespace PPTX
 				return;
 			}
 
-			if (!table.is_init() && !chartRec.is_init() && xml_object_vml.IsEmpty() == false)
+            if (!table.is_init() && !chartRec.is_init() && xml_object_vml.empty() == false)
 			{
-				CString temp = _T("<v:object>");
+				std::wstring temp = _T("<v:object>");
                 temp += xml_object_vml;
                 temp += L"</v:object>";
 
@@ -279,7 +279,7 @@ namespace PPTX
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pImageManager = pWriter->m_pCommon->m_pImageManager;
 	
-				CString *main_props = NULL;
+				std::wstring *main_props = NULL;
 
 				oDrawingConverter.SetRelsPath(xml_object_rels);
 				oDrawingConverter.SetAdditionalParam(_T("xfrm_override"), (BYTE*)&xfrm, sizeof(xfrm));
@@ -306,7 +306,7 @@ namespace PPTX
 			{
 				pWriter->WriteRecord2(3, chartRec);
 			}
-			else if (xml_object_vml.IsEmpty() == false)
+            else if (xml_object_vml.empty() == false)
 			{
 			}
 
@@ -384,7 +384,7 @@ namespace PPTX
 				parentAs<Logic::SpTree>().NormalizeRect(pRect);
 		}
 
-		CString GraphicFrame::toXML() const
+		std::wstring GraphicFrame::toXML() const
 		{
 			//XML::XNode node;
 			//if(dm.is_init())
@@ -436,9 +436,9 @@ namespace PPTX
 
 		//	return filename;
 		//}
-		CString GraphicFrame::GetVmlXmlBySpid(CString & rels)const
+		std::wstring GraphicFrame::GetVmlXmlBySpid(std::wstring & rels)const
 		{
-            CString xml;
+            std::wstring xml;
 			rels = _T("");
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -85,14 +85,11 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str1 = _T("");
-				str1.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
-				CString str2 = _T("");
-				str2.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
-				CString str3 = _T("");
-				str3.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x3, y3);
+				std::wstring str1 = L"<a:pt x=\"" + x1 + L"\" y=\"" + y1 + L"\" />";
+				std::wstring str2 = L"<a:pt x=\"" + x2 + L"\" y=\"" + y2 + L"\" />";
+				std::wstring str3 = L"<a:pt x=\"" + x3 + L"\" y=\"" + y3 + L"\" />";
 
 				return _T("<a:cubicBezTo>") + str1 + str2 + str3 + _T("</a:cubicBezTo>");
 			}
@@ -143,24 +140,21 @@ namespace PPTX
 			}
 
 		public:
-			CString x1;
-			CString y1;
-			CString x2;
-			CString y2;
-			CString x3;
-			CString y3;
+			std::wstring x1;
+			std::wstring y1;
+			std::wstring x2;
+			std::wstring y2;
+			std::wstring x3;
+			std::wstring y3;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
-				CString str1 = _T("");
-				str1.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
-				CString str2 = _T("");
-				str2.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
-				CString str3 = _T("");
-				str3.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x3, y3);
+				std::wstring str1 = L"<pt x=\"" + x1 + L"\" y=\"" + y1 + L"\"/>";
+				std::wstring str2 = L"<pt x=\"" + x2 + L"\" y=\"" + y2 + L"\"/>";
+				std::wstring str3 = L"<pt x=\"" + x3 + L"\" y=\"" + y3 + L"\"/>";
 
 				return _T("<cubicBezTo>") + str1 + str2 + str3 + _T("</cubicBezTo>");
 			}

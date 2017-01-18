@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,16 +65,13 @@ namespace PPTX
 				upZ = oNodeU.ReadAttributeInt(L"dz");
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str1 = _T("");
-				str1.Format(_T("<a:anchor x=\"%d\" y=\"%d\" z=\"%d\" />"), anchorX, anchorY, anchorZ);
+                std::wstring str1 = L"<a:anchor x=\"" + std::to_wstring(anchorX) + L"\" y=\"" + std::to_wstring(anchorY) + L"\" z=\"" + std::to_wstring(anchorZ) + L"\"/>";
 
-				CString str2 = _T("");
-				str1.Format(_T("<a:norm dx=\"%d\" dy=\"%d\" dz=\"%d\" />"), normX, normY, normZ);
+                std::wstring str2 = L"<a:norm dx=\"" + std::to_wstring(normX) + L"\" dy=\"" + std::to_wstring(normY) + L"\" dz=\"" + std::to_wstring(normY) + L"\"/>";
 
-				CString str3 = _T("");
-				str1.Format(_T("<a:up dx=\"%d\" dy=\"%d\" dz=\"%d\" />"), upX, upY, upZ);
+                std::wstring str3 = L"<a:up dx=\"" + std::to_wstring(upX) + L"\" dy=\"" + std::to_wstring(upY) + L"\" dz=\"" + std::to_wstring(upZ) + L"\"/>";
 
 				return _T("<a:backdrop>") + str1 + str2 + str3 + _T("</a:backdrop>");
 			}

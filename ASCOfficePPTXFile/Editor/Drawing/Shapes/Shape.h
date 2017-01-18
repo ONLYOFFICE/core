@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -81,7 +81,7 @@ public:
 
 	CBaseShape*				m_pShape;
 
-	CString					m_strPPTXShape;
+        std::wstring					m_strPPTXShape;
 public:
 	CShape(NSBaseShape::ClassType ClassType, int ShapeType_) : m_rcBounds()
 	{
@@ -146,7 +146,7 @@ public:
 	}
 
 
-	//virtual CString GetTextXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
+        //virtual std::wstring GetTextXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
 	//{
 	//	if (m_oText.IsEmptyText())
 	//		return _T("");
@@ -156,14 +156,14 @@ public:
 	//}
 
 
-	//virtual CString GetBrushXml()
+        //virtual std::wstring GetBrushXml()
 	//{
 	//	if (!m_pShape->m_bConcentricFill)
 	//		return _T("");
 	//	return m_oBrush.ToString();
 	//}
 
-	//virtual CString GetPenXml()
+        //virtual std::wstring GetPenXml()
 	//{
 	//	return m_oPen.ToString();
 	//}
@@ -316,9 +316,9 @@ public:
 		oInfo.bottom	= dTop + dHeight;
 	}
 
-	//virtual CString ToXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
+        //virtual std::wstring ToXml(CGeomShapeInfo& oGeomInfo, CMetricInfo& pInfo, double dStartTime, double dEndTime, CTheme* pTheme, CLayout* pLayout)
 	//{
-	//	CString strImageTransform = _T("");
+        //	std::wstring strImageTransform = _T("");
 
 	//	oGeomInfo.m_dLimoX = m_lLimoX;
 	//	oGeomInfo.m_dLimoY = m_lLimoY;
@@ -327,7 +327,7 @@ public:
 	//	
 	//	CBrush	brush; //копии с уровня выше нужны
 	//	CPen	pen;
-	//	CString strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
+        //	std::wstring strDrawing = m_pShape->ToXML(oGeomInfo, pInfo, dStartTime, dEndTime, brush, pen);
 	//	if (m_lDrawType & c_ShapeDrawType_Graphic)
 	//	{
 	//		strImageTransform += strDrawing;
@@ -362,7 +362,7 @@ public:
 	}
 
 
-	virtual bool LoadFromXML(const CString& xml)
+        virtual bool LoadFromXML(const std::wstring& xml)
 	{
 		XmlUtils::CXmlNode oNodePict;
 		if (oNodePict.FromXmlString(xml))
@@ -440,20 +440,20 @@ public:
 		XmlUtils::CXmlNode oNodeTemplate;
 		if (oNodePict.GetNode(_T("stroke"), oNodeTemplate))
 		{
-			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("strokecolor"));
+                        std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("strokecolor"));
 			//if (strColor != _T(""))
 			//	m_oPen.Color.FromString(strColor);
-			//CString strSize = oNodeTemplate.GetAttributeOrValue(_T("strokeweight"));
+                        //std::wstring strSize = oNodeTemplate.GetAttributeOrValue(_T("strokeweight"));
 			//if (strSize != _T(""))
 			//	m_oPen.Size = XmlUtils::GetDouble(strSize);
-			//CString strStroke = oNodeTemplate.GetAttributeOrValue(_T("stroked"));
+                        //std::wstring strStroke = oNodeTemplate.GetAttributeOrValue(_T("stroked"));
 			//if (strStroke != _T(""))
 			//	m_oPen.Alpha = 0;
 
 		}
 		if (oNodePict.GetNode(_T("v:stroke"), oNodeTemplate))
 		{
-			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("dashstyle"));
+                        std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("dashstyle"));
 			//if (strColor != _T(""))
 			//	m_oPen.DashStyle = XmlUtils::GetInteger(strColor);
 		}		
@@ -464,7 +464,7 @@ public:
 		XmlUtils::CXmlNode oNodeTemplate;
 		if (oNodePict.GetNode(_T("fillcolor"), oNodeTemplate))
 		{
-			CString strColor = oNodeTemplate.GetAttributeOrValue(_T("val"));
+                        std::wstring strColor = oNodeTemplate.GetAttributeOrValue(_T("val"));
 			//if (strColor != _T(""))
 			//	m_oBrush.Color1.FromString(strColor);				
 		}
@@ -477,18 +477,19 @@ public:
 			XmlUtils::CXmlNode oNodeTemplate;
 			if (oNodePict.GetNode(_T("coordsize"), oNodeTemplate))
 			{
-				CString strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
+                                std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
 				if (strCoordSize != _T(""))
 				{
-					std::vector<CString> oArray;
-					NSStringUtils::ParseString(_T(","), strCoordSize, &oArray);
-					m_dWidthLogic  = XmlUtils::GetInteger(oArray[0]);
+                                        std::vector<std::wstring> oArray;
+                                        boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
+                                        m_dWidthLogic  = XmlUtils::GetInteger(oArray[0]);
 					m_dHeightLogic = XmlUtils::GetInteger(oArray[1]);
 				}
 			}
 			else
 			{
-				CString id = oNodePict.GetAttributeOrValue(_T("type"));
+                                std::wstring id = oNodePict.GetAttributeOrValue(_T("type"));
 				if (id != _T(""))
 				{
 					m_dWidthLogic  = 21600;
@@ -499,11 +500,12 @@ public:
 					XmlUtils::CXmlNode oNodeTemplate;
 					if (oNodePict.GetNode(_T("template"), oNodeTemplate))
 					{
-						CString strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordsize"));
+                                                std::wstring strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordsize"));
 						if (strCoordSize != _T(""))
 						{
-							std::vector<CString> oArray;
-							NSStringUtils::ParseString(_T(","), strCoordSize, &oArray);
+                                                        std::vector<std::wstring> oArray;
+                                                        boost::algorithm::split(oArray, strCoordSize, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+
 							m_dWidthLogic  = XmlUtils::GetInteger(oArray[0]);
 							m_dHeightLogic = XmlUtils::GetInteger(oArray[1]);
 						}

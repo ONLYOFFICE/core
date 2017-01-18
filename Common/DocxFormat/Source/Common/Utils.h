@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,7 +38,7 @@
 
 namespace Common
 {
-void readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes);
+void readAllShapeTypes(const OOX::CPath& oPath, std::vector<std::wstring>& aShapetypes);
 } // namespace Common
 
 #endif // COMMON_UTILS_INCLUDE_H_

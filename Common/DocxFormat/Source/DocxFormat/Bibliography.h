@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -77,27 +77,27 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+			std::wstring sXml;
 			sXml = _T("<b:Sources");
 			
 			if ( m_sSelectedStyle.IsInit() )
 			{
 				sXml += _T(" SelectedStyle=\"");
-				sXml += m_sSelectedStyle->GetString();
+                sXml += m_sSelectedStyle.get2();
 				sXml += _T("\"");
 			}
 
 			if ( m_sStyleName.IsInit() )
 			{
 				sXml += _T(" StyleName=\"");
-				sXml += m_sStyleName->GetString();
+                sXml += m_sStyleName.get2();
 				sXml += _T("\"");
 			}
 
 			if ( m_sURI.IsInit() )
 			{
 				sXml += _T(" URI=\"");
-				sXml += m_sURI->GetString();
+                sXml += m_sURI.get2();
 				sXml += _T("\"");
 			}
 
@@ -141,9 +141,9 @@ namespace OOX
 	private:
 
 		// Attributes
-		nullable<CString> m_sSelectedStyle;
-		nullable<CString> m_sStyleName;
-		nullable<CString> m_sURI;
+		nullable<std::wstring> m_sSelectedStyle;
+		nullable<std::wstring> m_sStyleName;
+		nullable<std::wstring> m_sURI;
 
 		// Childs
 

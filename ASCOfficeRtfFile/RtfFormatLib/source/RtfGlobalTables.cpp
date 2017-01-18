@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,7 @@
 #include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
-CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 {
 	////записывает default charset и codepage
 	//RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
@@ -47,7 +47,7 @@ CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 	//		}
 	//}
 	
-	CString sResult;
+    std::wstring sResult;
 	if( m_aArray.size() > 0 )
 	{
 		sResult += _T("{\\fonttbl");
@@ -61,18 +61,18 @@ CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( m_aArray.size() > 0 )
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
 		for( int i = 0; i < (int)m_aPictureList.GetCount(); i++ )
 		{
-			sResult.AppendFormat(_T("<w:numPicBullet w:numPicBulletId=\"%d\">"), i );
+            sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
 			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);
-			sResult += _T("</w:numPicBullet>");
+            sResult += L"</w:numPicBullet>";
 		}
 		for( int i = 0; i < (int)m_aArray.size(); i++)
 			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
@@ -90,9 +90,9 @@ CString RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( !m_aArray.empty())
 	{
 		RenderParameter oNewParam = oRenderParameter;

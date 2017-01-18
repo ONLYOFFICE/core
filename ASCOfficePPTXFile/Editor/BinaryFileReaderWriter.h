@@ -40,6 +40,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 
 #define MAX_STACK_SIZE 1024
 

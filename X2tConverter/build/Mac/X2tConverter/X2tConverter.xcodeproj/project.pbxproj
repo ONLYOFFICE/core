@@ -24,6 +24,7 @@
 		177C43321AD7C0EF00055DD7 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 177C432F1AD7C0D100055DD7 /* libcurl.a */; };
 		17C8DEC71ACD696100902C85 /* X2tConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */; };
 		17C8DECC1ACD696100902C85 /* X2tConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17C27A171AC2DB3D00E1D003 /* X2tConverter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 691A8BD01E2FA67E00DCB54A /* liblibxml2.a */; };
 		69415F271CB51C37003E771B /* libOfficeUtils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415F241CB51C2A003E771B /* libOfficeUtils.a */; };
 		69415F311CB51D41003E771B /* libASCOfficeDocxFile2Lib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */; };
 		69415FE01CB52455003E771B /* libmng_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69415FD41CB5243F003E771B /* libmng_ios.a */; };
@@ -86,6 +87,20 @@
 			proxyType = 2;
 			remoteGlobalIDString = 17E17EDC1AC453F800BEA2EA;
 			remoteInfo = ASCOfficeDocxFile2Lib;
+		};
+		691A8BCF1E2FA67E00DCB54A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 69967F581E2F84F100B620CD;
+			remoteInfo = libxml2;
+		};
+		691A8BD11E2FA68900DCB54A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 69967F571E2F84F100B620CD;
+			remoteInfo = libxml2;
 		};
 		69415F231CB51C2A003E771B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -445,6 +460,7 @@
 		17C27A191AC2DB3D00E1D003 /* X2tConverter.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = X2tConverter.mm; sourceTree = "<group>"; };
 		17C8DED01ACD696100902C85 /* libX2tConverter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libX2tConverter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17F561AC457CD00BEA2EA /* ASCOfficeDocxFile2Lib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeDocxFile2Lib.xcodeproj; path = ../../../../ASCOfficeDocxFile2/Mac/ASCOfficeDocxFile2Lib.xcodeproj; sourceTree = "<group>"; };
+		691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libxml2.xcodeproj; path = ../../../../DesktopEditor/xml/mac/libxml2.xcodeproj; sourceTree = "<group>"; };
 		69415F1F1CB51C29003E771B /* OfficeUtils.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OfficeUtils.xcodeproj; path = ../../../../OfficeUtils/OfficeUtils.xcodeproj; sourceTree = "<group>"; };
 		69415FAE1CB5243F003E771B /* mng.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = mng.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/mng/mng.xcodeproj; sourceTree = "<group>"; };
 		69415FB11CB5243F003E771B /* png.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = png.xcodeproj; path = ../../../../DesktopEditor/mac_build/cximage/png/png.xcodeproj; sourceTree = "<group>"; };
@@ -483,6 +499,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				691A8BD31E2FA68F00DCB54A /* liblibxml2.a in Frameworks */,
 				6967B1D11E27B9D700A129E2 /* libRtfFormatLib.a in Frameworks */,
 				6967B10A1E27A41B00A129E2 /* libPdfWriter.a in Frameworks */,
 				6967B0D41E27A36E00A129E2 /* libHtmlFile.a in Frameworks */,
@@ -527,6 +544,7 @@
 		17C27A0B1AC2DB3C00E1D003 = {
 			isa = PBXGroup;
 			children = (
+				691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */,
 				6967B1C91E27B9C400A129E2 /* RtfFormatLib.xcodeproj */,
 				6967B1031E27A41300A129E2 /* PdfWriter.xcodeproj */,
 				6967B0CC1E27A35E00A129E2 /* HtmlFile.xcodeproj */,
@@ -582,6 +600,14 @@
 			isa = PBXGroup;
 			children = (
 				17E17F5B1AC457CD00BEA2EA /* libASCOfficeDocxFile2Lib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		691A8BCC1E2FA67E00DCB54A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				691A8BD01E2FA67E00DCB54A /* liblibxml2.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -835,6 +861,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				691A8BD21E2FA68900DCB54A /* PBXTargetDependency */,
 				6967B1D01E27B9D000A129E2 /* PBXTargetDependency */,
 				6967B10C1E27A42500A129E2 /* PBXTargetDependency */,
 				6967B0D31E27A36800A129E2 /* PBXTargetDependency */,
@@ -945,6 +972,10 @@
 					ProjectRef = 69415FBA1CB5243F003E771B /* libpsd.xcodeproj */;
 				},
 				{
+					ProductGroup = 691A8BCC1E2FA67E00DCB54A /* Products */;
+					ProjectRef = 691A8BCB1E2FA67E00DCB54A /* libxml2.xcodeproj */;
+				},
+				{
 					ProductGroup = 69DA322D1CEE08DC00E10AF0 /* Products */;
 					ProjectRef = 69DA322C1CEE08DC00E10AF0 /* metafile.xcodeproj */;
 				},
@@ -1018,6 +1049,13 @@
 			fileType = archive.ar;
 			path = libASCOfficeDocxFile2Lib_ios.a;
 			remoteRef = 17E17F5A1AC457CD00BEA2EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		691A8BD01E2FA67E00DCB54A /* liblibxml2.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblibxml2.a;
+			remoteRef = 691A8BCF1E2FA67E00DCB54A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		69415F241CB51C2A003E771B /* libOfficeUtils.a */ = {
@@ -1237,6 +1275,11 @@
 			isa = PBXTargetDependency;
 			name = ASCOfficeDocxFile2Lib_ios;
 			targetProxy = 17C8DEDB1ACD6A3900902C85 /* PBXContainerItemProxy */;
+		};
+		691A8BD21E2FA68900DCB54A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libxml2;
+			targetProxy = 691A8BD11E2FA68900DCB54A /* PBXContainerItemProxy */;
 		};
 		69415F261CB51C32003E771B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1488,6 +1531,7 @@
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
+					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1530,6 +1574,7 @@
 					/usr/include/libxml2,
 					"$(PROJECT_DIR)/../../../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../../../DesktopEditor/agg-2.4/include",
+					"$(PROJECT_DIR)/../../../../Common/3dParty/boost/boost_1_58_0",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";

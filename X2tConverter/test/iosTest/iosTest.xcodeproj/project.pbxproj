@@ -19,6 +19,7 @@
 		17DAB70E1ACC3B96005AF479 /* Demo-Hayden-Management-v2.docx in Resources */ = {isa = PBXBuildFile; fileRef = 17DAB70D1ACC3B90005AF479 /* Demo-Hayden-Management-v2.docx */; };
 		6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6967BEB21E27D5BE00A129E2 /* libiconv.tbd */; };
 		69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 69920A401E016F9700E7E6EE /* libX2tConverter.a */; };
+		699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 699690721E2F925200B620CD /* libc++abi.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		6905975F1CA137D000000D4D /* X2tConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = X2tConverter.h; path = ../../../build/Mac/X2tConverter/X2tConverter/X2tConverter.h; sourceTree = "<group>"; };
 		6967BEB21E27D5BE00A129E2 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		69920A3A1E016F9700E7E6EE /* X2tConverter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = X2tConverter.xcodeproj; path = ../../build/Mac/X2tConverter/X2tConverter.xcodeproj; sourceTree = "<group>"; };
+		699690721E2F925200B620CD /* libc++abi.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++abi.tbd"; path = "usr/lib/libc++abi.tbd"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				699690731E2F925200B620CD /* libc++abi.tbd in Frameworks */,
 				6967BEB31E27D5BE00A129E2 /* libiconv.tbd in Frameworks */,
 				69920A431E016FAB00E7E6EE /* libX2tConverter.a in Frameworks */,
 			);
@@ -138,6 +141,7 @@
 		6967BEB11E27D5BE00A129E2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				699690721E2F925200B620CD /* libc++abi.tbd */,
 				6967BEB21E27D5BE00A129E2 /* libiconv.tbd */,
 			);
 			name = Frameworks;
@@ -318,6 +322,11 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lstdc++",
+					"-lz",
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -353,6 +362,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lstdc++",
+					"-lz",
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

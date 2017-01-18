@@ -49,9 +49,13 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring val = node.GetAttribute(_T("val"));
-				red		= HexString2Int(val.substr(0, 2));
-				green	= HexString2Int(val.substr(2, 2));
-				blue	= HexString2Int(val.substr(4, 2));
+               
+                if (6 == val.length())
+                {
+                    red		= HexString2Int(val.substr(0, 2));
+                    green	= HexString2Int(val.substr(2, 2));
+                    blue	= HexString2Int(val.substr(4, 2));
+                }
 
 				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);

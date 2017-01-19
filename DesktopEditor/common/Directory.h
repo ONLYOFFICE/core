@@ -341,30 +341,18 @@ namespace NSDirectory
 
 #if defined(_WIN32) || defined (_WIN64)
 		return FALSE != ::CreateDirectoryW(strDirectory.c_str(), NULL);
-#elif __linux__
+#else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
 		struct stat st;
 		int nRes = 0;
 		if (stat((char*)pUtf8, &st) == -1) {
-			nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IRWXO);
+			nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 		}
 		delete [] pUtf8;
 		return 0 == nRes;
-#elif MAC
-        BYTE* pUtf8 = NULL;
-        LONG lLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
-        struct stat st;
-        int nRes = 0;
-        if (stat((char*)pUtf8, &st) == -1) {
-            nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IRWXO);
-        }
-        delete [] pUtf8;
-        return 0 == nRes;
 #endif
-        return false;
 	}
 	static bool CreateDirectories(const std::wstring& strDirectory)
 	{

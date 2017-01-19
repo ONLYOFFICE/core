@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
 
 #include "Limit/Conformance.h"
 #include "Logic/TextListStyle.h"
@@ -47,7 +48,6 @@
 #include "Presentation/PhotoAlbum.h"
 #include "Logic/XmlId.h"
 #include "Presentation/SldSz.h"
-#include "DocxFormat/FileTypes.h"
 #include "CommentAuthors.h"
 
 namespace PPTX

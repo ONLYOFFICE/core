@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "stdafx.h"
+
 
 #include "SpTree.h"
 #include "Shape.h"
@@ -43,8 +43,8 @@ namespace PPTX
 	{
 		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap)
 		{
-			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap> oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
+			smart_ptr<PPTX::Theme>			oTheme	= _oTheme.smart_dynamic_cast<PPTX::Theme>();
+			smart_ptr<PPTX::Logic::ClrMap>	oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
 
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();

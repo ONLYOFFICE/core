@@ -36,7 +36,7 @@
 #include "WrapperFile.h"
 #include "Logic/TableStyle.h"
 #include "Theme.h"
-#include "DocxFormat/FileTypes.h"
+#include "FileTypes.h"
 
 namespace PPTX
 {

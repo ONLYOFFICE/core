@@ -30,11 +30,12 @@
  *
  */
 
+#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 
+#include "FileTypes.h"
 #include "Folder.h"
-#include "DocxFormat/Rels/File.h"
 #include "FileMap.h"
-#include "DocxFormat/FileTypes.h"
 #include "Presentation.h"
 #include "Theme.h"
 #include "SlideMaster.h"
@@ -57,7 +58,7 @@ namespace PPTX
 
 	void Folder::read(const OOX::CPath& path, IPPTXEvent* Event)
 	{
-		PPTX::Rels::File rels(path);
+		OOX::CRels rels(path);
 		PPTX::FileMap map;
         long files = CountFiles(path);
 		if(files == 0)
@@ -147,13 +148,13 @@ namespace PPTX
 	{
 		OOX::CSystemUtility::CreateDirectories(path);
 
-		PPTX::Rels::File rels;
+		OOX::CRels rels;
 		OOX::CContentTypes content;
 
 		OOX::CPath dir = path;
 		FileContainer::write(rels, path, dir, content);
 
-		rels.write(path / FILE_SEPARATOR_STR);
+		rels.Write(path / FILE_SEPARATOR_STR);
 		content.Write(path);
 		FileContainer::WrittenSetFalse();
 	}

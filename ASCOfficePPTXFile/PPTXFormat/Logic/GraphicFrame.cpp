@@ -443,17 +443,17 @@ namespace PPTX
 			if(parentFileIs<PPTX::Slide>() && parentFileAs<PPTX::Slide>().Vml.IsInit())
 			{
 				xml		= parentFileAs<PPTX::Slide>().GetVmlXmlBySpid(spid.get_value_or(_T("")));
-				rels	= parentFileAs<PPTX::Slide>().Vml->filename().GetPath();
+				rels	= parentFileAs<PPTX::Slide>().Vml->GetReadPath().GetPath();
 			}
 			else if(parentFileIs<PPTX::SlideLayout>() && parentFileAs<PPTX::SlideLayout>().Vml.IsInit())
 			{
 				xml= parentFileAs<PPTX::SlideLayout>().GetVmlXmlBySpid(spid.get_value_or(_T("")));
-				rels	= parentFileAs<PPTX::SlideLayout>().Vml->filename().GetPath();
+				rels	= parentFileAs<PPTX::SlideLayout>().Vml->GetReadPath().GetPath();
 			}
 			else if(parentFileIs<PPTX::SlideMaster>() && parentFileAs<PPTX::SlideMaster>().Vml.IsInit())
 			{
 				xml = parentFileAs<PPTX::SlideMaster>().GetVmlXmlBySpid(spid.get_value_or(_T("")));
-				rels	= parentFileAs<PPTX::SlideMaster>().Vml->filename().GetPath();
+				rels	= parentFileAs<PPTX::SlideMaster>().Vml->GetReadPath().GetPath();
 			}
 
 			return xml;

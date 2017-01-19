@@ -45,7 +45,7 @@
 #include "./PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "./PPTXFormat/Logic/Colors/SysClr.h"
 #include "./PPTXFormat/PPTX.h"
-#include "./PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h"
+#include "./PPTXFormat/LegacyDiagramText.h"
 
 #include "./Editor/Drawing/Elements.h"
 #include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"

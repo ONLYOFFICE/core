@@ -46,6 +46,10 @@
 
 class COfficeFontPicker;
 
+namespace OOX
+{
+	class WritingElement;
+}
 namespace NSCommon
 {
 	template<typename Type> class smart_ptr;
@@ -57,7 +61,6 @@ namespace NSCommon
 }
 namespace PPTX
 {
-	class WritingElement;
 	class FileContainer;
 	class CCommonRels;
 }
@@ -237,7 +240,7 @@ namespace NSBinPptxRW
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
 
 		NSCommon::smart_ptr<PPTX::FileContainer>* ThemeDoc;
-		NSCommon::smart_ptr<PPTX::WritingElement>* ClrMapDoc;
+		NSCommon::smart_ptr<OOX::WritingElement>* ClrMapDoc;
 	private:
 		BYTE*		m_pStreamData;
 		BYTE*		m_pStreamCur;

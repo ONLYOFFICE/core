@@ -30,22 +30,20 @@
  *
  */
 #include "BinaryFileReaderWriter.h"
+#include "BinReaderWriterDefines.h"
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "BinReaderWriterDefines.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 #include "../../Common/Base64.h"
 
 #include "./imagemanager.h"
-
 #include "./XmlWriter.h"
-#include "BinaryFileReaderWriter.h"
-#include "../PPTXFormat/FileContainer.h"
-#include "../PPTXFormat/DocxFormat/WritingElement.h"
+#include "./FontPicker.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
-#include "FontPicker.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../PPTXFormat/FileContainer.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define UINT16_SIZEOF	sizeof(_UINT16)
@@ -686,7 +684,7 @@ namespace NSBinPptxRW
 		m_pCommon		= new CCommonWriter();
 		m_pCommonRels	= new NSCommon::smart_ptr<PPTX::CCommonRels>();
 		ThemeDoc		= new NSCommon::smart_ptr<PPTX::FileContainer>();
-		ClrMapDoc		= new NSCommon::smart_ptr<PPTX::WritingElement>();
+		ClrMapDoc		= new NSCommon::smart_ptr<OOX::WritingElement>();
 		
 		Clear();
 	}

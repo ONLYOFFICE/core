@@ -37,6 +37,6 @@
 #include "imagemanager.h"
 #include "./XmlWriter.h"
 #include "../PPTXFormat/FileContainer.h"
-#include "../PPTXFormat/DocxFormat/WritingElement.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "BinaryFileReaderWriter.h"

@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
 
 #include "Limit/LastView.h"
 #include "ViewProps/GridSpacing.h"
@@ -44,8 +45,6 @@
 #include "ViewProps/OutlineViewPr.h"
 #include "ViewProps/SlideViewPr.h"
 #include "ViewProps/SorterViewPr.h"
-
-#include "DocxFormat/FileTypes.h"
 
 using namespace NSBinPptxRW;
 

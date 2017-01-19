@@ -33,8 +33,8 @@
 #ifndef PPTX_THEME_FILE_INCLUDE_H_
 #define PPTX_THEME_FILE_INCLUDE_H_
 
-#include "WrapperFile.h"
 #include "FileContainer.h"
+#include "WrapperFile.h"
 
 #include "Theme/ThemeElements.h"
 #include "Logic/DefaultShapeDefinition.h"

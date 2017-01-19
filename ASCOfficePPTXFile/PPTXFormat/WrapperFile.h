@@ -34,7 +34,7 @@
 #define PPTX_WRAPPER_FILE_INCLUDE_H_
 
 #include "../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "DocxFormat/NamespaceOwn.h"
+#include "Namespaces.h"
 #include "FileMap.h"
 
 #include "../Editor/BinWriters.h"

@@ -56,12 +56,12 @@ namespace PPTX
 
 	protected:
 		void read(const OOX::CPath& filename);
-		void read(const PPTX::Rels::File& rels, const OOX::CPath& path);
+		void read(const OOX::CRels& rels, const OOX::CPath& path);
 
 		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
-		void read(const PPTX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
 		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
-		void write(PPTX::Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
+		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 		void WrittenSetFalse();
 
@@ -77,7 +77,7 @@ namespace PPTX
 		}
 	
 		void _read(const OOX::CPath& filename);
-		void _read(const PPTX::Rels::File& rels, const OOX::CPath& path);
+		void _read(const OOX::CRels& rels, const OOX::CPath& path);
 	};
 } // namespace PPTX
 

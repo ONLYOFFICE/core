@@ -34,10 +34,10 @@
 #define PPTX_CORE_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
-#include "DocxFormat/WritingElement.h"
-//#include "DocxFormat/DateTime.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
+
 #include "Limit/ContentStatus.h"
-#include "DocxFormat/FileTypes.h"
+#include "FileTypes.h"
 
 using namespace NSBinPptxRW;
 

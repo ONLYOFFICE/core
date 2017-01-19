@@ -34,6 +34,7 @@
 #define PPTX_LOGIC_TXBODY_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
+
 #include "BodyPr.h"
 #include "TextListStyle.h"
 #include "Paragraph.h"

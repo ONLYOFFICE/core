@@ -113,15 +113,9 @@ SOURCES += \
 HEADERS += pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \
     ../../../ASCOfficePPTXFile.h \
-    ../../../PPTXFormat/DocxFormat/Rels/File.h \
-    ../../../PPTXFormat/DocxFormat/Rels/RelationShip.h \
-    ../../../PPTXFormat/DocxFormat/Rels/RelationTable.h \
-    ../../../PPTXFormat/DocxFormat/DateTime.h \
-    ../../../PPTXFormat/DocxFormat/FileTypes.h \
-    ../../../PPTXFormat/DocxFormat/NamespaceOwn.h \
-    ../../../PPTXFormat/DocxFormat/Namespaces.h \
-    ../../../PPTXFormat/DocxFormat/WritingElement.h \
-    ../../../PPTXFormat/DocxFormat/WritingVector.h \
+    ../../../PPTXFormat/FileTypes.h \
+    ../../../PPTXFormat/Namespaces.h \
+    ../../../PPTXFormat/WritingVector.h \
     ../../../PPTXFormat/Limit/AlbumLayout.h \
     ../../../PPTXFormat/Limit/AnimationDgmBuild.h \
     ../../../PPTXFormat/Limit/BaseLimit.h \
@@ -341,6 +335,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/Transitions/TransitionBase.h \
     ../../../PPTXFormat/Logic/Transitions/WheelTransition.h \
     ../../../PPTXFormat/Logic/Transitions/ZoomTransition.h \
+    ../../../PPTXFormat/Logic/Controls.h \
     ../../../PPTXFormat/Logic/Ah.h \
     ../../../PPTXFormat/Logic/AhBase.h \
     ../../../PPTXFormat/Logic/AhPolar.h \
@@ -470,6 +465,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/App.h \
     ../../../PPTXFormat/CommentAuthors.h \
     ../../../PPTXFormat/Comments.h \
+    ../../../PPTXFormat/LegacyDiagramText.h \
     ../../../PPTXFormat/Core.h \
     ../../../PPTXFormat/FileContainer.h \
     ../../../PPTXFormat/FileFactory.h \
@@ -490,9 +486,6 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ViewProps.h \
     ../../../PPTXFormat/WrapperFile.h \
     ../../../PPTXFormat/WrapperWritingElement.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h \
     ../../../Editor/BinaryFileReaderWriter.h \
     ../../../Editor/BinReaderWriterDefines.h \
     ../../../Editor/BinWriters.h \

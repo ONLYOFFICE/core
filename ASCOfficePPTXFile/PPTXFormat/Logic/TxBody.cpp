@@ -30,10 +30,11 @@
  *
  */
 #pragma once
-//#include "stdafx.h"
-#include "./TxBody.h"
+
+#include "TxBody.h"
+#include "ClrMap.h"
+
 #include "../Theme.h"
-#include "./ClrMap.h"
 
 namespace PPTX
 {

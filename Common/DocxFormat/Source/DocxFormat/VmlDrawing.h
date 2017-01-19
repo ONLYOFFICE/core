@@ -76,7 +76,7 @@ namespace OOX
 		void fromXML(XmlUtils::CXmlNode &)
 		{
 		}
-                std::wstring toXML() const
+		std::wstring toXML() const
 		{
 			return _T("");
 		}

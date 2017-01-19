@@ -34,9 +34,10 @@
 #define PPTX_APP_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
+#include "FileTypes.h"
+
 #include "Logic/PartTitle.h"
 #include "Logic/HeadingVariant.h"
-#include "DocxFormat/FileTypes.h"
 
 using namespace NSBinPptxRW;
 

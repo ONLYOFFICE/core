@@ -54,7 +54,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "DocxFormat/Drawing/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 #include "Comments.h"
 
@@ -392,12 +392,12 @@ namespace PPTX
 		nullable<Logic::Transition> transition;
 		nullable<Logic::Timing>		timing;
 
-		smart_ptr<SlideLayout>	Layout;
-		smart_ptr<SlideMaster>	Master;
-		smart_ptr<NotesSlide>	Note;
-		smart_ptr<Theme>		theme;
-		smart_ptr<VmlDrawing>	Vml;
-        smart_ptr<TableStyles>	tableStyles_;
+		smart_ptr<SlideLayout>		Layout;
+		smart_ptr<SlideMaster>		Master;
+		smart_ptr<NotesSlide>		Note;
+		smart_ptr<Theme>			theme;
+		smart_ptr<OOX::CVmlDrawing>	Vml;
+        smart_ptr<TableStyles>		tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
 
@@ -414,7 +414,7 @@ namespace PPTX
 
 			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
 			{
-				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
 			}
 		}
 

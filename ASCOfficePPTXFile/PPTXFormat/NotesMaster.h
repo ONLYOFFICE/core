@@ -35,11 +35,12 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
+
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
 #include "Logic/Hf.h"
 #include "Logic/TextListStyle.h"
-#include "DocxFormat/FileTypes.h"
 
 namespace PPTX
 {

@@ -55,7 +55,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "DocxFormat/Drawing/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 namespace PPTX
 {
@@ -508,7 +508,7 @@ namespace PPTX
 
         smart_ptr<Theme>			theme;
         smart_ptr<TableStyles>		tableStyles;
-		smart_ptr<VmlDrawing>		Vml;
+		smart_ptr<OOX::CVmlDrawing>	Vml;
 		
 	public:		
 		void ApplyRels()
@@ -522,7 +522,7 @@ namespace PPTX
 
 			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
 			{
-				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
 			}
 		}
 

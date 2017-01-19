@@ -35,7 +35,7 @@
 
 #include "../../Common/DocxFormat/Source/DocxFormat/File.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
-#include "DocxFormat/Rels/File.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 
 #include <map>
 

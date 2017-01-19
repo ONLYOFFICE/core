@@ -339,18 +339,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -362,10 +350,6 @@
 			</File>
 			<File
 				RelativePath="..\.\ASCOfficePPTXFile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\stringcommon.h"
 				>
 			</File>
 		</Filter>
@@ -407,10 +391,6 @@
 			<Filter
 				Name="Source"
 				>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\DateTime.h"
-					>
-				</File>
 				<File
 					RelativePath="..\.\PPTXFormat\FileContainer.cpp"
 					>
@@ -530,10 +510,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\FileType.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Common\DocxFormat\Source\DocxFormat\FileTypes.h"
 					>
 				</File>
@@ -594,11 +570,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\NamespaceOwn.h"
-					>
-				</File>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\Namespaces.h"
+					RelativePath="..\..\Common\DocxFormat\Source\DocxFormat\Namespaces.h"
 					>
 				</File>
 				<File
@@ -610,15 +582,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\RId.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Common\DocxFormat\Source\DocxFormat\Unit.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\Common\DocxFormat\Source\DocxFormat\UnknowTypeFile.h"
 					>
 				</File>
 				<File
@@ -627,14 +591,6 @@
 				</File>
 				<File
 					RelativePath="..\.\PPTXFormat\WrapperWritingElement.h"
-					>
-				</File>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\WritingElement.h"
-					>
-				</File>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\WritingVector.h"
 					>
 				</File>
 				<Filter
@@ -3203,50 +3159,10 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Rels"
-					>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Rels\File.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Rels\RelationShip.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Rels\RelationTable.h"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="TableStyles"
 					>
 					<File
 						RelativePath="..\.\PPTXFormat\TableStyles.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="External"
-					>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\External\External.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\External\ExternalAudio.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\External\ExternalImage.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\External\ExternalVideo.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\External\HyperLink.h"
 						>
 					</File>
 				</Filter>
@@ -3267,10 +3183,6 @@
 					>
 					<File
 						RelativePath="..\..\Common\DocxFormat\Source\SystemUtility\File.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\Common\DocxFormat\Source\SystemUtility\FileSystem\FileSystem.h"
 						>
 					</File>
 					<File

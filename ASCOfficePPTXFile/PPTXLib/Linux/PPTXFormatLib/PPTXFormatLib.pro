@@ -60,7 +60,6 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
-    ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
     ../../../PPTXFormat/Logic/Table/TableCell.cpp \
@@ -114,22 +113,6 @@ SOURCES += \
 HEADERS += pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \
     ../../../ASCOfficePPTXFile.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/DefaultTable.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/ExtensionTable.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/File.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/Override.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/OverrideTable.h \
-    ../../../PPTXFormat/DocxFormat/External/External.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalAudio.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalImage.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalVideo.h \
-    ../../../PPTXFormat/DocxFormat/External/HyperLink.h \
-    ../../../PPTXFormat/DocxFormat/Media/Audio.h \
-    ../../../PPTXFormat/DocxFormat/Media/Image.h \
-    ../../../PPTXFormat/DocxFormat/Media/Media.h \
-    ../../../PPTXFormat/DocxFormat/Media/OleObject.h \
-    ../../../PPTXFormat/DocxFormat/Media/Video.h \
     ../../../PPTXFormat/DocxFormat/Rels/File.h \
     ../../../PPTXFormat/DocxFormat/Rels/RelationShip.h \
     ../../../PPTXFormat/DocxFormat/Rels/RelationTable.h \
@@ -138,11 +121,8 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/DocxFormat/FileType.h \
     ../../../PPTXFormat/DocxFormat/FileTypes.h \
     ../../../PPTXFormat/DocxFormat/IFileBuilder.h \
-    ../../../PPTXFormat/DocxFormat/IFileContainer.h \
     ../../../PPTXFormat/DocxFormat/NamespaceOwn.h \
     ../../../PPTXFormat/DocxFormat/Namespaces.h \
-    ../../../PPTXFormat/DocxFormat/RId.h \
-    ../../../PPTXFormat/DocxFormat/UnknowTypeFile.h \
     ../../../PPTXFormat/DocxFormat/WritingElement.h \
     ../../../PPTXFormat/DocxFormat/WritingVector.h \
     ../../../PPTXFormat/Limit/AlbumLayout.h \

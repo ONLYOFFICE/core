@@ -33,7 +33,7 @@
 #ifndef PPTXOOX_FILE_TYPES_INCLUDE_H_
 #define PPTXOOX_FILE_TYPES_INCLUDE_H_
 
-#include "../../Common/DocxFormat/Source/DocxFormat/FileType.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/FileType.h"
 
 namespace OOX
 {

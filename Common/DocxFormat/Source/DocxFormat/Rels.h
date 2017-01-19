@@ -55,35 +55,36 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRelationShip)
+
             CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
 				boost::algorithm::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
-			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
+
+            CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
 			{
                 m_sMode = new std::wstring( _T("External") );
 			}
-			virtual ~CRelationShip()
+
+            virtual ~CRelationShip()
 			{
 			}
 			
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+            virtual void  fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+            virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("Id"),         m_rId );
 				oNode.ReadAttributeBase( _T("Target"),     m_oTarget );
 				oNode.ReadAttributeBase( _T("Type"),       m_sType );
 				oNode.ReadAttributeBase( _T("TargetMode"), m_sMode );
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write( _T("Id"),         m_rId.ToString() );
@@ -126,13 +127,6 @@ namespace OOX
 
 		public:
 
-			//const bool operator <(const CRelationShip& rhs) const
-			//{
-			//	return m_rId < rhs.m_rId;
-			//}
-
-		public:
-
             const std::wstring Type() const
 			{
 				return m_sType;
@@ -151,7 +145,7 @@ namespace OOX
 					return false;
                 return ( *m_sMode == _T("External" ));
 			}
-			const RId     rId() const
+            const RId rId() const
 			{
 				return m_rId;
 			}
@@ -187,8 +181,6 @@ namespace OOX
 
 		}
 
-	public:
-
 		void Read (const CPath& oFilePath)
 		{
 			CPath oRelsPath = CreateFileName( oFilePath );
@@ -216,7 +208,7 @@ namespace OOX
 							sName = oReader.GetName();
 							if ( _T("Relationship") == sName )
 							{
-								Rels::CRelationShip *oRel = new Rels::CRelationShip(oReader);
+                                OOX::Rels::CRelationShip *oRel = new OOX::Rels::CRelationShip(oReader);
 								if (oRel) m_arrRelations.push_back( oRel );
 							}
 						}

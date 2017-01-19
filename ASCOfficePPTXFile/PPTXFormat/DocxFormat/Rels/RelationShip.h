@@ -34,8 +34,8 @@
 #define PPTXOOX_RELS_RELATION_SHIP_INCLUDE_H_
 
 #include "./../WritingElement.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 
 #include <boost/algorithm/string.hpp>
 

@@ -34,10 +34,9 @@
 #define PPTXOOX_RELS_FILE_INCLUDE_H_
 
 #include "RelationTable.h"
+
 #include "../FileTypes.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 
 #include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"

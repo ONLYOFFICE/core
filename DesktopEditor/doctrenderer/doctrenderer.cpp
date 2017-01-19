@@ -70,6 +70,8 @@ namespace NSDoctRenderer
 
         bool m_bIsOnlyOnePage;
 
+        bool m_bIsCachedScripts;
+
     public:
         CExecuteParams() : m_arChanges()
         {
@@ -94,6 +96,7 @@ namespace NSDoctRenderer
             m_nSaveToPDFParams = 0;
 
             m_bIsOnlyOnePage = false;
+            m_bIsCachedScripts = true;
         }
         ~CExecuteParams()
         {
@@ -150,6 +153,9 @@ namespace NSDoctRenderer
 
             if (nParams & 0x02)
                 m_nSaveToPDFParams = 1;
+
+            if (nParams & 0x04)
+                m_bIsCachedScripts = false;
 
             m_bIsOnlyOnePage = (oNode.ReadValueInt(L"OnlyOnePage", 0) == 1) ? true : false;
 
@@ -584,7 +590,7 @@ namespace NSDoctRenderer
         }
 
 
-        bool ExecuteScript(const std::string& strScript, std::wstring& strError, std::wstring& strReturnParams)
+        bool ExecuteScript(const std::string& strScript, const std::wstring& sCachePath, std::wstring& strError, std::wstring& strReturnParams)
         {
             bool bIsBreak = false;
             v8::Isolate* isolate = CV8Worker::getInitializer()->CreateNew();
@@ -604,7 +610,15 @@ namespace NSDoctRenderer
                 v8::Context::Scope context_scope(context);
                 v8::TryCatch try_catch;
                 v8::Local<v8::String> source = v8::String::NewFromUtf8(isolate, strScript.c_str());
-                v8::Local<v8::Script> script = v8::Script::Compile(source);
+                v8::Local<v8::Script> script;
+
+                CCacheDataScript oCachedScript(sCachePath);
+                if (sCachePath.empty())
+                    script = v8::Script::Compile(source);
+                else
+                {
+                    script = oCachedScript.Compile(context, source);
+                }
 
                 // COMPILE
                 if (try_catch.HasCaught())
@@ -1096,8 +1110,14 @@ namespace NSDoctRenderer
             strScript += "\n\n";
         }
 
+        std::wstring sCachePath = L"";
         if (NULL != arSdkFiles)
         {
+            if (m_pInternal->m_oParams.m_bIsCachedScripts && (0 < arSdkFiles->size()))
+            {
+                sCachePath = NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
+            }
+
             for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
             {
                 strScript += m_pInternal->ReadScriptFile(*i);
@@ -1109,7 +1129,7 @@ namespace NSDoctRenderer
             strScript += "\n$.ready();";
 
         std::wstring sReturnParams = L"";
-        bool bResult = m_pInternal->ExecuteScript(strScript, strError, sReturnParams);
+        bool bResult = m_pInternal->ExecuteScript(strScript, sCachePath, strError, sReturnParams);
 
         if (strError.length() != 0)
         {

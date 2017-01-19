@@ -1185,6 +1185,53 @@ namespace NSFile
         }
         return sPath;
     }
+
+    // CommonFunctions
+    static std::wstring GetFileExtention(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos = sPath.rfind('.');
+        if (nPos != std::wstring::npos)
+            return sPath.substr(nPos + 1);
+        return sPath;
+    }
+    static std::wstring GetFileName(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos1 = sPath.rfind('\\');
+        std::wstring::size_type nPos2 = sPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return sPath;
+        return sPath.substr(nPos + 1);
+    }
+    static std::wstring GetDirectoryName(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos1 = sPath.rfind('\\');
+        std::wstring::size_type nPos2 = sPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return sPath;
+        return sPath.substr(0, nPos);
+    }
 }
 
 #endif //_BUILD_FILE_CROSSPLATFORM_H_

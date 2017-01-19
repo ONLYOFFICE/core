@@ -310,14 +310,14 @@ namespace PPTX
 				m_arComments.back().fromXML(oCm);
 			}
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{			
 		}
 		
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::SlideComments;
+			return OOX::Presentation::FileTypes::SlideComments;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

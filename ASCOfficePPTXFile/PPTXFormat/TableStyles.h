@@ -83,7 +83,7 @@ namespace PPTX
 				pPair->second.SetParentFilePointer(this);
 			}
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			std::wstring strValue = _T("");
 			for (std::map<std::wstring, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
@@ -96,15 +96,15 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("a:tblStyleLst"), oAttr, strValue));
 			
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 		}
 
 	public:
-		virtual const FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return FileTypes::TableStyles;
+			return OOX::Presentation::FileTypes::TableStyles;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

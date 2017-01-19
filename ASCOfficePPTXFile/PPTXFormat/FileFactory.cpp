@@ -29,10 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "FileFactory.h"
-#include "DocxFormat/File.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
 #include "DocxFormat/FileTypes.h"
 #include "DocxFormat/Rels/RelationShip.h"
 #include "App.h"
@@ -51,89 +51,91 @@
 #include "NotesSlide.h"
 #include "NotesMaster.h"
 
-#include "DocxFormat/Media/Image.h"
-#include "DocxFormat/Media/Audio.h"
-#include "DocxFormat/Media/Video.h"
-#include "DocxFormat/Media/OleObject.h"
-#include "DocxFormat/External/HyperLink.h"
-#include "DocxFormat/External/ExternalImage.h"
-#include "DocxFormat/External/ExternalAudio.h"
-#include "DocxFormat/External/ExternalVideo.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalImage.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalAudio.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/ExternalVideo.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/UnknowTypeFile.h"
 #include "DocxFormat/Drawing/VmlDrawing.h"
 #include "DocxFormat/Drawing/LegacyDiagramText.h"
-#include "DocxFormat/UnknowTypeFile.h"
 
 #include "FileMap.h"
 
 namespace PPTX
 {
-	const smart_ptr<PPTX::File> FileFactory::CreateFilePPTX(const OOX::CPath& path, const PPTX::Rels::RelationShip& relation, FileMap& map)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& path, const PPTX::Rels::RelationShip& relation, FileMap& map)
 	{
 		OOX::CPath filename = path / relation.filename();
 		
-		if (relation.type() == PPTX::FileTypes::App)
-			return smart_ptr<PPTX::File>(new PPTX::App(filename, map));
-		else if (relation.type() == PPTX::FileTypes::Core)
-			return smart_ptr<PPTX::File>(new PPTX::Core(filename, map));
-		else if (relation.type() == PPTX::FileTypes::Presentation)
-			return smart_ptr<PPTX::File>(new PPTX::Presentation(filename, map));
-		else if (relation.type() == PPTX::FileTypes::Theme)
-			return smart_ptr<PPTX::File>(new PPTX::Theme(filename, map));
-		else if (relation.type() == PPTX::FileTypes::SlideMaster)
-			return smart_ptr<PPTX::File>(new PPTX::SlideMaster(filename, map));
-		else if (relation.type() == PPTX::FileTypes::SlideLayout)
-			return smart_ptr<PPTX::File>(new PPTX::SlideLayout(filename, map));
-		else if (relation.type() == PPTX::FileTypes::Slide)
-			return smart_ptr<PPTX::File>(new PPTX::Slide(filename, map));
-		else if (relation.type() == PPTX::FileTypes::HandoutMaster)
-			return smart_ptr<PPTX::File>(new PPTX::HandoutMaster(filename, map));
-		else if (relation.type() == PPTX::FileTypes::NotesMaster)
-			return smart_ptr<PPTX::File>(new PPTX::NotesMaster(filename, map));
-		else if (relation.type() == PPTX::FileTypes::NotesSlide)
-			return smart_ptr<PPTX::File>(new PPTX::NotesSlide(filename, map));
-		else if (relation.type() == PPTX::FileTypes::PresProps)
-			return smart_ptr<PPTX::File>(new PPTX::PresProps(filename, map));
-		else if (relation.type() == PPTX::FileTypes::ViewProps)
-			return smart_ptr<PPTX::File>(new PPTX::ViewProps(filename, map));
-		else if (relation.type() == PPTX::FileTypes::TableStyles)
-			return smart_ptr<PPTX::File>(new PPTX::TableStyles(filename, map));
-		else if (relation.type() == PPTX::FileTypes::LegacyDiagramText)
-			return smart_ptr<PPTX::File>(new PPTX::LegacyDiagramText(filename));
-		else if (relation.type() == PPTX::FileTypes::VmlDrawing)
-			return smart_ptr<PPTX::File>(new PPTX::VmlDrawing(filename, map));
-		else if (relation.type() == PPTX::FileTypes::HyperLink)
-			return smart_ptr<PPTX::File>(new PPTX::HyperLink(relation.target()));
-		else if ((relation.type() == PPTX::FileTypes::ExternalImage) && (relation.isExternal()))
-			return smart_ptr<PPTX::File>(new PPTX::ExternalImage(relation.target()));
-		else if ((relation.type() == PPTX::FileTypes::ExternalAudio) && (relation.isExternal()))
-			return smart_ptr<PPTX::File>(new PPTX::ExternalAudio(relation.target()));
-		else if ((relation.type() == PPTX::FileTypes::ExternalVideo) && (relation.isExternal()))
-			return smart_ptr<PPTX::File>(new PPTX::ExternalVideo(relation.target()));
-		else if (relation.type() == PPTX::FileTypes::Image)
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename));
-		else if (relation.type() == PPTX::FileTypes::Audio)
-			return smart_ptr<PPTX::File>(new PPTX::Audio(filename));
-		else if (relation.type() == PPTX::FileTypes::Video)
-			return smart_ptr<PPTX::File>(new PPTX::Video(filename));
-		else if (relation.type() == PPTX::FileTypes::Media)				// FOR NONE OPTIMIZED PPTX FILES
-			return smart_ptr<PPTX::File>(new PPTX::HyperLink(filename));
-		else if (relation.type() == PPTX::FileTypes::Data) // нужен только filepath
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename));
-		else if (relation.type() == PPTX::FileTypes::DrawingDiag)
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // нужен только filepath
-		else if (relation.type() == PPTX::FileTypes::Chart)
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // нужен только filepath
-		else if (relation.type() == PPTX::FileTypes::CommentAuthors)
-			return smart_ptr<PPTX::File>(new PPTX::Authors(filename, map));
-		else if (relation.type() == PPTX::FileTypes::SlideComments)
-			return smart_ptr<PPTX::File>(new PPTX::Comments(filename, map));
-		else if (relation.type() == PPTX::FileTypes::OleObject)
-			return smart_ptr<PPTX::File>(new PPTX::OleObject(filename));
+		if (relation.type() == OOX::Presentation::FileTypes::App)
+			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::Core)
+			return smart_ptr<OOX::File>(new PPTX::Core(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::Presentation)
+			return smart_ptr<OOX::File>(new PPTX::Presentation(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::Theme)
+			return smart_ptr<OOX::File>(new PPTX::Theme(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::SlideMaster)
+			return smart_ptr<OOX::File>(new PPTX::SlideMaster(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::SlideLayout)
+			return smart_ptr<OOX::File>(new PPTX::SlideLayout(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::Slide)
+			return smart_ptr<OOX::File>(new PPTX::Slide(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::HandoutMaster)
+			return smart_ptr<OOX::File>(new PPTX::HandoutMaster(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::NotesMaster)
+			return smart_ptr<OOX::File>(new PPTX::NotesMaster(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::NotesSlide)
+			return smart_ptr<OOX::File>(new PPTX::NotesSlide(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::PresProps)
+			return smart_ptr<OOX::File>(new PPTX::PresProps(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::ViewProps)
+			return smart_ptr<OOX::File>(new PPTX::ViewProps(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::TableStyles)
+			return smart_ptr<OOX::File>(new PPTX::TableStyles(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::LegacyDiagramText)
+			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(filename));
+		else if (relation.type() == OOX::Presentation::FileTypes::VmlDrawing)
+			return smart_ptr<OOX::File>(new PPTX::VmlDrawing(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::Media)				// FOR NONE OPTIMIZED PPTX FILES
+			return smart_ptr<OOX::File>(new OOX::HyperLink(filename));		
+		else if (relation.type() == OOX::FileTypes::Chart)
+			return smart_ptr<OOX::File>(new OOX::Image(filename)); // нужен только filepath
+		else if (relation.type() == OOX::Presentation::FileTypes::CommentAuthors)
+			return smart_ptr<OOX::File>(new PPTX::Authors(filename, map));
+		else if (relation.type() == OOX::Presentation::FileTypes::SlideComments)
+			return smart_ptr<OOX::File>(new PPTX::Comments(filename, map));
 
-		return smart_ptr<PPTX::File>(new PPTX::UnknowTypeFile());
+		else if (relation.type() == OOX::FileTypes::HyperLink)
+			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.target()));
+		else if ((relation.type() == OOX::FileTypes::ExternalImage) && (relation.isExternal()))
+			return smart_ptr<OOX::File>(new OOX::ExternalImage(relation.target()));
+		else if ((relation.type() == OOX::FileTypes::ExternalAudio) && (relation.isExternal()))
+			return smart_ptr<OOX::File>(new OOX::ExternalAudio(relation.target()));
+		else if ((relation.type() == OOX::FileTypes::ExternalVideo) && (relation.isExternal()))
+			return smart_ptr<OOX::File>(new OOX::ExternalVideo(relation.target()));
+		else if (relation.type() == OOX::FileTypes::Image)
+			return smart_ptr<OOX::File>(new OOX::Image(filename));
+		else if (relation.type() == OOX::FileTypes::Audio)
+			return smart_ptr<OOX::File>(new OOX::Audio(filename));
+		else if (relation.type() == OOX::FileTypes::Video)
+			return smart_ptr<OOX::File>(new OOX::Video(filename));
+		else if (relation.type() == OOX::FileTypes::Data) 
+			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
+		else if (relation.type() == OOX::FileTypes::DiagDrawing)	 // нужен только filepath	
+			return smart_ptr<OOX::File>(new OOX::Image(filename)); // нужен только filepath
+		else if (relation.type() == OOX::FileTypes::OleObject)
+			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
+
+		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}
 
-	const smart_ptr<PPTX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& path, const PPTX::Rels::RelationShip& relation)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& path, const PPTX::Rels::RelationShip& relation)
 	{
 		bool bIsDownload = false;
 		std::wstring strFile = relation.filename().GetPath();
@@ -154,23 +156,25 @@ namespace PPTX
 
 		std::wstring strT = relation.type();
 
-		if (strT == PPTX::FileTypes::Image ||
-			strT == PPTX::FileTypes::Data ||
-			strT == PPTX::FileTypes::DrawingDiag ||
-			strT == PPTX::FileTypes::Chart)
+		if (strT == OOX::FileTypes::Image ||
+			strT == OOX::FileTypes::DiagDrawing ||
+			strT == OOX::FileTypes::Chart)
 		{
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename));
+			return smart_ptr<OOX::File>(new OOX::Image(filename));
 		}
-		else if(strT == PPTX::FileTypes::HyperLink)
-			return smart_ptr<PPTX::File>(new PPTX::HyperLink(relation.target()));
-		
-		else if(strT == PPTX::FileTypes::LegacyDiagramText)
-			return smart_ptr<PPTX::File>(new PPTX::LegacyDiagramText(filename));
+		else if(strT == OOX::FileTypes::Data)
+			return smart_ptr<OOX::File>(new OOX::CDiagramData(relation.target()));
 
-		else if(strT == PPTX::FileTypes::OleObject)
-			return smart_ptr<PPTX::File>(new PPTX::OleObject(filename));
+		else if(strT == OOX::FileTypes::HyperLink)
+			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.target()));
 		
-		return smart_ptr<PPTX::File>(new PPTX::UnknowTypeFile());
+		else if(strT == OOX::FileTypes::LegacyDiagramText)
+			return smart_ptr<OOX::File>(new PPTX::LegacyDiagramText(filename));
+
+		else if(strT == OOX::FileTypes::OleObject)
+			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
+		
+		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}
 
 } // namespace PPTX

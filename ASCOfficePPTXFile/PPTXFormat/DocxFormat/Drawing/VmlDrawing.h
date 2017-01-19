@@ -36,7 +36,7 @@
 #include "../../WrapperFile.h"
 #include "../../FileContainer.h"
 
-#include "../RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 
 namespace PPTX
@@ -103,9 +103,9 @@ namespace PPTX
 			}
 
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = false;
 			
 			//m_WrittenFileName = filename.GetFilename();
@@ -113,9 +113,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::VmlDrawing;
+			return OOX::Presentation::FileTypes::VmlDrawing;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -292,13 +292,13 @@ namespace PPTX
 							}
 							if (bReadyElement)
 							{		
-								if (sSpid.length() > 0)
+                                                                if (!sSpid.empty())
 								{
 									//m_mapShapes.insert(std::pair<std::wstring,int>(sSpid, m_arrItems.size()-1));		
 								
 									m_mapShapesXml.insert(std::pair<std::wstring,std::wstring>(sSpid,elementContent));
 								}
-								elementContent = _T("");
+                                                                elementContent.clear();
 								bReadyElement = false;
 							}
 							delete pItem;

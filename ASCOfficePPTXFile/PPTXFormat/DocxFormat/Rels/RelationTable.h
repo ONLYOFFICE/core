@@ -35,7 +35,7 @@
 
 #include "./../WritingVector.h"
 #include "RelationShip.h"
-#include "./../RId.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX {class External;}
 
@@ -61,13 +61,11 @@ namespace PPTX
 				fromXML(node);
 				return *this;
 			}
-
-		public:
-			void registration(const RId& rId, const std::wstring& type, const OOX::CPath& filename)
+			void registration(const OOX::RId& rId, const std::wstring& type, const OOX::CPath& filename)
 			{
 				m_items.push_back(RelationShip(rId, type, filename));
 			}
-			void registration(const RId& rId, const smart_ptr<PPTX::External> external)
+			void registration(const OOX::RId& rId, const smart_ptr<OOX::External> external)
 			{
 				m_items.push_back(RelationShip(rId, external));
 			}

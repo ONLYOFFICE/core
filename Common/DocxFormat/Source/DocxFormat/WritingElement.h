@@ -322,6 +322,11 @@ namespace OOX
 		et_a_ShapeNonVisual,
 		
 		et_dgm_DiagrammParts,	// <dgm:relIds> 
+		et_dgm_ptLst,			// <dgm:ptLst> 
+		et_dgm_pt,				// <dgm:pt> 
+		et_dgm_prSet,			// <dgm:prSet> 
+		et_dgm_spPr,			// <dgm:spPr> 
+		et_dgm_t,				// <dgm:t> 
 		et_dsp_Shape,			// <dsp:sp>
 		et_dsp_ShapeTree,		// <dsp:spTree>
 		et_dsp_spPr,			// <dsp:spPr>

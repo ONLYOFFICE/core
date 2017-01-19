@@ -44,7 +44,6 @@
 #include "./PPTXFormat/Logic/Colors/PrstClr.h"
 #include "./PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "./PPTXFormat/Logic/Colors/SysClr.h"
-#include "./PPTXFormat/DocxFormat/Media/Image.h"
 #include "./PPTXFormat/PPTX.h"
 #include "./PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h"
 
@@ -52,7 +51,10 @@
 #include "./Editor/Drawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
 
 #include "../DesktopEditor/common/Directory.h"
+
 #include "../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
+#include "../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+#include "../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
@@ -1078,90 +1080,89 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 
                             if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCommonRels->is_init())
 							{
-								nullable<PPTX::RId> id_data;
+								nullable<OOX::RId> id_data;
 								oNodeContent.ReadAttributeBase(L"r:dm", id_data);
 
+								nullable<std::wstring> id_drawing;
 								if (id_data.is_init())
 								{
-									smart_ptr<PPTX::Image> pDiagData = (*m_pBinaryWriter->m_pCommonRels)->image(*id_data);
+									smart_ptr<OOX::File> oFile = (*m_pBinaryWriter->m_pCommonRels)->Find(*id_data);
 									
-									if (pDiagData.is_init())
+									if (oFile.is_init())
 									{
-										std::wstring strDiagDataPath = pDiagData->filename().m_strFilename;
-										
-										XmlUtils::CXmlNode oNodeDiagData;
-                                        if (oNodeDiagData.FromXmlFile(strDiagDataPath))
+										OOX::CDiagramData* pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFile.operator->());										
+										if ((pDiagramData) && (pDiagramData->m_oExtLst.IsInit()))
 										{
-											nullable<PPTX::RId> id_drawing;
-
-                                            XmlUtils::CXmlNode oNode2 = oNodeDiagData.ReadNode(L"dgm:extLst");
-											if (oNode2.IsValid())
+											for (int i = 0; i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
 											{
-                                                XmlUtils::CXmlNode oNode3 = oNode2.ReadNode(L"a:ext");
-												if (oNode3.IsValid())
+												if (pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 												{
-                                                    XmlUtils::CXmlNode oNode4 = oNode3.ReadNode(L"dsp:dataModelExt");
-													if (oNode4.IsValid())
-													{
-														oNode4.ReadAttributeBase(L"relId", id_drawing);
-													}
+													id_drawing = pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
+													break;
 												}
 											}
+										}
 
-											if (id_drawing.is_init())
+										if (id_drawing.is_init())
+										{
+											smart_ptr<OOX::Image> pDiagDW = (*m_pBinaryWriter->m_pCommonRels)->GetImage(OOX::RId(*id_drawing));
+
+											if (pDiagDW.is_init())
 											{
-												smart_ptr<PPTX::Image> pDiagDW = (*m_pBinaryWriter->m_pCommonRels)->image(*id_drawing);
+												std::wstring strPathDiagDW = pDiagDW->filename().m_strFilename;
 
-												if (pDiagDW.is_init())
+												XmlUtils::CXmlNode oNodeDW;
+                                                oNodeDW.FromXmlFile(strPathDiagDW);
+
+                                                XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
+												oElem = oNodeS;
+
+												if (oElem.is<PPTX::Logic::SpTree>())
 												{
-													std::wstring strPathDiagDW = pDiagDW->filename().m_strFilename;
-
-													XmlUtils::CXmlNode oNodeDW;
-                                                    oNodeDW.FromXmlFile(strPathDiagDW);
-
-                                                    XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
-													oElem = oNodeS;
-
-													if (oElem.is<PPTX::Logic::SpTree>())
+													PPTX::Logic::SpTree& _pElem = oElem.as<PPTX::Logic::SpTree>();
+													if (!_pElem.grpSpPr.xfrm.is_init())
 													{
-														PPTX::Logic::SpTree& _pElem = oElem.as<PPTX::Logic::SpTree>();
-														if (!_pElem.grpSpPr.xfrm.is_init())
-														{
-															_pElem.grpSpPr.xfrm = new PPTX::Logic::Xfrm();
+														_pElem.grpSpPr.xfrm = new PPTX::Logic::Xfrm();
 
-															_pElem.grpSpPr.xfrm->offX = (int)0;
-															_pElem.grpSpPr.xfrm->offY = (int)0;
-															_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
-															_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
-															_pElem.grpSpPr.xfrm->chOffX = (int)0;
-															_pElem.grpSpPr.xfrm->chOffY = (int)0;
-															_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
-															_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
-														}
-														else
-														{
-															if (!_pElem.grpSpPr.xfrm->offX.is_init())
-																_pElem.grpSpPr.xfrm->offX = (int)0;
-															if (!_pElem.grpSpPr.xfrm->offY.is_init())
-																_pElem.grpSpPr.xfrm->offY = (int)0;
-															if (!_pElem.grpSpPr.xfrm->extX.is_init())
-																_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
-															if (!_pElem.grpSpPr.xfrm->extY.is_init())
-																_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
-															if (!_pElem.grpSpPr.xfrm->chOffX.is_init())
-																_pElem.grpSpPr.xfrm->chOffX = (int)0;
-															if (!_pElem.grpSpPr.xfrm->chOffY.is_init())
-																_pElem.grpSpPr.xfrm->chOffY = (int)0;
-															if (!_pElem.grpSpPr.xfrm->chExtX.is_init())
-																_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
-															if (!_pElem.grpSpPr.xfrm->chExtY.is_init())
-																_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
-														}
+														_pElem.grpSpPr.xfrm->offX = (int)0;
+														_pElem.grpSpPr.xfrm->offY = (int)0;
+														_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
+														_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
+														_pElem.grpSpPr.xfrm->chOffX = (int)0;
+														_pElem.grpSpPr.xfrm->chOffY = (int)0;
+														_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
+														_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
 													}
-											
-													m_strCurrentRelsPath = strPathDiagDW;
-													SetCurrentRelsPath();
+													else
+													{
+														if (!_pElem.grpSpPr.xfrm->offX.is_init())
+															_pElem.grpSpPr.xfrm->offX = (int)0;
+														if (!_pElem.grpSpPr.xfrm->offY.is_init())
+															_pElem.grpSpPr.xfrm->offY = (int)0;
+														if (!_pElem.grpSpPr.xfrm->extX.is_init())
+															_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
+														if (!_pElem.grpSpPr.xfrm->extY.is_init())
+															_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
+														if (!_pElem.grpSpPr.xfrm->chOffX.is_init())
+															_pElem.grpSpPr.xfrm->chOffX = (int)0;
+														if (!_pElem.grpSpPr.xfrm->chOffY.is_init())
+															_pElem.grpSpPr.xfrm->chOffY = (int)0;
+														if (!_pElem.grpSpPr.xfrm->chExtX.is_init())
+															_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
+														if (!_pElem.grpSpPr.xfrm->chExtY.is_init())
+															_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
+													}
 												}
+										
+												m_strCurrentRelsPath = strPathDiagDW;
+												SetCurrentRelsPath();
+											}
+										}
+										else
+										{//BG-FSC1.docx
+
+											if (pDiagramData->m_oDgmPtLst.IsInit())
+											{
 											}
 										}
 									}
@@ -2348,7 +2349,7 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 			if (sId.length() > 0 && m_pBinaryWriter->m_pCommonRels->IsInit())
 			{
-				PPTX::RId rId(sId);
+				OOX::RId rId(sId);
 				smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCommonRels)->legacyDiagramText(rId);
 
 				if (pExt.IsInit())
@@ -3530,7 +3531,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 			PPTX::Logic::BlipFill* pBlipFill = new PPTX::Logic::BlipFill();
             pBlipFill->m_namespace = L"a";
 			pBlipFill->blip = new PPTX::Logic::Blip();
-			pBlipFill->blip->embed = new PPTX::RId(*sRid);
+			pBlipFill->blip->embed = new OOX::RId(*sRid);
 
             if (sType.is_init() && ((*sType == L"tile") || (*sType == L"pattern")))
 			{
@@ -3670,7 +3671,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 				pBlipFill->blip = new PPTX::Logic::Blip();
 
                 std::wstring sId = sRid.IsInit() ? *sRid : (sRelid.IsInit() ? *sRelid : L"");
-				pBlipFill->blip->embed = new PPTX::RId(sId);
+				pBlipFill->blip->embed = new OOX::RId(sId);
 
                 if (sType.is_init() && *sType == L"tile")
 				{

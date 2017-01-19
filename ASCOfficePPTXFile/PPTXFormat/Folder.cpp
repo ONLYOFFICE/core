@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "Folder.h"
 #include "DocxFormat/Rels/File.h"
@@ -70,17 +70,17 @@ namespace PPTX
         if(m_bCancelled  && percent < 1000000)
 			return;
 
-		smart_ptr<PPTX::Presentation> _presentation = FileContainer::get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+		smart_ptr<PPTX::Presentation> _presentation = FileContainer::Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (_presentation.is_init())
 		{
-			_presentation->commentAuthors = _presentation->get(PPTX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
+			_presentation->commentAuthors = _presentation->Get(OOX::Presentation::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
 		}
 
-        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
-            const PPTX::FileType& curType = pPair->second->type();
+            const OOX::FileType& curType = pPair->second->type();
 
-            if (PPTX::FileTypes::ThemePPTX == curType)
+            if (OOX::Presentation::FileTypes::ThemePPTX == curType)
             {
                 smart_ptr<PPTX::Theme> pTheme = pPair->second.smart_dynamic_cast<PPTX::Theme>();
                 if (pTheme.IsInit())
@@ -88,11 +88,11 @@ namespace PPTX
             }
         }
 
-        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
-            const PPTX::FileType& curType = pPair->second->type();
+            const OOX::FileType& curType = pPair->second->type();
 
-            if (PPTX::FileTypes::SlideMaster == curType)
+            if (OOX::Presentation::FileTypes::SlideMaster == curType)
             {
                 smart_ptr<PPTX::SlideMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::SlideMaster>();
                 if (pointer.is_init())
@@ -102,11 +102,11 @@ namespace PPTX
         }
 
 
-        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
-            const PPTX::FileType& curType = pPair->second->type();
+            const OOX::FileType& curType = pPair->second->type();
 
-            if (PPTX::FileTypes::SlideLayout == curType)
+            if (OOX::Presentation::FileTypes::SlideLayout == curType)
             {
                 smart_ptr<PPTX::SlideLayout> pointer = pPair->second.smart_dynamic_cast<PPTX::SlideLayout>();
                 if (pointer.is_init())
@@ -115,11 +115,11 @@ namespace PPTX
 
         }
 
-        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
-            const PPTX::FileType& curType = pPair->second->type();
+            const OOX::FileType& curType = pPair->second->type();
 
-            if (PPTX::FileTypes::Slide == curType)
+            if (OOX::Presentation::FileTypes::Slide == curType)
             {
                 smart_ptr<PPTX::Slide> pointer = pPair->second.smart_dynamic_cast<PPTX::Slide>();
                 if (pointer.is_init())
@@ -128,10 +128,11 @@ namespace PPTX
         }
 
 
-        for (std::map<std::wstring, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
         {
-            const PPTX::FileType& curType = pPair->second->type();
-            if (PPTX::FileTypes::NotesMaster == curType)
+            const OOX::FileType& curType = pPair->second->type();
+           
+			if (OOX::Presentation::FileTypes::NotesMaster == curType)
             {
                 smart_ptr<PPTX::NotesMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::NotesMaster>();
                 if (pointer.is_init())
@@ -147,13 +148,13 @@ namespace PPTX
 		OOX::CSystemUtility::CreateDirectories(path);
 
 		PPTX::Rels::File rels;
-		PPTX::ContentTypes::File content;
+		OOX::CContentTypes content;
 
 		OOX::CPath dir = path;
 		FileContainer::write(rels, path, dir, content);
 
 		rels.write(path / FILE_SEPARATOR_STR);
-		content.write(path);
+		content.Write(path);
 		FileContainer::WrittenSetFalse();
 	}
 
@@ -164,13 +165,13 @@ namespace PPTX
 
 	const bool Folder::isValid(const OOX::CPath& path) const
 	{
-		return true;//FileContainer::exist(PPTX::FileTypes::Presentation);
+		return true;//FileContainer::exist(OOX::Presentation::FileTypes::Presentation);
 	}
 
 	void Folder::extractPictures(const OOX::CPath& path)
 	{
 		OOX::CSystemUtility::CreateDirectories(path);
-		FileContainer::extractPictures(path);
+		FileContainer::ExtractPictures(path);
 	}
 
 	void Folder::extractPictures(const OOX::CPath& source, const OOX::CPath& path)

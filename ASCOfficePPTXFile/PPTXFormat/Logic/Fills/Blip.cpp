@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "Blip.h"
 #include "./../../Slide.h"
@@ -85,7 +85,7 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::Image> p = pRels->image(*embed);
+					smart_ptr<OOX::Image> p = pRels->GetImage(*embed);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
@@ -104,7 +104,7 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::Image> p = pRels->image(*link);
+					smart_ptr<OOX::Image> p = pRels->GetImage(*link);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
@@ -121,11 +121,11 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		std::wstring Blip::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
 		{
 			if (pRels != NULL)
 			{
-				smart_ptr<PPTX::OleObject> p = pRels->oleObject(oRId);
+				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
 				if (p.is_init())
 					return p->filename().m_strFilename;
 			}

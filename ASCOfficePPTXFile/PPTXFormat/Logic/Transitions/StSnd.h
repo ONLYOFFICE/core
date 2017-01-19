@@ -34,7 +34,7 @@
 #define PPTX_SLIDES_STSND_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -73,7 +73,7 @@ namespace PPTX
 			}
 
 		public:
-			PPTX::RId			embed;
+			OOX::RId			embed;
 			nullable_string		name;
 			nullable_bool		loop;
 		protected:

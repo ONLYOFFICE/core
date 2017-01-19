@@ -43,7 +43,7 @@
 
 namespace PPTX
 {
-	class LegacyDiagramText : public File
+	class LegacyDiagramText : public OOX::File
 	//[MS-PPT] Section 2.9.1; DocumentTextInfoContainer
 	{
 	public:
@@ -92,10 +92,10 @@ namespace PPTX
 			// щас используется 'нулевой' вариант
 			// незабыть поменять в doc_LoadShape (ASCOfficeDrawingConvert.cpp)
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			//старье на запись не поддерживаем
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 		}
 		
 		LegacyDiagramText& operator=(const LegacyDiagramText& oSrc)
@@ -104,9 +104,9 @@ namespace PPTX
 			return *this;
 		}
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::LegacyDiagramText;
+			return OOX::Presentation::FileTypes::LegacyDiagramText;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

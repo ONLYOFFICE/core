@@ -413,10 +413,10 @@ namespace OOX
             virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

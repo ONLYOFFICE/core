@@ -50,7 +50,7 @@ namespace PPTX2EditorAdvanced
 		std::vector<smart_ptr<PPTX::NotesSlide>>		_notes;
 		std::vector<smart_ptr<PPTX::NotesMaster>>		_notesMasters;
 
-		smart_ptr<PPTX::Presentation> presentation = oFolder.get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+		smart_ptr<PPTX::Presentation> presentation = oFolder.Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		int cx = presentation->sldSz->cx;
 		int cy = presentation->sldSz->cy;
 
@@ -218,7 +218,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteULONG(0);
 		
 		// App
-		smart_ptr<PPTX::App> app = oFolder.get(PPTX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+		smart_ptr<PPTX::App> app = oFolder.Get(OOX::Presentation::FileTypes::App).smart_dynamic_cast<PPTX::App>();
 		if (app.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::App);
@@ -226,7 +226,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// Core
-		smart_ptr<PPTX::Core> core = oFolder.get(PPTX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::Presentation::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
 		if (core.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::Core);
@@ -234,7 +234,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// PresProps
-		smart_ptr<PPTX::PresProps> presProps = presentation->get(PPTX::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
+		smart_ptr<PPTX::PresProps> presProps = presentation->Get(OOX::Presentation::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
 		if (presProps.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::PresProps);
@@ -242,7 +242,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// ViewProps
-		smart_ptr<PPTX::ViewProps> viewProps = presentation->get(PPTX::FileTypes::ViewProps).smart_dynamic_cast<PPTX::ViewProps>();
+		smart_ptr<PPTX::ViewProps> viewProps = presentation->Get(OOX::Presentation::FileTypes::ViewProps).smart_dynamic_cast<PPTX::ViewProps>();
 		if (viewProps.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::ViewProps);
@@ -250,7 +250,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// TableStyles
-		smart_ptr<PPTX::TableStyles> tablestyles = presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+		smart_ptr<PPTX::TableStyles> tablestyles = presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 		if (tablestyles.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::TableStyles);

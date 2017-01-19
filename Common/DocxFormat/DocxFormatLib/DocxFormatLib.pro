@@ -273,4 +273,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
-    ../Source/XlsxFormat/Ole/OleObjects.h
+    ../Source/XlsxFormat/Ole/OleObjects.h \
+    ../Source/DocxFormat/Diagram/DiagramData.h

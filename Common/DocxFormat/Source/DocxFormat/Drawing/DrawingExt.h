@@ -94,6 +94,58 @@ namespace OOX
 
 			// Childs
 		};
+		class CDataModelExt : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataModelExt)
+			CDataModelExt()
+			{
+			}
+			virtual ~CDataModelExt()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+                //todo
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+            virtual std::wstring      toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return OOX::et_a_compatExt;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+            nullable<std::wstring> m_oRelId;
+
+			// Childs
+		};
+
+
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -141,6 +193,7 @@ namespace OOX
 			// Childs
 			nullable<CCompatExt>							m_oCompatExt;
 			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
+			nullable<CDataModelExt>							m_oDataModelExt;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)

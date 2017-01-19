@@ -72,7 +72,7 @@ namespace PPTX
 			if(showPr.is_init())
 				showPr->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
@@ -85,7 +85,7 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:presentationPr"), oAttr, oValue));
 		
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
@@ -169,9 +169,9 @@ namespace PPTX
 			pReader->Seek(end);
 		}
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::PresProps;
+			return OOX::Presentation::FileTypes::PresProps;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

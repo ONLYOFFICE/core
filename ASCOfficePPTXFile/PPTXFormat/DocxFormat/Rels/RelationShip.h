@@ -34,8 +34,8 @@
 #define PPTXOOX_RELS_RELATION_SHIP_INCLUDE_H_
 
 #include "./../WritingElement.h"
-#include "./../RId.h"
-#include "./../External/External.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -46,11 +46,11 @@ namespace PPTX
 		class RelationShip : public WritingElement
 		{
 		public:
-			RelationShip(const PPTX::RId& rId, const std::wstring& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
+			RelationShip(const OOX::RId& rId, const std::wstring& type, const OOX::CPath& filename) : m_rId(rId), m_target(filename), m_type(type)
 			{
 				boost::algorithm::replace_all(m_target.m_strFilename, L" ", L"_");
 			}
-			RelationShip(const PPTX::RId& rId, const smart_ptr<External> external): m_rId(rId), m_target(external->Uri()), 
+			RelationShip(const OOX::RId& rId, const smart_ptr<OOX::External> external): m_rId(rId), m_target(external->Uri()), 
 				m_type(external->type().RelationType())
 			{
 				m_mode = new std::wstring(_T("External"));
@@ -93,7 +93,6 @@ namespace PPTX
 				return m_rId < rhs.m_rId;
 			}
 
-		public:
 			const std::wstring type() const
 			{
 				return m_type;
@@ -112,16 +111,16 @@ namespace PPTX
 					return false;
                 return (*m_mode == _T("External"));
 			}
-			const RId rId() const
+			const OOX::RId rId() const
 			{
 				return m_rId;
 			}
 
 		private:
-			RId						m_rId;
-			OOX::CPath					m_target;
-			std::wstring					m_type;
-			nullable_string			m_mode;
+			OOX::RId			m_rId;
+			OOX::CPath			m_target;
+			std::wstring		m_type;
+			nullable_string		m_mode;
 		};
 	} // namespace Rels
 } // namespace PPTX

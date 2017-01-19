@@ -31,6 +31,7 @@
  */
 #include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
+#include "../Diagram/DiagramData.h"
 
 namespace OOX
 {
@@ -40,20 +41,25 @@ namespace OOX
 		{
 			ReadAttributes( oReader );
 
-            if ((m_sUri.IsInit()) && (*m_sUri == _T("{63B3BB69-23CF-44E3-9099-C40C66FF867C}") ||
-                                      *m_sUri == _T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}")))     //2.2.6.2 Legacy Object Wrapper
+            if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
+                                      *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" || 
+									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (sName == _T("compatExt"))//2.3.1.2 compatExt
+					if (sName == L"compatExt")//2.3.1.2 compatExt
 					{	//attributes spid -https://msdn.microsoft.com/en-us/library/hh657207(v=office.12).aspx
 						m_oCompatExt = oReader;
 					}
-					else if (sName == _T("sparklineGroups"))
+					else if (sName == L"sparklineGroups")
 					{
 						m_oSparklineGroups = oReader;
+					}
+					else if (sName == L"dataModelExt")
+					{
+						m_oDataModelExt = oReader;
 					}
 				}
 			}

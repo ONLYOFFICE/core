@@ -57,12 +57,6 @@ namespace OOX
 			(*this) = oSrc;
 		}
 
-	public:
-		//const RId& operator= (const size_t id)
-		//{
-		//	m_id = id;
-		//	return *this;
-		//}		
 		const RId& operator= (const std::wstring& rid)
 		{
 			//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
@@ -90,7 +84,6 @@ namespace OOX
 			return *this;
 		}
 
-	public:
 		const bool operator ==(const RId& lhs) const
 		{
 			return m_id == lhs.m_id && m_sId == lhs.m_sId;
@@ -99,35 +92,34 @@ namespace OOX
 		{
 			return !operator ==(lhs);
 		}
-		//const bool operator < (const RId& lhs) const
-		//{
-		//	return m_id < lhs.m_id;
-		//}
-		//const bool operator <=(const RId& lhs) const
-		//{
-		//	return m_id <= lhs.m_id;
-		//}
-		//const bool operator >(const RId& lhs) const
-		//{
-		//	return m_id > lhs.m_id;
-		//}
-		//const bool operator >=(const RId& lhs) const
-		//{
-		//	return m_id >= lhs.m_id;
-		//}
+		const bool operator < (const RId& lhs) const
+		{
+			return m_id < lhs.m_id;
+		}
+		const bool operator <=(const RId& lhs) const
+		{
+			return m_id <= lhs.m_id;
+		}
+		const bool operator >(const RId& lhs) const
+		{
+			return m_id > lhs.m_id;
+		}
+		const bool operator >=(const RId& lhs) const
+		{
+			return m_id >= lhs.m_id;
+		}
 
 		AVSINLINE std::wstring get() const 
 		{
 			return ToString();
 		}
 		AVSINLINE size_t getNumber() const { return m_id; }
-	public:
+
 		const RId	next() const
 		{
 			return RId(m_id + 1);
 		}
 		
-	public:
 		const std::wstring ToString() const
 		{
 			if(!m_sId.empty())
@@ -135,10 +127,15 @@ namespace OOX
 			else
 				return _T("rId") + std::to_wstring(m_id);
 		}
-
+		template<typename T>
+		void toPPTY(BYTE type, T pWriter) const
+		{
+			pWriter->WriteBYTE(type);
+            pWriter->WriteStringW(ToString());
+		}
 	private:
-		size_t m_id;
-		std::wstring m_sId;
+		size_t			m_id;
+		std::wstring	m_sId;
 	};
 } // namespace OOX
 

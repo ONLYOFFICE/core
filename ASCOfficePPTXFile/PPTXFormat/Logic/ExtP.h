@@ -33,7 +33,7 @@
 #define PPTX_LOGIC_EXTP_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "../DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 /*
 
@@ -97,7 +97,7 @@ namespace PPTX
 
 		public:
 
-			PPTX::RId				link;
+			OOX::RId				link;
 
 			// trim
 			nullable_double			st;

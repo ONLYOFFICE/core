@@ -221,10 +221,7 @@ namespace OOX
 
 		};
 	} // namespace ContentTypes
-} // namespace OOX
 
-namespace OOX
-{
     static const CPath c_oContentTypeFileName (_T("[Content_Types].xml"));
 
 	class CContentTypes

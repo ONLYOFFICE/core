@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_MEDIAFILE_INCLUDE_H_
 
 #include "../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -76,7 +76,7 @@ namespace PPTX
 			}
 		public:
 			std::wstring				name;
-			PPTX::RId			link;
+			OOX::RId			link;
 			nullable_string		contentType;
 		protected:
 			virtual void FillParentPointersForChilds(){};

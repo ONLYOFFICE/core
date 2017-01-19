@@ -34,10 +34,10 @@
 #define PPTXOOX_RELS_FILE_INCLUDE_H_
 
 #include "RelationTable.h"
-#include "./../FileType.h"
-#include "./../FileTypes.h"
-#include "./../RId.h"
-#include "./../External/External.h"
+#include "../FileTypes.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
 
 #include "../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
@@ -109,12 +109,12 @@ namespace PPTX
 			}
 
 		public:
-			void registration(const RId& rId, const FileType& type, const OOX::CPath& filename)
+			void registration(const OOX::RId& rId, const OOX::FileType& type, const OOX::CPath& filename)
 			{
-				if(!(type == FileTypes::Unknow))
+				if(!(type == OOX::FileTypes::Unknow))
 				{
 					std::wstring strFileName	= filename.m_strFilename;
-					std::wstring strDir		= filename.GetDirectory() + _T("");
+					std::wstring strDir			= filename.GetDirectory() + _T("");
 					if (_T("") == filename.GetExtention())
 					{
                         if (type.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"))
@@ -134,7 +134,7 @@ namespace PPTX
 					}
 				}
 			}
-			void registration(const RId& rId, const smart_ptr<External> external)
+			void registration(const OOX::RId& rId, const smart_ptr<OOX::External> external)
 			{
 				Relations.registration(rId, external);
 			}

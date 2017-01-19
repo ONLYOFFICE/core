@@ -150,12 +150,12 @@ namespace OOX
 		public:
 
 			// Attributes
-            nullable<std::wstring>               m_sAppName;
+            nullable<std::wstring>			m_sAppName;
 			nullable<SimpleTypes::COnOff<>> m_oCheckSyle;
-            nullable<std::wstring>               m_sDllVersion;
+            nullable<std::wstring>			m_sDllVersion;
 			nullable<SimpleTypes::CLang>    m_oLang;
 			nullable<SimpleTypes::COnOff<>> m_oNlCheck;
-            nullable<std::wstring>               m_sVendorID;
+            nullable<std::wstring>			m_sVendorID;
 		};
 		//--------------------------------------------------------------------------------
 		// CAutoCaption 17.15.1.7 (Part 1)

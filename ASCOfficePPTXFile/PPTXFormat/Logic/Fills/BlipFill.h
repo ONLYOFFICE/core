@@ -407,11 +407,11 @@ namespace PPTX
 										if (!blip.is_init())
 											blip = new PPTX::Logic::Blip();
 
-										blip->embed = new PPTX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
+										blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
 
 										if(oRelsGeneratorInfo.m_nOleRId > 0)
 										{
-											blip->oleRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+											blip->oleRid = OOX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
 											blip->oleFilepathBin = oRelsGeneratorInfo.m_sFilepathBin;
 											blip->oleFilepathImg = oRelsGeneratorInfo.m_sFilepathImg;
 											blip->oleRidImg = blip->embed->get();

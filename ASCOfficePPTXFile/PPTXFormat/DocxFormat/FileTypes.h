@@ -33,10 +33,11 @@
 #ifndef PPTXOOX_FILE_TYPES_INCLUDE_H_
 #define PPTXOOX_FILE_TYPES_INCLUDE_H_
 
-#include "FileType.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/FileType.h"
 
-
-namespace PPTX
+namespace OOX
+{
+namespace Presentation
 {
 	namespace FileTypes
 	{
@@ -100,58 +101,6 @@ namespace PPTX
 												_T("application/vnd.openxmlformats-officedocument.customXmlProperties+xml"),
 												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps"));
 
-		const FileType HyperLink(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"));
-
-		const FileType ExternalImage(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));
-
-		const FileType ExternalAudio(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio"));
-
-		const FileType ExternalVideo(L"", L"", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"));
-
-		const FileType Image(L"media", L"image", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"));
-
-		const FileType Audio(L"media", L"audio", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio"));
-
-		const FileType Video(L"media", L"video", 
-												_T(""), 
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"));
-
-		const FileType Data(L"diagrams", L"data.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData"));
-
-		const FileType DrawingDiag(L"diagrams", L"drawing.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramDrawing+xml"),
-												_T("http://schemas.microsoft.com/office/2007/relationships/diagramDrawing"));
-
-		const FileType Layout(L"diagrams", L"layout.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout"));
-
-		const FileType Colors(L"diagrams", L"colors.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors"));
-
-		const FileType QuickStyle(L"diagrams", L"quickStyle.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.diagramStyle+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle"));
-
-		const FileType Chart(L"charts", L"chart.xml",
-												_T("application/vnd.openxmlformats-officedocument.drawingml.chart+xml"),
-												_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart"));
-		
 
 		const FileType MicrosoftOfficeExcelWorksheet(L"embeddings", L"Microsoft_Office_Excel_Worksheet.xlsx",
 												_T(""),
@@ -279,10 +228,8 @@ namespace PPTX
 		
 		const FileType Media(L"ppt/media", L"", _T(""), 	_T("http://schemas.microsoft.com/office/2007/relationships/media"));
 
-
-		const FileType Unknow(L"", L"", _T(""), _T(""));
-
 	} // namespace FileTypes
+	} //Presentation
 } // namespace OOX
 
 #endif // PPTXOOX_FILE_TYPES_INCLUDE_H_

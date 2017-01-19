@@ -190,13 +190,13 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void FillParentPointersForChilds();
 			bool isValid();
-			std::wstring GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const;
+			std::wstring GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const;
 			std::wstring GetOleData(const std::wstring& sFilePath)const;
 
 		public:
 			// Attributes
 			nullable_limit<Limit::OLEDrawAspectType>	m_oDrawAspect;
-			nullable<PPTX::RId>					m_oId;
+			nullable<OOX::RId>					m_oId;
 			nullable_string                     m_sObjectId;
 			nullable_string                     m_sProgId;
 			nullable_string                     m_sShapeId;
@@ -207,7 +207,7 @@ namespace PPTX
 			nullable_string						m_sData;
 			nullable_string						m_sFilepathBin;
 			nullable_string						m_sFilepathImg;
-			nullable<PPTX::RId>					m_oIdImg;
+			nullable<OOX::RId>					m_oIdImg;
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
 		};
@@ -390,10 +390,10 @@ namespace PPTX
 				}
 				if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
 				{
-					oleObject->m_oId = PPTX::RId(blipFill.blip->oleRid);
+					oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
 					oleObject->m_sFilepathBin = blipFill.blip->oleFilepathBin;
 					oleObject->m_sFilepathImg = blipFill.blip->oleFilepathImg;
-					oleObject->m_oIdImg = PPTX::RId(blipFill.blip->oleRidImg);
+					oleObject->m_oIdImg = OOX::RId(blipFill.blip->oleRidImg);
 				}
 
 				pReader->Seek(_end_rec);

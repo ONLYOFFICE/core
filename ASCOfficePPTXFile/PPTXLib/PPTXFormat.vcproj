@@ -412,10 +412,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\File.h"
-					>
-				</File>
-				<File
 					RelativePath="..\.\PPTXFormat\FileContainer.cpp"
 					>
 					<FileConfiguration
@@ -595,62 +591,6 @@
 				</File>
 				<File
 					RelativePath="..\.\PPTXFormat\Folder.h"
-					>
-				</File>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\IFileContainer.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|x64"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|x64"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="ReleaseASC|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="ReleaseOpenSource|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							PrecompiledHeaderThrough="./StdAfx.h"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\.\PPTXFormat\DocxFormat\IFileContainer.h"
 					>
 				</File>
 				<File
@@ -3283,26 +3223,6 @@
 					>
 					<File
 						RelativePath="..\.\PPTXFormat\TableStyles.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Media"
-					>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Media\Audio.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Media\Image.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Media\Media.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\PPTXFormat\DocxFormat\Media\Video.h"
 						>
 					</File>
 				</Filter>

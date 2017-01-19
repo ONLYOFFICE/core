@@ -45,12 +45,12 @@ namespace PPTX
 		{
 			if(id.IsInit() && *id != _T(""))
 			{
-				PPTX::RId rid(*id);
+				OOX::RId rid(*id);
 
 				std::wstring sLink = _T("");
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::HyperLink> p = pRels->hyperlink(rid);
+					smart_ptr<OOX::HyperLink> p = pRels->GetHyperlink(rid);
 					if (p.is_init())
 						sLink = p->Uri().m_strFilename;
 				}

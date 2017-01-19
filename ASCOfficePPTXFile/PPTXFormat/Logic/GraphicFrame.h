@@ -37,7 +37,6 @@
 #include "NvGraphicFramePr.h"
 #include "Xfrm.h"
 #include "ShapeProperties.h"
-//#include "DocxFormat/RId.h"
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
@@ -68,11 +67,7 @@ namespace PPTX
 		public:
 			NvGraphicFramePr		nvGraphicFramePr;
 			Xfrm					xfrm;
-			//property<Graphic> grpahic;
-			//nullable_property<PPTX::RId> dm;
-			//nullable_property<PPTX::RId> lo;
-			//nullable_property<PPTX::RId> qs;
-			//nullable_property<PPTX::RId> cs;
+
 			nullable_string			spid;
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;

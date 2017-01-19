@@ -34,7 +34,7 @@
 #define PPTX_FOLDER_INCLUDE_H_
 
 #include "FileContainer.h"
-#include "DocxFormat/RId.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {

@@ -164,9 +164,7 @@ namespace OOX
 		};
 
 	} // namespace Rels
-} // namespace OOX
-namespace OOX
-{
+
 	class CRels
 	{
 	public:
@@ -276,7 +274,6 @@ namespace OOX
 			}
 		}
 
-	public:
 
 		void Registration(const RId& rId, const FileType& oType, const CPath& oPath)
 		{

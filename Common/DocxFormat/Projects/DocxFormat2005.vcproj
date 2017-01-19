@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="DocxFormat"
 	ProjectGUID="{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	RootNamespace="DocxFormat"
@@ -1860,6 +1860,10 @@
 			Name="DiagramML"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramData.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
 				>
 			</File>
@@ -1994,10 +1998,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\Docx.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\SystemUtility\FileSystem\File.cpp"
 			>
 		</File>
 		<File

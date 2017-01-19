@@ -106,7 +106,7 @@ namespace PPTX
 			nullable_bool									showAsIcon;
 			nullable<SimpleTypes::CPositiveCoordinate<0>>	height;
 			nullable<SimpleTypes::CPositiveCoordinate<0>>	width;
-			nullable<PPTX::RId>								rId;
+			nullable<OOX::RId>								rId;
 
 			nullable<PPTX::Logic::Pic>						pic;
 /// todooo

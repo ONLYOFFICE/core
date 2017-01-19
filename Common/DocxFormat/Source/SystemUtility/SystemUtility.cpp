@@ -123,6 +123,10 @@ namespace OOX
         int nCurrentW       = 0;
         bool bIsUp          = false;
 
+#if !defined(_WIN32) && !defined (_WIN64)
+        if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+            pDataNorm[nCurrentW++] = pData[nCurrent];
+#endif
 		while (nCurrent < nLen)
 		{
             if (pData[nCurrent] == FILE_SEPARATOR_CHAR)

@@ -117,10 +117,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/DocxFormat/Rels/RelationShip.h \
     ../../../PPTXFormat/DocxFormat/Rels/RelationTable.h \
     ../../../PPTXFormat/DocxFormat/DateTime.h \
-    ../../../PPTXFormat/DocxFormat/File.h \
-    ../../../PPTXFormat/DocxFormat/FileType.h \
     ../../../PPTXFormat/DocxFormat/FileTypes.h \
-    ../../../PPTXFormat/DocxFormat/IFileBuilder.h \
     ../../../PPTXFormat/DocxFormat/NamespaceOwn.h \
     ../../../PPTXFormat/DocxFormat/Namespaces.h \
     ../../../PPTXFormat/DocxFormat/WritingElement.h \

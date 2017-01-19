@@ -33,9 +33,9 @@
 #ifndef PPTX_LegacyDiagramText_INCLUDE_H_
 #define PPTX_LegacyDiagramText_INCLUDE_H_
 
-#include "../File.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/File.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../Logic/TextParagraphPr.h"
 #include "../../Logic/Colors/SrgbClr.h"

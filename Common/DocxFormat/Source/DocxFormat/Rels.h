@@ -183,61 +183,57 @@ namespace OOX
 
 		void Read (const CPath& oFilePath)
 		{
-			CPath oRelsPath = CreateFileName( oFilePath );
+            CPath oRelsPath = CreateFileName( oFilePath );
 
-			if ( CSystemUtility::IsFileExist( oRelsPath ) )
-			{
 #ifdef USE_LITE_READER
 
-				XmlUtils::CXmlLiteReader oReader;
+            XmlUtils::CXmlLiteReader oReader;
 
-				if ( !oReader.FromFile( oRelsPath.GetPath() ) )
-					return;
+            if ( !oReader.FromFile( oRelsPath.GetPath() ) )
+                return;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+            if ( !oReader.ReadNextNode() )
+                return;
 
-				std::wstring sName = oReader.GetName();
-				if ( _T("Relationships") == sName )
-				{
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nRelationshipsDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
-						{
-							sName = oReader.GetName();
-							if ( _T("Relationship") == sName )
-							{
-                                OOX::Rels::CRelationShip *oRel = new OOX::Rels::CRelationShip(oReader);
-								if (oRel) m_arrRelations.push_back( oRel );
-							}
-						}
-					}
-				}
-
+            std::wstring sName = oReader.GetName();
+            if ( _T("Relationships") == sName )
+            {
+                if ( !oReader.IsEmptyNode() )
+                {
+                    int nRelationshipsDepth = oReader.GetDepth();
+                    while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
+                    {
+                        sName = oReader.GetName();
+                        if ( _T("Relationship") == sName )
+                        {
+                            OOX::Rels::CRelationShip *oRel = new OOX::Rels::CRelationShip(oReader);
+                            if (oRel) m_arrRelations.push_back( oRel );
+                        }
+                    }
+                }
+            }
 #else
 
-				XmlUtils::CXmlNode oNode;
+            XmlUtils::CXmlNode oNode;
 
-                if ( oNode.FromXmlFile2( oRelsPath.GetPath() ) && _T("Relationships") == oNode.GetName() )
-				{
-					XmlUtils::CXmlNodes oNodes;
-					if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
-					{
-						XmlUtils::CXmlNode oRelNode;
-						for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
-						{
-							if ( oNodes.GetAt( nIndex, oRelNode ) )
-							{
-                                //Rels::CRelationShip oRel = oRelNode;
-                                Rels::CRelationShip *oRel = new Rels::CRelationShip (oRelNode);
-                                m_arrRelations.push_back( oRel );
-							}
-						}
-					}
-				}
+            if ( oNode.FromXmlFile2( oRelsPath.GetPath() ) && _T("Relationships") == oNode.GetName() )
+            {
+                XmlUtils::CXmlNodes oNodes;
+                if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
+                {
+                    XmlUtils::CXmlNode oRelNode;
+                    for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+                    {
+                        if ( oNodes.GetAt( nIndex, oRelNode ) )
+                        {
+                            //Rels::CRelationShip oRel = oRelNode;
+                            Rels::CRelationShip *oRel = new Rels::CRelationShip (oRelNode);
+                            m_arrRelations.push_back( oRel );
+                        }
+                    }
+                }
+            }
 #endif
-			}
 		}
 		void Write(const CPath& oFilePath) const
 		{

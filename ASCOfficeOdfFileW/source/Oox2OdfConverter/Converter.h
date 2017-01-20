@@ -271,11 +271,11 @@ namespace OOX
 		class CRichText;
 		class CTextProperties;
 	}
-	namespace Diagram	
-	{
-		class CShape;
-		class CShapeTree;
-	}
+	//namespace Diagram	
+	//{
+	//	class CShape;
+	//	class CShapeTree;
+	//}
 	namespace Vml
 	{
 		class CShapeType;
@@ -309,6 +309,17 @@ namespace SimpleTypes
 	namespace Vml
 	{
 		class CCssStyle;
+	}
+}
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpTree;
+		class Shape;
+		class SpPr;
+		class ShapeStyle;
+		class PrstTxWarp;
 	}
 }
 
@@ -346,7 +357,7 @@ public:
 		OOX::IFileContainer									*oox_current_child_document;
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
-		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);
+		void convert(double oox_font_size, cpdoccore::_CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);
 	
 //.drawing......................................................................................................................
 		void convert(OOX::Drawing::CLockedCanvas				*oox_canvas);
@@ -391,9 +402,11 @@ public:
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf_writer::style_text_properties	* text_properties);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
-//.diagram................................................................................................................................
-		void convert(OOX::Diagram::CShapeTree					*oox_shape_tree);
-		void convert(OOX::Diagram::CShape						*oox_shape);
+//.diagram(pptx)................................................................................................................................
+		void convert(PPTX::Logic::SpTree						*oox_shape_tree);
+		void convert(PPTX::Logic::Shape							*oox_shape);
+		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
+		int	 convert(PPTX::Logic::PrstTxWarp					*oox_text_preset);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);
@@ -444,7 +457,6 @@ public:
 		void convert(OOX::Spreadsheet::CT_ExternalData			*external_data);
 		void convert(OOX::Spreadsheet::CT_NumData				*num_data, bool categories, bool label);
 		void convert(OOX::Spreadsheet::CT_StrData				*str_data, bool categories, bool label);
-
 
 //.vml............................................................................................................................
 		void convert(OOX::Vml::CShapeType				*vml_shape_type);

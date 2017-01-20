@@ -38,6 +38,7 @@
 #include "../../ASCOfficeDrawingConverter.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 
 namespace PPTX
 {
@@ -49,27 +50,25 @@ namespace PPTX
 			if (pWriter->m_pCommonRels->is_init())
 				pRels = pWriter->m_pCommonRels->operator ->();
 
-			smart_ptr<OOX::File> oFile;
+			smart_ptr<OOX::File>	oFileData;
+			smart_ptr<OOX::File>	oFileDrawing;
+			nullable<std::wstring>	id_drawing;
+
+			OOX::CDiagramData*		pDiagramData	= NULL;
+			OOX::CDiagramDrawing*	pDiagramDrawing	= NULL;
+
 			if(id_data.IsInit())
 			{
-				if(parentFileIs<Slide>())
-					oFile = parentFileAs<Slide>().Find(*id_data);
-				else if(parentFileIs<SlideLayout>())
-					oFile = parentFileAs<SlideLayout>().Find(*id_data);
-				else if(parentFileIs<SlideMaster>())
-					oFile = parentFileAs<SlideMaster>().Find(*id_data);
-				else if(parentFileIs<Theme>())
-					oFile = parentFileAs<Theme>().Find(*id_data);
-				else if (pRels != NULL)
-					oFile = pRels->Find(*id_data);
+				if		(parentFileIs<Slide>())			oFileData = parentFileAs<Slide>().Find(*id_data);
+				else if	(parentFileIs<SlideLayout>())	oFileData = parentFileAs<SlideLayout>().Find(*id_data);
+				else if	(parentFileIs<SlideMaster>())	oFileData = parentFileAs<SlideMaster>().Find(*id_data);
+				else if	(parentFileIs<Theme>())			oFileData = parentFileAs<Theme>().Find(*id_data);
+				else if (pRels != NULL)					oFileData = pRels->Find(*id_data);
 			}
-			nullable<std::wstring> id_drawing;
 			
-			std::wstring strPathDiagramDrawing;
-
-			if (oFile.is_init())
+			if (oFileData.IsInit())
 			{
-                OOX::CDiagramData* pDiagramData = (OOX::CDiagramData*)oFile.operator->();
+                pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());
 
 				if ((pDiagramData) && (pDiagramData->m_oExtLst.IsInit()))
 				{
@@ -83,58 +82,48 @@ namespace PPTX
 					}
 				}
 
-				if (id_drawing.is_init())
+				if (id_drawing.IsInit())
 				{
-					if(parentFileIs<Slide>())
-						strPathDiagramDrawing = parentFileAs<Slide>().GetMediaFullPathNameFromRId(*id_drawing);
-					else if(parentFileIs<SlideLayout>())
-						strPathDiagramDrawing = parentFileAs<SlideLayout>().GetMediaFullPathNameFromRId(*id_drawing);
-					else if(parentFileIs<SlideMaster>())
-						strPathDiagramDrawing = parentFileAs<SlideMaster>().GetMediaFullPathNameFromRId(*id_drawing);
-					else if(parentFileIs<Theme>())
-						strPathDiagramDrawing = parentFileAs<Theme>().GetMediaFullPathNameFromRId(*id_drawing);
-					else if (pRels != NULL)
-					{
-						smart_ptr<OOX::Image> p = pRels->GetImage(*id_drawing);
-						if (p.is_init())
-							strPathDiagramDrawing = p->filename().m_strFilename;
-					}
+					if		(parentFileIs<Slide>())			oFileDrawing = parentFileAs<Slide>().Find(*id_drawing);
+					else if	(parentFileIs<SlideLayout>())	oFileDrawing = parentFileAs<SlideLayout>().Find(*id_drawing);
+					else if	(parentFileIs<SlideMaster>())	oFileDrawing = parentFileAs<SlideMaster>().Find(*id_drawing);
+					else if	(parentFileIs<Theme>())			oFileDrawing = parentFileAs<Theme>().Find(*id_drawing);
+					else if (pRels != NULL)					oFileDrawing = pRels->Find(*id_data);
 				}
 				else
 				{
 					//Monetizing_Innovation.pptx (слайд 13) - diagrams/data1.xml не ссылается на diagrams/drawing1.xml
-					//пробуем по тому же пути с номером data.xml				
-					// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
-                    OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
-
-					int a1 = pathDiagramData.GetFilename().find(L".");
-					std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
-					
-					OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
-					
-					strPathDiagramDrawing = pathDiagramDrawing.GetPath();
-				}
+					//пробуем по тому же пути с номером data.xml - ниже			
+ 				}
 			}
-            if (!strPathDiagramDrawing.empty())
+            if (oFileDrawing.IsInit())
 			{
-				XmlUtils::CXmlNode oNodeDW;
-                if (oNodeDW.FromXmlFile(strPathDiagramDrawing))
-				{
-                    XmlUtils::CXmlNode oNodeS = oNodeDW.ReadNodeNoNS(L"spTree");
+                pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			}
 
-					if (oNodeS.IsValid())
-					{
-						m_diag = oNodeS;
+			if (!pDiagramDrawing)
+			{
+				// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
+               OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
 
-						CCommonRels* pRels = new CCommonRels();
-						OOX::CPath filename = strPathDiagramDrawing;
-						pRels->_read(filename);
+				int a1 = pathDiagramData.GetFilename().find(L".");
+				std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
+				
+				OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";	
 
-						m_oCommonRels = pRels;
+				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(pathDiagramDrawing)));
+				if (oFileDrawing.IsInit())
+					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			}
 
-						return;
-					}
-				}
+			if (pDiagramDrawing)
+			{
+				m_diag			= pDiagramDrawing->m_oShapeTree;
+				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>(dynamic_cast<PPTX::CCommonRels*>(pDiagramDrawing));
+			}
+			else
+			{
+				//parse pDiagramData !!
 			}
 		}
 

@@ -2171,8 +2171,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)

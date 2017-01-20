@@ -991,10 +991,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Layout.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Layout.h"
 				>
 			</File>

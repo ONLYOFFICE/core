@@ -171,7 +171,7 @@ namespace OOX
         }
 		CDiagramData(const CPath& uri)
 		{
-			read(CPath(), uri);
+			read(uri.GetDirectory(), uri);
 		}
 		CDiagramData(const CPath& oRootPath, const CPath& oPath)
         {

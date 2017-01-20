@@ -62,7 +62,8 @@ namespace OOX
 			//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
 			//Tогда не будет проблем с добавление новый id, мы всегда будем генерировать их с префиксом rId
 			std::wstring sFindString(_T("rId"));
-			int nFindStringLength = sFindString.length();
+			int nFindStringLength = (int)sFindString.length();
+			
 			if(0 == rid.find(sFindString) && rid.length() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
 			{
 				std::wstring strParam = rid.substr(nFindStringLength);

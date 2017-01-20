@@ -2864,10 +2864,8 @@ void DocxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 
 		oox_current_child_document = diag_drawing;
 
-		for (unsigned int i=0; i < diag_drawing->m_arrShapeTree.size(); i++)
-		{
-			OoxConverter::convert(diag_drawing->m_arrShapeTree[i]);
-		}
+		OoxConverter::convert(diag_drawing->m_oShapeTree.GetPointer());
+
 		oox_current_child_document = NULL;
 	}
 }

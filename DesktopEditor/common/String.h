@@ -309,7 +309,7 @@ namespace NSStringExt
 			}
 			else
 			{
-				unLen = wsUnicodeText.size();
+				unLen = (unsigned int)wsUnicodeText.size();
 				for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
 				{
 					pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);

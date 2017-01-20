@@ -33,16 +33,23 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../OdfFormat/odf_conversion_context.h"
 
 #include "../OdfFormat/odf_text_context.h"
 #include "../OdfFormat/odf_drawing_context.h"
 
+using namespace cpdoccore;
+
 namespace Oox2Odf
 {
-
-void OoxConverter::convert(OOX::Diagram::CShapeTree *oox_shape_tree)
+	double Emu2Pt(int emu)
+	{
+		return (1.0 * emu / (635 * 20.0));
+	}
+void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 {
 	if (oox_shape_tree == NULL) return;
 	
@@ -51,70 +58,63 @@ void OoxConverter::convert(OOX::Diagram::CShapeTree *oox_shape_tree)
 	cpdoccore::_CP_OPT(double) x, y , ch_x , ch_y ;
 	odf_context()->drawing_context()->set_group_position(x, y, ch_x, ch_y);
 
-	for (long i=0 ;i < oox_shape_tree->m_arrItems.size(); i++)
+	for (long i=0 ;i < oox_shape_tree->SpTreeElems.size(); i++)
 	{
-		convert(oox_shape_tree->m_arrItems[i]);
+		convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
 	}
 	odf_context()->drawing_context()->end_group();
 }
 
-void OoxConverter::convert(OOX::Diagram::CShape *oox_shape)
+void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
 
-	if (!oox_shape->m_oSpPr.IsInit()) return;
-
 	odf_context()->drawing_context()->start_drawing();
 	
-		int type = -1;
+		int type = 1000;
 
-		if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
+		PPTX::Logic::PrstGeom* prstGeom = &oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+
+		if ( prstGeom )
 		{
-			OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
-			type =(geometry->m_oPrst.GetValue());
+			SimpleTypes::CShapeType<> preset;
+			preset.FromString(prstGeom->prst.get());
+			type = preset.GetValue();
 		}
-	
-		if (type < 0 && oox_shape->m_oSpPr->m_oCustGeom.IsInit())
+
+		if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) type = 2000;
+
+		if (type == 2000 && oox_shape->txBody->bodyPr.fromWordArt.get_value_or(false))
 		{
-			type = 1000;//6??? - poligon, path нужно пересчитывать
-		}
-		//if (oox_shape->m_oNvSpPr.IsInit() && oox_shape->m_oNvSpPr->m_oCNvSpPr.IsInit() && ?????
-		//											oox_shape->m_oNvSpPr->m_oCNvSpPr->m_otxBox.GetValue() == 1) type = 2000; //textBox
+			int wordart_type = convert(oox_shape->txBody->bodyPr.prstTxWarp.GetPointer());
 
-		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit()) type = 2000;
-
-		if (type == 2000 && oox_shape->m_oTxBody->m_oBodyPr.IsInit() && oox_shape->m_oTxBody->m_oBodyPr->m_oFromWordArt.ToBool())
-		{
-			int wordart_type = convert(oox_shape->m_oTxBody->m_oBodyPr->m_oPrstTxWrap.GetPointer());
-
-			if (wordart_type >0)type = wordart_type;
+			if (wordart_type > 0) type = wordart_type;
 		}
 
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////
 		odf_context()->drawing_context()->start_shape(type);
 		
-		convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
+		convert(&oox_shape->spPr, oox_shape->style.GetPointer());
 	//имя, описалово, номер ...	
-		//if (oox_shape->m_oNvSpPr.IsInit())
-		//	convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	
+		convert(&oox_shape->nvSpPr.cNvSpPr);	
 
-		if ( oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBody->m_arrItems.size() >0)
+		if ( oox_shape->txBody.IsInit() && oox_shape->txBody->Paragrs.size() >0)
 		{
 			odf_context()->start_text_context();	
 				
-			for (long i=0 ; i < oox_shape->m_oTxBody->m_arrItems.size();i++)
+			for (long i=0 ; i < oox_shape->txBody->Paragrs.size();i++)
 			{
-				convert(oox_shape->m_oTxBody->m_arrItems[i]);
+				convert(&oox_shape->txBody->Paragrs[i]);
 			}
 			odf_context()->drawing_context()->set_text( odf_context()->text_context());
 			
-			//наложим внешние настройки для текста
-			convert(oox_shape->m_oTxBody->m_oBodyPr.GetPointer());			
+		//наложим внешние настройки для текста
+			convert(&oox_shape->txBody->bodyPr);			
 			
-			if (oox_shape->m_oShapeStyle.IsInit() && oox_shape->m_oShapeStyle->m_oFontRef.getType() == OOX::et_a_fontRef)
+			if (oox_shape->style.IsInit())
 			{
-				convert(&oox_shape->m_oShapeStyle->m_oFontRef);
+				convert(&oox_shape->style->fontRef);
 			}	
 
 
@@ -124,5 +124,94 @@ void OoxConverter::convert(OOX::Diagram::CShape *oox_shape)
 	odf_context()->drawing_context()->end_shape();
 	
 	odf_context()->drawing_context()->end_drawing();
+}
+void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style)
+{
+	if (oox_spPr == NULL) return;
+
+	bool use_fill_from_style = false;
+	bool use_line_from_style = false;
+
+	if (oox_spPr->xfrm.IsInit())	//CTransform2D
+	{
+		_CP_OPT(double) x, y, width, height;
+
+		if (oox_spPr->xfrm->offX.IsInit())	x = Emu2Pt(*oox_spPr->xfrm->offX);
+		if (oox_spPr->xfrm->offY.IsInit())	y = Emu2Pt(*oox_spPr->xfrm->offY);
+		
+		odf_context()->drawing_context()->set_position( x, y);
+		
+		if (oox_spPr->xfrm->extX.IsInit())	width	= Emu2Pt(*oox_spPr->xfrm->extX);
+		if (oox_spPr->xfrm->extY.IsInit())	height	= Emu2Pt(*oox_spPr->xfrm->extY);
+		
+		odf_context()->drawing_context()->set_size(	width, height);					
+		
+		if (oox_spPr->xfrm->flipH.get_value_or(false))
+			odf_context()->drawing_context()->set_flip_H(true);
+		if (oox_spPr->xfrm->flipV.get_value_or(false))
+			odf_context()->drawing_context()->set_flip_V(true);
+		
+		if (oox_spPr->xfrm->rot.get_value_or(0) > 0)
+			odf_context()->drawing_context()->set_rotate(360. - oox_spPr->xfrm->rot.get_value_or(0)/60000.);
+	}
+	PPTX::Logic::PrstGeom* prstGeom = &oox_spPr->Geometry.as<PPTX::Logic::PrstGeom>();
+	PPTX::Logic::CustGeom* custGeom = &oox_spPr->Geometry.as<PPTX::Logic::CustGeom>();
+
+	convert(prstGeom);
+	convert(custGeom);
+
+	odf_context()->drawing_context()->start_area_properties();
+	{
+		PPTX::Logic::NoFill*	noFill		= &oox_spPr->Fill.as<PPTX::Logic::NoFill>();
+		PPTX::Logic::BlipFill*	blipFill	= &oox_spPr->Fill.as<PPTX::Logic::BlipFill>();
+		PPTX::Logic::GradFill*	gradFill	= &oox_spPr->Fill.as<PPTX::Logic::GradFill>();
+		PPTX::Logic::SolidFill*	solidFill	= &oox_spPr->Fill.as<PPTX::Logic::SolidFill>();
+		PPTX::Logic::PattFill*	pattFill	= &oox_spPr->Fill.as<PPTX::Logic::PattFill>();
+		
+		if		(solidFill)	convert(solidFill);
+		else if (blipFill)	convert(blipFill);
+		else if (gradFill)	convert(gradFill);
+		else if (pattFill)	convert(pattFill);			
+		else if (noFill)	odf_context()->drawing_context()->set_no_fill();
+		else				use_fill_from_style = true;
+
+		if ( use_fill_from_style && oox_sp_style )
+		{
+			convert(&oox_sp_style->fillRef);
+		}
+	}
+	odf_context()->drawing_context()->end_area_properties();
+
+	odf_context()->drawing_context()->start_line_properties();
+	{
+		if (oox_spPr->ln.IsInit())
+		{
+			convert(oox_spPr->ln.GetPointer());	//CLineProperties
+		}
+		else if (oox_sp_style)
+		{
+			convert(&oox_sp_style->lnRef);
+		}
+	}
+	odf_context()->drawing_context()->end_line_properties();
+//-----------------------------------------------------------------------------------------------------------------------------
+	PPTX::Logic::EffectLst*	effectLst = &oox_spPr->EffectList.as<PPTX::Logic::EffectLst>();
+	
+	if		(effectLst)		convert(effectLst);
+	else if (oox_sp_style)	convert(&oox_sp_style->effectRef);
+
+	//nullable<OOX::Drawing::CEffectContainer>          EffectDag;
+
+	//nullable<OOX::Drawing::COfficeArtExtensionList>   ExtLst;
+	//nullable<OOX::Drawing::CScene3D>                  Scene3D;
+	//nullable<OOX::Drawing::CShape3D>                  Sp3D;	
+//-----------------------------------------------------------------------------------------------------------------------------
+}
+int OoxConverter::convert(PPTX::Logic::PrstTxWarp *oox_text_preset)
+{
+	if (oox_text_preset == NULL) return -1;
+	if (oox_text_preset->prst.GetBYTECode() ==  SimpleTypes::textshapetypeTextNoShape) return 2000;
+
+	return 2001 + oox_text_preset->prst.GetBYTECode();
 }
 }

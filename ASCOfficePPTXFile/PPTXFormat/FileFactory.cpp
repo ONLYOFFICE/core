@@ -56,6 +56,7 @@
 
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
@@ -129,8 +130,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Video(filename));
 		else if (relation.Type() == OOX::FileTypes::Data) 
 			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
-		else if (relation.Type() == OOX::FileTypes::DiagDrawing)	 // нужен только filepath	
-			return smart_ptr<OOX::File>(new OOX::Image(filename)); // нужен только filepath
+		else if (relation.Type() == OOX::FileTypes::DiagDrawing)	
+			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(filename)); 
 		else if (relation.Type() == OOX::FileTypes::OleObject)
 			return smart_ptr<OOX::File>(new OOX::OleObject(filename));
 
@@ -159,7 +160,6 @@ namespace PPTX
 		std::wstring strT = relation.Type();
 
 		if (strT == OOX::FileTypes::Image ||
-			strT == OOX::FileTypes::DiagDrawing ||
 			strT == OOX::FileTypes::Chart)
 		{
 			return smart_ptr<OOX::File>(new OOX::Image(filename));
@@ -167,6 +167,9 @@ namespace PPTX
 		else if(strT == OOX::FileTypes::Data)
 			return smart_ptr<OOX::File>(new OOX::CDiagramData(relation.Target()));
 
+		else if(strT == OOX::FileTypes::DiagDrawing)
+			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(relation.Target()));
+			
 		else if(strT == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));
 		

@@ -312,11 +312,11 @@ namespace PPTX
 															int nFind1 = sFormatDataString.find(_T("base64"));
 															if (nFind1 >=0 ) bBase64 = true;
 															
-															nFind1 = sFormatDataString.find(_T("image/"));
+															nFind1 = (int)sFormatDataString.find(_T("image/"));
 															if (nFind1>=0)
 															{
 																int nFind2 = sFormatDataString.find(_T(";"));
-																if (nFind2 < 0) nFind2  = sFormatDataString.length();
+																if (nFind2 < 0) nFind2  = (int)sFormatDataString.length();
 														
 																sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
 															}

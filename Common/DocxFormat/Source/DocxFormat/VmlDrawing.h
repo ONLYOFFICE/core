@@ -95,7 +95,7 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
-                                std::wstring elementContent;
+				std::wstring elementContent;
 				bool bReadyElement = false;//собираем все до нахождения собственно элемента
 
 				if ( !oReader.IsEmptyNode() )
@@ -103,12 +103,12 @@ namespace OOX
 					int nStylesDepth = oReader.GetDepth();
 					while ( oReader.ReadNextSiblingNode( nStylesDepth ) )//
 					{
-                                                std::wstring NodeContent = oReader.GetOuterXml();
+						std::wstring NodeContent = oReader.GetOuterXml();
 
-                                                std::wstring strXml = L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
- xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">";
-                                                            strXml += NodeContent;
-                                                            strXml += L"</xml>";
+						std::wstring strXml = L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+							xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:oa=\"urn:schemas-microsoft-com:office:activation\">";
+						strXml += NodeContent;
+						strXml += L"</xml>";
 								
 						XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml и сами объекты 
 						
@@ -212,7 +212,7 @@ namespace OOX
 							m_arrItems.push_back( pItem );
 
 							OOX::Vml::CVmlCommonElements* common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pItem);
-                                                        std::wstring sSpid;
+							std::wstring sSpid;
 							
 							if (common)
 							{
@@ -230,13 +230,12 @@ namespace OOX
 							}
 							if (bReadyElement)
 							{		
-                                                                if (!sSpid.empty())
+								if (!sSpid.empty())
 								{
-                                                                    m_mapShapes.insert(std::pair<std::wstring,int>(sSpid, m_arrItems.size()-1));
-								
-                                                                    m_mapShapesXml.insert(std::pair<std::wstring,std::wstring>(sSpid, elementContent));
+									m_mapShapes.insert(std::make_pair(sSpid, m_arrItems.size()-1));
+									m_mapShapesXml.insert(std::make_pair(sSpid, elementContent));
 								}
-                                                                elementContent.clear();
+								elementContent.clear();
 								bReadyElement = false;
 							}
 						}						
@@ -307,10 +306,10 @@ namespace OOX
 			if((NULL != m_mapComments && m_mapComments->size() > 0) || m_aXml.size() > 0)
 			{
 				XmlUtils::CStringWriter sXml;
-                                sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
+				sXml.WriteString(L"<xml xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout><v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\" path=\"m,l,21600r21600,l21600,xe\"><v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
 				for (size_t i = 0; i < m_aXml.size(); ++i)
 				{
-                                    sXml.WriteString(m_aXml[i]);
+					sXml.WriteString(m_aXml[i]);
 				}
 				long nIndex = m_lObjectIdVML;
 				if(NULL != m_mapComments && m_mapComments->size() > 0)
@@ -321,70 +320,71 @@ namespace OOX
                                                 std::wstring sStyle;
 						if(comment->m_dLeftMM.IsInit())
 						{
-                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
-                                                    sStyle += L"margin-left:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
+							sStyle += L"margin-left:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dTopMM.IsInit())
 						{
-                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
-                                                    sStyle += L"margin-top:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
+							sStyle += L"margin-top:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dWidthMM.IsInit())
 						{
-                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
-                                                    sStyle += L"width:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
+							sStyle += L"width:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
 						if(comment->m_dHeightMM.IsInit())
 						{
-                                                    SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
-                                                    sStyle += L"height:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
+							SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
+							sStyle += L"height:" + OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oPoint.ToPoints()) + L"pt;";
 						}
-                                                std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
+						std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
 
 						if(comment->m_bMove.IsInit() && true == comment->m_bMove.get())
-                                                    sClientData += L"<x:MoveWithCells/>";
+							sClientData += L"<x:MoveWithCells/>";
 
 						if(comment->m_bSize.IsInit() && true == comment->m_bSize.get())
-                                                    sClientData += L"<x:SizeWithCells/>";
+							sClientData += L"<x:SizeWithCells/>";
 
-                                                if( comment->m_nLeft.IsInit()   && comment->m_nLeftOffset.IsInit()  &&
-                                                    comment->m_nTop.IsInit()    && comment->m_nTopOffset.IsInit()   &&
-                                                    comment->m_nRight.IsInit()  && comment->m_nRightOffset.IsInit() &&
-                                                    comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
+						if( comment->m_nLeft.IsInit()   && comment->m_nLeftOffset.IsInit()  &&
+							comment->m_nTop.IsInit()    && comment->m_nTopOffset.IsInit()   &&
+							comment->m_nRight.IsInit()  && comment->m_nRightOffset.IsInit() &&
+							comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
 						{
-                                                    sClientData += L"<x:Anchor>";
-                                                    sClientData += std::to_wstring(comment->m_nLeft.get())          + L",";
-                                                    sClientData += std::to_wstring(comment->m_nLeftOffset.get())    + L",";
-                                                    sClientData += std::to_wstring(comment->m_nTop.get())           + L",";
-                                                    sClientData += std::to_wstring(comment->m_nTopOffset.get())     + L",";
-                                                    sClientData += std::to_wstring(comment->m_nRight.get())         + L",";
-                                                    sClientData += std::to_wstring(comment->m_nRightOffset.get())   + L",";
-                                                    sClientData += std::to_wstring(comment->m_nBottom.get())        + L",";
-                                                    sClientData += std::to_wstring(comment->m_nBottomOffset.get())  + L",";
-                                                    sClientData += L"</x:Anchor>";
+							sClientData += L"<x:Anchor>";
+							sClientData += std::to_wstring(comment->m_nLeft.get())          + L",";
+							sClientData += std::to_wstring(comment->m_nLeftOffset.get())    + L",";
+							sClientData += std::to_wstring(comment->m_nTop.get())           + L",";
+							sClientData += std::to_wstring(comment->m_nTopOffset.get())     + L",";
+							sClientData += std::to_wstring(comment->m_nRight.get())         + L",";
+							sClientData += std::to_wstring(comment->m_nRightOffset.get())   + L",";
+							sClientData += std::to_wstring(comment->m_nBottom.get())        + L",";
+							sClientData += std::to_wstring(comment->m_nBottomOffset.get())  + L",";
+							sClientData += L"</x:Anchor>";
 						}
-                                                sClientData += L"<x:AutoFill>False</x:AutoFill>";
+						sClientData += L"<x:AutoFill>False</x:AutoFill>";
 
 						if(comment->m_nRow.IsInit())
-                                                    sClientData += L"<x:Row>" + std::to_wstring(comment->m_nRow.get()) + L"</x:Row>";
+								sClientData += L"<x:Row>" + std::to_wstring(comment->m_nRow.get()) + L"</x:Row>";
 
 						if(comment->m_nCol.IsInit())
-                                                    sClientData += L"<x:Column>" + std::to_wstring(comment->m_nCol.get()) + L"</x:Column>";
+							sClientData += L"<x:Column>" + std::to_wstring(comment->m_nCol.get()) + L"</x:Column>";
 
-                                                sClientData += L"</x:ClientData>";
+						sClientData += L"</x:ClientData>";
 
-                                                std::wstring sGfxdata;
+						std::wstring sGfxdata;
 						if(comment->m_sGfxdata.IsInit())
-                                                    sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
+							sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
 
-                                                std::wstring sShape;
-                                                sShape += L"<v:shape id=\"_x0000_s" + std::to_wstring(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
-                                                sShape += sStyle;
-                                                sShape += L"z-index:4;visibility:hidden' ";
-                                                sShape += sGfxdata;
-                                                sShape += L" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>";
-                                                sShape += sClientData;
-                                                sShape += L"</v:shape>";
+						std::wstring sShape;
+						sShape += L"<v:shape id=\"_x0000_s" + std::to_wstring(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
+						sShape += sStyle;
+						sShape += L"z-index:4;visibility:hidden' ";
+						sShape += sGfxdata;
+						sShape += L" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>";
+						sShape += sClientData;
+						sShape += L"</v:shape>";
+						
 						sXml.WriteString(sShape);
 					}
 				}
@@ -426,6 +426,9 @@ namespace OOX
         std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
         std::map<std::wstring, int>                                 m_mapShapes;    //связь id (_x0000_s1025) с номером объекта  для комментов
         std::map<std::wstring, std::wstring>                        m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
+
+		std::map<std::wstring, bool>								m_mapUsesShapes;//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
+																	// в vml есть обычный шейп - картинка
         std::vector<std::wstring>                                   m_aXml;
         long                                                        m_lObjectIdVML;
 	};

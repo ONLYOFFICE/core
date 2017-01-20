@@ -2668,7 +2668,8 @@ namespace BinXlsxRW {
                         std::map<std::wstring, std::wstring>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
 						if (pFind != pVmlDrawing->m_mapShapesXml.end())
 						{
-							//ищем shape как обьект, чтобы обработать ClientData
+							pVmlDrawing->m_mapUsesShapes.insert(std::make_pair(sShapeId, true));
+							//ищем shape как обьект, чтобы обработать ClientData -todooo - переписасть на map !
 							for(size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
 							{
 								OOX::WritingElement* pElem = pVmlDrawing->m_arrItems[i];
@@ -2722,6 +2723,76 @@ namespace BinXlsxRW {
 										}
 										break;
 									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (NULL != pVmlDrawing)
+			{
+				std::map<std::wstring, std::wstring>::iterator it = pVmlDrawing->m_mapShapesXml.begin();
+				for (; it != pVmlDrawing->m_mapShapesXml.end(); it++)
+				{
+					std::wstring sShapeId = it->first;
+                    std::map<std::wstring, bool>::iterator pFind = pVmlDrawing->m_mapUsesShapes.find(sShapeId);
+					
+					if (pFind == pVmlDrawing->m_mapUsesShapes.end())
+					{
+						//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
+						for(size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+						{
+							OOX::WritingElement* pElem = pVmlDrawing->m_arrItems[i];
+							if(OOX::et_v_shape == pElem->getType())
+							{
+								OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+								if((pShape->m_sSpId.IsInit() && sShapeId == pShape->m_sSpId.get()) ||
+								   (pShape->m_sId.IsInit() && sShapeId == pShape->m_sId.get()))
+								{
+									for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+									{
+										OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+										if(OOX::et_v_ClientData == pElemShape->getType())
+										{
+											//преобразуем ClientData в CellAnchor
+											OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+											std::vector<int> m_aAnchor;
+											pClientData->getAnchorArray(m_aAnchor);
+											if(8 == m_aAnchor.size())
+											{
+												SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+												eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+												OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+												oCellAnchor.m_sSpId.Init();
+												oCellAnchor.m_sSpId->append(sShapeId);
+												oCellAnchor.m_oFrom.Init();
+												oCellAnchor.m_oFrom->m_oCol.Init();
+												oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+												oCellAnchor.m_oFrom->m_oColOff.Init();
+												oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+												oCellAnchor.m_oFrom->m_oRow.Init();
+												oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+												oCellAnchor.m_oFrom->m_oRowOff.Init();
+												oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+												oCellAnchor.m_oTo.Init();
+												oCellAnchor.m_oTo->m_oCol.Init();
+												oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+												oCellAnchor.m_oTo->m_oColOff.Init();
+												oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+												oCellAnchor.m_oTo->m_oRow.Init();
+												oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+												oCellAnchor.m_oTo->m_oRowOff.Init();
+												oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+
+												nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+												WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, NULL);
+												m_oBcw.WriteItemEnd(nCurPos);
+											}
+											break;
+										}
+									}
+									break;
 								}
 							}
 						}

@@ -2635,7 +2635,6 @@ namespace BinXlsxRW {
                     //m_oBufferedStream.Seek(nCurPos + oTransport.m_nLength);
 					if(NULL != m_pCurDrawing)
 					{
-
                         m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), m_pOfficeDrawingConverter->GetDocumentChartsCount());
                         m_pCurVmlDrawing->m_lObjectIdVML = m_pOfficeDrawingConverter->GetObjectIdVML();
 

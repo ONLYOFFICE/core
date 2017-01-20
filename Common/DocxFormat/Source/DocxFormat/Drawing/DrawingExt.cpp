@@ -31,6 +31,7 @@
  */
 #include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
+#include "../../XlsxFormat/Table/Table.h"
 #include "../Diagram/DiagramData.h"
 
 namespace OOX
@@ -43,6 +44,7 @@ namespace OOX
 
             if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
                                       *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" || 
+									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}" || 
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -60,6 +62,10 @@ namespace OOX
 					else if (sName == L"dataModelExt")
 					{
 						m_oDataModelExt = oReader;
+					}
+					else if (sName == _T("table"))
+					{
+						m_oAltTextTable = oReader;
 					}
 				}
 			}
@@ -98,6 +104,12 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				m_oSparklineGroups->toXML(writer);
                 sResult += writer.GetData().c_str();
+			}
+			if(m_oAltTextTable.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oAltTextTable->toXML(writer);
+				sResult += writer.GetData().c_str();
 			}
 
             sResult += _T("</");

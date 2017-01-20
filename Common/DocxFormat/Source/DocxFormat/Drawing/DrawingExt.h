@@ -41,6 +41,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CSparklineGroups;
+		class CAltTextTable;
 	}
 	namespace Drawing
 	{
@@ -194,6 +195,7 @@ namespace OOX
 			nullable<CCompatExt>							m_oCompatExt;
 			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
 			nullable<CDataModelExt>							m_oDataModelExt;
+			nullable<OOX::Spreadsheet::CAltTextTable>	m_oAltTextTable;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)

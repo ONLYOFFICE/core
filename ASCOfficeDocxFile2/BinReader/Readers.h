@@ -1760,6 +1760,14 @@ public:
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
             pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>";
 		}
+		else if( c_oSerProp_tblPrType::tblCaption == type )
+		{
+			pWiterTblPr->Caption = m_oBufferedStream.GetString3(length);
+		}
+		else if( c_oSerProp_tblPrType::tblDescription == type )
+		{
+			pWiterTblPr->Description = m_oBufferedStream.GetString3(length);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;

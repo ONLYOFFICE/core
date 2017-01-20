@@ -1846,6 +1846,16 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 					}
 				}
+				if(tblPr.m_oTblCaption.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::tblCaption);
+					m_oBcw.m_oStream.WriteStringW(tblPr.m_oTblCaption->ToString2());
+				}
+				if(tblPr.m_oTblDescription.IsInit())
+				{
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::tblDescription);
+					m_oBcw.m_oStream.WriteStringW(tblPr.m_oTblDescription->ToString2());
+				}
 			}
 			void WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 			{

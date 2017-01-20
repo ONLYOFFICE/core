@@ -385,6 +385,7 @@ namespace Spreadsheet
 		et_TableColumns,
 		et_TableColumn,
 		et_TableStyleInfo,
+		et_AltTextTable,
 		et_SortState,
 		et_SortCondition,
 		et_Autofilter,

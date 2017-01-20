@@ -145,6 +145,33 @@ namespace BinXlsxRW {
 				WriteTableStyleInfo(oTable.m_oTableStyleInfo.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oTable.m_oExtLst.IsInit())
+			{
+				for(size_t i = 0; i < oTable.m_oExtLst->m_arrExt.size(); ++i)
+				{
+					OOX::Drawing::COfficeArtExtension* pExt = oTable.m_oExtLst->m_arrExt[i];
+					if(pExt->m_oAltTextTable.IsInit())
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AltTextTable);
+						WriteAltTextTable(pExt->m_oAltTextTable.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+				}
+			}
+		}
+		void WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable)
+		{
+			int nCurPos = 0;
+			if(oAltTextTable.m_oAltText.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltText);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltText.get());
+			}
+			if(oAltTextTable.m_oAltTextSummary.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltTextSummary);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltTextSummary.get());
+			}
 		}
 		void WriteAutoFilter(const OOX::Spreadsheet::CAutofilter& oAutofilter)
 		{

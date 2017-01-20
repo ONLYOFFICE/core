@@ -192,6 +192,37 @@ namespace BinXlsxRW {
 				pTable->m_oTableStyleInfo.Init();
 				res = Read2(length, &BinaryTableReader::ReadTableStyleInfo, this, pTable->m_oTableStyleInfo.GetPointer());
 			}
+			else if(c_oSer_TablePart::AltTextTable == type)
+			{
+				OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+				pOfficeArtExtension->m_oAltTextTable.Init();
+
+				res = Read1(length, &BinaryTableReader::ReadAltTextTable, this, pOfficeArtExtension->m_oAltTextTable.GetPointer());
+
+				pOfficeArtExtension->m_sUri.Init();
+				pOfficeArtExtension->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
+				pOfficeArtExtension->m_sAdditionalNamespace = _T(" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"");
+				pTable->m_oExtLst.Init();
+				pTable->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		}
+		int ReadAltTextTable(BYTE type, long length, void* poResult)
+		{
+			int res = c_oSerConstants::ReadOk;
+			OOX::Spreadsheet::CAltTextTable* pAltTextTable = static_cast<OOX::Spreadsheet::CAltTextTable*>(poResult);
+			if(c_oSer_AltTextTable::AltText == type)
+			{
+				pAltTextTable->m_oAltText.Init();
+				pAltTextTable->m_oAltText->append(m_oBufferedStream.GetString3(length));
+			}
+			else if(c_oSer_AltTextTable::AltTextSummary == type)
+			{
+				pAltTextTable->m_oAltTextSummary.Init();
+				pAltTextTable->m_oAltTextSummary->append(m_oBufferedStream.GetString3(length));
+			}
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;

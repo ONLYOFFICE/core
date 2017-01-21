@@ -100,7 +100,7 @@ namespace Strings
         green	= 16 * ToDigit(color[2]) + ToDigit(color[3]);
         blue	= 16 * ToDigit(color[4]) + ToDigit(color[5]);
 
-        return RGB(red, green, blue);
+        return ((int)(((BYTE)(red)|((WORD)((BYTE)(green))<<8))|(((DWORD)(BYTE)(blue))<<16))); //RGB(red, green, blue);
     }
     static void ToColor(const std::wstring& strValue, int& nR, int& nG, int& nB, int& nA)
 	{
@@ -132,9 +132,11 @@ namespace Strings
     static double ToDouble(const std::wstring& strValue)
 	{
 		double d = 0;
-
+#if defined (_WIN32) || defined(_WIN64)
+        _stscanf_s(strValue.c_str(), L" %lf", &d);
+#else
         _stscanf(strValue.c_str(), L" %lf", &d);
-
+#endif
 		return d;
 	}
 	
@@ -163,28 +165,36 @@ namespace Strings
 class Convert
 {
 public:	
-    static  std::wstring ToString(int i)
+    static std::wstring ToString(int i)
 	{
-        std::wstring result = std::to_wstring( i);
-		return result;
+		return std::to_wstring( i );
 	}
     static  std::wstring ToStringHex( int i, int nLen )
 	{
         std::wstring result = XmlUtils::IntToString(i, L"%X");
 
-        for( int i = result.length(); i < nLen; i++ )
+        for(int i = (int)result.length(); i < nLen; i++ )
             result.insert( result.begin() , '0' );
 		return result;
 	}
      static  int ToInt32(std::wstring str, int base = 10)
 	 {
 		 int nResult;
+#if defined(_WIN32) || defined(_WIN64)
 		 if(16 == base)
-             _stscanf(str.c_str(), L"%x", &nResult);
+             _stscanf_s(str.c_str(), L"%X", &nResult);
+		 else if(8 == base)
+             _stscanf_s(str.c_str(), L"%o", &nResult);
+		 else 
+             _stscanf_s(str.c_str(), L"%d", &nResult);
+#else
+		 if(16 == base)
+             _stscanf(str.c_str(), L"%X", &nResult);
 		 else if(8 == base)
              _stscanf(str.c_str(), L"%o", &nResult);
 		 else 
-             _stscanf(str.c_str(), L"%d", &nResult);
+             _stscanf(str.c_str(), L"%d", &nResult);		 
+#endif
 		 return nResult;
 	 }
 };
@@ -438,7 +448,7 @@ public:
         {
 #if defined(_WIN32) || defined(_WIN64)
             std::string sAnsiText(sText.begin(), sText.end());
-            int nLenth = sAnsiText.length();
+            size_t nLenth = sAnsiText.length();
             BYTE* BufferString = (BYTE*)sAnsiText.c_str() ;
 #else
             std::string sAnsiText(sText.begin(),sText.end());
@@ -448,15 +458,15 @@ public:
             int nStart = 0;
             int nFindRes = -1;
             std::wstring sFindString = L"{\\*filename ";
-            int nFindStringLen = sFindString.length();
+            size_t nFindStringLen = sFindString.length();
             std::wstring sFindEnd = L"\\*end}";
-            int nFindEndLen = sFindEnd.length();
-            while( -1 != (nFindRes = sText.find( sFindString, nStart )) )
+            int nFindEndLen = (int)sFindEnd.length();
+            while( -1 != (nFindRes = (int)sText.find( sFindString, nStart )) )
             {
                 oFileWriter.Write( BufferString + nStart, nFindRes - nStart );
 
                 int nRightBound = 0;
-                nRightBound = sText.find( sFindEnd, nStart + nFindStringLen );
+                nRightBound = (int)sText.find( sFindEnd, nStart + nFindStringLen );
 
                 std::wstring sTargetFilename = sText.substr( nFindRes + nFindStringLen, nRightBound - nFindRes - nFindStringLen );
 
@@ -501,13 +511,13 @@ public:
     static float String2Percent( std::wstring sValue )
 	{
 		int nPosition;
-        if( (nPosition = sValue.find( L"f" )) != -1 )
+        if( (nPosition = (int)sValue.find( L"f" )) != -1 )
 		{
             sValue = sValue.substr(0, nPosition );
 			int dResult = Strings::ToInteger( sValue );
 			return (float)(1.0 * dResult / 65536);
 		}
-        else if( (nPosition = sValue.find( L"%" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"%" )) != -1 )
 		{
             sValue = sValue.substr(0, nPosition );
 			return (float)Strings::ToDouble( sValue ) / 100;
@@ -518,37 +528,37 @@ public:
     static int String2Twips( std::wstring sValue )
 	{
 		int nPosition;
-        if( (nPosition = sValue.find( L"pt" )) != -1 )
+        if( (nPosition = (int)sValue.find( L"pt" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pt2Twip( dResult );
 		}
-        else if( (nPosition = sValue.find( L"in" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"in" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return in2Twip(dResult);
 		}
-        else if( (nPosition = sValue.find( L"cm" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"cm" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return cm2Twip(dResult);
 		}
-        else if( (nPosition = sValue.find( L"mm" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"mm" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return mm2Twip(dResult);
 		}
-        else if( (nPosition = sValue.find( L"pc" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"pc" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
 			return pc2Twip(dResult);
 		}
-        else if( (nPosition = sValue.find( L"pi" )) != -1 )
+        else if( (nPosition = (int)sValue.find( L"pi" )) != -1 )
 		{
             sValue = sValue.substr(0,  nPosition );
 			float dResult = (float)Strings::ToDouble( sValue );
@@ -619,7 +629,7 @@ public:
         if (file.CreateFile(sFilename) != S_OK) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
-        int nLengthText = sData.length();
+        int nLengthText = (int)sData.length();
 		int nLengthData = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nLengthData];
 		BYTE nByte=0;
@@ -637,7 +647,7 @@ public:
     static void WriteDataToBinary( std::wstring sData, BYTE** ppData, long& nSize)
 	{
         wchar_t * buf  = (wchar_t *)sData.c_str();
-        int nLengthText = sData.length();
+        int nLengthText = (int)sData.length();
 		nSize = nLengthText/2;
 		BYTE * buf2 = new BYTE[ nSize];
 		(*ppData) = buf2;
@@ -652,9 +662,9 @@ public:
     static std::wstring DecodeHex( std::wstring sText )
 	{
         std::wstring sHexText;
-        for( int i = 0; i < sText.length(); i++ )
+        for( size_t i = 0; i < sText.length(); i++ )
 		{
-            BYTE byteChar = sText[i];
+            BYTE byteChar = (BYTE)sText[i];
             sHexText += XmlUtils::IntToString(byteChar, L"%x");
 		}
 		return sHexText;
@@ -662,7 +672,7 @@ public:
     static std::wstring EncodeHex( std::wstring sHexText )
 	{
         std::wstring sText;
-        for( int i = 0; i < sHexText.length() -1 ; i+=2 )
+        for( size_t i = 0; i < sHexText.length() -1 ; i+=2 )
 		{
 			int byte1 = ToByte( sHexText[i] );
 			int byte2 = ToByte(sHexText[i + 1] );
@@ -691,7 +701,7 @@ public:
 		//sResult.Trim();
 
 		//удаляем дублирующие пробелы
-        boost::algorithm::replace_all(sResult, L"  ", L" ");
+        XmlUtils::replace_all(sResult, L"  ", L" ");
 //		while( sResult.Replace( L"  ", L" " ) > 0 )
 //			;
 		return sResult;
@@ -702,7 +712,7 @@ public:
     {
 #if defined (_WIN32) || defined(_WIN64)
         CHARSETINFO Info;
-        DWORD* dwAcp = (DWORD*)nCharset;
+        DWORD* dwAcp = (DWORD*)&nCharset;
         if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCHARSET) )
             return Info.ciACP;
 #endif
@@ -820,7 +830,7 @@ public:
             insize = WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, NULL, 0, NULL, NULL);
 
 			out.reserve(insize);
-			if (WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, outptr, insize, NULL, NULL) > 0)
+			if (WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, outptr, (int)insize, NULL, NULL) > 0)
 			{
 				out.resize(insize);
 				ansi = false;
@@ -855,7 +865,7 @@ public:
     {
 #if defined (_WIN32) || defined(_WIN64)
         CHARSETINFO Info;
-        DWORD* dwAcp = (DWORD*)nCodepage;
+        DWORD* dwAcp = (DWORD*)&nCodepage;
         if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCODEPAGE) )
             return Info.ciCharset;
 #endif

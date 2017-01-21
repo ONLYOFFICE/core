@@ -1237,7 +1237,7 @@ namespace SimpleTypes
 				return m_dValue;
 			}
 
-            int nLen = sValue.length();
+            int nLen = (int)sValue.length();
             wchar_t wsLastChar = sValue[nLen - 1 ];
 			if ( wsLastChar == '%' )
 			{

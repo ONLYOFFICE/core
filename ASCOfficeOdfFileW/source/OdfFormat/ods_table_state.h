@@ -36,7 +36,8 @@
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+
+#include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
 
@@ -119,8 +120,8 @@ namespace utils {
 		std::wstring a = a_;
 
 		std::reverse(a.begin(), a.end());
-		::boost::algorithm::replace_all(a, L"$", L"");
-		//::boost::algorithm::replace_all(a, L"'", L"");
+		XmlUtils::replace_all( a, L"$", L"");
+		//XmlUtils::replace_all( a, L"'", L"");
 		::boost::algorithm::to_upper(a);
 		
 

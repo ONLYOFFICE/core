@@ -58,7 +58,7 @@ namespace OOX
 
             CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
-				boost::algorithm::replace_all(m_oTarget.m_strFilename, L" ", L"_");
+				XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
 
             CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
@@ -91,7 +91,7 @@ namespace OOX
 				oAttr.Write( _T("Type"),       m_sType );
                 std::wstring sTarget = m_oTarget.m_strFilename;
 
-                boost::algorithm::replace_all(sTarget, _T("\\"), _T("/"));
+                XmlUtils::replace_all(sTarget, _T("\\"), _T("/"));
 				sTarget = XmlUtils::EncodeXmlString(sTarget);
 				oAttr.Write( _T("Target"), sTarget);
 				if(m_sMode.IsInit())

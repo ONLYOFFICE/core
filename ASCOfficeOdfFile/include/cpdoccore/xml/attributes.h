@@ -66,7 +66,7 @@ namespace cpdoccore
             typedef typename T::value_type T_value_type;
 
 			Val.reset();
-			for (int i = 0 ; i < Heap.size(); i++)
+			for (size_t i = 0 ; i < Heap.size(); i++)
 			{
 				if (Heap[i].name_ == Name )
 				{

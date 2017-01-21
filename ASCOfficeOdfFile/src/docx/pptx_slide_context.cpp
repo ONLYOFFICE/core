@@ -334,7 +334,7 @@ std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href,bool ob
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
-	boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+	XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
 	_hlink_desc desc={hId, href_correct, object};
 	impl_->object_description_.hlinks_.push_back(desc);

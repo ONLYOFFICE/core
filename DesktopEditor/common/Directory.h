@@ -413,10 +413,10 @@ namespace NSDirectory
 	}
 	static std::wstring GetFolderPath(const std::wstring& wsFolderPath)
 	{
-		int n1 = wsFolderPath.rfind('\\');
+		int n1 = (int)wsFolderPath.rfind('\\');
 		if (n1 < 0)
 		{
-			n1 = wsFolderPath.rfind('/');
+			n1 = (int)wsFolderPath.rfind('/');
 			if (n1 < 0)
 			{
 				return L"";

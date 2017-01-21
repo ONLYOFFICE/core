@@ -323,7 +323,7 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
-    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+    XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 	
 	return hyperlinks_.add(href_correct, type, draw);
 }

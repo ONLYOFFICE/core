@@ -656,7 +656,7 @@ namespace SimpleTypes
             if ( 20 > sValue.length() )
 			{
 				m_sValue = sValue;
-                for ( int nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
+                for ( size_t nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
 				{
 					m_sValue += _T("0");
 				}

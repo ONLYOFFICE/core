@@ -38,7 +38,11 @@ namespace OOX
 {
 	namespace Drawing
 	{
-        void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		COfficeArtExtension::~COfficeArtExtension()
+		{
+			m_oSparklineGroups.reset();
+		}
+		void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 

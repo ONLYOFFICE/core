@@ -234,7 +234,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					if( !sTarget.empty() )
 					{
 						//заменяем пробелы на %20
-                        boost::algorithm::replace_all(sTarget, L" ", L"%20" );
+                        XmlUtils::replace_all(sTarget, L" ", L"%20" );
 
                         std::wstring sFileUrl = L"file:///";
 

@@ -38,6 +38,8 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
+#include "../XML/Utils.h"
+
 #include <boost/algorithm/string.hpp>
 
 namespace OOX
@@ -108,8 +110,8 @@ namespace OOX
 			return;
 
 		//todooo оптимизировать 
-		boost::algorithm::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
-		boost::algorithm::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
+		XmlUtils::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
+		XmlUtils::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
 
 		const wchar_t*  pData   = m_strFilename.c_str();
         int             nLen    = (int) m_strFilename.length();

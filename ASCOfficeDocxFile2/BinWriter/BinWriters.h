@@ -778,7 +778,7 @@ namespace BinDocxRW
 				{
                     std::wstring sTextOutline = rPr.m_sTextOutline.get2();
 					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-                    boost::algorithm::replace_all(sTextOutline, L"w14:", L"");
+                    XmlUtils::replace_all(sTextOutline, L"w14:", L"");
 
                     m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -790,7 +790,7 @@ namespace BinDocxRW
 				{
                     std::wstring sTextFill = rPr.m_sTextFill.get2();
 					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-                    boost::algorithm::replace_all(sTextFill, L"w14:", L"");
+                    XmlUtils::replace_all(sTextFill, L"w14:", L"");
 
                     m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextFill);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);

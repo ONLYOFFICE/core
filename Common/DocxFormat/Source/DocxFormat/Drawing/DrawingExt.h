@@ -157,18 +157,16 @@ namespace OOX
 			COfficeArtExtension()
 			{
 			}
-			virtual ~COfficeArtExtension()
-			{
-			}
+			virtual ~COfficeArtExtension();
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
                 oNode.ReadAttributeBase( _T("uri"), m_sUri );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-            virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring toXML() const;
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
 			virtual EElementType getType() const
 			{
@@ -195,7 +193,7 @@ namespace OOX
 			nullable<CCompatExt>							m_oCompatExt;
 			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
 			nullable<CDataModelExt>							m_oDataModelExt;
-			nullable<OOX::Spreadsheet::CAltTextTable>	m_oAltTextTable;
+			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)

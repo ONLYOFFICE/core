@@ -33,9 +33,6 @@
 #ifndef OOX_VMLDRAWING_FILE_INCLUDE_H_
 #define OOX_VMLDRAWING_FILE_INCLUDE_H_
 
-//#include ".CommonInclude.h"
-//#include "../SharedStrings/Si.h"
-
 #include "IFileContainer.h"
 #include "Logic/Vml.h"
 
@@ -51,6 +48,15 @@ namespace OOX
 	class CVmlDrawing : public OOX::WritingElementWithChilds<OOX::WritingElement>, public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
+		struct _vml_shape
+		{
+			_vml_shape() : bUsed(false), pElement(NULL), nId(0) {}
+			
+			int						nId;		// for comments
+			std::wstring			sXml;		// for pptx 
+			OOX::WritingElement*	pElement;	// for docx/xlsx
+			bool					bUsed;		// for single drawing
+		};
 		CVmlDrawing(bool bSpreadsheet_ = false)
 		{
 			bSpreadsheet	= bSpreadsheet_;
@@ -232,8 +238,13 @@ namespace OOX
 							{		
 								if (!sSpid.empty())
 								{
-									m_mapShapes.insert(std::make_pair(sSpid, m_arrItems.size()-1));
-									m_mapShapesXml.insert(std::make_pair(sSpid, elementContent));
+									_vml_shape element;
+									
+									element.nId			= m_arrItems.size()-1;
+									element.sXml		= elementContent;
+									element.pElement	= pItem;
+
+									m_mapShapes.insert(std::make_pair(sSpid, element));
 								}
 								elementContent.clear();
 								bReadyElement = false;
@@ -242,14 +253,6 @@ namespace OOX
 					}
 				}
 			}		
-		}
-		void replace_all(std::wstring& subject, const std::wstring search, const std::wstring replace)
-		{
-			size_t pos = 0;
-			while ((pos = subject.find(search, pos)) != std::string::npos) {
-				 subject.replace(pos, search.length(), replace);
-				 pos += replace.length();
-			}
 		}
 		virtual void read(const CPath& oRootPath, const CPath& oPath)
 		{
@@ -280,7 +283,7 @@ namespace OOX
 			{
 				// элементы вида <br> без </br>
 				// test_vml4.xlsx
-				replace_all(fileContent, _T("<br>"), _T(""));
+				XmlUtils::replace_all(fileContent, _T("<br>"), _T(""));
 
 
 				// элементы вида <![if ...]>, <![endif]>
@@ -421,15 +424,12 @@ namespace OOX
 		bool bSpreadsheet;
 
 	public:
-		CPath m_oReadPath;
-
+//reading
+		CPath														m_oReadPath;
+		std::map<std::wstring, _vml_shape>							m_mapShapes;
+//writing
         std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
-        std::map<std::wstring, int>                                 m_mapShapes;    //связь id (_x0000_s1025) с номером объекта  для комментов
-        std::map<std::wstring, std::wstring>                        m_mapShapesXml; //связь id (_x0000_s1025) с  xml для OfficeDrawing
-
-		std::map<std::wstring, bool>								m_mapUsesShapes;//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
-																	// в vml есть обычный шейп - картинка
-        std::vector<std::wstring>                                   m_aXml;
+        std::vector<std::wstring>                                   m_aXml;			
         long                                                        m_lObjectIdVML;
 	};
 } // namespace OOX

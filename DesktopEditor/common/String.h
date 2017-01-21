@@ -201,8 +201,8 @@ namespace NSStringExt
 					int nTrailing = pData[nCurPos]; nCurPos++;
 					if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
 					{
-						*pCur = (wchar_t)(((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
-						*pCur += 0x10000;
+						*pCur =		(wchar_t)(((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+						*pCur +=	(wchar_t) (0x10000);
 						pCur++;
 					}
 				}
@@ -346,7 +346,8 @@ namespace NSStringExt
 
 				unsigned short* pCur = pUtf16;
 				memset(pUtf16, 0x00, sizeof(unsigned short) * (2 * unTextLen + 1));
-				for (long lIndex = 0; lIndex < unTextLen; lIndex++)
+				
+				for (unsigned int lIndex = 0; lIndex < unTextLen; lIndex++)
 				{
 					unsigned int unUnicode = wsUnicodeText.at(lIndex);
 					if (unUnicode < 0x10000)
@@ -394,8 +395,8 @@ namespace NSStringExt
 	}
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, const std::wstring wsDelim, std::vector<std::wstring> &arrElements)
 	{
-		int nDelimLen = (int)wsDelim.length();
-		int nPrevPos = 0;
+		unsigned int nDelimLen	= wsDelim.length();
+		unsigned int nPrevPos	= 0;
 
 		if (nDelimLen > 0)
 		{

@@ -1084,8 +1084,8 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 	{
 		formulasconvert::oox2odf_converter converter;
 		std::wstring out = converter.convert_ref(ref);
-		boost::algorithm::replace_all(out,L"[",L"");
-		boost::algorithm::replace_all(out,L"]",L"");
+		XmlUtils::replace_all( out,L"[",L"");
+		XmlUtils::replace_all( out,L"]",L"");
 		cond_format->calcext_target_range_address_ = out;
 		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
 	}

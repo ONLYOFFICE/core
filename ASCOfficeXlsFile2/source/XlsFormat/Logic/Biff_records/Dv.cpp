@@ -143,12 +143,12 @@ int Dv::serialize(std::wostream & stream)
 
 			if (!sFormula1.empty())
 			{
-				//boost::algorithm::replace_all(sFormula1 , "\0", L",");
+				//XmlUtils::replace_all( sFormula1 , "\0", L",");
 				CP_XML_NODE(L"formula1") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula1);}
 			}
 			if (!sFormula2.empty())
 			{
-				//boost::algorithm::replace_all(sFormula2 , "\0", L",");
+				//XmlUtils::replace_all( sFormula2 , "\0", L",");
 				CP_XML_NODE(L"formula2") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula2);}
 			}
 		}

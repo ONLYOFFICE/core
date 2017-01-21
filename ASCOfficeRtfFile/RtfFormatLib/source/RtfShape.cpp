@@ -630,7 +630,7 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 	
     if( !sOle.empty() && !sResult.empty())
 	{
-        boost::algorithm::replace_all(sResult, L"</w:pict>", sOle + L"</w:pict>" );//todooo переписать
+        XmlUtils::replace_all(sResult, L"</w:pict>", sOle + L"</w:pict>" );//todooo переписать
 	}
 	
 	return sResult;

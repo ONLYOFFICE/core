@@ -64,9 +64,9 @@ private:
             pModeCreate = L"wb";
         }
         if(NULL == m_pFile && bOpen)
-            m_pFile = _wfopen(strFileName.c_str(), pModeOpen);
+            _wfopen_s(&m_pFile, strFileName.c_str(), pModeOpen);
         if(NULL == m_pFile && bCreate)
-            m_pFile = _wfopen(strFileName.c_str(), pModeCreate);
+            _wfopen_s(&m_pFile, strFileName.c_str(), pModeCreate);
 #else
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;

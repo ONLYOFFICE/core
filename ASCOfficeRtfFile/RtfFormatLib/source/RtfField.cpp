@@ -199,10 +199,10 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			}
 	
 		//оставляем только одну ссылку
-            boost::algorithm::replace_all(sHyperlink, L"\"", L"" );
+            XmlUtils::replace_all(sHyperlink, L"\"", L"" );
             boost::algorithm::trim(sHyperlink);
 		//заменяем пробелы на %20
-            boost::algorithm::replace_all(sHyperlink, L" ", L"%20" );
+            XmlUtils::replace_all(sHyperlink, L" ", L"%20" );
 
 		//добавляем в rels
 			OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );

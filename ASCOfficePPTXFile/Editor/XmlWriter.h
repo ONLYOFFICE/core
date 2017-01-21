@@ -149,11 +149,11 @@ namespace NSBinPptxRW
             // можно ускорить (см. как сделано в шейпах)
 			std::wstring strValue = _strValue;
 
-			boost::algorithm::replace_all(strValue, L"&",	L"&amp;");
-            boost::algorithm::replace_all(strValue, L"'",	L"&apos;");
-            boost::algorithm::replace_all(strValue, L"<",	L"&lt;");
-            boost::algorithm::replace_all(strValue, L">",	L"&gt;");
-            boost::algorithm::replace_all(strValue, L"\"",	L"&quot;");
+			XmlUtils::replace_all(strValue, L"&",	L"&amp;");
+            XmlUtils::replace_all(strValue, L"'",	L"&apos;");
+            XmlUtils::replace_all(strValue, L"<",	L"&lt;");
+            XmlUtils::replace_all(strValue, L">",	L"&gt;");
+            XmlUtils::replace_all(strValue, L"\"",	L"&quot;");
             
 			WriteString(strValue);
         }
@@ -318,11 +318,11 @@ namespace NSBinPptxRW
         AVSINLINE void WriteStringXML(std::wstring strValue)
         {
             std::wstring s = strValue;
-            boost::algorithm::replace_all( s, L"&",	L"&amp;");
-            boost::algorithm::replace_all( s, L"'",	L"&apos;");
-            boost::algorithm::replace_all( s, L"<",	L"&lt;");
-            boost::algorithm::replace_all( s, L">",	L"&gt;");
-            boost::algorithm::replace_all( s, L"\"",	L"&quot;");
+            XmlUtils::replace_all( s, L"&",	L"&amp;");
+            XmlUtils::replace_all( s, L"'",	L"&apos;");
+            XmlUtils::replace_all( s, L"<",	L"&lt;");
+            XmlUtils::replace_all( s, L">",	L"&gt;");
+            XmlUtils::replace_all( s, L"\"",	L"&quot;");
             m_oWriter.WriteString(s);
         }
         AVSINLINE void WriteDouble(const double& val)
@@ -696,7 +696,7 @@ namespace NSBinPptxRW
             // ужасная функция. вызывать ее не надо. не для этого класс писался. .. получше .. но все равно не надо !!!
 
 			std::wstring sCur = m_oWriter.GetData();
-			boost::algorithm::replace_all(sCur, str1, str2);
+			XmlUtils::replace_all(sCur, str1, str2);
 
 			ClearNoAttack();
             WriteString(sCur);

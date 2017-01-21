@@ -263,7 +263,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 		// normalize path ???? todooo
-		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+		XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 //---------------------------------------------------------------------------------------------------------------------

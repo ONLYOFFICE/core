@@ -3428,7 +3428,7 @@ namespace BinXlsxRW {
                     if (0 == sImage.find(_T("file:///")))
 					{
 						sImageSrc = sImage;
-                        boost::algorithm::replace_all( sImageSrc, L"file:///", L"");
+                        XmlUtils::replace_all( sImageSrc, L"file:///", L"");
 					}
 					else
 					{

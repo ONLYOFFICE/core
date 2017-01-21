@@ -294,10 +294,10 @@ namespace NSShapeImageGen
 
 				std::wstring strFile1 = strFile;
 				
-				boost::algorithm::replace_all(strFile1, L"\\",		L"/");
-				boost::algorithm::replace_all(strFile1, L"http:/",	L"http://");
-				boost::algorithm::replace_all(strFile1, L"https:/",	L"https://");
-				boost::algorithm::replace_all(strFile1, L"ftp:/",	L"ftp://");
+				XmlUtils::replace_all(strFile1, L"\\",		L"/");
+				XmlUtils::replace_all(strFile1, L"http:/",	L"http://");
+				XmlUtils::replace_all(strFile1, L"https:/",	L"https://");
+				XmlUtils::replace_all(strFile1, L"ftp:/",	L"ftp://");
 
 
 				CImageInfo oInfo;

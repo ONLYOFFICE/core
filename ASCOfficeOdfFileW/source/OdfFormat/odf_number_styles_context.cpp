@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <boost/algorithm/string.hpp>
+#include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "logging.h"
 
@@ -596,7 +596,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			if(sz>1) 
 			{
 				//выкинем "лишние" слэши
-				boost::algorithm::replace_all(s, L"\\", L"");
+				XmlUtils::replace_all( s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
@@ -672,7 +672,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 			if(sz>1) 
 			{
 				//выкинем "лишние" слэши
-				boost::algorithm::replace_all(s, L"\\", L"");
+				XmlUtils::replace_all( s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());

@@ -101,7 +101,7 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 
 	if (!xlsx_table_name.empty())
 	{
-		boost::algorithm::replace_all(xlsx_table_name, L"'", L"");
+		XmlUtils::replace_all( xlsx_table_name, L"'", L"");
 		xlsx_data_ranges_map_.insert(std::pair<std::wstring, int> (xlsx_table_name, xlsx_data_ranges_.size() - 1));
 	}
 

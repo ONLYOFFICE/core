@@ -46,7 +46,7 @@ using namespace NSCommon;
 
 namespace XmlUtils
 {
-    static std::wstring strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
+    static std::wstring strInvalidValue = L"x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc";
 
 	// common
     AVSINLINE static int     GetDigit   (wchar_t c)
@@ -66,11 +66,11 @@ namespace XmlUtils
 			return true;
 		return false;
 	}
-    AVSINLINE static __int64 GetHex     (const std::wstring& string)
+    AVSINLINE static __int64 GetHex (const std::wstring& string)
 	{
 		__int64 nResult = 0;
-        int nLen = string.length();
-		for ( int nIndex = 0; nIndex < nLen; ++nIndex )
+        size_t nLen = string.length();
+		for (size_t nIndex = 0; nIndex < nLen; ++nIndex )
 		{
 			nResult += GetDigit( string[nIndex] ) << ( 4 * ( nLen - 1 - nIndex ) );
 		}
@@ -86,13 +86,11 @@ namespace XmlUtils
 
         std::wstring color = string; boost::algorithm::trim(color);
 				
-        if (color.find(_T("0x"))!=-1)
-            color.erase(0,2);
-        if (color.find(_T("#"))!=-1)
-            color.erase(0,1);
+        if (color.find(L"0x") != -1)    color.erase(0, 2);
+        if (color.find(L"#") != -1)     color.erase(0, 1);
 
         while (color.length() < 6)
-			color = _T("0") + color;
+			color = L"0" + color;
 
 		red		= 16*GetDigit(color[0]) + GetDigit(color[1]);
 		green	= 16*GetDigit(color[2]) + GetDigit(color[3]);
@@ -104,16 +102,34 @@ namespace XmlUtils
     {
         std::wstring sResult;
 
-        for( int nIndex = 0; nIndex < string.length(); nIndex++)
+        for( size_t nIndex = 0; nIndex < string.length(); nIndex++)
             sResult += wchar_t( towlower(string[nIndex]) );
 
         return sResult;
     }
-    AVSINLINE static std::wstring GetUpper(const std::wstring& string)
+	AVSINLINE static void replace_all(std::wstring& subject, const std::wstring& search, const std::wstring& replace)
+	{
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::wstring::npos) 
+		{
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
+	AVSINLINE static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
+	{
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::string::npos) 
+		{
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
+	AVSINLINE static std::wstring GetUpper(const std::wstring& string)
     {
         std::wstring sResult;
 
-        for( int nIndex = 0; nIndex < string.length(); nIndex++)
+        for( size_t nIndex = 0; nIndex < string.length(); nIndex++)
             sResult += wchar_t( towupper(string[nIndex]) );
 
         return sResult;
@@ -123,13 +139,13 @@ namespace XmlUtils
 	{
         std::wstring s = XmlUtils::GetLower(string);
 
-		return (s == _T("true"));
+		return (s == L"true");
 	}
     AVSINLINE static bool    GetBoolean2(const std::wstring& string)
 	{
         std::wstring sTemp = XmlUtils::GetLower(string);
 
-		return ( _T("true") == sTemp || _T("1") == sTemp || _T("t") == sTemp || _T("on") == sTemp );
+		return ( L"true" == sTemp || L"1" == sTemp || L"t" == sTemp || L"on" == sTemp );
 	}
     AVSINLINE static int     GetInteger (const std::wstring& string)
 	{
@@ -177,7 +193,11 @@ namespace XmlUtils
         if (string.empty()) return 0;
 
         double d = 0;
-        _stscanf(string.c_str(), _T("%lf"), &d);
+#if defined (_WIN32) || defined (_WIN64)
+		swscanf_s(string.c_str(), L"%lf", &d);
+#else
+		_stscanf(string.c_str(), L"%lf", &d);
+#endif
 		return d;
 	}
     AVSINLINE static float   GetFloat   (const std::wstring& string)
@@ -185,33 +205,32 @@ namespace XmlUtils
         if (string.empty()) return 0;
 
         float f = 0;
-        _stscanf(string.c_str(), _T("%f"), &f);
+#if defined (_WIN32) || defined (_WIN64)
+		swscanf_s(string.c_str(), L"%f", &f);
+#else
+        _stscanf(string.c_str(), L"%f", &f);
+#endif
 		return f;
 	}
     AVSINLINE static std::wstring BoolToString  (const bool  & value)
 	{
-        std::wstring sResult = ( value ? _T("true") : _T("false") );
-		return sResult;
+		return ( value ? L"true" : L"false" );
 	}
     AVSINLINE static std::wstring IntToString   (const int   & value)
 	{
-        std::wstring str = std::to_wstring( value);
-		return str;
+		return std::to_wstring( value);
 	}
     AVSINLINE static std::wstring UIntToString  (const size_t   & value)
 	{
-        std::wstring str = std::to_wstring( value);
-		return str;
+		return std::to_wstring( (unsigned long)value);
 	}
     AVSINLINE static std::wstring FloatToString (const float & value)
 	{
-        std::wstring str = std::to_wstring(value);
-		return str;
+		return std::to_wstring( value);
 	}
     AVSINLINE static std::wstring DoubleToString(const double& value)
 	{
-        std::wstring str = std::to_wstring(value);
-		return str;
+		return std::to_wstring( value);
 	}
     AVSINLINE static std::wstring IntToString( int value, const wchar_t* format )
     {
@@ -241,6 +260,63 @@ namespace XmlUtils
 		}
 
 		return result;		  
+	}
+    AVSINLINE static std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode = false)
+	{
+        std::string buffer;
+        buffer.reserve(data.size());
+
+        if(bDeleteNoUnicode)
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append("&amp;");      break;
+                    case '\"': buffer.append("&quot;");     break;
+                    case '\'': buffer.append("&apos;");     break;
+                    case '<':  buffer.append("&lt;");       break;
+                    case '>':  buffer.append("&gt;");       break;
+                    default:
+                    {
+                        if ( false == IsUnicodeSymbol( data[pos] ) )
+                        {
+                            wchar_t symbol1 = data[pos];
+                            if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+                            {
+                                pos++;
+                                wchar_t symbol2 = data[pos];
+                                if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+                                {
+                                    buffer.append(&data[pos-1], 2);
+                                }
+                            }
+                        }
+                        else
+                            buffer.append(&data[pos], 1);
+                    }break;
+                }
+            }
+        }
+        else
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append("&amp;");      break;
+                    case '\"': buffer.append("&quot;");     break;
+                    case '\'': buffer.append("&apos;");     break;
+                    case '<':  buffer.append("&lt;");       break;
+                    case '>':  buffer.append("&gt;");       break;
+                    case '\0':
+                        return buffer;
+                    default:   buffer.append(&data[pos], 1);	break;
+                }
+            }
+        }
+
+        return buffer;
 	}
     AVSINLINE static std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode = false)
 	{

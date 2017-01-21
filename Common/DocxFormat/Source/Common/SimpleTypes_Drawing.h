@@ -1063,8 +1063,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -1956,8 +1956,8 @@ namespace SimpleTypes
         virtual double FromString(std::wstring &sValue)
         {
             //todo странно что если пришло значение от 0 до 1, то m_dValue от 0 до 1. В других случаях от 0 до 100
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos )
@@ -2120,8 +2120,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -4999,8 +4999,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -5446,8 +5446,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)

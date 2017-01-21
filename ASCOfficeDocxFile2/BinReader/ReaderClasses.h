@@ -1704,7 +1704,7 @@ public:
 		{
             std::wstring sText = pComment->Text;
 
-            boost::algorithm::replace_all(sText, L"\r", L"");
+            XmlUtils::replace_all(sText, L"\r", L"");
 
             bool bFirst = true;
 			int nPrevIndex = 0;

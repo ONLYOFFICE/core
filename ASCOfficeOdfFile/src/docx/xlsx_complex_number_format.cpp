@@ -56,8 +56,8 @@ public:
     {
         std::wstring c = condition;
         boost::algorithm::to_lower(c);
-        boost::algorithm::replace_all(c, L" ", L"");
-        boost::algorithm::replace_all(c, L"\t", L"");
+        XmlUtils::replace_all( c, L" ", L"");
+        XmlUtils::replace_all( c, L"\t", L"");
 
         if (L"" == c)
         {

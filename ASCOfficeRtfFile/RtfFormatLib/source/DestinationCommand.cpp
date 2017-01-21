@@ -1795,8 +1795,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		
 		for (int i = 2 ; i < splitted.size(); i++)
 		{
-			boost::algorithm::replace_all(splitted[i], L")", L"");
-			boost::algorithm::replace_all(splitted[i], L"(", L"");
+			XmlUtils::replace_all(splitted[i], L")", L"");
+			XmlUtils::replace_all(splitted[i], L"(", L"");
 			int pos = splitted[i].find(L",");
 
             int x = 0, y = 0;
@@ -1822,8 +1822,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		
 		for (int i = 2 ; i < splitted.size(); i++)
 		{
-			boost::algorithm::replace_all(splitted[i], L")", L"");
-			boost::algorithm::replace_all(splitted[i], L"(", L"");
+			XmlUtils::replace_all(splitted[i], L")", L"");
+			XmlUtils::replace_all(splitted[i], L"(", L"");
 			int pos = splitted[i].find(L",");
 
             int x = 0, y = 0;

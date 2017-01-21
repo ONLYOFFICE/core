@@ -526,16 +526,18 @@ namespace PPTX
 			}
 		}
 
-		const std::wstring GetVmlXmlBySpid(const std::wstring& spid)const
+		std::wstring GetVmlXmlBySpid(const std::wstring& spid)
 		{
-            std::wstring xml;
-			if((Vml.is_init()) && (spid != _T("")))
+			if(Vml.is_init() && !spid.empty())
 			{
-				std::map<std::wstring, std::wstring>::const_iterator pPair = Vml->m_mapShapesXml.find(spid);
-				if (Vml->m_mapShapesXml.end() != pPair)
-					xml = pPair->second;
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+				if (Vml->m_mapShapes.end() != pPair)
+				{
+					pPair->second.bUsed = true;
+					return pPair->second.sXml;
+				}
 			}
-			return xml;
+			return L"";
 		}
 	};
 } // namespace PPTX

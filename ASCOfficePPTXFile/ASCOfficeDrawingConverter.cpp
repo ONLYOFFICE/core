@@ -1851,7 +1851,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						if (pPair != oCSSParser.m_mapSettings.end())
 						{
 							sFont = pPair->second;
-							boost::algorithm::replace_all(sFont, L"\"", L"");
+							XmlUtils::replace_all(sFont, L"\"", L"");
 						}
                         pPair = oCSSParser.m_mapSettings.find(L"font-size");
 						if (pPair != oCSSParser.m_mapSettings.end())
@@ -4524,7 +4524,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 								{
                                     if (attNames[r] == L"color" && attValues[r].length() == 7)
 									{
-                                        boost::algorithm::replace_all(attValues[r], L"#", L"");
+                                        XmlUtils::replace_all(attValues[r], L"#", L"");
 
                                         PPTX::Logic::SolidFill	*fill	= new PPTX::Logic::SolidFill();
 										PPTX::Logic::SrgbClr	*color	= new PPTX::Logic::SrgbClr();

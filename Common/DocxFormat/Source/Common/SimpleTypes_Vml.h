@@ -2809,7 +2809,7 @@ namespace SimpleTypes
 					return 0;
 
 					std::wstring strX = sValue.substr( 0, nPos );
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
@@ -2820,8 +2820,8 @@ namespace SimpleTypes
 					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1)  ;
 					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 );
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strZ, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strZ, L"@", L"");
 
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
                     m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
@@ -2891,7 +2891,7 @@ namespace SimpleTypes
 					return 0;
 
 					std::wstring strX = sValue.substr( 0, nPos );
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
@@ -2902,8 +2902,8 @@ namespace SimpleTypes
 					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1);
 					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 ) ;
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strZ, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strZ, L"@", L"");
 
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
                     m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
@@ -2967,7 +2967,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					//only x coord
-					boost::algorithm::replace_all(sValue, L"@", L"");
+					XmlUtils::replace_all(sValue, L"@", L"");
                     m_nX = sValue.empty() ? 0 : _wtoi(sValue.c_str() );
 				}
 				else
@@ -2975,8 +2975,8 @@ namespace SimpleTypes
 					std::wstring strX = sValue.substr( 0, nPos );
 					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -3118,8 +3118,8 @@ namespace SimpleTypes
 					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos );
 					   std::wstring strY = sValue.substr( nStartPos, nMidPos - nStartPos );
 
-						boost::algorithm::replace_all(strX, L"@", L"");
-						boost::algorithm::replace_all(strY, L"@", L"");
+						XmlUtils::replace_all(strX, L"@", L"");
+						XmlUtils::replace_all(strY, L"@", L"");
 
                        int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                        int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -4563,7 +4563,7 @@ namespace SimpleTypes
 				double dValue = 0.0;
 				std::wstring sId;
 
-                boost::algorithm::replace_all( sValue, _T(" "), _T("") );
+                XmlUtils::replace_all( sValue, _T(" "), _T("") );
 
 				int nLen = sValue.length();
 				if ( nLen > 0 )
@@ -4743,8 +4743,8 @@ namespace SimpleTypes
 					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos ) ;
 					   std::wstring strY = sValue.substr( nMidPos + 1, nEndPos - nMidPos - 1 );
 
-						boost::algorithm::replace_all(strX, L"@", L"");
-						boost::algorithm::replace_all(strY, L"@", L"");
+						XmlUtils::replace_all(strX, L"@", L"");
+						XmlUtils::replace_all(strY, L"@", L"");
 
                        int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                        int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -5212,7 +5212,7 @@ namespace SimpleTypes
 				std::vector<std::wstring> arSplit;
 
 				// Разделителями могут быть запятые и пробелы
-				boost::algorithm::replace_all(sValue, L"@", L"");
+				XmlUtils::replace_all(sValue, L"@", L"");
 				boost::algorithm::split(arSplit, sValue, boost::algorithm::is_any_of(L", "), boost::algorithm::token_compress_on);
 
 				if (arSplit.size() > 0)

@@ -66,12 +66,12 @@ namespace PPTX
 						sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
 				}
 
-                boost::algorithm::replace_all(sLink, L"\\",     L"/");
-                boost::algorithm::replace_all(sLink, L"//",     L"/");
-                boost::algorithm::replace_all(sLink, L"http:/", L"http://");
-                boost::algorithm::replace_all(sLink, L"https:/",L"https://");
-                boost::algorithm::replace_all(sLink, L"ftp:/",  L"ftp://");
-                boost::algorithm::replace_all(sLink, L"file:/", L"file://");
+                XmlUtils::replace_all(sLink, L"\\",     L"/");
+                XmlUtils::replace_all(sLink, L"//",     L"/");
+                XmlUtils::replace_all(sLink, L"http:/", L"http://");
+                XmlUtils::replace_all(sLink, L"https:/",L"https://");
+                XmlUtils::replace_all(sLink, L"ftp:/",  L"ftp://");
+                XmlUtils::replace_all(sLink, L"file:/", L"file://");
 
 				return sLink;
 			}

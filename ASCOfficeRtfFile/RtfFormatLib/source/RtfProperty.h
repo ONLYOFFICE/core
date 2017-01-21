@@ -1402,7 +1402,7 @@ public:
 		{
 			int nLevelTextLength = sResult[0];
 			nLevelTextLength--;
-            for( int i = m_sNumber.length() - 1; i >= 0; i-- )
+            for( int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
 			{
 				int nReplaceNumber = m_sNumber[i];
 				nReplaceNumber--;

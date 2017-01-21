@@ -402,7 +402,7 @@ std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href,bool 
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
-    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+    XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
 	_hlink_desc desc = {hId, href_correct, object}; //корректность написания ссылки важна для ms office и не важна для open office ->
 	//todooo 

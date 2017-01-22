@@ -676,9 +676,14 @@ namespace NSFile
 		}
 		bool CreateTempFile()
 		{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 			if (0 != tmpfile_s(&m_pFile))
 				return false;
-
+#else
+			m_pFile = tmpfile();
+			if (NULL == m_pFile)
+				return false;
+#endif		
 			m_lFilePosition = 0;
 			return true;
 		}

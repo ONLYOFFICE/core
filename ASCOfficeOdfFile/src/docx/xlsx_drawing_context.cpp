@@ -29,8 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <cpdoccore/xml/utils.h>
 
@@ -44,6 +45,8 @@
 #include "../formulasconvert/formulasconvert.h"
 
 #include "drawing_object_description.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace oox {

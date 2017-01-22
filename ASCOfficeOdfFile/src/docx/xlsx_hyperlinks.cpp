@@ -31,7 +31,6 @@
  */
 
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/simple_xml_writer.h>
@@ -85,11 +84,12 @@ public:
 		r.display = display;
 		r.id = std::wstring(L"hId") + boost::lexical_cast<std::wstring>(records_.size()+1);
 
-        if (boost::algorithm::starts_with(target, "#"))//ссыль на страницу или метку в текущем документе
+		int pos_target = target.find(L"#");
+        if (pos_target == 0)//ссыль на страницу или метку в текущем документе
         {
 			//адресация всегда на ячейку ...
 			int pos =target.find(L".");
-			if (pos <0)
+			if (pos < 0)
 			{
 				target = target + std::wstring(L".A1");
 			}

@@ -39,8 +39,6 @@
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
-#include <boost/algorithm/string.hpp>
-
 namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen		= L"<";

@@ -30,11 +30,18 @@
  *
  */
 #pragma once
+
+#include <boost/algorithm/string.hpp>
+
 #include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "../../Metric.h"
 #include "../../Attributes.h"
-#define _USE_MATH_DEFINES
+
+#ifndef _USE_MATH_DEFINES
+	#define _USE_MATH_DEFINES
+#endif
+
 #include <math.h>//M_PI
 #include <vector>
 

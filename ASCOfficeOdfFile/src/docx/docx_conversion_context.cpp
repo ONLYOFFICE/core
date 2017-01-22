@@ -52,7 +52,8 @@
 #include "oox_rels.h"
 #include "logging.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 static int current_id_changes = 0;
 
@@ -1290,14 +1291,14 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		if (state.type	== 1)
 		{
 
-			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
 		}
 		
 		if (state.type	== 2)
 		{
 			for (int i = 0 ; i < state.content.size(); i++)
 			{
-				output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+				output_stream() << L"<w:del" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
 
 				output_stream() << state.content[i];
 
@@ -1329,7 +1330,7 @@ void docx_conversion_context::start_changes()
 		std::wstring change_attr;
 		change_attr += L" w:date=\""	+ state.date	+ L"\"";
 		change_attr += L" w:author=\""	+ state.author	+ L"\"";
-		change_attr += L" w:id=\""		+ std::to_wstring(current_id_changes++) + L"\"";
+		change_attr += L" w:id=\""		+ boost::lexical_cast<std::wstring>(current_id_changes++) + L"\"";
 
 		if (state.type	== 1)
 		{

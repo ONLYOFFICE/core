@@ -77,12 +77,12 @@ namespace ComplexTypes
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += L"w:w=\"" + std::to_wstring(m_oW->ToTwips()) + L"\" ";
+					sResult += L"w:w=\"" + boost::lexical_cast<std::wstring>(m_oW->ToTwips()) + L"\" ";
 				}
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult += L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
+					sResult += L"w:space=\"" + boost::lexical_cast<std::wstring>(m_oSpace->ToTwips()) + L"\" ";
 				}
 
 				return sResult;
@@ -1260,7 +1260,7 @@ namespace OOX
 
 				if ( m_oSpace.IsInit() )
 				{
-					sResult +=L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
+					sResult +=L"w:space=\"" + boost::lexical_cast<std::wstring>(m_oSpace->ToTwips()) + L"\" ";
 				}
 
 				if ( m_oEqualWidth.IsInit() )

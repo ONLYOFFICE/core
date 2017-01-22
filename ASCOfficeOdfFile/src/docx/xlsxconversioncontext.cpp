@@ -138,7 +138,7 @@ void xlsx_conversion_context::end_document()
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
 		
-		const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
+		const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(i + 1);
 
         package::sheet_content_ptr content = package::sheet_content::create();
  ////////////////////////////////////////////////////////////////////////////////////////////       

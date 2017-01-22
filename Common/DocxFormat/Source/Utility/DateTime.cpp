@@ -75,13 +75,13 @@ const std::wstring  DateTime::ToString  (const std::wstring &sPattern) const
 {
     std::wstring sResult = sPattern, sTemp;
 
-    sTemp = XmlUtils::IntToString(m_nYear,  _T("%04d") ); boost::algorithm::replace_all(sResult, _T("%YYYY"), sTemp );
-    sTemp = XmlUtils::IntToString(m_nMonth, _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%MM"),   sTemp );
-    sTemp = XmlUtils::IntToString(m_nDay,   _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%DD"),   sTemp );
-    sTemp = XmlUtils::IntToString(m_nHour,  _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%hh"),   sTemp );
-    sTemp = XmlUtils::IntToString(m_nMinute, _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%mm"),   sTemp );
-    sTemp = XmlUtils::IntToString(m_nSecond, _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%ss"),   sTemp );
-    sTemp = XmlUtils::IntToString(m_nMillisecond, _T("%02d") ); boost::algorithm::replace_all(sResult, _T("%ms"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nYear,  _T("%04d") ); XmlUtils::replace_all(sResult, _T("%YYYY"), sTemp );
+    sTemp = XmlUtils::IntToString(m_nMonth, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%MM"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nDay,   _T("%02d") ); XmlUtils::replace_all(sResult, _T("%DD"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nHour,  _T("%02d") ); XmlUtils::replace_all(sResult, _T("%hh"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nMinute, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%mm"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nSecond, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%ss"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nMillisecond, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%ms"),   sTemp );
 
 	return sResult;
 }

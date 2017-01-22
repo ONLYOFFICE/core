@@ -36,7 +36,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>

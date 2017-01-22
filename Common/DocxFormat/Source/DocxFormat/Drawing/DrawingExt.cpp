@@ -41,6 +41,7 @@ namespace OOX
 		COfficeArtExtension::~COfficeArtExtension()
 		{
 			m_oSparklineGroups.reset();
+			m_oAltTextTable.reset();
 		}
 		void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{

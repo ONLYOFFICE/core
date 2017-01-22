@@ -33,6 +33,7 @@
 
 #include <boost/regex.hpp>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
 

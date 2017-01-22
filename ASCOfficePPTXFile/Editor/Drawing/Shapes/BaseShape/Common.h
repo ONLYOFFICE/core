@@ -31,11 +31,12 @@
  */
 #pragma once
 
-#include <algorithm>
 #include <vector>
 
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
+
+#include <boost/algorithm/string.hpp>
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;

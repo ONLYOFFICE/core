@@ -76,11 +76,6 @@ namespace NSStringUtils
 		}
 		return true;
 	}
-
-	static std::wstring ToString(LONG val)
-	{
-		return std::to_wstring(val);
-	}
 	
 	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 
 		std::vector<std::wstring>& pArrayResults, bool bIsCleared = true)

@@ -34,12 +34,13 @@
 #include "xlsx_utils.h"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 

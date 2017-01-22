@@ -38,7 +38,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/CPOptional.h>
 

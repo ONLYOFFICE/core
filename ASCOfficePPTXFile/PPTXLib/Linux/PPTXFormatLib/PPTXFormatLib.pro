@@ -105,7 +105,6 @@ SOURCES += \
     ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
-    ../../../Editor/Drawing/Layout.cpp \
     ../../../Editor/Drawing/TextAttributesEx.cpp \
     ../../../Editor/Drawing/Elements.cpp \
     ../../../../HtmlRenderer/src/ASCSVGWriter.cpp

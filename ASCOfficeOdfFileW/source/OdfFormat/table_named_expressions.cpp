@@ -88,13 +88,13 @@ void table_named_expressions::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, named_expression_)
+			for (int i = 0; i < named_expression_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				named_expression_[i]->serialize(CP_XML_STREAM());
 			}
-			BOOST_FOREACH(const office_element_ptr & elm, named_range_)
+			for (int i = 0; i < named_range_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				named_range_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

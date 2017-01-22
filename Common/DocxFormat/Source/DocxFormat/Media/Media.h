@@ -36,11 +36,6 @@
 #include "../File.h"
 #include "../FileTypes.h"
 
-#ifdef AVS_OFFICE_SVM_FILE
-#include "OfficeSvmFile.h"
-#include "SvmConverter.h"
-#endif
-
 
 namespace OOX
 {

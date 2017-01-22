@@ -40,8 +40,6 @@
 
 #include "../XML/Utils.h"
 
-#include <boost/algorithm/string.hpp>
-
 namespace OOX
 {
     CPath::CPath() : m_strFilename(L"") 
@@ -177,7 +175,7 @@ namespace OOX
 		std::wstring fileDirectory = GetDirectory(false);
 		std::wstring lowerFileName = m_strFilename;
 
-		boost::algorithm::to_lower(lowerFileName);
+		XmlUtils::GetLower(lowerFileName);
 
 		CArray<std::wstring> trueArray;
 
@@ -186,7 +184,7 @@ namespace OOX
 		for (int i = 0; i < trueArray.GetCount(); i++)
 		{
 			std::wstring lowerTest = trueArray[i];
-			boost::algorithm::to_lower(lowerTest);
+			XmlUtils::GetLower(lowerTest);
 
 			if (lowerTest == lowerFileName)
 			{

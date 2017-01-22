@@ -37,7 +37,6 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
 #include <cpdoccore/odf/odf_document.h>
@@ -55,6 +54,8 @@
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { 
 

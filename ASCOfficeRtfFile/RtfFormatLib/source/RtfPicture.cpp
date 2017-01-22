@@ -134,7 +134,7 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 	}
 
-    std::wstring sFilenameRels = L"Image" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_ImageIndex()) + L".";
+    std::wstring sFilenameRels = L"Image" + boost::lexical_cast<std::wstring>(poRtfDocument->m_oIdGenerator.Generate_ImageIndex()) + L".";
 	sFilenameRels += sExtension;
 	
     std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";

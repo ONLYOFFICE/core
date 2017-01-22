@@ -138,7 +138,7 @@ static std::wstring utf8_to_unicode(const char *src)
 		InputParams oInputParams;
 		oInputParams.m_sFileFrom	= new std::wstring(sArg1);
 		oInputParams.m_sFileTo		= new std::wstring(sArg2);
-		//oInputParams.m_sPassword	= new std::wstring(L"password");
+		oInputParams.m_sPassword	= new std::wstring(L"123");
 		
 		// get conversion direction from 3rd argument
 		if (argc > 3)

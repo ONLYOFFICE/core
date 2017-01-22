@@ -355,23 +355,23 @@ namespace OOX
 							comment->m_nBottom.IsInit() && comment->m_nBottomOffset.IsInit())
 						{
 							sClientData += L"<x:Anchor>";
-							sClientData += std::to_wstring(comment->m_nLeft.get())          + L",";
-							sClientData += std::to_wstring(comment->m_nLeftOffset.get())    + L",";
-							sClientData += std::to_wstring(comment->m_nTop.get())           + L",";
-							sClientData += std::to_wstring(comment->m_nTopOffset.get())     + L",";
-							sClientData += std::to_wstring(comment->m_nRight.get())         + L",";
-							sClientData += std::to_wstring(comment->m_nRightOffset.get())   + L",";
-							sClientData += std::to_wstring(comment->m_nBottom.get())        + L",";
-							sClientData += std::to_wstring(comment->m_nBottomOffset.get())  + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeft.get())          + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nLeftOffset.get())    + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nTop.get())           + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nTopOffset.get())     + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRight.get())         + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nRightOffset.get())   + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottom.get())        + L",";
+							sClientData += boost::lexical_cast<std::wstring>(comment->m_nBottomOffset.get())  + L",";
 							sClientData += L"</x:Anchor>";
 						}
 						sClientData += L"<x:AutoFill>False</x:AutoFill>";
 
 						if(comment->m_nRow.IsInit())
-								sClientData += L"<x:Row>" + std::to_wstring(comment->m_nRow.get()) + L"</x:Row>";
+								sClientData += L"<x:Row>" + boost::lexical_cast<std::wstring>(comment->m_nRow.get()) + L"</x:Row>";
 
 						if(comment->m_nCol.IsInit())
-							sClientData += L"<x:Column>" + std::to_wstring(comment->m_nCol.get()) + L"</x:Column>";
+							sClientData += L"<x:Column>" + boost::lexical_cast<std::wstring>(comment->m_nCol.get()) + L"</x:Column>";
 
 						sClientData += L"</x:ClientData>";
 
@@ -380,7 +380,7 @@ namespace OOX
 							sGfxdata = L"o:gfxdata=\"" + comment->m_sGfxdata.get2() + L"\"";
 
 						std::wstring sShape;
-						sShape += L"<v:shape id=\"_x0000_s" + std::to_wstring(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
+						sShape += L"<v:shape id=\"_x0000_s" + boost::lexical_cast<std::wstring>(nIndex++) + L" \" type=\"#_x0000_t202\" style='position:absolute;";
 						sShape += sStyle;
 						sShape += L"z-index:4;visibility:hidden' ";
 						sShape += sGfxdata;

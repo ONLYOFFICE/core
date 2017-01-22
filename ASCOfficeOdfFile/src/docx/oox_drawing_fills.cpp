@@ -71,7 +71,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double) 
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)(*opacity)*1000));// + L"%");
+					CP_XML_ATTR(L"val", boost::lexical_cast<std::wstring>((int)(*opacity)*1000));// + L"%");
 				}
 			}
 		}
@@ -88,7 +88,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf_type
 			{
 				CP_XML_NODE(L"a:alpha")
 				{
-					CP_XML_ATTR(L"val",boost::lexical_cast<std::wstring>((int)opacity->get_value()*1000));// + L"%");
+					CP_XML_ATTR(L"val", boost::lexical_cast<std::wstring>((int)opacity->get_value()*1000));// + L"%");
 				}
 			}
 		}
@@ -187,8 +187,9 @@ void oox_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 			{
 				CP_XML_NODE(L"a:gsLst")
 				{
-					BOOST_FOREACH(oox_gradient_fill::_color_position & col, val.gradient->colors)
+					for (int i = 0; i < val.gradient->colors.size(); i++)
 					{
+						oox_gradient_fill::_color_position & col = val.gradient->colors[i];
 						CP_XML_NODE(L"a:gs")
 						{
 							CP_XML_ATTR(L"pos", (int)(col.pos * 1000));//%

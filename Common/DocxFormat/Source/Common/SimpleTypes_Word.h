@@ -1186,7 +1186,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return std::to_wstring( this->m_eValue);
+            return boost::lexical_cast<std::wstring>( this->m_eValue);
 		}
 
 
@@ -1257,9 +1257,9 @@ namespace SimpleTypes
             std::wstring sResult;
 
 			if ( !m_bTrailingPercentSign )
-                sResult = std::to_wstring( (int)m_dValue);
+                sResult = boost::lexical_cast<std::wstring>( (int)m_dValue);
 			else
-				sResult = std::to_wstring(m_dValue) + L"%";
+				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"%";
 
 			return sResult;
 		}
@@ -1909,7 +1909,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 			return sResult;
 		}
@@ -3061,11 +3061,11 @@ namespace SimpleTypes
 
 			if (m_bUnit)
 			{
-				sResult = std::to_wstring( m_dValue ) + L"pt";
+				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			}
 			else
 			{
-				sResult = std::to_wstring( (int)(m_dValue * 2) );
+				sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 2) );
 			}
 
 			return sResult;
@@ -4413,7 +4413,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 			return sResult;
 		}
@@ -4441,7 +4441,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 			return sResult;
 		}
@@ -5104,7 +5104,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-			return std::to_wstring(m_dValue) + L"pt";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
 		}
 
 		SimpleType_FromString          (double)
@@ -5133,9 +5133,9 @@ namespace SimpleTypes
             std::wstring sResult;
 
 			if ( m_bUnit )
-				sResult = std::to_wstring( m_dValue ) + L"pt";
+				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			else
-                sResult = std::to_wstring( (int)(m_dValue * 20) );
+                sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -5881,7 +5881,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 			return sResult;
 		}

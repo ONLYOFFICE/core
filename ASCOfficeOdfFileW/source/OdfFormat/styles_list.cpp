@@ -106,9 +106,10 @@ void text_list_style::serialize(std::wostream & strm)
         {
 			text_list_style_attr_.serialize(CP_GET_XML_NODE());
 
-			BOOST_FOREACH(office_element_ptr & elm, text_list_style_content_)
+			for (int i = 0; i < text_list_style_content_.size(); i++)
 			{
-				if (elm) elm->serialize(CP_XML_STREAM());
+				if (text_list_style_content_[i])
+					text_list_style_content_[i]->serialize(CP_XML_STREAM());
 			}	
 		}
 	}

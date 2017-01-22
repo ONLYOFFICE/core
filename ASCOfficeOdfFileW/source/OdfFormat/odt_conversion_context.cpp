@@ -808,7 +808,7 @@ bool odt_conversion_context::start_change (int id, int type, std::wstring &autho
 	
 	text_changes_state_.current_types.push_back(type);
 
-	std::wstring strId = L"ct" + std::to_wstring(id);
+	std::wstring strId = L"ct" + boost::lexical_cast<std::wstring>(id);
 //---------------------------------------------------------------------------------
 	office_element_ptr start_elm;
 
@@ -886,7 +886,7 @@ void odt_conversion_context::end_change (int id, int type)
 {
 	//if (!text_changes_state_.main_text_context) return;
 	
-	std::wstring strId = L"ct" + std::to_wstring(id);
+	std::wstring strId = L"ct" + boost::lexical_cast<std::wstring>(id);
 
 	if (type == 2)//delete
 	{

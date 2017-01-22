@@ -38,7 +38,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/regex.h>
-#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 
@@ -62,6 +61,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { 
 

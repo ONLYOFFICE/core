@@ -34,16 +34,13 @@
 
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/algorithm/string.hpp>
-
 namespace XLS
 {
 
 struct CFRecordTypeValue
 {
-	CFRecordType::TypeString name;
-	CFRecordType::TypeId id;
+	CFRecordType::TypeString	name;
+	CFRecordType::TypeId		id;
 }
 CFRecordTypeValues[] = 
 {

@@ -39,7 +39,6 @@
 #include <cpdoccore/xml/sax.h>
 #include <cpdoccore/common/readdocelement.h>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "abstract_xml.h"

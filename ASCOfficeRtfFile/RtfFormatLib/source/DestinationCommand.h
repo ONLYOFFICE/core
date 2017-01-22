@@ -30,6 +30,7 @@
  *
  */
 #pragma once 
+#include <boost/algorithm/string.hpp>
 
 #include "RtfReader.h"
 #include "RtfDocument.h"
@@ -1283,7 +1284,7 @@ public:
 		}
 		else
 		{
-            strProp = std::to_wstring( parameter);
+            strProp = boost::lexical_cast<std::wstring>( parameter);
 		}
 
 		return strProp;

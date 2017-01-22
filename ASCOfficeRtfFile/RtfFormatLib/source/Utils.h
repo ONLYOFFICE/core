@@ -142,13 +142,13 @@ namespace Strings
 	
     static std::wstring FromInteger(int Value, int Base = 10)
 	{
-        std::wstring str = std::to_wstring(Value);
+        std::wstring str = boost::lexical_cast<std::wstring>(Value);
 
 		return str;
 	}
     static std::wstring FromDouble(double Value)
 	{
-        std::wstring str = std::to_wstring(Value);
+        std::wstring str = boost::lexical_cast<std::wstring>(Value);
 
 		return str;
 	}
@@ -167,7 +167,7 @@ class Convert
 public:	
     static std::wstring ToString(int i)
 	{
-		return std::to_wstring( i );
+		return boost::lexical_cast<std::wstring>( i );
 	}
     static  std::wstring ToStringHex( int i, int nLen )
 	{
@@ -394,15 +394,15 @@ public:
 		int		Year	= GETBITS(dt, 20, 28) + 1900;
 
 		//to 1899-12-31T05:37:46.66569 - iso_extended_string
-		std::wstring date_str = std::to_wstring(Year) 
+		std::wstring date_str = boost::lexical_cast<std::wstring>(Year) 
 								+ L"-" 
-								+ (Month < 10 ? L"0": L"") + std::to_wstring(Month) 
+								+ (Month < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Month) 
 								+ L"-" 
-								+ (Day < 10 ? L"0": L"") + std::to_wstring(Day)
+								+ (Day < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Day)
 								+ L"T"
-								+ (Hour < 10 ? L"0": L"") + std::to_wstring(Hour)
+								+ (Hour < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Hour)
 								+ L":" 
-								+ (Min < 10 ? L"0": L"") + std::to_wstring(Min)
+								+ (Min < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Min)
 								+ L":00Z";
 
 		return date_str;

@@ -33,7 +33,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
@@ -53,6 +52,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace _image_file_
 {
@@ -660,11 +660,10 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 	
 	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
 	
-	BOOST_FOREACH(std::wstring const & t, transforms)
+	for (int i = 0; i < transforms.size(); i++)
 	{			
-        //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
-		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
+		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
 		if (transform.size()>1)//тока с аргументами
 		{

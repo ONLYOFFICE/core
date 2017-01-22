@@ -896,9 +896,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					nFontSize = oNewProperty.m_nFontSize / 2;
 
 				sFieldText = L"SYMBOL";
-                sFieldText += std::to_wstring( nChar );
+                sFieldText += boost::lexical_cast<std::wstring>( nChar );
 				sFieldText += L" \\\\f \"" + sFont + L"\" \\\\s ";
-                sFieldText += std::to_wstring( nFontSize );
+                sFieldText += boost::lexical_cast<std::wstring>( nFontSize );
 				
 				pNewChar->setText( sFieldText );
 				

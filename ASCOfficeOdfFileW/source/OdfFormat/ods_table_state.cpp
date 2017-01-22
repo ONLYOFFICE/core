@@ -32,6 +32,9 @@
 
 #include "logging.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time.hpp>
+
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
 #include "ods_table_state.h"
@@ -47,8 +50,6 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
-
-#include <boost/date_time.hpp>
 
 namespace cpdoccore {
 

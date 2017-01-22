@@ -32,6 +32,9 @@
 #pragma once 
 
 #include <map>
+
+#include <boost/lexical_cast.hpp>
+
 class IdGenerator
 {
 private: 
@@ -70,12 +73,12 @@ public:
 
     std::wstring Generate_rId()
 	{
-        return L"rId" + std::to_wstring(m_nrIdCount++);
+        return L"rId" + boost::lexical_cast<std::wstring>(m_nrIdCount++);
 	}
 
     std::wstring Generate_FitTextId()
 	{
-        return std::to_wstring(m_nFitTextIdCount++);
+        return boost::lexical_cast<std::wstring>(m_nFitTextIdCount++);
 	}
 
 	int Generate_ImageIndex()
@@ -121,7 +124,7 @@ public:
 	
     std::wstring Generate_OleId()
 	{
-        std::wstring sId = std::to_wstring(m_nOleId++);
+        std::wstring sId = boost::lexical_cast<std::wstring>(m_nOleId++);
         std::wstring sResult = L"_1330071130";
 
         sResult = sResult.substr(0, sResult.length() - sId.length() );

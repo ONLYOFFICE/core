@@ -282,7 +282,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return std::to_wstring(m_dValue) + L"pt";
+            return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
 		}
 
 		virtual double FromPoints(double dValue)
@@ -323,7 +323,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return std::to_wstring(ToInches()) + L"in";
+            return boost::lexical_cast<std::wstring>(ToInches()) + L"in";
         }
 
 		SimpleType_FromString          (double)
@@ -348,7 +348,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return std::to_wstring(m_dValue) + L"pt";
+            return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
 		}
 
 		virtual double FromPoints(double dValue)
@@ -414,12 +414,11 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring(m_dValue);
-			return sResult;
+			return boost::lexical_cast<std::wstring>(m_dValue);
 		}
 		virtual std::wstring ToString2() const
 		{
-			return std::to_wstring(m_dValue);
+			return boost::lexical_cast<std::wstring>(m_dValue);
 		}
   
 		void SetValue(double dValue)

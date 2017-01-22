@@ -57,8 +57,6 @@ using namespace NSFontCutter;
 #include "../../HtmlRenderer/include/ASCSVGWriter.h"
 #include <list>
 
-#include <boost/algorithm/string.hpp>
-
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;

@@ -41,7 +41,7 @@
 using namespace NSCommon;
 #endif
 
-#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 
 namespace XmlUtils
@@ -84,7 +84,7 @@ namespace XmlUtils
 		int green = 0;
 		int red = 0;
 
-        std::wstring color = string; boost::algorithm::trim(color);
+        std::wstring color = string; //boost::algorithm::trim(color);
 				
         if (color.find(L"0x") != -1)    color.erase(0, 2);
         if (color.find(L"#") != -1)     color.erase(0, 1);
@@ -218,21 +218,28 @@ namespace XmlUtils
 	}
     AVSINLINE static std::wstring IntToString   (const int   & value)
 	{
-		return std::to_wstring( value);
+		return boost::lexical_cast<std::wstring>( value);
 	}
     AVSINLINE static std::wstring UIntToString  (const size_t   & value)
 	{
-		return std::to_wstring( (unsigned long)value);
+		return boost::lexical_cast<std::wstring>( (unsigned long)value);
 	}
     AVSINLINE static std::wstring FloatToString (const float & value)
 	{
-		return std::to_wstring( value);
+		return boost::lexical_cast<std::wstring>( value);
 	}
     AVSINLINE static std::wstring DoubleToString(const double& value)
 	{
-		return std::to_wstring( value);
+		return boost::lexical_cast<std::wstring>( value);
 	}
     AVSINLINE static std::wstring IntToString( int value, const wchar_t* format )
+    {
+        if ( format == NULL ) return L"";
+        std::wstringstream sstream;
+        sstream << boost::wformat(format) % value;
+        return sstream.str();
+    }
+    AVSINLINE static std::wstring Int64ToString( __int64 value, const wchar_t* format )
     {
         if ( format == NULL ) return L"";
         std::wstringstream sstream;

@@ -32,13 +32,14 @@
 #pragma once   
 
 #include "svg_parser.h"
+#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace cpdoccore 
 { 
 namespace svg_path
 {
-    void skipSpaces(int&          io_rPos, const std::wstring&     rStr, const int     nLen)
+    void skipSpaces(int& io_rPos, const std::wstring& rStr, const int nLen)
     {
         while( io_rPos < nLen && L' ' == rStr[io_rPos] )
         {
@@ -46,7 +47,7 @@ namespace svg_path
         }
     }
 
-    void skipSpacesAndCommas(int&         io_rPos,const std::wstring&    rStr,const int    nLen)
+    void skipSpacesAndCommas(int& io_rPos,const std::wstring& rStr,const int nLen)
     {
         while(io_rPos < nLen && (wchar_t(' ') == rStr[io_rPos] || wchar_t(',') == rStr[io_rPos]))
         {
@@ -152,14 +153,13 @@ namespace svg_path
 		return true;
 	}
 
-	void putNumberChar( std::wstring & rStr, double          fValue )
+	void putNumberChar( std::wstring & rStr, double fValue )
 	{
 		const std::wstring sValue = boost::lexical_cast<std::wstring>(fValue) ;
 		rStr.append(sValue);
 	}
 
-	void putNumberCharWithSpace( std::wstring &    rStr,  double             fValue,
-									 double                 fOldValue,  bool                   bUseRelativeCoordinates )
+	void putNumberCharWithSpace( std::wstring & rStr, double fValue, double fOldValue, bool bUseRelativeCoordinates )
 	{
 		if( bUseRelativeCoordinates )
 			fValue -= fOldValue;

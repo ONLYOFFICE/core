@@ -36,9 +36,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/regex.h>
 
 #include <cpdoccore/CPOptional.h>
 

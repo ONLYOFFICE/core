@@ -2447,7 +2447,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		{
             OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
 
-			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
@@ -2466,7 +2466,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
                
 				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 				{
-					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 					bSet = true;
 				}
@@ -2558,7 +2558,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 
         if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
-			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			bSet = true;
 		}

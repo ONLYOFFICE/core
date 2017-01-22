@@ -71,7 +71,7 @@ std::wstring process_border(border_style	& borderStyle,
 		if (szInt <= 0) szInt = 1;
 
         w_sz	= boost::lexical_cast<std::wstring>( szInt );
-        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+        w_color = borderStyle.get_color().get_hex_value();
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt)) );

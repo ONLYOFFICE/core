@@ -37,7 +37,6 @@
 #include <vector>
 
 #include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
 //
 #include <cpdoccore/CPString.h>
 #include <cpdoccore/xml/xmlchar.h>

@@ -235,8 +235,7 @@ namespace SimpleTypes
 
 			virtual std::wstring       ToString  () const 
 			{
-                std::wstring sRes = std::to_wstring( (long)this->m_eValue);
-				return sRes;
+				return boost::lexical_cast<std::wstring>( (long)this->m_eValue);
 			}
 			virtual std::wstring       ToHexString  () const 
 			{
@@ -504,8 +503,7 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-                std::wstring sRes = std::to_wstring((int)this->m_eValue);
-				return sRes;
+				return boost::lexical_cast<std::wstring>((int)this->m_eValue);
 			}
             std::wstring ToStringWord() const
 			{
@@ -1685,8 +1683,7 @@ namespace SimpleTypes
 
 			virtual std::wstring     ToString  () const 
 			{
-                std::wstring sResult = std::to_wstring(this->m_eValue );
-				return sResult;
+				return boost::lexical_cast<std::wstring>(this->m_eValue );
 			}
 
 			SimpleType_FromString     (EPageSize)

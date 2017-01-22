@@ -297,7 +297,7 @@ namespace OOX
                 int nDotIndex = sPath.rfind('.');
 				if(-1 != nDotIndex && nDotIndex > 0)
 				{
-                    std::wstring sDigit = std::to_wstring( nIndex);
+                    std::wstring sDigit = boost::lexical_cast<std::wstring>( nIndex);
                     sPath.insert(sPath.begin() + nDotIndex, sDigit.begin(), sDigit.end());
 				}
 				pFile->m_sOutputFilename = sPath;

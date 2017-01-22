@@ -88,14 +88,15 @@ namespace utils {
     static int getColAddressInv(const std::wstring & a_)
 	{
 		std::wstring a = a_;
-		::boost::algorithm::to_upper(a);
+        XmlUtils::GetUpper(a);
 		static const size_t r = (L'Z' - L'A' + 1);
 		size_t mul = 1;
 		bool f = true;
         int res = 0;
-		BOOST_REVERSE_FOREACH(const wchar_t c, a)
+
+        for (int i = a.length() - 1; i >= 0; i--)
 		{
-			size_t v = c - L'A';
+            size_t v = a[i] - L'A';
 			if (f)
 				f = false;
 			else
@@ -121,16 +122,14 @@ namespace utils {
 
 		std::reverse(a.begin(), a.end());
 		XmlUtils::replace_all( a, L"$", L"");
-		//XmlUtils::replace_all( a, L"'", L"");
-		::boost::algorithm::to_upper(a);
+        XmlUtils::GetUpper(a);
 		
-
-		BOOST_FOREACH(wchar_t c, a)
+        for (int i = 0; i < a.length(); i++)
 		{
-			if (c >= L'0' && c <= L'9')
-				row +=c;
+            if (a[i] >= L'0' && a[i] <= L'9')
+                row += a[i];
 			else
-				col += c;
+                col += a[i];
 		}
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());

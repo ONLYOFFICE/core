@@ -31,9 +31,6 @@
  */
 #pragma once
 
-//#include "NamespaceOwn.h"
-//#include "../XML/XmlUtils.h"
-
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX

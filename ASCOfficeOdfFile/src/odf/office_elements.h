@@ -40,15 +40,14 @@
 
 #include "office_elements_type.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
 #include "../docx/docx_conversion_context.h"
 #include "../docx/xlsxconversioncontext.h"
 #include "../docx/pptx_conversion_context.h"
 
 #include "visitor.h"
 #include "../conversionelement.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -137,13 +136,7 @@ public:
 private:
     virtual void add_text(const std::wstring & Text)
     {
-        std::wstring text = Text;
-        boost::algorithm::erase_all(text, L" ");
-        boost::algorithm::erase_all(text, L"\t");
-        boost::algorithm::erase_all(text, L"\n");
-        boost::algorithm::erase_all(text, L"\r");
-        //CP_ASSERT(false);
-    }
+	}
 
 // office_element impl
 public:

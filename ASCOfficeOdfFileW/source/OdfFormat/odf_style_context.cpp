@@ -397,7 +397,7 @@ std::wstring odf_style_context::find_free_name(style_family::type  family)
 	//		count++;
 	//	}
 	//}
-	name = name + boost::lexical_cast<std::wstring>(count+1);
+	name = name + boost::lexical_cast<std::wstring>(count + 1);
 	return name;
 }
 office_element_ptr & odf_style_context::add_or_find(std::wstring name, style_family::type family, bool automatic , bool root, int oox_id)

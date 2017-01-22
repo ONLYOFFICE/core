@@ -116,8 +116,9 @@ void pptx_conversion_context::process_layouts()
 
 		if (master)
 		{
-			BOOST_FOREACH(odf_reader::office_element_ptr elm, master->content_)
+			for (int i = 0; i < master->content_.size(); i++)			
 			{
+				odf_reader::office_element_ptr elm = master->content_[i];
 				if (elm->get_type() == odf_reader::typeDrawFrame)
 				{
 					odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame *>(elm.get());
@@ -209,8 +210,10 @@ void pptx_conversion_context::end_document()
 {
     unsigned int count = 1;
    
-	BOOST_FOREACH(const pptx_xml_slideMaster_ptr& slideM, slideMasters_)
+	for (int i = 0; i < slideMasters_.size(); i++)
     {
+		pptx_xml_slideMaster_ptr& slideM = slideMasters_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideM->write_to(content->content());
@@ -230,8 +233,10 @@ void pptx_conversion_context::end_document()
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	count=0;
-	BOOST_FOREACH(const pptx_xml_slide_ptr& slide, slides_)
+	for (int i = 0; i < slides_.size(); i++)
     {
+		pptx_xml_slide_ptr& slide = slides_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slide->write_to(content->content());
@@ -250,8 +255,10 @@ void pptx_conversion_context::end_document()
 		count++;
     }
 ///////////////////////////////////////////////////////////////////////////////////////////
-	BOOST_FOREACH(const pptx_xml_slideLayout_ptr& slideL, slideLayouts_)
+	for (int i = 0; i < slideLayouts_.size(); i++)
     {
+		pptx_xml_slideLayout_ptr& slideL = slideLayouts_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideL->write_to(content->content());
@@ -263,6 +270,7 @@ void pptx_conversion_context::end_document()
 	//размеры страниц в презентации
     odf_reader::odf_read_context & context =  root()->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
+	
 	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
 	{
 		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_->style_name();
@@ -279,13 +287,13 @@ void pptx_conversion_context::end_document()
 	//добавляем диаграммы
 
 	count = 0;
-    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+	for (int i = 0; i < charts_.size(); i++)
     {
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->serialize(content->content());
-		chart->dump_rels(content->get_rel_file()->get_rels());
+		charts_[i]->serialize(content->content());
+		charts_[i]->dump_rels(content->get_rel_file()->get_rels());
 
 		output_document_->get_ppt_files().add_charts(content);
 	

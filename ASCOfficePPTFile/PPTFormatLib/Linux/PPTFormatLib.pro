@@ -190,7 +190,6 @@ SOURCES += \
 SOURCES += \
     ../PPTFormatLib.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp
 

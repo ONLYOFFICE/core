@@ -37,7 +37,7 @@
 class CSLocker
 {
 public:
-	CSLocker(AVSOfficeCriticalSection &critical_section) : cs(critical_section)
+	CSLocker(OfficeCriticalSection &critical_section) : cs(critical_section)
 	{
 		cs.Enter();
 	}
@@ -48,5 +48,5 @@ public:
 	}
 
 private:
-	AVSOfficeCriticalSection &cs;
+	OfficeCriticalSection &cs;
 };

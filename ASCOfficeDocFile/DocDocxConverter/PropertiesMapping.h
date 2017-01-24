@@ -76,6 +76,6 @@ namespace DocFileFormat
 		XMLTools::CStringXmlWriter* m_pXmlWriter;
 
 		static std::map<unsigned char, std::wstring>	brcTypeMap;		
-		static ASCOfficeCriticalSection					brcTypeMapLock;
+		static OfficeCriticalSection					brcTypeMapLock;
 	};
 }

@@ -410,6 +410,7 @@
 #include "../../../raster/Metafile/Emf/EmfObjects.cpp"
 #include "../../../raster/Metafile/Emf/EmfPath.cpp"
 #include "../../../raster/Metafile/Emf/EmfPlayer.cpp"
+#include "../../../raster/Metafile/Emf/EmfFile.cpp"
 #include "../../../raster/Metafile/Wmf/WmfClip.cpp"
 #include "../../../raster/Metafile/Wmf/WmfObjects.cpp"
 #include "../../../raster/Metafile/Wmf/WmfPlayer.cpp"

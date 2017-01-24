@@ -970,15 +970,15 @@ namespace MetaFile
 			return SetError();
 
 		m_oStream >> pPen->PenStyle;
-		m_oStream >> pPen->Width;
-		unsigned int widthY = 0;
-		m_oStream >> widthY;
 
-		if (widthY && !pPen->Width)
-			pPen->Width = widthY;
+		unsigned int widthX, widthY;
+		m_oStream >> widthX >> widthY;
 
-		if (!pPen->Width)
-			pPen->Width = 1;
+		if (!widthX)	
+		{//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
+			widthX = 1 / m_pDC->GetPixelWidth();
+		}
+		pPen->Width = widthX;
 
 		m_oStream >> pPen->Color;
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);

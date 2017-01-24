@@ -1,7 +1,6 @@
 #pragma once
 #include "Common.h"
 
-//#include "../../Common/DocxFormat/Source/DocxFormat/Logic/Paragraph.h"
 #include "FontManager.h"
 
 namespace NSDocxRenderer
@@ -10,7 +9,7 @@ namespace NSDocxRenderer
 
 	// у класса T должен быть метод IsBigger, IsBiggerOrEqual
 	template<typename T> 
-	void SortElements(CAtlArray<T*>& oArray)
+    void SortElements(CArray<T*>& oArray)
 	{
 		int nSize = (int)oArray.GetCount();
 
@@ -111,7 +110,7 @@ namespace NSDocxRenderer
 
 	static CString g_string_par_props_mode2				= _T("<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"%d\" w:y=\"%d\"/></w:pPr>");
 
-	AVSINLINE void DeleteSpaces(CString& strText)
+    inline void DeleteSpaces(CString& strText)
 	{
 		int nLen   = strText.GetLength();
 		int nStart = 0;

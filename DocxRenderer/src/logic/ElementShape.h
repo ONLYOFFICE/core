@@ -1,28 +1,10 @@
-#pragma once
+#ifndef DOCX_RENDERER_ELEMENT_SHAPE_H
+#define DOCX_RENDERER_ELEMENT_SHAPE_H
+
 #include "Common.h"
 
 namespace NSDocxRenderer
 {
-	static _bstr_t g_vml_bstr_ClosePath			= L"x";
-	static _bstr_t g_vml_bstr_EndPath			= L"e";
-	static _bstr_t g_vml_bstr_NoFill			= L"nf";
-	static _bstr_t g_vml_bstr_NoStroke			= L"ns";
-	static CString g_vml_string_MoveTo			= _T("m%d,%d");
-	static CString g_vml_string_LineTo			= _T("l%d,%d");
-	static CString g_vml_string_CurveTo			= _T("c%d,%d %d,%d %d,%d");
-
-	static _bstr_t g_bstr_shape1				= L"<w:r><w:pict><v:shape id=\"\" o:spid=\"\" style=\"position:absolute;";
-	static _bstr_t g_bstr_shape2				= L"z-index:-1;mso-position-horizontal-relative:page;mso-position-vertical-relative:page;\"";
-	static CString g_string_shape_position		= _T("margin-left:%.2lfmm;margin-top:%.2lfmm;width:%.2lfmm;height:%.2lfmm;");
-
-	static CString g_string_shape_geometry		= _T(" coordsize=\"%d,%d\" path=\"%s\" fillcolor=\"#%06x\" strokecolor=\"#%06x\" strokeweight=\"%.2lfmm\">");
-
-	static CString g_string_tx_rid				= _T("<v:imagedata r:id=\"rId%d\" o:title=\"\"/>");
-	static CString g_string_fill_opacity		= _T("<v:fill opacity=\"%.2lf\"/>");
-	static CString g_string_stroke_opacity		= _T("<v:stroke opacity=\"%.2lf\"/>");
-
-	static _bstr_t g_bstr_shape3				= L"<w10:wrap anchorx=\"page\" anchory=\"page\"/></v:shape></w:pict></w:r>";
-
 	class CVectorGraphics
 	{
 	public:
@@ -54,7 +36,7 @@ namespace NSDocxRenderer
 			RELEASEMEM(m_pData);
 		}
 
-		AVSINLINE void AddSize(size_t nSize)
+        inline void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -93,7 +75,7 @@ namespace NSDocxRenderer
 		}
 
 	public:
-		AVSINLINE void MoveTo(const double& x1, const double& y1)
+        inline void MoveTo(const double& x1, const double& y1)
 		{
 			AddSize(3);
 			*m_pDataCur = 0;	++m_pDataCur;
@@ -105,7 +87,7 @@ namespace NSDocxRenderer
 
 			CheckPoint(x1, y1);			
 		}
-		AVSINLINE void LineTo(const double& x1, const double& y1)
+        inline void LineTo(const double& x1, const double& y1)
 		{
 			AddSize(3);
 			*m_pDataCur = 1;	++m_pDataCur;
@@ -117,7 +99,7 @@ namespace NSDocxRenderer
 
 			CheckPoint(x1, y1);
 		}
-		AVSINLINE void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
+        inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 		{
 			AddSize(7);
 			*m_pDataCur = 2;	++m_pDataCur;
@@ -135,7 +117,7 @@ namespace NSDocxRenderer
 			CheckPoint(x2, y2);
 			CheckPoint(x3, y3);
 		}
-		AVSINLINE void Close()
+        inline void Close()
 		{
 			AddSize(1);
 			*m_pDataCur = 3;	++m_pDataCur;
@@ -143,12 +125,12 @@ namespace NSDocxRenderer
 			m_lSizeCur += 1;
 		}
 
-		AVSINLINE size_t GetCurSize()
+        inline size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		AVSINLINE void Clear()
+        inline void Clear()
 		{
 			RELEASEMEM(m_pData);
 			
@@ -158,13 +140,13 @@ namespace NSDocxRenderer
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= 0;
 		}
-		AVSINLINE void ClearNoAttack()
+        inline void ClearNoAttack()
 		{
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= 0;
 		}
 
-		AVSINLINE void End()
+        inline void End()
 		{
 			ClearNoAttack();
 
@@ -174,7 +156,7 @@ namespace NSDocxRenderer
 			m_dBottom	= -0xFFFFFF;
 		}
 
-		AVSINLINE void CheckPoint(const double& x, const double& y)
+        inline void CheckPoint(const double& x, const double& y)
 		{
 			if (m_dLeft > x)
 				m_dLeft = x;
@@ -190,7 +172,7 @@ namespace NSDocxRenderer
 	class CShape : public CBaseItem
 	{
 	public:
-		CString m_strPath;
+        std::wstring m_strPath;
 		NSStructures::CBrush	m_oBrush;
 		NSStructures::CPen		m_oPen;
 
@@ -250,7 +232,7 @@ namespace NSDocxRenderer
 			return *this;
 		}
 
-		void CreateFromVectorData(CVectorGraphics* pVector, NSDocxRenderer::CStringWriter& oWriter, const LONG& lCoordSize, LONG lType)
+        void CreateFromVectorData(CVectorGraphics* pVector, NSStringUtils::CStringBuilder& oWriter, const LONG& lCoordSize, LONG lType)
 		{
 			m_dLeft		= pVector->m_dLeft;
 			m_dTop		= pVector->m_dTop;
@@ -272,10 +254,10 @@ namespace NSDocxRenderer
 					LONG lY = (LONG)((*pData - m_dTop) * lCoordSize / m_dHeight);
 					++pData;
 
-					CString strPath = _T("");
-					strPath.Format(g_vml_string_MoveTo, lX, lY);
-
-					oWriter.WriteString(strPath);
+                    oWriter.AddCharSafe('m');
+                    oWriter.AddInt(lX);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lY);
 
 					nCount -= 3;
 				}
@@ -286,10 +268,10 @@ namespace NSDocxRenderer
 					LONG lY = (LONG)((*pData - m_dTop) * lCoordSize / m_dHeight);
 					++pData;
 
-					CString strPath = _T("");
-					strPath.Format(g_vml_string_LineTo, lX, lY);
-
-					oWriter.WriteString(strPath);
+                    oWriter.AddCharSafe('l');
+                    oWriter.AddInt(lX);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lY);
 
 					nCount -= 3;
 				}
@@ -310,76 +292,104 @@ namespace NSDocxRenderer
 					LONG lY3 = (LONG)((*pData - m_dTop) * lCoordSize / m_dHeight);
 					++pData;
 
-					CString strPath = _T("");
-					strPath.Format(g_vml_string_CurveTo, lX1, lY1, lX2, lY2, lX3, lY3);
-
-					oWriter.WriteString(strPath);
+                    oWriter.AddCharSafe('c');
+                    oWriter.AddInt(lX1);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lY1);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lX2);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lY2);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lX3);
+                    oWriter.AddCharSafe(',');
+                    oWriter.AddInt(lY3);
 
 					nCount -= 7;
 				}
 				else
 				{
-					oWriter.WriteString(g_vml_bstr_ClosePath);
+                    oWriter.AddCharSafe('x');
 					--nCount;
 				}
 			}
 
 			if (0x00 == (lType & 0x01))
-				oWriter.WriteString(g_vml_bstr_NoStroke);
+                oWriter.WriteString(L"ns");
 			if (0x00 == (lType >> 8))
-				oWriter.WriteString(g_vml_bstr_NoFill);
+                oWriter.WriteString(L"nf");
 
-			oWriter.WriteString(g_vml_bstr_EndPath);
+            oWriter.AddCharSafe('e');
 
-			m_strPath = oWriter.GetData();
+            m_strPath = oWriter.GetData();
 			oWriter.ClearNoAttack();
 		}
 
-		virtual void ToXml(NSDocxRenderer::CStringWriter& oWriter)
+        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter)
 		{
-			oWriter.WriteString(g_bstr_shape1);
+            oWriter.WriteString(L"<w:r><w:pict><v:shape id=\"\" o:spid=\"\" style=\"position:absolute;");
 
-			CString strPosition = _T("");
-			strPosition.Format(g_string_shape_position, m_dLeft, m_dTop, m_dWidth, m_dHeight);
-			oWriter.WriteString(strPosition);
+            oWriter.WriteString(L"margin-left:");
+            oWriter.AddDouble(m_dLeft, 2);
+            oWriter.WriteString(L"mm;margin-top:");
+            oWriter.AddDouble(m_dTop, 2);
+            oWriter.WriteString(L"mm;width:");
+            oWriter.AddDouble(m_dWidth, 2);
+            oWriter.WriteString(L"mm;height:");
+            oWriter.AddDouble(m_dHeight, 2);
+            oWriter.WriteString(L"mm;");
 
-			oWriter.WriteString(strPosition);
-			oWriter.WriteString(g_bstr_shape2);
+            oWriter.WriteString(L"z-index:-1;mso-position-horizontal-relative:page;mso-position-vertical-relative:page;\"");
 
-			CString strStyle = _T("");
-			strStyle.Format(g_string_shape_geometry, m_lCoordSizeX, m_lCoordSizeY, m_strPath, ConvertColor(m_oBrush.Color1), ConvertColor(m_oPen.Color), m_oPen.Size);
-			oWriter.WriteString(strStyle);
+            oWriter.WriteString(L" coordsize=\"");
+            oWriter.AddInt((int)m_lCoordSizeX);
+            oWriter.AddCharSafe(',');
+            oWriter.AddInt((int)m_lCoordSizeY);
+            oWriter.WriteString(L"\" path=\"");
+            oWriter.WriteString(m_strPath);
+            oWriter.WriteString(L"\" fillcolor=\"");
+            oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
+            oWriter.WriteString(L"\" strokecolor=\"");
+            oWriter.WriteHexInt3((int)ConvertColor(m_oPen.Color));
+            oWriter.WriteString(L"\" strokeweight=\"");
+            oWriter.AddDouble(m_oPen.Size, 2);
+            oWriter.WriteString(L"mm\">");
 
-			if (c_BrushTypeTexture == m_oBrush.Type)
+            static CString g_string_fill_opacity		= _T("<v:fill opacity=\"%.2lf\"/>");
+            static CString g_string_stroke_opacity		= _T("<v:stroke opacity=\"%.2lf\"/>");
+
+            if (c_BrushTypeTexture == m_oBrush.Type)
 			{
-				CString strImage = _T("");
-				strImage.Format(g_string_tx_rid, 10 + m_lTxId);
-				oWriter.WriteString(strImage);
+                oWriter.WriteString(L"<v:imagedata r:id=\"rId");
+                oWriter.AddInt(10 + m_lTxId);
+                oWriter.WriteString(L"\" o:title=\"\"/>");
 
 				if (0xFF != m_oBrush.TextureAlpha)
 				{
-					CString strFillOpacity = _T("");
-					strFillOpacity.Format(g_string_fill_opacity, (double)m_oBrush.TextureAlpha / 255.0);
-					oWriter.WriteString(strFillOpacity);
+                    oWriter.WriteString(L"<v:fill opacity=\"");
+                    oWriter.AddDouble((double)m_oBrush.TextureAlpha / 255.0, 2);
+                    oWriter.WriteString(L"\"/>");
 				}
 			}
 			else
 			{
 				if (0xFF != m_oBrush.Alpha1)
 				{
-					CString strFillOpacity = _T("");
-					strFillOpacity.Format(g_string_fill_opacity, (double)m_oBrush.Alpha1 / 255.0);
-					oWriter.WriteString(strFillOpacity);
+                    oWriter.WriteString(L"<v:fill opacity=\"");
+                    oWriter.AddDouble((double)m_oBrush.Alpha1 / 255.0, 2);
+                    oWriter.WriteString(L"\"/>");
 				}
 				if (0xFF != m_oPen.Alpha)
 				{
-					CString strPenOpacity = _T("");
-					strPenOpacity.Format(g_string_stroke_opacity, (double)m_oPen.Alpha / 255.0);
-					oWriter.WriteString(strPenOpacity);
+                    oWriter.WriteString(L"<v:stroke opacity=\"");
+                    oWriter.AddDouble((double)m_oPen.Alpha / 255.0, 2);
+                    oWriter.WriteString(L"\"/>");
 				}
 			}
 
-			oWriter.WriteString(g_bstr_shape3);
+            oWriter.WriteString(L"<w10:wrap anchorx=\"page\" anchory=\"page\"/></v:shape></w:pict></w:r>");
 		}
 	};
 }
+
+#endif // DOCX_RENDERER_ELEMENT_SHAPE_H

@@ -1,34 +1,22 @@
-#pragma once
+#ifndef DOCX_RENDERER_COMMON_H
+#define DOCX_RENDERER_COMMON_H
 
-#ifndef AVSINLINE
-#if defined(_MSC_VER)
-#define AVSINLINE __forceinline
-#else
-#define AVSINLINE inline
-#endif
-#endif
+#include "../DesktopEditor/common/StringBuilder.h"
+#include "../DesktopEditor/common/CalculatorCRC32.h"
+#include "../DesktopEditor/graphics/Matrix.h"
+#include "../DesktopEditor/graphics/structures.h"
+#include "../DesktopEditor/graphics/TemporaryCS.h"
+#include "../DesktopEditor/raster/BgraFrame.h"
+#include "../DesktopEditor/common/Directory.h"
 
-#include "../../Common/TemporaryCS.h"
-#include "../Graphics/Matrix.h"
-#include "../Graphics/Structures.h"
-#include "StringWriter.h"
-#include "CalculatorCRC32.h"
+#include <map>
 
 namespace NSDocxRenderer
 {
-	AVSINLINE LONG ConvertColor(LONG lBGR)
+    inline LONG ConvertColor(LONG lBGR)
 	{
 		return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
-	} 
-
-	AVSINLINE void CorrectString(CString& strValue)
-	{
-		strValue.Replace(_T("&"),	_T("&amp;"));			
-		strValue.Replace(_T("'"),	_T("&apos;"));
-		strValue.Replace(_T("<"),	_T("&lt;"));
-		strValue.Replace(_T(">"),	_T("&gt;"));
-		strValue.Replace(_T("\""),	_T("&quot;"));
-	}
+    }
 
 	class CBaseItem
 	{
@@ -47,299 +35,171 @@ namespace NSDocxRenderer
 			m_eType = etShape;
 		}
 
-		virtual void ToXml(NSDocxRenderer::CStringWriter& oWriter) = 0;
+        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
 	};
+
+    class CImageInfo
+    {
+    public:
+        enum ImageType
+        {
+            itPNG = 0,
+            itJPG = 1
+        };
+
+    public:
+        ImageType m_eType;
+        int m_nId;
+
+        CImageInfo()
+        {
+            m_eType = itPNG;
+            m_nId = 0;
+        }
+    };
 
 	class CImageManager
 	{
 	public:
-		CAtlMap<CString, CImageInfo>	m_mapImagesFile;
-		CAtlMap<DWORD, CImageInfo>		m_mapImageData;
+        std::map<std::wstring, CImageInfo>	m_mapImagesFile;
+        std::map<DWORD, CImageInfo>         m_mapImageData;
 
-		CString							m_strDstMedia;
+        std::wstring                        m_strDstMedia;
 
-		LONG							m_lMaxSizeImage;
-		LONG							m_lNextIDImage;
+        int                                 m_lMaxSizeImage;
+        int                                 m_lNextIDImage;
 
-		CCalculatorCRC32				m_oCRC;
+        CCalculatorCRC32                    m_oCRC;
 
 	public:
 
 		CImageManager()
 		{
-			m_strDstMedia	= _T("");
-			m_lMaxSizeImage = 800;
+            m_strDstMedia	= L"";
+            m_lMaxSizeImage = 1200;
 			m_lNextIDImage	= 0;
 		}
 
-		AVSINLINE void NewDocument()
+        inline void NewDocument()
 		{
-			m_strDstMedia	= _T("");
-			m_lMaxSizeImage = 800;
+            m_strDstMedia	= L"";
+            m_lMaxSizeImage = 1200;
 			m_lNextIDImage	= 0;
 
-			m_mapImageData.RemoveAll();
-			m_mapImagesFile.RemoveAll();
+            m_mapImageData.clear();
+            m_mapImagesFile.clear();
 		}
 
 	public:
-		CImageInfo WriteImage(IUnknown* punkImage, double& x, double& y, double& width, double& height)
+        CImageInfo WriteImage(CBgraFrame* pImage, double& x, double& y, double& width, double& height)
 		{
 			if (height < 0)
 			{
-				FlipY(punkImage);
+                FlipY(pImage);
 				height = -height;
 				y -= height;
 			}
 			
-			return GenerateImageID(punkImage);
+            return GenerateImageID(pImage);
 		}
-		CImageInfo WriteImage(CString& strFile, double& x, double& y, double& width, double& height)
+        CImageInfo WriteImage(std::wstring& strFile, double& x, double& y, double& width, double& height)
 		{
 			return GenerateImageID(strFile);
 		}
 	
 	protected:
-		inline void CopyFile(CString& strFileSrc, CString& strFileDst)
+        inline void CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst)
 		{
-			CDirectory::CopyFile(strFileSrc, strFileDst, NULL, NULL);
+            NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
 		}
-		void SaveImage(CString& strFileSrc, CImageInfo& oInfo)
+        void SaveImage(std::wstring& strFileSrc, CImageInfo& oInfo)
 		{
-			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + _T("\"/></transforms>");
-
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT_BOOL vbRes = VARIANT_FALSE;
-			BSTR bsLoad = strLoadXml.AllocSysString();
-			pTransform->SetXml(bsLoad, &vbRes);
-			SysFreeString(bsLoad);
-
-			pTransform->Transform(&vbRes);
-
-			VARIANT var;
-			var.punkVal = NULL;
-			pTransform->GetResult(0, &var);
-
-			if (NULL == var.punkVal)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			var.punkVal->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			RELEASEINTERFACE((var.punkVal));
-
-			if (NULL == pFrame)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
-			}
-			else
-			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
-			}
-
-			CString strXml = _T("");
-
-			if ((lWidth <= m_lMaxSizeImage) && (lHeight <= m_lMaxSizeImage))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = m_lMaxSizeImage;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = m_lMaxSizeImage;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
-			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
+            CBgraFrame oFrame;
+            if (oFrame.OpenFile(strFileSrc))
+                return SaveImage(&oFrame, oInfo);
 		}
-		void SaveImage(IUnknown* punkImage, CImageInfo& oInfo)
+        void SaveImage(CBgraFrame* pImage, CImageInfo& oInfo)
 		{
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
+            if (NULL == pImage)
 				return;
 
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
+            int w = pImage->get_Width();
+            int h = pImage->get_Height();
 
-			oInfo.m_eType = GetImageType(pFrame);
+            oInfo.m_eType = GetImageType(pImage);
 
-			RELEASEINTERFACE(pFrame);
-			
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
+            int format = (oInfo.m_eType == CImageInfo::itJPG) ? 3 : 4;
+            std::wstring sSavedFile = m_strDstMedia + L"/image" + std::to_wstring(oInfo.m_nId);
+            sSavedFile += ((oInfo.m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
 
-			VARIANT var;
-			var.vt = VT_UNKNOWN;
-			var.punkVal = punkImage;
-			pTransform->SetSource(0, var);
+            if (w <= m_lMaxSizeImage && h <= m_lMaxSizeImage)
+            {
+                pImage->SaveFile(sSavedFile, format);
+            }
+            else
+            {
+                int lW = 0;
+                int lH = 0;
+                double dAspect = (double)w / h;
 
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
-			}
-			else
-			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
-			}
+                if (w >= h)
+                {
+                    lW = m_lMaxSizeImage;
+                    lH = (int)((double)lW / dAspect);
+                }
+                else
+                {
+                    lH = m_lMaxSizeImage;
+                    lW = (LONG)(dAspect * lH);
+                }
 
-			CString strXml = _T("");
-			if ((lWidth <= m_lMaxSizeImage) && (lHeight <= m_lMaxSizeImage))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = m_lMaxSizeImage;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = m_lMaxSizeImage;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
-			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
+                // TODO: resize
+                pImage->SaveFile(sSavedFile, format);
+            }
 		}
 
-		CImageInfo GenerateImageID(IUnknown* punkData)
+        CImageInfo GenerateImageID(CBgraFrame* pImage)
 		{
-			CImageInfo oInfo;
+            BYTE* pData = pImage->get_Data();
+            int nSize = pImage->get_Stride() * pImage->get_Height();
+            if (nSize < 0)
+                nSize = -nSize;
 
-			if (NULL == punkData)
-				return oInfo;
+            DWORD dwSum = m_oCRC.Calc(pData, nSize);
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkData->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+            std::map<DWORD, CImageInfo>::iterator find = m_mapImageData.find(dwSum);
+            if (find != m_mapImageData.end())
+                return *find;
 
-			BYTE* pBuffer = NULL;
-			LONG lLen = 0;
+            ++m_lNextIDImage;
+            CImageInfo oInfo;
+            oInfo.m_lID = m_lNextIDImage;
+            SaveImage(pImage, oInfo);
+            m_mapImageData.insert(std::pair<std::DWORD, CImageInfo>(dwSum, oInfo);
 
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_BufferSize(&lLen);
+            return oInfo;
+		}
 
-			DWORD dwSum = m_oCRC.Calc(pBuffer, lLen);
+        CImageInfo GenerateImageID(std::wstring& strFileName)
+		{
+            std::map<std::wstring, CImageInfo>::iterator find = m_mapImagesFile.find(strFileName);
+            if (find != m_mapImagesFile.end())
+                return *find;
 
-			CAtlMap<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.Lookup(dwSum);
-			if (NULL == pPair)
-			{
-				// нужно добавить
-				++m_lNextIDImage;
-				
-				oInfo.m_lID = m_lNextIDImage;
-				SaveImage(punkData, oInfo);
-				m_mapImageData.SetAt(dwSum, oInfo);
-			}
-			else
-			{
-				oInfo = pPair->m_value;
-			}
-
-			RELEASEINTERFACE(pFrame);
+            ++m_lNextIDImage;
+            CImageInfo oInfo;
+            oInfo.m_lID = m_lNextIDImage;
+            SaveImage(strFileName, oInfo);
+            m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo);
 
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(CString& strFileName)
+        CImageInfo::ImageType GetImageType(CBgraFrame* pFrame)
 		{
-			CImageInfo oInfo;
-			CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.Lookup(strFileName);
-
-			if (NULL == pPair)
-			{
-				// нужно добавить
-				++m_lNextIDImage;
-				
-				oInfo.m_lID = m_lNextIDImage;
-				SaveImage(strFileName, oInfo);
-				m_mapImagesFile.SetAt(strFileName, oInfo);
-			}
-			else
-			{
-				oInfo = pPair->m_value;
-			}
-
-			return oInfo;
-		}
-
-		ImageType GetImageType(MediaCore::IAVSUncompressedVideoFrame* pFrame)
-		{
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			BYTE* pBuffer	= NULL;
-
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Buffer(&pBuffer);
+            int w = pFrame->get_Width();
+            int h = pFrame->get_Height();
+            BYTE* pBuffer = pFrame->get_Data();
 
 			BYTE* pBufferMem = pBuffer + 3;
 			LONG lCountPix = lWidth * lHeight;
@@ -347,95 +207,66 @@ namespace NSDocxRenderer
 			for (LONG i = 0; i < lCountPix; ++i, pBufferMem += 4)
 			{
 				if (255 != *pBufferMem)
-					return itPNG;
+                    return CImageInfo::itPNG;
 			}
-			return itJPG;
+            return CImageInfo::itJPG;
 		}
 
-		void FlipY(IUnknown* punkImage)
+        void FlipY(CBgraFrame* pImage)
 		{
-			if (NULL == punkImage)
+            if (NULL == pImage)
 				return;
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+            int w = pImage->get_Width();
+            int h = pImage->get_Height();
+            BYTE* pBuffer = pImage->get_Data();
+            int stride = pImage->get_Stride();
 
-			if (NULL == pFrame)
-				return;
-
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
-
-			if (lStride < 0)
-				lStride = -lStride;
+            if (stride < 0)
+                stride = -stride;
 			
-			if ((lWidth * 4) != lStride)
-			{
-				RELEASEINTERFACE(pFrame);
+            if ((w * 4) != stride)
 				return;
-			}
 
-			BYTE* pBufferMem = new BYTE[lStride];
+            BYTE* pBufferMem = new BYTE[stride];
 
-			BYTE* pBufferEnd = pBuffer + lStride * (lHeight - 1);
+            BYTE* pBufferEnd = pBuffer + stride * (h - 1);
 
-			LONG lCountV = lHeight / 2;
+            LONG lCountV = h / 2;
 
 			for (LONG lIndexV = 0; lIndexV < lCountV; ++lIndexV)
 			{
-				memcpy(pBufferMem, pBuffer, lStride);
-				memcpy(pBuffer, pBufferEnd, lStride);
-				memcpy(pBufferEnd, pBufferMem, lStride);
+                memcpy(pBufferMem, pBuffer, stride);
+                memcpy(pBuffer, pBufferEnd, stride);
+                memcpy(pBufferEnd, pBufferMem, stride);
 				
-				pBuffer		+= lStride;
-				pBufferEnd	-= lStride;
+                pBuffer		+= stride;
+                pBufferEnd	-= stride;
 			}
 
 			RELEASEARRAYOBJECTS(pBufferMem);
-			RELEASEINTERFACE(pFrame);
 		}
 
-		void FlipX(IUnknown* punkImage)
+        void FlipX(CBgraFrame* pImage)
 		{
-			if (NULL == punkImage)
+            if (NULL == pImage)
 				return;
 
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
+            int w = pImage->get_Width();
+            int h = pImage->get_Height();
+            BYTE* pBuffer = pImage->get_Data();
+            int stride = pImage->get_Stride();
 
-			if (NULL == pFrame)
-				return;
+            if (stride < 0)
+                stride = -stride;
 
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
-
-			if (lStride < 0)
-				lStride = -lStride;
-			
-			if ((lWidth * 4) != lStride)
-			{
-				RELEASEINTERFACE(pFrame);
-				return;
-			}
+            if ((w * 4) != stride)
+                return;
 
 			DWORD* pBufferDWORD	= (DWORD*)pBuffer;
 
-			LONG lW2 = lWidth / 2;
-			for (LONG lIndexV = 0; lIndexV < lHeight; ++lIndexV)
+            LONG lW2 = w / 2;
+            for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
 			{
 				DWORD* pMem1 = pBufferDWORD;
 				DWORD* pMem2 = pBufferDWORD + lWidth - 1;
@@ -447,9 +278,7 @@ namespace NSDocxRenderer
 					*pMem1++ = *pMem2;
 					*pMem2-- = dwMem;
 				}
-			}
-
-			RELEASEINTERFACE(pFrame);
+            }
 		}
 
 	};
@@ -470,49 +299,6 @@ namespace NSDocxRenderer
     {
 		return ( ( i & 0xff ) << 24 ) + ( ( i & 0xff00 ) << 8 ) + ( ( i & 0xff0000 ) >> 8 ) + ( ( i >> 24 ) & 0xff );
     }
-
-	AVSINLINE CString ToHexString( unsigned int ui )
-    {
-		CString strRes = _T("");
-		strRes.Format(_T("%08X"), ui);
-		return strRes;
-    }
-
-	/*========================================================================================================*/
-
-    AVSINLINE CString ToHexString( short s )
-    {
-		CString strRes = _T("");
-		strRes.Format(_T("%04X"), s);
-		return strRes;
-    }
-
-	/*========================================================================================================*/
-	
-	AVSINLINE CString ToHexString( unsigned short us )
-    {
-		CString strRes = _T("");
-		strRes.Format(_T("%04X"), us);
-		return strRes;
-    }
-
-	/*========================================================================================================*/
-
-    AVSINLINE CString ToHexString( char c )
-    {
-		CString strRes = _T("");
-		strRes.Format(_T("%02X"), c);
-		return strRes;
-    }
-
-	/*========================================================================================================*/
-	
-	AVSINLINE CString ToHexString( BYTE uc )
-    {
-		CString strRes = _T("");
-		strRes.Format(_T("%02X"), uc);
-		return strRes;
-    }
-
-	/*========================================================================================================*/
 }
+
+#endif // DOCX_RENDERER_COMMON_H

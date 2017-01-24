@@ -1,9 +1,8 @@
-#pragma once
+#ifndef DOCX_RENDERER_FMB_H
+#define DOCX_RENDERER_FMB_H
 
-#include "..\stdafx.h"
-#include "StringWriter.h"
-#include "..\Graphics\Structures.h"
-#include "..\Graphics\Matrix.h"
+#include "Common.h"
+#include "../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontManager
 {
@@ -28,10 +27,10 @@ namespace NSFontManager
 		double							m_dSpaceWidthMM;
 
 		// font params
-		CString							m_strFamilyName;
-		CString							m_strPANOSE;
+        std::wstring					m_strFamilyName;
+        std::wstring					m_strPANOSE;
 		LONG							m_lStyle;
-		CAtlArray<DWORD>				m_arSignature;
+        CArray<DWORD>   				m_arSignature;
 		bool							m_bIsFixedWidth;
 		LONG							m_lAvgWidth;
 
@@ -49,8 +48,8 @@ namespace NSFontManager
 
 			m_dSpaceWidthMM		= 0;
 
-			m_strFamilyName		= _T("");
-			m_strPANOSE			= _T("");
+            m_strFamilyName		= L"";
+            m_strPANOSE			= L"";
 			m_lStyle			= 0;
 			m_arSignature.RemoveAll();
 			m_bIsFixedWidth		= false;
@@ -78,7 +77,7 @@ namespace NSFontManager
 			m_strFamilyName		= oSrc.m_strFamilyName;
 			m_strPANOSE			= oSrc.m_strPANOSE;
 			m_lStyle			= oSrc.m_lStyle;
-			m_arSignature.Copy(oSrc.m_arSignature);
+            m_arSignature       = m_arSignature;
 			m_bIsFixedWidth		= oSrc.m_bIsFixedWidth;
 			m_lAvgWidth			= oSrc.m_lAvgWidth;
 
@@ -92,7 +91,7 @@ namespace NSFontManager
 		CFontAdvanced	m_oFont;
 		BYTE			m_lRangeNum;
 		BYTE			m_lRange;
-		CString			m_strPickFont;
+        std::wstring	m_strPickFont;
 		LONG			m_lPickStyle;
 
 	public:
@@ -100,7 +99,7 @@ namespace NSFontManager
 		{
 			m_lRangeNum		= 0xFF;
 			m_lRange		= 0xFF;
-			m_strPickFont	= _T("");
+            m_strPickFont	= L"";
 			m_lPickStyle	= 0;
 		}
 		CFontPickUp(const CFontPickUp& oSrc)
@@ -129,9 +128,9 @@ namespace NSFontManager
 		};
 
 	protected:
-		AVSGraphics::IASCWinFonts*		m_pWinFonts;
-		AVSGraphics::IASCFontManager*	m_pManager;
-		CString							m_strDefaultFont;
+        CApplicationFonts*              m_pFonts;
+        CFontManager*                   m_pManager;
+        std::wstring					m_strDefaultFont;
 
 	public:
 
@@ -141,8 +140,8 @@ namespace NSFontManager
 		BYTE							m_pRanges[0xFFFF];
 		BYTE							m_pRangesNums[0xFFFF];
 
-		CAtlList<CFontPickUp>			m_arListPicUps;
-		CString							m_strCurrentPickFont;
+        std::list<CFontPickUp>			m_arListPicUps;
+        std::wstring					m_strCurrentPickFont;
 		LONG							m_lCurrentPictFontStyle;
 
 	public:
@@ -303,7 +302,7 @@ namespace NSFontManager
 		void LoadFontMetrics()
 		{
 			unsigned short iTemp = 0;
-			m_pManager->GetCellAscent(&iTemp);
+            m_pManager->GetCellAscent(&iTemp);
 			m_oFont.m_dAscent = iTemp;
 			m_pManager->GetCellDescent(&iTemp);
 			m_oFont.m_dDescent = iTemp;
@@ -1236,7 +1235,7 @@ namespace NSFontManager
             //case 31: sUCRName = "Reserved for process-internal usage"; break;
 		}
 
-		__forceinline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
+        inline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
 		{
 			lRangeNum	= m_pRangesNums[symbol];
 			lRange		= m_pRanges[symbol];
@@ -1244,10 +1243,10 @@ namespace NSFontManager
 			return (0xFF != lRangeNum);
 		}
 
-		__forceinline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, CString strText)
+        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, const std::wstring& strText)
 		{
-			int lCount   = strText.GetLength();
-			WCHAR* pData = strText.GetBuffer();
+            int lCount   = (int)strText.length();
+            WCHAR* pData = strText.c_str();
 
 			BYTE lRangeNum  = 0xFF;
 			BYTE lRange		= 0xFF;
@@ -1266,7 +1265,7 @@ namespace NSFontManager
 				}
 			}
 		}
-		__forceinline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
+        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
 		{
 			if (0 == lRangeNum)
 				lRange1 |= 1 << lRange;
@@ -1372,3 +1371,5 @@ namespace NSFontManager
 		}
 	};
 };
+
+#endif // DOCX_RENDERER_FMB_H

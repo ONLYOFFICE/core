@@ -1027,11 +1027,11 @@ namespace OOX
 			}
 			if(m_oRow.IsInit())
 			{
-                sResult += L"<x:Row>" + boost::lexical_cast<std::wstring>(m_oRow->GetValue()) + L"</x:Row>";
+                sResult += L"<x:Row>" + std::to_wstring(m_oRow->GetValue()) + L"</x:Row>";
 			}
 			if(m_oColumn.IsInit())
 			{
-                sResult += L"<x:Column>" + boost::lexical_cast<std::wstring>(m_oColumn->GetValue()) + L"</x:Column>";
+                sResult += L"<x:Column>" + std::to_wstring(m_oColumn->GetValue()) + L"</x:Column>";
 			}
 			sResult += _T("</x:ClientData>");
 			return sResult;

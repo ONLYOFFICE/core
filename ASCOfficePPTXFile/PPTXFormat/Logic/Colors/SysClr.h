@@ -178,7 +178,7 @@ namespace PPTX
 				pWriter->StartNode(sNodeNamespace + _T("sysClr"));
 						
                 std::wstringstream sstream;
-                sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
+                sstream << boost::wformat( L"%02X%02X%02X" ) % red % green % blue;
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());

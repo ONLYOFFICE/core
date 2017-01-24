@@ -326,7 +326,7 @@ namespace PPTX
 							BYTE _b = (BYTE)((dwColor) & 0xFF);
 
                             std::wstringstream sstream;
-                            sstream << boost::wformat( L"%.02X%.02X%.02X" ) % _r % _g % _b;
+                            sstream << boost::wformat( L"%02X%02X%02X" ) % _r % _g % _b;
 
                             std::wstring sHex = L"<w:color w:val=\"" + sstream.str() + L"\"/>";
 							oWriter.WriteString(sHex);

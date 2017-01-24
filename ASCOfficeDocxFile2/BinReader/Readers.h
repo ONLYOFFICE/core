@@ -776,7 +776,7 @@ public:
                             case g_tabtype_clear:   sVal=_T("clear");   break;
                             default:                sVal=_T("left");    break;
 						}
-                        pCStringWriter->WriteString(L"<w:tab w:val=\"%ls\" w:pos=\"" + std::to_wstring(nTab) + L"\"/>");
+                        pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(nTab) + L"\"/>");
 					}
                     pCStringWriter->WriteString(std::wstring(_T("</w:tabs>")));
 				}				
@@ -785,11 +785,7 @@ public:
 			{
                 std::wstring sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
-                std::wstring sStyle;
-                sStyle += L"<w:pStyle w:val=\"";
-                sStyle += sStyleName;
-                sStyle += L"\" />";
-				pCStringWriter->WriteString(sStyle);				
+                pCStringWriter->WriteString(L"<w:pStyle w:val=\"" + sStyleName + L"\" />");
             }break;
 		case c_oSerProp_pPrType::numPr:
             {

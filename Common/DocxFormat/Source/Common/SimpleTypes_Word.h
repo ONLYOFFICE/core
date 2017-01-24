@@ -1186,7 +1186,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return boost::lexical_cast<std::wstring>( this->m_eValue);
+            return std::to_wstring( this->m_eValue);
 		}
 
 
@@ -1257,7 +1257,7 @@ namespace SimpleTypes
             std::wstring sResult;
 
 			if ( !m_bTrailingPercentSign )
-                sResult = boost::lexical_cast<std::wstring>( (int)m_dValue);
+                sResult = std::to_wstring( (int)m_dValue);
 			else
 				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"%";
 
@@ -1909,7 +1909,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -3065,7 +3065,7 @@ namespace SimpleTypes
 			}
 			else
 			{
-				sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 2) );
+                sResult = std::to_wstring( (int)(m_dValue * 2) );
 			}
 
 			return sResult;
@@ -4413,7 +4413,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -4441,7 +4441,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
@@ -5135,7 +5135,7 @@ namespace SimpleTypes
 			if ( m_bUnit )
 				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			else
-                sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 20) );
+                sResult = std::to_wstring( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -5881,7 +5881,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
+            std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}

@@ -52,17 +52,17 @@ const std::wstring ToWString(const bool value)
 
 const std::string ToString(const int value)
 {
-	return StlUtils::IntToString(value);
+    return std::to_string(value);
 }
 
 const std::wstring ToWString(const int value)
 {
-	return StlUtils::IntToWideString(value);
+    return std::to_wstring(value);
 }
 
 const std::string ToString(const size_t value)
 {
-	return StlUtils::IntToString(value);
+    return std::to_string(value);
 }
 
 const std::string ToString(const std::wstring& value)
@@ -77,7 +77,7 @@ const std::string ToString(const wchar_t* value)
 
 const std::wstring ToWString(const size_t value)
 {
-	return StlUtils::IntToWideString(value);
+    return std::to_wstring(value);
 }
 
 const std::string ToString(const double value)

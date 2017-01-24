@@ -109,9 +109,7 @@ namespace OOX
 						+ _T("\">");
 
 					break;
-
 				default:
-
 					return _T("");
 				}
 
@@ -130,7 +128,9 @@ namespace OOX
 				switch ( m_eType )
 				{
 				case et_a_xfrm: sResult = _T("</a:xfrm>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}
@@ -233,7 +233,6 @@ namespace OOX
 					break;
 
 				default:
-
 					return _T("");
 				}
 
@@ -246,7 +245,9 @@ namespace OOX
 				switch ( m_eType )
 				{
 				case et_a_xfrm: sResult = _T("</a:xfrm>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}

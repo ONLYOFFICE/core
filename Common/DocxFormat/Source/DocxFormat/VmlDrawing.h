@@ -393,7 +393,7 @@ namespace OOX
 				}
 				sXml.WriteString(L"</xml>");
 
-				NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
+                NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
 				oContent.AddDefault( oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}

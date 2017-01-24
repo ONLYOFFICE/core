@@ -2832,7 +2832,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nX) + boost::lexical_cast<std::wstring>(m_nY) + L"," + boost::lexical_cast<std::wstring>(m_nZ);
+                return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nX) + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2915,7 +2915,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nY) + L"," + boost::lexical_cast<std::wstring>(m_nZ);
+                return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2988,7 +2988,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nY);
+                return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -3140,7 +3140,7 @@ namespace SimpleTypes
 
 				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					std::wstring sTemp = boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].nX) + L"," + boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].nY);
+                    std::wstring sTemp = std::to_wstring(m_arrPoints[nIndex].nX) + L"," + std::to_wstring(m_arrPoints[nIndex].nY);
 					if ( nIndex < m_arrPoints.size() - 1 ) sTemp += L",";
 					sResult += sTemp;
 				}
@@ -4418,7 +4418,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-                std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
+                std::wstring sResult = std::to_wstring( this->m_eValue);
 
 				return sResult;
 			}

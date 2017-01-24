@@ -126,7 +126,7 @@ namespace OOX
 			if(!m_sId.empty())
 				return m_sId;
 			else
-				return _T("rId") + XmlUtils::IntToString(m_id);
+                return _T("rId") + std::to_wstring(m_id);
 		}
 		template<typename T>
 		void toPPTY(BYTE type, T pWriter) const

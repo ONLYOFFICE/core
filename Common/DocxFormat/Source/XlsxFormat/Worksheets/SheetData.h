@@ -421,7 +421,7 @@ namespace OOX
 				{
 					nCol = 0;
 				}
-				return (m_aLetters[nCol] + XmlUtils::IntToString(nRow + 1));
+                return (m_aLetters[nCol] + std::to_wstring(nRow + 1));
 			}
 		private:
 

@@ -52,45 +52,33 @@ namespace NSPresentationEditor
 
     static std::wstring ToNode(const NSCommon::nullable_base<WORD>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-		int n = (int)prop.get();
-        std::wstring strVal = XmlUtils::IntToString(n);
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<LONG>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-		int n = (int)prop.get();
-        std::wstring strVal = XmlUtils::IntToString(n);
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::UIntToString((size_t)prop.get());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring(prop.get()) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<double>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::DoubleToString(prop.get());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + XmlUtils::DoubleToString(prop.get()) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::UIntToString(prop->GetLONG());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 	}
 
 	class CFontProperties

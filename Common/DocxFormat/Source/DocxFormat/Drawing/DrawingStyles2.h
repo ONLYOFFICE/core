@@ -233,7 +233,9 @@ namespace OOX
 				case et_a_effectRef: sResult += _T("</a:effectRef>");
 				case et_a_fillRef  : sResult += _T("</a:fillRef>");
 				case et_a_lnRef    : sResult += _T("</a:lnRef>");
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}

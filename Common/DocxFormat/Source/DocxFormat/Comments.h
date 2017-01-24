@@ -262,6 +262,8 @@ namespace OOX
 						}
 					}
 					break;
+                default:
+                    break;
 				}
 			}
 			return sRes;

@@ -123,7 +123,9 @@ namespace OOX
 					case OOX::et_m_oMath:	return L"m:oMath";
 					case OOX::et_m_sub:		return L"m:sub";
 					case OOX::et_m_sup:		return L"m:sup";
-				}
+                    default:
+                        break;
+                }
 				return L"";
 			}
 			// Childs

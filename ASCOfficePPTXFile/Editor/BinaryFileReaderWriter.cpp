@@ -66,19 +66,6 @@ namespace NSBinPptxRW
 	template <typename T,unsigned S>
 	inline unsigned arraysize(const T (&v)[S]) { return S; }
 
-	inline _INT32 __strlen(const char* str)
-	{
-		const char* s = str;
-		for (; *s != 0; ++s);
-		return (_INT32)(s - str);
-	}
-	inline _INT32 __wstrlen(const wchar_t* str)
-	{
-		const wchar_t* s = str;
-		for (; *s != 0; ++s);
-		return (_INT32)(s - str);
-	}
-
 	CMasterSlideInfo::CMasterSlideInfo() : m_arLayoutIndexes(), m_arLayoutImagesBase64()
 	{
 		m_lThemeIndex = 0;

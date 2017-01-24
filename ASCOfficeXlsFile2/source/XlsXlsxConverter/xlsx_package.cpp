@@ -123,14 +123,14 @@ void sheets_files::write(const std::wstring & RootPath)
     {
         if (sheets_[i])
         {
-            const std::wstring fileName = std::wstring(L"sheet") + XmlUtils::IntToString(i + 1) + L".xml";
+            const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
             content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
             static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
             contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
 
             if (rels_)
             {
-				const std::wstring id = std::wstring(L"sId") + XmlUtils::IntToString(i + 1);
+                const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
                 static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
                 const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
                 rels_->add(id, kWSRel, fileRef);
@@ -278,7 +278,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
     {
         if (charts_[i])
         {
-            const std::wstring fileName = std::wstring(L"chart") + XmlUtils::IntToString(i + 1) + L".xml";
+            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
             content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
            
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";

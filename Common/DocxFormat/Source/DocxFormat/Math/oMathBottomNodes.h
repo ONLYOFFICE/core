@@ -307,7 +307,9 @@ namespace OOX
 					case OOX::et_m_zeroAsc:			return L"m:zeroAsc";
 					case OOX::et_m_zeroDesc:		return L"m:zeroDesc";
 					case OOX::et_m_zeroWid:			return L"m:zeroWid";
-				}
+                    default:
+                        break;
+                }
 				return L"";
 			}
 			nullable<TMathBottomType> m_val;			

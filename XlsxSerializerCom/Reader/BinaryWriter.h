@@ -145,6 +145,33 @@ namespace BinXlsxRW {
 				WriteTableStyleInfo(oTable.m_oTableStyleInfo.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oTable.m_oExtLst.IsInit())
+			{
+				for(size_t i = 0; i < oTable.m_oExtLst->m_arrExt.size(); ++i)
+				{
+					OOX::Drawing::COfficeArtExtension* pExt = oTable.m_oExtLst->m_arrExt[i];
+					if(pExt->m_oAltTextTable.IsInit())
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AltTextTable);
+						WriteAltTextTable(pExt->m_oAltTextTable.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+				}
+			}
+		}
+		void WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable)
+		{
+			int nCurPos = 0;
+			if(oAltTextTable.m_oAltText.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltText);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltText.get());
+			}
+			if(oAltTextTable.m_oAltTextSummary.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltTextSummary);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltTextSummary.get());
+			}
 		}
 		void WriteAutoFilter(const OOX::Spreadsheet::CAutofilter& oAutofilter)
 		{
@@ -2638,62 +2665,54 @@ namespace BinXlsxRW {
 					else if (NULL != pVmlDrawing && pOleObject->m_oShapeId.IsInit())
 					{
                         std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pOleObject->m_oShapeId->GetValue());
-                        std::map<std::wstring, std::wstring>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
-						if (pFind != pVmlDrawing->m_mapShapesXml.end())
+						std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+						if (pFind != pVmlDrawing->m_mapShapes.end())
 						{
-							//ищем shape как обьект, чтобы обработать ClientData
-							for(size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+							pFind->second.bUsed			= true;
+							OOX::WritingElement* pElem	= pFind->second.pElement;
+							
+							if(OOX::et_v_shapetype != pElem->getType()) //shape, rect, ...
 							{
-								OOX::WritingElement* pElem = pVmlDrawing->m_arrItems[i];
-								if(OOX::et_v_shape == pElem->getType())
+								OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+								for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
 								{
-									OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
-									if((pShape->m_sSpId.IsInit() && sShapeId == pShape->m_sSpId.get()) ||
-									   (pShape->m_sId.IsInit() && sShapeId == pShape->m_sId.get()))
+									OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+									if(OOX::et_v_ClientData == pElemShape->getType())
 									{
-										for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+										//преобразуем ClientData в CellAnchor
+										OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+										std::vector<int> m_aAnchor;
+										pClientData->getAnchorArray(m_aAnchor);
+										if(8 == m_aAnchor.size())
 										{
-											OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
-											if(OOX::et_v_ClientData == pElemShape->getType())
-											{
-												//преобразуем ClientData в CellAnchor
-												OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
-												std::vector<int> m_aAnchor;
-												pClientData->getAnchorArray(m_aAnchor);
-												if(8 == m_aAnchor.size())
-												{
-													SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-													eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-													OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
-													oCellAnchor.m_sSpId.Init();
-													oCellAnchor.m_sSpId->append(sShapeId);
-													oCellAnchor.m_oFrom.Init();
-													oCellAnchor.m_oFrom->m_oCol.Init();
-													oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
-													oCellAnchor.m_oFrom->m_oColOff.Init();
-													oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
-													oCellAnchor.m_oFrom->m_oRow.Init();
-													oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
-													oCellAnchor.m_oFrom->m_oRowOff.Init();
-													oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
-													oCellAnchor.m_oTo.Init();
-													oCellAnchor.m_oTo->m_oCol.Init();
-													oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
-													oCellAnchor.m_oTo->m_oColOff.Init();
-													oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
-													oCellAnchor.m_oTo->m_oRow.Init();
-													oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
-													oCellAnchor.m_oTo->m_oRowOff.Init();
-													oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+											SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+											eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+											OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+											oCellAnchor.m_sSpId.Init();
+											oCellAnchor.m_sSpId->append(sShapeId);
+											oCellAnchor.m_oFrom.Init();
+											oCellAnchor.m_oFrom->m_oCol.Init();
+											oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+											oCellAnchor.m_oFrom->m_oColOff.Init();
+											oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+											oCellAnchor.m_oFrom->m_oRow.Init();
+											oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+											oCellAnchor.m_oFrom->m_oRowOff.Init();
+											oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+											oCellAnchor.m_oTo.Init();
+											oCellAnchor.m_oTo->m_oCol.Init();
+											oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+											oCellAnchor.m_oTo->m_oColOff.Init();
+											oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+											oCellAnchor.m_oTo->m_oRow.Init();
+											oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+											oCellAnchor.m_oTo->m_oRowOff.Init();
+											oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
 
-													nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-													WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
-													m_oBcw.WriteItemEnd(nCurPos);
-												}
-												break;
-											}
+											nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+											WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+											m_oBcw.WriteItemEnd(nCurPos);
 										}
-										break;
 									}
 								}
 							}
@@ -2701,7 +2720,65 @@ namespace BinXlsxRW {
 					}
 				}
 			}
-		};
+
+			if (NULL != pVmlDrawing)
+			{
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
+				for (; it != pVmlDrawing->m_mapShapes.end(); it++)
+				{
+					if (it->second.bUsed == false)
+					{//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx						
+						it->second.bUsed = true;
+						OOX::WritingElement* pElem = it->second.pElement;
+						if(OOX::et_v_shapetype != pElem->getType())
+						{
+							OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+							for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+							{
+								OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+								if(OOX::et_v_ClientData == pElemShape->getType())
+								{
+									//преобразуем ClientData в CellAnchor
+									OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+									std::vector<int> m_aAnchor;
+									pClientData->getAnchorArray(m_aAnchor);
+									if(8 == m_aAnchor.size())
+									{
+										SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+										eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+										OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+										oCellAnchor.m_sSpId.Init();
+										oCellAnchor.m_sSpId->append(it->first);
+										oCellAnchor.m_oFrom.Init();
+										oCellAnchor.m_oFrom->m_oCol.Init();
+										oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+										oCellAnchor.m_oFrom->m_oColOff.Init();
+										oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+										oCellAnchor.m_oFrom->m_oRow.Init();
+										oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+										oCellAnchor.m_oFrom->m_oRowOff.Init();
+										oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+										oCellAnchor.m_oTo.Init();
+										oCellAnchor.m_oTo->m_oCol.Init();
+										oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+										oCellAnchor.m_oTo->m_oColOff.Init();
+										oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+										oCellAnchor.m_oTo->m_oRow.Init();
+										oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+										oCellAnchor.m_oTo->m_oRowOff.Init();
+										oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+
+										nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+										WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, NULL);
+										m_oBcw.WriteItemEnd(nCurPos);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
         void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor& pCellAnchor, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
 		{
 			//Type
@@ -2745,15 +2822,16 @@ namespace BinXlsxRW {
 			}
 			else if (pCellAnchor.m_sSpId.IsInit() && pVmlDrawing)
 			{
-                std::map<std::wstring, std::wstring>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(pCellAnchor.m_sSpId.get2());
-				if (pFind != pVmlDrawing->m_mapShapesXml.end())
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor.m_sSpId.get2());
+				if (pFind != pVmlDrawing->m_mapShapes.end())
 				{
                     std::wstring* bstrOutputXml = NULL;
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 
-					std::wstring temp = _T("<v:object>");
-					temp.append(pFind->second);
+					std::wstring temp = L"<v:object>" + pFind->second.sXml;
+					pFind->second.bUsed = true;
+
 					if (NULL != pOleObject)
 					{
 						//ищем физический файл, потому что rId относительно sheet.xml, а SetRelsPath(pVmlDrawing
@@ -2792,7 +2870,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				RELEASEOBJECT(bstrOutputXml);
 			}
-		};
+		}
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo)
 		{
 			//Col
@@ -2823,7 +2901,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oFromTo.m_oRowOff->ToMm());
 			}
-		};
+		}
 		void WritePos(const OOX::Spreadsheet::CPos& oPos)
 		{
 			//X
@@ -2840,7 +2918,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oPos.m_oY->ToMm());
 			}
-		};
+		}
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt)
 		{
 			//Cx
@@ -2857,7 +2935,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCy->ToMm());
 			}
-		};
+		}
 		void WriteComments(std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments)
 		{
 			int nCurPos = 0;
@@ -2881,7 +2959,7 @@ namespace BinXlsxRW {
 					aCommentDatas.clear();
 				}
 			}
-		};
+		}
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas)
 		{
 			if(oComment.m_sGfxdata.IsInit())

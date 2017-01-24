@@ -58,6 +58,7 @@
 #include "Comments.h"
 #include "UnknowTypeFile.h"
 #include "Diagram/DiagramDrawing.h"
+#include "Diagram/DiagramData.h"
 
 
 namespace OOX
@@ -125,8 +126,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CPeople( oFileName ));
 	
 		////
-		else if (oRelation.Type() == FileTypes::Data)				// нужен только filepath
-			return smart_ptr<OOX::File>(new Image( oFileName ));
+		else if (oRelation.Type() == FileTypes::Data)			
+			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
 
@@ -197,8 +198,8 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( oFileName ));
 ////
-		else if (pRelation->Type() == FileTypes::Data)				// нужен только filepath
-			return smart_ptr<OOX::File>(new Image( oFileName ));
+		else if (pRelation->Type() == FileTypes::Data)
+			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
 

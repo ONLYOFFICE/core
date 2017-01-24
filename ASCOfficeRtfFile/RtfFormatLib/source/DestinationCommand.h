@@ -30,6 +30,7 @@
  *
  */
 #pragma once 
+#include <boost/algorithm/string.hpp>
 
 #include "RtfReader.h"
 #include "RtfDocument.h"
@@ -120,7 +121,7 @@ public:
     void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
 	{
 		if( true == m_bErease )
-            boost::algorithm::replace_all(sText, L";", L"");
+            XmlUtils::replace_all(sText, L";", L"");
 		m_sName += sText;
 	}
 };
@@ -479,7 +480,7 @@ public:
 
     void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
-        boost::algorithm::replace_all(sText, L";", L"");
+        XmlUtils::replace_all(sText, L";", L"");
 		oDocument.m_oRevisionTable.AddItem( sText );
 	}
 
@@ -1283,7 +1284,7 @@ public:
 		}
 		else
 		{
-            strProp = std::to_wstring( parameter);
+            strProp = boost::lexical_cast<std::wstring>( parameter);
 		}
 
 		return strProp;

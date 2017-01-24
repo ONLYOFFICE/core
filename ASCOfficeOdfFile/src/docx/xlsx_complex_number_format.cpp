@@ -31,6 +31,7 @@
  */
 
 #include "xlsx_complex_number_format.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -55,9 +56,9 @@ public:
     void add_format(std::wstring const & condition, std::wstring const & format)
     {
         std::wstring c = condition;
-        boost::algorithm::to_lower(c);
-        boost::algorithm::replace_all(c, L" ", L"");
-        boost::algorithm::replace_all(c, L"\t", L"");
+		XmlUtils::GetLower(c);
+        XmlUtils::replace_all( c, L" ", L"");
+        XmlUtils::replace_all( c, L"\t", L"");
 
         if (L"" == c)
         {

@@ -31,9 +31,6 @@
  */
 #pragma once
 
-//#include "NamespaceOwn.h"
-//#include "../XML/XmlUtils.h"
-
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX
@@ -385,6 +382,7 @@ namespace Spreadsheet
 		et_TableColumns,
 		et_TableColumn,
 		et_TableStyleInfo,
+		et_AltTextTable,
 		et_SortState,
 		et_SortCondition,
 		et_Autofilter,

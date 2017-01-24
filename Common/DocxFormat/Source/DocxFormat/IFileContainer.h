@@ -62,17 +62,14 @@ namespace OOX
 		}
 	protected:
 
-        std::map<std::wstring, smart_ptr<OOX::File>> m_mContainer;
-		size_t                                m_lMaxRid;
-
-	protected:
+        std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
+		size_t											m_lMaxRid;
 
 		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 		void Write(const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
 		void Write(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
 
-	protected:
 		void Commit  (const CPath& oPath);
 		void Finalize(const CPath& oFilefilename, const CPath& oDir, OOX::CContentTypes& oContent);
 		void Finalize(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent);
@@ -81,13 +78,9 @@ namespace OOX
 
 		void ExtractPictures(const OOX::CPath& oPath) const;
 
-	public:
-
 		virtual smart_ptr<Image>     GetImage    (const RId& rId) const;
 		virtual smart_ptr<HyperLink> GetHyperlink(const RId& rId) const;
 		virtual smart_ptr<OleObject> GetOleObject(const RId& rId) const;
-
-	public:
 
 		template<typename T>
 		const bool IsExist() const;

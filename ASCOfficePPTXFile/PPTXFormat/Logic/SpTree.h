@@ -46,7 +46,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class SpTree : public WrapperWritingElement
 		{
 		public:

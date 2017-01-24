@@ -31,7 +31,9 @@
  */
 
 
-#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/ref.hpp>
+
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include "../odf/style_text_properties.h"
 
@@ -137,17 +139,17 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 	if (ind == 0)	values_[ind].strRef_.present = true;
 	else			values_[ind].numRef_.present = true;
 
-	BOOST_FOREACH(std::wstring & v, values)
+	for (int i = 0; i < values.size(); i++)
 	{
-		boost::algorithm::trim(v);
+		boost::algorithm::trim(values[i]);
 		if (ind == 0)
 		{
-			values_[ind].strRef_.str_cache.push_back(v);
+			values_[ind].strRef_.str_cache.push_back(values[i]);
 			values_[ind].strRef_.str_cache_count++;
 		}
 		else
 		{
-			values_[ind].numRef_.num_cache.push_back(v);
+			values_[ind].numRef_.num_cache.push_back(values[i]);
 			values_[ind].numRef_.num_cache_count++;
 		}
 	}
@@ -238,13 +240,14 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									{
 										CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
 									}
-									int j=0;
-									BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cache)
-									{								
+									for (int j = 0; j < values_[i].numRef_.num_cache.size(); j++)
+									{				
+										std::wstring & v = values_[i].numRef_.num_cache[j];
+
 										if (v == L"NaN") continue; 
 										CP_XML_NODE(L"c:pt")
 										{
-											CP_XML_ATTR(L"idx", j++);
+											CP_XML_ATTR(L"idx", j);
 											double val = 0;
 
 											try { val = boost::lexical_cast<double>(v);}
@@ -271,13 +274,15 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							{
 								CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
 							}
-							int j=0;
-							BOOST_FOREACH(std::wstring & v, values_[i].numRef_.num_cache)
+
+							for (int j = 0; j < values_[i].numRef_.num_cache.size(); j++)
 							{				
+								std::wstring & v = values_[i].numRef_.num_cache[j];
+								
 								if (v == L"NaN") continue; 
 								CP_XML_NODE(L"c:pt")
 								{
-									CP_XML_ATTR(L"idx", j++);
+									CP_XML_ATTR(L"idx", j);
 									double val = 0;
 
 									try { val = boost::lexical_cast<double>(v);}
@@ -307,12 +312,13 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								{
 									CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
 								}
-								int j=0;
-								BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cache)
+								for (int j = 0; j < values_[i].strRef_.str_cache.size(); j++)
 								{								
+									std::wstring & v = values_[i].strRef_.str_cache[j];
+
 									CP_XML_NODE(L"c:pt")
 									{
-										CP_XML_ATTR(L"idx", j++);
+										CP_XML_ATTR(L"idx", j);
 										CP_XML_NODE(L"c:v")
 										{
 											CP_XML_CONTENT(v);
@@ -330,12 +336,12 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							{
 								CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
 							}
-							int j=0;
-							BOOST_FOREACH(std::wstring & v, values_[i].strRef_.str_cache)
+							for (int j = 0; j < values_[i].strRef_.str_cache.size(); j++)
 							{								
+								std::wstring & v = values_[i].strRef_.str_cache[j];
 								CP_XML_NODE(L"c:pt")
 								{
-									CP_XML_ATTR(L"idx", j++);
+									CP_XML_ATTR(L"idx", j);
 									CP_XML_NODE(L"c:v")
 									{
 										CP_XML_CONTENT(v);
@@ -347,7 +353,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 				}
 			}
 		}		
-		if (content_.regression_curve_.line_properties_.size()>0)
+		if (content_.regression_curve_.line_properties_.size() > 0)
 		{
 			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
             _oox_fill oox_fill;

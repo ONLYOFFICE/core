@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
 
 #include "Logic/CSld.h"
 #include "Logic/ClrMapOvr.h"
@@ -51,11 +52,10 @@
 #include "SlideMaster.h"
 #include "TableStyles.h"
 
-#include "DocxFormat/FileTypes.h"
-#include "DocxFormat/Media/Image.h"
-#include "DocxFormat/Media/OleObject.h"
-#include "DocxFormat/External/HyperLink.h"
-#include "DocxFormat/Drawing/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 
 namespace PPTX
@@ -108,7 +108,7 @@ namespace PPTX
 			oNode.ReadAttributeBase(L"type", attrType);
 			oNode.ReadAttributeBase(L"userDrawn", userDrawn);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 
@@ -134,16 +134,16 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:sldLayout"), oAttr, oValue));
 
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::SlideLayout;
+			return OOX::Presentation::FileTypes::SlideLayout;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -251,28 +251,27 @@ namespace PPTX
 					Master->GetBackground(bg, ARGB);
 			}
 		}
-		virtual std::wstring GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::Image> p = image(rid);
+			smart_ptr<OOX::Image> p = GetImage(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual std::wstring GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
+			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual std::wstring GetOleFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::OleObject> p = oleObject(rid);
+			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-
 		virtual DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
@@ -469,12 +468,12 @@ namespace PPTX
 		smart_ptr<SlideMaster>					Master;
 		smart_ptr<Theme>						theme;
         smart_ptr<TableStyles>					tableStyles;
-		smart_ptr<VmlDrawing>					Vml;
+		smart_ptr<OOX::CVmlDrawing>				Vml;
 		
 	public:
 		void ApplyRels()
 		{
-			smart_ptr<PPTX::File> pFile = FileContainer::get(PPTX::FileTypes::SlideMaster);
+			smart_ptr<OOX::File> pFile = FileContainer::Get(OOX::Presentation::FileTypes::SlideMaster);
 
 			Master = pFile.smart_dynamic_cast<PPTX::SlideMaster>();
 
@@ -483,24 +482,26 @@ namespace PPTX
 			
 			if (theme.IsInit())
 			{	
-                tableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+                tableStyles = theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
-			if (exist(PPTX::FileTypes::VmlDrawing))
+			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
 			{
-				Vml = FileContainer::get(PPTX::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(PPTX::FileTypes::VmlDrawing));
+				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
 			}
 		}
 
-		const std::wstring GetVmlXmlBySpid(const std::wstring& spid)const
+		std::wstring GetVmlXmlBySpid(const std::wstring& spid)
 		{
-            std::wstring xml;
-			if((Vml.is_init()) && (spid != _T("")))
+			if(Vml.is_init() && !spid.empty())
 			{
-				std::map<std::wstring, std::wstring>::const_iterator pPair = Vml->m_mapShapesXml.find(spid);
-				if (Vml->m_mapShapesXml.end() != pPair)
-					xml = pPair->second;
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+				if (Vml->m_mapShapes.end() != pPair)
+				{
+					pPair->second.bUsed = true;
+					return pPair->second.sXml;
+				}
 			}
-			return xml;
+			return L"";
 		}
 	};
 } // namespace PPTX

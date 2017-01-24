@@ -314,19 +314,19 @@ namespace NSCustomShapesConvert
 
 					if (nGuideIndex_x >= 0 ) 
 					{
-                        strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
+                        strPath += XmlUtils::IntToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 					}
 					else
 					{
-                       strPath += NSStringUtils::ToString(m_arVertices[nIndex].x) + L",";
+                       strPath += XmlUtils::IntToString(m_arVertices[nIndex].x) + L",";
 					}
 					if (nGuideIndex_y >= 0)
 					{
-                        strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
+                        strPath += XmlUtils::IntToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 					}
 					else
 					{
-                        strPath += NSStringUtils::ToString(m_arVertices[nIndex].y) + L",";
+                        strPath += XmlUtils::IntToString(m_arVertices[nIndex].y) + L",";
 					}
 				}
 				strPath.erase(strPath.length() - 1);
@@ -390,19 +390,19 @@ namespace NSCustomShapesConvert
 
 						if (nGuideIndex_x >= 0 )
 						{
-                            strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
+                            strPath += XmlUtils::IntToString(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
 						}
 						else
 						{
-                            strPath += NSStringUtils::ToString(m_arVertices[nV].x) + L",";
+                            strPath += XmlUtils::IntToString(m_arVertices[nV].x) + L",";
 						}
 						if (nGuideIndex_y >= 0)
 						{
-                            strPath += NSStringUtils::ToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
+                            strPath += XmlUtils::IntToString(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
 						}
 						else
 						{
-                            strPath += NSStringUtils::ToString(m_arVertices[nV].y) + L",";
+                            strPath += XmlUtils::IntToString(m_arVertices[nV].y) + L",";
 						}
 					}
 

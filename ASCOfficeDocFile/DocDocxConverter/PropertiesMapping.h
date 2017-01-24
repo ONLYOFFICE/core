@@ -40,7 +40,7 @@
 #include "SinglePropertyModifier.h"
 
 
-#include "../Win32/ASCOfficeCriticalSection.h" //for linux make inside
+#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h" //for linux make inside
 
 namespace DocFileFormat
 {
@@ -76,6 +76,6 @@ namespace DocFileFormat
 		XMLTools::CStringXmlWriter* m_pXmlWriter;
 
 		static std::map<unsigned char, std::wstring>	brcTypeMap;		
-		static ASCOfficeCriticalSection					brcTypeMapLock;
+		static OfficeCriticalSection					brcTypeMapLock;
 	};
 }

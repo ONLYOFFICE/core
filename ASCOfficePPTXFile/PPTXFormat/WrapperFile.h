@@ -33,15 +33,15 @@
 #ifndef PPTX_WRAPPER_FILE_INCLUDE_H_
 #define PPTX_WRAPPER_FILE_INCLUDE_H_
 
-#include "DocxFormat/File.h"
-#include "DocxFormat/NamespaceOwn.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
+#include "Namespaces.h"
 #include "FileMap.h"
 
 #include "../Editor/BinWriters.h"
 
 namespace PPTX
 {
-	class WrapperFile : public PPTX::File
+	class WrapperFile : public OOX::File
 	{
 	public:
 		WrapperFile()

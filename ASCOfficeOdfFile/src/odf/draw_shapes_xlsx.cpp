@@ -37,9 +37,8 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
-#include <boost/regex.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>

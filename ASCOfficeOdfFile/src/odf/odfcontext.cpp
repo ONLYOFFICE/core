@@ -32,7 +32,6 @@
 
 #include "odfcontext.h"
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { 
 
@@ -107,7 +106,7 @@ void styles_container::add_style(	const std::wstring & Name,
 
         // TODO: как правильно??
         std::wstring lName = Name;
-        boost::algorithm::to_lower(lName);
+		XmlUtils::GetLower(lName);
         //if ( boost::algorithm::contains(lName, L"internet_20_link") )
         if (lName == L"internet_20_link")///???????????????
             hyperlink_style_pos_ = pos;

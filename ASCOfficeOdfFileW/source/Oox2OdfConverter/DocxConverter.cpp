@@ -36,6 +36,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -2446,7 +2447,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		{
             OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
 
-			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
@@ -2465,7 +2466,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
                
 				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 				{
-					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 					bSet = true;
 				}
@@ -2557,7 +2558,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 
         if (sptType != OOX::Vml::SptType::sptNotPrimitive)
 		{
-			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + boost::lexical_cast<std::wstring>(sptType));
+			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 			bSet = true;
 		}
@@ -2829,40 +2830,33 @@ void DocxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 	if (oox_diagramm == NULL)return;
 	if (oox_diagramm->m_oRId_Data.IsInit() == false) return;
 
-	smart_ptr<OOX::Image> pDiagData;
+	smart_ptr<OOX::File> oFile;
 	
 	if (oox_current_child_document)
-		pDiagData = docx_document->GetDocument()->GetImage(oox_diagramm->m_oRId_Data->GetValue());
+		oFile = docx_document->GetDocument()->Find(oox_diagramm->m_oRId_Data->GetValue());
 	else
-		pDiagData = docx_document->GetDocument()->GetImage(oox_diagramm->m_oRId_Data->GetValue());
+		oFile = docx_document->GetDocument()->Find(oox_diagramm->m_oRId_Data->GetValue());
 	
-	NSCommon::nullable<OOX::RId> id_drawing;
+	NSCommon::nullable<std::wstring> id_drawing;
 
-	if (pDiagData.IsInit())
+	if (oFile.IsInit())
 	{
-        std::wstring strDiagDataPath = pDiagData->filename().m_strFilename;
+		OOX::CDiagramData* pDiagData = (OOX::CDiagramData*)oFile.operator->();
 		
-		XmlUtils::CXmlNode oNodeDiagData;
-        if (oNodeDiagData.FromXmlFile(strDiagDataPath))
+        if ((pDiagData) && (pDiagData->m_oExtLst.IsInit()))
 		{
-			XmlUtils::CXmlNode oNode2 = oNodeDiagData.ReadNode(_T("dgm:extLst"));
-			if (oNode2.IsValid())
+			for (int i = 0 ; i < pDiagData->m_oExtLst->m_arrExt.size(); i++)
 			{
-				XmlUtils::CXmlNode oNode3 = oNode2.ReadNode(_T("a:ext"));
-				if (oNode3.IsValid())
+				if ( pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 				{
-					XmlUtils::CXmlNode oNode4 = oNode3.ReadNode(_T("dsp:dataModelExt"));
-					if (oNode4.IsValid())
-					{
-						oNode4.ReadAttributeBase(L"relId", id_drawing);
-					}
+					id_drawing = pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
 				}
 			}
 		}
 	}
 	if (id_drawing.is_init() == false) return;
 
-	smart_ptr<OOX::File> oFile = docx_document->GetDocument()->Find( *id_drawing );
+	oFile = docx_document->GetDocument()->Find( *id_drawing );
 
 	if (oFile.is_init() && OOX::FileTypes::DiagDrawing == oFile->type())
 	{
@@ -2870,10 +2864,8 @@ void DocxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 
 		oox_current_child_document = diag_drawing;
 
-		for (unsigned int i=0; i < diag_drawing->m_arrShapeTree.size(); i++)
-		{
-			OoxConverter::convert(diag_drawing->m_arrShapeTree[i]);
-		}
+		OoxConverter::convert(diag_drawing->m_oShapeTree.GetPointer());
+
 		oox_current_child_document = NULL;
 	}
 }

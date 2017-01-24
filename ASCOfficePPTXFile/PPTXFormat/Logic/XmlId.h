@@ -34,7 +34,7 @@
 #define PPTX_PPTSLIDES_XMLID_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "../DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -45,10 +45,9 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(XmlId)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name		= XmlUtils::GetNameNoNS(node.GetName());
+				m_name = XmlUtils::GetNameNoNS(node.GetName());
 				node.ReadAttributeBase(L"r:id", rid);
 				node.ReadAttributeBase(L"id", id);
 			}
@@ -65,7 +64,9 @@ namespace PPTX
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteString2(0, id);
+				
 				rid.toPPTY(1, pWriter);
+				
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
@@ -81,11 +82,9 @@ namespace PPTX
 				pWriter->EndNode(_T("p:") + m_name);
 			}
 
-		public:
 			nullable_string			id;
-			PPTX::RId				rid;
-		public:
-			std::wstring					m_name;
+			OOX::RId				rid;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

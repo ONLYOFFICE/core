@@ -33,7 +33,6 @@
 #define CPDOCCORE_COMPLEX_NUMBER_FORMAT
 
 #include <string>
-#include <boost/algorithm/string.hpp>  
 #include <cpdoccore/CPScopedPtr.h>
 
 namespace cpdoccore {

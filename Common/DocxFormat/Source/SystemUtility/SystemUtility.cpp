@@ -38,7 +38,7 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
-#include <boost/algorithm/string.hpp>
+#include "../XML/Utils.h"
 
 namespace OOX
 {
@@ -108,8 +108,8 @@ namespace OOX
 			return;
 
 		//todooo оптимизировать 
-		boost::algorithm::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
-		boost::algorithm::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
+		XmlUtils::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
+		XmlUtils::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
 
 		const wchar_t*  pData   = m_strFilename.c_str();
         int             nLen    = (int) m_strFilename.length();
@@ -123,6 +123,10 @@ namespace OOX
         int nCurrentW       = 0;
         bool bIsUp          = false;
 
+#if !defined(_WIN32) && !defined (_WIN64)
+        if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+            pDataNorm[nCurrentW++] = pData[nCurrent];
+#endif
 		while (nCurrent < nLen)
 		{
             if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
@@ -171,7 +175,7 @@ namespace OOX
 		std::wstring fileDirectory = GetDirectory(false);
 		std::wstring lowerFileName = m_strFilename;
 
-		boost::algorithm::to_lower(lowerFileName);
+		XmlUtils::GetLower(lowerFileName);
 
 		CArray<std::wstring> trueArray;
 
@@ -180,7 +184,7 @@ namespace OOX
 		for (int i = 0; i < trueArray.GetCount(); i++)
 		{
 			std::wstring lowerTest = trueArray[i];
-			boost::algorithm::to_lower(lowerTest);
+			XmlUtils::GetLower(lowerTest);
 
 			if (lowerTest == lowerFileName)
 			{

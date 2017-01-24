@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "Pic.h"
 #include "SpTree.h"
@@ -141,7 +141,7 @@ namespace PPTX
 					if (pWriter->m_pCommonRels->is_init())
 						pRels = pWriter->m_pCommonRels->operator ->();
 
-					sFilePath = this->GetFullOleName(PPTX::RId(m_oId.get()), pRels);
+					sFilePath = this->GetFullOleName(OOX::RId(m_oId.get()), pRels);
 				}
                 if(!sFilePath.empty())
 				{
@@ -220,11 +220,11 @@ namespace PPTX
 			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_sFilepathBin.IsInit());
 		}
 
-		std::wstring COLEObject::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		std::wstring COLEObject::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
 		{
 			if (pRels != NULL)
 			{
-				smart_ptr<PPTX::OleObject> p = pRels->oleObject(oRId);
+				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
 				if (p.is_init())
 					return p->filename().m_strFilename;
 			}

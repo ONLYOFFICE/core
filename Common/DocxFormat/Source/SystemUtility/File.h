@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include <boost/lexical_cast.hpp>
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/File.h"
@@ -37,10 +38,6 @@
 #include "../../../3dParty/pole/pole.h"
 #include "../Base/unicode_util.h"
 #include "../Base/Types_32.h"
-
-#ifndef COINIT_MULTITHREADED
-	#define COINIT_MULTITHREADED 0				//for win64 .... oO
-#endif
 
 class CFile 
 {
@@ -64,9 +61,9 @@ private:
             pModeCreate = L"wb";
         }
         if(NULL == m_pFile && bOpen)
-            m_pFile = _wfopen(strFileName.c_str(), pModeOpen);
+            _wfopen_s(&m_pFile, strFileName.c_str(), pModeOpen);
         if(NULL == m_pFile && bCreate)
-            m_pFile = _wfopen(strFileName.c_str(), pModeCreate);
+            _wfopen_s(&m_pFile, strFileName.c_str(), pModeCreate);
 #else
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;
@@ -478,12 +475,6 @@ namespace CDirectory
     {
         return NSFile::CFileBinary::Remove(strFileName);
     }
-
-    static std::wstring ToString(DWORD val)
-    {
-        return std::to_wstring(val);
-    }
-
     static bool CopyFile (std::wstring strExists, std::wstring strNew)
     {
         return NSFile::CFileBinary::Copy(strExists, strNew);
@@ -491,17 +482,14 @@ namespace CDirectory
     static void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
-        pWriter->WriteString(CDirectory::ToString(value));
+        pWriter->WriteString(boost::lexical_cast<std::wstring>(value));
         pWriter->WriteNodeEnd(strName);
     }
 
     static void WriteValueToNode(std::wstring strName, LONG value, XmlUtils::CXmlWriter* pWriter)
     {
         pWriter->WriteNodeBegin(strName);
-
-        std::wstring strLONG = std::to_wstring(value);
-
-        pWriter->WriteString(strLONG);
+        pWriter->WriteString(boost::lexical_cast<std::wstring>(value));
         pWriter->WriteNodeEnd(strName);
     }
     static void WriteValueToNode(std::wstring strName, std::wstring value, XmlUtils::CXmlWriter* pWriter)

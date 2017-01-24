@@ -977,4 +977,69 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
                                v8::TryCatch& try_catch,
                                std::wstring& strError);
 
+class CCacheDataScript
+{
+private:
+    BYTE* Data;
+    int Length;
+
+    v8::ScriptCompiler::Source* Source;
+    v8::ScriptCompiler::CachedData* CachedData;
+
+    std::wstring Path;
+
+public:
+    CCacheDataScript(const std::wstring& sPath)
+    {
+        Data = NULL;
+        Length = 0;
+
+        if (!sPath.empty())
+        {
+            BYTE* _data = NULL;
+            DWORD _data_length = 0;
+            if (NSFile::CFileBinary::ReadAllBytes(sPath, &_data, _data_length))
+            {
+                Data = _data;
+                Length = (int)_data_length;
+            }
+        }
+
+        Source      = NULL;
+        CachedData  = NULL;
+        Path        = sPath;
+    }
+    ~CCacheDataScript()
+    {
+        //RELEASEOBJECT(Source);
+        //RELEASEOBJECT(CachedData);
+        RELEASEARRAYOBJECTS(Data);
+    }
+
+    v8::Local<v8::Script> Compile(const v8::Local<v8::Context>& _context, const v8::Local<v8::String>& source)
+    {
+        v8::Local<v8::Script> script;
+        if (NULL == Data)
+        {
+            Source = new v8::ScriptCompiler::Source(source);
+            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
+
+            const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
+            NSFile::CFileBinary oFileTest;
+            if (oFileTest.CreateFileW(Path))
+            {
+                oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
+                oFileTest.CloseFile();
+            }
+        }
+        else
+        {
+            CachedData = new v8::ScriptCompiler::CachedData(Data, Length);
+            Source = new v8::ScriptCompiler::Source(source, CachedData);
+            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
+        }
+        return script;
+    }
+};
+
 #endif // NATIVECONTROL

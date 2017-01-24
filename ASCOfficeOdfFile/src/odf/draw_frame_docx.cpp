@@ -37,7 +37,6 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
 #include <cpdoccore/odf/odf_document.h>
@@ -55,6 +54,8 @@
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { 
 
@@ -1430,7 +1431,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 		//normalize path ??? todooo
-		boost::algorithm::replace_all(objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
+		XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
         cpdoccore::odf_reader::odf_document objectSubDoc(objectPath ,NULL);    
 //---------------------------------------------------------------------------------------------------------------------

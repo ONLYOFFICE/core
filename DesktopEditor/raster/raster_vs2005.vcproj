@@ -713,6 +713,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Metafile\Emf\EmfFile.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Metafile\Emf\EmfFile.h"
 					>
 				</File>

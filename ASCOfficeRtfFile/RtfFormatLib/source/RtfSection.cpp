@@ -41,7 +41,7 @@ std::wstring RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 			{
 				sResult += L"\\ansi";
 				if( PROP_DEF != m_nAnsiCodePage )
-                    sResult += L"\\ansicpg" + std::to_wstring( m_nAnsiCodePage );
+                    sResult += L"\\ansicpg" + boost::lexical_cast<std::wstring>( m_nAnsiCodePage );
 
 				break;
 			}
@@ -158,7 +158,7 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_INT( m_nTabWidth, sResult, L"w:defaultTabStop" )
 	
 	if( PROP_DEF != m_nZoom )
-        sResult += L"<w:zoom w:percent=\"" + std::to_wstring(m_nZoom) + L"\" />";
+        sResult += L"<w:zoom w:percent=\"" + boost::lexical_cast<std::wstring>(m_nZoom) + L"\" />";
 //Page Borders
 	if( PROP_DEF != m_bDorderSurroundHeader )
 	{
@@ -188,7 +188,7 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sFootnoteProp;
 	for( int i = 0; i < m_aSpecialFootnotes.size(); i++ )
 	{
-        sFootnoteProp += L"<w:footnote w:id=\"" + std::to_wstring(m_aSpecialFootnotes[i]) + L"\" />";
+        sFootnoteProp += L"<w:footnote w:id=\"" + boost::lexical_cast<std::wstring>(m_aSpecialFootnotes[i]) + L"\" />";
 	}
 	
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
@@ -225,7 +225,7 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
     //todooo проверить id
     for( int i = 0; i < m_aSpecialEndnotes.size(); i++ )
 	{
-        sEndnoteProp += L"<w:endnote w:id=\"" + std::to_wstring(m_aSpecialEndnotes[i]) + L"\"/>";
+        sEndnoteProp += L"<w:endnote w:id=\"" + boost::lexical_cast<std::wstring>(m_aSpecialEndnotes[i]) + L"\"/>";
 	}
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
 	{
@@ -313,7 +313,7 @@ std::wstring RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		for( int i = 0; i < nCollFormCount; i++ )
 		{
-            sResult += L"\\colno" + std::to_wstring( i + 1 );
+            sResult += L"\\colno" + boost::lexical_cast<std::wstring>( i + 1 );
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol, sResult, L"colsr" )
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth, sResult, L"colw" )
 		}
@@ -536,9 +536,9 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
     std::wstring sPaperSource;
 	if( PROP_DEF != m_nPaperSourceFirst )
-        sPaperSource += L" w:first=\"" + std::to_wstring(m_nPaperSourceFirst) + L"\"";
+        sPaperSource += L" w:first=\"" + boost::lexical_cast<std::wstring>(m_nPaperSourceFirst) + L"\"";
 	if( PROP_DEF != m_nPaperSourceFirst )
-        sPaperSource += L" w:other=\"" + std::to_wstring(m_nPaperSourceOther) + L"\"";
+        sPaperSource += L" w:other=\"" + boost::lexical_cast<std::wstring>(m_nPaperSourceOther) + L"\"";
 	
     if( !sPaperSource.empty() )
         sResult += L"<w:paperSrc " + sPaperSource + L"/>";
@@ -572,9 +572,9 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 					bEqualWidth = true;
 					break;
 				}
-        sCollumnFormating += L"<w:cols w:num=\"" + std::to_wstring(m_nColumnNumber) + L"\"";
+        sCollumnFormating += L"<w:cols w:num=\"" + boost::lexical_cast<std::wstring>(m_nColumnNumber) + L"\"";
 		if( PROP_DEF != m_nColumnSpace )
-            sCollumnFormating += L" w:space=\"" + std::to_wstring(m_nColumnSpace) + L"\"";
+            sCollumnFormating += L" w:space=\"" + boost::lexical_cast<std::wstring>(m_nColumnSpace) + L"\"";
 		if( true == bEqualWidth )
 			sCollumnFormating += L" w:equalWidth=\"true\"/>";
 		else
@@ -584,9 +584,9 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 			{
 				sCollumnFormating += L"<w:col";
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
-                    sCollumnFormating += L" w:w=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth) + L"\"";
+                    sCollumnFormating += L" w:w=\"" + boost::lexical_cast<std::wstring>(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth) + L"\"";
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol )
-                    sCollumnFormating += L" w:space=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol ) + L"\"";
+                    sCollumnFormating += L" w:space=\"" + boost::lexical_cast<std::wstring>(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol ) + L"\"";
 				sCollumnFormating += L"/>";
 			}
 			sCollumnFormating += L"</w:cols>";
@@ -674,11 +674,11 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Line Numbering
     std::wstring sLineNumbering;
 	if( PROP_DEF != m_nLineModulus )
-        sLineNumbering += L" w:countBy=\"" + std::to_wstring(m_nLineModulus) + L"\"";
+        sLineNumbering += L" w:countBy=\"" + boost::lexical_cast<std::wstring>(m_nLineModulus) + L"\"";
 	if( PROP_DEF != m_nLineX && 0 != m_nLineX)
-        sLineNumbering += L" w:distance=\"" + std::to_wstring(m_nLineX) + L"\"";
+        sLineNumbering += L" w:distance=\"" + boost::lexical_cast<std::wstring>(m_nLineX) + L"\"";
 	if( PROP_DEF != m_nLineStart )
-        sLineNumbering += L" w:start=\"" + std::to_wstring(m_nLineStart) + L"\"";
+        sLineNumbering += L" w:start=\"" + boost::lexical_cast<std::wstring>(m_nLineStart) + L"\"";
 	switch( m_eLineNumberRestart )
 	{
 		case lnr_linerestart:	sLineNumbering += L" w:restart=\"newSection\"";	break; 
@@ -691,9 +691,9 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Page Information
     std::wstring sPageSize;
 	if( PROP_DEF != m_nPageWidth )
-        sPageSize += L" w:w=\"" + std::to_wstring(m_nPageWidth) + L"\"";
+        sPageSize += L" w:w=\"" + boost::lexical_cast<std::wstring>(m_nPageWidth) + L"\"";
 	if( PROP_DEF != m_nPageHeight )
-        sPageSize += L" w:h=\"" + std::to_wstring(m_nPageHeight) + L"\"";
+        sPageSize += L" w:h=\"" + boost::lexical_cast<std::wstring>(m_nPageHeight) + L"\"";
 	if( 1 == m_bLandscapeFormat )
         sPageSize += L" w:orient=\"landscape\"";
     if( false == sPageSize.empty() )
@@ -701,19 +701,19 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 
     std::wstring sMargin;
 	if( PROP_DEF != m_nMarginLeft )
-        sMargin += L" w:left=\"" + std::to_wstring(m_nMarginLeft) + L"\"";
+        sMargin += L" w:left=\"" + boost::lexical_cast<std::wstring>(m_nMarginLeft) + L"\"";
 	if( PROP_DEF != m_nMarginRight )
-        sMargin += L" w:right=\"" + std::to_wstring(m_nMarginRight) + L"\"";
+        sMargin += L" w:right=\"" + boost::lexical_cast<std::wstring>(m_nMarginRight) + L"\"";
 	if( PROP_DEF != m_nMarginTop )
-        sMargin += L" w:top=\"" + std::to_wstring(m_nMarginTop) + L"\"";
+        sMargin += L" w:top=\"" + boost::lexical_cast<std::wstring>(m_nMarginTop) + L"\"";
 	if( PROP_DEF != m_nMarginBottom )
-        sMargin += L" w:bottom=\"" + std::to_wstring(m_nMarginBottom) + L"\"";
+        sMargin += L" w:bottom=\"" + boost::lexical_cast<std::wstring>(m_nMarginBottom) + L"\"";
 	if( PROP_DEF != m_nGutterMarginWidth )
-        sMargin += L" w:gutter=\"" + std::to_wstring(m_nGutterMarginWidth) + L"\"";
+        sMargin += L" w:gutter=\"" + boost::lexical_cast<std::wstring>(m_nGutterMarginWidth) + L"\"";
 	if( PROP_DEF != m_nHeaderTop )
-        sMargin += L" w:header=\"" + std::to_wstring(m_nHeaderTop) + L"\"";
+        sMargin += L" w:header=\"" + boost::lexical_cast<std::wstring>(m_nHeaderTop) + L"\"";
 	if( PROP_DEF != m_nFooterBottom )
-        sMargin += L" w:footer=\"" + std::to_wstring(m_nFooterBottom) + L"\"";
+        sMargin += L" w:footer=\"" + boost::lexical_cast<std::wstring>(m_nFooterBottom) + L"\"";
     if( false == sMargin.empty() )
         sResult += L"<w:pgMar " + sMargin + L"/>";
 	if( 1 == m_bTitlePage )
@@ -722,7 +722,7 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Page Numbers
     std::wstring sPageNumber;
 	if( PROP_DEF != m_nPageNumberStart )
-        sPageNumber += L" w:start=\"" + std::to_wstring(m_nPageNumberStart) + L"\"";
+        sPageNumber += L" w:start=\"" + boost::lexical_cast<std::wstring>(m_nPageNumberStart) + L"\"";
     if( false == sPageNumber.empty() )
         sResult += L"<w:pgNumType " + sPageNumber + L"/>";
 	//Vertical Alignment
@@ -829,7 +829,7 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		
-		sResult += L"<w:sectPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+		sResult += L"<w:sectPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			sResult += m_pOldSectionProp->RenderToOOX(oRenderParameterNew);
 		sResult += L"</w:sectPrChange>";
 	}
@@ -843,9 +843,9 @@ std::wstring RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderP
 
     std::wstring sFilename;
 	if( true == bHeader )
-        sFilename += L"header" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_HeaderNumber()) + L".xml";
+        sFilename += L"header" + boost::lexical_cast<std::wstring>(poRtfDocument->m_oIdGenerator.Generate_HeaderNumber()) + L".xml";
 	else
-        sFilename += L"footer" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_FooterNumber()) + L".xml";
+        sFilename += L"footer" + boost::lexical_cast<std::wstring>(poRtfDocument->m_oIdGenerator.Generate_FooterNumber()) + L".xml";
 
     std::wstring sContent;
     std::wstring sRootName;

@@ -191,7 +191,10 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage
     if (entries.size() > 0)
         return true;
 
-    return false;
+    if ( storage->exists("EncryptionInfo") && 
+				storage->exists("EncryptedPackage"))
+				return true;
+   return false;
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 {

@@ -234,7 +234,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					if( !sTarget.empty() )
 					{
 						//заменяем пробелы на %20
-                        boost::algorithm::replace_all(sTarget, L" ", L"%20" );
+                        XmlUtils::replace_all(sTarget, L" ", L"%20" );
 
                         std::wstring sFileUrl = L"file:///";
 
@@ -896,9 +896,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					nFontSize = oNewProperty.m_nFontSize / 2;
 
 				sFieldText = L"SYMBOL";
-                sFieldText += std::to_wstring( nChar );
+                sFieldText += boost::lexical_cast<std::wstring>( nChar );
 				sFieldText += L" \\\\f \"" + sFont + L"\" \\\\s ";
-                sFieldText += std::to_wstring( nFontSize );
+                sFieldText += boost::lexical_cast<std::wstring>( nFontSize );
 				
 				pNewChar->setText( sFieldText );
 				

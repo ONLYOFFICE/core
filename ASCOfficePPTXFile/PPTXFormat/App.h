@@ -34,9 +34,10 @@
 #define PPTX_APP_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
+#include "FileTypes.h"
+
 #include "Logic/PartTitle.h"
 #include "Logic/HeadingVariant.h"
-#include "DocxFormat/FileTypes.h"
 
 using namespace NSBinPptxRW;
 
@@ -111,7 +112,7 @@ namespace PPTX
 
 			Normalize();
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
@@ -168,16 +169,16 @@ namespace PPTX
 			//DigSig (Digital Signature)
 			//HLinks
 			
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 
 			m_WrittenFileName.m_strFilename = filename.GetFilename();
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::App;
+			return OOX::Presentation::FileTypes::App;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <boost/algorithm/string.hpp>
 
 #include "RtfField.h"
 
@@ -167,7 +168,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauth);
             sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nRevised = PROP_DEF;
 		}
 		if (m_pInsert->m_oCharProperty.m_nDeleted != PROP_DEF)
@@ -177,7 +178,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_pInsert->m_oCharProperty.m_nRevauthDel);
             sDate	= std::wstring(RtfUtility::convertDateTime(m_pInsert->m_oCharProperty.m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_pInsert->m_oCharProperty.m_nDeleted = PROP_DEF;
 		}
 		//поверяем на наличие гиперссылки
@@ -199,10 +200,10 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			}
 	
 		//оставляем только одну ссылку
-            boost::algorithm::replace_all(sHyperlink, L"\"", L"" );
+            XmlUtils::replace_all(sHyperlink, L"\"", L"" );
             boost::algorithm::trim(sHyperlink);
 		//заменяем пробелы на %20
-            boost::algorithm::replace_all(sHyperlink, L" ", L"%20" );
+            XmlUtils::replace_all(sHyperlink, L" ", L"%20" );
 
 		//добавляем в rels
 			OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );

@@ -30,10 +30,8 @@
  *
  */
 #include "abstract_xml.h"
-
 #include "paragraph_elements.h"
 
-#include <boost/foreach.hpp>
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -46,18 +44,18 @@ const wchar_t * abstract_xml::name = L"abstract-xml";
 
 std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & element, xml_content_)
+	for (int i = 0; i < xml_content_.size(); i++)
     {
-        element->text_to_stream(_Wostream);
+        xml_content_[i]->text_to_stream(_Wostream);
     }
     return _Wostream;
 }
 
 std::wostream & abstract_xml::xml_to_stream(std::wostream & _Wostream) const
 {
-    BOOST_FOREACH(const office_element_ptr & element, xml_content_)
+	for (int i = 0; i < xml_content_.size(); i++)
     {
-        element->xml_to_stream(_Wostream);
+		xml_content_[i]->xml_to_stream(_Wostream);
     }
     return _Wostream;
 }

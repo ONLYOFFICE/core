@@ -261,16 +261,17 @@ namespace NSBinPptxRW
         bool ParceObject        (const std::wstring& strXml, std::wstring** pMainProps);
         void SendMainProps      (const std::wstring& strMainProps, std::wstring**& pMainProps);
 
-		PPTX::Logic::SpTreeElem doc_LoadShape(XmlUtils::CXmlNode& oNodeShape, std::wstring**& pMainProps, bool bIsTop = true);
-		PPTX::Logic::SpTreeElem doc_LoadGroup(XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadShape	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadGroup	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 
         std::wstring GetVMLShapeXml      (CPPTShape* pPPTShape);
         std::wstring GetVMLShapeXml      (PPTX::Logic::SpTreeElem& oElem);
 
-        void CheckBrushShape        (PPTX::Logic::SpTreeElem& oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
-        void CheckPenShape          (PPTX::Logic::SpTreeElem& oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
+        void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
+        void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
 
-        void    LoadCoordSize       (XmlUtils::CXmlNode& oNode, ::CShape* pShape);
+        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
         std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
 
         void ConvertMainPropsToVML  (const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter, PPTX::Logic::SpTreeElem& oElem);

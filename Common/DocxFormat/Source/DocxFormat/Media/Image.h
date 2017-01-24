@@ -57,7 +57,7 @@ namespace OOX
             std::wstring newFilename = filename.GetFilename();
 			CPath newFilePath = filename.GetDirectory();
 
-            boost::algorithm::replace_all(newFilename, L"", L"_");
+            XmlUtils::replace_all(newFilename, L"", L"_");
 			if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath/newFilename))	
 			{
 				//if (m_filename.GetExtention(true) == _T(".svm"))

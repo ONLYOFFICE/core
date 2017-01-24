@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_HYPERLINK_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "../DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 #include "Media/WavAudioFile.h"
 
 namespace PPTX
@@ -210,7 +210,7 @@ namespace PPTX
 		public:
 			nullable<WavAudioFile>	snd;
 
-			nullable_string			id;//<PPTX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
+			nullable_string			id;//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
 			nullable_string			invalidUrl;//default=""
 			nullable_string			action;//default=""
 			nullable_string			tgtFrame;//default=""

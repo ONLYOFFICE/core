@@ -123,7 +123,7 @@ HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath
 		RELEASEOBJECT(m_pFolder);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);
@@ -289,7 +289,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutp
 		RELEASEOBJECT(m_pFolder);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
         NSDirectory::DeleteDirectory(m_strTempDir, false);

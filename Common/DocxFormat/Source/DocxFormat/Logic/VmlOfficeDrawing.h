@@ -185,7 +185,7 @@ namespace OOX
 			EElementType                                m_eType;
 
 			// Attributes
-			nullable<std::wstring>                           m_sAlthref;
+			nullable<std::wstring>						m_sAlthref;
 			nullable<SimpleTypes::CColorType<>>         m_oColor;
 			nullable<SimpleTypes::CColorType<>>         m_oColor2;
 			nullable<SimpleTypes::Vml::CVmlDashStyle<>> m_oDashStyle;
@@ -196,22 +196,22 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>               m_oExt;
 			nullable<SimpleTypes::CFillType<>>          m_oFillType;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oForceDash;
-			nullable<std::wstring>                           m_sHref;
+			nullable<std::wstring>						m_sHref;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oImageAlignShape;
 			nullable<SimpleTypes::CImageAspect<>>       m_oImageAspect;
-			nullable<std::wstring>                           m_sImageSize;
+			nullable<std::wstring>						m_sImageSize;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle<>>   m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle<>>   m_oLineStyle;
 			nullable<SimpleTypes::CDecimalNumber<8>>    m_oMiterLimit;
 			nullable<SimpleTypes::CTrueFalse<>>         m_oOn;
-			nullable<std::wstring>                           m_sOpacity;
-			nullable<std::wstring>                           m_sSrc;
+			nullable<std::wstring>						m_sOpacity;
+			nullable<std::wstring>						m_sSrc;
 			nullable<SimpleTypes::CStrokeArrowType<>>   m_oStartArrow;
 			nullable<SimpleTypes::CStrokeArrowLength<>> m_oStartArrowLength;
 			nullable<SimpleTypes::CStrokeArrowWidth<>>  m_oStartArrowWidth;
-			nullable<std::wstring>                           m_sTitle;
-			nullable<std::wstring>                           m_sWeight;
+			nullable<std::wstring>						m_sTitle;
+			nullable<std::wstring>						m_sWeight;
 
 		};
 		//--------------------------------------------------------------------------------

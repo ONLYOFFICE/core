@@ -503,7 +503,7 @@ namespace XmlUtils
 	}
     static inline std::wstring GetNamespace(const std::wstring& strNodeName)
 	{
-		int nFind = strNodeName.find(L":");
+		int nFind = (int)strNodeName.find(L":");
 		if (-1 == nFind)
 			return L"";
 		return strNodeName.substr(0, nFind);

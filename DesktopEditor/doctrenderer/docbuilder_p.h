@@ -172,7 +172,7 @@ public:
         return true;
     }
 
-    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString)
+    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
     {
         LOGGER_SPEED_START
 
@@ -181,7 +181,15 @@ public:
         v8::TryCatch try_catch;
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
-        v8::Local<v8::Script> script = v8::Script::Compile(source);
+        v8::Local<v8::Script> script;
+
+        CCacheDataScript oCachedScript(sCachePath);
+        if (sCachePath.empty())
+            script = v8::Script::Compile(source);
+        else
+        {
+            script = oCachedScript.Compile(m_context, source);
+        }
 
         LOGGER_SPEED_LAP("compile")
 
@@ -463,6 +471,8 @@ namespace NSDoctRenderer
 
         CDocBuilderParams m_oParams;
         bool m_bIsInit;
+
+        bool m_bIsCacheScript;
     public:
         CDocBuilder_Private()
         {
@@ -478,6 +488,7 @@ namespace NSDoctRenderer
 
             m_pAdditionalData = NULL;
             m_bIsInit = false;
+            m_bIsCacheScript = true;
         }
 
         void Init()
@@ -1125,7 +1136,11 @@ namespace NSDoctRenderer
                 m_pWorker->m_nFileType = m_nFileType;
                 m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 
-                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript());
+                std::wstring sCachePath = L"";
+                if (m_bIsCacheScript)
+                    sCachePath = GetScriptCache();
+
+                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath);
                 if (!bOpen)
                     return false;
             }
@@ -1179,6 +1194,37 @@ namespace NSDoctRenderer
                 strScript += "\n$.ready();";
 
             return strScript;
+        }
+
+        std::wstring GetScriptCache()
+        {
+            std::vector<std::wstring>* arSdkFiles = NULL;
+            switch (m_nFileType)
+            {
+            case 0:
+                {
+                    arSdkFiles = &m_arDoctSDK;
+                    break;
+                }
+            case 1:
+                {
+                    arSdkFiles = &m_arPpttSDK;
+                    break;
+                }
+            case 2:
+                {
+                    arSdkFiles = &m_arXlstSDK;
+                    break;
+                }
+            default:
+                return L"";
+            }
+
+            if (0 < arSdkFiles->size())
+            {
+                return NSCommon::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
+            }
+            return L"";
         }
 
         std::string ReadScriptFile(const std::wstring& strFile)
@@ -1450,6 +1496,8 @@ namespace NSDoctRenderer
             m_pInternal->m_oParams.m_bCheckFonts = true;
         else if (sParam == "--work-directory")
             m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
+        else if (sParam == "--cache-scripts")
+            m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
         else if (sParam == "--argument")
         {
             std::wstring sArg(value);

@@ -35,6 +35,7 @@
 #include "SimpleTypes_Drawing.h"
 
 #include <vector>
+#include <boost/algorithm/string.hpp>
 
 // Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes
@@ -2587,7 +2588,7 @@ namespace SimpleTypes
 			{
 				m_nCount    = 0;
 
-                    this->m_eValue = eDefValue;
+				this->m_eValue = eDefValue;
 
 				if ( sValue.length() <= 0 )
                        return this->m_eValue;
@@ -2649,22 +2650,22 @@ namespace SimpleTypes
                     return this->m_eValue;
 			}
 
-			virtual std::wstring       ToString  () const 
+			virtual std::wstring ToString  () const 
 			{
-                    switch(this->m_eValue)
+				switch(this->m_eValue)
 				{
-				case vmldashstyleSolid          :  return _T("solid");
-				case vmldashstyleShortDash      :  return _T("shortdash");
-				case vmldashstyleShortDot       :  return _T("shortdot");
-				case vmldashstyleShortDashDot   :  return _T("shortdashdot");
-				case vmldashstyleShortDashDotDot:  return _T("shortdashdotdot");
-				case vmldashstyleDot            :  return _T("dot");
-				case vmldashstyleDash           :  return _T("dash");
-				case vmldashstyleLongDash       :  return _T("longdash");
-				case vmldashstyleDashDot        :  return _T("dashdot");
-				case vmldashstyleLongDashDot    :  return _T("longdashdot");
-				case vmldashstyleLongDashDotDot :  return _T("longdashdotdot");
-				case vmldashstyleCustom         :
+					case vmldashstyleSolid          :  return _T("solid");
+					case vmldashstyleShortDash      :  return _T("shortdash");
+					case vmldashstyleShortDot       :  return _T("shortdot");
+					case vmldashstyleShortDashDot   :  return _T("shortdashdot");
+					case vmldashstyleShortDashDotDot:  return _T("shortdashdotdot");
+					case vmldashstyleDot            :  return _T("dot");
+					case vmldashstyleDash           :  return _T("dash");
+					case vmldashstyleLongDash       :  return _T("longdash");
+					case vmldashstyleDashDot        :  return _T("dashdot");
+					case vmldashstyleLongDashDot    :  return _T("longdashdot");
+					case vmldashstyleLongDashDotDot :  return _T("longdashdotdot");
+					case vmldashstyleCustom         :
 					{
 						std::wstring sResult;
 
@@ -2675,12 +2676,12 @@ namespace SimpleTypes
 						}
 						return sResult;
 					}
-				default: return _T("solid");
+					default: return _T("solid");
 				}
 			}
 
 			SimpleType_FromString     (EVmlDashStyle)
-				SimpleType_Operator_Equal (CVmlDashStyle)
+			SimpleType_Operator_Equal (CVmlDashStyle)
 
 		private:
 
@@ -2742,7 +2743,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-                std::wstring sResult = std::to_wstring( m_dValue );
+                std::wstring sResult = boost::lexical_cast<std::wstring>( m_dValue );
 
 				return sResult;
 			}
@@ -2809,7 +2810,7 @@ namespace SimpleTypes
 					return 0;
 
 					std::wstring strX = sValue.substr( 0, nPos );
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
@@ -2820,8 +2821,8 @@ namespace SimpleTypes
 					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1)  ;
 					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 );
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strZ, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strZ, L"@", L"");
 
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
                     m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
@@ -2831,7 +2832,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nX) + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
+				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nX) + boost::lexical_cast<std::wstring>(m_nY) + L"," + boost::lexical_cast<std::wstring>(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2891,7 +2892,7 @@ namespace SimpleTypes
 					return 0;
 
 					std::wstring strX = sValue.substr( 0, nPos );
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
@@ -2902,8 +2903,8 @@ namespace SimpleTypes
 					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1);
 					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 ) ;
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strZ, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strZ, L"@", L"");
 
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
                     m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
@@ -2914,7 +2915,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY) + L"," + std::to_wstring(m_nZ);
+				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nY) + L"," + boost::lexical_cast<std::wstring>(m_nZ);
 			}
 
 			SimpleType_FromString2    (double)
@@ -2967,7 +2968,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					//only x coord
-					boost::algorithm::replace_all(sValue, L"@", L"");
+					XmlUtils::replace_all(sValue, L"@", L"");
                     m_nX = sValue.empty() ? 0 : _wtoi(sValue.c_str() );
 				}
 				else
@@ -2975,8 +2976,8 @@ namespace SimpleTypes
 					std::wstring strX = sValue.substr( 0, nPos );
 					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 
-					boost::algorithm::replace_all(strY, L"@", L"");
-					boost::algorithm::replace_all(strX, L"@", L"");
+					XmlUtils::replace_all(strY, L"@", L"");
+					XmlUtils::replace_all(strX, L"@", L"");
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                     m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -2987,7 +2988,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_nX) + L"," + std::to_wstring(m_nY);
+				return boost::lexical_cast<std::wstring>(m_nX) + L"," + boost::lexical_cast<std::wstring>(m_nY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -3049,7 +3050,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
+				return boost::lexical_cast<std::wstring>(m_dX) + L"," + boost::lexical_cast<std::wstring>(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -3118,8 +3119,8 @@ namespace SimpleTypes
 					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos );
 					   std::wstring strY = sValue.substr( nStartPos, nMidPos - nStartPos );
 
-						boost::algorithm::replace_all(strX, L"@", L"");
-						boost::algorithm::replace_all(strY, L"@", L"");
+						XmlUtils::replace_all(strX, L"@", L"");
+						XmlUtils::replace_all(strY, L"@", L"");
 
                        int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                        int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -3139,7 +3140,7 @@ namespace SimpleTypes
 
 				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					std::wstring sTemp = std::to_wstring(m_arrPoints[nIndex].nX) + L"," + std::to_wstring(m_arrPoints[nIndex].nY);
+					std::wstring sTemp = boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].nX) + L"," + boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].nY);
 					if ( nIndex < m_arrPoints.size() - 1 ) sTemp += L",";
 					sResult += sTemp;
 				}
@@ -4188,7 +4189,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
+				return boost::lexical_cast<std::wstring>(m_dX) + L"," + boost::lexical_cast<std::wstring>(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -4250,7 +4251,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_dX) + L"%," + std::to_wstring(m_dY) + L"%";
+				return boost::lexical_cast<std::wstring>(m_dX) + L"%," + boost::lexical_cast<std::wstring>(m_dY) + L"%";
 			}
 
 			SimpleType_FromString2    (double)
@@ -4312,7 +4313,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_dX) + L"," + std::to_wstring(m_dY);
+				return boost::lexical_cast<std::wstring>(m_dX) + L"," + boost::lexical_cast<std::wstring>(m_dY);
 			}
 
 			SimpleType_FromString2    (double)
@@ -4385,7 +4386,7 @@ namespace SimpleTypes
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrLimits.size(); nIndex++ )
 				{
-					sResult += std::to_wstring(m_arrLimits[nIndex]) + L"pt ";
+					sResult += boost::lexical_cast<std::wstring>(m_arrLimits[nIndex]) + L"pt ";
 				}
 
 				return sResult;
@@ -4417,7 +4418,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-                std::wstring sResult = std::to_wstring( this->m_eValue);
+                std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 				return sResult;
 			}
@@ -4524,7 +4525,7 @@ namespace SimpleTypes
 
 				switch ( m_eTypeX )
 				{
-                case vmlvector2dposConstant    : sResult = std::to_wstring( m_dX ); break;
+                case vmlvector2dposConstant    : sResult = boost::lexical_cast<std::wstring>( m_dX ); break;
 				case vmlvector2dposFormula     : sResult = _T("@") + m_sIdX; break;
 				case vmlvector2dposAdjValue    : sResult = _T("#") + m_sIdX; break;
 				case vmlvector2dposCenter      : sResult = _T("center"); break;
@@ -4538,7 +4539,7 @@ namespace SimpleTypes
 				{
 				case vmlvector2dposConstant    : 
 					{
-                        std::wstring sTemp = std::to_wstring( m_dY );
+                        std::wstring sTemp = boost::lexical_cast<std::wstring>( m_dY );
 						sResult += sTemp;
 						break;
 					}
@@ -4563,7 +4564,7 @@ namespace SimpleTypes
 				double dValue = 0.0;
 				std::wstring sId;
 
-                boost::algorithm::replace_all( sValue, _T(" "), _T("") );
+                XmlUtils::replace_all( sValue, _T(" "), _T("") );
 
 				int nLen = sValue.length();
 				if ( nLen > 0 )
@@ -4743,8 +4744,8 @@ namespace SimpleTypes
 					   std::wstring strX = sValue.substr( nStartPos, nMidPos - nStartPos ) ;
 					   std::wstring strY = sValue.substr( nMidPos + 1, nEndPos - nMidPos - 1 );
 
-						boost::algorithm::replace_all(strX, L"@", L"");
-						boost::algorithm::replace_all(strY, L"@", L"");
+						XmlUtils::replace_all(strX, L"@", L"");
+						XmlUtils::replace_all(strY, L"@", L"");
 
                        int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
                        int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
@@ -4764,7 +4765,7 @@ namespace SimpleTypes
 
 				for ( size_t nIndex = 0; nIndex < m_arrPoints.size(); nIndex++ )
 				{
-					sResult += std::to_wstring(m_arrPoints[nIndex].dX) + L"," + std::to_wstring(m_arrPoints[nIndex].dY);
+					sResult += boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].dX) + L"," + boost::lexical_cast<std::wstring>(m_arrPoints[nIndex].dY);
 					if ( nIndex < m_arrPoints.size() - 1 )
 						sResult += m_wcDelimiter;
 				}
@@ -4854,7 +4855,7 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-                std::wstring sResult = std::to_wstring( m_dValue );
+                std::wstring sResult = boost::lexical_cast<std::wstring>( m_dValue );
 
 				return sResult;
 			}
@@ -5037,9 +5038,9 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				return	std::to_wstring(m_dSxx) + L"," + std::to_wstring(m_dSxy) + L"," +
-						std::to_wstring(m_dSyx) + L"," + std::to_wstring(m_dSyy) + L"," +
-						std::to_wstring(m_dPx)	+ L"," + std::to_wstring(m_dPy);
+				return	boost::lexical_cast<std::wstring>(m_dSxx) + L"," + boost::lexical_cast<std::wstring>(m_dSxy) + L"," +
+						boost::lexical_cast<std::wstring>(m_dSyx) + L"," + boost::lexical_cast<std::wstring>(m_dSyy) + L"," +
+						boost::lexical_cast<std::wstring>(m_dPx)	+ L"," + boost::lexical_cast<std::wstring>(m_dPy);
 			}
 
 			SimpleType_FromString2    (double)
@@ -5142,12 +5143,12 @@ namespace SimpleTypes
 
 			virtual std::wstring ToString  () const 
 			{
-				std::wstring sResult = std::to_wstring(m_dX);
+				std::wstring sResult = boost::lexical_cast<std::wstring>(m_dX);
 
 				if ( m_bUnitsX )	sResult += L"pt,";
 				else				sResult += L"%,";
 
-				sResult += std::to_wstring(m_dY);
+				sResult += boost::lexical_cast<std::wstring>(m_dY);
 
 				if ( m_bUnitsY )	sResult += L"pt";
 				else				sResult += L"%";
@@ -5212,7 +5213,7 @@ namespace SimpleTypes
 				std::vector<std::wstring> arSplit;
 
 				// Разделителями могут быть запятые и пробелы
-				boost::algorithm::replace_all(sValue, L"@", L"");
+				XmlUtils::replace_all(sValue, L"@", L"");
 				boost::algorithm::split(arSplit, sValue, boost::algorithm::is_any_of(L", "), boost::algorithm::token_compress_on);
 
 				if (arSplit.size() > 0)
@@ -5244,7 +5245,7 @@ namespace SimpleTypes
 
 			std::wstring ToString  () const 
 			{
-				return std::to_wstring(m_dLeft) + L"pt," + std::to_wstring(m_dTop) + L"pt," + std::to_wstring(m_dRight) + L"pt,"+ std::to_wstring(m_dBottom) + L"pt";
+				return boost::lexical_cast<std::wstring>(m_dLeft) + L"pt," + boost::lexical_cast<std::wstring>(m_dTop) + L"pt," + boost::lexical_cast<std::wstring>(m_dRight) + L"pt,"+ boost::lexical_cast<std::wstring>(m_dBottom) + L"pt";
 			}
 
 			SimpleType_FromString2    (double)

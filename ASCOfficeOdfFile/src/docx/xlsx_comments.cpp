@@ -106,11 +106,11 @@ public:
 			CP_XML_ATTR(L"xmlns:v", L"urn:schemas-microsoft-com:vml");
 			CP_XML_ATTR(L"xmlns:o", L"urn:schemas-microsoft-com:office:office");
 			CP_XML_ATTR(L"xmlns:x", L"urn:schemas-microsoft-com:office:excel");
-		
-
  
-			BOOST_FOREACH(_xlsx_comment const & c, xlsx_comment_)
+			for (int i = 0; i < xlsx_comment_.size(); i++)
 			{
+				const _xlsx_comment & c = xlsx_comment_[i];
+
 				std::wstring str_fill_color_ = L"00003f";
 				if (odf_reader::GetProperty(c.graphicProperties_,L"fill-color",strVal))
 					str_fill_color_ = strVal.get();
@@ -143,10 +143,10 @@ public:
 					
 					std::wstring style = std::wstring(L"position:absolute;");
 					
-					style += std::wstring(L"margin-left:")	+boost::lexical_cast<std::wstring>(c.left_)		+std::wstring(L"pt;");
-					style += std::wstring(L"margin-top:")	+boost::lexical_cast<std::wstring>(c.top_)		+std::wstring(L"pt;");
-					style += std::wstring(L"width:")		+boost::lexical_cast<std::wstring>(c.width_)	+std::wstring(L"pt;");
-					style += std::wstring(L"height:")		+boost::lexical_cast<std::wstring>(c.height_)	+std::wstring(L"pt;");
+					style += std::wstring(L"margin-left:")	+ boost::lexical_cast<std::wstring>(c.left_)		+ std::wstring(L"pt;");
+					style += std::wstring(L"margin-top:")	+ boost::lexical_cast<std::wstring>(c.top_)		+ std::wstring(L"pt;");
+					style += std::wstring(L"width:")		+ boost::lexical_cast<std::wstring>(c.width_)		+ std::wstring(L"pt;");
+					style += std::wstring(L"height:")		+ boost::lexical_cast<std::wstring>(c.height_)	+ std::wstring(L"pt;");
 
 					if (c.visibly_ == false)style += std::wstring(L"visibility:hidden;");
 
@@ -154,7 +154,7 @@ public:
 					CP_XML_ATTR(L"type", L"shapetype_202");
 					//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 					//{
-					//	CP_XML_ATTR(L"opacity",boost::lexical_cast<std::wstring>((int)(100.-dVal.get())) + L"%");
+					//	CP_XML_ATTR(L"opacity", boost::lexical_cast<std::wstring>((int)(100.-dVal.get())) + L"%");
 					//}
 					//CP_XML_NODE(L"v:shadow")
 					//{
@@ -222,12 +222,12 @@ public:
     void add(_xlsx_comment & c)
     {
 		bool find = false;
-		for (long i=0;i<author_list_.size();i++)
+		for (long i = 0; i < author_list_.size(); i++)
 		{		
 			if (c.author_ == author_list_[i])
 			{
 				find=true;
-				c.author_ = boost::lexical_cast<std::wstring>(i);
+				c.author_ =  boost::lexical_cast<std::wstring>(i);
 				break;
 			}
 		}

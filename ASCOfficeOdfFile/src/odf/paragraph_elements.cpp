@@ -35,7 +35,6 @@
 #include <ostream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>

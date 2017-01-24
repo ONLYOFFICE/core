@@ -37,7 +37,7 @@
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include <string>
 #include <windows.h>
@@ -55,8 +55,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring sSrcDoc	= argv[1];
 	std::wstring sDstDocx	= argc > 2 ? argv[2] : sSrcDoc + L"-my.docx";
 
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(sDstDocx);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstDocx);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
 	// doc->docx
 	COfficeDocFile docFile;

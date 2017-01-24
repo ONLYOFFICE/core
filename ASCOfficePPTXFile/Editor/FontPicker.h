@@ -37,7 +37,6 @@
 #include "FontCutter.h"
 
 
-//#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontCutter
@@ -207,7 +206,6 @@ public:
 		return S_OK;
 	}
 
-	//HRESULT GetBinaryData(LONG lType, SAFEARRAY** ppBinaryArray);
 	HRESULT GetBinaryData(LONG lType, BYTE** ppyArray, size_t& szCount);
 
 	NSFontCutter::CFontDstManager* GetNativePicker()

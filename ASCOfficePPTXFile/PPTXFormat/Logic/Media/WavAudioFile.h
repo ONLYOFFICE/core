@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_WAVAUDIOFILE_INCLUDE_H_
 
 #include "../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -87,7 +87,7 @@ namespace PPTX
 
 		public:
 			nullable_string name;
-			PPTX::RId		embed;
+			OOX::RId		embed;
 		public:
 			std::wstring			m_name;
 		protected:

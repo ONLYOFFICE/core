@@ -429,7 +429,7 @@ void docx_serialize_wps(std::wostream & strm, _docx_drawing & val)
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
 							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
 						{
-							CP_XML_NODE(L"wp:align") {CP_XML_STREAM() << boost::lexical_cast<std::wstring>(*val.styleHorizontalPos);}
+							CP_XML_NODE(L"wp:align") {CP_XML_STREAM() << (*val.styleHorizontalPos);}
 
 						}
 						else
@@ -573,8 +573,8 @@ void docx_serialize_object(std::wostream & strm, _docx_drawing & val)
 				CP_XML_ATTR(L"o:ole", "");
 				std::wstring style_str;	// = L"width:730.6pt; height:261.8pt";
 
-				style_str += L"width:"	+ std::to_wstring(val.cx / 12700.) + L"pt;";
-				style_str += L"height:" + std::to_wstring(val.cy / 12700.) + L"pt;";
+				style_str += L"width:"	+ boost::lexical_cast<std::wstring>(val.cx / 12700.) + L"pt;";
+				style_str += L"height:" + boost::lexical_cast<std::wstring>(val.cy / 12700.) + L"pt;";
 
 				CP_XML_ATTR(L"style", style_str);
 

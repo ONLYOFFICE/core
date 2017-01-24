@@ -31,29 +31,46 @@
  */
 #include "DrawingExt.h"
 #include "../../XlsxFormat/Worksheets/Sparkline.h"
+#include "../../XlsxFormat/Table/Table.h"
+#include "../Diagram/DiagramData.h"
 
 namespace OOX
 {
 	namespace Drawing
 	{
-        void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		COfficeArtExtension::~COfficeArtExtension()
+		{
+			m_oSparklineGroups.reset();
+			m_oAltTextTable.reset();
+		}
+		void COfficeArtExtension::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
-            if ((m_sUri.IsInit()) && (*m_sUri == _T("{63B3BB69-23CF-44E3-9099-C40C66FF867C}") ||
-                                      *m_sUri == _T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}")))     //2.2.6.2 Legacy Object Wrapper
+            if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
+                                      *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" || 
+									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}" || 
+									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (sName == _T("compatExt"))//2.3.1.2 compatExt
+					if (sName == L"compatExt")//2.3.1.2 compatExt
 					{	//attributes spid -https://msdn.microsoft.com/en-us/library/hh657207(v=office.12).aspx
 						m_oCompatExt = oReader;
 					}
-					else if (sName == _T("sparklineGroups"))
+					else if (sName == L"sparklineGroups")
 					{
 						m_oSparklineGroups = oReader;
+					}
+					else if (sName == L"dataModelExt")
+					{
+						m_oDataModelExt = oReader;
+					}
+					else if (sName == _T("table"))
+					{
+						m_oAltTextTable = oReader;
 					}
 				}
 			}
@@ -92,6 +109,12 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				m_oSparklineGroups->toXML(writer);
                 sResult += writer.GetData().c_str();
+			}
+			if(m_oAltTextTable.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oAltTextTable->toXML(writer);
+				sResult += writer.GetData().c_str();
 			}
 
             sResult += _T("</");

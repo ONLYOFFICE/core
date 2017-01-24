@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_TGTEL_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 #include "SpTgt.h"
 
 namespace PPTX
@@ -93,7 +93,7 @@ namespace PPTX
 
 			//sndTgt
 			nullable_string		name;
-			nullable<PPTX::RId>	embed;
+			nullable<OOX::RId>	embed;
 			nullable_bool		builtIn;
 
 			nullable<SpTgt>		spTgt;

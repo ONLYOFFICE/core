@@ -22,14 +22,12 @@
 		17C1FB9F1ACC4250006B99B3 /* Index.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E69FFE1AC4262700F28F8B /* Index.cpp */; };
 		17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A1461AC4262800F28F8B /* TxtFile.cpp */; };
 		17C1FBA11ACC4250006B99B3 /* SectionProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A06F1AC4262700F28F8B /* SectionProperty.cpp */; };
-		17C1FBA21ACC4250006B99B3 /* libxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A1931AC4262800F28F8B /* libxml2.cpp */; };
 		17C1FBA31ACC4250006B99B3 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E69FF91AC4262700F28F8B /* Color.cpp */; };
 		17C1FBA41ACC4250006B99B3 /* Docx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0271AC4262700F28F8B /* Docx.cpp */; };
 		17C1FBA51ACC4250006B99B3 /* ZIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0121AC4262700F28F8B /* ZIndex.cpp */; };
 		17C1FBA61ACC4250006B99B3 /* ParagraphProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0661AC4262700F28F8B /* ParagraphProperty.cpp */; };
 		17C1FBA71ACC4250006B99B3 /* NumFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0001AC4262700F28F8B /* NumFormat.cpp */; };
 		17C1FBA81ACC4250006B99B3 /* SystemUtility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A13D1AC4262800F28F8B /* SystemUtility.cpp */; };
-		17C1FBA91ACC4250006B99B3 /* FilePosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A12B1AC4262800F28F8B /* FilePosix.cpp */; };
 		17C1FBAA1ACC4250006B99B3 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A00E1AC4262700F28F8B /* Utils.cpp */; };
 		17C1FBAB1ACC4250006B99B3 /* FileFactory_Spreadsheet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A1631AC4262800F28F8B /* FileFactory_Spreadsheet.cpp */; };
 		17C1FBAC1ACC4250006B99B3 /* AlternateContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0561AC4262700F28F8B /* AlternateContent.cpp */; };
@@ -41,7 +39,6 @@
 		17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0781AC4262700F28F8B /* Vml.cpp */; };
 		17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E69FF31AC4262700F28F8B /* unicode_util.cpp */; };
 		17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0601AC4262700F28F8B /* FldSimple.cpp */; };
-		17C1FBB61ACC4250006B99B3 /* DirectoryPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A1281AC4262800F28F8B /* DirectoryPosix.cpp */; };
 		17C1FBB91ACC4250006B99B3 /* Paragraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0641AC4262700F28F8B /* Paragraph.cpp */; };
 		17C1FBBA1ACC4250006B99B3 /* SimpleTypes_Word.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A00A1AC4262700F28F8B /* SimpleTypes_Word.cpp */; };
 		17C1FBBB1ACC4250006B99B3 /* MathEquation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A1161AC4262800F28F8B /* MathEquation.cpp */; };
@@ -86,7 +83,6 @@
 		17C1FBF01ACC4250006B99B3 /* StringWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1EE1AC4263900F28F8B /* StringWriter.h */; };
 		17C1FBF11ACC4250006B99B3 /* SimpleTypes_OMath.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0071AC4262700F28F8B /* SimpleTypes_OMath.h */; };
 		17C1FBF21ACC4250006B99B3 /* StringOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1211AC4262800F28F8B /* StringOutput.h */; };
-		17C1FBF31ACC4250006B99B3 /* libxml2.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1941AC4262800F28F8B /* libxml2.h */; };
 		17C1FBF41ACC4250006B99B3 /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0861AC4262700F28F8B /* Image.h */; };
 		17C1FBF51ACC4250006B99B3 /* Dir.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A05E1AC4262700F28F8B /* Dir.h */; };
 		17C1FBF61ACC4250006B99B3 /* HyperLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0471AC4262700F28F8B /* HyperLink.h */; };
@@ -177,7 +173,6 @@
 		17C1FC5C1ACC4250006B99B3 /* RId.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A08E1AC4262700F28F8B /* RId.h */; };
 		17C1FC5E1ACC4250006B99B3 /* Shape.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0711AC4262700F28F8B /* Shape.h */; };
 		17C1FC5F1ACC4250006B99B3 /* IFileContainer_Spreadsheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1671AC4262800F28F8B /* IFileContainer_Spreadsheet.h */; };
-		17C1FC601ACC4250006B99B3 /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1F11AC4263900F28F8B /* xmlutils.h */; };
 		17C1FC611ACC4250006B99B3 /* Image.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A15C1AC4262800F28F8B /* Image.h */; };
 		17C1FC621ACC4250006B99B3 /* Rels.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A08D1AC4262700F28F8B /* Rels.h */; };
 		17C1FC631ACC4250006B99B3 /* ASCString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FED1AC4262700F28F8B /* ASCString.h */; };
@@ -399,9 +394,7 @@
 		17E6A1221AC4262800F28F8B /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		17E6A1241AC4262800F28F8B /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		17E6A1271AC4262800F28F8B /* Directory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Directory.h; sourceTree = "<group>"; };
-		17E6A1281AC4262800F28F8B /* DirectoryPosix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirectoryPosix.cpp; sourceTree = "<group>"; };
 		17E6A12A1AC4262800F28F8B /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
-		17E6A12B1AC4262800F28F8B /* FilePosix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FilePosix.cpp; sourceTree = "<group>"; };
 		17E6A12C1AC4262800F28F8B /* FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystem.h; sourceTree = "<group>"; };
 		17E6A12D1AC4262800F28F8B /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		17E6A13D1AC4262800F28F8B /* SystemUtility.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SystemUtility.cpp; sourceTree = "<group>"; };
@@ -474,12 +467,9 @@
 		17E6A18E1AC4262800F28F8B /* WorksheetChildOther.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorksheetChildOther.h; sourceTree = "<group>"; };
 		17E6A18F1AC4262800F28F8B /* WritingElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WritingElement.h; sourceTree = "<group>"; };
 		17E6A1901AC4262800F28F8B /* Xlsx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Xlsx.h; sourceTree = "<group>"; };
-		17E6A1931AC4262800F28F8B /* libxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = libxml2.cpp; sourceTree = "<group>"; };
-		17E6A1941AC4262800F28F8B /* libxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libxml2.h; sourceTree = "<group>"; };
 		17E6B1EE1AC4263900F28F8B /* StringWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringWriter.h; sourceTree = "<group>"; };
 		17E6B1EF1AC4263900F28F8B /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		17E6B1F01AC4263900F28F8B /* XmlSimple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlSimple.h; sourceTree = "<group>"; };
-		17E6B1F11AC4263900F28F8B /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xmlutils.h; sourceTree = "<group>"; };
 		17E6B3BB1AC4298500F28F8B /* Array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		17E6B3BC1AC4298500F28F8B /* ASCVariant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ASCVariant.h; sourceTree = "<group>"; };
 		17E6B3BD1AC4298500F28F8B /* Base64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
@@ -845,9 +835,7 @@
 			isa = PBXGroup;
 			children = (
 				17E6A1271AC4262800F28F8B /* Directory.h */,
-				17E6A1281AC4262800F28F8B /* DirectoryPosix.cpp */,
 				17E6A12A1AC4262800F28F8B /* File.h */,
-				17E6A12B1AC4262800F28F8B /* FilePosix.cpp */,
 				17E6A12C1AC4262800F28F8B /* FileSystem.h */,
 				17E6A12D1AC4262800F28F8B /* Settings.h */,
 			);
@@ -1019,22 +1007,11 @@
 		17E6A1911AC4262800F28F8B /* XML */ = {
 			isa = PBXGroup;
 			children = (
-				17E6A1921AC4262800F28F8B /* libxml2 */,
 				17E6B1EE1AC4263900F28F8B /* StringWriter.h */,
 				17E6B1EF1AC4263900F28F8B /* Utils.h */,
 				17E6B1F01AC4263900F28F8B /* XmlSimple.h */,
-				17E6B1F11AC4263900F28F8B /* xmlutils.h */,
 			);
 			path = XML;
-			sourceTree = "<group>";
-		};
-		17E6A1921AC4262800F28F8B /* libxml2 */ = {
-			isa = PBXGroup;
-			children = (
-				17E6A1931AC4262800F28F8B /* libxml2.cpp */,
-				17E6A1941AC4262800F28F8B /* libxml2.h */,
-			);
-			path = libxml2;
 			sourceTree = "<group>";
 		};
 		17E6B3BA1AC4298500F28F8B /* common */ = {
@@ -1099,7 +1076,6 @@
 				17C1FBF01ACC4250006B99B3 /* StringWriter.h in Headers */,
 				17C1FBF11ACC4250006B99B3 /* SimpleTypes_OMath.h in Headers */,
 				17C1FBF21ACC4250006B99B3 /* StringOutput.h in Headers */,
-				17C1FBF31ACC4250006B99B3 /* libxml2.h in Headers */,
 				17C1FBF41ACC4250006B99B3 /* Image.h in Headers */,
 				17C1FBF51ACC4250006B99B3 /* Dir.h in Headers */,
 				17C1FBF61ACC4250006B99B3 /* HyperLink.h in Headers */,
@@ -1202,7 +1178,6 @@
 				17C1FC5E1ACC4250006B99B3 /* Shape.h in Headers */,
 				17C1FC5F1ACC4250006B99B3 /* IFileContainer_Spreadsheet.h in Headers */,
 				69415F4D1CB51D9E003E771B /* DrawingColors.h in Headers */,
-				17C1FC601ACC4250006B99B3 /* xmlutils.h in Headers */,
 				17C1FC611ACC4250006B99B3 /* Image.h in Headers */,
 				69415F5C1CB51D9E003E771B /* DrawingStyles.h in Headers */,
 				69415F4B1CB51D9E003E771B /* Drawing3D.h in Headers */,
@@ -1327,14 +1302,12 @@
 				17C1FB9F1ACC4250006B99B3 /* Index.cpp in Sources */,
 				17C1FBA01ACC4250006B99B3 /* TxtFile.cpp in Sources */,
 				17C1FBA11ACC4250006B99B3 /* SectionProperty.cpp in Sources */,
-				17C1FBA21ACC4250006B99B3 /* libxml2.cpp in Sources */,
 				17C1FBA31ACC4250006B99B3 /* Color.cpp in Sources */,
 				17C1FBA41ACC4250006B99B3 /* Docx.cpp in Sources */,
 				17C1FBA51ACC4250006B99B3 /* ZIndex.cpp in Sources */,
 				17C1FBA61ACC4250006B99B3 /* ParagraphProperty.cpp in Sources */,
 				17C1FBA71ACC4250006B99B3 /* NumFormat.cpp in Sources */,
 				17C1FBA81ACC4250006B99B3 /* SystemUtility.cpp in Sources */,
-				17C1FBA91ACC4250006B99B3 /* FilePosix.cpp in Sources */,
 				17C1FBAA1ACC4250006B99B3 /* Utils.cpp in Sources */,
 				69415F4E1CB51D9E003E771B /* DrawingCoreInfo.cpp in Sources */,
 				69415F521CB51D9E003E771B /* DrawingExt.cpp in Sources */,
@@ -1349,7 +1322,6 @@
 				17C1FBB21ACC4250006B99B3 /* Vml.cpp in Sources */,
 				17C1FBB31ACC4250006B99B3 /* unicode_util.cpp in Sources */,
 				17C1FBB41ACC4250006B99B3 /* FldSimple.cpp in Sources */,
-				17C1FBB61ACC4250006B99B3 /* DirectoryPosix.cpp in Sources */,
 				17C1FBB91ACC4250006B99B3 /* Paragraph.cpp in Sources */,
 				17C1FBBA1ACC4250006B99B3 /* SimpleTypes_Word.cpp in Sources */,
 				17C1FBBB1ACC4250006B99B3 /* MathEquation.cpp in Sources */,

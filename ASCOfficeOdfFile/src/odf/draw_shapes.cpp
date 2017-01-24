@@ -39,7 +39,6 @@
 
 #include <boost/foreach.hpp>
 #include <boost/regex.h>
-#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>

@@ -45,11 +45,11 @@ const int		ShapeSizeVML	= 21600;
 const double	RadKoef			= M_PI/10800000.0;
 
 #ifndef		pow2_16
-#define		pow2_16			65536
+	#define		pow2_16			65536
 #endif
 
 #ifndef		pow3_16
-#define		pow3_16			60000
+	#define		pow3_16			60000
 #endif
 
 namespace NSStringUtils
@@ -67,7 +67,7 @@ namespace NSStringUtils
 	}
 	static bool IsNumber(std::wstring str)
 	{
-		for (int nIndex = 0; nIndex < str.length(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < str.length(); ++nIndex)
 		{
 			if (!IsDigit(str[nIndex]))
 			{
@@ -75,17 +75,6 @@ namespace NSStringUtils
 			}
 		}
 		return true;
-	}
-
-	static std::wstring ToString(LONG val)
-	{
-#if defined(_WIN32) || defined (_WIN64)
-            wchar_t buff[32] ={};
-            _itow(val, buff, 10);
-            return std::wstring(buff);
-#else
-            return (std::to_wstring(val));
-#endif
 	}
 	
 	static void ParseString(std::wstring strDelimeters, std::wstring strSource, 
@@ -119,7 +108,7 @@ namespace NSStringUtils
 	{
 		std::wstring strPath = strSource;
 		//strPath.Replace(_T(" "), _T(","));
-		for (int nIndex = 0; nIndex < strPath.length(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < strPath.length(); ++nIndex)
 		{
 			if (nIndex == (strPath.length() - 1))
 				continue;

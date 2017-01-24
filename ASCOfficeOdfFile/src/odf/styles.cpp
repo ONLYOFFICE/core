@@ -93,7 +93,7 @@ std::wstring process_border(const border_style	& borderStyle,
         if (szInt <= 0)      szInt = 1;
 
 		w_sz = boost::lexical_cast<std::wstring>( szInt );
-		w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+		w_color = borderStyle.get_color().get_hex_value() ;
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
@@ -1186,14 +1186,14 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 			w =  fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
-			w_w = std::to_wstring(w);
+			w_w = boost::lexical_cast<std::wstring>(w);
 		}
         if (fo_page_height_)
 		{
 			h = fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
-			w_h = std::to_wstring(h);
+			w_h = boost::lexical_cast<std::wstring>(h);
 		}
                 
         std::wstring w_orient = L"custom";

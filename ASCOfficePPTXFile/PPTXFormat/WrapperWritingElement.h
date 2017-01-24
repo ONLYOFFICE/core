@@ -33,7 +33,7 @@
 #ifndef PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 #define PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 
-#include "DocxFormat/WritingElement.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "WrapperFile.h"
 
 #include "../Editor/BinWriters.h"
@@ -73,7 +73,7 @@
 
 namespace PPTX
 {
-	class WrapperWritingElement : public PPTX::WritingElement
+	class WrapperWritingElement : public OOX::WritingElement
 	{
 	public:
 		WrapperWritingElement() : parentElement(NULL), parentFile(NULL)
@@ -110,9 +110,9 @@ namespace PPTX
 			fromXML(oNode);
 		}
 
-		virtual PPTX::EElementType getType() const
+		virtual OOX::EElementType getType() const
 		{
-			return PPTX::et_Unknown;
+			return OOX::et_Unknown;
 		}
 
 
@@ -137,7 +137,7 @@ namespace PPTX
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			return (NULL != pResult);
 		}
-		template<class T> const T& parentFileAs()const
+		template<class T> T& parentFileAs()const
 		{
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			return *pResult;

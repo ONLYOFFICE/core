@@ -41,6 +41,57 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CAltTextTable : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CAltTextTable)
+			CAltTextTable()
+			{
+			}
+			virtual ~CAltTextTable()
+			{
+			}
+
+		public:
+			virtual std::wstring      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<x14:table");
+				WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
+				WritingStringNullableAttrEncodeXmlString(L"altTextSummary", m_oAltTextSummary, m_oAltTextSummary.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_AltTextTable;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+						WritingElement_ReadAttributes_Read_if     ( oReader, _T("altText"),      m_oAltText )
+						WritingElement_ReadAttributes_Read_if     ( oReader, _T("altTextSummary"),      m_oAltTextSummary )
+
+						WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring > m_oAltText;
+			nullable<std::wstring > m_oAltTextSummary;
+		};
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
@@ -315,7 +366,10 @@ namespace OOX
 						m_oTableColumns->toXML(writer);
 					if(m_oTableStyleInfo.IsInit())
 						m_oTableStyleInfo->toXML(writer);
-
+					if(m_oExtLst.IsInit())
+					{
+						writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+					}
 					writer.WriteString(L"</table>");
 				}
 			}
@@ -339,6 +393,8 @@ namespace OOX
 						m_oTableColumns = oReader;
 					else if ( _T("tableStyleInfo") == sName )
 						m_oTableStyleInfo = oReader;
+					else if (_T("extLst") == sName)
+						m_oExtLst = oReader;
 				}
 			}
 
@@ -372,6 +428,8 @@ namespace OOX
 			nullable<CSortState > m_oSortState;
 			nullable<CTableColumns > m_oTableColumns;
 			nullable<CTableStyleInfo > m_oTableStyleInfo;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};
 		class CTablePart : public WritingElement
 		{

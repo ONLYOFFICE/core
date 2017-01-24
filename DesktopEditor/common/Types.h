@@ -137,12 +137,6 @@ typedef long HRESULT;
 #endif
 
 
-#ifndef RGB
-    typedef int RGB;
-    #define RGB(r,g,b) ((r)<<16|(g)<<8|(b))
-#endif
-
-
 #define RELEASEMEM(pobject)\
 {\
 	if (pobject!=NULL)\

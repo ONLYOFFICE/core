@@ -38,173 +38,173 @@
 
 #include "../WritingElement.h"
 
-#include "../Drawing/DrawingCoreInfo.h"
-#include "../Drawing/DrawingText.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+//#include "../Drawing/DrawingCoreInfo.h"
+//#include "../Drawing/DrawingText.h"
 
 
 namespace OOX
 {
-namespace Diagram
-{
-    //--------------------------------------------------------------------------------
-    //		?????? sp (Shape)
-    //--------------------------------------------------------------------------------
-    class CShape : public WritingElement
-    {
-    public:
-        CShape(XmlUtils::CXmlNode &oNode)
-        {
-            fromXML( oNode );
-        }
-        CShape(XmlUtils::CXmlLiteReader& oReader)
-        {
-            fromXML( oReader );
-        }
-        CShape()
-        {
-        }
-        virtual ~CShape()
-        {
-        }
+	//namespace Diagram
+	//{
+	//	//--------------------------------------------------------------------------------
+	//	//		?????? sp (Shape)
+	//	//--------------------------------------------------------------------------------
+	//	class CShape : public WritingElement
+	//	{
+	//	public:
+	//		CShape(XmlUtils::CXmlNode &oNode)
+	//		{
+	//			fromXML( oNode );
+	//		}
+	//		CShape(XmlUtils::CXmlLiteReader& oReader)
+	//		{
+	//			fromXML( oReader );
+	//		}
+	//		CShape()
+	//		{
+	//		}
+	//		virtual ~CShape()
+	//		{
+	//		}
 
-    public:
-        virtual std::wstring      toXML() const
-        {
-            return _T("");
-        }
-        virtual void toXML(XmlUtils::CStringWriter& writer) const
-        {
-        }
-        virtual void         fromXML(XmlUtils::CXmlNode& node)
-        {
-        }
-        virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-        {
-            ReadAttributes( oReader );
+	//	public:
+	//		virtual std::wstring      toXML() const
+	//		{
+	//			return _T("");
+	//		}
+	//		virtual void toXML(XmlUtils::CStringWriter& writer) const
+	//		{
+	//		}
+	//		virtual void         fromXML(XmlUtils::CXmlNode& node)
+	//		{
+	//		}
+	//		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+	//		{
+	//			ReadAttributes( oReader );
 
-            if ( oReader.IsEmptyNode() )
-                return;
+	//			if ( oReader.IsEmptyNode() )
+	//				return;
 
-            int nCurDepth = oReader.GetDepth();
-            while( oReader.ReadNextSiblingNode( nCurDepth ) )
-            {
-                std::wstring sName = oReader.GetName();
+	//			int nCurDepth = oReader.GetDepth();
+	//			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+	//			{
+	//				std::wstring sName = oReader.GetName();
 
-                if ( _T("dsp:spPr") == sName )
-                    m_oSpPr = oReader;
-                //else if ( _T("dsp:nvSpPr") == sName )
-                //	m_oNvSpPr = oReader;
-                else if ( _T("dsp:style") == sName )
-                    m_oShapeStyle = oReader;
-                else if (_T("dsp:txBody") == sName)
-                    m_oTxBody = oReader;
-                else if (_T("dsp:txXfrm") == sName)
-                    m_oTxXfrm = oReader;
-            }
-        }
+	//				if ( _T("dsp:spPr") == sName )
+	//					m_oSpPr = oReader;
+	//				//else if ( _T("dsp:nvSpPr") == sName )
+	//				//	m_oNvSpPr = oReader;
+	//				else if ( _T("dsp:style") == sName )
+	//					m_oShapeStyle = oReader;
+	//				else if (_T("dsp:txBody") == sName)
+	//					m_oTxBody = oReader;
+	//				else if (_T("dsp:txXfrm") == sName)
+	//					m_oTxXfrm = oReader;
+	//			}
+	//		}
 
-        virtual EElementType getType () const
-        {
-            return et_dsp_Shape;
-        }
+	//		virtual EElementType getType () const
+	//		{
+	//			return et_dsp_Shape;
+	//		}
 
-    private:
-        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-        {
-        }
-    public:
-        //nullable<OOX::Drawing::CShapeNonVisual>			m_oNvSpPr;
+	//	private:
+	//		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	//		{
+	//		}
+	//	public:
+	//		//nullable<OOX::Drawing::CShapeNonVisual>		m_oNvSpPr;
 
-        nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
-        nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
-        nullable<OOX::Drawing::CTxBody>					m_oTxBody;
-        nullable<OOX::Drawing::CTransform2D>			m_oTxXfrm;
+	//		nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
+	//		nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
+	//		nullable<OOX::Drawing::CTxBody>					m_oTxBody;
+	//		nullable<OOX::Drawing::CTransform2D>			m_oTxXfrm;
 
-        //extLst (Extension List) І20.1.2.2.15
+	//		//extLst (Extension List) І20.1.2.2.15
 
-    };
+	//	};
 
-    class CShapeTree : public WritingElementWithChilds<OOX::Diagram::CShape>
-    {
-    public:
-        WritingElement_AdditionConstructors(CShapeTree)
-        CShapeTree()
-        {
-        }
-        virtual ~CShapeTree()
-        {
-        }
+	//	class CShapeTree : public WritingElementWithChilds<OOX::Diagram::CShape>
+	//	{
+	//	public:
+	//		WritingElement_AdditionConstructors(CShapeTree)
+	//		CShapeTree()
+	//		{
+	//		}
+	//		virtual ~CShapeTree()
+	//		{
+	//		}
 
-    public:
-        virtual void		fromXML(XmlUtils::CXmlNode& oNode)
-        {
-        }
-        virtual void		fromXML(XmlUtils::CXmlLiteReader& oReader)
-        {
-            ReadAttributes( oReader );
+	//	public:
+	//		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+	//		{
+	//		}
+	//		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+	//		{
+	//			ReadAttributes( oReader );
 
-            if ( oReader.IsEmptyNode() )
-                return;
+	//			if ( oReader.IsEmptyNode() )
+	//				return;
 
-            int nParentDepth = oReader.GetDepth();
-            while( oReader.ReadNextSiblingNode( nParentDepth ) )
-            {
-                std::wstring sName = oReader.GetName();
-                WritingElement *pItem = NULL;
+	//			int nParentDepth = oReader.GetDepth();
+	//			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+	//			{
+	//				std::wstring sName = oReader.GetName();
+	//				WritingElement *pItem = NULL;
 
-                if ( _T("dsp:sp") == sName )
-                    m_arrItems.push_back( new Diagram::CShape( oReader ));
-                //else if ( _T("dsp:nvGrpSpPr") == sName )
-                //	m_oGroupShapeNonVisual = oReader;
-                else if ( _T("dsp:grpSpPr") == sName )
-                    m_oGroupShapeProperties = oReader;
-            }
-        }
-        virtual std::wstring      toXML() const
-        {
-            std::wstring sResult = _T("");
-            return sResult;
-        }
+	//				if ( _T("dsp:sp") == sName )
+	//					m_arrItems.push_back( new Diagram::CShape( oReader ));
+	//				//else if ( _T("dsp:nvGrpSpPr") == sName )
+	//				//	m_oGroupShapeNonVisual = oReader;
+	//				else if ( _T("dsp:grpSpPr") == sName )
+	//					m_oGroupShapeProperties = oReader;
+	//			}
+	//		}
+	//		virtual std::wstring toXML() const
+	//		{
+	//			std::wstring sResult = _T("");
+	//			return sResult;
+	//		}
 
-        virtual EElementType getType() const
-        {
-            return et_dsp_ShapeTree;
-        }
-    private:
-        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-        {
-            // Читаем атрибуты
-            WritingElement_ReadAttributes_Start( oReader )
-                    WritingElement_ReadAttributes_End( oReader )
-        }
+	//		virtual EElementType getType() const
+	//		{
+	//			return et_dsp_ShapeTree;
+	//		}
+	//	private:
+	//		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	//		{
+	//			// Читаем атрибуты
+	//			WritingElement_ReadAttributes_Start	( oReader )
+	//			WritingElement_ReadAttributes_End	( oReader )
+	//		}
 
-    public:
+	//	public:
 
-        // Attributes
+	//		// Attributes
 
-        // Childs
-        //nullable<Diagram::CGroupShapeNonVisual>		m_oGroupShapeNonVisual;
-        nullable<Drawing::CGroupShapeProperties>	m_oGroupShapeProperties;
-    };
-}
+	//		// Childs
+	//		//nullable<Diagram::CGroupShapeNonVisual>		m_oGroupShapeNonVisual;
+	//		nullable<Drawing::CGroupShapeProperties>	m_oGroupShapeProperties;
+	//	};
+	//}
     class CDiagramDrawing : public OOX::File, public OOX::IFileContainer
     {
     public:
         CDiagramDrawing()
         {
         }
-        CDiagramDrawing(const CPath& oRootPath, const CPath& oPath)
+		CDiagramDrawing(const CPath& uri)
+		{
+			read(uri.GetDirectory(), uri);
+		}
+		CDiagramDrawing(const CPath& oRootPath, const CPath& oPath)
         {
             read( oRootPath, oPath );
         }
         virtual ~CDiagramDrawing()
         {
-            for(int i = 0, length = m_arrShapeTree.size(); i < length; ++i)
-                delete m_arrShapeTree[i];
-            m_arrShapeTree.clear();
         }
-    public:
-
         virtual void read(const CPath& oFilePath)
         {
             //don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -214,35 +214,38 @@ namespace Diagram
         virtual void read(const CPath& oRootPath, const CPath& oFilePath)
         {
             IFileContainer::Read( oRootPath, oFilePath );
-    #ifdef USE_LITE_READER
+    //#ifdef USE_LITE_READER
 
-            XmlUtils::CXmlLiteReader oReader;
+    //        XmlUtils::CXmlLiteReader oReader;
 
-            if ( !oReader.FromFile( oFilePath.GetPath() ) )
-                return;
+    //        if ( !oReader.FromFile( oFilePath.GetPath() ) )
+    //            return;
 
-            if ( !oReader.ReadNextNode() )
-                return;
+    //        if ( !oReader.ReadNextNode() )
+    //            return;
 
-            std::wstring sName = oReader.GetName();
-            if ( _T("dsp:drawing") == sName && !oReader.IsEmptyNode() )
-            {
-                int nNumberingDepth = oReader.GetDepth();
-                while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
-                {
-                    sName = oReader.GetName();
-                    if ( _T("dsp:spTree") == sName )
-                        m_arrShapeTree.push_back( new Diagram::CShapeTree(oReader) );
-                }
-            }
-    #endif
+    //        std::wstring sName = oReader.GetName();
+    //        if ( _T("dsp:drawing") == sName && !oReader.IsEmptyNode() )
+    //        {
+    //            int nNumberingDepth = oReader.GetDepth();
+    //            while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
+    //            {
+    //                sName = oReader.GetName();
+    //                if ( _T("dsp:spTree") == sName )
+    //                    m_arrShapeTree.push_back( new PPTX::Logic::SpTree(oReader) );
+    //            }
+    //        }
+    //#endif
+			XmlUtils::CXmlNode oNodeDW;
+            if (oNodeDW.FromXmlFile(oFilePath.GetPath() ))
+			{
+				m_oShapeTree = oNodeDW.ReadNodeNoNS(L"spTree");
+			}
         }
 
         virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
         {
         }
-
-    public:
 
         virtual const OOX::FileType type() const
         {
@@ -257,9 +260,7 @@ namespace Diagram
             return type().DefaultFileName();
         }
 
-    public:
-
-        std::vector<Diagram::CShapeTree*> m_arrShapeTree;
+		NSCommon::nullable<PPTX::Logic::SpTree> m_oShapeTree;
 
     };
 } // namespace OOX

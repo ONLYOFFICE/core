@@ -75,14 +75,14 @@
 		{\
 			sResult += L"<";\
 			sResult += sName;\
-            sResult += L" w:val=\"" + std::to_wstring(prop) + L"\"/>";\
+            sResult += L" w:val=\"" + boost::lexical_cast<std::wstring>(prop) + L"\"/>";\
 		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
 		if ( PROP_DEF != prop )\
 		{\
 			sResult += L" ";\
 			sResult += sName;\
-            sResult += L"=\"" + std::to_wstring(prop) + L"\"";\
+            sResult += L"=\"" + boost::lexical_cast<std::wstring>(prop) + L"\"";\
 		}
 #define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
 		if ( 0 == prop )\
@@ -116,11 +116,11 @@
 		{\
 			sResult += L"\\";\
 			sResult += sName;\
-            sResult += std::to_wstring( prop  );\
+            sResult += boost::lexical_cast<std::wstring>( prop  );\
 		}
 #define RENDER_RTF_SHAPE_PROP( sName, sResult, prop)\
         if ( PROP_DEF != prop )\
-            sResult += L"{\\sp{\\sn " + std::wstring(sName) + L"}{\\sv " + std::to_wstring( prop ) + L"}}";
+            sResult += L"{\\sp{\\sn " + std::wstring(sName) + L"}{\\sv " + boost::lexical_cast<std::wstring>( prop ) + L"}}";
 
 class RtfSection;
 typedef boost::shared_ptr<RtfSection> RtfSectionPtr;
@@ -629,8 +629,8 @@ private:
              if ( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
                 sResult += L"theme" + sParam + L"Color=\"" + sTheme +L"\"";
-                sResult += L" theme" + sParam + L"Shade=\"" + std::to_wstring(m_byteShade) + L"\"";
-                sResult += L" theme" + sParam + L"Tint=\"" + std::to_wstring(m_byteTint) + L"\"";
+                sResult += L" theme" + sParam + L"Shade=\"" + boost::lexical_cast<std::wstring>(m_byteShade) + L"\"";
+                sResult += L" theme" + sParam + L"Tint=\"" + boost::lexical_cast<std::wstring>(m_byteTint) + L"\"";
 			 }
          }
          return sResult;
@@ -1402,7 +1402,7 @@ public:
 		{
 			int nLevelTextLength = sResult[0];
 			nLevelTextLength--;
-            for( int i = m_sNumber.length() - 1; i >= 0; i-- )
+            for( int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
 			{
 				int nReplaceNumber = m_sNumber[i];
 				nReplaceNumber--;
@@ -1415,7 +1415,7 @@ public:
 						nReplaceNumber++;
 						nLevel = sResult[ nReplaceNumber];
 					}
-                    std::wstring sExt = L"%" + std::to_wstring(nLevel);
+                    std::wstring sExt = L"%" + boost::lexical_cast<std::wstring>(nLevel);
 
                     sResult.erase( nReplaceNumber, 1 );
                     sResult.insert(sResult.begin() + nReplaceNumber, sExt.begin(), sExt.end());
@@ -1529,7 +1529,7 @@ public:
 			for( int i = 0; i < nOverrideCount; i++ )
 				if ( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
                     nOverrideCount--;
-            sResult += L"\\listoverridecount" + std::to_wstring( nOverrideCount );
+            sResult += L"\\listoverridecount" + boost::lexical_cast<std::wstring>( nOverrideCount );
 			for( int i = 0; i < nOverrideCount; i++ )
 			{
 				if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
@@ -1537,9 +1537,9 @@ public:
 					sResult += L"{\\lfolevel";
 					
 					if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
-                        sResult += L"\\listoverrideformat" + std::to_wstring( m_aOverrideLevels[i].m_nLevelIndex );
+                        sResult += L"\\listoverrideformat" + boost::lexical_cast<std::wstring>( m_aOverrideLevels[i].m_nLevelIndex );
 					if ( PROP_DEF != m_aOverrideLevels[i].m_nStart )
-                        sResult += L"\\listoverridestartat" + std::to_wstring( m_aOverrideLevels[i].m_nStart );
+                        sResult += L"\\listoverridestartat" + boost::lexical_cast<std::wstring>( m_aOverrideLevels[i].m_nStart );
 					
 					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
 					sResult += L"}";
@@ -1555,9 +1555,9 @@ public:
 				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
 				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
 				{
-                    sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(OverrideLevel.m_nLevelIndex) + L"\">";
+                    sResult += L"<w:lvlOverride w:ilvl=\"" + boost::lexical_cast<std::wstring>(OverrideLevel.m_nLevelIndex) + L"\">";
 					if ( PROP_DEF != OverrideLevel.m_nStart )
-                        sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
+                        sResult += L"<w:startOverride w:val=\"" + boost::lexical_cast<std::wstring>(OverrideLevel.m_nStart) + L"\"/>";
 					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
 					sResult += L"</w:lvlOverride>";
 				}
@@ -1699,10 +1699,10 @@ public:
         std::wstring sResult;
 		switch( m_eType )
 		{
-            case stParagraph :	sResult += L"{\\s"      + std::to_wstring( m_nID);                  break;
-            case stCharacter :	sResult += L"{\\*\\cs"  + std::to_wstring( m_nID);                  break;
-            case stSection :	sResult += L"{\\*\\ds"  + std::to_wstring( m_nID);                  break;
-            case stTable :		sResult += L"{\\*\\ts"  + std::to_wstring( m_nID) + L"\\tsrowd";    break;
+            case stParagraph :	sResult += L"{\\s"      + boost::lexical_cast<std::wstring>( m_nID);                  break;
+            case stCharacter :	sResult += L"{\\*\\cs"  + boost::lexical_cast<std::wstring>( m_nID);                  break;
+            case stSection :	sResult += L"{\\*\\ds"  + boost::lexical_cast<std::wstring>( m_nID);                  break;
+            case stTable :		sResult += L"{\\*\\ts"  + boost::lexical_cast<std::wstring>( m_nID) + L"\\tsrowd";    break;
 		}
 		return sResult;
 	}

@@ -33,6 +33,7 @@
 #include "logging.h"
 
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
@@ -241,7 +242,7 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 	}
 	std::wstring odf_formula = formulas_converter_chart.convert_chart_distance(oox_formula);
 	
-	//boost::algorithm::replace_all(odf_formula, L"$", L"");
+	//XmlUtils::replace_all( odf_formula, L"$", L"");
 	return odf_formula;
 }
 

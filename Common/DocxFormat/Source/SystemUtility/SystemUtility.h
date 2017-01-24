@@ -64,7 +64,7 @@ namespace OOX
 		}
 		friend CPath operator/(const CPath& path1, const std::wstring& path2)
 		{
-			CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + (path2 == FILE_SEPARATOR_STR ? L"" : path2));
+            CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + path2);
 			path.Normalize();
 
 			return path;

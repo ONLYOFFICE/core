@@ -1860,6 +1860,10 @@
 			Name="DiagramML"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramData.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
 				>
 			</File>
@@ -1994,10 +1998,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\Docx.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\SystemUtility\FileSystem\File.cpp"
 			>
 		</File>
 		<File

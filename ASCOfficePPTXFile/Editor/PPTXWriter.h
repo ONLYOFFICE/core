@@ -42,11 +42,11 @@ namespace NSBinPptxRW
 	class CPPTXWriter
 	{
 	private:
-		CBinaryFileReader	m_oReader;
-		CImageManager2		m_oImageManager;
+		CBinaryFileReader			m_oReader;
+		CImageManager2				m_oImageManager;
 		std::wstring				m_strDstFolder;
 
-		std::map<BYTE, LONG> m_mainTables;
+		std::map<BYTE, LONG>		m_mainTables;
 
 		std::vector<PPTX::Theme>			m_arThemes;
 		
@@ -65,14 +65,14 @@ namespace NSBinPptxRW
 		
 		PPTX::Presentation				m_oPresentation;
 		PPTX::TableStyles				m_oTableStyles;
-		PPTX::VmlDrawing				m_oVmlDrawing;
+		OOX::CVmlDrawing				m_oVmlDrawing;
 		PPTX::App						m_oApp;
 		PPTX::Core						m_oCore;
 		PPTX::ViewProps					m_oViewProps;
 		PPTX::PresProps					m_oPresProps;
+		PPTX::NotesSlide				m_oDefaultNote;
 
         bool							m_bIsDefaultNoteMaster;
-		PPTX::NotesSlide				m_oDefaultNote;
 
 	public:
 

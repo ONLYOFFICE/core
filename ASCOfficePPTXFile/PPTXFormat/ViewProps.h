@@ -35,6 +35,7 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
 
 #include "Limit/LastView.h"
 #include "ViewProps/GridSpacing.h"
@@ -44,8 +45,6 @@
 #include "ViewProps/OutlineViewPr.h"
 #include "ViewProps/SlideViewPr.h"
 #include "ViewProps/SorterViewPr.h"
-
-#include "DocxFormat/FileTypes.h"
 
 using namespace NSBinPptxRW;
 
@@ -105,7 +104,7 @@ namespace PPTX
 			if(SorterViewPr.is_init())
 				SorterViewPr->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
@@ -125,16 +124,16 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:viewPr"), oAttr, oValue));
 
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::ViewProps;
+			return OOX::Presentation::FileTypes::ViewProps;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

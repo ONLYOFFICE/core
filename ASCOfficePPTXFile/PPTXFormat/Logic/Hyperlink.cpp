@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "stdafx.h"
+
 
 #include "Hyperlink.h"
 #include "./../Slide.h"
@@ -45,12 +45,12 @@ namespace PPTX
 		{
 			if(id.IsInit() && *id != _T(""))
 			{
-				PPTX::RId rid(*id);
+				OOX::RId rid(*id);
 
 				std::wstring sLink = _T("");
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::HyperLink> p = pRels->hyperlink(rid);
+					smart_ptr<OOX::HyperLink> p = pRels->GetHyperlink(rid);
 					if (p.is_init())
 						sLink = p->Uri().m_strFilename;
 				}
@@ -66,12 +66,12 @@ namespace PPTX
 						sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
 				}
 
-                boost::algorithm::replace_all(sLink, L"\\",     L"/");
-                boost::algorithm::replace_all(sLink, L"//",     L"/");
-                boost::algorithm::replace_all(sLink, L"http:/", L"http://");
-                boost::algorithm::replace_all(sLink, L"https:/",L"https://");
-                boost::algorithm::replace_all(sLink, L"ftp:/",  L"ftp://");
-                boost::algorithm::replace_all(sLink, L"file:/", L"file://");
+                XmlUtils::replace_all(sLink, L"\\",     L"/");
+                XmlUtils::replace_all(sLink, L"//",     L"/");
+                XmlUtils::replace_all(sLink, L"http:/", L"http://");
+                XmlUtils::replace_all(sLink, L"https:/",L"https://");
+                XmlUtils::replace_all(sLink, L"ftp:/",  L"ftp://");
+                XmlUtils::replace_all(sLink, L"file:/", L"file://");
 
 				return sLink;
 			}

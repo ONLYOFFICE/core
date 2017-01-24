@@ -470,7 +470,7 @@ namespace OOX
 										int nIndex = pSharedStrings->AddSi(pSi);
 										//меняем значение ячейки
 										pCell->m_oValue.Init();
-										pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+										pCell->m_oValue->m_sText = boost::lexical_cast<std::wstring>(nIndex);
 										//меняем тип ячейки
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -492,7 +492,7 @@ namespace OOX
 									int nIndex = pSharedStrings->AddSi(pSi);
 									//меняем значение ячейки
 									pCell->m_oValue.Init();
-									pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+									pCell->m_oValue->m_sText = boost::lexical_cast<std::wstring>(nIndex);
 									//меняем тип ячейки
 									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{

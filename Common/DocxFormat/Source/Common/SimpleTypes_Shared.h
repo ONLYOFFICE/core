@@ -656,7 +656,7 @@ namespace SimpleTypes
             if ( 20 > sValue.length() )
 			{
 				m_sValue = sValue;
-                for ( int nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
+                for ( size_t nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
 				{
 					m_sValue += _T("0");
 				}
@@ -728,9 +728,9 @@ namespace SimpleTypes
             std::wstring sResult;
 
 			if ( m_bUnit )
-				sResult = std::to_wstring( m_dValue ) + L"pt";
+				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			else
-				sResult = std::to_wstring( (int)(m_dValue * 20) );
+				sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -799,9 +799,7 @@ namespace SimpleTypes
 
         virtual std::wstring      ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
-
-			return sResult;
+			return boost::lexical_cast<std::wstring>( this->m_eValue);
 		}
 
 

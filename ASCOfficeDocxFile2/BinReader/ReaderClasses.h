@@ -1704,7 +1704,7 @@ public:
 		{
             std::wstring sText = pComment->Text;
 
-            boost::algorithm::replace_all(sText, L"\r", L"");
+            XmlUtils::replace_all(sText, L"\r", L"");
 
             bool bFirst = true;
 			int nPrevIndex = 0;
@@ -2297,6 +2297,8 @@ public:
     std::wstring Layout;
     std::wstring tblPrChange;
     std::wstring TableCellSpacing;
+	std::wstring Caption;
+	std::wstring Description;
 	bool IsEmpty()
 	{
         return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
@@ -2336,8 +2338,20 @@ public:
             sRes += (TableCellMar);
         if(false == Look.empty())
             sRes += (Look);
+		if(!Caption.empty())
+		{
+			sRes += L"<w:tblCaption w:val=\"";
+			sRes += XmlUtils::EncodeXmlString(Caption);
+			sRes += L"\"/>";
+		}
+		if(!Description.empty())
+		{
+			sRes += L"<w:tblDescription w:val=\"";
+			sRes += XmlUtils::EncodeXmlString(Description);
+			sRes += L"\"/>";
+		}
         if(!tblPrChange.empty())
-            sRes += (tblPrChange);
+			sRes += (tblPrChange);
         sRes += L"</w:tblPr>";
 		return sRes;
 	}

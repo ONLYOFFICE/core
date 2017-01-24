@@ -432,8 +432,8 @@ namespace OOX
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLast;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorHigh;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLow;
-				nullable<std::wstring>										m_oRef;
-				nullable<CSparklines>									m_oSparklines;
+				nullable<std::wstring>								m_oRef;
+				nullable<CSparklines>								m_oSparklines;
 		};
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
 		{

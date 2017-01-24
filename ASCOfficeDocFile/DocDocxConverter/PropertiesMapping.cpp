@@ -35,7 +35,7 @@
 namespace DocFileFormat
 {
 	std::map<unsigned char, std::wstring>	PropertiesMapping::brcTypeMap;
-	ASCOfficeCriticalSection				PropertiesMapping::brcTypeMapLock;
+	OfficeCriticalSection				PropertiesMapping::brcTypeMapLock;
 	
 	void PropertiesMapping::init()
 	{

@@ -36,7 +36,7 @@
 #include "./../../WrapperWritingElement.h"
 #include "./../../Limit/BlipCompression.h"
 #include "./../UniEffect.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -142,7 +142,7 @@ namespace PPTX
 				}
 				else if(!oleRid.empty())
 				{
-					olePath= this->GetFullOleName(PPTX::RId(oleRid), pRels);
+					olePath= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				}
 
 				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), olePath, dX, dY, dW, dH);
@@ -158,14 +158,14 @@ namespace PPTX
 			}
 		public:
 			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
-			virtual std::wstring GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullOleName(const OOX::RId& pRId, FileContainer* pRels = NULL)const;
 
 		public:
 			std::vector<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
-			nullable<PPTX::RId> embed;
-			nullable<PPTX::RId> link;
+			nullable<OOX::RId> embed;
+			nullable<OOX::RId> link;
 		//private:
 		public:
 			std::wstring m_namespace;

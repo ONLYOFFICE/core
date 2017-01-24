@@ -995,7 +995,7 @@ namespace BinXlsxRW
 			if(-1 != nIndex)
 			{
                 std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex + 1);
-                boost::algorithm::replace_all(sContentTypesPath, L"\\", L"/");
+                XmlUtils::replace_all(sContentTypesPath, L"\\", L"/");
 
                 std::wstring strType = L"<Override PartName=\"/";
                 strType += sContentTypesPath + L"/" + sThemeOverrideName;

@@ -1086,8 +1086,8 @@ void OoxConverter::convert(OOX::Drawing::CPath2DLineTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 
-	std::wstring path_elm =				boost::lexical_cast<std::wstring> ( (int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
-					std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
+	std::wstring path_elm =				std::to_wstring ( (int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
+					std::wstring(L" ")+ std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"L"), path_elm);
 }
@@ -1095,8 +1095,8 @@ void OoxConverter::convert(OOX::Drawing::CPath2DMoveTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 	
-	std::wstring path_elm =						boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
-							std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));	
+	std::wstring path_elm =						std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
+							std::wstring(L" ")+ std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"M"), path_elm);
 }
 
@@ -1104,8 +1104,8 @@ void OoxConverter::convert(OOX::Drawing::CPath2DArcTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 	
-	//std::wstring path_elm =						boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
-	//						std::wstring(L" ")+ boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
+	//std::wstring path_elm =						std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
+	//						std::wstring(L" ")+ std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
 	//
 	//odf_context()->drawing_context()->add_path_element(std::wstring(L"A"), path_elm);
 }
@@ -1113,10 +1113,10 @@ void OoxConverter::convert(OOX::Drawing::CPath2DQuadBezierTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 	
-	std::wstring path_elm =							boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl.m_oX.GetValue())) + 
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl.m_oY.GetValue())) + 
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
+	std::wstring path_elm =							std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl.m_oX.GetValue())) + 
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl.m_oY.GetValue())) + 
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"S"), path_elm);
 
@@ -1125,12 +1125,12 @@ void OoxConverter::convert(OOX::Drawing::CPath2DCubicBezierTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 
-	std::wstring path_elm =							boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl1.m_oX.GetValue())) + 
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl1.m_oY.GetValue())) + 
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oX.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oY.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
-							std::wstring(L" ") +	boost::lexical_cast<std::wstring> ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
+	std::wstring path_elm =							std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl1.m_oX.GetValue())) + 
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl1.m_oY.GetValue())) + 
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oX.GetValue())) +
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oCtrl2.m_oY.GetValue())) +
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oEnd.m_oX.GetValue())) +
+							std::wstring(L" ") +	std::to_wstring ((int)pt2emu(oox_geom_path->m_oEnd.m_oY.GetValue())) ;	
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"C"), path_elm);
 }

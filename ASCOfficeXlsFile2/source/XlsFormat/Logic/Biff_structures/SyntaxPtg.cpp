@@ -35,7 +35,7 @@
 #include "PtgParen.h"
 
 #include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -411,7 +411,8 @@ const bool SyntaxPtg::extract_PtgStr(std::wstring::const_iterator& first, std::w
 	boost::match_results<std::wstring::const_iterator> results;
 	if(boost::regex_search(first, last, results, reg_str))
 	{
-		out_str = boost::algorithm::replace_all_copy(results.str(1), L"\"\"", L"\"");
+		out_str = results.str(1);
+		XmlUtils::replace_all(out_str, L"\"\"", L"\"");
 		first = results[0].second;
 		return true;
 	}

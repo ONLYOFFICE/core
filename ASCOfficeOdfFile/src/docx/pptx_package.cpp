@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <boost/ref.hpp>
 
 #include "pptx_package.h"
 #include "pptx_output_xml.h"
@@ -126,13 +127,13 @@ void slides_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName = std::wstring(L"slide") + std::to_wstring( i + 1 ) + L".xml";
+        const std::wstring fileName = std::wstring(L"slide") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
        
 		contentTypes->add_override(std::wstring(L"/ppt/slides/") + fileName, kWSConType);
 
         if (rels_)
         {
-            const std::wstring id = std::wstring(L"sId") + std::to_wstring( i + 1);
+            const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>( i + 1);
             static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
             const std::wstring fileRef = std::wstring(L"slides/") + fileName;
             rels_->add(id, kWSRel, fileRef);
@@ -169,12 +170,12 @@ void slideMasters_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName = std::wstring(L"slideMaster") + std::to_wstring( i + 1 ) + L".xml";
+        const std::wstring fileName = std::wstring(L"slideMaster") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
         contentTypes->add_override(std::wstring(L"/ppt/slideMasters/") + fileName, kWSConType);
 
         if (rels_)
         {
-            const std::wstring id = std::wstring(L"smId") + std::to_wstring( i + 1);
+            const std::wstring id = std::wstring(L"smId") + boost::lexical_cast<std::wstring>( i + 1);
             static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
             const std::wstring fileRef = std::wstring(L"slideMasters/") + fileName;
             rels_->add(id, kWSRel, fileRef);
@@ -208,7 +209,7 @@ void slideLayouts_files::write(const std::wstring & RootPath)
     {
         if (!slides_[i]) continue;
 
-        const std::wstring fileName		= std::wstring(L"slideLayout") + std::to_wstring( i + 1 ) + L".xml";
+        const std::wstring fileName		= std::wstring(L"slideLayout") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
         const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
        
 		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
@@ -260,7 +261,7 @@ void ppt_charts_files::write(const std::wstring & RootPath)
     {
         if (!charts_[i]) continue;
 		
-		const std::wstring fileName = std::wstring(L"chart") + std::to_wstring( i + 1 ) + L".xml";
+		const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
         content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
        
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
@@ -290,7 +291,7 @@ void ppt_themes_files::write(const std::wstring & RootPath)
     {
         if (!themes_[i]) continue;
             
-		const std::wstring fileName		= std::wstring(L"theme") + std::to_wstring( i + 1) + L".xml";
+		const std::wstring fileName		= std::wstring(L"theme") + boost::lexical_cast<std::wstring>( i + 1) + L".xml";
 		const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.theme+xml";
        
 		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();

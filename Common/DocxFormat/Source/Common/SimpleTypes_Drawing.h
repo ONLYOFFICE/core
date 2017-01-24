@@ -70,8 +70,7 @@ namespace SimpleTypes
 		{
             if ( adjangleAngle == this->m_eValue )
 			{
-                std::wstring sResult = std::to_wstring( m_nAngle );
-				return sResult;
+				return boost::lexical_cast<std::wstring>( m_nAngle );
 			}
 			else
 			{
@@ -120,8 +119,8 @@ namespace SimpleTypes
 		}
 
 
-		int     m_nAngle;
-        std::wstring m_sGuide;
+		int				m_nAngle;
+        std::wstring	m_sGuide;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -163,8 +162,7 @@ namespace SimpleTypes
 				}
 				else
 				{
-                    std::wstring sResult = std::to_wstring( (int)Pt_To_Emu( m_dValue ) );
-					return sResult;
+					return boost::lexical_cast<std::wstring>( (int)Pt_To_Emu( m_dValue ) );
 				}
 			}
 			else
@@ -258,8 +256,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue );
-			return sResult;
+			return boost::lexical_cast<std::wstring>( this->m_eValue );
 		}
 
 		SimpleType_FromString     (int)
@@ -901,9 +898,9 @@ namespace SimpleTypes
             std::wstring sResult;
 
             if ( m_bUnit )
-                sResult = std::to_wstring(m_dValue) + L"pt";
+                sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
             else
-                sResult = std::to_wstring( (__int64)m_dValue );
+                sResult = boost::lexical_cast<std::wstring>( (__int64)m_dValue );
 
             return sResult;
         }
@@ -942,7 +939,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -1026,7 +1023,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue );
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue );
 			return sResult;
 		}
 
@@ -1063,8 +1060,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -1084,7 +1081,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-			return std::to_wstring(m_dValue) + L"%";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
 
         SimpleType_FromString2    (double)
@@ -1172,7 +1169,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue );
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue );
 			return sResult;
 		}
 
@@ -1738,7 +1735,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -1956,8 +1953,8 @@ namespace SimpleTypes
         virtual double FromString(std::wstring &sValue)
         {
             //todo странно что если пришло значение от 0 до 1, то m_dValue от 0 до 1. В других случаях от 0 до 100
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos )
@@ -1988,11 +1985,11 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            return std::to_wstring(m_dValue) + L"%";
+            return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
         virtual std::wstring ToStringDecimalNumber  () const
 		{
-            std::wstring sResult = std::to_wstring( int(m_dValue * 1000.0) );
+            std::wstring sResult = boost::lexical_cast<std::wstring>( int(m_dValue * 1000.0) );
 
 			return sResult;
 		}
@@ -2027,7 +2024,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -2086,7 +2083,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString() const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue );
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue );
 			return sResult;
 		}
 
@@ -2120,8 +2117,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -2141,7 +2138,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-			return std::to_wstring(m_dValue) + L"%";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
 
         SimpleType_FromString2    (double)
@@ -2171,8 +2168,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -2192,7 +2189,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-			return std::to_wstring(m_dValue) + L"%";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
 
         SimpleType_FromString2    (double)
@@ -4904,7 +4901,7 @@ namespace SimpleTypes
 
         virtual std::wstring       ToString  () const
         {
-            std::wstring sResult = std::to_wstring(this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>(this->m_eValue);
 
             return sResult;
         }
@@ -4999,8 +4996,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -5020,7 +5017,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-			return std::to_wstring(m_dValue) + L"%";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
 
         SimpleType_FromString2    (double)
@@ -5103,7 +5100,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -5147,7 +5144,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -5193,7 +5190,7 @@ namespace SimpleTypes
 //
 //        virtual std::wstring ToString  () const
 //        {
-//            std::wstring sResult = std::to_wstring( this->m_eValue);
+//            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 //
 //            return sResult;
 //        }
@@ -5446,8 +5443,8 @@ namespace SimpleTypes
 
         virtual double FromString(std::wstring &sValue)
         {
-            int nPos = sValue.find( '%' );
-            int nLen = sValue.length();
+            int nPos = (int)sValue.find( '%' );
+            int nLen = (int)sValue.length();
             if ( -1 == nPos || nPos != sValue.length() - 1 || nLen <= 0  )
 			{
 				if ( -1 == nPos && nLen > 0)
@@ -5466,7 +5463,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-			return std::to_wstring(m_dValue) + L"%";
+			return boost::lexical_cast<std::wstring>(m_dValue) + L"%";
         }
 
         SimpleType_FromString2    (double)
@@ -5498,7 +5495,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
         {
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
             return sResult;
         }
@@ -5909,7 +5906,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
+            std::wstring sResult = boost::lexical_cast<std::wstring>( this->m_eValue);
 
 			return sResult;
 		}
@@ -6074,13 +6071,13 @@ namespace SimpleTypes
 
         virtual ESizeRelFromH FromString(std::wstring &sValue)
 		{
-            if       ( (L"margin")     == sValue ) this->m_eValue = sizerelfromhMargin;
-            else if  ( (L"page")        == sValue ) this->m_eValue = sizerelfromhPage;
-            else if  ( (L"leftMargin")  == sValue ) this->m_eValue = sizerelfromhLeftMargin;
-            else if  ( (L"rightMargin")    == sValue ) this->m_eValue = sizerelfromhRightMargin;
-            else if  ( (L"insideMargin")        == sValue ) this->m_eValue = sizerelfromhInsideMargin;
-            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = sizerelfromhOutsideMargin;
-            else                                       this->m_eValue = eDefValue;
+            if       ( (L"margin")			== sValue ) this->m_eValue = sizerelfromhMargin;
+            else if  ( (L"page")			== sValue ) this->m_eValue = sizerelfromhPage;
+            else if  ( (L"leftMargin")		== sValue ) this->m_eValue = sizerelfromhLeftMargin;
+            else if  ( (L"rightMargin")		== sValue ) this->m_eValue = sizerelfromhRightMargin;
+            else if  ( (L"insideMargin")	== sValue ) this->m_eValue = sizerelfromhInsideMargin;
+            else if  ( (L"outsideMargin")	== sValue ) this->m_eValue = sizerelfromhOutsideMargin;
+            else										this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -6089,13 +6086,14 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case sizerelfromhMargin     : return (L"margin");
-			case sizerelfromhPage        : return (L"page");
-			case sizerelfromhLeftMargin  : return (L"leftMargin");
-			case sizerelfromhRightMargin    : return (L"rightMargin");
-			case sizerelfromhInsideMargin        : return (L"insideMargin");
-			case sizerelfromhOutsideMargin : return (L"outsideMargin");
+				case sizerelfromhMargin			: return (L"margin");
+				case sizerelfromhPage			: return (L"page");
+				case sizerelfromhLeftMargin		: return (L"leftMargin");
+				case sizerelfromhRightMargin    : return (L"rightMargin");
+				case sizerelfromhInsideMargin	: return (L"insideMargin");
+				case sizerelfromhOutsideMargin	: return (L"outsideMargin");
 			}
+			return L"margin";
 		}
 
 		SimpleType_FromString     (ESizeRelFromH)
@@ -6104,12 +6102,12 @@ namespace SimpleTypes
 
 	enum ESizeRelFromV
 	{
-		sizerelfromvMargin     = 0,
-		sizerelfromvPage        = 1,
-		sizerelfromvTopMargin    = 2,
-		sizerelfromvBottomMargin   = 3,
-		sizerelfromvInsideMargin  = 4,
-		sizerelfromvOutsideMargin = 5
+		sizerelfromvMargin			= 0,
+		sizerelfromvPage			= 1,
+		sizerelfromvTopMargin		= 2,
+		sizerelfromvBottomMargin	= 3,
+		sizerelfromvInsideMargin	= 4,
+		sizerelfromvOutsideMargin	= 5
 	};
 
 	template<ESizeRelFromV eDefValue = sizerelfromvPage>
@@ -6121,13 +6119,13 @@ namespace SimpleTypes
 
         virtual ESizeRelFromV FromString(std::wstring &sValue)
 		{
-            if       ( (L"margin")     == sValue ) this->m_eValue = sizerelfromvMargin;
-            else if  ( (L"page")        == sValue ) this->m_eValue = sizerelfromvPage;
-            else if  ( (L"topMargin")  == sValue ) this->m_eValue = sizerelfromvTopMargin;
+            if       ( (L"margin")			== sValue ) this->m_eValue = sizerelfromvMargin;
+            else if  ( (L"page")			== sValue ) this->m_eValue = sizerelfromvPage;
+            else if  ( (L"topMargin")		== sValue ) this->m_eValue = sizerelfromvTopMargin;
             else if  ( (L"bottomMargin")    == sValue ) this->m_eValue = sizerelfromvBottomMargin;
-            else if  ( (L"insideMargin")        == sValue ) this->m_eValue = sizerelfromvInsideMargin;
-            else if  ( (L"outsideMargin") == sValue ) this->m_eValue = sizerelfromvOutsideMargin;
-            else                                       this->m_eValue = eDefValue;
+            else if  ( (L"insideMargin")	== sValue ) this->m_eValue = sizerelfromvInsideMargin;
+            else if  ( (L"outsideMargin")	== sValue ) this->m_eValue = sizerelfromvOutsideMargin;
+            else										this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -6136,13 +6134,14 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case sizerelfromvMargin     : return (L"margin");
-			case sizerelfromvPage        : return (L"page");
-			case sizerelfromvTopMargin  : return (L"topMargin");
-			case sizerelfromvBottomMargin    : return (L"bottomMargin");
-			case sizerelfromvInsideMargin        : return (L"insideMargin");
-			case sizerelfromvOutsideMargin : return (L"outsideMargin");
+				case sizerelfromvMargin			: return (L"margin");
+				case sizerelfromvPage			: return (L"page");
+				case sizerelfromvTopMargin		: return (L"topMargin");
+				case sizerelfromvBottomMargin	: return (L"bottomMargin");
+				case sizerelfromvInsideMargin	: return (L"insideMargin");
+				case sizerelfromvOutsideMargin	: return (L"outsideMargin");
 			}
+			return L"margin";
 		}
 
 		SimpleType_FromString     (ESizeRelFromV)
@@ -6168,7 +6167,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return XmlUtils::IntToString(this->m_eValue, L"%lu");
+            return XmlUtils::Int64ToString(this->m_eValue, L"%lu");
 		}
 
 
@@ -6220,7 +6219,7 @@ namespace SimpleTypes
             else if  ( (L"largest")   == sValue ) this->m_eValue = wraptextLargest;
             else if  ( (L"left")      == sValue ) this->m_eValue = wraptextLeft;
             else if  ( (L"right")     == sValue ) this->m_eValue = wraptextRight;
-            else                                   this->m_eValue = eDefValue;
+            else								  this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

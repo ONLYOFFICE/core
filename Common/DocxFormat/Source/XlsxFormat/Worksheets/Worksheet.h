@@ -211,7 +211,7 @@ namespace OOX
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 								if(NULL != pSi)
 									pCommentItem->m_oText.reset(pSi);
-								std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
+								std::wstring sNewId = boost::lexical_cast<std::wstring>(pCommentItem->m_nRow.get()) + L"-" + boost::lexical_cast<std::wstring>(pCommentItem->m_nCol.get());
 								m_mapComments [sNewId] = pCommentItem;
 							}
 						}
@@ -234,7 +234,7 @@ namespace OOX
 							{
 								int nRow = pClientData->m_oRow->GetValue();
 								int nCol = pClientData->m_oColumn->GetValue();
-								std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
+								std::wstring sId = boost::lexical_cast<std::wstring>(nRow) + L"-" + boost::lexical_cast<std::wstring>(nCol);
 
 								std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 								if(pPair != m_mapComments.end())

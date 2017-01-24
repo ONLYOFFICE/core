@@ -57,7 +57,7 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 			case ft_fdbminor:	sResult += L"\\fdbminor";	break;
 			case ft_fbiminor:	sResult += L"\\fbiminor";	break;
 		}
-        sResult += L"\\f" + std::to_wstring(m_nID);
+        sResult += L"\\f" + boost::lexical_cast<std::wstring>(m_nID);
 
 		switch( m_eFontFamily )
 		{
@@ -88,7 +88,7 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		sResult += L";}";
 	}
 	else
-        sResult += L"\\f" + std::to_wstring(m_nID);
+        sResult += L"\\f" + boost::lexical_cast<std::wstring>(m_nID);
 	return sResult;
 }
 
@@ -290,9 +290,9 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 		//if( L"" != sTheme )
 		//{
 		//	sResult += sTheme;
-        //	sResult += L"\\ctint" + std::to_wstring(m_byteTint) + L"\\cshade" + std::to_wstring(m_byteShade) + L"", , );
+        //	sResult += L"\\ctint" + boost::lexical_cast<std::wstring>(m_byteTint) + L"\\cshade" + boost::lexical_cast<std::wstring>(m_byteShade) + L"", , );
 		//}
-        sResult+= L"\\red" + std::to_wstring(m_byteRed) + L"\\green" + std::to_wstring(m_byteGreen) + L"\\blue" + std::to_wstring(m_byteBlue);
+        sResult+= L"\\red" + boost::lexical_cast<std::wstring>(m_byteRed) + L"\\green" + boost::lexical_cast<std::wstring>(m_byteGreen) + L"\\blue" + boost::lexical_cast<std::wstring>(m_byteBlue);
 		//важно
 		sResult += L";";
 	}
@@ -300,7 +300,7 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 	{
 		int nColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor(*this, nColor) )
-            sResult += L"\\c" + std::to_wstring(nColor); //todo
+            sResult += L"\\c" + boost::lexical_cast<std::wstring>(nColor); //todo
 	}
 	return sResult;
 }
@@ -402,8 +402,8 @@ std::wstring RtfShadingCell::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nForeColor, sResult, L"clcfpat" )
 	if( PROP_DEF != m_nBackColor )
     {
-        sResult += L"\\clcbpat" + std::to_wstring(m_nBackColor);
-        sResult += L"\\clcfpatraw" + std::to_wstring(m_nBackColor);
+        sResult += L"\\clcbpat" + boost::lexical_cast<std::wstring>(m_nBackColor);
+        sResult += L"\\clcfpatraw" + boost::lexical_cast<std::wstring>(m_nBackColor);
     }
 	return sResult;
 }
@@ -564,11 +564,11 @@ std::wstring RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 		case bt_brdrnone:		sResult = L"\\brdrnone";		break;
 	}
 	if( PROP_DEF != m_nWidth && m_nWidth > 0)
-        sResult += L"\\brdrw" + std::to_wstring(m_nWidth );
+        sResult += L"\\brdrw" + boost::lexical_cast<std::wstring>(m_nWidth );
 	if( PROP_DEF != m_nSpace  && m_nSpace > 0)
-        sResult += L"\\brsp" + std::to_wstring(m_nSpace );
+        sResult += L"\\brsp" + boost::lexical_cast<std::wstring>(m_nSpace );
 	if( PROP_DEF != m_nColor )
-        sResult += L"\\brdrcf" + std::to_wstring(m_nColor );
+        sResult += L"\\brdrcf" + boost::lexical_cast<std::wstring>(m_nColor );
 	return sResult;
 }
 std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
@@ -584,9 +584,9 @@ std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
             sResult += L" w:color=\"" + oColor.RenderToOOX(oNewParam) + L"\"";
 	}
 	if( PROP_DEF != m_nWidth ) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
-        sResult += L" w:sz=\"" + std::to_wstring(2 * m_nWidth / 5 ) + L"\"";
+        sResult += L" w:sz=\"" + boost::lexical_cast<std::wstring>(2 * m_nWidth / 5 ) + L"\"";
 	if( PROP_DEF != m_nSpace )
-        sResult += L" w:space=\"" + std::to_wstring((int)RtfUtility::Twip2pt( m_nSpace )) + L"\"";
+        sResult += L" w:space=\"" + boost::lexical_cast<std::wstring>((int)RtfUtility::Twip2pt( m_nSpace )) + L"\"";
 
 	switch( m_eType )
 	{
@@ -643,9 +643,9 @@ std::wstring RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nCharacterSpacing, sResult, L"expndtw" )
 	
 	if( PROP_DEF != m_nCharacterSpacing )
-        sResult += L"\\expnd" + std::to_wstring( m_nCharacterSpacing / 5  );
+        sResult += L"\\expnd" + boost::lexical_cast<std::wstring>( m_nCharacterSpacing / 5  );
 	if( PROP_DEF != m_nFitText )
-        sResult += L"\\fittext" + std::to_wstring( m_nFitText / 5  );
+        sResult += L"\\fittext" + boost::lexical_cast<std::wstring>( m_nFitText / 5  );
 	
 	RENDER_RTF_INT( m_nFont,		sResult, L"f" )
 	//RENDER_RTF_INT( m_nFont2,		sResult, L"fittext" )
@@ -662,7 +662,7 @@ std::wstring RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nComplexScript )
-        sResult += L"\\fcs" + std::to_wstring( m_nComplexScript);
+        sResult += L"\\fcs" + boost::lexical_cast<std::wstring>( m_nComplexScript);
 
 	RENDER_RTF_BOOL	( m_bOutline, sResult, L"outl" )
 	RENDER_RTF_BOOL	( m_bScaps	, sResult, L"scaps" )
@@ -753,7 +753,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime( m_nRevdttm ).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_nRevised = PROP_DEF;
 		}
 		if (m_nDeleted != PROP_DEF)
@@ -763,7 +763,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime( m_nRevdttmDel ).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_nDeleted = PROP_DEF;
 		}
 		sResult += L"<w:rPr>";
@@ -774,14 +774,14 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
         std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
         std::wstring sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
 
-		sResult += L"<w:del w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		sResult += L"<w:del w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	if ( PROP_DEF != m_nRevised )
 	{
         std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
         std::wstring sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
 		
-		sResult += L"<w:ins w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		sResult += L"<w:ins w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	
 	switch( m_nAnimated )
@@ -811,7 +811,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
 	if( PROP_DEF != m_nDown )
 	{
-        sResult += L"<w:position w:val=\"-" + std::to_wstring(m_nDown) + L"\"/>";
+        sResult += L"<w:position w:val=\"-" + boost::lexical_cast<std::wstring>(m_nDown) + L"\"/>";
 	}
 	RENDER_OOX_BOOL( m_bEmbo, sResult, L"w:emboss" )
 	RENDER_OOX_INT( m_nCharacterSpacing, sResult, L"w:spacing" )
@@ -820,13 +820,13 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if( -1 == m_nFitText )
 		{
-            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + std::to_wstring(poOOXWriter->m_nCurFitWidth) + L"\"/>";
+            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurFitWidth) + L"\"/>";
 		}
 		else 
 		{
 			poOOXWriter->m_nCurFitId = poRtfDocument->m_oIdGenerator.Generate_FitTextId();
 			poOOXWriter->m_nCurFitWidth = m_nFitText;
-            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + std::to_wstring(poOOXWriter->m_nCurFitWidth) + L"\"/>";
+            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurFitWidth) + L"\"/>";
 		}
 	}
 	if( PROP_DEF == m_nFont)
@@ -971,7 +971,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-		sResult += L"<w:rPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+		sResult += L"<w:rPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			sResult += L"<w:rPr>";
 				sResult += m_pOldCharProp->RenderToOOX(oRenderParameterNew);
 			sResult += L"</w:rPr>";
@@ -1039,7 +1039,7 @@ std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter
 	
 	if(PROP_DEF != nLevel)
 	{
-        sResult += L"<w:lvl w:ilvl=\"" + std::to_wstring(nLevel) + L"\"";
+        sResult += L"<w:lvl w:ilvl=\"" + boost::lexical_cast<std::wstring>(nLevel) + L"\"";
 		RENDER_OOX_BOOL_ATTRIBUTE( m_bTentative, sResult, L"w:tentative")
 		sResult += L">"; 
 
@@ -1078,9 +1078,9 @@ std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter
 		if( PROP_DEF != m_nFirstIndent )
 		{
 			if( m_nFirstIndent >= 0 )
-                sIndent += L" w:firstLine=\"" + std::to_wstring(m_nFirstIndent) + L"\"";
+                sIndent += L" w:firstLine=\"" + boost::lexical_cast<std::wstring>(m_nFirstIndent) + L"\"";
 			else
-                sIndent += L" w:hanging=\"" + std::to_wstring(-m_nFirstIndent) + L"\"";
+                sIndent += L" w:hanging=\"" + boost::lexical_cast<std::wstring>(-m_nFirstIndent) + L"\"";
 		}
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndent,		sIndent, L"w:left" )
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart,	sIndent, L"w:start" )
@@ -1116,7 +1116,7 @@ std::wstring RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( 1 == m_bListHybrid )
 		sResult += L"\\listhybrid";
 	else if( 1 == m_nListSimple )
-        sResult += L"\\listsimple" + std::to_wstring(m_nListSimple);
+        sResult += L"\\listsimple" + boost::lexical_cast<std::wstring>(m_nListSimple);
 
 	for( int i = 0; i < (int)m_aArray.size(); i++ )
 	{
@@ -1134,7 +1134,7 @@ std::wstring RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
     std::wstring sResult;
 	
-    sResult += L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_nID) + L"\">";
+    sResult += L"<w:abstractNum w:abstractNumId=\"" + boost::lexical_cast<std::wstring>(m_nID) + L"\">";
 	
 	if( 1 == m_bListHybrid )
 		sResult += L"<w:multiLevelType w:val=\"hybridMultilevel\"/>";
@@ -1183,8 +1183,8 @@ std::wstring RtfListOverrideProperty::RenderToOOX(RenderParameter oRenderParamet
     std::wstring sResult;
 	if( true == IsValid() )
 	{
-        sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nIndex) + L"\">";
-        sResult += L"<w:abstractNumId w:val=\"" + std::to_wstring(m_nListID) + L"\" />";
+        sResult += L"<w:num w:numId=\"" + boost::lexical_cast<std::wstring>(m_nIndex) + L"\">";
+        sResult += L"<w:abstractNumId w:val=\"" + boost::lexical_cast<std::wstring>(m_nListID) + L"\" />";
 		sResult += m_oOverrideLevels.RenderToOOX( oRenderParameter );
 		sResult += L"</w:num>";
 	}
@@ -1223,7 +1223,7 @@ std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
 	if( 1		==	m_nSemiHidden )			sResult += L"<w:semiHidden/>";
 	if( PROP_DEF != m_bQFormat )			sResult += L"<w:qformat/>";
-    if( PROP_DEF != m_nPriority )			sResult += L"<w:uiPriority w:val=\"" + std::to_wstring(m_nPriority) + L"\"/>";
+    if( PROP_DEF != m_nPriority )			sResult += L"<w:uiPriority w:val=\"" + boost::lexical_cast<std::wstring>(m_nPriority) + L"\"/>";
 	if( PROP_DEF != m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";
 
 	return sResult;
@@ -1572,7 +1572,7 @@ std::wstring RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tl_hyph:	sResult += L"\\tlhyph";	break;
 				case tl_ul:		sResult += L"\\tlul";	break;
 			}
-            sResult += L"\\tb" + std::to_wstring( m_nTab );
+            sResult += L"\\tb" + boost::lexical_cast<std::wstring>( m_nTab );
 		}
 		else
 		{
@@ -1589,7 +1589,7 @@ std::wstring RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tk_tqc:	sResult += L"\\tqc";		break;
 				case tk_tqdec:	sResult += L"\\tqdec";	break;
 			}
-            sResult += L"\\tx" + std::to_wstring( m_nTab );
+            sResult += L"\\tx" + boost::lexical_cast<std::wstring>( m_nTab );
 		}
 	}
 	return sResult;
@@ -1615,7 +1615,7 @@ std::wstring RtfTab::RenderToOOX(RenderParameter oRenderParameter)
 		case tk_tqbar:	sTab += L" w:val=\"bar\"";		break;
 	}
 	if( PROP_DEF != m_nTab )
-        sTab += L" w:pos=\"" + std::to_wstring(m_nTab) + L"\"";
+        sTab += L" w:pos=\"" + boost::lexical_cast<std::wstring>(m_nTab) + L"\"";
 	
     if( false == sTab.empty() )
 		sResult = L"<w:tab " + sTab + L"/>";
@@ -1635,9 +1635,9 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHPos )
 	{
 		if( m_nHPos > 0 )
-            sResult += L"\\posx" + std::to_wstring(m_nHPos);
+            sResult += L"\\posx" + boost::lexical_cast<std::wstring>(m_nHPos);
 		else
-            sResult += L"\\posnegx" + std::to_wstring(m_nHPos);
+            sResult += L"\\posnegx" + boost::lexical_cast<std::wstring>(m_nHPos);
 	}
 	switch ( m_eHPos )
 	{
@@ -1657,9 +1657,9 @@ std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nVPos )
 	{
 		if( m_nVPos > 0 )
-            sResult += L"\\posy" + std::to_wstring(m_nVPos);
+            sResult += L"\\posy" + boost::lexical_cast<std::wstring>(m_nVPos);
 		else 
-            sResult += L"\\posnegy" + std::to_wstring(m_nVPos);
+            sResult += L"\\posnegy" + boost::lexical_cast<std::wstring>(m_nVPos);
 	}
 	switch ( m_eVPos )
 	{
@@ -1755,11 +1755,11 @@ std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 	
 	RENDER_OOX_INT_ATTRIBUTE( m_DropcapLines, sFrame, L"w:lines" )
 
-    if( PROP_DEF != m_nHorSpace )		sFrame += L" w:hSpace=\"" + std::to_wstring(m_nHorSpace) + L"\"";
-    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:hSpace=\"" + std::to_wstring(m_nAllSpace) + L"\"";
+    if( PROP_DEF != m_nHorSpace )		sFrame += L" w:hSpace=\"" + boost::lexical_cast<std::wstring>(m_nHorSpace) + L"\"";
+    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:hSpace=\"" + boost::lexical_cast<std::wstring>(m_nAllSpace) + L"\"";
 	
-    if( PROP_DEF != m_nVerSpace )		sFrame += L" w:vSpace=\"" + std::to_wstring(m_nVerSpace) + L"\"";
-    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:vSpace=\"" + std::to_wstring(m_nAllSpace) + L"\"";
+    if( PROP_DEF != m_nVerSpace )		sFrame += L" w:vSpace=\"" + boost::lexical_cast<std::wstring>(m_nVerSpace) + L"\"";
+    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:vSpace=\"" + boost::lexical_cast<std::wstring>(m_nAllSpace) + L"\"";
 
     if( !sFrame.empty() )
 	{
@@ -1777,7 +1777,7 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_BOOL	( m_bInTable			, sResult, L"intbl" );
 	
 	if( PROP_DEF != m_nItap && 1 != m_nItap )
-        sResult += L"\\itap" + std::to_wstring(m_nItap );
+        sResult += L"\\itap" + boost::lexical_cast<std::wstring>(m_nItap );
 	
 	RENDER_RTF_BOOL	( m_bKeep			, sResult, L"keep" );
 	RENDER_RTF_BOOL	( m_bKeepNext		, sResult, L"keepn" );
@@ -1839,8 +1839,8 @@ std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
-        sResult += L"\\ls" + std::to_wstring( m_nListId );
-        sResult += L"\\ilvl" + std::to_wstring(m_nListLevel );
+        sResult += L"\\ls" + boost::lexical_cast<std::wstring>( m_nListId );
+        sResult += L"\\ilvl" + boost::lexical_cast<std::wstring>(m_nListLevel );
 	}
 
 	if( true == m_oShading.IsValid() )
@@ -2025,8 +2025,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sIndent;
 	if( PROP_DEF != m_nIndFirstLine )
 	{
-        if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + std::to_wstring(m_nIndFirstLine) + L"\"";
-        else						sIndent += L" w:hanging=\"" + std::to_wstring(-m_nIndFirstLine) + L"\"";
+        if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + boost::lexical_cast<std::wstring>(m_nIndFirstLine) + L"\"";
+        else						sIndent += L" w:hanging=\"" + boost::lexical_cast<std::wstring>(-m_nIndFirstLine) + L"\"";
 	}
 	else if (m_bOldList && PROP_DEF != m_nIndLeft)
         sIndent += L" w:firstLine=\"0\"";
@@ -2060,9 +2060,9 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nSpaceBetween && 0 != m_nSpaceBetween )
 	{
 		if( m_nSpaceBetween > 0 )
-            sSpacing += L" w:line=\"" + std::to_wstring(m_nSpaceBetween) + L"\"";
+            sSpacing += L" w:line=\"" + boost::lexical_cast<std::wstring>(m_nSpaceBetween) + L"\"";
 		else
-            sSpacing += L" w:line=\"" + std::to_wstring(-m_nSpaceBetween) + L"\"";
+            sSpacing += L" w:line=\"" + boost::lexical_cast<std::wstring>(-m_nSpaceBetween) + L"\"";
 		if( 0 == m_nSpaceMultiLine )
 		{
 			if( m_nSpaceBetween > 0 )	sSpacing += L" w:lineRule=\"atLeast\"";
@@ -2094,7 +2094,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case tbw_txbxtwlast:		sResult += L"<w:textboxTightWrap w:val=\"lastLineOnly\"/>";		break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
-        sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nListLevel) + L"\" /><w:numId w:val=\"" + std::to_wstring(m_nListId) + L"\" /></w:numPr>";
+        sResult += L"<w:numPr><w:ilvl w:val=\"" + boost::lexical_cast<std::wstring>(m_nListLevel) + L"\" /><w:numId w:val=\"" + boost::lexical_cast<std::wstring>(m_nListId) + L"\" /></w:numPr>";
 
 
 	if( true == m_oShading.IsValid() )
@@ -2177,7 +2177,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		
-		sResult += L"<w:pPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+		sResult += L"<w:pPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			sResult += L"<w:pPr>";
 				sResult += m_pOldParagraphProp->RenderToOOX(oRenderParameterNew);
 			sResult += L"</w:pPr>";
@@ -2273,7 +2273,7 @@ std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case mu_Twips:		sResult += L"\\clftsWidth3";	break;
 	}
 
-    sResult += L"\\cellx" + std::to_wstring(m_nCellx);
+    sResult += L"\\cellx" + boost::lexical_cast<std::wstring>(m_nCellx);
 
 	return sResult;
 }
@@ -2290,13 +2290,13 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 
     std::wstring sMargin;
 	if( 3 == m_nIsPaddingLeft && PROP_DEF != m_nPaddingLeft)
-        sResult += L"<w:left w:w=\"" + std::to_wstring(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
+        sResult += L"<w:left w:w=\"" + boost::lexical_cast<std::wstring>(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingRight && PROP_DEF != m_nPaddingRight)
-        sResult += L"<w:right w:w=\"" + std::to_wstring(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
+        sResult += L"<w:right w:w=\"" + boost::lexical_cast<std::wstring>(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingTop && PROP_DEF != m_nPaddingTop)
-        sResult += L"<w:top w:w=\"" + std::to_wstring(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
+        sResult += L"<w:top w:w=\"" + boost::lexical_cast<std::wstring>(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingBottom && PROP_DEF != m_nPaddingBottom)
-        sResult += L"<w:bottom w:w=\"" + std::to_wstring(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
+        sResult += L"<w:bottom w:w=\"" + boost::lexical_cast<std::wstring>(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
 	
     if( !sMargin.empty() )
 	{
@@ -2310,32 +2310,32 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//else	
 	//	sResult += L"trspdl0");
 	//if( PROP_DEF != m_nSpacingLeft )
-    //	sResult += L"trspdfl" + std::to_wstring(m_nSpacingLeft) + L"",);
+    //	sResult += L"trspdfl" + boost::lexical_cast<std::wstring>(m_nSpacingLeft) + L"",);
 	//if( true == m_bIsSpacingRight )
 	//	sResult += L"trspdr3");
 	//else	
 	//	sResult += L"trspdr0");
 	//if( PROP_DEF != m_nSpacingRight )
-    //	sResult += L"trspdfr" + std::to_wstring(m_nSpacingRight) + L"",);
+    //	sResult += L"trspdfr" + boost::lexical_cast<std::wstring>(m_nSpacingRight) + L"",);
 	//if( true == m_bIsSpacingTop )
 	//	sResult += L"trspdt3");
 	//else	
 	//	sResult += L"trspdt0");
 	//if( PROP_DEF != m_nSpacingTop )
-    //	sResult += L"trspdft" + std::to_wstring(m_nSpacingTop) + L"",);
+    //	sResult += L"trspdft" + boost::lexical_cast<std::wstring>(m_nSpacingTop) + L"",);
 	//if( true == m_bIsSpacingBottom )
 	//	sResult += L"trspdb3");
 	//else	
 	//	sResult += L"trspdb0");
 	//if( PROP_DEF != m_nSpacingBottom )
-    //	sResult += L"trspdfb" + std::to_wstring(m_nSpacingBottom) + L"",);
+    //	sResult += L"trspdfb" + boost::lexical_cast<std::wstring>(m_nSpacingBottom) + L"",);
 
 	if( PROP_DEF != m_nWidth )
 	{
 		if( mu_Percent ==  m_eWidthUnits )
-            sResult += L"<w:tcW w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidth) + L"%\"/>";
+            sResult += L"<w:tcW w:type=\"pct\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidth) + L"%\"/>";
 		else if( mu_Twips ==  m_eWidthUnits )
-            sResult += L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidth) + L"\"/>";
+            sResult += L"<w:tcW w:type=\"dxa\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidth) + L"\"/>";
 	}
 	RENDER_OOX_BOOL( m_bHideMark, sResult, L"w:hideMark" )
 
@@ -2471,9 +2471,9 @@ std::wstring RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHPos )
 	{
 		if( m_nHPos > 0 )
-            sResult += L"\\tposx" + std::to_wstring(m_nHPos);
+            sResult += L"\\tposx" + boost::lexical_cast<std::wstring>(m_nHPos);
 		else
-            sResult += L"\\tposnegx" + std::to_wstring(m_nHPos);
+            sResult += L"\\tposnegx" + boost::lexical_cast<std::wstring>(m_nHPos);
 	}
 	switch ( m_eHPos )
 	{
@@ -2493,9 +2493,9 @@ std::wstring RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nVPos )
 	{
 		if( m_nVPos > 0 )
-            sResult += L"\\tposy" + std::to_wstring(m_nVPos);
+            sResult += L"\\tposy" + boost::lexical_cast<std::wstring>(m_nVPos);
 		else 
-            sResult += L"\\tposnegy" + std::to_wstring(m_nVPos);
+            sResult += L"\\tposnegy" + boost::lexical_cast<std::wstring>(m_nVPos);
 	}
 	switch ( m_eVPos )
 	{
@@ -2599,9 +2599,9 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		switch(nTableIndentUnits)
 		{
 			//case 0: sResult += L"<w:tblInd w:w=\"0\" w:type=\"dxa\"/>" );break;
-            //case 2: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"%%\" w:type=\"pct\"/>",  );break;
-            case 3: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>";    break;
-            //default: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>", nTableIndent );break;
+            //case 2: sResult += L"<w:tblInd w:w=\"" + boost::lexical_cast<std::wstring>(nTableIndent) + L"%%\" w:type=\"pct\"/>",  );break;
+            case 3: sResult += L"<w:tblInd w:w=\"" + boost::lexical_cast<std::wstring>(nTableIndent) + L"\" w:type=\"dxa\"/>";    break;
+            //default: sResult += L"<w:tblInd w:w=\"" + boost::lexical_cast<std::wstring>(nTableIndent) + L"\" w:type=\"dxa\"/>", nTableIndent );break;
 		}
 	}
 
@@ -2617,13 +2617,13 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 
     std::wstring sFloatingPosition;
 	if( PROP_DEF != m_nWrapLeft )
-        sFloatingPosition += L" w:leftFromText=\"" + std::to_wstring(m_nWrapLeft) + L"\"";
+        sFloatingPosition += L" w:leftFromText=\"" + boost::lexical_cast<std::wstring>(m_nWrapLeft) + L"\"";
 	if( PROP_DEF != m_nWrapRight )
-        sFloatingPosition += L" w:rightFromText=\"" + std::to_wstring(m_nWrapRight) + L"\"";
+        sFloatingPosition += L" w:rightFromText=\"" + boost::lexical_cast<std::wstring>(m_nWrapRight) + L"\"";
 	if( PROP_DEF != m_nWrapTop )
-        sFloatingPosition += L" w:topFromText=\"" + std::to_wstring(m_nWrapTop) + L"\"";
+        sFloatingPosition += L" w:topFromText=\"" + boost::lexical_cast<std::wstring>(m_nWrapTop) + L"\"";
 	if( PROP_DEF != m_nWrapBottom )
-        sFloatingPosition += L" w:bottomFromText=\"" + std::to_wstring(m_nWrapBottom) + L"\"";
+        sFloatingPosition += L" w:bottomFromText=\"" + boost::lexical_cast<std::wstring>(m_nWrapBottom) + L"\"";
 
 	switch ( m_eHRef )
 	{
@@ -2632,7 +2632,7 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
         case hr_phcol:	sFloatingPosition += L" w:horzAnchor=\"text\"";     break;
 	}
 	if( PROP_DEF != m_nHPos )
-        sFloatingPosition += L" w:tblpX=\"" + std::to_wstring(m_nHPos) + L"\"";
+        sFloatingPosition += L" w:tblpX=\"" + boost::lexical_cast<std::wstring>(m_nHPos) + L"\"";
 	//else
 	switch ( m_eHPos )
 	{
@@ -2651,7 +2651,7 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nVPos )
-        sFloatingPosition += L" w:tblpY=\"" + std::to_wstring(m_nVPos) + L"\"";
+        sFloatingPosition += L" w:tblpY=\"" + boost::lexical_cast<std::wstring>(m_nVPos) + L"\"";
 	//else
 	switch ( m_eVPos )
 	{
@@ -2672,31 +2672,31 @@ std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nWidth && ( 2 == m_eMUWidth || 3 == m_eMUWidth ))
 	{
 		if( 2 == m_eMUWidth )
-            sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"pct\"/>";
+            sResult += L"<w:tblW w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidth) + L"\" w:type=\"pct\"/>";
 		else
-            sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"dxa\"/>";
+            sResult += L"<w:tblW w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidth) + L"\" w:type=\"dxa\"/>";
 	}
 	else
 		sResult += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
     std::wstring sDefCellMargins;
 	if( PROP_DEF != m_nDefCellMarBottom && 3 == m_nDefCellMarBottomUnits )
-        sDefCellMargins += L"<w:bottom w:w=\"" + std::to_wstring(m_nDefCellMarBottom) + L"\" w:type=\"dxa\"/>";
+        sDefCellMargins += L"<w:bottom w:w=\"" + boost::lexical_cast<std::wstring>(m_nDefCellMarBottom) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarLeft && 3 == m_nDefCellMarLeftUnits )
-        sDefCellMargins += L"<w:left w:w=\"" + std::to_wstring(m_nDefCellMarLeft) + L"\" w:type=\"dxa\"/>";
+        sDefCellMargins += L"<w:left w:w=\"" + boost::lexical_cast<std::wstring>(m_nDefCellMarLeft) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarRight && 3 == m_nDefCellMarRightUnits )
-        sDefCellMargins += L"<w:right w:w=\"" + std::to_wstring(m_nDefCellMarRight) + L"\" w:type=\"dxa\"/>";
+        sDefCellMargins += L"<w:right w:w=\"" + boost::lexical_cast<std::wstring>(m_nDefCellMarRight) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarTop && 3 == m_nDefCellMarTopUnits )
-        sDefCellMargins += L"<w:top w:w=\"" + std::to_wstring(m_nDefCellMarTop) + L"\" w:type=\"dxa\"/>";
+        sDefCellMargins += L"<w:top w:w=\"" + boost::lexical_cast<std::wstring>(m_nDefCellMarTop) + L"\" w:type=\"dxa\"/>";
 	
     if( !sDefCellMargins.empty() )
         sResult += L"<w:tblCellMar>" + sDefCellMargins + L"</w:tblCellMar>";
 	
 	if( PROP_DEF != m_nDefCellSpBottom && 3 == m_nDefCellSpBottomUnits ) 
-        sResult += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_nDefCellSpBottom) + L"\" w:type=\"dxa\"/>";
+        sResult += L"<w:tblCellSpacing w:w=\"" + boost::lexical_cast<std::wstring>(m_nDefCellSpBottom) + L"\" w:type=\"dxa\"/>";
 
 	//if( PROP_DEF != m_nLeft )
-    //	sResult += L"<w:tblInd w:w=\"" + std::to_wstring(m_nLeft) + L"\" w:type=\"dxa\"/>";
+    //	sResult += L"<w:tblInd w:w=\"" + boost::lexical_cast<std::wstring>(m_nLeft) + L"\" w:type=\"dxa\"/>";
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE;
@@ -2815,25 +2815,25 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHeight )
 	{
 		if( m_nHeight > 0 )
-            sResult += L"<w:trHeight w:val=\"" + std::to_wstring(m_nHeight) +L"\" w:hRule=\"atLeast\"/>";
+            sResult += L"<w:trHeight w:val=\"" + boost::lexical_cast<std::wstring>(m_nHeight) +L"\" w:hRule=\"atLeast\"/>";
 		else if( m_nHeight < 0 )
-            sResult += L"<w:trHeight w:val=\"" + std::to_wstring(-m_nHeight) +L"\" w:hRule=\"exact\"/>";
+            sResult += L"<w:trHeight w:val=\"" + boost::lexical_cast<std::wstring>(-m_nHeight) +L"\" w:hRule=\"exact\"/>";
 	}
 
 	if( PROP_DEF != m_nWidthStartInvCell )
 	{
 		switch( m_eMUStartInvCell )
 		{
-        case mu_Percent:	sResult += L"<w:wBefore w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"%\"/>";  break;
-        case mu_Twips:		sResult += L"<w:wBefore w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"\"/>";	break;
+        case mu_Percent:	sResult += L"<w:wBefore w:type=\"pct\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidthStartInvCell) + L"%\"/>";  break;
+        case mu_Twips:		sResult += L"<w:wBefore w:type=\"dxa\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidthStartInvCell) + L"\"/>";	break;
 		}
 	}
 	if( PROP_DEF != m_nWidthEndInvCell )
 	{
 		switch( m_eMUEndInvCell )
 		{
-        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
-        case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;
+        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidthEndInvCell) + L"%\"/>"; break;
+        case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + boost::lexical_cast<std::wstring>(m_nWidthEndInvCell) + L"\"/>";	break;
 		}
 	}
 	RENDER_OOX_INT( m_nGridBefore,	sResult, L"w:gridBefore" )
@@ -2865,14 +2865,14 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
         //	std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauthDel);
         //	std::wstring sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttmDel).c_str());
 
-		//	sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		//	sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
 		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nRevised )
 		//{
         //	std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauth);
         //	std::wstring sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttm).c_str());
 		//	
-		//	sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+		//	sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
         std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nTrAuth);
         std::wstring sDate(RtfUtility::convertDateTime(m_nTrDate).c_str());
@@ -2883,11 +2883,11 @@ std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 
         if (rowChangeProps.empty())
 		{
-			sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
+			sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		}
 		else
 		{
-			sResult += L"<w:trPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:trPrChange w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 				sResult += L"<w:trPr>";
 					sResult += rowChangeProps;
 				sResult += L"</w:trPr>";
@@ -2939,7 +2939,7 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nVersion )
-        sResult += L"{\\version" + std::to_wstring(m_nVersion) + L"}";
+        sResult += L"{\\version" + boost::lexical_cast<std::wstring>(m_nVersion) + L"}";
 
     if( !m_sDocCom.empty() )
 	{
@@ -2947,7 +2947,7 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nInternalVersion )
 	{
-        sResult += L"{\\vern" + std::to_wstring(m_nInternalVersion) + L"}";
+        sResult += L"{\\vern" + boost::lexical_cast<std::wstring>(m_nInternalVersion) + L"}";
 	}
     if( !m_sLinkBase.empty() )
 	{
@@ -2976,27 +2976,27 @@ std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nEndingTime )
 	{
-        sResult += L"{\\edmins" + std::to_wstring(m_nEndingTime) + L"}";
+        sResult += L"{\\edmins" + boost::lexical_cast<std::wstring>(m_nEndingTime) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfPages )
 	{
-        sResult += L"{\\nofpages" + std::to_wstring(m_nNumberOfPages) + L"}";
+        sResult += L"{\\nofpages" + boost::lexical_cast<std::wstring>(m_nNumberOfPages) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfWords )
 	{
-        sResult += L"{\\nofwords" + std::to_wstring(m_nNumberOfWords) + L"}";
+        sResult += L"{\\nofwords" + boost::lexical_cast<std::wstring>(m_nNumberOfWords) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfCharactersWithSpace )
 	{
-        sResult += L"{\\nofchars" + std::to_wstring(m_nNumberOfCharactersWithSpace) + L"}";
+        sResult += L"{\\nofchars" + boost::lexical_cast<std::wstring>(m_nNumberOfCharactersWithSpace) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )
 	{
-        sResult += L"{\\nofcharsws" + std::to_wstring(m_nNumberOfCharactersWithoutSpace) + L"}";
+        sResult += L"{\\nofcharsws" + boost::lexical_cast<std::wstring>(m_nNumberOfCharactersWithoutSpace) + L"}";
 	}
 
 	if( PROP_DEF != m_nInternalId )
-        sResult += L"{\\id" + std::to_wstring(m_nInternalId) + L"}";
+        sResult += L"{\\id" + boost::lexical_cast<std::wstring>(m_nInternalId) + L"}";
 
     if( !sResult.empty() )
 		sResult = L"{\\info" + sResult + L"}";
@@ -3037,19 +3037,19 @@ std::wstring RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 		if( PROP_DEF != m_nNumberOfCharactersWithSpace )	pApp->m_nCharactersWithSpaces	= m_nNumberOfCharactersWithSpace;
 		
 		//if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )	
-        //	sResult += L"<CharactersWithSpaces>" + std::to_wstring() + L"</CharactersWithSpaces>",m_nNumberOfCharactersWithoutSpace );
+        //	sResult += L"<CharactersWithSpaces>" + boost::lexical_cast<std::wstring>() + L"</CharactersWithSpaces>",m_nNumberOfCharactersWithoutSpace );
 	}
 	return L"";
 }
 std::wstring RtfTime::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
-    if( PROP_DEF != m_nYear )		sResult += L"\\yr" + std::to_wstring(m_nYear);
-    if( PROP_DEF != m_nMonth )		sResult += L"\\mo" + std::to_wstring(m_nMonth);
-    if( PROP_DEF != m_nDay )		sResult += L"\\dy" + std::to_wstring(m_nDay);
-    if( PROP_DEF != m_nHour )		sResult += L"\\hr" + std::to_wstring(m_nHour);
-    if( PROP_DEF != m_nMin )		sResult += L"\\min" + std::to_wstring(m_nMin);
-    if( PROP_DEF != m_nSecond )		sResult += L"\\sec" + std::to_wstring(m_nSecond);
+    if( PROP_DEF != m_nYear )		sResult += L"\\yr" + boost::lexical_cast<std::wstring>(m_nYear);
+    if( PROP_DEF != m_nMonth )		sResult += L"\\mo" + boost::lexical_cast<std::wstring>(m_nMonth);
+    if( PROP_DEF != m_nDay )		sResult += L"\\dy" + boost::lexical_cast<std::wstring>(m_nDay);
+    if( PROP_DEF != m_nHour )		sResult += L"\\hr" + boost::lexical_cast<std::wstring>(m_nHour);
+    if( PROP_DEF != m_nMin )		sResult += L"\\min" + boost::lexical_cast<std::wstring>(m_nMin);
+    if( PROP_DEF != m_nSecond )		sResult += L"\\sec" + boost::lexical_cast<std::wstring>(m_nSecond);
 	return sResult;
 }
 std::wstring RtfTime::RenderToOOX(RenderParameter oRenderParameter)
@@ -3064,7 +3064,7 @@ std::wstring RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 		int nDay = 0;
 		if( PROP_DEF != m_nDay )			nDay = m_nDay;
 
-        sResult = std::to_wstring(nYear) + L"-" + std::to_wstring(nMonth) + L"-" + std::to_wstring(nDay) + L"T";
+        sResult = boost::lexical_cast<std::wstring>(nYear) + L"-" + boost::lexical_cast<std::wstring>(nMonth) + L"-" + boost::lexical_cast<std::wstring>(nDay) + L"T";
 	}
 	if( PROP_DEF != m_nHour || PROP_DEF != m_nMin || PROP_DEF != m_nSecond )
 	{
@@ -3075,7 +3075,7 @@ std::wstring RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 		int nSecond = 0;
 		if( PROP_DEF != m_nSecond )			nSecond = m_nSecond;
 		
-        sResult = std::to_wstring(nHour) + L":" + std::to_wstring(nMin) + L":" + std::to_wstring(nSecond) + L"Z";
+        sResult = boost::lexical_cast<std::wstring>(nHour) + L":" + boost::lexical_cast<std::wstring>(nMin) + L":" + boost::lexical_cast<std::wstring>(nSecond) + L"Z";
 	}
 	return sResult;
 }

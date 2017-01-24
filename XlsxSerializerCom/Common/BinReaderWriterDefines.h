@@ -494,7 +494,8 @@ namespace BinXlsxRW
 		SortState = 5,
 		TableColumns = 6,
 		TableStyleInfo = 7,
-		HeaderRowCount = 8
+		HeaderRowCount = 8,
+		AltTextTable = 9
 	};}
 	namespace c_oSer_TableStyleInfo{enum c_oSer_TableStyleInfo
 	{
@@ -801,6 +802,11 @@ namespace BinXlsxRW
         SparklineRef = 29,
         SparklineSqRef = 30
     };}
+	namespace c_oSer_AltTextTable{enum c_oSer_AltTextTable
+	{
+		AltText = 0,
+		AltTextSummary = 1
+	};}
 }
 
 #endif //

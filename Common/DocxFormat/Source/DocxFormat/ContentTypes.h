@@ -180,7 +180,7 @@ namespace OOX
 				XmlUtils::CAttribute oAttr;
                 std::wstring sPartName = m_oPart.m_strFilename;
 
-				boost::algorithm::replace_all(sPartName, L"\\", L"/");
+				XmlUtils::replace_all(sPartName, L"\\", L"/");
 
 				oAttr.Write( _T("PartName"), _T("/") + sPartName);
 				oAttr.Write( _T("ContentType"), m_sType );
@@ -221,10 +221,7 @@ namespace OOX
 
 		};
 	} // namespace ContentTypes
-} // namespace OOX
 
-namespace OOX
-{
     static const CPath c_oContentTypeFileName (_T("[Content_Types].xml"));
 
 	class CContentTypes

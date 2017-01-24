@@ -34,12 +34,13 @@
 #include "xlsx_utils.h"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 
@@ -118,9 +119,10 @@ void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring 
 	std::wstring a = a_;
 
 	std::reverse(a.begin(), a.end());
-    ::boost::algorithm::replace_all(a, L"$", L"");
-    //::boost::algorithm::replace_all(a, L"'", L"");
-	::boost::algorithm::to_upper(a);
+    XmlUtils::replace_all( a, L"$", L"");
+    //XmlUtils::replace_all( a, L"'", L"");
+	
+	boost::algorithm::to_upper(a);
 	
 
 	BOOST_FOREACH(wchar_t c, a)

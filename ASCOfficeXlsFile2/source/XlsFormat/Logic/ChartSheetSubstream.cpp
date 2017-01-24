@@ -528,7 +528,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 		AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 		AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
 
-		if ((bool)ax_parent->iax == false) //primary axes
+		if (ax_parent->iax == 0) //primary axes
 		{
 			for (int i = 0 ; i < parent->m_arCRT.size() ; i++)
 			{
@@ -711,7 +711,7 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent0->m_AxisParent.get());
 	AXES*		axes		= dynamic_cast<AXES*>		(parent0->m_AXES.get());
 
-	if (((bool)ax_parent->iax == false) && axes) //primary axes
+	if ((ax_parent->iax == 0) && axes) //primary axes
 	{
 		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
 		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get());
@@ -900,10 +900,9 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
 				AXES*		axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
 
-				bool secondary = ax_parent->iax;
 				if (axes)
 				{
-					axes->serialize(CP_XML_STREAM(), secondary);
+					axes->serialize(CP_XML_STREAM(), (ax_parent->iax!=0) ); //secondary
 				}
 				//else error complex_29s.xls
 			}

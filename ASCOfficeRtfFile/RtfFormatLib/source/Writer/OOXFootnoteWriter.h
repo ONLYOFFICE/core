@@ -54,7 +54,7 @@ public:
 
 		}
 		if( PROP_DEF != nID )
-            sFootnote += L" w:id=\"" + std::to_wstring(nID) + L"\"";
+            sFootnote += L" w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
 		sFootnote += _T(">");
 		sFootnote += sText;
 		sFootnote += _T("</w:footnote>");
@@ -71,7 +71,7 @@ public:
 			m_sFootnotes += _T("\"");
 		}
 		if( PROP_DEF != nID )
-            m_sFootnotes += L" w:id=\"" + std::to_wstring(nID) + L"\"";
+            m_sFootnotes += L" w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
 		m_sFootnotes += _T(">");
 		m_sFootnotes += sText;
 		m_sFootnotes += _T("</w:footnote>");
@@ -133,7 +133,7 @@ public:
 			sEndnote += _T("\"");
 		}
 		if( -2 != nID )
-            sEndnote += L" w:id=\"" + std::to_wstring(nID) + L"\"";
+            sEndnote += L" w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
 		sEndnote += _T(">");
 		sEndnote += sText;
 		sEndnote += _T("</w:endnote>");
@@ -151,7 +151,7 @@ public:
 
 		}
 		if( -2 != nID )
-            m_sEndnotes += L" w:id=\"" + std::to_wstring(nID) + L"\"";
+            m_sEndnotes += L" w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
 		m_sEndnotes += _T(">");
 		m_sEndnotes += sText;
 		m_sEndnotes += _T("</w:endnote>");

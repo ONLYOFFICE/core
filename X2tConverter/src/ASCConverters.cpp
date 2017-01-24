@@ -76,6 +76,26 @@ namespace NExtractTools
         else
             oApplicationFonts.InitializeFromFolder(sFontPath);
     }
+	std::wstring getExtentionByRasterFormat(int format)
+	{
+		std::wstring sExt;
+		switch(format)
+		{
+			case 1:
+				sExt = L".bmp";
+			break;
+			case 2:
+				sExt = L".gif";
+			break;
+			case 3:
+				sExt = L".jpg";
+			break;
+			default:
+				sExt = L".png";
+			break;
+		}
+		return sExt;
+	}
 	// docx -> bin
     int docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -626,6 +646,101 @@ namespace NExtractTools
        int nReg = (bPaid == false) ? 0 : 1;
        return S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
    }
+	int bin2image (const std::wstring &sTFileDir, BYTE* pBuffer, LONG lBufferLen, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
+	{
+		long nRes = 0;
+		CApplicationFonts oApplicationFonts;
+		initApplicationFonts(oApplicationFonts, params);
+		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
+		imageWriter.wsHtmlPlace = sTFileDir;
+		imageWriter.wsThemesPlace = sThemeDir;
+		imageWriter.wsTempDir = sTemp;
+		imageWriter.appFonts = &oApplicationFonts;
+		if(NULL != params.m_oThumbnail)
+		{
+			InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
+			if(NULL != oThumbnail->format)
+			{
+				imageWriter.m_nRasterFormat = *oThumbnail->format;
+			}
+			if(NULL != oThumbnail->aspect)
+			{
+				imageWriter.m_nSaveType = *oThumbnail->aspect;
+			}
+			if(NULL != oThumbnail->first)
+			{
+				imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
+			}
+			if(NULL != oThumbnail->width)
+			{
+				imageWriter.m_nRasterW = *oThumbnail->width;
+			}
+			if(NULL != oThumbnail->height)
+			{
+				imageWriter.m_nRasterH = *oThumbnail->height;
+			}
+		}
+		std::wstring sThumbnailDir;
+		if(imageWriter.m_bIsOnlyFirst)
+		{
+			imageWriter.m_sFileName = sTo;
+		}
+		else
+		{
+			sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
+			NSDirectory::CreateDirectory(sThumbnailDir);
+			imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
+		}
+		nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		if(!imageWriter.m_bIsOnlyFirst)
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo, -1) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
+	int bin2imageBase64 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params)
+	{
+		long nRes = 0;
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(sFrom))
+			return AVS_FILEUTILS_ERROR_CONVERT;
+
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			return AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		DWORD dwReaded;
+		oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
+		oFile.CloseFile();
+
+		int   nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+		BYTE* pBuffer    = new BYTE[nBufferLen];
+		if (!pBuffer)
+		{
+			RELEASEARRAYOBJECTS(pFileContent);
+			return AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
+		{
+			std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
+			nRes = bin2image(sTFileDir, pBuffer, nBufferLen, sTo, sTemp, sThemeDir, params);
+		}
+		else
+		{
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		RELEASEARRAYOBJECTS(pBuffer);
+		RELEASEARRAYOBJECTS(pFileContent);
+
+		return nRes;
+	}
    //doct_bin -> pdf
    int doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
@@ -658,26 +773,7 @@ namespace NExtractTools
            NSFile::CFileBinary::Remove(sPdfBinFile);
        return nRes;
    }
-	std::wstring getExtentionByRasterFormat(int format)
-	{
-		std::wstring sExt;
-		switch(format)
-		{
-			case 1:
-				sExt = L".bmp";
-			break;
-			case 2:
-				sExt = L".gif";
-			break;
-			case 3:
-				sExt = L".jpg";
-			break;
-			default:
-				sExt = L".png";
-			break;
-		}
-		return sExt;
-	}
+
 	//doct_bin -> image
 	int doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
@@ -697,58 +793,21 @@ namespace NExtractTools
 		}
 		else
 		{
-			CApplicationFonts oApplicationFonts;
-			initApplicationFonts(oApplicationFonts, params);
-			NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-			imageWriter.wsHtmlPlace = sTFileDir;
-			imageWriter.wsThemesPlace = sThemeDir;
-			imageWriter.wsTempDir = sTemp;
-			imageWriter.appFonts = &oApplicationFonts;
-			if(NULL != params.m_oThumbnail)
+			BYTE* pData = NULL;
+			DWORD nBytesCount;
+			if (NSFile::CFileBinary::ReadAllBytes(sPdfBinFile, &pData, nBytesCount))
 			{
-				InputParamsThumbnail* oThumbnail = params.m_oThumbnail;
-				if(NULL != oThumbnail->format)
-				{
-					imageWriter.m_nRasterFormat = *oThumbnail->format;
+				nRes = 0 == bin2image(sTFileDir, pData, nBytesCount, sTo, sTemp, sThemeDir, params) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+				RELEASEARRAYOBJECTS(pData);
 				}
-				if(NULL != oThumbnail->aspect)
-				{
-					imageWriter.m_nSaveType = *oThumbnail->aspect;
-				}
-				if(NULL != oThumbnail->first)
-				{
-					imageWriter.m_bIsOnlyFirst = *oThumbnail->first;
-				}
-				if(NULL != oThumbnail->width)
-				{
-					imageWriter.m_nRasterW = *oThumbnail->width;
-				}
-				if(NULL != oThumbnail->height)
-				{
-					imageWriter.m_nRasterH = *oThumbnail->height;
-				}
-			}
-			std::wstring sThumbnailDir;
-			if(imageWriter.m_bIsOnlyFirst)
-			{
-				imageWriter.m_sFileName = sTo;
-			}
 			else
 			{
-				sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
-                NSDirectory::CreateDirectory(sThumbnailDir);
-				imageWriter.m_sFileName = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.m_nRasterFormat);
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 			}
-			BYTE* pData;
-			DWORD nBytesCount;
-			NSFile::CFileBinary::ReadAllBytes(sPdfBinFile, &pData, nBytesCount);
-			nRes = imageWriter.ConvertBuffer(pData, nBytesCount) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-			if(!imageWriter.m_bIsOnlyFirst)
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo, -1) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			}
-		}
+		//delete sPdfBinFile, because it is not in Temp
+		if (NSFile::CFileBinary::Exists(sPdfBinFile))
+			NSFile::CFileBinary::Remove(sPdfBinFile);
 		return nRes;
 	}
 
@@ -2310,6 +2369,10 @@ namespace NExtractTools
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
            nRes = bin2pdf(sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+       }
+       else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+       {
+           nRes = bin2imageBase64(sFrom, sTo, sTemp, sThemeDir, params);
        }
        else
        {

@@ -165,10 +165,10 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Image(filename));
 		}
 		else if(strT == OOX::FileTypes::Data)
-			return smart_ptr<OOX::File>(new OOX::CDiagramData(relation.Target()));
+			return smart_ptr<OOX::File>(new OOX::CDiagramData(filename));
 
 		else if(strT == OOX::FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(relation.Target()));
+			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(filename));
 			
 		else if(strT == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(relation.Target()));

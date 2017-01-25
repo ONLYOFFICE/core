@@ -54,9 +54,6 @@ public:
     HRESULT txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
     HRESULT txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
 
-	//HRESULT xml_LoadFromFile(CString sSrcFileName, CString sDstPath, CString sXMLOptions);
-	//HRESULT xml_SaveToFile	(CString sDstFileName, CString sSrcPath, CString sXMLOptions);
-	
 	CTxtXmlFile();
 
 private:

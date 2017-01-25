@@ -2077,7 +2077,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 
 	if (oox_cond_fmt->m_oSqRef.IsInit())	
 	{
-		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef->GetValue());
+		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef.get());
 
 		for (unsigned int i=0; i< oox_cond_fmt->m_arrItems.size(); i++)
 			convert(oox_cond_fmt->m_arrItems[i]);//rule

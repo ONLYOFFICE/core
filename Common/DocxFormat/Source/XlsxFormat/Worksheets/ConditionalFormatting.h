@@ -386,7 +386,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oType.IsInit() && m_oPriority.IsInit() && 0 < m_arrItems.size())
+				if (isValid())
 				{
 					writer.WriteString(L"<cfRule");
 					WritingStringAttrString(L"type", m_oType->ToString());
@@ -398,7 +398,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
 					if (m_oEqualAverage.IsInit() && true == m_oEqualAverage->ToBool())
 						writer.WriteString(_T (" equalAverage=\"1\""));
-					WritingStringNullableAttrString(L"text", m_oOperator, m_oOperator->ToString());
+					WritingStringNullableAttrString(L"operator", m_oOperator, m_oOperator->ToString());
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
 						writer.WriteString(_T (" percent=\"1\""));
 					WritingStringNullableAttrInt(L"rank", m_oRank, m_oRank->GetValue());
@@ -441,6 +441,11 @@ namespace OOX
 			virtual EElementType getType () const
 			{
 				return et_ConditionalFormattingRule;
+			}
+
+			bool isValid () const
+			{
+				return m_oType.IsInit() && m_oPriority.IsInit();
 			}
 
 		private:
@@ -503,11 +508,19 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oSqRef.IsInit() && 0 < m_arrItems.size())
+				bool isValid = false;
+				for(int i = 0; i < m_arrItems.size(); ++i)
 				{
-                    std::wstring sRoot;
+					if(m_arrItems[i]->isValid())
+					{
+						isValid = true;
+						break;
+					}
+				}
+				if (m_oSqRef.IsInit() && isValid)
+				{
 					writer.WriteString(L"<conditionalFormatting");
-					WritingStringAttrString(L"sqref", m_oSqRef->ToString());
+					WritingStringAttrString(L"sqref", m_oSqRef.get());
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{
@@ -557,7 +570,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+			nullable<std::wstring >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
 	} //Spreadsheet
 } // namespace OOX

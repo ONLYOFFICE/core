@@ -3287,7 +3287,7 @@ namespace BinXlsxRW {
 			if (oConditionalFormatting.m_oSqRef.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormatting::SqRef);
-				m_oBcw.m_oStream.WriteStringW(oConditionalFormatting.m_oSqRef->ToString());
+				m_oBcw.m_oStream.WriteStringW(oConditionalFormatting.m_oSqRef.get());
 			}
 
 			if (0 < oConditionalFormatting.m_arrItems.size())
@@ -3323,7 +3323,7 @@ namespace BinXlsxRW {
 			}
 			if (oConditionalFormattingRule.m_oDxfId.IsInit())
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::DataDxfId);
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::DxfId);
 				m_oBcw.m_oStream.WriteLONG(oConditionalFormattingRule.m_oDxfId->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}

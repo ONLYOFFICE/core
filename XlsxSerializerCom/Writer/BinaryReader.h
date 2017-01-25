@@ -2014,8 +2014,9 @@ namespace BinXlsxRW {
 			}
 			else if (c_oSerWorksheetsTypes::ConditionalFormatting == type)
 			{
-				// ToDo
-				res = c_oSerConstants::ReadUnknown;
+				OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadConditionalFormatting, this, pConditionalFormatting);
+				m_pCurWorksheet->m_arrConditionalFormatting.push_back(pConditionalFormatting);
 			}
 			else if(c_oSerWorksheetsTypes::Comments == type)
 			{
@@ -3128,7 +3129,239 @@ namespace BinXlsxRW {
 				res = c_oSerConstants::ReadUnknown;
 			return res;
 		};
-        int ReadSparklineGroups(BYTE type, long length, void* poResult)
+		int ReadConditionalFormatting(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = static_cast<OOX::Spreadsheet::CConditionalFormatting*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormatting::Pivot == type)
+			{
+				pConditionalFormatting->m_oPivot.Init();
+				pConditionalFormatting->m_oPivot->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormatting::SqRef == type)
+			{
+				pConditionalFormatting->m_oSqRef.Init();
+				pConditionalFormatting->m_oSqRef->append(m_oBufferedStream.GetString4(length));
+			}
+			else if(c_oSer_ConditionalFormatting::ConditionalFormattingRule == type)
+			{
+				OOX::Spreadsheet::CConditionalFormattingRule* pConditionalFormattingRule = new OOX::Spreadsheet::CConditionalFormattingRule();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadConditionalFormattingRule, this, pConditionalFormattingRule);
+				pConditionalFormatting->m_arrItems.push_back(pConditionalFormattingRule);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadConditionalFormattingRule(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CConditionalFormattingRule* pConditionalFormattingRule = static_cast<OOX::Spreadsheet::CConditionalFormattingRule*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingRule::AboveAverage == type)
+			{
+				pConditionalFormattingRule->m_oAboveAverage.Init();
+				pConditionalFormattingRule->m_oAboveAverage->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Bottom == type)
+			{
+				pConditionalFormattingRule->m_oBottom.Init();
+				pConditionalFormattingRule->m_oBottom->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingRule::DxfId == type)
+			{
+				pConditionalFormattingRule->m_oDxfId.Init();
+				pConditionalFormattingRule->m_oDxfId->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingRule::EqualAverage == type)
+			{
+				pConditionalFormattingRule->m_oEqualAverage.Init();
+				pConditionalFormattingRule->m_oEqualAverage->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Operator == type)
+			{
+				pConditionalFormattingRule->m_oOperator.Init();
+				pConditionalFormattingRule->m_oOperator->SetValue((SimpleTypes::Spreadsheet::ECfOperator)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Percent == type)
+			{
+				pConditionalFormattingRule->m_oPercent.Init();
+				pConditionalFormattingRule->m_oPercent->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Priority == type)
+			{
+				pConditionalFormattingRule->m_oPriority.Init();
+				pConditionalFormattingRule->m_oPriority->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Rank == type)
+			{
+				pConditionalFormattingRule->m_oRank.Init();
+				pConditionalFormattingRule->m_oRank->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingRule::StdDev == type)
+			{
+				pConditionalFormattingRule->m_oStdDev.Init();
+				pConditionalFormattingRule->m_oStdDev->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingRule::StopIfTrue == type)
+			{
+				pConditionalFormattingRule->m_oStopIfTrue.Init();
+				pConditionalFormattingRule->m_oStopIfTrue->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingRule::Text == type)
+			{
+				pConditionalFormattingRule->m_oText.Init();
+				pConditionalFormattingRule->m_oText->append(m_oBufferedStream.GetString4(length));
+			}
+			else if(c_oSer_ConditionalFormattingRule::TimePeriod == type)
+			{
+				pConditionalFormattingRule->m_oTimePeriod.Init();
+				pConditionalFormattingRule->m_oTimePeriod->append(m_oBufferedStream.GetString4(length));
+			}
+			else if(c_oSer_ConditionalFormattingRule::Type == type)
+			{
+				pConditionalFormattingRule->m_oType.Init();
+				pConditionalFormattingRule->m_oType->SetValue((SimpleTypes::Spreadsheet::ECfType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_ConditionalFormattingRule::ColorScale == type)
+			{
+				OOX::Spreadsheet::CColorScale* pColorScale = new OOX::Spreadsheet::CColorScale();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadColorScale, this, pColorScale);
+				pConditionalFormattingRule->m_arrItems.push_back(pColorScale);
+			}
+			else if(c_oSer_ConditionalFormattingRule::DataBar == type)
+			{
+				OOX::Spreadsheet::CDataBar* pDataBar = new OOX::Spreadsheet::CDataBar();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadDataBar, this, pDataBar);
+				pConditionalFormattingRule->m_arrItems.push_back(pDataBar);
+			}
+			else if(c_oSer_ConditionalFormattingRule::FormulaCF == type)
+			{
+				OOX::Spreadsheet::CFormulaCF* pFormulaCF = new OOX::Spreadsheet::CFormulaCF();
+				pFormulaCF->m_sText.append(m_oBufferedStream.GetString4(length));
+				pConditionalFormattingRule->m_arrItems.push_back(pFormulaCF);
+			}
+			else if(c_oSer_ConditionalFormattingRule::IconSet == type)
+			{
+				OOX::Spreadsheet::CIconSet* pIconSet = new OOX::Spreadsheet::CIconSet();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadIconSet, this, pIconSet);
+				pConditionalFormattingRule->m_arrItems.push_back(pIconSet);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadColorScale(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CColorScale* pColorScale = static_cast<OOX::Spreadsheet::CColorScale*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingRuleColorScale::CFVO == type)
+			{
+				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadCFVO, this, pCFVO);
+				pColorScale->m_arrItems.push_back(pCFVO);
+			}
+			else if(c_oSer_ConditionalFormattingRuleColorScale::Color == type)
+			{
+				OOX::Spreadsheet::CColor* pColor = new OOX::Spreadsheet::CColor();
+				res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pColor);
+				pColorScale->m_arrItems.push_back(pColor);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadDataBar(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CDataBar* pDataBar = static_cast<OOX::Spreadsheet::CDataBar*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingDataBar::MaxLength == type)
+			{
+				pDataBar->m_oMaxLength.Init();
+				pDataBar->m_oMaxLength->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::MinLength == type)
+			{
+				pDataBar->m_oMinLength.Init();
+				pDataBar->m_oMinLength->SetValue(m_oBufferedStream.GetLong());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::ShowValue == type)
+			{
+				pDataBar->m_oShowValue.Init();
+				pDataBar->m_oShowValue->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::Color == type)
+			{
+				pDataBar->m_oColor.Init();
+				res = Read2(length, &BinaryWorksheetsTableReader::ReadColor, this, pDataBar->m_oColor.GetPointer());
+			}
+			else if(c_oSer_ConditionalFormattingDataBar::CFVO == type)
+			{
+				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadCFVO, this, pCFVO);
+				pDataBar->m_arrItems.push_back(pCFVO);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadIconSet(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CIconSet* pIconSet = static_cast<OOX::Spreadsheet::CIconSet*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingIconSet::IconSet == type)
+			{
+				pIconSet->m_oIconSet.Init();
+				pIconSet->m_oIconSet->SetValue((SimpleTypes::Spreadsheet::EIconSetType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_ConditionalFormattingIconSet::Percent == type)
+			{
+				pIconSet->m_oPercent.Init();
+				pIconSet->m_oPercent->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingIconSet::Reverse == type)
+			{
+				pIconSet->m_oReverse.Init();
+				pIconSet->m_oReverse->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingIconSet::ShowValue == type)
+			{
+				pIconSet->m_oShowValue.Init();
+				pIconSet->m_oShowValue->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingIconSet::CFVO == type)
+			{
+				OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = new OOX::Spreadsheet::CConditionalFormatValueObject();
+				res = Read1(length, &BinaryWorksheetsTableReader::ReadCFVO, this, pCFVO);
+				pIconSet->m_arrItems.push_back(pCFVO);
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadCFVO(BYTE type, long length, void* poResult)
+		{
+			OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = static_cast<OOX::Spreadsheet::CConditionalFormatValueObject*>(poResult);
+			int res = c_oSerConstants::ReadOk;
+			if(c_oSer_ConditionalFormattingValueObject::Gte == type)
+			{
+				pCFVO->m_oGte.Init();
+				pCFVO->m_oGte->FromBool(m_oBufferedStream.GetBool());
+			}
+			else if(c_oSer_ConditionalFormattingValueObject::Type == type)
+			{
+				pCFVO->m_oType.Init();
+				pCFVO->m_oType->SetValue((SimpleTypes::Spreadsheet::ECfvoType)m_oBufferedStream.GetUChar());
+			}
+			else if(c_oSer_ConditionalFormattingValueObject::Val == type)
+			{
+				pCFVO->m_oVal.Init();
+				pCFVO->m_oVal->append(m_oBufferedStream.GetString4(length));
+			}
+			else
+				res = c_oSerConstants::ReadUnknown;
+			return res;
+		};
+		int ReadSparklineGroups(BYTE type, long length, void* poResult)
         {
             OOX::Spreadsheet::CSparklineGroups* pSparklineGroups = static_cast<OOX::Spreadsheet::CSparklineGroups*>(poResult);
             int res = c_oSerConstants::ReadOk;

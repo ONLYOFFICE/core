@@ -348,7 +348,7 @@ namespace OOX
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
 				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
-					m_arrConditionalFormatting[nIndex]->toXML();
+					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
 				if(m_oMergeCells.IsInit())
@@ -425,6 +425,10 @@ namespace OOX
 				m_mapComments.clear();
 
 				// delete Conditional Formatting
+				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+				{
+					delete m_arrConditionalFormatting[nIndex];
+				}
 				m_arrConditionalFormatting.clear();
 			}
 		private:

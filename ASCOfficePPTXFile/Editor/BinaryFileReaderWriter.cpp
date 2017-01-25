@@ -423,22 +423,33 @@ namespace NSBinPptxRW
 		m_lPosition += lSize;
 		m_pStreamCur = m_pStreamData + m_lPosition;
 	}
-	double CBinaryFileWriter::GetWidthMM()
+	double CBinaryFileWriter::GetShapeHeight()
 	{
-		if (m_lWidthCurShape == 0)
+		if (m_lCyCurShape == 0)
 			return -1;
-		return (double)m_lWidthCurShape / 36000;
+		return (double)m_lCyCurShape / 36000; //mm
 	}
-	double CBinaryFileWriter::GetHeightMM()
+	double CBinaryFileWriter::GetShapeWidth()
 	{
-		if (m_lHeightCurShape == 0)
+		if (m_lCyCurShape == 0)
 			return -1;
-		return (double)m_lHeightCurShape / 36000;
+		return (double)m_lCxCurShape / 36000;
 	}
-	void CBinaryFileWriter::ClearShapeCurSizes()
+	double CBinaryFileWriter::GetShapeY()
 	{
-		m_lWidthCurShape = 0;
-		m_lHeightCurShape = 0;
+		return (double)m_lYCurShape / 36000;
+	}
+	double CBinaryFileWriter::GetShapeX()
+	{
+		return (double)m_lXCurShape / 36000; //mm
+	}
+	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
+	{
+		m_lXCurShape	= 0;
+		m_lYCurShape	= 0;
+		
+		m_lCxCurShape = 0;
+		m_lCyCurShape = 0;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -451,8 +462,11 @@ namespace NSBinPptxRW
 		m_lStackPosition = 0;
 		memset(m_arStack, 0, MAX_STACK_SIZE * sizeof(_UINT32));
 
-		m_lWidthCurShape = 0;
-		m_lHeightCurShape = 0;
+		m_lCxCurShape = 0;
+		m_lCyCurShape = 0;
+
+		m_lXCurShape = 0;
+		m_lYCurShape = 0;
 	}
 
 	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)

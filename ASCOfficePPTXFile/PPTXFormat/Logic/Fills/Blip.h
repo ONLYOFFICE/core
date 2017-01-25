@@ -125,15 +125,16 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				double dX = 0;
-				double dY = 0;
-				double dW = pWriter->GetWidthMM();
-				double dH = pWriter->GetHeightMM();
+				double dX = pWriter->GetShapeX(); //mm
+				double dY = pWriter->GetShapeY();
+
+				double dW = pWriter->GetShapeWidth(); //mm
+				double dH = pWriter->GetShapeHeight();
 
 				FileContainer* pRels = NULL;
+				
 				if (pWriter->m_pCommonRels->is_init())
 					pRels = pWriter->m_pCommonRels->operator ->();
-
 
 				std::wstring olePath;
 				if(!oleFilepathBin.empty())

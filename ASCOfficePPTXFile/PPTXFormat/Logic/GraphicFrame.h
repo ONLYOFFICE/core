@@ -54,7 +54,6 @@ namespace PPTX
 			explicit GraphicFrame(XmlUtils::CXmlNode& node);
 			const GraphicFrame& operator =(XmlUtils::CXmlNode& node);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
@@ -64,17 +63,17 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-		public:
-			NvGraphicFramePr		nvGraphicFramePr;
-			Xfrm					xfrm;
 
+			NvGraphicFramePr		nvGraphicFramePr;
+
+			nullable<Xfrm>			xfrm;
 			nullable_string			spid;
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;
 
-			std::wstring		 GetVmlXmlBySpid(std::wstring & rels)	const;
+			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

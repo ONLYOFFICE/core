@@ -233,8 +233,8 @@ namespace NSBinPptxRW
 			CSeekTableEntry();
 		};
 
-		CCommonWriter* m_pCommon;
-		std::wstring m_strMainFolder;
+		CCommonWriter*	m_pCommon;
+		std::wstring	m_strMainFolder;
 
 		NSCommon::smart_ptr<PPTX::CCommonRels>	*	m_pCommonRels;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
@@ -253,22 +253,25 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32 m_lWidthCurShape;
-		_INT32 m_lHeightCurShape;
+		_INT32	m_lCxCurShape;	//emu
+		_INT32	m_lCyCurShape;
 
-	public:
-		BYTE*				GetBuffer();
+		_INT32	m_lXCurShape;
+		_INT32	m_lYCurShape;
+
+		BYTE*	GetBuffer();
 		_UINT32	GetPosition();
-		void				SetPosition(const _UINT32& lPosition);
-		void				Skip(const _UINT32& lSize);
+		void	SetPosition(const _UINT32& lPosition);
+		void	Skip(const _UINT32& lSize);
 
-		double GetWidthMM();
-		double GetHeightMM();
-		void ClearShapeCurSizes();
+		double	GetShapeWidth();
+		double	GetShapeHeight();
+		double	GetShapeX();
+		double	GetShapeY();
 
-		// -------------------- stream simple types -----------------------
-	public:
-		void Clear();
+		void	ClearCurShapePositionAndSizes();
+
+		void	Clear();
 
 		void SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc);
 
@@ -305,7 +308,6 @@ namespace NSBinPptxRW
 		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
-	public: 
 		CBinaryFileWriter();
 		~CBinaryFileWriter();
 
@@ -316,8 +318,6 @@ namespace NSBinPptxRW
 		void WriteReserved(size_t lCount);
 
 		void WriteMainPart();
-
-	public:
 		
 		void WriteString1	(int type, const std::wstring& val);
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
@@ -400,14 +400,14 @@ namespace NSBinPptxRW
 
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
-		_INT32 _WriteString(const WCHAR* sBuffer, _UINT32 lCount);
-		void _WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
 	class CSlideMasterInfo
 	{
 	public:
-		_INT32			m_lThemeIndex;
-		std::vector<LONG> m_arLayouts;
+		_INT32				m_lThemeIndex;
+		std::vector<LONG>	m_arLayouts;
 
 	public:
 		CSlideMasterInfo();

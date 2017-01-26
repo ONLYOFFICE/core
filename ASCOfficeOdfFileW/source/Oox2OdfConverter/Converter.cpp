@@ -55,6 +55,8 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
+
 #define PROGRESSEVENT_ID	0
 
 namespace Oox2Odf
@@ -267,13 +269,13 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 		//et_p_cNvPr,
 		//et_p_xfrm,
 
-			case PPTX::et_p_ShapeTree:
+			case OOX::et_p_ShapeTree:
 			{
 				PPTX::Logic::SpTree *spTree = static_cast<PPTX::Logic::SpTree *>(oox_unknown);
 				convert(spTree);				
 			}break;
 
-			case PPTX::et_p_Shape:
+			case OOX::et_p_Shape:
 			{
 				PPTX::Logic::Shape *shape = static_cast<PPTX::Logic::Shape *>(oox_unknown);
 				convert(shape);				

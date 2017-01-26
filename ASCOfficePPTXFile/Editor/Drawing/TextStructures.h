@@ -110,7 +110,7 @@ namespace NSPresentationEditor
 			strPitchFamily		= oSrc.strPitchFamily;
 			lFontFixed			= oSrc.lFontFixed;
 
-			for (int i =0 ; i< oSrc.arFontCharsets.size(); i++)
+			for (size_t i =0 ; i< oSrc.arFontCharsets.size(); i++)
 				arFontCharsets.push_back(oSrc.arFontCharsets[i]);
 
 			return *this;
@@ -844,7 +844,7 @@ namespace NSPresentationEditor
 			size_t nCountSpans = m_arSpans.size();
 			for (size_t i = 0; i < nCountSpans; ++i)
 			{
-				int nLen = m_arSpans[i].m_strText.length();
+				size_t nLen = m_arSpans[i].m_strText.length();
 
 				if (nLen > 1)
 					return false;

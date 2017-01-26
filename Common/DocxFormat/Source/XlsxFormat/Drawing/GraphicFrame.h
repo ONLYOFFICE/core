@@ -234,14 +234,27 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				if(m_oChart.IsInit())
+				{
+					writer.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">");
+					writer.WriteString(L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ");
+
+					if (m_oChart->m_oRId.IsInit())
+					{
+						writer.WriteString(L"r:id=\"");
+							writer.WriteString(m_oChart->m_oRId->ToString());
+						writer.WriteString(L"\"/>");
+					}
+					writer.WriteString(L"</a:graphicData>");
+				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -253,13 +266,20 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("chart") == sName )
+					if ( L"chart" == sName )
 					{
-						m_oChart = oReader;
+						m_eGraphicType	= OOX::Drawing::graphictypeChart;
+						m_oChart		= oReader;
 					}
-					else if (_T("legacyDrawing") == sName )
+					else if (L"legacyDrawing" == sName )
 					{
-						ReadAttributes( oReader );
+						m_eGraphicType	= OOX::Drawing::graphictypeLegacyDrawing;
+						ReadAttributes( oReader ); 
+					}
+					else if ( L"relIds" == sName )
+					{
+						m_eGraphicType		= OOX::Drawing::graphictypeDiagram;
+						m_oDiagrammParts	= oReader;
 					}
 				}
 			}
@@ -273,41 +293,44 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("spid"),  m_sSpId)
-
-
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("spid"),  m_sSpId)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("uri"),	m_sUri )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CGraphicChart>		m_oChart;
-			nullable<std::wstring>			m_sSpId;
-			//Any element in any namespace
+			OOX::Drawing::EGraphicType				m_eGraphicType;
+
+	// Attributes
+            nullable<std::wstring>					m_sUri;
+	//Child
+			nullable<CGraphicChart>					m_oChart;
+			nullable<OOX::Drawing::CDiagrammParts>	m_oDiagrammParts;
+			nullable<std::wstring>					m_sSpId;
 		};
 		
 		//--------------------------------------------------------------------------------
 		// 20.1.2.2.16 graphic (Graphic Object) - тю ..это может быть не только чарт !!
 		//--------------------------------------------------------------------------------		
-		class CChartGraphic : public WritingElement
+		class CGraphic : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CChartGraphic)
-			CChartGraphic()
+			WritingElementSpreadsheet_AdditionConstructors(CGraphic)
+			CGraphic()
 			{
 			}
-			virtual ~CChartGraphic()
+			virtual ~CGraphic()
 			{
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -326,7 +349,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_xdr_GraphicFrame;
+				return et_xdr_Graphic;
 			}
 
 		private:
@@ -334,7 +357,7 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<CGraphicData>		m_oGraphicData;
+			nullable<CGraphicData>	m_oGraphicData;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -352,36 +375,35 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_oChartGraphic.IsInit() && m_oChartGraphic->m_oGraphicData.IsInit() && m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
-				{
-					writer.WriteString(_T("<xdr:graphicFrame macro=\"\">"));
+				if(!m_oGraphic.IsInit()) return;
+				
+				writer.WriteString(_T("<xdr:graphicFrame macro=\"\">"));
 
-						if (m_oNvGraphicFramePr.IsInit())
-						{
-							m_oNvGraphicFramePr->toXML(writer);
-						}else
-						{
-							writer.WriteString(_T("<xdr:nvGraphicFramePr><xdr:cNvPr id=\"1\" name=\"diagram\"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr>"));
-						}
-						writer.WriteString(_T("<xdr:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/></xdr:xfrm>"));
-						writer.WriteString(_T("<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">"));
-						writer.WriteString(_T("<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" "));
-							writer.WriteString(_T("r:id=\""));
-								writer.WriteString(m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->ToString());
-							writer.WriteString(_T("\"/>"));
-						writer.WriteString(_T("</a:graphicData>"));
-						writer.WriteString(_T("</a:graphic>"));
-					writer.WriteString(_T("</xdr:graphicFrame>"));
-					writer.WriteString(_T("<xdr:clientData/>"));
+				if (m_oNvGraphicFramePr.IsInit())
+				{
+					m_oNvGraphicFramePr->toXML(writer);
+				}else
+				{
+					writer.WriteString(_T("<xdr:nvGraphicFramePr><xdr:cNvPr id=\"1\" name=\"Graphic>\"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr>"));
 				}
+				writer.WriteString(L"<xdr:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/></xdr:xfrm>");
+				writer.WriteString(L"<a:graphic>");
+
+				if (m_oGraphic->m_oGraphicData.IsInit())
+					m_oGraphic->m_oGraphicData->toXML(writer);
+
+					writer.WriteString(_T("</a:graphic>"));
+				writer.WriteString(_T("</xdr:graphicFrame>"));
+				
+				writer.WriteString(_T("<xdr:clientData/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -392,6 +414,7 @@ namespace OOX
                 std::wstring sXml = L"<root xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">";
                 sXml += m_sXml.get();
                 sXml += L"</root>";
+				
 				XmlUtils::CXmlLiteReader oSubReader;
 				oSubReader.FromString(sXml);
 				oSubReader.ReadNextNode();//root
@@ -403,7 +426,7 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
 
 					if ( _T("graphic") == sName )
-						m_oChartGraphic = oSubReader;
+						m_oGraphic = oSubReader;
 					else if ( _T("nvGraphicFramePr") == sName )
 						m_oNvGraphicFramePr = oSubReader;
 				}
@@ -419,11 +442,14 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<CChartGraphic>				m_oChartGraphic;
+	// Attributes
+            nullable<std::wstring>				m_sUri;
+	// Child
+			nullable<CGraphic>					m_oGraphic;
 			nullable<CGraphicFrameNonVisual>	m_oNvGraphicFramePr;
-			//xfrm
-			//extLst
-            nullable<std::wstring>					m_sXml;
+		//xfrm
+		//extLst
+            nullable<std::wstring>				m_sXml;
 		};
 	} //Spreadsheet
 } // namespace OOX

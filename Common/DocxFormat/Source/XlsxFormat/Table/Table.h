@@ -270,7 +270,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -279,14 +279,16 @@ namespace OOX
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(L"<tableColumns");
-					WritingStringAttrInt(L"count", m_arrItems.size());
+					WritingStringAttrInt(L"count", (int)m_arrItems.size());
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(L"</tableColumns>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -494,7 +496,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -503,14 +505,16 @@ namespace OOX
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(L"<tableParts");
-					WritingStringAttrInt(L"count", m_arrItems.size());
+					WritingStringAttrInt(L"count", (int)m_arrItems.size());
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(L"</tableParts>");	
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

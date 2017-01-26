@@ -47,12 +47,16 @@ struct SRecordHeader
 	
 	SRecordHeader()
 	{
-		RecVersion = RecInstance = RecType = RecLen = 0;
+		RecVersion = 0;
+		RecInstance = RecType = 0;
+		RecLen = 0;
 	}
 
     bool ReadFromStream(POLE::Stream * pStream)
 	{
-		RecVersion = RecInstance = RecType = RecLen = 0;
+		RecVersion = 0;
+		RecInstance = RecType = 0;
+		RecLen = 0;
 
 		POLE::uint64 nRd = 0; 
 		
@@ -69,11 +73,11 @@ struct SRecordHeader
 	
 		nRd = pStream->read((unsigned char*)&(RecLen), 4);
 
-		long sz = pStream->size()-pStream->tell();
+		POLE::uint64 sz = pStream->size()-pStream->tell();
 
 		if (RecLen > sz )
 		{
-			RecLen = sz;
+			RecLen = (UINT)sz;
 		}
 
         return true;

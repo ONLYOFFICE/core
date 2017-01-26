@@ -585,8 +585,8 @@ namespace PPTX
 							if (0 == _type)
 							{
 								std::wstring _name = pReader->GetString2();
-								int _find = _name.find(_T(":"));
-								if (_find >= 0 && _find < (_name.length() - 1))
+								int _find = (int)_name.find(_T(":"));
+								if (_find >= 0 && _find < (int)(_name.length() - 1))
 									_name = _name.substr(_find + 1);
 
 								_mod.name = _T("a:") + _name;

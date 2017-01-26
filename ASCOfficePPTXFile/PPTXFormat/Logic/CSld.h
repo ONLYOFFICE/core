@@ -107,7 +107,7 @@ namespace PPTX
 						
 						pWriter->StartRecord(2);		//pWriter->WriteRecordArray(2, 0, spTree.SpTreeElems);  - вручную
 							pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size() + (controls.IsInit() ? 1 : 0));
-							for(int i = 0; i < spTree.SpTreeElems.size();i++)
+							for(size_t i = 0; i < spTree.SpTreeElems.size();i++)
 								pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
 						
 							if (controls.IsInit())	controls->toPPTY(pWriter); //можно искуственно добавить controls в sptree .. и все "это" перенести туда

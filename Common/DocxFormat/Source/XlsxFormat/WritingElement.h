@@ -371,6 +371,7 @@ namespace Spreadsheet
 		et_c_SeriesShapeOrder,
 		et_c_SeriesShapeOutline,
 		et_xdr_GraphicFrame,
+		et_xdr_Graphic,
 		et_xdr_GraphicData,
 		et_OleObjects,
 		et_OleObject,

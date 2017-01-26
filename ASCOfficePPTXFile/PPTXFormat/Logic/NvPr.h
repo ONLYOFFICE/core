@@ -53,7 +53,7 @@ namespace PPTX
 				media		=	oSrc.media;
 				ph			=	oSrc.ph;
 
-				for (int i=0; i < oSrc.extLst.size(); i++)
+				for (size_t i=0; i < oSrc.extLst.size(); i++)
 					extLst.push_back(oSrc.extLst[i]);
 				
 				return *this;

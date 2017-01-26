@@ -335,6 +335,17 @@ namespace OOX
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
 		
+		et_p_cNvPicPr, // <p:cNvPicPr>
+		et_p_cNvPr, // <p:cNvPr>
+		et_p_pic, // <p:pic>
+		et_p_Shape,			// <p:sp>
+		et_p_ShapeTree,		// <p:spTree>
+		et_p_spPr,			// <p:spPr>
+		et_p_style,			// <p:style>
+		et_p_groupSpPr,		// <p:grpSpPr>
+		et_p_NvGrpSpPr,
+		et_p_xfrm,
+
 		et_a_p, // <a:p>
 		et_a_pPr, // <a:pPr>
 		et_a_r, // <a:p>
@@ -509,10 +520,6 @@ namespace OOX
 		et_o_signatureline, // <o:signatureline>
 		et_o_skew, // <o:skew>
 		et_o_top, // <o:top>
-
-		et_p_cNvPicPr, // <p:cNvPicPr>
-		et_p_cNvPr, // <p:cNvPr>
-		et_p_pic, // <p:pic>
 
 		et_pic_blipFill, // <pic:blipFill>
 		et_pic_cNvPicPr, // <pic:cNvPicPr>

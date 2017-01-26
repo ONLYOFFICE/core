@@ -57,7 +57,7 @@ namespace Writers
 		}
 		~ChartWriter()
 		{
-			for(int i = 0, length = m_aCharts.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aCharts.size(); i < length; ++i)
 			{
 				delete m_aCharts[i];
 			}
@@ -73,7 +73,7 @@ namespace Writers
                 OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("charts");
                 NSDirectory::CreateDirectory(pathChartDir.GetPath());
 
-                for(int i = 0, length = m_aCharts.size(); i < length; ++i)
+                for(size_t i = 0, length = m_aCharts.size(); i < length; ++i)
 				{
 					ChartElem* elem = m_aCharts[i];
 

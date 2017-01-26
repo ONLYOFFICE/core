@@ -192,7 +192,7 @@ namespace OOX
 				if(pComments->m_oCommentList.IsInit())
 				{
 					std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
-					for(unsigned int i = 0, length = aComments.size(); i < length; ++i)
+					for(size_t i = 0, length = aComments.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CComment* pComment = aComments[i];
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
@@ -218,13 +218,13 @@ namespace OOX
 					}
 				}
 
-				for(unsigned int i = 0, length = pVmlDrawing->m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = pVmlDrawing->m_arrItems.size(); i < length; ++i)
 				{
 					OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
 					
 					if (pShape == NULL) continue;
 
-					for(unsigned int j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
+					for(size_t j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if( OOX::et_v_ClientData == pElem->getType())
@@ -261,7 +261,7 @@ namespace OOX
 									if(pClientData->m_oSizeWithCells.IsInit())
 										pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
 
-									for(unsigned int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
+									for(size_t k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
 									{
 										if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 
@@ -347,7 +347,7 @@ namespace OOX
 					m_oCols->toXML(sXml);
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
-				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
@@ -425,7 +425,7 @@ namespace OOX
 				m_mapComments.clear();
 
 				// delete Conditional Formatting
-				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 				{
 					delete m_arrConditionalFormatting[nIndex];
 				}

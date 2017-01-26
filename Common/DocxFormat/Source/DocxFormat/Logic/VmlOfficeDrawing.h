@@ -511,7 +511,7 @@ namespace OOX
 					int nStartPos = 0;
 					int nEndPos = -1;
 					std::wstring sColor;
-                    while ( -1 != ( nEndPos = sColors.find( _T(","), nStartPos )  ) )
+                    while ( -1 != ( nEndPos =(int)sColors.find( _T(","), nStartPos )  ) )
 					{
                         sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
 						SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
@@ -523,7 +523,7 @@ namespace OOX
 						nStartPos = nEndPos + 1;
 					}
 
-					nEndPos = sColors.length();
+					nEndPos = (int)sColors.length();
 					sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
 					SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
 					if (oColor )

@@ -57,10 +57,14 @@ namespace PPTX
 			explicit Shape(XmlUtils::CXmlNode& node);
 			const Shape& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_Shape;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
-		public:
+
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
 			void GetShapeFullDescription(Shape& shape, int level = 0)const;
@@ -320,7 +324,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+
 			NvSpPr					nvSpPr;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;

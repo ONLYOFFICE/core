@@ -199,7 +199,7 @@ namespace NSPresentationEditor
             pRenderer->BeginCommand(c_nPathType);
 
             CDoublePoint pointCur; pointCur.dX = 0; pointCur.dY = 0;
-            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 m_arParts[nIndex].Draw(pRenderer, pointCur);
             }
@@ -228,7 +228,7 @@ namespace NSPresentationEditor
             pRenderer->BeginCommand(c_nPathType);
 
             CDoublePoint pointCur; pointCur.dX = 0; pointCur.dY = 0;
-            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 m_arParts[nIndex].Draw(pRenderer, pointCur);
             }
@@ -266,7 +266,7 @@ namespace NSPresentationEditor
             {
                 m_eType	= oSrc.m_eType;
                 this->m_arPoints.clear();
-                for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+                for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
                 {
                     this->m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
                 }
@@ -305,7 +305,7 @@ namespace NSPresentationEditor
 
                 bool bIsX = true;
                 int nCurPoint = 0;
-                for (int nIndex = 0; nIndex < arStrNums.size(); ++nIndex)
+                for (size_t nIndex = 0; nIndex < arStrNums.size(); ++nIndex)
                 {
                     if (bIsX)
                     {
@@ -472,7 +472,7 @@ namespace NSPresentationEditor
                 if (NULL == ppArray)
                     return;
 
-                int nCount = this->m_arPoints.size();
+                int nCount = (int)this->m_arPoints.size();
 
                 nCountOut = 2 * (nCount + 1);
 
@@ -652,7 +652,7 @@ namespace NSPresentationEditor
                 }
                 case rtAngleEllipseTo:
                 {
-                    int nFigure = 0;
+                    size_t nFigure = 0;
                     while ((nFigure + 3) <= this->m_arPoints.size())
                     {
                         double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
@@ -671,7 +671,7 @@ namespace NSPresentationEditor
                 case rtAngleEllipse:
                 {
                     pRenderer->PathCommandStart();
-                    int nFigure = 0;
+                    size_t nFigure = 0;
                     while ((nFigure + 3) <= this->m_arPoints.size())
                     {
                         double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
@@ -690,7 +690,7 @@ namespace NSPresentationEditor
                 case rtArc:
                 {
                     pRenderer->PathCommandStart();
-                    int nFigure = 0;
+                    size_t nFigure = 0;
                     while ((nFigure + 4) <= this->m_arPoints.size())
                     {
                         double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
@@ -715,7 +715,7 @@ namespace NSPresentationEditor
                 }
                 case rtArcTo:
                 {
-                    int nFigure = 0;
+                    size_t nFigure = 0;
                     while ((nFigure + 4) <= this->m_arPoints.size())
                     {
                         double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
@@ -740,7 +740,7 @@ namespace NSPresentationEditor
                 }
                 case rtClockwiseArcTo:
                 {
-                    int nFigure = 0;
+					size_t nFigure = 0;
                     while ((nFigure + 4) <= this->m_arPoints.size())
                     {
                         double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
@@ -766,7 +766,8 @@ namespace NSPresentationEditor
                 case rtClockwiseArc:
                 {
                     pRenderer->PathCommandStart();
-                    int nFigure = 0;
+                   
+					size_t nFigure = 0;
                     while ((nFigure + 4) <= this->m_arPoints.size())
                     {
                         double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;

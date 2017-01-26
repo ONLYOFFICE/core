@@ -176,8 +176,8 @@ namespace BinXlsxRW{
 			std::wstring sThemePath;
 			std::wstring sEmbedingPath;
 			
-            int nIndex	= sFilepath.rfind(FILE_SEPARATOR_CHAR); 
-            nIndex		= sFilepath.rfind(FILE_SEPARATOR_CHAR, nIndex - 1);
+            int nIndex	= (int)sFilepath.rfind(FILE_SEPARATOR_CHAR); 
+            nIndex		= (int)sFilepath.rfind(FILE_SEPARATOR_CHAR, nIndex - 1);
 			if(-1 != nIndex)
 			{
                 std::wstring sFilepathLeft = sFilepath.substr(0, nIndex + 1);

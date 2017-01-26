@@ -224,7 +224,7 @@ namespace NSPresentationEditor
 
         static void CheckPlaceholderStyle(std::wstring strStyleName, LONG& lType, LONG& lLevel, LONG& lTypeStyle)
 		{
-            int         nLen  = strStyleName.length();
+            size_t		nLen  = strStyleName.length();
             wchar_t*    pData = (wchar_t*)strStyleName.c_str();
 
 			lType		= 0;

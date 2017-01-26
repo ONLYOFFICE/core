@@ -427,7 +427,7 @@ namespace SimpleTypes
 
             void Parse(const std::wstring& sValue)
 			{
-                int nValueLength = sValue.length();
+                int nValueLength = (int)sValue.length();
 
                 if(3 == nValueLength)
 				{

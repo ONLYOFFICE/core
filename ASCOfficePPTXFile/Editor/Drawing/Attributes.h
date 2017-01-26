@@ -145,11 +145,11 @@ namespace NSPresentationEditor
             m_strPresentationDirectory	= oSrc.m_strPresentationDirectory;
             m_strSourceDirectory		= oSrc.m_strSourceDirectory;
 
-            for (int i=0; i < oSrc.m_arVideos.size(); i++)
+            for (size_t i=0; i < oSrc.m_arVideos.size(); i++)
                 m_arVideos.push_back(oSrc.m_arVideos[i]);
-            for (int i=0; i < oSrc.m_arVideos.size(); i++)
+            for (size_t i=0; i < oSrc.m_arVideos.size(); i++)
                 m_arImages.push_back(oSrc.m_arImages[i]);
-            for (int i=0; i < oSrc.m_arVideos.size(); i++)
+            for (size_t i=0; i < oSrc.m_arVideos.size(); i++)
                 m_arAudios.push_back(oSrc.m_arAudios[i]);
 
             return *this;
@@ -422,8 +422,9 @@ namespace NSPresentationEditor
             }
             else
             {
-                int nLen = str.length();
-                wchar_t* pBuffer        = (wchar_t*)str.c_str();
+                size_t nLen			= str.length();
+
+                wchar_t* pBuffer	= (wchar_t*)str.c_str();
                 wchar_t* pBuffer1	= pBuffer;
                 wchar_t* pBuffer2	= pBuffer;
                 wchar_t* pBufferEnd	= pBuffer + nLen;

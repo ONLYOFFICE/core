@@ -59,14 +59,17 @@ namespace PPTX
 				nvGrpSpPr	= oSrc.nvGrpSpPr;
 				grpSpPr		= oSrc.grpSpPr;
 
-				for (int i=0; i < oSrc.SpTreeElems.size(); i++)
+				for (size_t i=0; i < oSrc.SpTreeElems.size(); i++)
 					SpTreeElems.push_back(oSrc.SpTreeElems[i]);
 
 				m_name = oSrc.m_name;
 
 				return *this;
 			}
-
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_ShapeTree;
+			}
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

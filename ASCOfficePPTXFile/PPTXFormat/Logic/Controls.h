@@ -171,7 +171,7 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const 
 			{
-				for (int i = 0; i <arrControls.size(); i++)
+				for (size_t i = 0; i <arrControls.size(); i++)
 					arrControls[i].toPPTY(pWriter);
 			}	
 			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager* pImageManager) const;
@@ -186,7 +186,7 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				for (int i = 0; i <arrControls.size(); i++)
+				for (size_t i = 0; i <arrControls.size(); i++)
 					arrControls[i].SetParentPointer(this);
 			}
 		};

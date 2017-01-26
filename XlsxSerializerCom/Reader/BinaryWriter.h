@@ -69,7 +69,7 @@ namespace BinXlsxRW {
 		void Write(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTableParts& oTableParts)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oTableParts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oTableParts.m_arrItems.size(); i < length; ++i)
 				WriteTablePart(oWorksheet, *oTableParts.m_arrItems[i]);
 		};
 		void WriteTablePart(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTablePart& oTablePart)
@@ -197,7 +197,7 @@ namespace BinXlsxRW {
 		void WriteFilterColumns(const std::vector<OOX::Spreadsheet::CFilterColumn *>& aFilterColumn)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aFilterColumn.size(); i < length; ++i)
+			for(size_t i = 0, length = aFilterColumn.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_AutoFilter::FilterColumn);
 				WriteFilterColumn(*aFilterColumn[i]);
@@ -265,7 +265,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBOOL(oFilters.m_oBlank->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			for(int i = 0, length = oFilters.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oFilters.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = oFilters.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Filter == we->getType())
@@ -356,7 +356,7 @@ namespace BinXlsxRW {
 		void WriteCustomFiltersItems(const std::vector<OOX::Spreadsheet::CCustomFilter *>& aCustomFilters)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aCustomFilters.size(); i < length; ++i)
+			for(size_t i = 0, length = aCustomFilters.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CustomFilters::CustomFilter);
 				WriteCustomFiltersItem(*aCustomFilters[i]);
@@ -487,7 +487,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_SortState::SortConditions);
-			for(int i = 0, length = oSortState.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oSortState.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SortState::SortCondition);
 				WriteSortCondition(*oSortState.m_arrItems[i]);
@@ -534,7 +534,7 @@ namespace BinXlsxRW {
 		void WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oTableColumns.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oTableColumns.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::TableColumn);
 				WriteTableColumn(*oTableColumns.m_arrItems[i]);
@@ -662,7 +662,7 @@ namespace BinXlsxRW {
 		void WriteBorders(const OOX::Spreadsheet::CBorders& borders, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = borders.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = borders.m_arrItems.size(); i < length; ++i)
 			{
 					OOX::Spreadsheet::CBorder* pBorder = borders.m_arrItems[i];
 					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Border);
@@ -767,7 +767,7 @@ namespace BinXlsxRW {
 		void WriteCellStyleXfs(const OOX::Spreadsheet::CCellStyleXfs& cellStyleXfs)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = cellStyleXfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = cellStyleXfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = cellStyleXfs.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Xfs == we->getType())
@@ -782,7 +782,7 @@ namespace BinXlsxRW {
 		void WriteCellXfs(const OOX::Spreadsheet::CCellXfs& cellXfs)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = cellXfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = cellXfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = cellXfs.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Xfs == we->getType())
@@ -940,7 +940,7 @@ namespace BinXlsxRW {
 		void WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = fills.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = fills.m_arrItems.size(); i < length; ++i)
 			{
 					OOX::Spreadsheet::CFill* pFill = fills.m_arrItems[i];
 					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Fill);
@@ -1001,12 +1001,12 @@ namespace BinXlsxRW {
 		void WriteFonts(const OOX::Spreadsheet::CFonts& fonts, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = fonts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = fonts.m_arrItems.size(); i < length; ++i)
 			{
-					OOX::Spreadsheet::CFont* pFont = fonts.m_arrItems[i];
-					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Font);
-					WriteFont(*pFont, pIndexedColors, pTheme, oFontProcessor);
-					m_oBcw.WriteItemEnd(nCurPos);
+				OOX::Spreadsheet::CFont* pFont = fonts.m_arrItems[i];
+				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Font);
+				WriteFont(*pFont, pIndexedColors, pTheme, oFontProcessor);
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
 		void WriteFont(const OOX::Spreadsheet::CFont& font, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme, DocWrapper::FontProcessor& oFontProcessor)
@@ -1090,7 +1090,7 @@ namespace BinXlsxRW {
 		void WriteNumFmts(const OOX::Spreadsheet::CNumFmts& numFmts)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = numFmts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = numFmts.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CNumFmt* pNumFmt = numFmts.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::NumFmt);
@@ -1123,7 +1123,7 @@ namespace BinXlsxRW {
 		void WriteCellStyles(const OOX::Spreadsheet::CCellStyles& oCellStyles)
 		{
 			int nCurPos = 0;
-			for (int i = 0, nLength = oCellStyles.m_arrItems.size(); i < nLength; ++i)
+			for (size_t i = 0, nLength = oCellStyles.m_arrItems.size(); i < nLength; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = oCellStyles.m_arrItems[i];
 				if (OOX::Spreadsheet::et_CellStyle == we->getType())
@@ -1177,7 +1177,7 @@ namespace BinXlsxRW {
 		void WriteDxfs(const OOX::Spreadsheet::CDxfs& oDxfs, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oDxfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oDxfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CDxf* pDxf = oDxfs.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Dxf);
@@ -1242,7 +1242,7 @@ namespace BinXlsxRW {
 		void WriteTableCustomStyles(const std::vector<OOX::Spreadsheet::CTableStyle *>& aTableStyles)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aTableStyles.size(); i < length; ++i)
+			for(size_t i = 0, length = aTableStyles.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CTableStyle* pTableStyle = aTableStyles[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableStyles::TableStyle);
@@ -1285,7 +1285,7 @@ namespace BinXlsxRW {
 		void WriteTableStyleElements(const std::vector<OOX::Spreadsheet::CTableStyleElement *>& aTableStyles)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aTableStyles.size(); i < length; ++i)
+			for(size_t i = 0, length = aTableStyles.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableStyle::Element);
 				WriteTableStyleElement(*aTableStyles[i]);
@@ -1332,7 +1332,7 @@ namespace BinXlsxRW {
 		void WriteSharedStrings(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			for(int i = 0, length = sharedString.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = sharedString.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = sharedString.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Si == we->getType())
@@ -1347,7 +1347,7 @@ namespace BinXlsxRW {
 		void WriteSharedString(OOX::Spreadsheet::CSi& si, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			for(int i = 0, length = si.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = si.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = si.m_arrItems[i];
 				if(OOX::Spreadsheet::et_r == we->getType())
@@ -1378,7 +1378,7 @@ namespace BinXlsxRW {
 				WriteRPr(run.m_oRPr.get(), pIndexedColors, pTheme, oFontProcessor);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			for(int i = 0, length = run.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = run.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = run.m_arrItems[i];
 				if(OOX::Spreadsheet::et_t == we->getType())
@@ -1558,7 +1558,7 @@ namespace BinXlsxRW {
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames)
 		{
 			int nCurPos;
-			for(int i = 0, length = definedNames.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = definedNames.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CDefinedName* pDefinedName = definedNames.m_arrItems[i];
 				//DefinedName
@@ -1570,7 +1570,7 @@ namespace BinXlsxRW {
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook)
 		{
 			int nCurPos;
-			for(int i = 0, length = externalReferences.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = externalReferences.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CExternalReference* pExternalReference = externalReferences.m_arrItems[i];
 				//ExternalReference
@@ -1669,7 +1669,7 @@ namespace BinXlsxRW {
 			if(workbook.m_oSheets.IsInit())
 			{
 				std::vector<OOX::Spreadsheet::CSheet*>& aWs = workbook.m_oSheets->m_arrItems;
-				for(int i = 0, length = aWs.size(); i < length; ++i)
+				for(size_t i = 0, length = aWs.size(); i < length; ++i)
 				{
 					OOX::Spreadsheet::CSheet* pSheet = aWs[i];
 					if(pSheet->m_oRid.IsInit())
@@ -1885,7 +1885,7 @@ namespace BinXlsxRW {
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols)
 		{
 			int nCurPos;
-			for(int i = 0, length = oCols.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oCols.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CCol* pCol = oCols.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Col);
@@ -1949,7 +1949,7 @@ namespace BinXlsxRW {
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews)
 		{
 			int nCurPos = 0;
-			for (int nIndex = 0, nLength = oSheetViews.m_arrItems.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0, nLength = oSheetViews.m_arrItems.size(); nIndex < nLength; ++nIndex)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetView);
 				WriteSheetView(*oSheetViews.m_arrItems[nIndex]);
@@ -2275,7 +2275,7 @@ namespace BinXlsxRW {
 		void WriteHyperlinks(const OOX::Spreadsheet::CHyperlinks& oHyperlinks, OOX::Spreadsheet::CWorksheet& oWorksheet)
 		{
 			int nCurPos;
-			for(int i = 0, length = oHyperlinks.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oHyperlinks.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CHyperlink* pHyperlink = oHyperlinks.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Hyperlink);
@@ -2343,7 +2343,7 @@ namespace BinXlsxRW {
 		};
 		void WriteMergeCells(const OOX::Spreadsheet::CMergeCells& oMergeCells)
 		{
-			for(int i = 0, length = oMergeCells.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oMergeCells.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CMergeCell* pMergeCell = oMergeCells.m_arrItems[i];
 				if(pMergeCell->m_oRef.IsInit())
@@ -2356,7 +2356,7 @@ namespace BinXlsxRW {
 		void WriteSheetData(const OOX::Spreadsheet::CSheetData& oSheetData)
 		{
 			int nCurPos;
-			for(int i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
@@ -2414,7 +2414,7 @@ namespace BinXlsxRW {
 		void WriteCells(const OOX::Spreadsheet::CRow& oRows)
 		{
 			int nCurPos;
-			for(int i = 0, length = oRows.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oRows.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CCell* oCell =oRows.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerRowTypes::Cell);
@@ -2582,7 +2582,7 @@ namespace BinXlsxRW {
         void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
 		{
 			int nCurPos;
-			for(int i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
+			for(size_t i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
 			{
 				OOX::Spreadsheet::CCellAnchor& pCellAnchor = *pDrawing->m_arrItems[i];
 				//we use legacyDrawing or objectPr in OleObject so skip shape in drawing
@@ -2952,7 +2952,7 @@ namespace BinXlsxRW {
 					WriteComment(oComment, aCommentDatas, oComment.m_oText);
 					m_oBcw.WriteItemEnd(nCurPos);
 
-					for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
+					for(size_t i = 0, length = aCommentDatas.size(); i < length; ++i)
 					{
 						RELEASEOBJECT(aCommentDatas[i]);
 					}
@@ -2969,7 +2969,7 @@ namespace BinXlsxRW {
                 if(sSignatureBase64 == sGfxData.substr(0, sSignatureBase64.length()))
 				{
                     std::string sSignature("XLST");
-                    int nSignatureSize = sSignature.length();
+                    int nSignatureSize = (int)sSignature.length();
 					int nDataLengthSize = sizeof(long);
 					int nJunkSize = 2;
                     std::string sGfxDataA = std::string(sGfxData.begin(), sGfxData.end());
@@ -3103,7 +3103,7 @@ namespace BinXlsxRW {
 			int nCurPos = 0;
 			if(aCommentDatas.size() > 0)
 			{
-				for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
+				for(size_t i = 0, length = aCommentDatas.size(); i < length; ++i)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
 					if(0 == i)
@@ -3191,7 +3191,7 @@ namespace BinXlsxRW {
 		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aReplies.size(); i < length; i++)
+			for(size_t i = 0, length = aReplies.size(); i < length; i++)
 			{
 				SerializeCommon::CommentData* pReply = aReplies[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Reply);
@@ -3267,7 +3267,7 @@ namespace BinXlsxRW {
 		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting)
 		{
 			int nCurPos = 0;
-			for (int nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ConditionalFormatting);
 				WriteConditionalFormatting(*arrConditionalFormatting[nIndex]);
@@ -3298,7 +3298,7 @@ namespace BinXlsxRW {
 		void WriteConditionalFormattingRules(const std::vector<OOX::Spreadsheet::CConditionalFormattingRule *>& aConditionalFormattingRules)
 		{
 			int nCurPos = 0;
-			for (int i = 0, length = aConditionalFormattingRules.size(); i < length; ++i)
+			for (size_t i = 0, length = aConditionalFormattingRules.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
 				WriteConditionalFormattingRule(*aConditionalFormattingRules[i]);
@@ -3399,7 +3399,7 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CIconSet* pIconSet = NULL;
 
 			int nCurPos = 0;
-			for (int i = 0, length = aConditionalFormattingRuleElements.size(); i < length; ++i)
+			for (size_t i = 0, length = aConditionalFormattingRuleElements.size(); i < length; ++i)
 			{
 				switch (aConditionalFormattingRuleElements[i]->getType())
 				{
@@ -3437,7 +3437,7 @@ namespace BinXlsxRW {
 			// ToDo более правильно заделать виртуальную функцию, которая будет писать без привидения типов
 			int nCurPos = 0;
 
-			for (int i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
 			{
 				pCFVO = dynamic_cast<OOX::Spreadsheet::CConditionalFormatValueObject*>(oColorScale.m_arrItems[i]);
 				if (NULL != pCFVO)
@@ -3486,7 +3486,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (int i = 0, length = oDataBar.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oDataBar.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
 				WriteCFVO(*oDataBar.m_arrItems[i]);
@@ -3522,7 +3522,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (int i = 0, length = oIconSet.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oIconSet.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::CFVO);
 				WriteCFVO(*oIconSet.m_arrItems[i]);
@@ -3768,7 +3768,7 @@ namespace BinXlsxRW {
 		void WriteCalcChainTableContent(OOX::Spreadsheet::CCalcChain& pCalcChain)
 		{
 			int nCurPos;
-			for(int i = 0, length = pCalcChain.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = pCalcChain.m_arrItems.size(); i < length; ++i)
 			{
 				//media
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CalcChainType::CalcChainItem);
@@ -4202,7 +4202,7 @@ namespace BinXlsxRW {
 					oBinaryCommonWriter.WriteItemEnd(nCurPos);
 				}
 
-				for (int i = 0, nLength = oCellStyles->m_arrItems.size(); i < nLength; ++i)
+				for (size_t i = 0, nLength = oCellStyles->m_arrItems.size(); i < nLength; ++i)
 				{
 					OOX::Spreadsheet::WritingElement* we = oCellStyles->m_arrItems[i];
 					if (OOX::Spreadsheet::et_CellStyle == we->getType())

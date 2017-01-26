@@ -97,7 +97,7 @@ namespace SimpleTypes
 		{
 			bool bAngleValue = true;
 
-            for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
+            for ( size_t nIndex = 0; nIndex < sValue.length(); nIndex++ )
 			{
 				if ( !iswdigit( sValue[nIndex] ) )
 				{
@@ -192,7 +192,7 @@ namespace SimpleTypes
 			bool bGuide = false;
 			if ( !m_bUnit )
 			{
-                for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
+                for ( size_t nIndex = 0; nIndex < sValue.length(); nIndex++ )
 				{
 					if ( !iswdigit( sValue[nIndex] ) )
 					{
@@ -204,7 +204,7 @@ namespace SimpleTypes
 			else
 			{
 				// Последние два символа не проверяем
-                for ( int nIndex = 0; nIndex < sValue.length() - 2; nIndex++ )
+                for ( size_t nIndex = 0; nIndex < sValue.length() - 2; nIndex++ )
 				{
 					if ( !iswdigit( sValue[nIndex] ) && sValue[nIndex] != '.' && sValue[nIndex] != '-' )
 					{

@@ -107,9 +107,9 @@ namespace NSPresentationEditor
 			m_bHasFooter		=	oSrc.m_bHasFooter;
 			m_nFormatDate		=	oSrc.m_nFormatDate;
 
-			for (int i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
+			for (size_t i = 0 ; i < 3 ; i++) m_PlaceholdersReplaceString[i] = oSrc.m_PlaceholdersReplaceString[i];
 
-			for (int i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
+			for (size_t i = 0; i < oSrc.m_arExtraColorScheme.size(); ++i)
 			{
 				m_arExtraColorScheme.push_back(oSrc.m_arExtraColorScheme[i]);
 			}

@@ -75,7 +75,7 @@ namespace PPTX
 			CFile file;
 			if (file.OpenFile(filename.GetPath()) == S_OK)
 			{
-				m_DataSize = file.GetFileSize();
+				m_DataSize = (int)file.GetFileSize();
 				m_Data = new BYTE[m_DataSize];
 
 				if (m_Data)
@@ -200,7 +200,7 @@ namespace PPTX
 					//rgTextPFRun (variable)
 					//rgTextCFRun (variable)
 
-					ParseTextProps(m_Data + pos, rec.RecLen, m_Text.length());
+					ParseTextProps(m_Data + pos, rec.RecLen, (int)m_Text.length());
 				}break;
 				case 0x0FAA:	//TextSpecialInfoAtom
 				{
@@ -416,7 +416,7 @@ namespace PPTX
 
 		if (fontAlign_)
 		{
-			props.fontAlgn	= *(_UINT16*)(Data + pos); pos += 2;
+			props.fontAlgn	= (BYTE)(*(_UINT16*)(Data + pos)); pos += 2;
 		}
 		
 		if (charWrap_ || wordWrap_ || overflow_)
@@ -541,7 +541,7 @@ namespace PPTX
 
 		if (BaseLineOffset_)
 		{
-			int BaseLineOffset = (double)(*(_UINT16*)(Data + pos)); pos += 2;
+			int BaseLineOffset = static_cast<int>((double)(*(_UINT16*)(Data + pos))); pos += 2;
 		}
 
 		// или два последних наоборот????

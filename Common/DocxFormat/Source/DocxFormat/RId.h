@@ -62,7 +62,7 @@ namespace OOX
 			//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
 			//Tогда не будет проблем с добавление новый id, мы всегда будем генерировать их с префиксом rId
 			std::wstring sFindString(_T("rId"));
-			int nFindStringLength = (int)sFindString.length();
+			size_t nFindStringLength = sFindString.length();
 			
 			if(0 == rid.find(sFindString) && rid.length() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
 			{
@@ -126,7 +126,7 @@ namespace OOX
 			if(!m_sId.empty())
 				return m_sId;
 			else
-                return _T("rId") + std::to_wstring(m_id);
+                return _T("rId") + std::to_wstring((unsigned int)m_id);
 		}
 		template<typename T>
 		void toPPTY(BYTE type, T pWriter) const

@@ -104,7 +104,7 @@ namespace NSBinPptxRW
                     //m_lSize *= 2; - бесконтрольно ..
                     m_lSize += (std::max)(nSize, (size_t) 1024);
                 }
-                int size_alloc = m_lSize * sizeof(wchar_t);
+                size_t size_alloc = m_lSize * sizeof(wchar_t);
 #if defined(_WIN32) || defined (_WIN64)
                 wchar_t* pRealloc = (wchar_t*)realloc(m_pData, size_alloc );
                 if (NULL != pRealloc)
@@ -551,7 +551,7 @@ namespace NSBinPptxRW
             {
                 CFile oFile;
                 oFile.CreateFile(strFilePath);
-                oFile.WriteFile((void*)strData.c_str(), strData.length());
+                oFile.WriteFile((void*)strData.c_str(), (DWORD)strData.length());
                 oFile.CloseFile();
             }
             else

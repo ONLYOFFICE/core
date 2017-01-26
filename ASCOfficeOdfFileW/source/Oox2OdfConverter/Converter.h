@@ -32,6 +32,7 @@
 #pragma once
 
 #include <cpdoccore/CPOptional.h>
+#include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 #include "../progressCallback.h"
 
@@ -70,6 +71,7 @@ namespace OOX
 	class WritingElement;
 	class CTheme;
 	class IFileContainer;
+	class File;
 
 	namespace Drawing
 	{
@@ -352,6 +354,7 @@ public:
 		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
         virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
+		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
 		
 		OOX::Spreadsheet::IFileContainer					*oox_current_child_document_spreadsheet;
 		OOX::IFileContainer									*oox_current_child_document;
@@ -360,6 +363,7 @@ public:
 		void convert(double oox_font_size, cpdoccore::_CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);
 	
 //.drawing......................................................................................................................
+		void convert(OOX::Drawing::CDiagrammParts				*oox_diagramm);
 		void convert(OOX::Drawing::CLockedCanvas				*oox_canvas);
 		void convert(OOX::Drawing::CShape						*oox_shape);
 		void convert(OOX::Drawing::CNonVisualDrawingProps		*oox_cnvPr);

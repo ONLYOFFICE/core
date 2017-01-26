@@ -94,7 +94,7 @@ namespace utils {
 		bool f = true;
         int res = 0;
 
-        for (int i = a.length() - 1; i >= 0; i--)
+        for (int i = (int)a.length() - 1; i >= 0; i--)
 		{
             size_t v = a[i] - L'A';
 			if (f)
@@ -108,10 +108,9 @@ namespace utils {
 	}
     static int getRowAdderssInv(const std::wstring & a_)
 	{
-		int sz = a_.length();
-		if (a_.length()>0)
+		if (!a_.empty())
 		{
-           return boost::lexical_cast<int>(a_)-1;
+           return boost::lexical_cast<int>(a_.length())-1;
 		}
 		else
 			return 0;
@@ -124,7 +123,7 @@ namespace utils {
 		XmlUtils::replace_all( a, L"$", L"");
         XmlUtils::GetUpper(a);
 		
-        for (int i = 0; i < a.length(); i++)
+        for (size_t i = 0; i < a.length(); i++)
 		{
             if (a[i] >= L'0' && a[i] <= L'9')
                 row += a[i];
@@ -136,12 +135,12 @@ namespace utils {
 	}
     static void parsing_ref (std::wstring ref, int & col,int & row)
 	{
-		int pos = ref.rfind(L"!");//oox table name
+		int pos = (int)ref.rfind(L"!");//oox table name
 		if (pos >= 0)
 			ref = ref.substr(pos + 1);
 		else
 		{
-			pos = ref.rfind(L".");//odf table name
+			pos = (int)ref.rfind(L".");//odf table name
 			if (pos >= 0)
 				ref = ref.substr(pos + 1);
 		}
@@ -241,7 +240,7 @@ public:
 	void start_group(office_element_ptr & elm);
 	void end_group();
 		
-    int current_level() {return current_level_.size()-1;}
+    int current_level() {return (int)current_level_.size()-1;}
 
 	void start_headers(office_element_ptr & elm);
 	void end_headers();

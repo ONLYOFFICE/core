@@ -308,20 +308,20 @@ namespace PPTX
 											bool bBase64 = false;
 											
 											strOrigBase64 = strUrl;
-											int nFind = strUrl.find(_T(","));
+											int nFind = (int)strUrl.find(_T(","));
 
 											std::wstring sImageExtension;
 
 											std::wstring sFormatDataString = XmlUtils::GetLower(strUrl.substr(5,nFind-5));
 											{
-												int nFind1 = sFormatDataString.find(_T("base64"));
+												int nFind1 = (int)sFormatDataString.find(_T("base64"));
 												if (nFind1 >=0 ) bBase64 = true;
 												
-												nFind1 = sFormatDataString.find(_T("image/"));
-												if (nFind1>=0)
+												nFind1 = (int)sFormatDataString.find(_T("image/"));
+												if (nFind1 >= 0)
 												{
-													int nFind2 = sFormatDataString.find(_T(";"));
-													if (nFind2 < 0) nFind2  = sFormatDataString.length();
+													int nFind2 = (int)sFormatDataString.find(_T(";"));
+													if (nFind2 < 0) nFind2  = (int)sFormatDataString.length();
 											
 													sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
 												}
@@ -329,7 +329,7 @@ namespace PPTX
 											strUrl.erase(0, nFind + 1);
 
 											std::string __s = std::string(strUrl.begin(), strUrl.end());
-											int len = __s.length();
+											int len = (int)__s.length();
 											BYTE* pDstBuffer = NULL;
 											int dstLen = 0;
 

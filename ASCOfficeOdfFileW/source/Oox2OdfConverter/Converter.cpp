@@ -52,6 +52,9 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+
 #define PROGRESSEVENT_ID	0
 
 namespace Oox2Odf
@@ -132,6 +135,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 		switch(oox_unknown->getType())
 		{
+			case OOX::et_dgm_DiagrammParts:
+			{
+				OOX::Drawing::CDiagrammParts* pDiagrammParts = static_cast<OOX::Drawing::CDiagrammParts*>(oox_unknown);
+				convert(pDiagrammParts);
+			}break;
 			case OOX::et_a_Shape:
 			{
 				OOX::Drawing::CShape* pShape = static_cast<OOX::Drawing::CShape*>(oox_unknown);
@@ -252,6 +260,24 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				//бяка
 			}break;
+		//et_p_spPr,			// <p:spPr>
+		//et_p_style,			// <p:style>
+		//et_p_groupSpPr,		// <p:grpSpPr>
+		//et_p_NvGrpSpPr,
+		//et_p_cNvPr,
+		//et_p_xfrm,
+
+			case PPTX::et_p_ShapeTree:
+			{
+				PPTX::Logic::SpTree *spTree = static_cast<PPTX::Logic::SpTree *>(oox_unknown);
+				convert(spTree);				
+			}break;
+
+			case PPTX::et_p_Shape:
+			{
+				PPTX::Logic::Shape *shape = static_cast<PPTX::Logic::Shape *>(oox_unknown);
+				convert(shape);				
+			}break;
 
 			default:
 			{
@@ -322,6 +348,47 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 	odf_context()->drawing_context()->end_shape();
 	
 	odf_context()->drawing_context()->end_drawing();
+}
+
+void OoxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
+{
+	if (oox_diagramm == NULL)return;
+	if (oox_diagramm->m_oRId_Data.IsInit() == false) return;
+
+	smart_ptr<OOX::File> oFile = find_file_by_id(oox_diagramm->m_oRId_Data->GetValue());
+	
+	NSCommon::nullable<std::wstring> id_drawing;
+
+	if (oFile.IsInit())
+	{
+		OOX::CDiagramData* pDiagData = dynamic_cast<OOX::CDiagramData*>(oFile.operator->());
+		
+        if ((pDiagData) && (pDiagData->m_oExtLst.IsInit()))
+		{
+			for (int i = 0 ; i < pDiagData->m_oExtLst->m_arrExt.size(); i++)
+			{
+				if ( pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
+				{
+					id_drawing = pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
+					break;
+				}
+			}
+		}
+	}
+	if (id_drawing.is_init() == false) return;
+
+	oFile = find_file_by_id( *id_drawing );
+
+	if (oFile.is_init() && OOX::FileTypes::DiagDrawing == oFile->type())
+	{
+        OOX::CDiagramDrawing * diag_drawing = dynamic_cast<OOX::CDiagramDrawing*>(oFile.operator->());
+
+		oox_current_child_document = diag_drawing;
+
+		convert(diag_drawing->m_oShapeTree.GetPointer());
+
+		oox_current_child_document = NULL;
+	}
 }
 
 void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
@@ -694,7 +761,7 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->m_oW.GetValue(), oox_geom_path->m_oH.GetValue());
 
-	for (unsigned int i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
+	for (size_t i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
 	{
 		convert(oox_geom_path->m_arrItems[i]);
 	}

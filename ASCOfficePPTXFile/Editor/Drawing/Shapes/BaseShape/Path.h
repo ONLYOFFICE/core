@@ -967,7 +967,7 @@ namespace NSPresentationEditor
         {
             m_eRuler = oSrc.m_eRuler;
             m_arPoints.clear();
-            for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
             {
                 m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
             }
@@ -1282,7 +1282,7 @@ namespace NSPresentationEditor
             LONG lValue;
             bool bRes = true;
 
-            for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
             {
                 lValue = GetValue(oArray[nIndex], eParamType, bRes);
                 if (bRes)
@@ -1291,7 +1291,7 @@ namespace NSPresentationEditor
                     {
                     case ptFormula:
                     {
-                        if (0 <= lValue && lValue < pManager.m_arResults.size())
+                        if (0 <= lValue && lValue < (LONG)pManager.m_arResults.size())
                         {
                             lValue = pManager.m_arResults[lValue];
                         }
@@ -1303,7 +1303,7 @@ namespace NSPresentationEditor
                     }
                     case ptAdjust:
                     {
-                        if (0 <= lValue && lValue < pManager.m_pAdjustments->size())
+                        if (0 <= lValue && lValue < (LONG)pManager.m_pAdjustments->size())
                         {
                             lValue = (*(pManager.m_pAdjustments))[lValue];
                         }
@@ -1364,8 +1364,7 @@ namespace NSPresentationEditor
 
             //pRenderer->BeginCommand(c_nPathType);
 
-            int nSlises = m_arSlices.size();
-            for (int nIndex = 0; nIndex < nSlises; ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arSlices.size(); ++nIndex)
             {
                 m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
             }
@@ -1383,8 +1382,7 @@ namespace NSPresentationEditor
             pRenderer->m_dWidthMM	= pInfo.m_lMillimetresHor;
             pRenderer->m_dHeightMM	= pInfo.m_lMillimetresVer;
 
-            int nSlises = m_arSlices.size();
-            for (int nIndex = 0; nIndex < nSlises; ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arSlices.size(); ++nIndex)
             {
                 m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
             }
@@ -1399,7 +1397,7 @@ namespace NSPresentationEditor
             height = oSrc.height;
 
             m_arSlices.clear();
-            for (int nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
             {
                 m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
             }
@@ -1433,7 +1431,7 @@ namespace NSPresentationEditor
             std::vector<std::wstring> oArray;
             boost::algorithm::split(oArray, strPath, boost::algorithm::is_any_of(L"e"), boost::algorithm::token_compress_on);
 
-            for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
             {
                 CPartPath oPath;
                 m_arParts.push_back(oPath);
@@ -1444,7 +1442,7 @@ namespace NSPresentationEditor
         std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
         {
             std::wstring strResult = _T("");
-            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 strResult += m_arParts[nIndex].ToXml(pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
             }
@@ -1458,8 +1456,7 @@ namespace NSPresentationEditor
             oPath.Pen	= pPen;
             oPath.Brush	= pFore;
 
-            int nSize = m_arParts.size();
-            for (int nIndex = 0; nIndex < nSize; ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 oPath.Clear();
                 m_arParts[nIndex].ToRenderer(&oPath, pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
@@ -1471,7 +1468,7 @@ namespace NSPresentationEditor
         CPath& operator =(const CPath& oSrc)
         {
             m_arParts.clear();
-            for (int nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
             {
                 m_arParts.push_back(oSrc.m_arParts[nIndex]);
             }
@@ -1480,7 +1477,7 @@ namespace NSPresentationEditor
 
         void SetCoordsize(LONG lWidth, LONG lHeight)
         {
-            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
             {
                 m_arParts[nIndex].width		= lWidth;
                 m_arParts[nIndex].height	= lHeight;

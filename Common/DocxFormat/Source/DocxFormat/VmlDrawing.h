@@ -240,7 +240,7 @@ namespace OOX
 								{
 									_vml_shape element;
 									
-									element.nId			= m_arrItems.size()-1;
+									element.nId			= (int)m_arrItems.size()-1;
 									element.sXml		= elementContent;
 									element.pElement	= pItem;
 
@@ -290,10 +290,10 @@ namespace OOX
 				// Zigmunds.pptx
 				while(true)
 				{
-					int res1 = fileContent.find(_T("<!["));
+					int res1 = (int)fileContent.find(_T("<!["));
 					if (res1 < 0) break;
 
-					int res2 = fileContent.find(_T(">"), res1);
+					int res2 = (int)fileContent.find(_T(">"), res1);
 
 					if (res1 >=0 && res2>=0)
 					{

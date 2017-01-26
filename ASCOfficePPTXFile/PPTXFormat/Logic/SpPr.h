@@ -57,7 +57,11 @@ namespace PPTX
 			explicit SpPr(XmlUtils::CXmlNode& node);
 			const SpPr& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_spPr;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 

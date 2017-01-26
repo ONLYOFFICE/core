@@ -137,11 +137,11 @@ namespace OOX
 					else if ( _T("graphicFrame") == sName )
 					{
 						m_oGraphicFrame = oReader;
-						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->m_oChartGraphic.IsInit()) && 
-															(m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.IsInit()))
+						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->m_oGraphic.IsInit()) && 
+															(m_oGraphicFrame->m_oGraphic->m_oGraphicData.IsInit()))
 						{
 							//вытащим выше ссылку на объект (для удобства)
-							m_sSpId = m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_sSpId;
+							m_sSpId = m_oGraphicFrame->m_oGraphic->m_oGraphicData->m_sSpId;
 						}
 					}
 	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
@@ -186,7 +186,7 @@ namespace OOX
 								if ((m_oShape.IsInit()) && (m_oShape->m_oNvSpPr.IsInit()) && 
 									(m_oShape->m_oNvSpPr->m_oCNvPr.IsInit()) && (m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst.IsInit()))
 								{
-									for (int i=0; i < m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt.size();i++)
+									for (size_t i=0; i < m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt.size();i++)
 									{
 										OOX::Drawing::COfficeArtExtension* pExt = m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt[i];
 										if (pExt->m_oCompatExt.IsInit() && pExt->m_oCompatExt->m_sSpId.IsInit())
@@ -298,11 +298,11 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 
 			// для pptx:ObjectDrawingConverter
-			nullable<std::wstring>								m_oXml;
-			nullable<SimpleTypes::COnOff<>>						m_oAlternateContent;
+			nullable<std::wstring>							m_oXml;
+			nullable<SimpleTypes::COnOff<>>					m_oAlternateContent;
 
 			//для удобства
-			nullable<std::wstring>								m_sSpId;
+			nullable<std::wstring>							m_sSpId;
 		};
 	} //Spreadsheet
 } // namespace OOX

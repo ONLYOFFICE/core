@@ -509,7 +509,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				bool isValid = false;
-				for(int i = 0; i < m_arrItems.size(); ++i)
+				for(size_t i = 0; i < m_arrItems.size(); ++i)
 				{
 					if(m_arrItems[i]->isValid())
 					{

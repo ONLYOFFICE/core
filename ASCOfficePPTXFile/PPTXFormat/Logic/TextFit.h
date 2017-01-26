@@ -73,7 +73,7 @@ namespace PPTX
 
 					if (sFontScale.is_init())
 					{
-                        int nFound = sFontScale->rfind(wchar_t('%'));
+                        int nFound = (int)sFontScale->rfind(wchar_t('%'));
 						if (nFound < 0)
 							fontScale = *sFontScale;
 						else
@@ -87,7 +87,7 @@ namespace PPTX
 
 					if (sLnSpcRed.is_init())
 					{
-                        int nFound = sLnSpcRed->rfind(wchar_t('%'));
+                        int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
 						if (nFound < 0)
 							lnSpcReduction = *sLnSpcRed;
 						else
@@ -123,7 +123,7 @@ namespace PPTX
 
 					if (sFontScale.is_init())
 					{
-                        int nFound = sFontScale->rfind(wchar_t('%'));
+                        int nFound = (int)sFontScale->rfind(wchar_t('%'));
 						if (nFound < 0)
 							fontScale = *sFontScale;
 						else
@@ -137,7 +137,7 @@ namespace PPTX
 
 					if (sLnSpcRed.is_init())
 					{
-                        int nFound = sLnSpcRed->rfind(wchar_t('%'));
+                        int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
 						if (nFound < 0)
 							lnSpcReduction = *sLnSpcRed;
 						else

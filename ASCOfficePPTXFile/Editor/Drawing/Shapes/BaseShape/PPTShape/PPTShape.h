@@ -288,7 +288,8 @@ public:
         std::wstring strXml = xml;
         if (0 == strXml.find((wchar_t)','))
             strXml = (_T("defaultAdj") + strXml);
-        LONG lLastIndex = strXml.length() - 1;
+        
+		LONG lLastIndex = (LONG)strXml.length() - 1;
 
         if (lLastIndex >= 0 && lLastIndex == strXml.rfind((wchar_t)','))
         {
@@ -300,13 +301,13 @@ public:
         boost::algorithm::split(arAdj, strXml, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
         std::vector<long> oOldAdj;
-        int nOldLen = m_arAdjustments.size();
+        size_t nOldLen = m_arAdjustments.size();
 
-        for (int ii = 0; ii < nOldLen; ++ii)
+        for (size_t ii = 0; ii < nOldLen; ++ii)
             oOldAdj.push_back(m_arAdjustments[ii]);
 
         m_arAdjustments.clear();
-        for (int nIndex = 0; nIndex < arAdj.size(); ++nIndex)
+        for (size_t nIndex = 0; nIndex < arAdj.size(); ++nIndex)
         {
             if (_T("defaultAdj") == arAdj[nIndex])
             {
@@ -321,7 +322,7 @@ public:
             }
         }
 
-        int newLen = m_arAdjustments.size();
+        int newLen = (int)m_arAdjustments.size();
         for (int i = newLen; i < nOldLen; ++i)
             m_arAdjustments.push_back(oOldAdj[i]);
         return true;
@@ -440,7 +441,7 @@ public:
 
     virtual bool SetAdjustment(long index, long value)
     {
-        if (index < m_arAdjustments.size() && index >= 0)
+        if (index < (long)m_arAdjustments.size() && index >= 0)
         {
             m_arAdjustments[index] =  value;
             return TRUE;
@@ -613,7 +614,7 @@ protected:
 
         if (bFormula)
         {
-            if (lValue >= 0 || lValue < m_oManager.m_arResults.size())
+            if (lValue >= 0 || lValue < (LONG)m_oManager.m_arResults.size())
             {
                 lValue = m_oManager.m_arResults[lValue];
                 return true;

@@ -258,7 +258,7 @@ void CSvmFile::Read_META_LINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
+			last_pen->Width = static_cast<int>(line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2));
 
 			switch(line_info.style)
 			{
@@ -291,12 +291,12 @@ void CSvmFile::Read_SVM_HEADER()
 	
 	if (m_bMainStream)
 	{	
-		m_oBoundingBox			 = m_oHeader.boundRect;
-		m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered		* 2; 
-		m_oBoundingBox.nBottom	*= m_pDC->m_dPixelHeightPrefered	* 2; 
+		m_oBoundingBox			= m_oHeader.boundRect;
+		m_oBoundingBox.nRight	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* 2 * m_oBoundingBox.nRight); 
+		m_oBoundingBox.nBottom	= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* 2 * m_oBoundingBox.nBottom); 
 			
-		m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered		* 2; 
-		m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered	* 2;
+		m_oBoundingBox.nLeft	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* 2 * m_oBoundingBox.nLeft); 
+		m_oBoundingBox.nTop		= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* 2 * m_oBoundingBox.nTop);
 	}// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 		
 	m_bFirstPoint = true;
@@ -348,7 +348,7 @@ void CSvmFile::Read_META_POLYLINE()
 
 	MoveTo(polygon.points[0].x + m_oCurrnetOffset.x, polygon.points[0].y + m_oCurrnetOffset.y);
 
-	for (int i = 1; i < polygon.points.size(); i++)
+	for (size_t i = 1; i < polygon.points.size(); i++)
 	{
 		LineTo(polygon.points[i].x + m_oCurrnetOffset.x, polygon.points[i].y + m_oCurrnetOffset.y);
 	}
@@ -366,7 +366,7 @@ void CSvmFile::Read_META_POLYGON()
 
 	MoveTo(polygon.points[0].x + m_oCurrnetOffset.x, polygon.points[0].y + m_oCurrnetOffset.y);
 
-	for (int i = 1; i < polygon.points.size(); i++)
+	for (size_t i = 1; i < polygon.points.size(); i++)
 	{
 		LineTo(polygon.points[i].x + m_oCurrnetOffset.x, polygon.points[i].y + m_oCurrnetOffset.y);
 	}
@@ -561,7 +561,7 @@ void CSvmFile::Read_META_ARRAYTEXT()
 		const unsigned int nIntAryLen = (std::max)(nArrayLen, (unsigned int)nLen) ;
 		mpDXAry = new int[ nIntAryLen ];
         
-        int i=0;
+        unsigned int i=0;
 		for( i = 0; i < nArrayLen; i++ )
 			m_oStream >> mpDXAry[ i ];
 
@@ -1073,8 +1073,8 @@ void CSvmFile::Read_META_BMPSCALE()
 	}
 	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
 
-	if (bitmap_info.nHeight >  m_oBoundingBox.nBottom &&
-			bitmap_info.nWidth > m_oBoundingBox.nRight && !m_pOutput)
+	if (bitmap_info.nHeight >  (unsigned int)m_oBoundingBox.nBottom &&
+			bitmap_info.nWidth > (unsigned int)m_oBoundingBox.nRight && !m_pOutput)
 	{
 		m_oBoundingBox.nRight = bitmap_info.nWidth;
 		m_oBoundingBox.nBottom = bitmap_info.nHeight;

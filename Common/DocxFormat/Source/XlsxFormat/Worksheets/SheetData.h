@@ -343,15 +343,15 @@ namespace OOX
 					}
 					NSStringExt::Replace(sSheetPrefix, L"''", L"'");
 
-					int nIndexWbStart = sSheetPrefix.find('[');
-					int nIndexWbEnd = sSheetPrefix.find(']');
+					int nIndexWbStart = (int)sSheetPrefix.find('[');
+					int nIndexWbEnd = (int)sSheetPrefix.find(']');
 
 					if (-1 != nIndexWbStart && -1 != nIndexWbEnd)
 					{
 						workbook = sSheetPrefix.substr(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
 						sSheetPrefix = sSheetPrefix.substr(nIndexWbEnd + 1, sSheetPrefix.length() - nIndexWbEnd - 1);
 					}
-					int nIndexColon = sSheetPrefix.find(':');
+					int nIndexColon = (int)sSheetPrefix.find(':');
 					if (-1 != nIndexColon)
 					{
 						sheetFrom = sSheetPrefix.substr(0, nIndexColon);
@@ -368,7 +368,7 @@ namespace OOX
 					sCellRef = sRef;
 				}
 				NSStringExt::Replace(sCellRef, L"$", L"");
-				int nIndexColon = sCellRef.find(':');
+				int nIndexColon = (int)sCellRef.find(':');
 				if (std::wstring::npos != nIndexColon)
 				{
 					bRes = parseRef(sCellRef.substr(0, nIndexColon), nRow1, nCol1) && parseRef(sCellRef.substr(nIndexColon + 1, sCellRef.length() - nIndexColon - 1), nRow2, nCol2);
@@ -387,7 +387,7 @@ namespace OOX
 
 				nRow = 0;
 				nCol = 0;
-				int nLegnth = sRef.length();
+				int nLegnth = (int)sRef.length();
 				if (nLegnth > 0)
 				{
 					int nIndex = 0;
@@ -402,7 +402,7 @@ namespace OOX
 					{
 						std::wstring sAdd = sRef.substr(0, nIndex);
 						std::wstring sDig = sRef.substr(nIndex, nLegnth - nIndex);
-						for (int i = 0, length = sAdd.length(); i < length; ++i)
+						for (size_t i = 0, length = sAdd.length(); i < length; ++i)
 						{
 							nCol = nCol * 26 + sAdd[i] - 'A' + 1;
 						}
@@ -469,7 +469,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -488,11 +488,13 @@ namespace OOX
 				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
 				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
 				writer.WriteString(_T(">"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
+				
 				writer.WriteString(_T("</row>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -565,18 +567,20 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<sheetData>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
+				
 				writer.WriteString(_T("</sheetData>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

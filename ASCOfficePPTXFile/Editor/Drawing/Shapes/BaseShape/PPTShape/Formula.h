@@ -302,7 +302,7 @@ namespace NSGuidesVML
             std::vector<std::wstring> oArrayParams;
             boost::algorithm::split(oArrayParams, strFormula, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-            int nCount = oArrayParams.size();
+            int nCount = (int)oArrayParams.size();
             if (0 >= nCount)
                 return;
 
@@ -354,12 +354,12 @@ namespace NSGuidesVML
             m_lShapeHeight	= oSrc.m_lShapeHeight;
 
             m_arResults.clear();
-            for (int nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
             {
                 m_arResults.push_back(oSrc.m_arResults[nIndex]);
             }
             m_arFormulas.clear();
-            for (int nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
             {
                 m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
             }
@@ -383,27 +383,29 @@ namespace NSGuidesVML
 
             //m_arFormulas.clear();
             //m_arResults.clear();
-            for (int nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
             {
                 m_arResults[nIndex] = 0xFFFFFFFF;
             }
         }
         void AddFormula(std::wstring strFormula)
         {
-            CFormula oFormula(m_arFormulas.size());
+            CFormula oFormula((int)m_arFormulas.size());
+
             oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
             m_arFormulas.push_back(oFormula);
             m_arResults.push_back(0xFFFFFFFF);
         }
         void AddFormula(CFormula oFormula)
         {
-            oFormula.m_lIndex = m_arFormulas.size();
-            m_arFormulas.push_back(oFormula);
+            oFormula.m_lIndex = (int)m_arFormulas.size();
+            
+			m_arFormulas.push_back(oFormula);
             m_arResults.push_back(0xFFFFFFFF);
         }
         void CalculateResults()
         {
-            for (int index = 0; index < m_arFormulas.size(); ++index)
+            for (size_t index = 0; index < m_arFormulas.size(); ++index)
             {
                 LONG lResult = m_arFormulas[index].Calculate(this);
             }

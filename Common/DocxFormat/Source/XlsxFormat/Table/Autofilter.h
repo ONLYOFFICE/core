@@ -112,7 +112,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -125,13 +125,13 @@ namespace OOX
 					WritingStringNullableAttrBool(L"caseSensitive", m_oCaseSensitive);
 					writer.WriteString(L">");
 
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(L"</sortState>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -349,7 +349,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -361,12 +361,14 @@ namespace OOX
 					if (m_oAnd.IsInit() && true == m_oAnd->ToBool())
 						writer.WriteString(L" and=\"1\"");
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(L"</customFilters>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -531,7 +533,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -543,13 +545,13 @@ namespace OOX
 					WritingStringNullableAttrBool(L"blank", m_oBlank);
 					writer.WriteString(_T(">"));
 
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</filters>"));
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -764,8 +766,10 @@ namespace OOX
 					writer.WriteString(L"<autoFilter");
 					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					if(m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
 					writer.WriteString(L"</autoFilter>");

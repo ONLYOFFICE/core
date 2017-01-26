@@ -1702,7 +1702,7 @@ namespace BinXlsxRW {
 					m_oBufferedStream.Seek(nStartPos);
 
                     std::string sSignature("XLST");
-                    int nSignatureSize      = sSignature.length();
+                    int nSignatureSize      = (int)sSignature.length();
                     int nDataLengthSize     = sizeof(long);
                     int nJunkSize           = 2;
                     int nWriteBufferLength  = nSignatureSize + nDataLengthSize + length + nJunkSize;
@@ -3748,7 +3748,7 @@ namespace BinXlsxRW {
 					//проверяем формат
 					bool bValidFormat = false;
                     std::wstring sSignature(g_sFormatSignature);
-                    int nSigLength = sSignature.length();
+                    size_t nSigLength = sSignature.length();
 					if(nBase64DataSize > nSigLength)
 					{
                         std::string sCurSig((char*)pBase64Data, nSigLength);
@@ -3905,7 +3905,7 @@ namespace BinXlsxRW {
 				}
 
 				OOX::Spreadsheet::CWorkbook* pWorkbook = oXlsx.CreateWorkbook();
-				for(int i = 0, length = aTypes.size(); i < length; ++i)
+				for(size_t i = 0, length = aTypes.size(); i < length; ++i)
 				{
 					BYTE mtiType = aTypes[i];
 					long mtiOffBits = aOffBits[i];

@@ -78,6 +78,7 @@ namespace OOX
 		class CGroupShape;
 		class CCommentItem;
 		class CGraphicFrame;
+		class CGraphicChart;
 		class CDefinedName;
 		class CConditionalFormatting;
 		class CConditionalFormattingRule;
@@ -138,6 +139,7 @@ namespace Oox2Odf
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual OOX::CTheme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
+		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
@@ -199,6 +201,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
 		void convert(OOX::Spreadsheet::CGraphicFrame				*oox_graphic_frame);
 		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
+		void convert(OOX::Spreadsheet::CGraphicChart				*oox_chart, double width, double height);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

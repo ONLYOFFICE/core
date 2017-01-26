@@ -277,10 +277,10 @@ namespace NSShapeImageGen
 		CImageInfo WriteImage(const std::wstring& strFile, const std::wstring& strOleFile, double& x, double& y, double& width, double& height)
 		{
 			bool bIsDownload = false;
-			int n1 = strFile.find (L"www");
-			int n2 = strFile.find (L"http");
-			int n3 = strFile.find (L"ftp");
-			int n4 = strFile.find (L"https");
+			int n1 = (int)strFile.find (L"www");
+			int n2 = (int)strFile.find (L"http");
+			int n3 = (int)strFile.find (L"ftp");
+			int n4 = (int)strFile.find (L"https");
 
             //если nI сранивать не с 0, то будут проблемы
             //потому что в инсталяции мы кладем файлы в /var/www...

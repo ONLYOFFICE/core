@@ -144,7 +144,7 @@ namespace NSBinPptxRW
 		int nRes = 0;
 		//шаблон display[N]image.ext
 		std::wstring sFind1 = _T("display");
-		int nIndex1 = strInput.find(sFind1);
+		int nIndex1 = (int)strInput.find(sFind1);
 		if(-1 != nIndex1)
 		{
 			if(nIndex1 + sFind1.length() < strInput.length())
@@ -152,8 +152,8 @@ namespace NSBinPptxRW
                 wchar_t cRes = strInput[nIndex1 + sFind1.length()];
 				if('1' <= cRes && cRes <= '6')
 				{
-					int nImageIndex = nIndex1 + sFind1.length() + 1;
-					if(nImageIndex == strInput.find(_T("image"), nImageIndex))
+					int nImageIndex = nIndex1 + (int)sFind1.length() + 1;
+					if(nImageIndex == (int)strInput.find(_T("image"), nImageIndex))
 						nRes = cRes - '0';
 				}
 
@@ -172,7 +172,7 @@ namespace NSBinPptxRW
 			return pPair->second;
 
 		std::wstring strExts = _T(".jpg");
-        int nIndexExt = strInput.rfind(wchar_t('.'));
+        int nIndexExt = (int)strInput.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
 			strExts = strInput.substr(nIndexExt);
 
@@ -241,9 +241,12 @@ namespace NSBinPptxRW
 			std::string sDataUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sData.c_str(), sData.size());
 			BYTE head[] = {0x00,0x00,0x00,0x00};
 			//LittleEndian
-			unsigned char* aData = (unsigned char*)sDataUtf8.c_str();
-			_UINT32 nDataSize = sDataUtf8.size();
+			
+			unsigned char*	aData		= (unsigned char*)sDataUtf8.c_str();			
+			_UINT32			nDataSize	= (_UINT32)sDataUtf8.size();
+
 			memcpy(head, &nDataSize, sizeof(_UINT32));
+
 			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
 			oStream.write(head, arraysize(head));
 			oStream.write(aData, nDataSize);
@@ -322,10 +325,10 @@ namespace NSBinPptxRW
 
 	bool CImageManager2::IsNeedDownload(const std::wstring& strFile)
 	{
-		int n1 = strFile.find(_T("www"));
-		int n2 = strFile.find(_T("http"));
-		int n3 = strFile.find(_T("ftp"));
-		int n4 = strFile.find(_T("https://"));
+		size_t n1 = strFile.find(_T("www"));
+		size_t n2 = strFile.find(_T("http"));
+		size_t n3 = strFile.find(_T("ftp"));
+		size_t n4 = strFile.find(_T("https://"));
 
         //если nI сранивать не с 0, то будут проблемы
         //потому что в инсталяции мы кладем файлы в /var/www...
@@ -341,7 +344,7 @@ namespace NSBinPptxRW
 			return pPair->second;
 
 		std::wstring strExts = _T(".jpg");
-        int nIndexExt = strUrl.rfind(wchar_t('.'));
+        int nIndexExt = (int)strUrl.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
 			strExts = strUrl.substr(nIndexExt);
 
@@ -632,15 +635,15 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteBYTEArray(const BYTE* pBuffer, size_t len)
 	{
-		CheckBufferSize(len);
+		CheckBufferSize((_UINT32)len);
 		memcpy(m_pStreamCur, pBuffer, len);
 		m_lPosition += (_UINT32)len;
 		m_pStreamCur += len;
 	}
 	void CBinaryFileWriter::WriteStringA(std::string& sBuffer)
 	{
-		_INT32 lSize = sBuffer.length();
-		_INT32 lSizeMem = lSize * sizeof(char);
+		_UINT32 lSize		= (_UINT32)sBuffer.length();
+		_UINT32 lSizeMem	= lSize * sizeof(char);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
 #ifdef _IOS
@@ -652,32 +655,33 @@ namespace NSBinPptxRW
 		m_pStreamCur += UINT32_SIZEOF;
 
 		memcpy(m_pStreamCur, sBuffer.c_str(), lSizeMem);
+		
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
 	void CBinaryFileWriter::WriteStringW(std::wstring& sBuffer)
 	{
-		_WriteStringWithLength(sBuffer.c_str(), sBuffer.length(), true);
+		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
 	void CBinaryFileWriter::WriteStringW(const std::wstring& sBuffer)
 	{
-		_WriteStringWithLength(sBuffer.c_str(), sBuffer.length(), true);
+		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
 	void CBinaryFileWriter::WriteStringW2(std::wstring& sBuffer)
 	{
-        _WriteStringWithLength(sBuffer.c_str(), sBuffer.length(), false);
+        _WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), false);
 	}
     void CBinaryFileWriter::WriteStringW3(std::wstring& sBuffer)
 	{
-		_WriteString(sBuffer.c_str(), sBuffer.length());
+		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
     void CBinaryFileWriter::WriteStringW3(const std::wstring& sBuffer)
 	{
-		_WriteString(sBuffer.c_str(), sBuffer.length());
+		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
 	void CBinaryFileWriter::WriteStringW4(const std::wstring& sBuffer)
 	{
-        _WriteString(sBuffer.c_str(), sBuffer.length());
+        _WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
@@ -724,7 +728,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileWriter::WriteReserved(size_t lCount)
 	{
-		CheckBufferSize(lCount);
+		CheckBufferSize((_UINT32)lCount);
 		memset(m_pStreamCur, 0, lCount);
 		m_pStreamCur += lCount;
 		m_lPosition += (_UINT32)lCount;
@@ -754,7 +758,7 @@ namespace NSBinPptxRW
 		WriteBYTE(bType);
 
 		std::wstring* s = const_cast<std::wstring*>(&val);
-		_WriteStringWithLength(s->c_str(), s->length(), false);
+		_WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
 	void CBinaryFileWriter::WriteString2(int type, const NSCommon::nullable_string& val)
 	{
@@ -764,7 +768,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteString(const std::wstring& val)
 	{
 		std::wstring* s = const_cast<std::wstring*>(&val);
-        _WriteStringWithLength(s->c_str(), s->length(), false);
+        _WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
 
 	void CBinaryFileWriter::WriteString1Data(int type, const WCHAR* pData, _UINT32 len)
@@ -1304,7 +1308,7 @@ namespace NSBinPptxRW
 		return m_lNextId;
 	}
 
-	int CBinaryFileReader::Seek(_INT32 _pos)
+	int CBinaryFileReader::Seek(LONG _pos)
 	{
 		if (_pos > m_lSize)
 			return 1;
@@ -1312,13 +1316,13 @@ namespace NSBinPptxRW
 		m_pDataCur = m_pData + m_lPos;
 		return 0;
 	}
-	int CBinaryFileReader::Skip(_INT32 _skip)
+	int CBinaryFileReader::Skip(LONG _skip)
 	{
 		if (_skip < 0)
 			return 1;
 		return Seek(m_lPos + _skip);
 	}
-	bool CBinaryFileReader::Peek(int nSizeToRead = 0)
+	bool CBinaryFileReader::Peek(LONG nSizeToRead = 0)
 	{
 		return !(m_lPos + nSizeToRead > m_lSize);
 	}
@@ -1424,7 +1428,7 @@ namespace NSBinPptxRW
 	}	// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
-        if (m_lPos + DOUBLE_SIZEOF > m_lSize)
+        if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
             return 0;
 #ifdef _IOS
         double res = 0.0;
@@ -1552,12 +1556,12 @@ namespace NSBinPptxRW
 		Skip(_len);
 	}
 
-	_INT32 CBinaryFileReader::GetPos()
+	LONG CBinaryFileReader::GetPos()
 	{
 		return m_lPos;
 	}
 
-	_INT32 CBinaryFileReader::GetSize()
+	LONG CBinaryFileReader::GetSize()
 	{
 		return m_lSize;
 	}

@@ -460,28 +460,27 @@ namespace NSBinPptxRW
 	class CBinaryFileReader
 	{
 	private:
-		BYTE* m_pData;
-		_INT32 m_lSize;
-		_INT32 m_lPos;
-		BYTE* m_pDataCur;
+		BYTE*	m_pData;
+		LONG	m_lSize;
+		LONG	m_lPos;
+		BYTE*	m_pDataCur;
 
 		_INT32 m_lNextId;
 
 	public:
 		//CRelsGenerator m_oRels;
-		std::wstring m_strFolder;
-		std::wstring m_strFolderThemes;
-		std::wstring m_strFolderExternalThemes;
+		std::wstring	m_strFolder;
+		std::wstring	m_strFolderThemes;
+		std::wstring	m_strFolderExternalThemes;
 
-		_INT32 m_lChartNumber;
-		std::wstring m_strContentTypes;
+		_INT32			m_lChartNumber;
+		std::wstring	m_strContentTypes;
 
 		BinDocxRW::CDocxSerializer* m_pMainDocument;
+		_INT32						m_lDocumentType;
 
-		_INT32		m_lDocumentType;
-
-		CRelsGenerator* m_pRels;
-		std::vector<CRelsGenerator*> m_stackRels;
+		CRelsGenerator*					m_pRels;
+		std::vector<CRelsGenerator*>	m_stackRels;
 		int m_nCurrentRelsStack;
 	
 	public:
@@ -496,9 +495,9 @@ namespace NSBinPptxRW
 
 	public:
 
-		int Seek(_INT32 _pos);
-		int Skip(_INT32 _skip);
-		bool Peek(int nSizeToRead);
+		int Seek	(LONG _pos);
+		int Skip	(LONG _skip);
+		bool Peek	(LONG nSizeToRead);
 		
 		// 1 bytes
 		BYTE GetUChar();
@@ -531,9 +530,9 @@ namespace NSBinPptxRW
 		std::string GetString2A();
 		void SkipRecord();
 
-		_INT32 GetPos();
+		LONG GetPos();
 
-		_INT32 GetSize();
+		LONG  GetSize();
 
 		BYTE* GetData();
 		BYTE* GetPointer(int nSize);

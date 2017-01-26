@@ -124,8 +124,6 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( oFileName ));
-	
-		////
 		else if (oRelation.Type() == FileTypes::Data)			
 			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
@@ -197,7 +195,6 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( oFileName ));
-////
 		else if (pRelation->Type() == FileTypes::Data)
 			return smart_ptr<OOX::File>(new CDiagramData( oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)

@@ -58,7 +58,10 @@ namespace PPTX
 				nvPr		= oSrc.nvPr;
 				return *this;
 			}
-
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_NvGrpSpPr;
+			}
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			//{

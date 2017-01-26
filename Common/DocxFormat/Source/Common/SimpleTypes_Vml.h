@@ -2621,17 +2621,17 @@ namespace SimpleTypes
                     this->m_eValue = vmldashstyleCustom;
 
 						std::wstring sTemp = sValue;
-						for ( int nIndex = 0; nIndex < sValue.length(); nIndex++ )
+						for ( size_t nIndex = 0; nIndex < sValue.length(); nIndex++ )
 						{
 							int nChar = sValue[nIndex ];
 							if ( ' ' == nChar )
 								continue;
 
-                            int nEndPos = sValue.find( _T(" "), nIndex );
+                            int nEndPos = (int)sValue.find( _T(" "), nIndex );
 							if ( -1 == nEndPos )
-								nEndPos = sValue.length();
+								nEndPos = (int)sValue.length();
 
-							int nLen = nEndPos - nIndex;
+							int nLen = (int)(nEndPos - nIndex);
 
 							if ( nLen <= 0 )
 								continue;
@@ -2719,7 +2719,7 @@ namespace SimpleTypes
 
 			virtual double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
@@ -2801,11 +2801,11 @@ namespace SimpleTypes
 				m_nY = 0;
 				m_nZ = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -2814,7 +2814,7 @@ namespace SimpleTypes
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
-                    int nPos2 = sValue.find( _T(","), nPos + 1 );
+                    int nPos2 = (int)sValue.find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
@@ -2883,11 +2883,11 @@ namespace SimpleTypes
 				m_nY = 0;
 				m_nZ = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -2896,7 +2896,7 @@ namespace SimpleTypes
 
                     m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
-                int nPos2 = sValue.find( _T(","), nPos + 1 );
+                int nPos2 = (int)sValue.find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
 					return 0;
 
@@ -2959,11 +2959,11 @@ namespace SimpleTypes
 				m_nX = 0;
 				m_nY = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				
 				if ( -1 == nPos )
 				{
@@ -3031,11 +3031,11 @@ namespace SimpleTypes
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -3072,7 +3072,7 @@ namespace SimpleTypes
 			}
 			int GetSize() const
 			{
-				return m_arrPoints.size();
+				return (int)m_arrPoints.size();
 			}
 
 			int GetX(int nIndex) const
@@ -3100,15 +3100,15 @@ namespace SimpleTypes
 			{
 				m_arrPoints.clear();
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				int nStartPos = 0;
 				while ( true )
 				{
-                    int nMidPos = sValue.find( _T(","), nStartPos );
-                    int nEndPos = sValue.find( _T(","), nMidPos + 1 );
+                    int nMidPos = (int)sValue.find( _T(","), nStartPos );
+                    int nEndPos = (int)sValue.find( _T(","), nMidPos + 1 );
 
 					if ( -1 == nMidPos )
 						break;
@@ -3176,7 +3176,7 @@ namespace SimpleTypes
 		static std::wstring RemoveWhiteSpaces(const std::wstring &sText)
 		{
 			std::wstring result;
-			for (int i = 0 ; i < sText.length(); i++)
+			for (size_t i = 0 ; i < sText.length(); i++)
 			{
 				if (XmlUtils::IsUnicodeSymbol(sText[i]) == true)
 				{
@@ -3479,7 +3479,7 @@ namespace SimpleTypes
 
 			void Parse(std::wstring &sBuffer)
 			{
-                int nPos = sBuffer.find( ':' );
+                int nPos = (int)sBuffer.find( ':' );
 				std::wstring sValue;
 
 				if ( -1 == nPos )
@@ -3742,11 +3742,11 @@ namespace SimpleTypes
 			void ReadValue_Units(std::wstring& sValue)
 			{
 				int nPos = -1;
-				if ( -1 != ( nPos = sValue.find(_T("auto" ) ) ) )
+				if ( -1 != ( nPos = (int)sValue.find(_T("auto" ) ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeAuto;
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("in") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("in") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3755,7 +3755,7 @@ namespace SimpleTypes
 
 					m_oValue.oValue.dValue = Inch_To_Pt(dValue);
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("cm") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("cm") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3764,7 +3764,7 @@ namespace SimpleTypes
 
 					   m_oValue.oValue.dValue = Cm_To_Pt(dValue);
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("mm") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("mm") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3773,15 +3773,15 @@ namespace SimpleTypes
 
 					   m_oValue.oValue.dValue = Mm_To_Pt(dValue);
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("em") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("em") ) ) )
 				{
 					// TO DO: Реализовать единицы 'em'
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("ex") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("ex") ) ) )
 				{
 					// TO DO: Реализовать единицы 'ex'
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("pt") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("pt") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3790,7 +3790,7 @@ namespace SimpleTypes
 
 					   m_oValue.oValue.dValue = dValue;
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("pc") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("pc") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3799,14 +3799,14 @@ namespace SimpleTypes
 
 					   m_oValue.oValue.dValue = dValue * 12;
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("%") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("%") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypePerc;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
                        m_oValue.oValue.dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
 				}
-                else if ( -1 != ( nPos = sValue.find( _T("px") ) ) )
+                else if ( -1 != ( nPos = (int)sValue.find( _T("px") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
@@ -3953,7 +3953,7 @@ namespace SimpleTypes
 			}
 			void ReadValue_String(std::wstring& sValue)
 			{
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen > 127 )
 					return;
 
@@ -4102,7 +4102,7 @@ namespace SimpleTypes
 				std::wstring sTemp = m_sCss;
 				while ( sTemp.length() > 0 )
 				{
-                    int nPos = sTemp.find( ';' );
+                    int nPos = (int)sTemp.find( ';' );
 					if ( -1 == nPos )
 					{
 						CCssProperty *oProperty = new CCssProperty(sTemp);
@@ -4170,11 +4170,11 @@ namespace SimpleTypes
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -4232,11 +4232,11 @@ namespace SimpleTypes
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -4294,11 +4294,11 @@ namespace SimpleTypes
 				m_dX = 0;
 				m_dY = 0;
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -4354,7 +4354,7 @@ namespace SimpleTypes
 			int FromString(std::wstring &sValue)
 			{
 				int nPos = 0;
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 
 				int nSpacePos = 0;
 				wchar_t wChar;
@@ -4367,7 +4367,7 @@ namespace SimpleTypes
 							return 0;
 					}
 
-                    nSpacePos = sValue.find( _T(" "), nPos );
+                    nSpacePos = (int)sValue.find( _T(" "), nPos );
 					if ( -1 == nSpacePos )
 						nSpacePos = nLen;
 
@@ -4502,11 +4502,11 @@ namespace SimpleTypes
 
 			double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = sValue.find( _T(",") );
+                int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 
@@ -4566,7 +4566,7 @@ namespace SimpleTypes
 
                 XmlUtils::replace_all( sValue, _T(" "), _T("") );
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen > 0 )
 				{
 
@@ -4725,15 +4725,15 @@ namespace SimpleTypes
 			{
 				m_arrPoints.clear();
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				int nStartPos = 0;
 				while ( true )
 				{
-                    int nMidPos = sValue.find( _T(","), nStartPos );
-                    int nEndPos = sValue.find( m_wcDelimiter, nMidPos + 1 );
+                    int nMidPos = (int)sValue.find( _T(","), nStartPos );
+                    int nEndPos = (int)sValue.find( m_wcDelimiter, nMidPos + 1 );
 
 					if ( -1 == nMidPos )
 						break;
@@ -4824,7 +4824,7 @@ namespace SimpleTypes
 
 			virtual double FromString(std::wstring &sValue)
 			{
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
@@ -4956,13 +4956,13 @@ namespace SimpleTypes
 			{
 				ResetMatrix();
 
-				int nLen = sValue.length();
+				int nLen = (int)sValue.length();
 				if ( nLen <= 0 )
 					return 0;
 
 				// Sxx
 				int nStartPos = 0;
-                int nEndPos = sValue.find( _T(","), nStartPos );
+                int nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -4974,7 +4974,7 @@ namespace SimpleTypes
 
 				// Sxy
 				nStartPos = nEndPos + 1;
-                nEndPos = sValue.find( _T(","), nStartPos );
+                nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -4986,7 +4986,7 @@ namespace SimpleTypes
 
 				// Syx
 				nStartPos = nEndPos + 1;
-                nEndPos = sValue.find( _T(","), nStartPos );
+                nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -4998,7 +4998,7 @@ namespace SimpleTypes
 
 				// Syy
 				nStartPos = nEndPos + 1;
-                nEndPos = sValue.find( _T(","), nStartPos );
+                nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5010,7 +5010,7 @@ namespace SimpleTypes
 
 				// Px
 				nStartPos = nEndPos + 1;
-                nEndPos = sValue.find( _T(","), nStartPos );
+                nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5022,7 +5022,7 @@ namespace SimpleTypes
 
 				// Py
 				nStartPos = nEndPos + 1;
-                nEndPos = sValue.find( _T(","), nStartPos );
+                nEndPos = (int)sValue.find( _T(","), nStartPos );
 				if ( -1 == nEndPos )
 					nEndPos = nLen;
 
@@ -5106,7 +5106,7 @@ namespace SimpleTypes
 				if ( nLen < 1)
 					return 0;
 
-				int nPos = sValue.find( _T(",") );
+				int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
 					return 0;
 

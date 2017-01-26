@@ -1058,7 +1058,12 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
                         m_pBinaryWriter->m_lCxCurShape = oNodeExt.ReadAttributeInt(L"cx");
                         m_pBinaryWriter->m_lCyCurShape = oNodeExt.ReadAttributeInt(L"cy");
 					}
+					XmlUtils::CXmlNode oNodeDocPr;
+					if (oNodeAnchorInline.GetNode(L"wp:docPr", oNodeDocPr))
+					{//vml shapes without id .. reset all id 
+						oNodeDocPr.SetAttributeInt(L"id", m_lNextId++);
 
+					}
 					SendMainProps(oNodeAnchorInline.GetXml(), pMainProps);
 
                     XmlUtils::CXmlNode oNodeGraphic		= oNodeAnchorInline.ReadNodeNoNS(L"graphic");

@@ -477,7 +477,7 @@ public:
     virtual bool SetAdjustment(long index, long value)
     {
         FManager.Clear();
-        if (index < m_arAdjustments.size() && index >=0)
+        if (index < (long)m_arAdjustments.size() && index >=0)
         {
             m_arAdjustments[index] = value;
             return TRUE;

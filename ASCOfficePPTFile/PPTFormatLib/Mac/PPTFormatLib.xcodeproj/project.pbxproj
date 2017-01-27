@@ -40,7 +40,6 @@
 		6967B00D1E279D8D00A129E2 /* ShapeWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeWriter.cpp; sourceTree = "<group>"; };
 		6967B00E1E279D8D00A129E2 /* ShapeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeWriter.h; sourceTree = "<group>"; };
 		6967B00F1E279D8D00A129E2 /* StylesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StylesWriter.h; sourceTree = "<group>"; };
-		6967B0111E279D8D00A129E2 /* AudioOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioOverlay.h; sourceTree = "<group>"; };
 		6967B0121E279D8D00A129E2 /* ClassesAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassesAtom.h; sourceTree = "<group>"; };
 		6967B0131E279D8D00A129E2 /* CommonZLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonZLib.h; sourceTree = "<group>"; };
 		6967B0141E279D8D00A129E2 /* PPTDocumentInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPTDocumentInfo.h; sourceTree = "<group>"; };
@@ -214,7 +213,6 @@
 		6967B0101E279D8D00A129E2 /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				6967B0111E279D8D00A129E2 /* AudioOverlay.h */,
 				6967B0121E279D8D00A129E2 /* ClassesAtom.h */,
 				6967B0131E279D8D00A129E2 /* CommonZLib.h */,
 				6967B0141E279D8D00A129E2 /* PPTDocumentInfo.h */,

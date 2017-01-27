@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Page.h"
 
 namespace NSDocxRenderer
@@ -160,7 +160,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			*dDpiY = m_dDpiY;
 			return S_OK;
 		}
-		//-------- Функции для задания настроек текста ----------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ Р·Р°РґР°РЅРёСЏ РЅР°СЃС‚СЂРѕРµРє С‚РµРєСЃС‚Р° ----------------------------------------------
 		// pen --------------------------------------------------------------------------------------
 		AVSINLINE HRESULT SetPen(BSTR bsXML)
 		{
@@ -561,7 +561,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			return S_OK;
 		}
 
-		//-------- Функции для вывода текста --------------------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 		AVSINLINE HRESULT CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
 		{
 			double dAngleMatrix = m_oTransform.z_Rotation();
@@ -596,7 +596,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			m_oCurrentPage.WriteText(bsUnicodeText, bsGidText, fX, fY, fWidth, fHeight, fBaseLineOffset, m_bIsNeedPDFTextAnalyzer);
 			return S_OK;
 		}
-		//-------- Маркеры для команд ---------------------------------------------------------------
+		//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 		AVSINLINE HRESULT BeginCommand(DWORD lType)
 		{
 			m_lCurrentCommandType = (LONG)lType;
@@ -611,7 +611,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 			if (c_nPageType == lType)
 			{
-				// нужно записать страницу в файл
+				// РЅСѓР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ РІ С„Р°Р№Р»
 				m_oCurrentPage.Build();
 				m_oCurrentPage.Write(m_oWriter);
 			}
@@ -622,7 +622,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 			return S_OK;
 		}
-		//-------- Функции для работы с Graphics Path -----------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 		AVSINLINE HRESULT PathCommandMoveTo(double fX, double fY)
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
@@ -759,7 +759,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			ApplyTransform2(dAngle, dLeft, dTop, dWidth, dHeight, lFlags);
 			return S_OK;
 		}
-		//-------- Функции для вывода изображений --------------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ --------------------------------------------------
 		AVSINLINE HRESULT DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
 		{
 			CImageInfo oInfo = m_oManager.WriteImage(pInterface, fX, fY, fWidth, fHeight);
@@ -955,7 +955,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 		void Close()
 		{
-			// сохраним rels (images & docs)
+			// СЃРѕС…СЂР°РЅРёРј rels (images & docs)
 			CFile oFile;
 			oFile.CreateFile(m_strTempDirectory + _T("\\word\\_rels\\document.xml.rels"));
 
@@ -1017,7 +1017,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			oFile.WriteStringUTF8(oWriter.GetData());
 			oFile.CloseFile();
 
-			// сохраним fontTable
+			// СЃРѕС…СЂР°РЅРёРј fontTable
 			CFile oFileFontTable;
 			oFileFontTable.CreateFile(m_strTempDirectory + _T("\\word\\fontTable.xml"));
 

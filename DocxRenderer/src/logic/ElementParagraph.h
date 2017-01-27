@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Common.h"
 
 #include "FontManager.h"
@@ -7,7 +7,7 @@ namespace NSDocxRenderer
 {
 	const double c_dMMToDx	 = 72 * 20 / 25.4;
 
-	// у класса T должен быть метод IsBigger, IsBiggerOrEqual
+	// Сѓ РєР»Р°СЃСЃР° T РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјРµС‚РѕРґ IsBigger, IsBiggerOrEqual
 	template<typename T> 
     void SortElements(CArray<T*>& oArray)
 	{
@@ -262,7 +262,7 @@ namespace NSDocxRenderer
 					m_strText += _T(" ");
 				}
 
-				// нужно перемерять...
+				// РЅСѓР¶РЅРѕ РїРµСЂРµРјРµСЂСЏС‚СЊ...
 				double ___dSize = (double)((LONG)(m_oFont.Size * 2)) / 2;
 				pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, FALSE);
 				double dWidth = pManagerLight->MeasureStringWidth(m_strText);
@@ -450,7 +450,7 @@ namespace NSDocxRenderer
 
 		AVSINLINE void SortConts()
 		{
-			// сортировка непрерывных слов по m_dX
+			// СЃРѕСЂС‚РёСЂРѕРІРєР° РЅРµРїСЂРµСЂС‹РІРЅС‹С… СЃР»РѕРІ РїРѕ m_dX
 			SortElements(m_arConts);
 		}
 
@@ -503,19 +503,19 @@ namespace NSDocxRenderer
 
 				if (dDelta < 0.5)
 				{
-					// просто текст на тексте или сменились настройки (font/brush)
+					// РїСЂРѕСЃС‚Рѕ С‚РµРєСЃС‚ РЅР° С‚РµРєСЃС‚Рµ РёР»Рё СЃРјРµРЅРёР»РёСЃСЊ РЅР°СЃС‚СЂРѕР№РєРё (font/brush)
 					pPrev->Write(oWriter, pManagerLight);
 					pPrev  = pCurrent;
 				}
 				//else if (dDelta < 2 * pPrev->m_dSpaceWidthMM)
 				//{
-				//	// сменились настройки, но пробел все-таки вставить нужно
+				//	// СЃРјРµРЅРёР»РёСЃСЊ РЅР°СЃС‚СЂРѕР№РєРё, РЅРѕ РїСЂРѕР±РµР» РІСЃРµ-С‚Р°РєРё РІСЃС‚Р°РІРёС‚СЊ РЅСѓР¶РЅРѕ
 				//	pPrev->Write(oWriter, pManagerLight, true);
 				//	pPrev = pCurrent;
 				//}
 				else
 				{
-					// расстояние слишком большое. нужно сделать большой пробел
+					// СЂР°СЃСЃС‚РѕСЏРЅРёРµ СЃР»РёС€РєРѕРј Р±РѕР»СЊС€РѕРµ. РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ Р±РѕР»СЊС€РѕР№ РїСЂРѕР±РµР»
 					pPrev->Write(oWriter, pManagerLight);
 					pPrev->WriteTo(dDelta, oWriter, pManagerLight);
 					pPrev = pCurrent;

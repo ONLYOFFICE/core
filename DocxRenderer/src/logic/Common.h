@@ -1,4 +1,4 @@
-#ifndef DOCX_RENDERER_COMMON_H
+﻿#ifndef DOCX_RENDERER_COMMON_H
 #define DOCX_RENDERER_COMMON_H
 
 #include "../DesktopEditor/common/StringBuilder.h"

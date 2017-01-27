@@ -1,4 +1,4 @@
-#ifndef DOCX_RENDERER_FMB_H
+п»ї#ifndef DOCX_RENDERER_FMB_H
 #define DOCX_RENDERER_FMB_H
 
 #include "Common.h"
@@ -136,7 +136,7 @@ namespace NSFontManager
 
 		CFontAdvanced					m_oFont;
 
-		//для подбора шрифтов
+		//РґР»СЏ РїРѕРґР±РѕСЂР° С€СЂРёС„С‚РѕРІ
 		BYTE							m_pRanges[0xFFFF];
 		BYTE							m_pRangesNums[0xFFFF];
 
@@ -323,7 +323,7 @@ namespace NSFontManager
 
 		void LoadFontParams(BOOL bIsPath = TRUE)
 		{
-			// читаем и выставляем все настройки шрифта
+			// С‡РёС‚Р°РµРј Рё РІС‹СЃС‚Р°РІР»СЏРµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё С€СЂРёС„С‚Р°
 			if (NULL == m_pManager)
 				return;
 
@@ -414,7 +414,7 @@ namespace NSFontManager
 			memset(m_pRanges, 0xFF, 0xFFFF);
 			memset(m_pRangesNums, 0xFF, 0xFFFF);
 
-			// теперь просто по порядку заполняем все рэнджи
+			// С‚РµРїРµСЂСЊ РїСЂРѕСЃС‚Рѕ РїРѕ РїРѕСЂСЏРґРєСѓ Р·Р°РїРѕР»РЅСЏРµРј РІСЃРµ СЂСЌРЅРґР¶Рё
 			int nStart = 0;
 			int nCount = 0;
 			
@@ -862,7 +862,7 @@ namespace NSFontManager
 			memset(m_pRanges + nStart, 24, nCount);
 			memset(m_pRangesNums + nStart, 1, nCount);
 
-            //case 25: sUCRName = "Non-Plane 0"; break; /* U+D800-U+DB7F */ /* U+DB80-U+DBFF */ /* U+DC00-U+DFFF */ // Не юникодные символы
+            //case 25: sUCRName = "Non-Plane 0"; break; /* U+D800-U+DB7F */ /* U+DB80-U+DBFF */ /* U+DC00-U+DFFF */ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
 			nStart = 0xD800;
 			nCount = 0xDB7F - nStart + 1;
 			memset(m_pRanges + nStart, 25, nCount);
@@ -911,7 +911,7 @@ namespace NSFontManager
 			memset(m_pRanges + nStart, 27, nCount);
 			memset(m_pRangesNums + nStart, 1, nCount);
 
-            //case 28: sUCRName = "Private Use Area (plane 0)"; break; /* U+E000-U+F8FF */ // Не юникодные символы
+            //case 28: sUCRName = "Private Use Area (plane 0)"; break; /* U+E000-U+F8FF */ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
 			nStart = 0xE000;
 			nCount = 0xF8FF - nStart + 1;
 			memset(m_pRanges + nStart, 28, nCount);
@@ -1112,7 +1112,7 @@ namespace NSFontManager
             //case 23: sUCRName = "Deseret"; break; /*U+10400-U+1044F*/
             //case 24: sUCRName = "Byzantine Musical Symbols"; break; /*U+1D000-U+1D0FF*/ /*U+1D100-U+1D1FF*/ /*U+1D200-U+1D24F*/
             //case 25: sUCRName = "Mathematical Alphanumeric Symbols"; break; /*U+1D400-U+1D7FF*/
-            //case 26: sUCRName = "Private Use (plane 15)"; break; /*U+F0000-U+FFFFD*/ /*U+100000-U+10FFFD*/ // Не юникодные символы
+            //case 26: sUCRName = "Private Use (plane 15)"; break; /*U+F0000-U+FFFFD*/ /*U+100000-U+10FFFD*/ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
             
 			//case 27: sUCRName = "Variation Selectors"; break; /* U+FE00-U+FE0F */ /*U+E0100-U+E01EF*/
 			nStart = 0xFE00;
@@ -1301,8 +1301,8 @@ namespace NSFontManager
 				CFontPickUp& oPick = m_arListPicUps.GetNext(pos);
 				if ((oPick.m_oFont.m_oFont.IsEqual3(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
 				{
-					// нашли! ничего подбирать не нужно
-					// нужно просто выкинуть этот шрифт наверх
+					// РЅР°С€Р»Рё! РЅРёС‡РµРіРѕ РїРѕРґР±РёСЂР°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ
+					// РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РІС‹РєРёРЅСѓС‚СЊ СЌС‚РѕС‚ С€СЂРёС„С‚ РЅР°РІРµСЂС…
 					m_arListPicUps.MoveToHead(posOld);
 					m_strCurrentPickFont = oPick.m_strPickFont;
 					m_lCurrentPictFontStyle = oPick.m_lPickStyle;
@@ -1310,7 +1310,7 @@ namespace NSFontManager
 				}
 			}
 
-			// не нашли...
+			// РЅРµ РЅР°С€Р»Рё...
 			m_arListPicUps.AddHead();
 			CFontPickUp& oPick = m_arListPicUps.GetHead();
 
@@ -1340,7 +1340,7 @@ namespace NSFontManager
 			}
 			else if (((lRangeNum == 2) && (lRange == 3)) || ((lRangeNum == 1) && (lRange == 31)) || ((lRangeNum == 0) && (lRange == 13)))
 			{
-				// ебаный арабский язык!!!
+				// РµР±Р°РЅС‹Р№ Р°СЂР°Р±СЃРєРёР№ СЏР·С‹Рє!!!
 				dwR1 = 1 << 13;
 				dwR2 = 1 << 31;
 				dwR3 = 1 << 3;

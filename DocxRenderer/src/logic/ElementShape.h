@@ -1,4 +1,4 @@
-#ifndef DOCX_RENDERER_ELEMENT_SHAPE_H
+п»ї#ifndef DOCX_RENDERER_ELEMENT_SHAPE_H
 #define DOCX_RENDERER_ELEMENT_SHAPE_H
 
 #include "Common.h"
@@ -58,7 +58,7 @@ namespace NSDocxRenderer
 				double* pRealloc = (double*)realloc(m_pData, m_lSize * sizeof(double));
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}

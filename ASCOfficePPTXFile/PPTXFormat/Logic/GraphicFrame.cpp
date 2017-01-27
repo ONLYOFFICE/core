@@ -295,7 +295,7 @@ namespace PPTX
 				std::wstring *main_props = NULL;
 
 				oDrawingConverter.SetRelsPath(xml_object_rels);
-				oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)&xfrm, sizeof(xfrm));
+                oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
 				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
 				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)

@@ -6219,7 +6219,7 @@ namespace BinDocxRW
 		}
 		void GetTableSize(std::vector<OOX::WritingElement *>& rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr)
 		{
-			for(size_t i = rows.size() - 1; i >= 0; i--)
+            for(int i = (int)rows.size() - 1; i >= 0; i--)
 			{
 				OOX::WritingElement* item = rows[i];
 				if(OOX::et_w_tblPr == item->getType())

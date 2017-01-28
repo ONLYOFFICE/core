@@ -2587,7 +2587,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>                                     m_oId;
+			nullable<std::wstring>                                m_oId;
 			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
 			SimpleTypes::Vml::CVml_TextBoxInset                   m_oInset;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oSingleClick;

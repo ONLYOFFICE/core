@@ -262,13 +262,6 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				//бяка
 			}break;
-		//et_p_spPr,			// <p:spPr>
-		//et_p_style,			// <p:style>
-		//et_p_groupSpPr,		// <p:grpSpPr>
-		//et_p_NvGrpSpPr,
-		//et_p_cNvPr,
-		//et_p_xfrm,
-
 			case OOX::et_p_ShapeTree:
 			{
 				PPTX::Logic::SpTree *spTree = static_cast<PPTX::Logic::SpTree *>(oox_unknown);
@@ -280,7 +273,26 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				PPTX::Logic::Shape *shape = static_cast<PPTX::Logic::Shape *>(oox_unknown);
 				convert(shape);				
 			}break;
-
+			case OOX::et_p_r:
+			{
+				PPTX::Logic::Run* pRun= static_cast<PPTX::Logic::Run*>(oox_unknown);
+				convert(pRun);
+			}break;
+			case OOX::et_p_fld:
+			{
+				PPTX::Logic::Fld* pFld= static_cast<PPTX::Logic::Fld*>(oox_unknown);
+				convert(pFld);
+			}break;
+			case OOX::et_p_br:
+			{
+				PPTX::Logic::Br* pBr= static_cast<PPTX::Logic::Br*>(oox_unknown);
+				convert(pBr);
+			}break;
+			case OOX::et_p_MathPara:
+			{
+				PPTX::Logic::MathParaWrapper* pMathPara= static_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown);
+				convert(pMathPara);
+			}break;
 			default:
 			{
                 _CP_LOG << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
@@ -339,7 +351,7 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 			odf_context()->start_text_context();
 		
 			convert(oox_shape->m_oTxSp->m_oTxBody->m_oBodyPr.GetPointer());
-			for (unsigned int i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.size();i++)
+			for (size_t i=0 ; i < oox_shape->m_oTxSp->m_oTxBody->m_arrItems.size();i++)
 			{
 				convert(oox_shape->m_oTxSp->m_oTxBody->m_arrItems[i]);
 			}
@@ -367,7 +379,7 @@ void OoxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 		
         if ((pDiagData) && (pDiagData->m_oExtLst.IsInit()))
 		{
-			for (int i = 0 ; i < pDiagData->m_oExtLst->m_arrExt.size(); i++)
+			for (size_t i = 0 ; i < pDiagData->m_oExtLst->m_arrExt.size(); i++)
 			{
 				if ( pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 				{
@@ -383,12 +395,23 @@ void OoxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 
 	if (oFile.is_init() && OOX::FileTypes::DiagDrawing == oFile->type())
 	{
-        OOX::CDiagramDrawing * diag_drawing = dynamic_cast<OOX::CDiagramDrawing*>(oFile.operator->());
+ 		_CP_OPT(double) x, y, width, height, cx = 0, cy = 0;
+
+		odf_context()->drawing_context()->get_size (width, height);
+		odf_context()->drawing_context()->get_position (x, y);
+
+		OOX::CDiagramDrawing * diag_drawing = dynamic_cast<OOX::CDiagramDrawing*>(oFile.operator->());
 
 		oox_current_child_document = diag_drawing;
 
+		odf_context()->drawing_context()->start_group();
+
+		odf_context()->drawing_context()->set_group_size (width, height, width, height);
+		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
+
 		convert(diag_drawing->m_oShapeTree.GetPointer());
 
+		odf_context()->drawing_context()->end_group();
 		oox_current_child_document = NULL;
 	}
 }
@@ -408,7 +431,7 @@ void OoxConverter::convert(OOX::Drawing::CLockedCanvas  *oox_canvas)
 		convert(oox_canvas->m_oGroupSpPr.GetPointer());
 		convert(oox_canvas->m_oSpPr.GetPointer());
 
-		for (unsigned int i=0; i < oox_canvas->m_arrItems.size(); i++)
+		for (size_t i = 0; i < oox_canvas->m_arrItems.size(); i++)
 		{
 			convert(oox_canvas->m_arrItems[i]);
 		}
@@ -455,7 +478,6 @@ void OoxConverter::convert(OOX::Drawing::CGroupShapeProperties *   oox_group_spP
 		if (oox_group_spPr->m_oXfrm->m_oRot.GetValue() > 0)
 			odf_context()->drawing_context()->set_group_rotate(oox_group_spPr->m_oXfrm->m_oRot.GetValue());
 	}
-
 }
 void OoxConverter::convert(OOX::Drawing::CFontReference *style_font_ref)
 {
@@ -604,13 +626,13 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 	}
 	switch(oox_spPr->m_eGeomType)
 	{
-	case OOX::Drawing::geomtypeCustom :
+		case OOX::Drawing::geomtypeCustom :
 			if(oox_spPr->m_oCustGeom.IsInit())convert(oox_spPr->m_oCustGeom.GetPointer());break;
-	case OOX::Drawing::geomtypePreset:
+		case OOX::Drawing::geomtypePreset:
 			if(oox_spPr->m_oPrstGeom.IsInit())convert(oox_spPr->m_oPrstGeom.GetPointer());break;
-	case OOX::Drawing::geomtypeUnknown:
-	default:
-		break;
+		case OOX::Drawing::geomtypeUnknown:
+		default:
+			break;
 	}
 	odf_context()->drawing_context()->start_area_properties();
 	{
@@ -668,16 +690,16 @@ void OoxConverter::convert(OOX::Drawing::CNonVisualDrawingProps * oox_cnvPr)
 		odf_context()->drawing_context()->set_name(name);
 	}
 
-    //nullable<std::wstring>                               m_sDescr;
-	//nullable<SimpleTypes::COnOff<>>                 m_oHidden;
-    //nullable<std::wstring>                               m_sTitle;
+    //nullable<std::wstring>				m_sDescr;
+	//nullable<SimpleTypes::COnOff<>>		m_oHidden;
+    //nullable<std::wstring>				m_sTitle;
 }
 
 void OoxConverter::convert(OOX::Drawing::CCustomGeometry2D *oox_cust_geom)
 {
 	if (!oox_cust_geom)return;
 
-	for (unsigned int i=0; i< oox_cust_geom->m_oPthLst.m_arrPath.size();i++)
+	for (size_t i = 0; i < oox_cust_geom->m_oPthLst.m_arrPath.size(); i++)
 	{
 		convert(oox_cust_geom->m_oPthLst.m_arrPath[i]);
 	}
@@ -704,9 +726,9 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, std::ws
 		if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit() || oox_line_prop->m_oHeadEnd->m_oType.IsInit() || oox_line_prop->m_oHeadEnd->m_oW.IsInit())
 		{
 			int type = 0, w=1, len =1;//medium arrow
-			if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit())		len = oox_line_prop->m_oHeadEnd->m_oLen->GetValue();
-			if (oox_line_prop->m_oHeadEnd->m_oType.IsInit())	type = oox_line_prop->m_oHeadEnd->m_oType->GetValue();
-			if (oox_line_prop->m_oHeadEnd->m_oW.IsInit())		w=oox_line_prop->m_oHeadEnd->m_oW->GetValue();
+			if (oox_line_prop->m_oHeadEnd->m_oLen.IsInit())		len		= oox_line_prop->m_oHeadEnd->m_oLen->GetValue();
+			if (oox_line_prop->m_oHeadEnd->m_oType.IsInit())	type	= oox_line_prop->m_oHeadEnd->m_oType->GetValue();
+			if (oox_line_prop->m_oHeadEnd->m_oW.IsInit())		w		= oox_line_prop->m_oHeadEnd->m_oW->GetValue();
 			
 			odf_context()->drawing_context()->set_line_head(type, len, w);
 		}
@@ -716,9 +738,9 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, std::ws
 		if (oox_line_prop->m_oTailEnd->m_oLen.IsInit() || oox_line_prop->m_oTailEnd->m_oType.IsInit() || oox_line_prop->m_oTailEnd->m_oW.IsInit())
 		{
 			int type =0, w=1, len =1;//medium arrow
-			if (oox_line_prop->m_oTailEnd->m_oLen.IsInit())		len = oox_line_prop->m_oTailEnd->m_oLen->GetValue();
-			if (oox_line_prop->m_oTailEnd->m_oType.IsInit())	type = oox_line_prop->m_oTailEnd->m_oType->GetValue();
-			if (oox_line_prop->m_oTailEnd->m_oW.IsInit())		w = oox_line_prop->m_oTailEnd->m_oW->GetValue();
+			if (oox_line_prop->m_oTailEnd->m_oLen.IsInit())		len		= oox_line_prop->m_oTailEnd->m_oLen->GetValue();
+			if (oox_line_prop->m_oTailEnd->m_oType.IsInit())	type	= oox_line_prop->m_oTailEnd->m_oType->GetValue();
+			if (oox_line_prop->m_oTailEnd->m_oW.IsInit())		w		= oox_line_prop->m_oTailEnd->m_oW->GetValue();
 			
 			odf_context()->drawing_context()->set_line_tail(type, len, w);
 		}
@@ -750,7 +772,7 @@ void OoxConverter::convert(OOX::Drawing::CPresetGeometry2D *oox_prst_geom)
 
 	if (oox_prst_geom->m_oAvLst.IsInit())
 	{
-		for (unsigned int i=0; i<oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
+		for (size_t i = 0; i < oox_prst_geom->m_oAvLst->m_arrGd.size(); i++)
 		{
 			if (oox_prst_geom->m_oAvLst->m_arrGd[i] == NULL) continue;
 			odf_context()->drawing_context()->add_modifier(oox_prst_geom->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue());
@@ -763,13 +785,12 @@ void OoxConverter::convert(OOX::Drawing::CPath2D *oox_geom_path)
 
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->m_oW.GetValue(), oox_geom_path->m_oH.GetValue());
 
-	for (size_t i =0 ; i< oox_geom_path->m_arrItems.size(); i++)
+	for (size_t i = 0 ; i < oox_geom_path->m_arrItems.size(); i++)
 	{
 		convert(oox_geom_path->m_arrItems[i]);
 	}
 
-	std::wstring path_elm ;	
-	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), path_elm);
+	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), L"");
 
 }
 //-----------------------------------------------------------------------------------------------------------------
@@ -777,7 +798,7 @@ void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, std::wstr
 {
 	if (oox_effect_list == NULL) return;
 
-	for (unsigned int i=0;i< oox_effect_list->m_arrEffects.size(); i++)
+	for (size_t i = 0; i < oox_effect_list->m_arrEffects.size(); i++)
 	{
 		switch(oox_effect_list->m_arrEffects[i]->getType())
 		{
@@ -875,7 +896,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	s
 				sID = oox_bitmap_fill->m_oBlip->m_oLink.GetValue();
 				//...
 			}
-			for (unsigned int i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
+			for (size_t i = 0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
 				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
 		}
 		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
@@ -1037,7 +1058,7 @@ void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fil
 	odf_context()->drawing_context()->end_hatch_style();
 
 }
-void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill,std::wstring & hexColor , _CP_OPT(double) &opacity)
+void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fill, std::wstring & hexColor , _CP_OPT(double) &opacity)
 {
 	switch( oox_solid_fill->m_eType )
 	{
@@ -1049,7 +1070,7 @@ void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fi
 		case OOX::Drawing::colorSys:	convert(&oox_solid_fill->m_oSysClr,		hexColor, opacity);		break;		
 	}	
 }
-void OoxConverter::convert(OOX::Drawing::CColor *oox_color,std::wstring & hexColor , _CP_OPT(double) &opacity)
+void OoxConverter::convert(OOX::Drawing::CColor *oox_color, std::wstring & hexColor , _CP_OPT(double) &opacity)
 {
 	switch( oox_color->m_eType )
 	{
@@ -1081,7 +1102,7 @@ void OoxConverter::convert(OOX::Drawing::CSolidColorFillProperties *oox_solid_fi
 	}
 }
 
-void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform     *oox_Clr,	std::wstring & hexString, _CP_OPT(double) &opacity)
+void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform *oox_Clr,	std::wstring & hexString, _CP_OPT(double) &opacity)
 {
 	if (!oox_Clr)return;
 	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
@@ -1095,18 +1116,15 @@ void OoxConverter::convert(OOX::Drawing::Colors::CColorTransform     *oox_Clr,	s
 	}
 	if (ucA !=255)opacity = (ucA/255.)* 100.;
 }
-void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::wstring & hexString, _CP_OPT(double) &opacity)
+
+bool OoxConverter::convert(int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR)
 {
 	OOX::CTheme * theme= oox_theme();
-	if (!oox_ShemeClr || !theme)return;
-
-	int theme_ind = oox_ShemeClr->m_oVal.GetValue();
-	
-	BYTE ucA=0, ucG=0, ucB=0, ucR =0;
+	if (!theme)return false;
 
 	bool result = false;
 
-	switch(theme_ind)
+	switch(indexSchemeColor)
 	{
 		case SimpleTypes::shemecolorvalLt1:
 		case SimpleTypes::shemecolorvalBg1:
@@ -1137,6 +1155,17 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
 		case SimpleTypes::shemecolorvalHlink:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 	}
+	return result;
+}
+void OoxConverter::convert(OOX::Drawing::CSchemeColor *oox_ShemeClr, std::wstring & hexString, _CP_OPT(double) &opacity)
+{
+	if (!oox_ShemeClr)return;
+
+	int theme_ind = oox_ShemeClr->m_oVal.GetValue();
+
+	BYTE ucA = 0, ucG = 0, ucB = 0, ucR = 0;
+	bool result = convert(theme_ind, ucA, ucG, ucB, ucR);
+
 	if (result == true)
 	{
 		oox_ShemeClr->SetRGBA(ucR,ucG,ucB,ucA);
@@ -1148,7 +1177,7 @@ void OoxConverter::convert(OOX::Drawing::CSchemeColor     *oox_ShemeClr,	std::ws
             hexString = oRgbColor->ToString().substr(2);//.Right(6);
 			delete oRgbColor;
 		}
-		if (ucA !=255)opacity = (ucA/255.)* 100.;
+		if ( ucA != 0xff )opacity = (ucA / 255.) * 100.;
 	}
 }
 void OoxConverter::convert(OOX::Drawing::CPath2DLineTo *oox_geom_path)
@@ -1173,8 +1202,8 @@ void OoxConverter::convert(OOX::Drawing::CPath2DArcTo *oox_geom_path)
 {
 	if (!oox_geom_path) return;
 	
-	//std::wstring path_elm =						std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
-	//						std::wstring(L" ")+ std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
+	//std::wstring path_elm = std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oX.GetValue())) + 
+	// std::wstring(L" ")+ std::to_wstring ((int)pt2emu(oox_geom_path->m_oPt.m_oY.GetValue()));
 	//
 	//odf_context()->drawing_context()->add_path_element(std::wstring(L"A"), path_elm);
 }
@@ -1217,10 +1246,15 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	odf_context()->drawing_context()->set_textarea_writing_mode		(oox_bodyPr->m_oVert.GetValue());
 	odf_context()->drawing_context()->set_textarea_vertical_align	(oox_bodyPr->m_oAnchor.GetValue());
 
-	odf_context()->drawing_context()->set_textarea_padding  (oox_bodyPr->m_oLIns.ToCm(),
-															oox_bodyPr->m_oTIns.ToCm(),
-															oox_bodyPr->m_oRIns.ToCm(),
-															oox_bodyPr->m_oBIns.ToCm());
+	_CP_OPT(double) lIns, tIns, rIns, bIns;
+	
+	lIns = oox_bodyPr->m_oLIns.ToCm();
+	tIns = oox_bodyPr->m_oTIns.ToCm();
+	rIns = oox_bodyPr->m_oRIns.ToCm();
+	bIns = oox_bodyPr->m_oBIns.ToCm();	
+	
+	odf_context()->drawing_context()->set_textarea_padding (lIns, tIns, rIns, bIns);
+
 	odf_context()->drawing_context()->set_textarea_wrap(oox_bodyPr->m_oWrap.GetValue());
 
 	if (oox_bodyPr->m_oNumCol.GetValue() > 1)
@@ -1236,7 +1270,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	}
 	if (oox_bodyPr->m_oFromWordArt.ToBool() && oox_bodyPr->m_oPrstTxWrap.IsInit())
 	{
-		for (unsigned int i=0; i< oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
+		for (size_t i = 0; i < oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd.size(); i++)
 		{
 			if (oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i] == NULL) continue;
 			odf_context()->drawing_context()->add_modifier(oox_bodyPr->m_oPrstTxWrap->m_oAvLst->m_arrGd[i]->m_oFmla.GetValue());
@@ -1367,7 +1401,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 		}
 	}
 }
-void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
+void OoxConverter::convert(OOX::Drawing::CRun *oox_run)
 {
 	if (!oox_run)return;
 
@@ -1497,7 +1531,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 	
 	odf_context()->text_context()->start_paragraph(styled);
 
-	for (unsigned int i=0; i< oox_paragraph->m_arrItems.size();i++)
+	for (size_t i=0; i< oox_paragraph->m_arrItems.size();i++)
 	{
 		convert(oox_paragraph->m_arrItems[i]);
 	}

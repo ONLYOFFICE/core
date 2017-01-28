@@ -55,7 +55,10 @@ namespace PPTX
 
 				return *this;
 			}
-
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_r;
+			}
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

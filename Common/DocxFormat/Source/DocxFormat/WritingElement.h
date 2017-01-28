@@ -335,9 +335,9 @@ namespace OOX
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
 		
-		et_p_cNvPicPr, // <p:cNvPicPr>
-		et_p_cNvPr, // <p:cNvPr>
-		et_p_pic, // <p:pic>
+		et_p_cNvPicPr,		// <p:cNvPicPr>
+		et_p_cNvPr,			// <p:cNvPr>
+		et_p_pic,			// <p:pic>
 		et_p_Shape,			// <p:sp>
 		et_p_ShapeTree,		// <p:spTree>
 		et_p_spPr,			// <p:spPr>
@@ -345,18 +345,22 @@ namespace OOX
 		et_p_groupSpPr,		// <p:grpSpPr>
 		et_p_NvGrpSpPr,
 		et_p_xfrm,
+		et_p_r,
+		et_p_fld,
+		et_p_br,
+		et_p_MathPara,
 
-		et_a_p, // <a:p>
-		et_a_pPr, // <a:pPr>
-		et_a_r, // <a:p>
-		et_a_rPr, // <a:pPr>
-		et_a_t, // <a:t>
-		et_a_br, // <a:br>
-		et_a_spcPts, // <a:spcPts>
-		et_a_spcPct, // <a:spcPct>
-		et_a_spcAft, // <a:spcAft>
-		et_a_spcBef, // <a:spcBef>
-		et_a_lnSpc, // <a:lnSpc>	
+		et_a_p,			// <a:p>
+		et_a_pPr,		// <a:pPr>
+		et_a_r,			// <a:p>
+		et_a_rPr,		// <a:pPr>
+		et_a_t,			// <a:t>
+		et_a_br,		// <a:br>
+		et_a_spcPts,	// <a:spcPts>
+		et_a_spcPct,	// <a:spcPct>
+		et_a_spcAft,	// <a:spcAft>
+		et_a_spcBef,	// <a:spcBef>
+		et_a_lnSpc,		// <a:lnSpc>	
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		

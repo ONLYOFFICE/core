@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../oox_shape_defines.h"
 	//	shapetypeAccentBorderCallout1,
 	//	shapetypeAccentBorderCallout2,
 	//	shapetypeAccentBorderCallout3,

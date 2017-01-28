@@ -201,7 +201,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
 		void convert(OOX::Spreadsheet::CGraphicFrame				*oox_graphic_frame);
 		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
-		void convert(OOX::Spreadsheet::CGraphicChart				*oox_chart, double width, double height);
+		void convert(OOX::Spreadsheet::CGraphicChart				*oox_chart);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

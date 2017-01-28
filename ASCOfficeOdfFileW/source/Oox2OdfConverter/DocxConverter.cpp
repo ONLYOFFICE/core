@@ -2859,7 +2859,7 @@ void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 				odt_context->drawing_context()->start_drawing();				
 				odt_context->drawing_context()->start_object(odf_context()->get_next_name_object());
 
-					double width =0, height =0;
+					_CP_OPT(double) width, height;
 					odt_context->drawing_context()->get_size(width, height);
 
 					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());

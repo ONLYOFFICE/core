@@ -341,7 +341,7 @@ namespace PPTX
 
 		public:
 			nullable<TextParagraphPr>	pPr;
-			std::vector<RunElem>			RunElems;
+			std::vector<RunElem>		RunElems;
 			nullable<RunProperties>		endParaRPr;
 		protected:
 			virtual void FillParentPointersForChilds()

@@ -198,7 +198,7 @@ namespace PPTX
 
 		public:
 			int					id;
-			std::wstring				name;
+			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;
 			nullable_string		title;

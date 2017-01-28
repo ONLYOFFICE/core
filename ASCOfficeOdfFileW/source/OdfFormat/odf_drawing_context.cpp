@@ -177,6 +177,8 @@ struct odf_drawing_state
 		svg_width_			= boost::none;
 
 		name_				= L"";
+		description_		= L"";
+		hidden_				= false;
 		z_order_			= -1;
 		
 		rotateAngle			= boost::none;
@@ -201,9 +203,10 @@ struct odf_drawing_state
 	_CP_OPT(length) svg_height_;
 	_CP_OPT(length) svg_width_;	
 
-
-	std::wstring name_;
-	int z_order_;
+	std::wstring	name_;
+	std::wstring	description_;
+	int				z_order_;
+	bool			hidden_;
 
 	_CP_OPT(double) rotateAngle;
 
@@ -342,10 +345,12 @@ void odf_drawing_context::start_group()
 	if (group== NULL)return;
 
 	//если группа топовая - то данные если не записать - сотруться
-	if (impl_->current_drawing_state_.name_.length() > 0)
+	if (!impl_->current_drawing_state_.name_.empty())
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	if (impl_->current_drawing_state_.z_order_ >= 0)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+	if (!impl_->current_drawing_state_.name_.empty())
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 
 	impl_->current_drawing_state_.name_		= L"";
 	impl_->current_drawing_state_.z_order_	= -1;
@@ -956,9 +961,9 @@ void odf_drawing_context::end_frame()
 /////////////////////
 void odf_drawing_context::start_element(office_element_ptr & elm, office_element_ptr  style_elm)
 {
-	int level = impl_->current_level_.size();
+	int level = (int)impl_->current_level_.size();
 	
-	if (impl_->current_level_.size()>0)
+	if (impl_->current_level_.size() > 0)
 		impl_->current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
@@ -968,13 +973,13 @@ void odf_drawing_context::start_element(office_element_ptr & elm, office_element
 		style_name = style_->style_name_;
 		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
 
-		if (impl_->current_drawing_state_.name_.length() < 1)
+		if (impl_->current_drawing_state_.name_.empty())
 		{
 			impl_->current_drawing_state_.name_ = std::wstring(L"Object_") + style_name;
 		}
 	}
 
-	odf_element_state state={elm, style_name, style_elm, level};
+	odf_element_state state = {elm, style_name, style_elm, level};
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
@@ -1009,9 +1014,17 @@ void odf_drawing_context::end_line_properties()
 //	impl_->current_drawing_part_ = Unknown;
 //}
 ////////////////////////////////////////////////////////////////////
-void odf_drawing_context::set_name(std::wstring  name)
+void odf_drawing_context::set_name(const std::wstring & name)
 {
 	impl_->current_drawing_state_.name_ = name;
+}
+void odf_drawing_context::set_description (const std::wstring & description)
+{
+	impl_->current_drawing_state_.description_ = description;
+}
+void odf_drawing_context::set_hidden (bool bVal)
+{
+	impl_->current_drawing_state_.hidden_ = bVal;
 }
 void odf_drawing_context::set_opacity(double percent_)
 {
@@ -1125,7 +1138,7 @@ void odf_drawing_context::set_path(std::wstring path_string)
 	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
 	//impl_->current_drawing_state_.path_ = path_string;
 }
-void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
+void odf_drawing_context::add_path_element(std::wstring command, const std::wstring & strE)
 {
 	if (command != impl_->current_drawing_state_.path_last_command_)
 	{
@@ -1500,7 +1513,19 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 	if (y2_pt && !line->draw_line_attlist_.svg_y2_) line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt,length::pt).get_value_unit(length::cm),length::cm);
 
 }
-
+void odf_drawing_context::get_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
+{
+	if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
+	{
+		x_pt	= impl_->current_drawing_state_.svg_x_->get_value_unit(length::pt);
+		y_pt	= impl_->current_drawing_state_.svg_y_->get_value_unit(length::pt);
+	}
+	else if (impl_->anchor_settings_.svg_x_ && impl_->anchor_settings_.svg_y_)
+	{
+		x_pt	= impl_->anchor_settings_.svg_x_->get_value_unit(length::pt);
+		y_pt	= impl_->anchor_settings_.svg_y_->get_value_unit(length::pt);
+	}
+}
 void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
 	if (x_pt)
@@ -1516,7 +1541,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		}
 		if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group)
 		{
-			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
 		}	
 	}
 	
@@ -1538,7 +1563,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		}
 	}
 }
-void odf_drawing_context::get_size( double & width_pt, double & height_pt)
+void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
 	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 	{
@@ -1550,7 +1575,6 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 		width_pt	= impl_->anchor_settings_.svg_width_->get_value_unit(length::pt);
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
-
 }
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
@@ -1840,14 +1864,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 
 }
 
-void odf_drawing_context::set_textarea_padding(double left,double top, double right,double bottom)//in cm
+void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in cm
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(left,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(top,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(right,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(bottom,length::cm);
+	if (left)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(*left,	length::cm);
+	if (top)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(*top,	length::cm);
+	if (right)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(*right,length::cm);
+	if (bottom)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::cm);
 }
 
 

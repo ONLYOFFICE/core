@@ -54,26 +54,31 @@ oox_shape_ptr oox_shape::create(int ooxPrstGeomType)
 {
 	switch (ooxPrstGeomType)
 	{
-	case SimpleTypes::shapetypeMathMultiply:	return boost::make_shared<oox_shape_mathMultiply>();
-	case SimpleTypes::shapetypeSun:				return boost::make_shared<oox_shape_sun>();
-	case SimpleTypes::shapetypeRound1Rect:		return boost::make_shared<oox_shape_round1Rect>();
-	case SimpleTypes::shapetypeRound2DiagRect:	return boost::make_shared<oox_shape_round2DiagRect>();
-	case SimpleTypes::shapetypeRound2SameRect:	return boost::make_shared<oox_shape_round2SameRect>();
-	case SimpleTypes::shapetypeSnip1Rect:		return boost::make_shared<oox_shape_snip1Rect>();
-	case SimpleTypes::shapetypeSnip2DiagRect:	return boost::make_shared<oox_shape_snip2DiagRect>();
-	case SimpleTypes::shapetypeSnip2SameRect:	return boost::make_shared<oox_shape_snip2SameRect>();
-	case SimpleTypes::shapetypeSnipRoundRect:	return boost::make_shared<oox_shape_snipRoundRect>();
-	case SimpleTypes::shapetypeStar6:			return boost::make_shared<oox_shape_star6>();
-	case SimpleTypes::shapetypeStar7:			return boost::make_shared<oox_shape_star7>();
-	case SimpleTypes::shapetypeStar10:			return boost::make_shared<oox_shape_star10>();
-	case SimpleTypes::shapetypeStar12:			return boost::make_shared<oox_shape_star12>();
-	case SimpleTypes::shapetypeStar16:			return boost::make_shared<oox_shape_star16>();
-	case SimpleTypes::shapetypeStar32:			return boost::make_shared<oox_shape_star32>();
-	case SimpleTypes::shapetypeCurvedLeftArrow:	return boost::make_shared<oox_shape_curvedLeftArrow>();
-	case SimpleTypes::shapetypeCurvedDownArrow:	return boost::make_shared<oox_shape_curvedDownArrow>();
+	case SimpleTypes::shapetypeMathMultiply:		return boost::make_shared<oox_shape_mathMultiply>();
+	case SimpleTypes::shapetypeSun:					return boost::make_shared<oox_shape_sun>();
+	case SimpleTypes::shapetypeRound1Rect:			return boost::make_shared<oox_shape_round1Rect>();
+	case SimpleTypes::shapetypeRound2DiagRect:		return boost::make_shared<oox_shape_round2DiagRect>();
+	case SimpleTypes::shapetypeRound2SameRect:		return boost::make_shared<oox_shape_round2SameRect>();
+	case SimpleTypes::shapetypeSnip1Rect:			return boost::make_shared<oox_shape_snip1Rect>();
+	case SimpleTypes::shapetypeSnip2DiagRect:		return boost::make_shared<oox_shape_snip2DiagRect>();
+	case SimpleTypes::shapetypeSnip2SameRect:		return boost::make_shared<oox_shape_snip2SameRect>();
+	case SimpleTypes::shapetypeSnipRoundRect:		return boost::make_shared<oox_shape_snipRoundRect>();
+	case SimpleTypes::shapetypeStar6:				return boost::make_shared<oox_shape_star6>();
+	case SimpleTypes::shapetypeStar7:				return boost::make_shared<oox_shape_star7>();
+	case SimpleTypes::shapetypeStar10:				return boost::make_shared<oox_shape_star10>();
+	case SimpleTypes::shapetypeStar12:				return boost::make_shared<oox_shape_star12>();
+	case SimpleTypes::shapetypeStar16:				return boost::make_shared<oox_shape_star16>();
+	case SimpleTypes::shapetypeStar32:				return boost::make_shared<oox_shape_star32>();
+	case SimpleTypes::shapetypeFunnel:				return boost::make_shared<oox_shape_Funnel>();
+	case SimpleTypes::shapetypeGear6:				return boost::make_shared<oox_shape_Gear6>();
+	case SimpleTypes::shapetypeGear9:				return boost::make_shared<oox_shape_Gear9>();
+	case SimpleTypes::shapetypeCircularArrow:		return boost::make_shared<oox_shape_CircularArrow>();
+	case SimpleTypes::shapetypeCurvedLeftArrow:		return boost::make_shared<oox_shape_curvedLeftArrow>();
+	case SimpleTypes::shapetypeCurvedDownArrow:		return boost::make_shared<oox_shape_curvedDownArrow>();
+	case SimpleTypes::shapetypeLeftCircularArrow:	return boost::make_shared<oox_shape_LeftCircularArrow>();
 
-	case SimpleTypes::shapetypePlaque:			return boost::make_shared<oox_shape_Plaque>();
-	case SimpleTypes::shapetypeDoubleWave:		return boost::make_shared<oox_shape_DoubleWave>();
+	case SimpleTypes::shapetypePlaque:				return boost::make_shared<oox_shape_Plaque>();
+	case SimpleTypes::shapetypeDoubleWave:			return boost::make_shared<oox_shape_DoubleWave>();
 		
 
 	//case (2001 + SimpleTypes::textshapetypeTextArchDown): 

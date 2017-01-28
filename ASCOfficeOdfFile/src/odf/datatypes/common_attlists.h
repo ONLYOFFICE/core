@@ -465,7 +465,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(horizontal_pos) style_horizontal_pos_;
-    _CP_OPT(length) svg_x_;
+    _CP_OPT(length)			svg_x_;
 
 };
 
@@ -477,10 +477,10 @@ public:
     void apply_from(const common_draw_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref) draw_style_name_;
-    _CP_OPT(std::wstring) draw_class_names_;
-    _CP_OPT(style_ref) presentation_style_name_;
-    _CP_OPT(std::wstring) presentation_class_names_;
+    _CP_OPT(style_ref)		draw_style_name_;
+    _CP_OPT(std::wstring)	draw_class_names_;
+    _CP_OPT(style_ref)		presentation_style_name_;
+    _CP_OPT(std::wstring)	presentation_class_names_;
 
 };
 
@@ -606,8 +606,8 @@ public:
     void apply_from(const common_draw_shape_with_text_and_styles_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    common_draw_shape_with_styles_attlist common_draw_shape_with_styles_attlist_;
-    common_draw_text_style_name_attlist	 common_draw_text_style_name_attlist_;
+    common_draw_shape_with_styles_attlist	common_draw_shape_with_styles_attlist_;
+    common_draw_text_style_name_attlist		common_draw_text_style_name_attlist_;
 };
 
 /// presentation-shape-attlist
@@ -618,9 +618,9 @@ public:
     void apply_from(const presentation_shape_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring) presentation_class_;
-    _CP_OPT(Bool) presentation_placeholder_;
-    _CP_OPT(Bool) presentation_user_transformed_;
+    _CP_OPT(std::wstring)	presentation_class_;
+    _CP_OPT(Bool)			presentation_placeholder_;
+    _CP_OPT(Bool)			presentation_user_transformed_;
     
 };
 

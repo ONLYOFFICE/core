@@ -257,7 +257,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
-    ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \

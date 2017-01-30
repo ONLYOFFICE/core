@@ -199,20 +199,6 @@ namespace Animations
             return std::wstring ( _T("TimeAnimateBehaviorValueTypeEnum : Unknown Enum") );
 		}
 	}
-
-    std::wstring Helpers::IntToHexString ( DWORD dwValue )
-	{
-        return XmlUtils::IntToString(dwValue, L"0x%.8x");
-	}
-
-    std::wstring Helpers::DoubleToString ( double dValue )
-	{
-        return std::to_wstring(dValue);
-	}
-    std::wstring Helpers::IntToString ( int nValue )
-	{
-        return std::to_wstring(nValue);
-	}
     std::wstring Helpers::GetAnimationClassName ( AnimationsClassType Value )
 	{
 		switch ( Value )

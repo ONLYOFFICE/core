@@ -72,7 +72,9 @@ namespace OOX
 				case et_a_hsl:          pEffect = new CHSLEffect               ( (const CHSLEffect&) *oOther.m_arrEffects[nIndex] ); break;
 				case et_a_lum:          pEffect = new CLuminanceEffect         ( (const CLuminanceEffect&) *oOther.m_arrEffects[nIndex] ); break;
 				case et_a_tint:         pEffect = new CTintEffect              ( (const CTintEffect&) *oOther.m_arrEffects[nIndex] ); break;
-				}
+                default:
+                    break;
+                }
 
 				if ( NULL != pEffect )
                     m_arrEffects.push_back( pEffect );
@@ -353,7 +355,9 @@ namespace OOX
 				case et_a_softEdge:     pEffect = new CSoftEdgesEffect         ( (const CSoftEdgesEffect&) *oOther.m_arrEffects[nIndex] ); break;
 				case et_a_tint:         pEffect = new CTintEffect              ( (const CTintEffect&) *oOther.m_arrEffects[nIndex] ); break;
 				case et_a_xfrm:         pEffect = new CTransformEffect         ( (const CTransformEffect&) *oOther.m_arrEffects[nIndex] ); break;
-				}
+                default:
+                    break;
+                }
 
 				if ( NULL != pEffect )
                     m_arrEffects.push_back( pEffect );
@@ -592,7 +596,9 @@ namespace OOX
 				case et_a_prstShdw:    pEffect = new CPresetShadowEffect( (const CPresetShadowEffect&)*oOther.m_arrEffects[nIndex] ); break;
 				case et_a_reflection:  pEffect = new CReflectionEffect  ( (const CReflectionEffect&)  *oOther.m_arrEffects[nIndex] ); break;
 				case et_a_softEdge:    pEffect = new CSoftEdgesEffect   ( (const CSoftEdgesEffect&)   *oOther.m_arrEffects[nIndex] ); break;
-				}
+                default:
+                    break;
+                }
 
 				if ( NULL != pEffect )
                     m_arrEffects.push_back( pEffect );

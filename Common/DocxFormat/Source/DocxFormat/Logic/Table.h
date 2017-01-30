@@ -618,7 +618,7 @@ namespace OOX
 
 			CTableCellProperties *GetProperties()
 			{
-				for ( int nIndex = m_arrItems.size() - 1; nIndex >= 0; nIndex-- )
+				for ( size_t nIndex = m_arrItems.size() - 1; nIndex >= 0; nIndex-- )
 				{
 					if ( m_arrItems[nIndex] && OOX::et_w_tcPr == m_arrItems[nIndex]->getType() )
 					{

@@ -84,21 +84,22 @@ namespace Writers
 		}
 		~HeaderFooterWriter()
 		{
-			for(int i = 0, length = m_aHeaders.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
 				delete m_aHeaders[i];
 			m_aHeaders.clear();
-			for(int i = 0, length = m_aFooters.size(); i < length; ++i)
+			
+			for(size_t i = 0, length = m_aFooters.size(); i < length; ++i)
 				delete m_aFooters[i];
 			m_aFooters.clear();
 		}
 		void Write()
 		{
-			for(int i = 0, length = m_aHeaders.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
 			{
 				HdrFtrItem* pHeader = m_aHeaders[i];
 				WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
 			}
-			for(int i = 0, length = m_aFooters.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aFooters.size(); i < length; ++i)
 			{
 				HdrFtrItem* pFooter = m_aFooters[i];
 				WriteItem(_T("footer"), pFooter->m_sFilename, pFooter->Header, false);

@@ -160,12 +160,12 @@ namespace NSFontCutter
 		}
 		void CheckString(const std::wstring& val)
 		{
-			int len = val.length();
+			size_t len = val.length();
 
 			std::wstring str_lower = XmlUtils::GetLower(val);
 			std::wstring str_upper = XmlUtils::GetUpper(val);
 
-			for (int i = 0; i < len; ++i)
+			for (size_t i = 0; i < len; ++i)
 			{
                 m_CharMap [str_lower[i]] = true;
                 m_CharMap [str_upper[i]] = true;

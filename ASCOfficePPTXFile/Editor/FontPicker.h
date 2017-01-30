@@ -86,10 +86,10 @@ namespace NSFontCutter
 		{
 			std::wstring sFind = strTypeface;
 
-			int nFindTh = sFind.find(_T("+mj"));
+			int nFindTh = (int)sFind.find(_T("+mj"));
 			if (0 == nFindTh)
 				return sFind;
-			nFindTh = sFind.find(_T("+mn"));
+			nFindTh = (int)sFind.find(_T("+mn"));
 			if (0 == nFindTh)
 				return sFind;
 

@@ -35,8 +35,6 @@
 
 #include "../CommonInclude.h"
 
-//#include "Colors.h"
-
 namespace OOX
 {
 	namespace Spreadsheet

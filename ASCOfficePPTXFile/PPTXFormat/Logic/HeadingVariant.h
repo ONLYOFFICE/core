@@ -65,7 +65,7 @@ namespace PPTX
 			{
 				if (m_type.IsInit() && (m_type->get() == _T("i4")))
 				{
-					return _T("<vt:variant><vt:i4>") + XmlUtils::IntToString(*m_iContent) + _T("</vt:i4></vt:variant>");
+                    return _T("<vt:variant><vt:i4>") + std::to_wstring(*m_iContent) + _T("</vt:i4></vt:variant>");
 				}
 				return _T("<vt:variant><vt:lpstr>") + *m_strContent + _T("</vt:lpstr></vt:variant>");
 			}

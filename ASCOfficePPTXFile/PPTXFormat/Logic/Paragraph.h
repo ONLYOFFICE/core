@@ -55,7 +55,7 @@ namespace PPTX
 				pPr			= oSrc.pPr;
 				endParaRPr	= oSrc.endParaRPr;
 
-				for (int i=0 ; i < oSrc.RunElems.size(); i++) 
+				for (size_t i=0 ; i < oSrc.RunElems.size(); i++) 
 					RunElems.push_back(oSrc.RunElems[i]);
 
 				return *this;
@@ -341,7 +341,7 @@ namespace PPTX
 
 		public:
 			nullable<TextParagraphPr>	pPr;
-			std::vector<RunElem>			RunElems;
+			std::vector<RunElem>		RunElems;
 			nullable<RunProperties>		endParaRPr;
 		protected:
 			virtual void FillParentPointersForChilds()

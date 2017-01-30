@@ -92,8 +92,7 @@ namespace PPTX
 			NSPresentationEditor::CGraphicPath oGrPath;			
 			CMetricInfo oMetricInfo;
 
-			int nSize = oPath.m_arParts.size();
-			for (int nIndex = 0; nIndex < nSize; ++nIndex)
+			for (size_t nIndex = 0; nIndex < oPath.m_arParts.size(); ++nIndex)
 			{
 				oGrPath.Clear();
 				oPath.m_arParts[nIndex].ToRendererOOX(&oGrPath, oInfo, oMetricInfo, NSBaseShape::pptx);

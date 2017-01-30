@@ -148,6 +148,7 @@ namespace Oox2Odf
 		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual OOX::CTheme								*oox_theme();
         virtual std::wstring							find_link_by_id (std::wstring sId, int t);
+		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
 		void convert(OOX::WritingElement *oox_unknown);
     private:
@@ -224,7 +225,6 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CGraphic				*oox_graphic);		
 		void convert(OOX::Drawing::CChart				*oox_chart);
 		void convert(OOX::Drawing::CPicture				*oox_picture);
-		void convert(OOX::Drawing::CDiagrammParts		*oox_diagramm);
 		
 		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);

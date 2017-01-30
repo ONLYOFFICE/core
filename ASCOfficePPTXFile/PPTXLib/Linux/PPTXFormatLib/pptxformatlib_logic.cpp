@@ -57,7 +57,6 @@
 #include "../../../PPTXFormat/Logic/SpPr.cpp"
 #include "../../../PPTXFormat/Logic/SpTree.cpp"
 #include "../../../PPTXFormat/Logic/SpTreeElem.cpp"
-//#include "../../../PPTXFormat/Logic/Timing.cpp"
 #include "../../../PPTXFormat/Logic/TxBody.cpp"
 #include "../../../PPTXFormat/Logic/UniColor.cpp"
 #include "../../../PPTXFormat/Logic/UniEffect.cpp"

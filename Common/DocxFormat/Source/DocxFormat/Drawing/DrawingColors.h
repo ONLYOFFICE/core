@@ -1987,7 +1987,9 @@ namespace OOX
 
 								break;
 							}
-						}
+                        default:
+                            break;
+                        }
 					}
 				}
 			private:
@@ -2563,7 +2565,9 @@ namespace OOX
 				case colorScRgb: sResult = m_oScrgbClr.toXML(); break;
 				case colorSRgb:  sResult = m_oSrgbClr.toXML();  break;
 				case colorSys:   sResult = m_oSysClr.toXML();   break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}

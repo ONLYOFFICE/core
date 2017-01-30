@@ -233,8 +233,8 @@ namespace NSBinPptxRW
 			CSeekTableEntry();
 		};
 
-		CCommonWriter* m_pCommon;
-		std::wstring m_strMainFolder;
+		CCommonWriter*	m_pCommon;
+		std::wstring	m_strMainFolder;
 
 		NSCommon::smart_ptr<PPTX::CCommonRels>	*	m_pCommonRels;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
@@ -253,22 +253,25 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32 m_lWidthCurShape;
-		_INT32 m_lHeightCurShape;
+		_INT32	m_lCxCurShape;	//emu
+		_INT32	m_lCyCurShape;
 
-	public:
-		BYTE*				GetBuffer();
+		_INT32	m_lXCurShape;
+		_INT32	m_lYCurShape;
+
+		BYTE*	GetBuffer();
 		_UINT32	GetPosition();
-		void				SetPosition(const _UINT32& lPosition);
-		void				Skip(const _UINT32& lSize);
+		void	SetPosition(const _UINT32& lPosition);
+		void	Skip(const _UINT32& lSize);
 
-		double GetWidthMM();
-		double GetHeightMM();
-		void ClearShapeCurSizes();
+		double	GetShapeWidth();
+		double	GetShapeHeight();
+		double	GetShapeX();
+		double	GetShapeY();
 
-		// -------------------- stream simple types -----------------------
-	public:
-		void Clear();
+		void	ClearCurShapePositionAndSizes();
+
+		void	Clear();
 
 		void SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc);
 
@@ -305,7 +308,6 @@ namespace NSBinPptxRW
 		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
-	public: 
 		CBinaryFileWriter();
 		~CBinaryFileWriter();
 
@@ -316,8 +318,6 @@ namespace NSBinPptxRW
 		void WriteReserved(size_t lCount);
 
 		void WriteMainPart();
-
-	public:
 		
 		void WriteString1	(int type, const std::wstring& val);
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
@@ -400,14 +400,14 @@ namespace NSBinPptxRW
 
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
-		_INT32 _WriteString(const WCHAR* sBuffer, _UINT32 lCount);
-		void _WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
 	class CSlideMasterInfo
 	{
 	public:
-		_INT32			m_lThemeIndex;
-		std::vector<LONG> m_arLayouts;
+		_INT32				m_lThemeIndex;
+		std::vector<LONG>	m_arLayouts;
 
 	public:
 		CSlideMasterInfo();
@@ -460,28 +460,27 @@ namespace NSBinPptxRW
 	class CBinaryFileReader
 	{
 	private:
-		BYTE* m_pData;
-		_INT32 m_lSize;
-		_INT32 m_lPos;
-		BYTE* m_pDataCur;
+		BYTE*	m_pData;
+		LONG	m_lSize;
+		LONG	m_lPos;
+		BYTE*	m_pDataCur;
 
 		_INT32 m_lNextId;
 
 	public:
 		//CRelsGenerator m_oRels;
-		std::wstring m_strFolder;
-		std::wstring m_strFolderThemes;
-		std::wstring m_strFolderExternalThemes;
+		std::wstring	m_strFolder;
+		std::wstring	m_strFolderThemes;
+		std::wstring	m_strFolderExternalThemes;
 
-		_INT32 m_lChartNumber;
-		std::wstring m_strContentTypes;
+		_INT32			m_lChartNumber;
+		std::wstring	m_strContentTypes;
 
 		BinDocxRW::CDocxSerializer* m_pMainDocument;
+		_INT32						m_lDocumentType;
 
-		_INT32		m_lDocumentType;
-
-		CRelsGenerator* m_pRels;
-		std::vector<CRelsGenerator*> m_stackRels;
+		CRelsGenerator*					m_pRels;
+		std::vector<CRelsGenerator*>	m_stackRels;
 		int m_nCurrentRelsStack;
 	
 	public:
@@ -496,9 +495,9 @@ namespace NSBinPptxRW
 
 	public:
 
-		int Seek(_INT32 _pos);
-		int Skip(_INT32 _skip);
-		bool Peek(int nSizeToRead);
+		int Seek	(LONG _pos);
+		int Skip	(LONG _skip);
+		bool Peek	(LONG nSizeToRead);
 		
 		// 1 bytes
 		BYTE GetUChar();
@@ -531,9 +530,9 @@ namespace NSBinPptxRW
 		std::string GetString2A();
 		void SkipRecord();
 
-		_INT32 GetPos();
+		LONG GetPos();
 
-		_INT32 GetSize();
+		LONG  GetSize();
 
 		BYTE* GetData();
 		BYTE* GetPointer(int nSize);

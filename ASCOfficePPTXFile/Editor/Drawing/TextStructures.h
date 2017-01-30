@@ -52,45 +52,33 @@ namespace NSPresentationEditor
 
     static std::wstring ToNode(const NSCommon::nullable_base<WORD>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-		int n = (int)prop.get();
-        std::wstring strVal = XmlUtils::IntToString(n);
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<LONG>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-		int n = (int)prop.get();
-        std::wstring strVal = XmlUtils::IntToString(n);
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<DWORD>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::UIntToString((size_t)prop.get());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring(prop.get()) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<double>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::DoubleToString(prop.get());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + XmlUtils::DoubleToString(prop.get()) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
 	{
-		if (!prop.is_init())
-			return _T("");
+        if (!prop.is_init()) return L"";
 		
-        std::wstring strVal = XmlUtils::UIntToString(prop->GetLONG());
-		return _T("<") + strName + _T(">") + strVal + _T("</") + strName + _T(">");
+        return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 	}
 
 	class CFontProperties
@@ -122,7 +110,7 @@ namespace NSPresentationEditor
 			strPitchFamily		= oSrc.strPitchFamily;
 			lFontFixed			= oSrc.lFontFixed;
 
-			for (int i =0 ; i< oSrc.arFontCharsets.size(); i++)
+			for (size_t i =0 ; i< oSrc.arFontCharsets.size(); i++)
 				arFontCharsets.push_back(oSrc.arFontCharsets[i]);
 
 			return *this;
@@ -856,7 +844,7 @@ namespace NSPresentationEditor
 			size_t nCountSpans = m_arSpans.size();
 			for (size_t i = 0; i < nCountSpans; ++i)
 			{
-				int nLen = m_arSpans[i].m_strText.length();
+				size_t nLen = m_arSpans[i].m_strText.length();
 
 				if (nLen > 1)
 					return false;

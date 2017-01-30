@@ -70,7 +70,6 @@ namespace PPTX
 					return Elem->toXML();
 				return _T("");
 			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (is_init())

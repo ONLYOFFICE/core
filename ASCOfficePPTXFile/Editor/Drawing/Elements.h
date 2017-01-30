@@ -510,10 +510,10 @@ namespace NSPresentationEditor
 			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
 			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
 
-			m_oShape.m_oText.m_oBounds.left		*= dScaleX;
-			m_oShape.m_oText.m_oBounds.right	*= dScaleX;
-			m_oShape.m_oText.m_oBounds.top		*= dScaleY;
-			m_oShape.m_oText.m_oBounds.bottom	*= dScaleY;
+			m_oShape.m_oText.m_oBounds.left		= (int)(dScaleX * m_oShape.m_oText.m_oBounds.left);
+			m_oShape.m_oText.m_oBounds.right	= (int)(dScaleX * m_oShape.m_oText.m_oBounds.right);
+			m_oShape.m_oText.m_oBounds.top		= (int)(dScaleY * m_oShape.m_oText.m_oBounds.top);
+			m_oShape.m_oText.m_oBounds.bottom	= (int)(dScaleY * m_oShape.m_oText.m_oBounds.bottom);
 		}
 		virtual ~CShapeElement()
 		{
@@ -704,12 +704,12 @@ namespace NSPresentationEditor
 				}
 			case CElementProperty::epFontBold:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (pProperty->m_dwValue != 0);
 					break;
 				}
 			case CElementProperty::epFontItalic:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (pProperty->m_dwValue != 0);
 					break;
 				}
 			case CElementProperty::epFontStrikeout:
@@ -853,14 +853,14 @@ namespace NSPresentationEditor
 			pFormulaConverter.ConvertCoef(pCoef);
 
 			//guids----------------------------------------
-			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.size();
+			int nGuidCount = (int)pPPTShape->m_oManager.m_arFormulas.size();
 			if (0 != nGuidCount)
 			{
 				pFormulaConverter.ConvertFormula(pPPTShape->m_oManager.m_arFormulas);
 			}				
 
 			//path------------------------------------------
-            int nPathCount = pPPTShape->m_strPath.length();
+            int nPathCount = (int)pPPTShape->m_strPath.length();
 			if (0 != nPathCount && pPPTShape->m_eType != 1)
 			{
 				pFormulaConverter.ConvertPath(pPPTShape->m_strPath, pPPTShape->m_oPath);
@@ -872,8 +872,8 @@ namespace NSPresentationEditor
 					pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
 				}
 
-				int nHandlesCount = pPPTShape->m_arHandles.size();
-				int nAdjCount = pPPTShape->m_arAdjustments.size();
+				int nHandlesCount	= (int)pPPTShape->m_arHandles.size();
+				int nAdjCount		= (int)pPPTShape->m_arAdjustments.size();
 
 				//handles
 				if (0 != nHandlesCount || 0 != nAdjCount)

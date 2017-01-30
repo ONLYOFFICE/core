@@ -142,7 +142,7 @@ public:
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_path			(std::wstring path_string);
-	void add_path_element	(std::wstring command, std::wstring & elm);
+	void add_path_element	(std::wstring command, const std::wstring & elm);
 	void add_modifier		(std::wstring modifier);
 	
 	void set_viewBox		(double W, double H);
@@ -151,14 +151,17 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 	
+	void get_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 
 	
-	void get_size			( double & width_pt, double & height_pt);
+	void get_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
+	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 	
-	void set_name			(std::wstring  name);
+	void set_name			(const std::wstring & name);
+	void set_description	(const std::wstring & descr);
+	void set_hidden			(bool bVal);
 	void set_z_order		(int id);
 	
 	void set_flip_H			(bool bVal);
@@ -191,7 +194,7 @@ public:
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);
-	void set_textarea_padding		(double left,double top,double right,double bottom);//in cm
+	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in cm
 	void set_textarea_writing_mode	(int mode);
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);

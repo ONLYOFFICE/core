@@ -1,9 +1,8 @@
-#pragma once
+п»ї#ifndef DOCX_RENDERER_FMB_H
+#define DOCX_RENDERER_FMB_H
 
-#include "..\stdafx.h"
-#include "StringWriter.h"
-#include "..\Graphics\Structures.h"
-#include "..\Graphics\Matrix.h"
+#include "Common.h"
+#include "../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontManager
 {
@@ -28,10 +27,10 @@ namespace NSFontManager
 		double							m_dSpaceWidthMM;
 
 		// font params
-		CString							m_strFamilyName;
-		CString							m_strPANOSE;
+        std::wstring					m_strFamilyName;
+        std::wstring					m_strPANOSE;
 		LONG							m_lStyle;
-		CAtlArray<DWORD>				m_arSignature;
+        CArray<DWORD>   				m_arSignature;
 		bool							m_bIsFixedWidth;
 		LONG							m_lAvgWidth;
 
@@ -49,8 +48,8 @@ namespace NSFontManager
 
 			m_dSpaceWidthMM		= 0;
 
-			m_strFamilyName		= _T("");
-			m_strPANOSE			= _T("");
+            m_strFamilyName		= L"";
+            m_strPANOSE			= L"";
 			m_lStyle			= 0;
 			m_arSignature.RemoveAll();
 			m_bIsFixedWidth		= false;
@@ -78,7 +77,7 @@ namespace NSFontManager
 			m_strFamilyName		= oSrc.m_strFamilyName;
 			m_strPANOSE			= oSrc.m_strPANOSE;
 			m_lStyle			= oSrc.m_lStyle;
-			m_arSignature.Copy(oSrc.m_arSignature);
+            m_arSignature       = m_arSignature;
 			m_bIsFixedWidth		= oSrc.m_bIsFixedWidth;
 			m_lAvgWidth			= oSrc.m_lAvgWidth;
 
@@ -92,7 +91,7 @@ namespace NSFontManager
 		CFontAdvanced	m_oFont;
 		BYTE			m_lRangeNum;
 		BYTE			m_lRange;
-		CString			m_strPickFont;
+        std::wstring	m_strPickFont;
 		LONG			m_lPickStyle;
 
 	public:
@@ -100,7 +99,7 @@ namespace NSFontManager
 		{
 			m_lRangeNum		= 0xFF;
 			m_lRange		= 0xFF;
-			m_strPickFont	= _T("");
+            m_strPickFont	= L"";
 			m_lPickStyle	= 0;
 		}
 		CFontPickUp(const CFontPickUp& oSrc)
@@ -129,20 +128,20 @@ namespace NSFontManager
 		};
 
 	protected:
-		AVSGraphics::IASCWinFonts*		m_pWinFonts;
-		AVSGraphics::IASCFontManager*	m_pManager;
-		CString							m_strDefaultFont;
+        CApplicationFonts*              m_pFonts;
+        CFontManager*                   m_pManager;
+        std::wstring					m_strDefaultFont;
 
 	public:
 
 		CFontAdvanced					m_oFont;
 
-		//для подбора шрифтов
+		//РґР»СЏ РїРѕРґР±РѕСЂР° С€СЂРёС„С‚РѕРІ
 		BYTE							m_pRanges[0xFFFF];
 		BYTE							m_pRangesNums[0xFFFF];
 
-		CAtlList<CFontPickUp>			m_arListPicUps;
-		CString							m_strCurrentPickFont;
+        std::list<CFontPickUp>			m_arListPicUps;
+        std::wstring					m_strCurrentPickFont;
 		LONG							m_lCurrentPictFontStyle;
 
 	public:
@@ -303,7 +302,7 @@ namespace NSFontManager
 		void LoadFontMetrics()
 		{
 			unsigned short iTemp = 0;
-			m_pManager->GetCellAscent(&iTemp);
+            m_pManager->GetCellAscent(&iTemp);
 			m_oFont.m_dAscent = iTemp;
 			m_pManager->GetCellDescent(&iTemp);
 			m_oFont.m_dDescent = iTemp;
@@ -324,7 +323,7 @@ namespace NSFontManager
 
 		void LoadFontParams(BOOL bIsPath = TRUE)
 		{
-			// читаем и выставляем все настройки шрифта
+			// С‡РёС‚Р°РµРј Рё РІС‹СЃС‚Р°РІР»СЏРµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё С€СЂРёС„С‚Р°
 			if (NULL == m_pManager)
 				return;
 
@@ -415,7 +414,7 @@ namespace NSFontManager
 			memset(m_pRanges, 0xFF, 0xFFFF);
 			memset(m_pRangesNums, 0xFF, 0xFFFF);
 
-			// теперь просто по порядку заполняем все рэнджи
+			// С‚РµРїРµСЂСЊ РїСЂРѕСЃС‚Рѕ РїРѕ РїРѕСЂСЏРґРєСѓ Р·Р°РїРѕР»РЅСЏРµРј РІСЃРµ СЂСЌРЅРґР¶Рё
 			int nStart = 0;
 			int nCount = 0;
 			
@@ -863,7 +862,7 @@ namespace NSFontManager
 			memset(m_pRanges + nStart, 24, nCount);
 			memset(m_pRangesNums + nStart, 1, nCount);
 
-            //case 25: sUCRName = "Non-Plane 0"; break; /* U+D800-U+DB7F */ /* U+DB80-U+DBFF */ /* U+DC00-U+DFFF */ // Не юникодные символы
+            //case 25: sUCRName = "Non-Plane 0"; break; /* U+D800-U+DB7F */ /* U+DB80-U+DBFF */ /* U+DC00-U+DFFF */ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
 			nStart = 0xD800;
 			nCount = 0xDB7F - nStart + 1;
 			memset(m_pRanges + nStart, 25, nCount);
@@ -912,7 +911,7 @@ namespace NSFontManager
 			memset(m_pRanges + nStart, 27, nCount);
 			memset(m_pRangesNums + nStart, 1, nCount);
 
-            //case 28: sUCRName = "Private Use Area (plane 0)"; break; /* U+E000-U+F8FF */ // Не юникодные символы
+            //case 28: sUCRName = "Private Use Area (plane 0)"; break; /* U+E000-U+F8FF */ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
 			nStart = 0xE000;
 			nCount = 0xF8FF - nStart + 1;
 			memset(m_pRanges + nStart, 28, nCount);
@@ -1113,7 +1112,7 @@ namespace NSFontManager
             //case 23: sUCRName = "Deseret"; break; /*U+10400-U+1044F*/
             //case 24: sUCRName = "Byzantine Musical Symbols"; break; /*U+1D000-U+1D0FF*/ /*U+1D100-U+1D1FF*/ /*U+1D200-U+1D24F*/
             //case 25: sUCRName = "Mathematical Alphanumeric Symbols"; break; /*U+1D400-U+1D7FF*/
-            //case 26: sUCRName = "Private Use (plane 15)"; break; /*U+F0000-U+FFFFD*/ /*U+100000-U+10FFFD*/ // Не юникодные символы
+            //case 26: sUCRName = "Private Use (plane 15)"; break; /*U+F0000-U+FFFFD*/ /*U+100000-U+10FFFD*/ // РќРµ СЋРЅРёРєРѕРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
             
 			//case 27: sUCRName = "Variation Selectors"; break; /* U+FE00-U+FE0F */ /*U+E0100-U+E01EF*/
 			nStart = 0xFE00;
@@ -1236,7 +1235,7 @@ namespace NSFontManager
             //case 31: sUCRName = "Reserved for process-internal usage"; break;
 		}
 
-		__forceinline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
+        inline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
 		{
 			lRangeNum	= m_pRangesNums[symbol];
 			lRange		= m_pRanges[symbol];
@@ -1244,10 +1243,10 @@ namespace NSFontManager
 			return (0xFF != lRangeNum);
 		}
 
-		__forceinline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, CString strText)
+        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, const std::wstring& strText)
 		{
-			int lCount   = strText.GetLength();
-			WCHAR* pData = strText.GetBuffer();
+            int lCount   = (int)strText.length();
+            WCHAR* pData = strText.c_str();
 
 			BYTE lRangeNum  = 0xFF;
 			BYTE lRange		= 0xFF;
@@ -1266,7 +1265,7 @@ namespace NSFontManager
 				}
 			}
 		}
-		__forceinline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
+        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
 		{
 			if (0 == lRangeNum)
 				lRange1 |= 1 << lRange;
@@ -1302,8 +1301,8 @@ namespace NSFontManager
 				CFontPickUp& oPick = m_arListPicUps.GetNext(pos);
 				if ((oPick.m_oFont.m_oFont.IsEqual3(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
 				{
-					// нашли! ничего подбирать не нужно
-					// нужно просто выкинуть этот шрифт наверх
+					// РЅР°С€Р»Рё! РЅРёС‡РµРіРѕ РїРѕРґР±РёСЂР°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ
+					// РЅСѓР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РІС‹РєРёРЅСѓС‚СЊ СЌС‚РѕС‚ С€СЂРёС„С‚ РЅР°РІРµСЂС…
 					m_arListPicUps.MoveToHead(posOld);
 					m_strCurrentPickFont = oPick.m_strPickFont;
 					m_lCurrentPictFontStyle = oPick.m_lPickStyle;
@@ -1311,7 +1310,7 @@ namespace NSFontManager
 				}
 			}
 
-			// не нашли...
+			// РЅРµ РЅР°С€Р»Рё...
 			m_arListPicUps.AddHead();
 			CFontPickUp& oPick = m_arListPicUps.GetHead();
 
@@ -1341,7 +1340,7 @@ namespace NSFontManager
 			}
 			else if (((lRangeNum == 2) && (lRange == 3)) || ((lRangeNum == 1) && (lRange == 31)) || ((lRangeNum == 0) && (lRange == 13)))
 			{
-				// ебаный арабский язык!!!
+				// РµР±Р°РЅС‹Р№ Р°СЂР°Р±СЃРєРёР№ СЏР·С‹Рє!!!
 				dwR1 = 1 << 13;
 				dwR2 = 1 << 31;
 				dwR3 = 1 << 3;
@@ -1372,3 +1371,5 @@ namespace NSFontManager
 		}
 	};
 };
+
+#endif // DOCX_RENDERER_FMB_H

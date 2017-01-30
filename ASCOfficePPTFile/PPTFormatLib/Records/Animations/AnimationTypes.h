@@ -299,9 +299,6 @@ namespace Animations
         static std::wstring GetTimeVisualElementEnum			( TimeVisualElementEnum Value );
         static std::wstring GetElementTypeEnum					( ElementTypeEnum Value );
         static std::wstring GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
-        static std::wstring IntToHexString						( DWORD Value );
-        static std::wstring DoubleToString						( double Value );
-        static std::wstring IntToString							( int Value );
         static std::wstring GetAnimationClassName				( AnimationsClassType Value );
 
         static std::wstring GetEffectTypeOfGroup				( DWORD Value );

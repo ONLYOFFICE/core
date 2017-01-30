@@ -35,8 +35,6 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -103,7 +101,26 @@ OOX::CTheme* DocxConverter::oox_theme()
 	else
 		return NULL;
 }
-std::wstring	DocxConverter::find_link_by_id (std::wstring sId, int type)
+
+NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
+{
+	OOX::CDocument  *oox_doc = docx_document->GetDocument();
+
+	smart_ptr<OOX::File> oFile;
+	if (oox_doc)
+	{
+		if (oox_current_child_document_spreadsheet)
+			oFile = oox_current_child_document_spreadsheet->Find(sId);
+		if (oox_current_child_document)
+			oFile = oox_current_child_document->Find(sId);
+		else
+			oFile = oox_doc->Find(sId);
+	}
+		
+	return oFile;
+}
+
+std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
 {
 	OOX::CDocument  *oox_doc = docx_document->GetDocument();
 
@@ -343,11 +360,6 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			OOX::Logic::CLockedCanvas* pLockedCanvas= static_cast<OOX::Logic::CLockedCanvas*>(oox_unknown);
 			convert(pLockedCanvas);
-		}break;
-		case OOX::et_dgm_DiagrammParts:
-		{
-			OOX::Drawing::CDiagrammParts* pDiagrammParts = static_cast<OOX::Drawing::CDiagrammParts*>(oox_unknown);
-			convert(pDiagrammParts);
 		}break;
 		case OOX::et_w_commentRangeEnd:
 		{
@@ -2825,51 +2837,6 @@ void DocxConverter::convert(OOX::Drawing::CPicture * oox_picture)
 	odt_context->drawing_context()->end_image();
 	odt_context->drawing_context()->end_drawing();
 }
-void DocxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
-{
-	if (oox_diagramm == NULL)return;
-	if (oox_diagramm->m_oRId_Data.IsInit() == false) return;
-
-	smart_ptr<OOX::File> oFile;
-	
-	if (oox_current_child_document)
-		oFile = docx_document->GetDocument()->Find(oox_diagramm->m_oRId_Data->GetValue());
-	else
-		oFile = docx_document->GetDocument()->Find(oox_diagramm->m_oRId_Data->GetValue());
-	
-	NSCommon::nullable<std::wstring> id_drawing;
-
-	if (oFile.IsInit())
-	{
-		OOX::CDiagramData* pDiagData = (OOX::CDiagramData*)oFile.operator->();
-		
-        if ((pDiagData) && (pDiagData->m_oExtLst.IsInit()))
-		{
-			for (int i = 0 ; i < pDiagData->m_oExtLst->m_arrExt.size(); i++)
-			{
-				if ( pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
-				{
-					id_drawing = pDiagData->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
-				}
-			}
-		}
-	}
-	if (id_drawing.is_init() == false) return;
-
-	oFile = docx_document->GetDocument()->Find( *id_drawing );
-
-	if (oFile.is_init() && OOX::FileTypes::DiagDrawing == oFile->type())
-	{
-		OOX::CDiagramDrawing * diag_drawing = (OOX::CDiagramDrawing*)oFile.operator->();
-
-		oox_current_child_document = diag_drawing;
-
-		OoxConverter::convert(diag_drawing->m_oShapeTree.GetPointer());
-
-		oox_current_child_document = NULL;
-	}
-}
-
 void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 {
 	if (oox_chart == NULL)return;
@@ -2892,7 +2859,7 @@ void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
 				odt_context->drawing_context()->start_drawing();				
 				odt_context->drawing_context()->start_object(odf_context()->get_next_name_object());
 
-					double width =0, height =0;
+					_CP_OPT(double) width, height;
 					odt_context->drawing_context()->get_size(width, height);
 
 					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());

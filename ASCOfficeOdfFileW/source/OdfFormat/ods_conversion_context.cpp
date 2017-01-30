@@ -147,7 +147,7 @@ void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 	boost::algorithm::split(ref_cells, ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
 	int max_col = 0, max_row = 0;
-	for (long i = 0; i < ref_cells.size(); i++)
+	for (size_t i = 0; i < ref_cells.size(); i++)
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[i], col, row);

@@ -1,21 +1,15 @@
-#pragma once
+﻿#ifndef DOCX_RENDERER_ELEMENT_IMAGE_H
+#define DOCX_RENDERER_ELEMENT_IMAGE_H
+
 #include "Common.h"
 
 namespace NSDocxRenderer
 {
-	static _bstr_t g_bstr_image_1			= L"<w:r><w:pict><v:shape id=\"\" type=\"\" style=\"position:absolute;";
-	static _bstr_t g_bstr_image_2			= L"z-index:-1;mso-position-horizontal-relative:page;mso-position-vertical-relative:page\" filled=\"f\">";
-	static _bstr_t g_bstr_image_3			= L"</v:shape></w:pict></w:r>";
-
-	static CString g_string_image_position			= _T("margin-left:%.2lfmm;margin-top:%.2lfmm;width:%.2lfmm;height:%.2lfmm;");
-	static CString g_string_image_position_rotate	= _T("margin-left:%.2lfmm;margin-top:%.2lfmm;width:%.2lfmm;height:%.2lfmm;rotation:%d;");
-	static CString g_string_image_rid				= _T("<v:imagedata r:id=\"rId%d\" o:title=\"\"/>");
-
-	class CImage : public CBaseItem
+    class CImage : public CBaseItem
 	{
 	public:
-		CString m_strPath;
-		LONG	m_lID;
+        std::wstring m_strPath;
+        int	m_lID;
 
 		double m_dLeft;
 		double m_dTop;
@@ -28,18 +22,18 @@ namespace NSDocxRenderer
 		CImage()
 		{
 			m_eType		= etImage;
-			m_strPath	= _T("");
+            m_strPath	= L"";
 			m_lID		= -1;
 		}
 		CImage(const CImage& oSrc)
 		{
 			*this = oSrc;
 		}
-		CImage(const CImageInfo& oInfo, const CString& strDstMedia)
+        CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia)
 		{
 			m_eType		= etImage;
 			m_strPath	= strDstMedia;
-			m_lID		= oInfo.m_lID;
+            m_lID		= oInfo.m_nId;
 		}
 		CImage& operator=(const CImage& oSrc)
 		{
@@ -57,31 +51,36 @@ namespace NSDocxRenderer
 			return *this;
 		}
 
-		virtual void ToXml(NSDocxRenderer::CStringWriter& oWriter)
+        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter)
 		{
-			oWriter.WriteString(g_bstr_image_1);
+            oWriter.WriteString(L"<w:r><w:pict><v:shape id=\"\" type=\"\" style=\"position:absolute;");
 
-			if (0.0 == m_dRotate)
+            oWriter.WriteString(L"margin-left:");
+            oWriter.AddDouble(m_dLeft, 2);
+            oWriter.WriteString(L"mm;margin-top:");
+            oWriter.AddDouble(m_dTop, 2);
+            oWriter.WriteString(L"mm;width:");
+            oWriter.AddDouble(m_dWidth, 2);
+            oWriter.WriteString(L"mm;height:");
+            oWriter.AddDouble(m_dHeight, 2);
+            oWriter.WriteString(L"mm;");
+
+            if (fabs(m_dRotate) > 0.01)
 			{
-				CString strPosition = _T("");
-				strPosition.Format(g_string_image_position, m_dLeft, m_dTop, m_dWidth, m_dHeight);
-				oWriter.WriteString(strPosition);
-			}
-			else
-			{
-				CString strPosition = _T("");
-				strPosition.Format(g_string_image_position_rotate, m_dLeft, m_dTop, m_dWidth, m_dHeight, (int)m_dRotate);
-				oWriter.WriteString(strPosition);
+                oWriter.WriteString(L"rotation:");
+                oWriter.AddInt((int)m_dRotate);
+                oWriter.AddCharSafe(';');
 			}
 
-			oWriter.WriteString(g_bstr_image_2);
+            oWriter.WriteString(L"z-index:-1;mso-position-horizontal-relative:page;mso-position-vertical-relative:page\" filled=\"f\">");
 
-			CString strRid = _T("");
-			strRid.Format(g_string_image_rid, 10 + m_lID);
+            oWriter.WriteString(L"<v:imagedata r:id=\"rId");
+            oWriter.AddInt(10 + m_lID);
+            oWriter.WriteString(L"\" o:title=\"\"/>");
 
-			oWriter.WriteString(strRid);
-
-			oWriter.WriteString(g_bstr_image_3);
+            oWriter.WriteString(L"</v:shape></w:pict></w:r>");
 		}
 	};
 }
+
+#endif // DOCX_RENDERER_ELEMENT_IMAGE_H

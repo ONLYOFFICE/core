@@ -76,7 +76,7 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				std::wstringstream sstream;
-				sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
+                sstream << boost::wformat( L"%02X%02X%02X" ) % red % green % blue;
 						
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), sstream.str());
@@ -101,7 +101,7 @@ namespace PPTX
 				pWriter->StartNode(sNodeNamespace + _T("srgbClr"));
 				
 				std::wstringstream sstream;
-				sstream << boost::wformat( L"%.02X%.02X%.02X" ) % red % green % blue;
+                sstream << boost::wformat( L"%02X%02X%02X" ) % red % green % blue;
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(sAttrNamespace + _T("val"), sstream.str());

@@ -274,25 +274,25 @@ public:
         }
         
         strAdjustments.clear();
-        for(int i = 0; i < manager.strAdjustments.size(); i++)
+        for(size_t i = 0; i < manager.strAdjustments.size(); i++)
         {
             strAdjustments.push_back(manager.strAdjustments[i]);
         }
 
         strGuides.clear();
-        for(int i = 0; i < manager.strGuides.size(); i++)
+        for(size_t i = 0; i < manager.strGuides.size(); i++)
         {
             strGuides.push_back(manager.strGuides[i]);
         }
         
         Adjustments->clear();
-        for(int i = 0; i < manager.Adjustments->size(); i++)
+        for(size_t i = 0; i < manager.Adjustments->size(); i++)
         {
             Adjustments->push_back((*manager.Adjustments)[i]);
         }
         
         Guides->clear();
-        for(int i = 0; i < manager.Guides->size(); i++)
+        for(size_t i = 0; i < manager.Guides->size(); i++)
         {
             Guides->push_back((*manager.Guides)[i]);
         }
@@ -318,7 +318,7 @@ public:
         strAdjustments.push_back(formula);
         Adjustments->push_back(NonDefResult);
 
-        mapAdjustments.insert(std::pair<std::wstring, long>(name, strAdjustments.size() - 1));
+        mapAdjustments.insert(std::pair<std::wstring, long>(name, (long)strAdjustments.size() - 1));
     }
     
     void AddGuide(const std::wstring& name, const std::wstring& fmla)
@@ -334,14 +334,14 @@ public:
                         */
         // формулы могут повторяться!!!
         // тогда по мере расчитывания они перетирают друг друга
-        CFormula formula( -strGuides.size() - 1);
+        CFormula formula( -1 -(int)strGuides.size());
         formula.m_sName = name;
         formula.FromString(fmla);
 
         strGuides.push_back(formula);
         Guides->push_back(dNonDefResult);
 
-        mapGuides.insert(std::pair<std::wstring, long>(name, strGuides.size() - 1));
+        mapGuides.insert(std::pair<std::wstring, long>(name, (long)strGuides.size() - 1));
     }
     
     double GetValue(std::wstring str)

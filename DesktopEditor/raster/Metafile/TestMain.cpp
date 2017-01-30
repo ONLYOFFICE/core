@@ -109,9 +109,9 @@ void main()
 	oFonts.Initialize();
 
 	CMetaFile oMetaFile(&oFonts);
-	ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
+	//ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
 	//ConvertFolder(oMetaFile, L"D://Test Files//Wmf//Test//", c_lMetaWmf);
-	//ConvertFolder(oMetaFile, L"D://Test Files//Emf//Temp//", c_lMetaEmf);
+	ConvertFolder(oMetaFile, L"D://test//_emf", c_lMetaEmf);
 
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();

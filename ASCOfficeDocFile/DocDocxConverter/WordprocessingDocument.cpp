@@ -183,9 +183,7 @@ namespace DocFileFormat
 	void WordprocessingDocument::SaveDocument()
 	{
         std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
-        //OOX::CPath pathWord = CString(m_strOutputPath) + FILE_SEPARATOR_STR + L"word" );
-		//FileSystem::Directory::CreateDirectory( pathWord.GetPath() );
-        NSDirectory::CreateDirectory( pathWord );
+         NSDirectory::CreateDirectory( pathWord );
 
 		WritePackage();
 
@@ -204,9 +202,7 @@ namespace DocFileFormat
 		if (!ImagesList.empty())
 		{
             std::wstring pathMedia = pathWord + FILE_SEPARATOR_STR + L"media";
-            //OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + L"media";
-			//FileSystem::Directory::CreateDirectory( pathMedia.GetPath() );
-
+ 
             NSDirectory::CreateDirectory(pathMedia);
 
 			int i = 1;
@@ -237,8 +233,6 @@ namespace DocFileFormat
 		if (!OleObjectsList.empty())
 		{
             std::wstring pathObjects = pathWord + FILE_SEPARATOR_STR + L"embeddings" ;
-            //OOX::CPath pathObjects = pathWord + FILE_SEPARATOR_STR + L"embeddings" ;
-			//FileSystem::Directory::CreateDirectory( pathObjects.GetPath());
             NSDirectory::CreateDirectory( pathObjects );
 
 			int i = 1;

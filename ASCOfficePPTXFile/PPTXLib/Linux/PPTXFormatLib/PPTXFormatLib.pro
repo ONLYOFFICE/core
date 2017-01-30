@@ -88,7 +88,6 @@ SOURCES += \
     ../../../PPTXFormat/Logic/SpPr.cpp \
     ../../../PPTXFormat/Logic/SpTree.cpp \
     ../../../PPTXFormat/Logic/SpTreeElem.cpp \
-    #../../../PPTXFormat/Logic/Timing.cpp \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
@@ -499,7 +498,6 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/PresentationDrawingsDef.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
-    ../../Settings.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \

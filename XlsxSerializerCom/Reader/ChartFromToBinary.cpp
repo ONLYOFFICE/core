@@ -5995,7 +5995,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)
 	{
-		for(int i = 0, length = oVal.m_ext.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ext.size(); i < length; ++i)
 		{
 			CT_Extension* pVal = oVal.m_ext[i];
 			if(NULL != pVal)
@@ -6404,7 +6404,7 @@ namespace BinXlsxRW
 			WriteCT_LegendPos(*oVal.m_legendPos);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_legendEntry.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_legendEntry.size(); i < length; ++i)
 		{
 			CT_LegendEntry* pVal = oVal.m_legendEntry[i];
 			if(NULL != pVal)
@@ -6848,7 +6848,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_ptCount);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_pt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_pt.size(); i < length; ++i)
 		{
 			CT_StrVal* pVal = oVal.m_pt[i];
 			if(NULL != pVal)
@@ -7496,7 +7496,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_invertIfNegative);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -7512,7 +7512,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_trendline.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_trendline.size(); i < length; ++i)
 		{
 			CT_Trendline* pVal = oVal.m_trendline[i];
 			if(NULL != pVal)
@@ -7522,7 +7522,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		for(int i = 0, length = oVal.m_errBars.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_errBars.size(); i < length; ++i)
 		{
 			CT_ErrBars* pVal = oVal.m_errBars[i];
 			if(NULL != pVal)
@@ -7725,7 +7725,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_DLbls(CT_DLbls& oVal)
 	{
-		for(int i = 0, length = oVal.m_dLbl.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dLbl.size(); i < length; ++i)
 		{
 			CT_DLbl* pVal = oVal.m_dLbl[i];
 			if(NULL != pVal)
@@ -7735,7 +7735,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		for(int i = 0, length = oVal.m_Items.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_Items.size(); i < length; ++i)
 		{
 			ItemsChoiceType3 eType = *oVal.m_ItemsElementName0[i];
 			toBin(eType, oVal.m_Items[i]);
@@ -7910,7 +7910,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_idx);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_Items.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_Items.size(); i < length; ++i)
 		{
 			ItemsChoiceType4 eType = *oVal.m_ItemsElementName0[i];
 			toBin(eType, oVal.m_Items[i]);
@@ -8337,7 +8337,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_ptCount);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_pt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_pt.size(); i < length; ++i)
 		{
 			CT_NumVal* pVal = oVal.m_pt[i];
 			if(NULL != pVal)
@@ -8452,7 +8452,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_lvl(CT_lvl& oVal)
 	{
-		for(int i = 0, length = oVal.m_pt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_pt.size(); i < length; ++i)
 		{
 			CT_StrVal* pVal = oVal.m_pt[i];
 			if(NULL != pVal)
@@ -8471,7 +8471,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_ptCount);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_lvl.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_lvl.size(); i < length; ++i)
 		{
 			CT_lvl* pVal = oVal.m_lvl[i];
 			if(NULL != pVal)
@@ -8496,7 +8496,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_BubbleSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -8536,7 +8536,7 @@ namespace BinXlsxRW
 			WriteCT_SizeRepresents(*oVal.m_sizeRepresents);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -8555,7 +8555,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_bandFmts(CT_bandFmts& oVal)
 	{
-		for(int i = 0, length = oVal.m_bandFmt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_bandFmt.size(); i < length; ++i)
 		{
 			CT_BandFmt* pVal = oVal.m_bandFmt[i];
 			if(NULL != pVal)
@@ -8574,7 +8574,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_wireframe);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_SurfaceSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -8590,7 +8590,7 @@ namespace BinXlsxRW
 			WriteCT_bandFmts(*oVal.m_bandFmts);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -8671,7 +8671,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_wireframe);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_SurfaceSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -8687,7 +8687,7 @@ namespace BinXlsxRW
 			WriteCT_bandFmts(*oVal.m_bandFmts);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -8735,7 +8735,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_custSplit(CT_custSplit& oVal)
 	{
-		for(int i = 0, length = oVal.m_secondPiePt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_secondPiePt.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_secondPiePt[i];
 			if(NULL != pVal)
@@ -8760,7 +8760,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_PieSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -8806,7 +8806,7 @@ namespace BinXlsxRW
 			WriteCT_SecondPieSize(*oVal.m_secondPieSize);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_serLines.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_serLines.size(); i < length; ++i)
 		{
 			CT_ChartLines* pVal = oVal.m_serLines[i];
 			if(NULL != pVal)
@@ -8853,7 +8853,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_explosion);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -8917,7 +8917,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_BarSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -8951,7 +8951,7 @@ namespace BinXlsxRW
 			WriteCT_Shape(*oVal.m_shape);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9024,7 +9024,7 @@ namespace BinXlsxRW
 			WriteCT_PictureOptions(*oVal.m_pictureOptions);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -9040,7 +9040,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_trendline.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_trendline.size(); i < length; ++i)
 		{
 			CT_Trendline* pVal = oVal.m_trendline[i];
 			if(NULL != pVal)
@@ -9120,7 +9120,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_BarSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9148,7 +9148,7 @@ namespace BinXlsxRW
 			WriteCT_Overlap(*oVal.m_overlap);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_serLines.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_serLines.size(); i < length; ++i)
 		{
 			CT_ChartLines* pVal = oVal.m_serLines[i];
 			if(NULL != pVal)
@@ -9158,7 +9158,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9192,7 +9192,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_PieSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9244,7 +9244,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_PieSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9275,7 +9275,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_PieSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9334,7 +9334,7 @@ namespace BinXlsxRW
 			WriteCT_Marker(*oVal.m_marker);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -9350,7 +9350,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_trendline.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_trendline.size(); i < length; ++i)
 		{
 			CT_Trendline* pVal = oVal.m_trendline[i];
 			if(NULL != pVal)
@@ -9360,7 +9360,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		for(int i = 0, length = oVal.m_errBars.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_errBars.size(); i < length; ++i)
 		{
 			CT_ErrBars* pVal = oVal.m_errBars[i];
 			if(NULL != pVal)
@@ -9419,7 +9419,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_ScatterSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9435,7 +9435,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9482,7 +9482,7 @@ namespace BinXlsxRW
 			WriteCT_Marker(*oVal.m_marker);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -9541,7 +9541,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_RadarSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9557,7 +9557,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9576,7 +9576,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_StockChart(CT_StockChart& oVal)
 	{
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_LineSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9610,7 +9610,7 @@ namespace BinXlsxRW
 			WriteCT_UpDownBars(*oVal.m_upDownBars);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9657,7 +9657,7 @@ namespace BinXlsxRW
 			WriteCT_Marker(*oVal.m_marker);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -9673,7 +9673,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_trendline.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_trendline.size(); i < length; ++i)
 		{
 			CT_Trendline* pVal = oVal.m_trendline[i];
 			if(NULL != pVal)
@@ -9762,7 +9762,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_LineSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9790,7 +9790,7 @@ namespace BinXlsxRW
 			WriteCT_GapAmount(*oVal.m_gapDepth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9831,7 +9831,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_LineSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9877,7 +9877,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_smooth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9908,7 +9908,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_AreaSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -9936,7 +9936,7 @@ namespace BinXlsxRW
 			WriteCT_GapAmount(*oVal.m_gapDepth);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -9983,7 +9983,7 @@ namespace BinXlsxRW
 			WriteCT_PictureOptions(*oVal.m_pictureOptions);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_dPt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_dPt.size(); i < length; ++i)
 		{
 			CT_DPt* pVal = oVal.m_dPt[i];
 			if(NULL != pVal)
@@ -9999,7 +9999,7 @@ namespace BinXlsxRW
 			WriteCT_DLbls(*oVal.m_dLbls);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_trendline.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_trendline.size(); i < length; ++i)
 		{
 			CT_Trendline* pVal = oVal.m_trendline[i];
 			if(NULL != pVal)
@@ -10009,7 +10009,7 @@ namespace BinXlsxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
-		for(int i = 0, length = oVal.m_errBars.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_errBars.size(); i < length; ++i)
 		{
 			CT_ErrBars* pVal = oVal.m_errBars[i];
 			if(NULL != pVal)
@@ -10052,7 +10052,7 @@ namespace BinXlsxRW
 			WriteCT_Boolean(*oVal.m_varyColors);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_ser.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_ser.size(); i < length; ++i)
 		{
 			CT_AreaSer* pVal = oVal.m_ser[i];
 			if(NULL != pVal)
@@ -10074,7 +10074,7 @@ namespace BinXlsxRW
 			WriteCT_ChartLines(*oVal.m_dropLines);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_axId.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_axId.size(); i < length; ++i)
 		{
 			CT_UnsignedInt* pVal = oVal.m_axId[i];
 			if(NULL != pVal)
@@ -10099,12 +10099,12 @@ namespace BinXlsxRW
 			WriteCT_Layout(*oVal.m_layout);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_Items.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_Items.size(); i < length; ++i)
 		{
 			ItemsChoiceType5 eType = *oVal.m_ItemsElementName0[i];
 			toBin(eType, oVal.m_Items[i]);
 		}
-		for(int i = 0, length = oVal.m_Items1.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_Items1.size(); i < length; ++i)
 		{
 			ItemsChoiceType6 eType = *oVal.m_ItemsElementName1[i];
 			toBin(eType, oVal.m_Items1[i]);
@@ -10517,7 +10517,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_pivotFmts(CT_pivotFmts& oVal)
 	{
-		for(int i = 0, length = oVal.m_pivotFmt.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_pivotFmt.size(); i < length; ++i)
 		{
 			CT_PivotFmt* pVal = oVal.m_pivotFmt[i];
 			if(NULL != pVal)
@@ -10656,7 +10656,7 @@ namespace BinXlsxRW
 			WriteCT_UnsignedInt(*oVal.m_fmtId);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		for(int i = 0, length = oVal.m_extLst.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_extLst.size(); i < length; ++i)
 		{
 			CT_extLst* pVal = oVal.m_extLst[i];
 			if(NULL != pVal)
@@ -10696,7 +10696,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteAlternateContent(AlternateContent& oVal)
 	{
-		for(int i = 0, length = oVal.m_Choice.size(); i < length; ++i)
+		for(size_t i = 0, length = oVal.m_Choice.size(); i < length; ++i)
 		{
 			AlternateContentChoice* pVal = oVal.m_Choice[i];
 			if(NULL != pVal)

@@ -192,7 +192,7 @@ namespace OOX
 				if(pComments->m_oCommentList.IsInit())
 				{
 					std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
-					for(unsigned int i = 0, length = aComments.size(); i < length; ++i)
+					for(size_t i = 0, length = aComments.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CComment* pComment = aComments[i];
 						if(pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
@@ -211,20 +211,20 @@ namespace OOX
 								OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 								if(NULL != pSi)
 									pCommentItem->m_oText.reset(pSi);
-								std::wstring sNewId = boost::lexical_cast<std::wstring>(pCommentItem->m_nRow.get()) + L"-" + boost::lexical_cast<std::wstring>(pCommentItem->m_nCol.get());
+                                std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
 								m_mapComments [sNewId] = pCommentItem;
 							}
 						}
 					}
 				}
 
-				for(unsigned int i = 0, length = pVmlDrawing->m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = pVmlDrawing->m_arrItems.size(); i < length; ++i)
 				{
 					OOX::Vml::CShape* pShape =  dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
 					
 					if (pShape == NULL) continue;
 
-					for(unsigned int j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
+					for(size_t j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if( OOX::et_v_ClientData == pElem->getType())
@@ -234,7 +234,7 @@ namespace OOX
 							{
 								int nRow = pClientData->m_oRow->GetValue();
 								int nCol = pClientData->m_oColumn->GetValue();
-								std::wstring sId = boost::lexical_cast<std::wstring>(nRow) + L"-" + boost::lexical_cast<std::wstring>(nCol);
+                                std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
 								std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 								if(pPair != m_mapComments.end())
@@ -261,7 +261,7 @@ namespace OOX
 									if(pClientData->m_oSizeWithCells.IsInit())
 										pCommentItem->m_bSize = pClientData->m_oSizeWithCells->ToBool();
 
-									for(unsigned int k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
+									for(size_t k = 0 ,length3 = pShape->m_oStyle->m_arrProperties.size(); k < length3; ++k)
 									{
 										if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
 
@@ -347,8 +347,8 @@ namespace OOX
 					m_oCols->toXML(sXml);
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
-				for (unsigned int nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
-					m_arrConditionalFormatting[nIndex]->toXML();
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
 				if(m_oMergeCells.IsInit())
@@ -425,6 +425,10 @@ namespace OOX
 				m_mapComments.clear();
 
 				// delete Conditional Formatting
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+				{
+					delete m_arrConditionalFormatting[nIndex];
+				}
 				m_arrConditionalFormatting.clear();
 			}
 		private:

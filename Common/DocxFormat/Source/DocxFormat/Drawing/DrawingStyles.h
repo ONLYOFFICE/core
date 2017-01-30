@@ -165,6 +165,8 @@ namespace OOX
 				case et_a_hlink:    sResult += _T("</a:hlink>"); break;
 				case et_a_lt1:      sResult += _T("</a:lt1>"); break;
 				case et_a_lt2:      sResult += _T("</a:lt2>"); break;
+                default:
+                    break;
 				}
 
 				return sResult;
@@ -206,7 +208,9 @@ namespace OOX
 					case et_a_noFill:   pItem = new CNoFillProperties        ( (const CNoFillProperties&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_pattFill: pItem = new CPatternFillProperties   ( (const CPatternFillProperties&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_solidFill:pItem = new CSolidColorFillProperties( (const CSolidColorFillProperties&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
 						m_arrItems.push_back( pItem );
@@ -523,7 +527,9 @@ namespace OOX
 					case et_a_noFill:   pItem = new CNoFillProperties        ( (const CNoFillProperties&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_pattFill: pItem = new CPatternFillProperties   ( (const CPatternFillProperties&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_solidFill:pItem = new CSolidColorFillProperties( (const CSolidColorFillProperties&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
 						m_arrItems.push_back( pItem );
@@ -753,7 +759,9 @@ namespace OOX
 				case et_a_lnDef: sResult += _T("</a:lnDef>"); break;
 				case et_a_spDef: sResult += _T("</a:spDef>"); break;
 				case et_a_txDef: sResult += _T("</a:txDef>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}
@@ -935,7 +943,9 @@ namespace OOX
 				{
 				case et_a_majorFont: sResult += _T("</a:majorFont>"); break;
 				case et_a_minorFont: sResult += _T("</a:minorFont>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}

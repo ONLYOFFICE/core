@@ -344,7 +344,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	std::wstring style_name;
 	
 	odf_element_state		state={chart_elm, style_name, style_elm, level};
-	odf_chart_level_state	level_state = {NULL,NULL,NULL,NULL,chart_elm};
+	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, chart_elm};
 
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_)
@@ -366,18 +366,18 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 
 	impl_->current_chart_state_.elements_.push_back(state);
 }
-void odf_chart_context::set_chart_size(double width_pt, double height_pt)
+void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt)
 {
-	if (width_pt <0.01 || height_pt < 0.01)return;
+	if (!width_pt && !height_pt) return;
 
-	impl_->current_chart_state_.chart_height_pt = height_pt;
-	impl_->current_chart_state_.chart_width_pt = width_pt;
+	impl_->current_chart_state_.chart_height_pt = *height_pt;
+	impl_->current_chart_state_.chart_width_pt = *width_pt;
 	
 	chart_chart *chart = impl_->get_current_chart();
 	if (!chart)return;
 
-	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 void odf_chart_context::set_chart_type(std::wstring type)
 {

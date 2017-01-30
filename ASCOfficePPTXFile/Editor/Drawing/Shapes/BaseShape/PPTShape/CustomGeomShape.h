@@ -554,7 +554,7 @@ namespace NSCustomVML
 
             m_arVertices.clear();
 
-            for (int ind = 0; ind < values.size(); ++ind)
+            for (size_t ind = 0; ind < values.size(); ++ind)
             {
                 Aggplus::POINT oPoint;
 
@@ -563,13 +563,13 @@ namespace NSCustomVML
 
                 LONG lMinF = (LONG)0x80000000;
                 LONG lMaxF = (LONG)0x8000007F;
-                if (lMinF <= (DWORD)oPoint.x)
+                if (lMinF <= oPoint.x)
                 {
                     int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
 
                     bool b = false;
                 }
-                if (lMinF <= (DWORD)oPoint.y)
+                if (lMinF <= oPoint.y)
                 {
                     int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
 
@@ -612,13 +612,13 @@ namespace NSCustomVML
 
                 LONG lMinF = (LONG)0x80000000;
                 LONG lMaxF = (LONG)0x8000007F;
-                if (lMinF <= (DWORD)oPoint.x)
+                if (lMinF <= oPoint.x)
                 {
                     int nGuideIndex = (DWORD)oPoint.x - 0x80000000;
 
                     bool b = false;
                 }
-                if (lMinF <= (DWORD)oPoint.y)
+                if (lMinF <= oPoint.y)
                 {
                     int nGuideIndex = (DWORD)oPoint.y - 0x80000000;
 
@@ -639,7 +639,7 @@ namespace NSCustomVML
             if (!values.empty())
                 m_bIsPathPresent = true;
 
-            for (int ind = 0; ind <  values.size(); ++ind)
+            for (size_t ind = 0; ind <  values.size(); ++ind)
             {
                 CSegment oInfo;
                 int count = oInfo.Read(values[ind]);
@@ -841,7 +841,7 @@ namespace NSCustomVML
                         if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (DWORD)m_arVertices[nV].y - (DWORD)lMinF;
 
                         std::wstring str = _T("");
-                        if (nGuideIndex_x >= 0 && nGuideIndex_x < m_arGuides.size())
+                        if (nGuideIndex_x >= 0 && nGuideIndex_x < (int)m_arGuides.size())
                         {
                             strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
                         }
@@ -849,7 +849,7 @@ namespace NSCustomVML
                         {
                             strPath += std::to_wstring(m_arVertices[nV].x) + L",";
                         }
-                        if (nGuideIndex_y >= 0 && nGuideIndex_y < m_arGuides.size())
+                        if (nGuideIndex_y >= 0 && nGuideIndex_y < (int)m_arGuides.size())
                         {
                             strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
                         }

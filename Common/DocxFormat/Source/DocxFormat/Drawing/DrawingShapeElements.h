@@ -1013,7 +1013,9 @@ namespace OOX
 					case et_a_lnTo:       pItem = new CPath2DLineTo       ( (const CPath2DLineTo&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_moveTo:     pItem = new CPath2DMoveTo       ( (const CPath2DMoveTo&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_quadBezTo:  pItem = new CPath2DQuadBezierTo ( (const CPath2DQuadBezierTo&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
                         m_arrItems.push_back ( pItem );
@@ -1214,7 +1216,9 @@ namespace OOX
 					{
 					case et_a_ahPolar: pItem = new CPolarAdjustHandle( (const CPolarAdjustHandle&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_ahXY:    pItem = new CXYAdjustHandle   ( (const CXYAdjustHandle&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
                         m_arrItems.push_back( pItem );

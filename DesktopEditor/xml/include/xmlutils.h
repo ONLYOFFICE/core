@@ -221,6 +221,9 @@ namespace XmlUtils
 
 		int GetAttributeInt(const std::string& sName, const int& _default = 0);
 		int GetAttributeInt(const std::wstring& sName, const int& _default = 0);
+		
+		bool SetAttributeInt(const std::wstring& sName, const int& value);
+		
 		int ReadAttributeInt(const std::wstring& str, const int& nDef = 0);
 		double ReadAttributeDouble(const std::wstring& str, const double& nDef = 0);
 

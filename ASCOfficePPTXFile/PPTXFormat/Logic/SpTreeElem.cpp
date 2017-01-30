@@ -105,7 +105,7 @@ namespace PPTX
 								if (nA > 65536)
 									nA = 65536;
 
-								fopacity = _T(" opacity=\"") + XmlUtils::IntToString(nA) + _T("f\"");
+                                fopacity = _T(" opacity=\"") + std::to_wstring(nA) + _T("f\"");
 							}
 							break;
 						}
@@ -136,7 +136,7 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-					strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 				}
 			}
 			else if (fill.is<GradFill>())
@@ -151,7 +151,7 @@ namespace PPTX
 					if (A != 255)
 					{
 						int fopacity = (int)(((double)A / 255.0) * 65536);
-						strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+                        strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 					}
 				}
 			}
@@ -167,7 +167,7 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-					strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 				}
 			}
 

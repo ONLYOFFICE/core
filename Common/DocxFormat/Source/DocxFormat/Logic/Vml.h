@@ -2175,7 +2175,7 @@ namespace OOX
 				{
                     std::vector<std::wstring> arSplit;
                     boost::algorithm::split(arSplit, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-                    for (int i = 0 ; i < arSplit.size(); i++)
+                    for (size_t i = 0 ; i < arSplit.size(); i++)
                     {
                         aAnchor.push_back(XmlUtils::GetInteger(arSplit[i]));
                     }
@@ -2587,7 +2587,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>                                     m_oId;
+			nullable<std::wstring>                                m_oId;
 			nullable<SimpleTypes::Vml::CCssStyle>                 m_oStyle;
 			SimpleTypes::Vml::CVml_TextBoxInset                   m_oInset;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>    m_oSingleClick;

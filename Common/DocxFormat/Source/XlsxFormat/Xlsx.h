@@ -450,11 +450,11 @@ namespace OOX
 				if(pWorksheet->m_oSheetData.IsInit())
 				{
 					std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
-					for(unsigned int i = 0, length = aRows.size(); i < length; ++i)
+					for(size_t i = 0, length = aRows.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CRow* pRow = aRows[i];
 						std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
-						for(unsigned int j = 0, length2 = aCells.size(); j < length2; ++j)
+						for(size_t j = 0, length2 = aCells.size(); j < length2; ++j)
 						{
 							OOX::Spreadsheet::CCell* pCell = aCells[j];
 							if(pCell->m_oType.IsInit())
@@ -470,7 +470,7 @@ namespace OOX
 										int nIndex = pSharedStrings->AddSi(pSi);
 										//меняем значение ячейки
 										pCell->m_oValue.Init();
-										pCell->m_oValue->m_sText = boost::lexical_cast<std::wstring>(nIndex);
+                                        pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 										//меняем тип ячейки
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -492,7 +492,7 @@ namespace OOX
 									int nIndex = pSharedStrings->AddSi(pSi);
 									//меняем значение ячейки
 									pCell->m_oValue.Init();
-									pCell->m_oValue->m_sText = boost::lexical_cast<std::wstring>(nIndex);
+                                    pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 									//меняем тип ячейки
 									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{

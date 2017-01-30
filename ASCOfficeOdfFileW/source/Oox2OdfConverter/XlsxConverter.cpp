@@ -94,13 +94,26 @@ OOX::CTheme* XlsxConverter::oox_theme()
 	else
 		return NULL;
 }
-
-std::wstring	XlsxConverter::find_link_by_id (std::wstring sId, int type)
+smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
+{
+	smart_ptr<OOX::File> oFile;
+	
+	if (xlsx_current_drawing)
+		oFile = xlsx_current_drawing->Find(sId);
+	else if (oox_current_child_document)
+		oFile = oox_current_child_document->Find(sId);
+	else if (oox_current_child_document_spreadsheet)
+		oFile = oox_current_child_document_spreadsheet->Find(sId);
+		
+	return oFile;
+}
+std::wstring XlsxConverter::find_link_by_id (std::wstring sId, int type)
 {
     std::wstring ref;
-	if (type==1)
+
+	if (type == 1)
 	{
-		if (xlsx_current_drawing)
+		if (ref.empty() && xlsx_current_drawing)
 		{
 			smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
@@ -174,7 +187,7 @@ void XlsxConverter::convert_sheets()
 	}
 	if(Workbook->m_oSheets.IsInit())
 	{				
-		for(unsigned int i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
+		for(size_t i = 0, length = Workbook->m_oSheets->m_arrItems.size(); i < length; ++i)
 		{
 			OOX::Spreadsheet::CSheet* pSheet = Workbook->m_oSheets->m_arrItems[i];
 				
@@ -535,7 +548,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
 	
 	ods_context->start_cell_text();
 
-	for(int i = 0; i < oox_rtf_text->m_arrItems.size(); ++i)
+	for(size_t i = 0; i < oox_rtf_text->m_arrItems.size(); ++i)
 	{
 		convert(oox_rtf_text->m_arrItems[i]);
 	}
@@ -916,7 +929,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 		bool bPaneY			= false;
 		int ActiveCellX = -1, ActiveCellY = -1;
 
-		for (int j = 0; j < sheet_view->m_arrItems.size(); j++)
+		for (size_t j = 0; j < sheet_view->m_arrItems.size(); j++)
 		{
 			OOX::Spreadsheet::CSelection *selection = sheet_view->m_arrItems[j];
 
@@ -1903,55 +1916,60 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
+
+	if (!oox_graphic_frame->m_oGraphic.IsInit()) return;
+	if (!oox_graphic_frame->m_oGraphic->m_oGraphicData.IsInit()) return;
+
 ////////////////////////////////////////////////////////////////////////////////
 	ods_context->drawing_context()->start_drawing();
 	
-	ods_context->drawing_context()->start_object(ods_context->get_next_name_object());
-	{		
-		double width =0, height =0;
-		ods_context->drawing_context()->get_size(width, height);
-		
-		if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
-		{
-			if (oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.IsInit())
-			{
-				OoxConverter::convert(oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.GetPointer());		
-			}
-		}
-		if (oox_graphic_frame->m_oChartGraphic.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData.IsInit())
-		{
-			if (oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
-			{
-				//диаграмма
-                std::wstring sId = oox_graphic_frame->m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue();
-				
-				smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
-				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Charts == oFile->type())
-				{
-					OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
-					
-					if (pChart)
-					{
-						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());
-						
-						oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);
-						
-						odf_context()->start_chart();
-							odf_context()->chart_context()->set_chart_size(width, height);
-							OoxConverter::convert(&pChart->m_oChartSpace);
-						odf_context()->end_chart();
-						
-						oox_current_child_document_spreadsheet = NULL;
-					}
-				}
-			}
-			//могут быть и другие типы объектов
-		}
+	if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
+	{
+		OoxConverter::convert(oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.GetPointer());		
+	}	
+	
+	if ( OOX::Drawing::graphictypeChart == oox_graphic_frame->m_oGraphic->m_oGraphicData->m_eGraphicType)
+	{
+		convert(oox_graphic_frame->m_oGraphic->m_oGraphicData->m_oChart.GetPointer());
 	}
-	ods_context->drawing_context()->end_object();	
+	else if ( OOX::Drawing::graphictypeDiagram == oox_graphic_frame->m_oGraphic->m_oGraphicData->m_eGraphicType)
+	{
+		OoxConverter::convert(oox_graphic_frame->m_oGraphic->m_oGraphicData->m_oDiagrammParts.GetPointer());
+	}
 	ods_context->drawing_context()->end_drawing();
 }
 
+void XlsxConverter::convert(OOX::Spreadsheet::CGraphicChart *oox_chart)
+{
+	if (!oox_chart) return;
+	if( !oox_chart->m_oRId.IsInit()) return;
+
+	_CP_OPT(double) width, height;
+	odf_context()->drawing_context()->get_size (width, height);
+				
+	smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(oox_chart->m_oRId->GetValue());
+	if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Charts == oFile->type())
+	{
+		OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
+		
+		if (pChart)
+		{
+			oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);	
+			odf_context()->drawing_context()->start_object(ods_context->get_next_name_object());
+			{
+				odf_context()->start_chart();
+					odf_context()->chart_context()->set_chart_size(width, height);		
+		
+					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());			
+			
+					OoxConverter::convert(&pChart->m_oChartSpace);
+				odf_context()->end_chart();
+			}
+			odf_context()->drawing_context()->end_object();	
+			oox_current_child_document_spreadsheet = NULL;
+		}
+	}
+}
 
 void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)
 {
@@ -2077,7 +2095,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 
 	if (oox_cond_fmt->m_oSqRef.IsInit())	
 	{
-		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef->GetValue());
+		ods_context->current_table().start_conditional_format(oox_cond_fmt->m_oSqRef.get());
 
 		for (unsigned int i=0; i< oox_cond_fmt->m_arrItems.size(); i++)
 			convert(oox_cond_fmt->m_arrItems[i]);//rule

@@ -112,10 +112,11 @@ namespace OOX
 		//http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument
 		//http://purl.oclc.org/ooxml/officeDocument/relationships/officeDocument
 		//is valid and equal so compare tail
-        int nIndexType = type.rfind('/');
+        int nIndexType = (int)type.rfind('/');
 		std::wstring relationType = file.RelationType();
-        int nIndexFile = relationType.rfind('/');
-        std::wstring tempType = (-1 == nIndexType) ? type : type.substr(nIndexType);
+        int nIndexFile = (int)relationType.rfind('/');
+        
+		std::wstring tempType = (-1 == nIndexType) ? type : type.substr(nIndexType);
         std::wstring tempFile = (-1 == nIndexFile) ? relationType : relationType.substr(nIndexFile);
 		return (tempType == tempFile);
 	}

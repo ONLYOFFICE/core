@@ -448,7 +448,7 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 int odt_conversion_context::get_current_section_columns()
 {
 	if (sections_.size() > 0)
-		sections_.back().count_columns;
+		return sections_.back().count_columns;
 	else return 1;
 }
 void odt_conversion_context::add_section(bool continuous)

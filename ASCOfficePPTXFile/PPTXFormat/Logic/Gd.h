@@ -80,11 +80,11 @@ namespace PPTX
 				{
 					pWriter->WriteString2(0, name);
 					
-					int nStart = 0;
-					int nCurrent = 0;
+					size_t nStart = 0;
+					size_t nCurrent = 0;
 
                     const wchar_t* pData = fmla->c_str();
-					int nLen = fmla->length();
+					size_t nLen = fmla->length();
 
 					int nFound = 0;
 					while (nCurrent < nLen)

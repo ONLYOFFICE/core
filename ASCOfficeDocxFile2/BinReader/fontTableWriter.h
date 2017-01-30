@@ -126,10 +126,7 @@ namespace Writers
 						BYTE cElem = pFontInfo->m_aPanose[i];
 						if(0 != cElem)
 							bUsePanose = true;
-						if(cElem > 0xF)
-                            sPanose += XmlUtils::IntToString(cElem, L"%X");
-						else
-                            sPanose+= XmlUtils::IntToString(cElem, L"0%X");
+                        sPanose += XmlUtils::IntToString(cElem, L"%02X");
 					}
 					
 				}

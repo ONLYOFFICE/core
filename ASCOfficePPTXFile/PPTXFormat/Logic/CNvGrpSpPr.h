@@ -104,25 +104,26 @@ namespace PPTX
 					!noSelect.is_init() &&
 					!noUngrp.is_init())
 				{
-					pWriter->WriteString(_T("<") + strNS + _T(":cNvGrpSpPr/>"));
+					pWriter->WriteString(L"<" + strNS + L":cNvGrpSpPr/>");
 					return;
 				}
 
-				pWriter->StartNode(strNS + _T(":cNvGrpSpPr"));
-				pWriter->StartNode(_T("a:grpSpLocks"));
+				pWriter->StartNode(strNS + L":cNvGrpSpPr");
+					pWriter->EndAttributes();
+				pWriter->StartNode(L"a:grpSpLocks");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("noChangeAspect"), noChangeAspect);
-				pWriter->WriteAttribute(_T("noGrp"), noGrp);
-				pWriter->WriteAttribute(_T("noMove"), noMove);
-				pWriter->WriteAttribute(_T("noResize"), noResize);
-				pWriter->WriteAttribute(_T("noRot"), noRot);
-				pWriter->WriteAttribute(_T("noSelect"), noSelect);
-				pWriter->WriteAttribute(_T("noUngrp"), noUngrp);
+				pWriter->WriteAttribute(L"noChangeAspect", noChangeAspect);
+				pWriter->WriteAttribute(L"noGrp", noGrp);
+				pWriter->WriteAttribute(L"noMove", noMove);
+				pWriter->WriteAttribute(L"noResize", noResize);
+				pWriter->WriteAttribute(L"noRot", noRot);
+				pWriter->WriteAttribute(L"noSelect", noSelect);
+				pWriter->WriteAttribute(L"noUngrp", noUngrp);
 				pWriter->EndAttributes();
 				
-				pWriter->EndNode(_T("a:grpSpLocks"));
-				pWriter->EndNode(strNS + _T(":cNvGrpSpPr"));
+				pWriter->EndNode(L"a:grpSpLocks");
+				pWriter->EndNode(strNS + L":cNvGrpSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

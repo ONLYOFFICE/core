@@ -449,7 +449,7 @@ namespace PPTX2EditorAdvanced
             oFile.CreateFile(strDstFile);
 #endif
 			std::string strPrefix = "PPTY;v1;" + std::to_string(nBinBufferLen) + ";";
-            oFile.WriteFile((void*)strPrefix.c_str(), strPrefix.length());
+            oFile.WriteFile((void*)strPrefix.c_str(), (DWORD)strPrefix.length());
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}

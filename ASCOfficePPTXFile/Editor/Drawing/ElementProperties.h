@@ -196,7 +196,7 @@ namespace NSPresentationEditor
 		inline void SetAt(const CElementProperty::Type& eType, std::wstring strValue)
 		{
 			CElementProperty oProp(eType);
-			oProp.m_dwValue = strValue.length() + 1;
+			oProp.m_dwValue = (DWORD)strValue.length() + 1;
 
 			oProp.m_strAdvanced = strValue;
 

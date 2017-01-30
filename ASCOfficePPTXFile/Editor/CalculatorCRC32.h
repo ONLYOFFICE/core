@@ -59,8 +59,8 @@ public:
 	{
 		InitCRCTable();
 		DWORD dwRes = m_dwInitCrc;
-		int nSize = sStream.length();
-		for (int i=0;i<nSize;i++)
+		
+		for (size_t i=0; i < sStream.length(); i++)
 		{
 			dwRes = m_arCRCTable[(dwRes ^ (BYTE)sStream[i]) & 0xFF] ^ (dwRes >> 8);
 		}

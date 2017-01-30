@@ -335,8 +335,8 @@ namespace PPTX
 
             pReader->Skip(1); // type
 
-            ULONG size   = pReader->GetULong();
-            ULONG end    = start + 1 + size + 4;
+            LONG size   = pReader->GetULong();
+            LONG end    = start + 1 + size + 4;
 
 			pReader->Skip(1); // attribute start
 			while (true)

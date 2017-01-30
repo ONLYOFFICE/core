@@ -117,11 +117,11 @@ namespace MathEquation
 			}
 			LONG GetSize()
 			{
-				return arrRun.size();
+				return (LONG)arrRun.size();
 			}			
 			bool GetElem (LONG lPos, EquationRun &oRun)
 			{
-				if (lPos < arrRun.size() )
+				if (lPos < (LONG)arrRun.size() )
 				{
 					oRun = arrRun[lPos];
 					return true;

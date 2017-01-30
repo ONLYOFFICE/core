@@ -771,6 +771,7 @@ namespace DocFormatUtils
 		{
             return (std::to_wstring(value));
 		}
+
 		static inline std::wstring DoubleToWideString(double value)
 		{
 			std::wstringstream src;			

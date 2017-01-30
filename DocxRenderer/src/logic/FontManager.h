@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Common.h"
 #include "FontManagerBase.h"
 
@@ -224,7 +224,7 @@ namespace NSDocxRenderer
 			dBoxWidth	= (double)fwidth;
 			dBoxHeight	= (double)fheight;
 
-			// переводим в миллиметры
+			// РїРµСЂРµРІРѕРґРёРј РІ РјРёР»Р»РёРјРµС‚СЂС‹
 			dBoxX		*= c_dPixToMM;
 			dBoxY		*= c_dPixToMM;
 			dBoxWidth	*= c_dPixToMM;

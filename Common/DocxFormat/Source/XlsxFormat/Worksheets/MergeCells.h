@@ -105,7 +105,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -116,12 +116,14 @@ namespace OOX
 					writer.WriteString(_T("<mergeCells"));
 					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
 					writer.WriteString(_T(">"));
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(_T("</mergeCells>"));
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

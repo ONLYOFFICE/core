@@ -1972,8 +1972,7 @@ namespace NSGuidesVML
         }
         void ConvertAdj(const std::vector<LONG>& arAdj)
         {
-            int nAdjCount = arAdj.size();
-            for (int i = 0; i < nAdjCount; ++i)
+            for (int i = 0; i < (int)arAdj.size(); ++i)
             {
                 m_oAdjRes.WriteString(_T("<a:gd name=\"adj"));
                 m_oAdjRes.WriteINT(i);
@@ -1981,7 +1980,7 @@ namespace NSGuidesVML
                 m_oAdjRes.WriteINT(arAdj[i]);
                 m_oAdjRes.WriteString(_T("\" />"));
             }
-            for (int i = nAdjCount; i <= m_lMaxAdjUse; ++i)
+            for (int i = (int)arAdj.size(); i <= m_lMaxAdjUse; ++i)
             {
                 m_oAdjRes.WriteString(_T("<a:gd name=\"adj"));
                 m_oAdjRes.WriteINT(i);
@@ -1992,8 +1991,7 @@ namespace NSGuidesVML
         }
         void ConvertFormula(const std::vector<CFormula>& arFormulas)
         {
-            int nGuidCount = arFormulas.size();
-            for (int i = 0; i < nGuidCount; ++i)
+            for (size_t i = 0; i < arFormulas.size(); ++i)
             {
                 const CFormula& pFormula = arFormulas[i];
                 m_lIndexSrc++;
@@ -2301,12 +2299,12 @@ namespace NSGuidesVML
                             {
                                 double dScale = (double)pow3_16 / m_oParam.m_lCoef;
 
-                                if (oHandle.gdRef.y >= arAdj.size())
+                                if (oHandle.gdRef.y >= (int)arAdj.size())
                                 {
                                     // дурацкий код. надо память перевыделить, а старую скопировать
                                     // пока сделаю так, чтобы наверняка
                                     int nNewSize = (int)oHandle.gdRef.y + 1;
-                                    while (arAdj.size() < nNewSize)
+                                    while ((int)arAdj.size() < nNewSize)
                                         arAdj.push_back(0);
                                 }
 
@@ -2464,7 +2462,7 @@ namespace NSGuidesVML
             switch (eParamType)
             {
             case ptFormula:
-                if (bExtShape || lParam < m_arIndexDst.size())
+                if (bExtShape || lParam < (int)m_arIndexDst.size())
                 {
                     oWriter.m_oWriter.AddCharNoCheck((WCHAR)'g');
                     oWriter.m_oWriter.AddCharNoCheck((WCHAR)'d');
@@ -2659,7 +2657,7 @@ namespace NSGuidesVML
             LONG lValue;
             bool bRes = true;
 
-            for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
+            for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
             {
                 std::wstring str = oArray[nIndex];
                 lValue = NSGuidesVML::GetValue(oArray[nIndex], eParamType, bRes);
@@ -3540,7 +3538,7 @@ namespace NSGuidesVML
         {
             for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 2)
             {
-                int l = (int)oSlice.m_arPoints.size() - j - 3;
+                int l = (int)(oSlice.m_arPoints.size() - j - 3);
                 if (l >= 0)
                 {
                     m_oPathRes.WriteString(_T("<a:quadBezTo>"));
@@ -3584,7 +3582,7 @@ namespace NSGuidesVML
             LONG nIndex = 0;
             for (size_t j = 0; j < oSlice.m_arPoints.size(); j += 3)
             {
-                int l = (int)oSlice.m_arPoints.size() - j - 3;
+                int l = (int)(oSlice.m_arPoints.size() - j - 3);
                 if ( l >= 0 )
                 {
                     m_oPathRes.WriteString(_T("<a:cubicBezTo>"));
@@ -3627,7 +3625,7 @@ namespace NSGuidesVML
             {
                 nIndex = m_arIndexDst[m_lIndexSrc];
 
-                int l = (int)oSlice.m_arPoints.size() - j - 3;
+                int l = (int)(oSlice.m_arPoints.size() - j - 3);
                 if (l >= 0)
                 {
                     m_oPathRes.WriteString(_T("<a:cubicBezTo>"));

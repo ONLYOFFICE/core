@@ -62,7 +62,10 @@ namespace PPTX
 				bwMode		= oSrc.bwMode;
 				return *this;
 			}
-
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_groupSpPr;
+			}
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

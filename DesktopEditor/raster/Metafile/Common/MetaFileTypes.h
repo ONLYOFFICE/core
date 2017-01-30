@@ -265,9 +265,15 @@ typedef unsigned char BYTE;
 #define BI_JPEG       4L
 #define BI_PNG        5L
 
-#define LAYOUT_LTR                        0x0000
-#define LAYOUT_RTL                        0x0001
-#define LAYOUT_BITMAPORIENTATIONPRESERVED 0x0008
+#ifndef LAYOUT_LTR
+	#define LAYOUT_LTR							0x0000
+#endif
+#ifndef LAYOUT_RTL
+	#define LAYOUT_RTL							0x0001
+#endif
+#ifndef LAYOUT_BITMAPORIENTATIONPRESERVED
+	#define LAYOUT_BITMAPORIENTATIONPRESERVED	0x0008
+#endif
 
 namespace MetaFile
 {

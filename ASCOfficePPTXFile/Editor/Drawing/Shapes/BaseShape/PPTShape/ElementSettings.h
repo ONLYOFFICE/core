@@ -156,8 +156,7 @@ public:
                 RELEASEARRAYOBJECTS(m_pOptions);
                 m_pOptions = new BYTE[m_lValue];
 
-                ULONG lReadBytes = 0;
-                lReadBytes = pStream->read(m_pOptions, m_lValue);
+                ULONG lReadBytes = (ULONG)pStream->read(m_pOptions, m_lValue);
                 if (lReadBytes != m_lValue)
                 {
                     return;

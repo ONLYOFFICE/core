@@ -643,10 +643,14 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 
 	if (vml_textbox->m_oInsetMode.GetValue() == SimpleTypes::insetmodeCustom)
 	{
-		odf_context()->drawing_context()->set_textarea_padding(odf_types::length(vml_textbox->m_oInset.GetLeft(0), odf_types::length::pt).get_value_unit(odf_types::length::cm),
-													odf_types::length(vml_textbox->m_oInset.GetTop(0), odf_types::length::pt).get_value_unit(odf_types::length::cm), 
-													odf_types::length(vml_textbox->m_oInset.GetRight(0), odf_types::length::pt).get_value_unit(odf_types::length::cm),
-													odf_types::length(vml_textbox->m_oInset.GetBottom(0), odf_types::length::pt).get_value_unit(odf_types::length::cm));	
+		_CP_OPT(double) lIns, tIns, rIns, bIns;
+		
+		lIns = odf_types::length(vml_textbox->m_oInset.GetLeft(0),odf_types::length::pt).get_value_unit(odf_types::length::cm);
+		tIns = odf_types::length(vml_textbox->m_oInset.GetTop(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+		rIns = odf_types::length(vml_textbox->m_oInset.GetRight(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+		bIns = odf_types::length(vml_textbox->m_oInset.GetBottom(0), odf_types::length::pt).get_value_unit(odf_types::length::cm);
+		
+		odf_context()->drawing_context()->set_textarea_padding (lIns, tIns, rIns, bIns);
 	}
 
 	odf_context()->drawing_context()->set_textarea_wrap(true);

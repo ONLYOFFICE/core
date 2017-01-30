@@ -314,7 +314,7 @@ namespace SimpleTypes
 			bool bResult = true;
 
 			unResult = 0;
-            for ( int nIndex = sValue.length() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
+            for ( size_t nIndex = sValue.length() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
 			{
 				unResult += HexToInt( (int)sValue[nIndex], bResult ) << nMult;
 			}
@@ -382,7 +382,7 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-            return XmlUtils::IntToString(this->m_eValue, L"%.6X");
+            return XmlUtils::IntToString(this->m_eValue, L"%06X");
 		}
 
 		SimpleType_FromString     (int)
@@ -730,7 +730,7 @@ namespace SimpleTypes
 			if ( m_bUnit )
 				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			else
-				sResult = boost::lexical_cast<std::wstring>( (int)(m_dValue * 20) );
+                sResult = std::to_wstring( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -799,7 +799,7 @@ namespace SimpleTypes
 
         virtual std::wstring      ToString  () const
 		{
-			return boost::lexical_cast<std::wstring>( this->m_eValue);
+            return std::to_wstring( this->m_eValue);
 		}
 
 

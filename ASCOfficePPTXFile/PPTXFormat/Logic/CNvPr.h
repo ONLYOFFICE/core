@@ -46,11 +46,16 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CNvPr)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_cNvPr;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				id		= node.ReadAttributeInt(L"id");
 				name	= node.GetAttribute(L"name");
+				
 				node.ReadAttributeBase(L"descr", descr);
 				node.ReadAttributeBase(L"hidden", hidden);
 				node.ReadAttributeBase(L"title", title);
@@ -193,7 +198,7 @@ namespace PPTX
 
 		public:
 			int					id;
-			std::wstring				name;
+			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;
 			nullable_string		title;

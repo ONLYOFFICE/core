@@ -472,11 +472,11 @@ namespace OOX
         virtual std::wstring      toXML() const
 		{
 			std::wstring sResult;
-			sResult += L"<w:latentStyles w:count=\"" + boost::lexical_cast<std::wstring>(m_oCount.GetValue())	+ L"\"";
+            sResult += L"<w:latentStyles w:count=\"" + std::to_wstring(m_oCount.GetValue())	+ L"\"";
 			sResult += L" w:defLockedState=\""		+ m_oDefLockedState.ToString()	+ L"\"";
 			sResult += L" w:defQFormat=\""			+ m_oDefQFormat.ToString()		+ L"\"";
 			sResult += L" w:defSemiHidden=\""		+ m_oDefSemiHidden.ToString()	+ L"\"";
-			sResult += L" w:defUIPriority=\""		+ boost::lexical_cast<std::wstring>(m_oDefUiPriority.GetValue()) + L"\"";
+            sResult += L" w:defUIPriority=\""		+ std::to_wstring(m_oDefUiPriority.GetValue()) + L"\"";
 			sResult += L" w:defUnhideWhenUsed=\""	+ m_oDefUnhideWhenUsed.ToString();
 			sResult += L"\">";
 

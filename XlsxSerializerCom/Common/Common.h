@@ -67,7 +67,7 @@ namespace SerializeCommon
 		}
 		~CommentData()
 		{
-			for(int i = 0, length = aReplies.size(); i < length; ++i)
+			for(size_t i = 0, length = aReplies.size(); i < length; ++i)
 				delete aReplies[i];
 			aReplies.clear();
 		}

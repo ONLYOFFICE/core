@@ -116,7 +116,7 @@ namespace PPTX
 					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 			}
 
-			if (pDiagramDrawing)
+			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
 			{
 				m_diag			= pDiagramDrawing->m_oShapeTree;
 				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>(dynamic_cast<PPTX::CCommonRels*>(pDiagramDrawing));

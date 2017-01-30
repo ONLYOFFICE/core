@@ -160,7 +160,7 @@ namespace OOX
 		std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
 			std::wstring sRes;
-			for(unsigned int i = 0, length = arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				WritingElement* item = arrItems[i];
 				if (item == NULL) continue;
@@ -262,6 +262,8 @@ namespace OOX
 						}
 					}
 					break;
+                default:
+                    break;
 				}
 			}
 			return sRes;
@@ -302,7 +304,7 @@ namespace OOX
 		}
 		virtual ~CComments()
 		{
-			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
@@ -422,7 +424,7 @@ namespace OOX
 		}
 		virtual ~CCommentsExt()
 		{
-			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
@@ -597,7 +599,7 @@ namespace OOX
 		}
 		virtual ~CPeople()
 		{
-			for(unsigned int i = 0, length = m_arrPeoples.size() ; i < length; ++i)
+			for(size_t i = 0, length = m_arrPeoples.size() ; i < length; ++i)
 				if (m_arrPeoples[i]) delete m_arrPeoples[i];
 			m_arrPeoples.clear();
 		}

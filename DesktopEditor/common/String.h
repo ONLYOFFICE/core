@@ -395,12 +395,12 @@ namespace NSStringExt
 	}
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, const std::wstring wsDelim, std::vector<std::wstring> &arrElements)
 	{
-		unsigned int nDelimLen	= wsDelim.length();
-		unsigned int nPrevPos	= 0;
+		size_t nDelimLen	= wsDelim.length();
+		size_t nPrevPos		= 0;
 
 		if (nDelimLen > 0)
 		{
-			int nPos = wsString.find(wsDelim);
+			size_t nPos = wsString.find(wsDelim);
 			while (std::wstring::npos != nPos)
 			{
 				if (nPrevPos != nPos)
@@ -464,7 +464,7 @@ namespace NSStringExt
 	{
 		int nFromLen	= (int)wsFrom.length();
 		int nToLen		= (int)wsTo.length();
-		int nPos		= -nToLen;
+		size_t nPos		= -nToLen;
 		
 		while (std::wstring::npos != (nPos = wsString.find(wsFrom, nPos + nToLen)))
 		{

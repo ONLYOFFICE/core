@@ -1023,10 +1023,8 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
     if (!oMainNode.GetNodes(L"*", oNodes))
 		return NULL;
 
-	//ULONG lCurrentPosition = m_pBinaryWriter->GetPosition();
 	m_pBinaryWriter->StartRecord(0);
-
-	m_pBinaryWriter->ClearShapeCurSizes();
+	m_pBinaryWriter->ClearCurShapePositionAndSizes();
 
 	LONG lCount = oNodes.GetCount();
 	for (LONG i = 0; i < lCount; ++i)
@@ -1051,15 +1049,24 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 				if (oNodeAnchorInline.IsValid())
 				{
 					XmlUtils::CXmlNode oNodeExt;
-                    if (oNodeAnchorInline.GetNode(L"wp:extent", oNodeExt))
-					{
-                        m_pBinaryWriter->m_lWidthCurShape = oNodeExt.ReadAttributeInt(L"cx");
-                        m_pBinaryWriter->m_lHeightCurShape = oNodeExt.ReadAttributeInt(L"cy");
-					}
 
+					m_pBinaryWriter->m_lXCurShape = 0;
+					m_pBinaryWriter->m_lYCurShape = 0;
+
+					if (oNodeAnchorInline.GetNode(L"wp:extent", oNodeExt))
+					{
+                        m_pBinaryWriter->m_lCxCurShape = oNodeExt.ReadAttributeInt(L"cx");
+                        m_pBinaryWriter->m_lCyCurShape = oNodeExt.ReadAttributeInt(L"cy");
+					}
+					XmlUtils::CXmlNode oNodeDocPr;
+					if (oNodeAnchorInline.GetNode(L"wp:docPr", oNodeDocPr))
+					{//vml shapes without id .. reset all id 
+						oNodeDocPr.SetAttributeInt(L"id", m_lNextId++);
+
+					}
 					SendMainProps(oNodeAnchorInline.GetXml(), pMainProps);
 
-                    XmlUtils::CXmlNode oNodeGraphic = oNodeAnchorInline.ReadNodeNoNS(L"graphic");
+                    XmlUtils::CXmlNode oNodeGraphic		= oNodeAnchorInline.ReadNodeNoNS(L"graphic");
                     XmlUtils::CXmlNode oNodeGraphicData = oNodeGraphic.ReadNodeNoNS(L"graphicData");
 
 					if (oNodeGraphicData.IsValid())
@@ -1083,11 +1090,12 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
                             else if (L"wpc:wpc" == oNodeContent.GetName())
 							{
 								PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree();
+								
 								pTree->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-								pTree->grpSpPr.xfrm->offX = 0;
-								pTree->grpSpPr.xfrm->offY = 0;
-								pTree->grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
-								pTree->grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
+								pTree->grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
+								pTree->grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
+								pTree->grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
+								pTree->grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
 
 								pTree->fromXML(oNodeContent);
 								oElem.InitElem(pTree);
@@ -1104,7 +1112,7 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 							if (!oElem.is_init())
 							{
                                 std::wstring strXFRM = L"<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" +
-                                    std::to_wstring(m_pBinaryWriter->m_lWidthCurShape) + L"\" cy=\"" + std::to_wstring(m_pBinaryWriter->m_lHeightCurShape) + L"\"/></a:xfrm>";
+                                    std::to_wstring(m_pBinaryWriter->m_lCxCurShape) + L"\" cy=\"" + std::to_wstring(m_pBinaryWriter->m_lCyCurShape) + L"\"/></a:xfrm>";
 
                                 std::wstring strUnsupported = L"<wps:wsp \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
@@ -1366,9 +1374,6 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());										
 			if (pDiagramData)
 			{
-				m_strCurrentRelsPath = pDiagramData->m_strFilename;
-				SetCurrentRelsPath();
-
 				for (int i = 0; (pDiagramData->m_oExtLst.IsInit()) && i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
 				{
 					if (pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
@@ -1379,9 +1384,9 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 				}
 			}
 		}
-
 		if (id_drawing.is_init())
 		{
+			oFileDrawing = (*m_pBinaryWriter->m_pCommonRels)->Find(*id_drawing);
 			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 		}
 		if (!pDiagramDrawing)
@@ -1401,7 +1406,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 
 	if (pDiagramDrawing)
 	{
-		result->InitElem(pDiagramDrawing->m_oShapeTree.operator->());
+		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
 	}
 	else
 	{//BG-FSC1.docx
@@ -1414,33 +1419,26 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		{
 			_pElem.grpSpPr.xfrm = new PPTX::Logic::Xfrm();
 
-			_pElem.grpSpPr.xfrm->offX = (int)0;
-			_pElem.grpSpPr.xfrm->offY = (int)0;
-			_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
-			_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
+			_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
+			_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
+			_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
+			_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
 			_pElem.grpSpPr.xfrm->chOffX = (int)0;
 			_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
-			_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
+			_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lCxCurShape;
+			_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lCyCurShape;
 		}
 		else
 		{
-			if (!_pElem.grpSpPr.xfrm->offX.is_init())
-				_pElem.grpSpPr.xfrm->offX = (int)0;
-			if (!_pElem.grpSpPr.xfrm->offY.is_init())
-				_pElem.grpSpPr.xfrm->offY = (int)0;
-			if (!_pElem.grpSpPr.xfrm->extX.is_init())
-				_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lWidthCurShape;
-			if (!_pElem.grpSpPr.xfrm->extY.is_init())
-				_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lHeightCurShape;
-			if (!_pElem.grpSpPr.xfrm->chOffX.is_init())
-				_pElem.grpSpPr.xfrm->chOffX = (int)0;
-			if (!_pElem.grpSpPr.xfrm->chOffY.is_init())
-				_pElem.grpSpPr.xfrm->chOffY = (int)0;
-			if (!_pElem.grpSpPr.xfrm->chExtX.is_init())
-				_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lWidthCurShape;
-			if (!_pElem.grpSpPr.xfrm->chExtY.is_init())
-				_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lHeightCurShape;
+			if (!_pElem.grpSpPr.xfrm->offX.is_init())	_pElem.grpSpPr.xfrm->offX = m_pBinaryWriter->m_lXCurShape;
+			if (!_pElem.grpSpPr.xfrm->offY.is_init())	_pElem.grpSpPr.xfrm->offY = m_pBinaryWriter->m_lYCurShape;
+			if (!_pElem.grpSpPr.xfrm->extX.is_init())	_pElem.grpSpPr.xfrm->extX = m_pBinaryWriter->m_lCxCurShape;
+			if (!_pElem.grpSpPr.xfrm->extY.is_init())	_pElem.grpSpPr.xfrm->extY = m_pBinaryWriter->m_lCyCurShape;
+			
+			if (!_pElem.grpSpPr.xfrm->chOffX.is_init())	_pElem.grpSpPr.xfrm->chOffX = (int)0;
+			if (!_pElem.grpSpPr.xfrm->chOffY.is_init())	_pElem.grpSpPr.xfrm->chOffY = (int)0;
+			if (!_pElem.grpSpPr.xfrm->chExtX.is_init())	_pElem.grpSpPr.xfrm->chExtX = m_pBinaryWriter->m_lCxCurShape;
+			if (!_pElem.grpSpPr.xfrm->chExtY.is_init())	_pElem.grpSpPr.xfrm->chExtY = m_pBinaryWriter->m_lCyCurShape;
 		}
 					
 	}								
@@ -2482,8 +2480,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		}
 		else
 		{
-			m_pBinaryWriter->m_lWidthCurShape = 0;
-			m_pBinaryWriter->m_lHeightCurShape = 0;
+			m_pBinaryWriter->m_lXCurShape = 0;
+			m_pBinaryWriter->m_lYCurShape = 0;
+
+			m_pBinaryWriter->m_lCxCurShape = 0;
+			m_pBinaryWriter->m_lCyCurShape = 0;
 
 			pShape->spPr.xfrm = new PPTX::Logic::Xfrm();
 			pShape->spPr.xfrm->offX = oProps.X;
@@ -2889,13 +2890,16 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	if (oCssStyles.m_mapSettings.end() != pPair)
 		margB = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
 
-	oProps.X = left;
-	oProps.Y = top;
-	oProps.Width = width;
-	oProps.Height = height;
+	oProps.X		= left;
+	oProps.Y		= top;
+	oProps.Width	= width;
+	oProps.Height	= height;
 
-	m_pBinaryWriter->m_lWidthCurShape = width;
-	m_pBinaryWriter->m_lHeightCurShape = height;
+	m_pBinaryWriter->m_lXCurShape = left;
+	m_pBinaryWriter->m_lYCurShape = top;
+
+	m_pBinaryWriter->m_lCxCurShape = width;
+	m_pBinaryWriter->m_lCyCurShape = height;
 
 	if (bIsInline)
 	{

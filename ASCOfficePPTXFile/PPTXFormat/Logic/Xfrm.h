@@ -54,7 +54,11 @@ namespace PPTX
 				return *this;
 			}
 			Xfrm(const Xfrm& oSrc) { *this = oSrc; }
-
+			
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_xfrm;
+			}
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

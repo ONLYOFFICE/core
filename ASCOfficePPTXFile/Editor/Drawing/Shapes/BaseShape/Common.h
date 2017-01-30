@@ -74,7 +74,7 @@ namespace NSStringUtils
     }
     static bool IsNumber(std::wstring str)
     {
-        for (int nIndex = 0; nIndex < str.length(); ++nIndex)
+        for (size_t nIndex = 0; nIndex < str.length(); ++nIndex)
         {
             if (!IsDigit(str[nIndex]))
             {
@@ -125,7 +125,7 @@ namespace NSStringUtils
     {
         std::wstring strPath = strSource;
 
-        for (int nIndex = 0; nIndex < strPath.length(); ++nIndex)
+        for (size_t nIndex = 0; nIndex < strPath.length(); ++nIndex)
         {
             if (nIndex == (strPath.length() - 1))
                 continue;
@@ -212,13 +212,13 @@ namespace NSStringUtils
     static void ParsePath2(std::wstring strSource, std::vector<std::wstring> & ArrayResults)
     {
         std::wstring strPath = strSource;
-        int nLength = strPath.length();
+        size_t nLength = strPath.length();
         //strPath.Replace(_T(" "), _T(","));
         if (strPath.find(wchar_t('h')) != -1)
         {
             wchar_t* pBuff = new wchar_t[nLength + 1];
             int nCur = 0;
-            for (int i = 1; i < nLength; ++i)
+            for (size_t i = 1; i < nLength; ++i)
             {
                 wchar_t _c = strPath[i - 1];
                 if (_c != wchar_t('h'))
@@ -264,8 +264,8 @@ namespace NSStringUtils
             ++nLength;
         }
 
-        int nIndexOld = 0;
-        for (int nIndex = 0; nIndex < nLength; ++nIndex)
+        size_t nIndexOld = 0;
+        for (size_t nIndex = 0; nIndex < nLength; ++nIndex)
         {
             if (nIndex == (nLength - 1))
             {
@@ -366,46 +366,46 @@ namespace NSStringUtils
     {
         bFill = true;
         bStroke = true;
-        int nIndex = strPath.find(_T("nf"));
+        int nIndex = (int)strPath.find(_T("nf"));
         if (-1 != nIndex)
         {
             bFill = false;
             while (-1 != nIndex)
             {
                 strPath.erase(nIndex, 2);
-                nIndex = strPath.find(_T("nf"));
+                nIndex = (int)strPath.find(_T("nf"));
             }
         }
-        nIndex = strPath.find(_T("ns"));
+        nIndex = (int)strPath.find(_T("ns"));
         if (-1 != nIndex)
         {
             bStroke = false;
             while (-1 != nIndex)
             {
                 strPath.erase(nIndex, 2);
-                nIndex = strPath.find(_T("ns"));
+                nIndex = (int)strPath.find(_T("ns"));
             }
         }
 
-        nIndex = strPath.find(_T("F"));
+        nIndex = (int)strPath.find(_T("F"));
         if (-1 != nIndex)
         {
             bFill = false;
             while (-1 != nIndex)
             {
                 strPath.erase(nIndex, 2);
-                nIndex = strPath.find(_T("F"));
+                nIndex = (int)strPath.find(_T("F"));
             }
         }
 
-        nIndex = strPath.find(_T("S"));
+        nIndex = (int)strPath.find(_T("S"));
         if (-1 != nIndex)
         {
             bStroke = false;
             while (-1 != nIndex)
             {
                 strPath.erase(nIndex, 2);
-                nIndex = strPath.find(_T("S"));
+                nIndex = (int)strPath.find(_T("S"));
             }
         }
     }

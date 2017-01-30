@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "ElementShape.h"
 #include "ElementParagraph.h"
 #include "ElementImage.h"
@@ -152,7 +152,7 @@ namespace NSDocxRenderer
 		{
 			if ((NULL == m_pCurrentLine) || (TextAssociationTypeDefault == m_eTextAssociationType))
 			{
-				// пустая (в плане текста) страница
+				// РїСѓСЃС‚Р°В¤ (РІ РїР»Р°РЅРµ С‚РµРєСЃС‚Р°) СЃС‚СЂР°РЅРёС†Р°
 				m_pCurrentLine = new CTextLine();
 
 				m_pCurrentLine->m_dBaselinePos = dBaseLinePos;
@@ -173,7 +173,7 @@ namespace NSDocxRenderer
 				}
 			}
 
-			// линия не нашлась - не беда - создадим новую
+			// Р»РёРЅРёВ¤ РЅРµ РЅР°С€Р»Р°СЃСЊ - РЅРµ Р±РµРґР° - СЃРѕР·РґР°РґРёРј РЅРѕРІСѓСЋ
 			m_pCurrentLine = new CTextLine();
 			m_pCurrentLine->m_dBaselinePos = dBaseLinePos;
 			m_arTextLine.Add(m_pCurrentLine);
@@ -309,7 +309,7 @@ namespace NSDocxRenderer
 				pShape->m_oPen		= *m_pPen;
 				pShape->m_oBrush	= *m_pBrush;
 
-				// нормализуем толщину линии
+				// РЅРѕСЂРјР°Р»РёР·СѓРµРј С‚РѕР»С‰РёРЅСѓ Р»РёРЅРёРё
 				double dScaleTransform = (m_pTransform->m_agg_mtx.sx + m_pTransform->m_agg_mtx.sy) / 2.0;
 				pShape->m_oPen.Size *= dScaleTransform;
 
@@ -386,7 +386,7 @@ namespace NSDocxRenderer
 				}
 				else
 				{
-					// такого быть не должно (только из xps)
+					// С‚Р°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ (С‚РѕР»СЊРєРѕ РёР· xps)
 					m_oManager.SetStringGid(0);
 					m_oManager.MeasureString(bsText, dTextX, dTextY, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
 				}
@@ -407,7 +407,7 @@ namespace NSDocxRenderer
 
 			if (NULL == pLastCont)
 			{
-				// первое слово в линии
+				// РїРµСЂРІРѕРµ СЃР»РѕРІРѕ РІ Р»РёРЅРёРё
 				CContText* pCont = new CContText();
 
 				pCont->m_dX = dTextX;
@@ -444,10 +444,10 @@ namespace NSDocxRenderer
 				return;
 			}
 			
-			// продолжение линии
+			// РїСЂРѕРґРѕР»Р¶РµРЅРёРµ Р»РёРЅРёРё
 			//if (m_lCurrentCommand == c_nTextType && pLastCont->m_oFont.IsEqual(&m_oManager.m_oFontOld) && pLastCont->m_oBrush.IsEqual(m_pBrush))
 			//{
-			//	// быстрое отметание всяких проверок
+			//	// Р±С‹СЃС‚СЂРѕРµ РѕС‚РјРµС‚Р°РЅРёРµ РІСЃВ¤РєРёС… РїСЂРѕРІРµСЂРѕРє
 			//	pLastCont->m_strText += strText;
 			//	pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 			//	return;
@@ -457,10 +457,10 @@ namespace NSDocxRenderer
 
 			if (pLastCont->m_oFont.IsEqual(&m_oManager.m_oFont.m_oFont) && pLastCont->m_oBrush.IsEqual(m_pBrush))
 			{
-				// настройки одинаковые. Теперь смотрим, на расположение
+				// РЅР°СЃС‚СЂРѕР№РєРё РѕРґРёРЅР°РєРѕРІС‹Рµ. вЂњРµРїРµСЂСЊ СЃРјРѕС‚СЂРёРј, РЅР° СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ
 				if (fabs(dRight - dTextX) < 0.5)
 				{
-					// продолжаем слово
+					// РїСЂРѕРґРѕР»Р¶Р°РµРј СЃР»РѕРІРѕ
 					pLastCont->m_strText += strText;
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -480,7 +480,7 @@ namespace NSDocxRenderer
 				}
 				else if ((dRight < dTextX) && ((dTextX - dRight) < m_oManager.m_dSpaceWidthMM))
 				{
-					// продолжаем слово с пробелом
+					// РїСЂРѕРґРѕР»Р¶Р°РµРј СЃР»РѕРІРѕ СЃ РїСЂРѕР±РµР»РѕРј
 					pLastCont->m_strText += (_T(" ") + strText);
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -500,8 +500,8 @@ namespace NSDocxRenderer
 				}
 			}
 			
-			// либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
-			// либо все вместе... просто добавляем новое слово
+			// Р»РёР±Рѕ РїСЂРѕР±РµР» Р±РѕР»СЊС€РѕР№ РјРµР¶РґСѓ СЃР»РѕРІР°РјРё, Р»РёР±Рѕ РЅРѕРІС‹Р№ С‚РµРєСЃС‚ Р»РµРІРµРµ, Р»РёР±Рѕ РЅР°СЃС‚СЂРѕР№РєРё РЅРµ С‚Рµ (С€СЂРёС„С‚, РєРёСЃС‚СЊ)
+			// Р»РёР±Рѕ РІСЃРµ РІРјРµСЃС‚Рµ... РїСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»В¤РµРј РЅРѕРІРѕРµ СЃР»РѕРІРѕ
 			CContText* pCont = new CContText();
 
 			pCont->m_dX = dTextX;
@@ -541,7 +541,7 @@ namespace NSDocxRenderer
 		{
 			if (m_bIsDeleteTextClipPage)
 			{
-				// удалим все линии, которые выходят за границы страницы
+				// СѓРґР°Р»РёРј РІСЃРµ Р»РёРЅРёРё, РєРѕС‚РѕСЂС‹Рµ РІС‹С…РѕРґВ¤С‚ Р·Р° РіСЂР°РЅРёС†С‹ СЃС‚СЂР°РЅРёС†С‹
 				size_t nCount = m_arTextLine.GetCount();
 				for (size_t i = 0; i < nCount; ++i)
 				{
@@ -581,7 +581,7 @@ namespace NSDocxRenderer
 						m_arParagraphs.Add(pParagraph);
 					}
 
-					// удалим все линии
+					// СѓРґР°Р»РёРј РІСЃРµ Р»РёРЅРёРё
 					m_arTextLine.RemoveAll();
 					break;
 				}
@@ -631,7 +631,7 @@ namespace NSDocxRenderer
 						m_arParagraphs.Add(pParagraph);
 					}
 
-					// удалим все линии
+					// СѓРґР°Р»РёРј РІСЃРµ Р»РёРЅРёРё
 					m_arTextLine.RemoveAll();
 					break;
 				}

@@ -46,7 +46,6 @@ core_windows {
 
 HEADERS += \
     ../PPTFormatLib.h \
-    ../Reader/AudioOverlay.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \

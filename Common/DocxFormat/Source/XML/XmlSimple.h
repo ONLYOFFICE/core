@@ -52,11 +52,11 @@ namespace XmlUtils
 		}
 		AVSINLINE void Write(const std::wstring& strName, const int& value)
 		{
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::IntToString(value) + L"\"";
+            m_strValue += L" " + strName + L"=\"" + std::to_wstring(value) + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const size_t& value)
 		{
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::IntToString(value) + L"\"";
+            m_strValue += L" " + strName + L"=\"" + std::to_wstring((unsigned int)value) + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const double& value)
 		{
@@ -100,13 +100,13 @@ namespace XmlUtils
 		{
 			if (!value.IsInit())
 				return;
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::IntToString(*value) + L"\"";
+            m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const nullable_sizet& value)
 		{
 			if (!value.IsInit())
 				return;
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::IntToString(*value) + L"\"";
+            m_strValue += L" " + strName + L"=\"" + std::to_wstring((unsigned int)*value) + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const nullable_double& value)
 		{
@@ -197,11 +197,11 @@ namespace XmlUtils
 		// --------------------------------------------------------------- //
 		AVSINLINE void Write2(const std::wstring& strName, const int& value)
 		{
-			Write2(strName, IntToString(value));
+            Write2(strName, std::to_wstring(value));
 		}
 		AVSINLINE void Write2(const std::wstring& strName, const size_t& value)
 		{
-			std::wstring s = L"=\"" + XmlUtils::IntToString(value) + L"\"";
+            std::wstring s = L"=\"" + std::to_wstring((unsigned int)value) + L"\"";
 			Write2(strName, s);
 		}
 		AVSINLINE void Write2(const std::wstring& strName, const double& value)

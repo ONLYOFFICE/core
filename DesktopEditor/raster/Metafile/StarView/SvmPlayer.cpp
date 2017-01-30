@@ -83,7 +83,7 @@ CSvmPlayer::CSvmPlayer(CSvmFile* pFile)
 
 CSvmPlayer::~CSvmPlayer()
 {
-	for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
+	for (size_t nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
 	{
 		CSvmDC* pDC = m_vDCStack.at(nIndex);
 		delete pDC;
@@ -100,7 +100,7 @@ CSvmPlayer::~CSvmPlayer()
 
 void    CSvmPlayer::Clear()
 {
-	for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
+	for (size_t nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
 	{
 		CSvmDC* pDC = m_vDCStack.at(nIndex);
 		delete pDC;

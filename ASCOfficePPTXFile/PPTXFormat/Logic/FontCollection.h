@@ -56,7 +56,7 @@ namespace PPTX
 				ea		= oSrc.ea;
 				cs		= oSrc.cs;
 				
-				for (int i=0; i < oSrc.Fonts.size(); i++)
+				for (size_t i=0; i < oSrc.Fonts.size(); i++)
 					Fonts.push_back(oSrc.Fonts[i]);
 
 				m_name	= oSrc.m_name;

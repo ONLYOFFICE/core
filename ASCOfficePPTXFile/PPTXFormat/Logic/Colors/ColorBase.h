@@ -116,16 +116,6 @@ namespace PPTX
 			//Надо сделать примерно также для "origin color" и setter'ы
 			//Нет, нет и нет!!! Setter'ы делать только в УниКолор, т.к. при установке цвета меняется его тип!
 
-		protected:
-			//origin color
-			unsigned char alpha;
-			unsigned char red;
-			unsigned char green;
-			unsigned char blue;
-			unsigned char hue;
-			unsigned char saturation;
-			unsigned char luminance;
-
 			enum ColorType {ctRGBA, ctARGB, ctBGRA, ctABGR};
 			virtual DWORD ApplyModifiers(const ColorType ct)const
 			{
@@ -389,6 +379,15 @@ namespace PPTX
 				return 0;
 			}
 
+		protected:
+			//origin color
+			unsigned char alpha;
+			unsigned char red;
+			unsigned char green;
+			unsigned char blue;
+			unsigned char hue;
+			unsigned char saturation;
+			unsigned char luminance;
 			//Эти функции использовать для заполнения "origin color"
 			void SetRGB2HSL()
 			{
@@ -585,8 +584,8 @@ namespace PPTX
 							if (0 == _type)
 							{
 								std::wstring _name = pReader->GetString2();
-								int _find = _name.find(_T(":"));
-								if (_find >= 0 && _find < (_name.length() - 1))
+								int _find = (int)_name.find(_T(":"));
+								if (_find >= 0 && _find < (int)(_name.length() - 1))
 									_name = _name.substr(_find + 1);
 
 								_mod.name = _T("a:") + _name;

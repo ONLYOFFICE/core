@@ -216,30 +216,17 @@ namespace XmlUtils
 	{
 		return ( value ? L"true" : L"false" );
 	}
-    AVSINLINE static std::wstring IntToString   (const int   & value)
-	{
-		return boost::lexical_cast<std::wstring>( value);
-	}
-    AVSINLINE static std::wstring UIntToString  (const size_t   & value)
-	{
-		return boost::lexical_cast<std::wstring>( (unsigned long)value);
-	}
     AVSINLINE static std::wstring FloatToString (const float & value)
 	{
 		return boost::lexical_cast<std::wstring>( value);
 	}
+
     AVSINLINE static std::wstring DoubleToString(const double& value)
 	{
 		return boost::lexical_cast<std::wstring>( value);
 	}
+
     AVSINLINE static std::wstring IntToString( int value, const wchar_t* format )
-    {
-        if ( format == NULL ) return L"";
-        std::wstringstream sstream;
-        sstream << boost::wformat(format) % value;
-        return sstream.str();
-    }
-    AVSINLINE static std::wstring Int64ToString( __int64 value, const wchar_t* format )
     {
         if ( format == NULL ) return L"";
         std::wstringstream sstream;
@@ -609,15 +596,13 @@ namespace XmlUtils
 
         std::wstring GetData()
 		{
-            std::wstring str(m_pData, (int)m_lSizeCur);
-			return str;
+            return std::wstring(m_pData, m_lSizeCur);
 		}
 
 	protected:
 		BYTE m_arTableUnicodes[65536];
-                bool m_bInitTable;
+        bool m_bInitTable;
 
-	protected:
 		BYTE CheckCode(const WCHAR& c)
 		{
 			if (!m_bInitTable)

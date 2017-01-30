@@ -1,4 +1,4 @@
-// AVSDocxRenderer.h : Declaration of the CAVSDocxRenderer
+п»ї// AVSDocxRenderer.h : Declaration of the CAVSDocxRenderer
 
 #pragma once
 #include "stdafx.h"
@@ -58,10 +58,10 @@ public:
 public:
     // IASCRenderer Methods
 
-	// тип рендерера-----------------------------------------------------------------------------
+	// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 	STDMETHOD(get_Type)(LONG* lType);
 
-	//-------- Функции для работы со страницей --------------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	STDMETHOD(NewPage)();
 	STDMETHOD(get_Height)(double* dHeight);
 	STDMETHOD(put_Height)(double dHeight);
@@ -69,7 +69,7 @@ public:
 	STDMETHOD(put_Width)(double dWidth);
 	STDMETHOD(get_DpiX)(double* dDpiX);
 	STDMETHOD(get_DpiY)(double* dDpiY);
-	//-------- Функции для задания настроек текста ----------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ Р·Р°РґР°РЅРёСЏ РЅР°СЃС‚СЂРѕРµРє С‚РµРєСЃС‚Р° ----------------------------------------------
 	STDMETHOD(SetPen)(BSTR bsXML);
 
     STDMETHOD(get_PenColor)(LONG* lColor);
@@ -157,13 +157,13 @@ public:
 	STDMETHOD(get_EdgeDist)(double* val);
 	STDMETHOD(put_EdgeDist)(double val);
 
-    //-------- Функции для вывода текста --------------------------------------------------------
+    //-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 	STDMETHOD(CommandDrawText)(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
 	STDMETHOD(CommandDrawTextEx)(BSTR bsUnicodeText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
-	//-------- Маркеры для команд ---------------------------------------------------------------
+	//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	STDMETHOD(BeginCommand)(DWORD lType);
 	STDMETHOD(EndCommand)(DWORD lType);
-    //-------- Функции для работы с Graphics Path -----------------------------------------------
+    //-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	STDMETHOD(PathCommandMoveTo)(double fX, double fY);
 	STDMETHOD(PathCommandLineTo)(double fX, double fY);
 	STDMETHOD(PathCommandLinesTo)(SAFEARRAY* pPoints);
@@ -181,7 +181,7 @@ public:
 	
 	STDMETHOD(GetCommandParams)(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags);
 	STDMETHOD(SetCommandParams)(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
-    //-------- Функции для вывода изображений --------------------------------------------------
+    //-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ --------------------------------------------------
 	STDMETHOD(DrawImage)(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight);
 	STDMETHOD(DrawImageFromFile)(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight);
 	//------------------------------------------------------------------------------------------

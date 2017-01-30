@@ -780,7 +780,7 @@ namespace NSBinPptxRW
             if (true)
 			{
 				// notes theme
-                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(m_arThemes.size() + 1) +
+                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring((int)m_arThemes.size() + 1) +
                         L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
 				oContentTypes.WriteString(strTheme);
 

@@ -1119,7 +1119,7 @@ namespace BinDocxRW
 			{
 				int nCurPos = 0;
 		//Len
-				for(int i = 0, length = Tab.m_arrTabs.size(); i < length; ++i)
+				for(size_t i = 0, length = Tab.m_arrTabs.size(); i < length; ++i)
 				{
 					const ComplexTypes::Word::CTabStop& tabItem = *Tab.m_arrTabs[i];
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Tab_Item);
@@ -1468,7 +1468,7 @@ namespace BinDocxRW
 			void WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr)
 			{
 				int nCurPos = 0;
-				for(int i = 0, length = aRefs.size(); i < length; ++i)
+				for(size_t i = 0, length = aRefs.size(); i < length; ++i)
 				{
 					const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
 					if( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
@@ -1548,7 +1548,7 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteLONG(columns.m_oSpace->ToTwips());
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
-				for(int i = 0; i < columns.m_arrColumns.size(); ++i)
+				for(size_t i = 0; i < columns.m_arrColumns.size(); ++i)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSerProp_Columns::Column);
 					WriteColumn(*columns.m_arrColumns[i]);
@@ -2398,7 +2398,7 @@ namespace BinDocxRW
 		void WriteStyles(std::vector<OOX::CStyle*>& styles)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = styles.size(); i < length; ++i)
+			for(size_t i = 0, length = styles.size(); i < length; ++i)
 			{
 				const OOX::CStyle& style = *styles[i];
 				if(false != style.m_sStyleId.IsInit())
@@ -2541,7 +2541,7 @@ namespace BinDocxRW
 		void WriteTblStylePr(const std::vector<OOX::Logic::CTableStyleProperties*>& aProperties)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aProperties.size(); i < length; ++i)
+			for(size_t i = 0, length = aProperties.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblStylePrType::TblStylePr);
 				WriteTblStyleProperties(*aProperties[i]);
@@ -2628,7 +2628,8 @@ namespace BinDocxRW
 		void WriteNums(const OOX::CNumbering& numbering)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = numbering.m_arrNum.size(); i < length; ++i)
+			
+			for(size_t i = 0, length = numbering.m_arrNum.size(); i < length; ++i)
 			{
 				const OOX::Numbering::CNum& num = *numbering.m_arrNum[i];
 				//num
@@ -2657,7 +2658,8 @@ namespace BinDocxRW
 		{
 			int nCurPos = 0;
 			int nRealCount = 0;
-			for(int i = 0, length = numbering.m_arrAbstractNum.size(); i < length; ++i)
+			
+			for(size_t i = 0, length = numbering.m_arrAbstractNum.size(); i < length; ++i)
 			{
 				const OOX::Numbering::CAbstractNum& num = *numbering.m_arrAbstractNum[i];
 				if(false != num.m_oAbstractNumId.IsInit())
@@ -2711,10 +2713,11 @@ namespace BinDocxRW
 		void WriteLevels(const std::vector<OOX::Numbering::CLvl*>& lvls, int nAId, const std::vector<OOX::Numbering::CNum*>& aNums)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = lvls.size(); i < length; ++i)
+			
+			for(size_t i = 0, length = lvls.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::Lvl);
-				WriteLevel(*lvls[i], i, nAId, aNums);
+				WriteLevel(*lvls[i], (int)i, nAId, aNums);
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
@@ -2855,7 +2858,7 @@ namespace BinDocxRW
         void WriteLevelText(const std::wstring& text)
 		{
 			int nCurPos = 0;
-            for(int i = 0, length = text.length(); i < length; ++i)
+            for(size_t i = 0, length = text.length(); i < length; ++i)
 			{
 				if('%' == text[i] && i + 1 < length && '0' <= text[i + 1] && text[i + 1] <= '9')
 				{
@@ -2977,7 +2980,7 @@ namespace BinDocxRW
 		}
 		~BinaryDocumentTableWriter()
 		{
-			for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
 			{
 				RELEASEOBJECT(m_aFldChars[i]);
 			}
@@ -2985,7 +2988,8 @@ namespace BinDocxRW
         void prepareOfficeDrawingConverter(NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, std::wstring& sDocumentPath, std::vector<std::wstring>& aShapeTypes)
 		{
 			pOfficeDrawingConverter->SetRelsPath(sDocumentPath);
-			for(int i = 0, length = aShapeTypes.size(); i < length; ++i)
+			
+			for(size_t i = 0, length = aShapeTypes.size(); i < length; ++i)
 			{
                 std::wstring& sShapeType = aShapeTypes[i];
 				pOfficeDrawingConverter->AddShapeType(sShapeType);
@@ -3125,9 +3129,10 @@ namespace BinDocxRW
 
             FldStruct* pRes = NULL;
 			int nIndex = 0;
-            if(-1 != (nIndex = sFldCopy.find(_T("TOC"))))
+            
+			if(-1 != (nIndex = (int)sFldCopy.find(_T("TOC"))))
 				pRes = new FldStruct(sFldCopy, fieldstruct_toc);
-            else if(-1 != (nIndex = sFldCopy.find(_T("HYPERLINK"))))
+            else if(-1 != (nIndex = (int)sFldCopy.find(_T("HYPERLINK"))))
 				pRes = new FldStruct(sFldCopy, fieldstruct_hyperlink);
 			else
 				pRes = new FldStruct(sFldCopy, fieldstruct_none);
@@ -3136,7 +3141,7 @@ namespace BinDocxRW
 		void WriteParagraphContent(const std::vector<OOX::WritingElement *>& Content, bool bHyperlink = false)
 		{
 			int nCurPos = 0;
-			for ( int i = 0, length = Content.size(); i < length; ++i )
+			for ( size_t i = 0, length = Content.size(); i < length; ++i )
 			{
 				OOX::WritingElement* item = Content[i];
 				switch (item->getType())
@@ -3375,7 +3380,7 @@ namespace BinDocxRW
 		{
 			int nCurPos			= 0;
 			int nIndexStart		= 0;
-			int nLength			= pRun->m_arrItems.size();
+			int nLength			= (int)pRun->m_arrItems.size();
 			bool bWasText		= false;
 			int nRecordType		= 0;
 			
@@ -3415,7 +3420,7 @@ namespace BinDocxRW
 		}
 		void WriteMathArgNodes(const std::vector<OOX::WritingElement*>& m_arrItems)
 		{
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -3583,7 +3588,7 @@ namespace BinDocxRW
 						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Matrix);
 
 						LONG lCol = 0; 
-						for ( int j = 0; j < pMatrix->m_arrItems.size(); j++) //TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
+						for ( size_t j = 0; j < pMatrix->m_arrItems.size(); j++) //TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
 						{
 							OOX::WritingElement* item = pMatrix->m_arrItems[j];
 							if (item->getType() == OOX::et_m_mr)
@@ -3800,7 +3805,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pAln.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pAln.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -3811,7 +3816,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pAlnScr.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pAlnScr.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4017,7 +4022,7 @@ namespace BinDocxRW
 		}
 		void WriteMathDelimiter(const std::vector<OOX::WritingElement*>& m_arrItems, LONG &lColumn)
 		{
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4073,7 +4078,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pDegHide.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pDegHide.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4090,7 +4095,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pDiff.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pDiff.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4134,7 +4139,7 @@ namespace BinDocxRW
 		}
 		void WriteMathEqArr(const std::vector<OOX::WritingElement*>& m_arrItems, LONG& lRow)
 		{
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4225,7 +4230,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pGrow.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pGrow.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4236,7 +4241,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pHideBot.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pHideBot.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4247,7 +4252,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pHideLeft.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pHideLeft.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4258,7 +4263,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pHideRight.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pHideRight.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4269,7 +4274,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pHideTop.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pHideTop.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4348,7 +4353,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pLit.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pLit.m_val->ToBool());
 			}
 			else
 			{
@@ -4361,7 +4366,7 @@ namespace BinDocxRW
 		void WriteMathMatrix(const std::vector<OOX::WritingElement*>& m_arrItems, LONG &lRow, LONG &lCol)
 		{
             bool bColumn = false;
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4419,7 +4424,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pMaxDist.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pMaxDist.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4458,7 +4463,7 @@ namespace BinDocxRW
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::Mcs);
 
-			for(int i = 0; i< pMcs.m_arrItems.size(); ++i)
+			for(size_t i = 0; i< pMcs.m_arrItems.size(); ++i)
 			{			
 				OOX::WritingElement* item = pMcs.m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4520,7 +4525,7 @@ namespace BinDocxRW
 		}		
 		void WriteMathMr(const std::vector<OOX::WritingElement*>& m_arrItems)
 		{
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4562,7 +4567,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pNoBreak.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pNoBreak.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4572,7 +4577,7 @@ namespace BinDocxRW
 			m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 			if (pNor.m_val.IsInit())
-				m_oBcw.m_oStream.WriteBOOL(pNor.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pNor.m_val->ToBool());
 			else 
 				m_oBcw.m_oStream.WriteBOOL(true);
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -4590,7 +4595,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pObjDist.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pObjDist.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4602,7 +4607,7 @@ namespace BinDocxRW
 		}
 		void WriteMathOMathPara(const std::vector<OOX::WritingElement*>& m_arrItems)
 		{
-			for(int i = 0; i< m_arrItems.size(); ++i)
+			for(size_t i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -4648,7 +4653,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pOpEmu.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pOpEmu.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4678,7 +4683,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pPlcHide.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pPlcHide.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4774,7 +4779,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pShow.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pShow.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4834,7 +4839,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pStrikeBLTR.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pStrikeBLTR.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4845,7 +4850,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pStrikeH.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pStrikeH.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4856,7 +4861,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pStrikeTLBR.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pStrikeTLBR.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4867,7 +4872,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pStrikeV.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pStrikeV.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4895,7 +4900,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pSubHide.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pSubHide.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4912,7 +4917,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pSupHide.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pSupHide.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4957,7 +4962,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pTransp.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pTransp.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -4990,7 +4995,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pZeroAsc.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pZeroAsc.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -5001,7 +5006,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pZeroDesc.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pZeroDesc.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -5012,7 +5017,7 @@ namespace BinDocxRW
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBOOL(pZeroWid.m_val->GetValue());
+				m_oBcw.m_oStream.WriteBOOL(pZeroWid.m_val->ToBool());
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
@@ -5029,17 +5034,19 @@ namespace BinDocxRW
 				if(false == bHyperlink)
 				{
 					//Случай если Hyperlink задан как field
-					for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
+					for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
+					{
 						if(fieldstruct_hyperlink == m_aFldChars[i]->GetType())
 						{
 							bHyperlink = true;
 							break;
 						}
+					}
 				}
 				if(bHyperlink)
 				{
 					bool bInTOC = false;
-					for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
+					for(size_t i = 0, length = m_aFldChars.size(); i < length; ++i)
 					{
 						if(fieldstruct_toc == m_aFldChars[i]->GetType())
 						{
@@ -5432,7 +5439,7 @@ namespace BinDocxRW
 				OOX::Drawing::CChart* pChart = NULL;
 				if(NULL != pGraphic)
 				{
-					for(int i = 0; i < pGraphic->m_arrItems.size(); i++)
+					for(size_t i = 0; i < pGraphic->m_arrItems.size(); i++)
 					{
 						OOX::WritingElement* we = pGraphic->m_arrItems[i];
 						if(OOX::et_c_chart == we->getType())
@@ -6107,7 +6114,7 @@ namespace BinDocxRW
 		void WriteLineTo(const std::vector<ComplexTypes::Drawing::CPoint2D*>& aLineTo)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aLineTo.size(); i < length; ++i)
+			for(size_t i = 0, length = aLineTo.size(); i < length; ++i)
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWrapPolygon::LineTo);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -6166,7 +6173,7 @@ namespace BinDocxRW
 		{
 	//Проверяем чтобы не все ячейки в ряду были вертикально замержены
 			bool bRes = true;
-			for(int i = 0, length = arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				OOX::WritingElement* item = arrItems[i];
 				if(OOX::et_w_tc == item->getType())
@@ -6212,7 +6219,7 @@ namespace BinDocxRW
 		}
 		void GetTableSize(std::vector<OOX::WritingElement *>& rows, int& nRows, int& nCols, OOX::Logic::CTableProperty** ppTblPr)
 		{
-			for(int i = rows.size() - 1; i >= 0; i--)
+            for(int i = (int)rows.size() - 1; i >= 0; i--)
 			{
 				OOX::WritingElement* item = rows[i];
 				if(OOX::et_w_tblPr == item->getType())
@@ -6264,14 +6271,14 @@ namespace BinDocxRW
 		int GetColsCount(const std::vector<OOX::WritingElement *>& arrItems)
 		{
 			int nColCount = 0;
-			for(int i = 0, length = arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				OOX::WritingElement* item = arrItems[i];
 				if(OOX::et_w_tc == item->getType())
 				{
 					nColCount++;
 					OOX::Logic::CTc* tc = static_cast<OOX::Logic::CTc*>(item);
-					for(int j = 0, length2 = tc->m_arrItems.size(); j < length2; ++j)
+					for(size_t j = 0, length2 = tc->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* item2 = tc->m_arrItems[j];
 						if(OOX::et_w_tcPr == item2->getType())
@@ -6313,7 +6320,7 @@ namespace BinDocxRW
 		void WriteTblGrid(const OOX::Logic::CTblGrid& grid)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = grid.m_arrGridCol.size(); i < length; i++)
+			for(size_t i = 0, length = grid.m_arrGridCol.size(); i < length; i++)
 			{
 				const ComplexTypes::Word::CTblGridCol& item = *grid.m_arrGridCol[i];
 				if(item.m_oW.IsInit())
@@ -6355,7 +6362,7 @@ namespace BinDocxRW
 			int nCurPos			= 0;
 			int nCurRowIndex	= 0;
 			
-			for(int i = 0, length = Content.size(); i < length; ++i)
+			for(size_t i = 0, length = Content.size(); i < length; ++i)
 			{
 				OOX::WritingElement* item = Content[i];
 				if(OOX::et_w_tr == item->getType())
@@ -6410,7 +6417,7 @@ namespace BinDocxRW
 			int nCurPos = 0;
 			int nCurColIndex = 0;
 			
-			for(int i = 0, length = Content.size(); i < length; i++)
+			for(size_t i = 0, length = Content.size(); i < length; i++)
 			{
 				OOX::WritingElement* item = Content[i];
 				
@@ -6495,7 +6502,7 @@ namespace BinDocxRW
 			//map author -> userId
 			if(NULL != pPeople)
 			{
-				for(int i = 0, length = pPeople->m_arrPeoples.size(); i < length; i++)
+				for(size_t i = 0, length = pPeople->m_arrPeoples.size(); i < length; i++)
 				{
 					OOX::CPerson* pPerson = pPeople->m_arrPeoples[i];
 					if(NULL != pPerson && pPerson->m_oAuthor.IsInit() && pPerson->m_oPresenceInfo.IsInit() && pPerson->m_oPresenceInfo->m_oProviderId.IsInit() && _T("Teamlab") == pPerson->m_oPresenceInfo->m_oProviderId.get2() && pPerson->m_oPresenceInfo->m_oUserId.IsInit())
@@ -6503,7 +6510,7 @@ namespace BinDocxRW
 				}
 			}
 			//map paraId -> CCommentWriteTemp
-			for(int i = 0, length = oComments.m_arrComments.size(); i < length; ++i)
+			for(size_t i = 0, length = oComments.m_arrComments.size(); i < length; ++i)
 			{
 				OOX::CComment* pComment = oComments.m_arrComments[i];
 				CCommentWriteTemp* pNewCommentWriteTemp = new CCommentWriteTemp();
@@ -6514,7 +6521,7 @@ namespace BinDocxRW
 					if(mapAuthorToUserId.end() != pPair)
 						pNewCommentWriteTemp->sUserId = pPair->second;
 				}
-				for(int j = 0, length2 = pComment->m_arrItems.size(); j < length2; j++)
+				for(size_t j = 0, length2 = pComment->m_arrItems.size(); j < length2; j++)
 				{
 					OOX::WritingElement* pWe = pComment->m_arrItems[j];
 					if(OOX::et_w_p == pWe->getType())
@@ -6529,7 +6536,7 @@ namespace BinDocxRW
 			//разбираемся с reply и done
 			if(NULL != pCommentsExt)
 			{
-				for(int i = 0, length = pCommentsExt->m_arrComments.size(); i < length; i++)
+				for(size_t i = 0, length = pCommentsExt->m_arrComments.size(); i < length; i++)
 				{
 					OOX::CCommentExt* pCommentExt = pCommentsExt->m_arrComments[i];
 					if(pCommentExt->m_oParaId.IsInit())
@@ -6559,7 +6566,7 @@ namespace BinDocxRW
 			}
 			int nCurPos = 0;
 
-			for(int i = 0, length = aCommentsToWrite.size(); i < length; ++i)
+			for(size_t i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 			{
 				CCommentWriteTemp* pCommentWriteTemp = aCommentsToWrite[i];
 				if(NULL != pCommentWriteTemp && NULL != pCommentWriteTemp->pComment && pCommentWriteTemp->pComment->m_oId.IsInit() && mapIgnoreComments.end() == mapIgnoreComments.find(pCommentWriteTemp->pComment->m_oId->GetValue()))
@@ -6570,7 +6577,7 @@ namespace BinDocxRW
 				}
 			}
 
-			for(int i = 0, length = aCommentsToWrite.size(); i < length; ++i)
+			for(size_t i = 0, length = aCommentsToWrite.size(); i < length; ++i)
 				delete aCommentsToWrite[i];
 		};
 		void WriteComment(CCommentWriteTemp& oComment)
@@ -6626,7 +6633,7 @@ namespace BinDocxRW
 		void WriteReplies(std::vector<CCommentWriteTemp*>& aCommentWriteTemp)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aCommentWriteTemp.size(); i < length; i++)
+			for(size_t i = 0, length = aCommentWriteTemp.size(); i < length; i++)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentsType::Comment);
 				WriteComment(*aCommentWriteTemp[i]);
@@ -6692,7 +6699,7 @@ namespace BinDocxRW
 		};
 		void WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 		{
-			for(int i = 0; i< pMathPr.m_arrItems.size(); ++i)
+			for(size_t i = 0; i< pMathPr.m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = pMathPr.m_arrItems[i];
 				OOX::EElementType eType = item->getType();
@@ -6745,7 +6752,7 @@ namespace BinDocxRW
 						{
 							m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-							m_oBcw.m_oStream.WriteBOOL(pDispDef->m_val->GetValue());
+							m_oBcw.m_oStream.WriteBOOL(pDispDef->m_val->ToBool());
 						}
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -6875,7 +6882,7 @@ namespace BinDocxRW
 						{
 							m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-							m_oBcw.m_oStream.WriteBOOL(pSmallFrac->m_val->GetValue());
+							m_oBcw.m_oStream.WriteBOOL(pSmallFrac->m_val->ToBool());
 						}
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -6901,7 +6908,7 @@ namespace BinDocxRW
 						{
 							m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
 							m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-							m_oBcw.m_oStream.WriteBOOL(pWrapRight->m_val->GetValue());
+							m_oBcw.m_oStream.WriteBOOL(pWrapRight->m_val->ToBool());
 						}
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
@@ -7241,7 +7248,7 @@ namespace BinDocxRW
 				if(NULL != pParagraph)
 				{
 					OOX::Logic::CParagraphProperty* pPr = NULL;
-					for(int i = 0, length = pParagraph->m_arrItems.size(); i < length; ++i)
+					for(size_t i = 0, length = pParagraph->m_arrItems.size(); i < length; ++i)
 					{
 						OOX::WritingElement* we = pParagraph->m_arrItems[i];
 						if(OOX::et_w_pPr == we->getType())

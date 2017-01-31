@@ -31,14 +31,6 @@
  */
 #include "HelpFunc.h"
 
-#ifndef _ASC_USE_UNICODE_CONVERTER_
-	#if defined (_WIN32) || defined (_WIN64)
-		#include "shlwapi.h"
-	#else
-		#include <iconv.h>
-	#endif
-
-#endif
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 #include <Logic/Biff_structures/CellRangeRef.h>
@@ -454,7 +446,6 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	return numeric;
 }
 
- #ifdef _ASC_USE_UNICODE_CONVERTER_
 const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 {
     std::string sCodePage;
@@ -506,138 +497,12 @@ const std::string toStdString(std::wstring wide_string, const unsigned int code_
     NSUnicodeConverter::CUnicodeConverter oConverter;
     return oConverter.fromUnicode(wide_string, sCodePage.c_str());
 }
-#else
-const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
-{
-#if defined (_WIN32) || defined (_WIN64)
-    const int nSize = WideCharToMultiByte(code_page, 0, wide_string.c_str(), wide_string.length(), NULL, 0, NULL, NULL);
-    char *sTemp = new char[nSize];
-    if (!sTemp)
-        return std::string();
-
-    int size = WideCharToMultiByte(code_page, 0, wide_string.c_str(), wide_string.length(), sTemp, nSize, NULL, NULL);
-
-    std::string sResult(sTemp, size);
-    delete []sTemp;
-
-    return sResult;
-#else
-    std::string out;
-    bool ansi = true;
-
-    size_t insize = wide_string.length();
-    out.reserve(insize);
-
-    char *inptr = (char*)wide_string.c_str();
-    char* outptr = (char*)out.c_str();
-
-    if (code_page >= 0)
-    {
-        std::string sCodepage =  "CP" + std::to_string(code_page);
-
-        iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
-        if (ic != (iconv_t) -1)
-        {
-            size_t nconv = 0, avail = insize * sizeof(wchar_t);
-
-            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-            if (nconv == 0) ansi = false;
-            iconv_close(ic);
-        }
-    }
-
-    if (ansi)
-        out = std::string(wide_string.begin(), wide_string.end());
-
-    return out;
-
-#endif
-}
- const std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
- {
-    std::string sCodePage;
-    for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
-    {
-        if (code_page == NSUnicodeConverter::Encodings[i].WindowsCodePage)
-        {
-            sCodePage = NSUnicodeConverter::Encodings[i].Name;
-            break;
-        }
-    }
-    if (!sCodePage.empty())
-	{
-		NSUnicodeConverter::CUnicodeConverter oConverter;
-		return oConverter.toUnicode(ansi, size, sCodePage.c_str());
-	}
-
-#if defined (_WIN32) || defined (_WIN64)
-    const int nSize = MultiByteToWideChar(code_page, 0, ansi, size, NULL, 0);
-
-    wchar_t *sTemp = new wchar_t[nSize];
-    if (!sTemp)
-        return std::wstring();
-
-    int size_out = MultiByteToWideChar(code_page, 0, ansi, size, sTemp, nSize);
-
-    std::wstring sResult(sTemp, size_out);
-    delete []sTemp;
-
-    return sResult;
-#else
-    bool bAnsi = true;
-
-    size_t insize = size;
-    std::wstring w_out;
-
-    char *inptr = ansi;
-
-    if (code_page >= 0)
-    {
-        std::string sCodepage =  "CP" + std::to_string(code_page);
-
-        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
-        if (ic != (iconv_t) -1)
-        {
-            size_t nconv = 0, avail = (insize + 1) * sizeof(wchar_t);
-
-            char* out_str   = new char[avail];
-            char* outptr    = out_str;
-
-            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-            if (nconv == 0)
-            {
-                insize = size;
-                ((wchar_t*)out_str)[insize] = 0;
-                w_out = std::wstring((wchar_t*)out_str, insize);
-                bAnsi = false;
-            }
-            iconv_close(ic);
-            delete []out_str;
-        }
-    }
-    if (bAnsi)
-	{
-		std::string ansi_string(ansi, size);
-        w_out = std::wstring(ansi_string.begin(), ansi_string.end());
-	}
-
-    return w_out;
-#endif
- }
-
-const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
-{
-	return toStdWString((char*)ansi_string.c_str(), (int)ansi_string.length(), code_page);
-}
-#endif
-
 
 } // namespace STR
 
 
 namespace XMLSTUFF
 {;
-
 
 
 const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& sheets_names)

@@ -36,9 +36,7 @@
 #include "../../../Common/FileWriter.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
-#ifdef _ASC_USE_UNICODE_CONVERTER_
-    #include "../../../UnicodeConverter/UnicodeConverter.h"
-#endif
+#include "../../../UnicodeConverter/UnicodeConverter.h"
 
 #include "UniversalConverterUtils.h"
 
@@ -695,7 +693,7 @@ public:
 
         return 1252;//ANSI
     }
-#ifdef _ASC_USE_UNICODE_CONVERTER_
+
     static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
@@ -737,100 +735,6 @@ public:
         return oConverter.fromUnicode(inptr, insize, sCodePage.c_str());
     }
 
-#else
-    static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
-    {
-		std::wstring w_out;
-
-		bool ansi = true;
-        size_t insize = end - start;
-
-		char *inptr = (char*)start.operator ->();
-		
-		if (nCodepage > 0)
-        {
-#if defined (_WIN32) || defined (_WIN64)
-			int insize = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
-
-			wchar_t *out = new wchar_t[insize];
-			if (out  && MultiByteToWideChar(nCodepage, 0, inptr, -1, out, insize) > 0)
-            {
-				w_out = std::wstring(out);
-                ansi = false;
-            }
-			if (out) delete []out;
-#else
-            std::string sCodepage =  "CP" + std::to_string(nCodepage);
-
-            iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
-            if (ic != (iconv_t) -1)
-            {
-                size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
-				wchar_t *out = new wchar_t[insize];
-
-                nconv = iconv (ic, &inptr, &insize, (char**)&out, &avail);
-                if (nconv == 0)
-                {
-					w_out = std::wstring(out);
-					ansi = false;
-                }
-				if (out) delete []out;
-                iconv_close(ic);
-            }
-#endif
-        }
-        if (ansi)
-            w_out = std::wstring(start, end);
-
-        return w_out;
-    }
-    static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
-    {
-        std::string out;
-        bool ansi = true;
-
-        size_t insize = end - start;
-
-        char *inptr = (char*)start.operator ->();
-        char* outptr = (char*)out.c_str();
-
-		if (nCodepage > 0)
-        {
-#if defined (_WIN32) || defined (_WIN64)
-            insize = WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, NULL, 0, NULL, NULL);
-
-			out.reserve(insize);
-			if (WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, outptr, (int)insize, NULL, NULL) > 0)
-			{
-				out.resize(insize);
-				ansi = false;
-			}
-#else
-			out.reserve(insize);
-			std::string sCodepage =  "CP" + std::to_string(nCodepage);
-
-            iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
-            if (ic != (iconv_t) -1)
-            {
-                size_t nconv = 0, avail = insize * sizeof(wchar_t);
-
-				nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-                if (nconv == 0)
-				{
-					out.resize(insize);
-					ansi = false;
-				}
-                iconv_close(ic);
-            }
-#endif
-        }
-
-        if (ansi)
-            out = std::string(start, end);
-
-        return out;
-    }
-#endif
     static int CodepageToCharset( int nCodepage )
     {
 #if defined (_WIN32) || defined(_WIN64)

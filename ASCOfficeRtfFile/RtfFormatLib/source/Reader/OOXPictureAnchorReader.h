@@ -30,15 +30,16 @@
  *
  */
 #pragma once
+#include "OOXDrawingGraphicReader.h"
 #include "OOXPictureGraphicReader.h"
 #include "OOXReaderBasic.h"
 
-class OOXPictureAnchorReader
+class OOXDrawingAnchorReader
 {
 private:
-	OOX::Drawing::CAnchor *m_ooxAnchor;
+	OOX::Drawing::CAnchor *	m_ooxAnchor;
 public: 
-	OOXPictureAnchorReader(OOX::Drawing::CAnchor *ooxAnchor)
+	OOXDrawingAnchorReader(OOX::Drawing::CAnchor *ooxAnchor)
 	{
 		m_ooxAnchor = ooxAnchor;
 	}
@@ -94,57 +95,57 @@ public:
 			{
 				switch(m_ooxAnchor->m_oPositionH->m_oRelativeFrom->GetValue())
 				{
-				case SimpleTypes::relfromhCharacter: 
-				{
-					oOutput.m_nPositionHRelative	= 3;
-					oOutput.m_eXAnchor				= RtfShape::ax_margin;
-				}break;
-				case SimpleTypes::relfromhColumn: 					
-				{
-					oOutput.m_nPositionHRelative = 2;
-					oOutput.m_eXAnchor = RtfShape::ax_column;
-				}break;
-				case SimpleTypes::relfromhInsideMargin: 					
-				{
-					oOutput.m_nPositionHRelative = 6;
-					oOutput.m_eXAnchor = RtfShape::ax_margin;
-				}break;
-				case SimpleTypes::relfromhLeftMargin: 					
-				{
-					oOutput.m_nPositionHRelative = 4;
-					oOutput.m_eXAnchor = RtfShape::ax_margin;
-				}break;
-				case SimpleTypes::relfromhMargin: 					
-				{
-					oOutput.m_nPositionHRelative = 0;
-					oOutput.m_eXAnchor = RtfShape::ax_margin;
-				}break;
-				case SimpleTypes::relfromhOutsideMargin: 					
-				{
-					oOutput.m_nPositionHRelative = 7;
-					oOutput.m_eXAnchor = RtfShape::ax_margin;
-				}break;
-				case SimpleTypes::relfromhPage          : 					
-				{
-					oOutput.m_nPositionHRelative = 1;
-					oOutput.m_eXAnchor = RtfShape::ax_page;
-				}break;
-				case SimpleTypes::relfromhRightMargin   : 					
-				{
-					oOutput.m_nPositionHRelative = 5;
-					oOutput.m_eXAnchor = RtfShape::ax_margin;
-				}break;
+					case SimpleTypes::relfromhCharacter: 
+					{
+						oOutput.m_nPositionHRelative	= 3;
+						oOutput.m_eXAnchor				= RtfShape::ax_margin;
+					}break;
+					case SimpleTypes::relfromhColumn: 					
+					{
+						oOutput.m_nPositionHRelative = 2;
+						oOutput.m_eXAnchor = RtfShape::ax_column;
+					}break;
+					case SimpleTypes::relfromhInsideMargin: 					
+					{
+						oOutput.m_nPositionHRelative = 6;
+						oOutput.m_eXAnchor = RtfShape::ax_margin;
+					}break;
+					case SimpleTypes::relfromhLeftMargin: 					
+					{
+						oOutput.m_nPositionHRelative = 4;
+						oOutput.m_eXAnchor = RtfShape::ax_margin;
+					}break;
+					case SimpleTypes::relfromhMargin: 					
+					{
+						oOutput.m_nPositionHRelative = 0;
+						oOutput.m_eXAnchor = RtfShape::ax_margin;
+					}break;
+					case SimpleTypes::relfromhOutsideMargin: 					
+					{
+						oOutput.m_nPositionHRelative = 7;
+						oOutput.m_eXAnchor = RtfShape::ax_margin;
+					}break;
+					case SimpleTypes::relfromhPage          : 					
+					{
+						oOutput.m_nPositionHRelative = 1;
+						oOutput.m_eXAnchor = RtfShape::ax_page;
+					}break;
+					case SimpleTypes::relfromhRightMargin   : 					
+					{
+						oOutput.m_nPositionHRelative = 5;
+						oOutput.m_eXAnchor = RtfShape::ax_margin;
+					}break;
 				}
 			}
 			if (m_ooxAnchor->m_oPositionH->m_oAlign.IsInit())
 			{
 				switch(m_ooxAnchor->m_oPositionH->m_oAlign->GetValue())
 				{
-				case SimpleTypes::alignhCenter  : oOutput.m_nPositionH = 2; break;
-				case SimpleTypes::alignhInside  : oOutput.m_nPositionH = 4; break;
-				case SimpleTypes::alignhLeft    : oOutput.m_nPositionH = 1; break;
-				case SimpleTypes::alignhOutside : oOutput.m_nPositionH = 5; break;
-				case SimpleTypes::alignhRight   : oOutput.m_nPositionH = 3; break;
+					case SimpleTypes::alignhCenter  : oOutput.m_nPositionH = 2; break;
+					case SimpleTypes::alignhInside  : oOutput.m_nPositionH = 4; break;
+					case SimpleTypes::alignhLeft    : oOutput.m_nPositionH = 1; break;
+					case SimpleTypes::alignhOutside : oOutput.m_nPositionH = 5; break;
+					case SimpleTypes::alignhRight   : oOutput.m_nPositionH = 3; break;
 				}
 			}
 			if (m_ooxAnchor->m_oPositionH->m_oPosOffset.IsInit())
@@ -157,45 +158,45 @@ public:
 				switch(m_ooxAnchor->m_oPositionV->m_oRelativeFrom->GetValue())
 				{
 					case SimpleTypes::relfromvBottomMargin  : 
-						{
-				oOutput.m_nPositionVRelative = 5;
-				oOutput.m_eYAnchor = RtfShape::ay_margin;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 5;
+						oOutput.m_eYAnchor = RtfShape::ay_margin;
+					}break;
 					case SimpleTypes::relfromvInsideMargin  :
-						{
-				oOutput.m_nPositionVRelative = 6;
-				oOutput.m_eYAnchor = RtfShape::ay_margin;
-						}break;
-					case SimpleTypes::relfromvLine          :
-						{
-				oOutput.m_nPositionVRelative = 3;
-				oOutput.m_eYAnchor = RtfShape::ay_Para;
-						}break;
-					case SimpleTypes::relfromvMargin        :
-						{
-				oOutput.m_nPositionVRelative = 0;
-				oOutput.m_eYAnchor = RtfShape::ay_margin;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 6;
+						oOutput.m_eYAnchor = RtfShape::ay_margin;
+					}break;
+				case SimpleTypes::relfromvLine          :
+					{
+						oOutput.m_nPositionVRelative = 3;
+						oOutput.m_eYAnchor = RtfShape::ay_Para;
+					}break;
+				case SimpleTypes::relfromvMargin        :
+					{
+						oOutput.m_nPositionVRelative = 0;
+						oOutput.m_eYAnchor = RtfShape::ay_margin;
+					}break;
 					case SimpleTypes::relfromvOutsideMargin : 
-						{
-				oOutput.m_nPositionVRelative = 7;
-				oOutput.m_eYAnchor = RtfShape::ay_margin;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 7;
+						oOutput.m_eYAnchor = RtfShape::ay_margin;
+					}break;
 					case SimpleTypes::relfromvPage          :
-						{
-				oOutput.m_nPositionVRelative = 1;
-				oOutput.m_eYAnchor = RtfShape::ay_page;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 1;
+						oOutput.m_eYAnchor = RtfShape::ay_page;
+					}break;
 					case SimpleTypes::relfromvParagraph     :
-						{
-				oOutput.m_nPositionVRelative = 2;
-				oOutput.m_eYAnchor = RtfShape::ay_Para;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 2;
+						oOutput.m_eYAnchor = RtfShape::ay_Para;
+					}break;
 					case SimpleTypes::relfromvTopMargin     :
-						{
-				oOutput.m_nPositionVRelative = 4;
-				oOutput.m_eYAnchor = RtfShape::ay_margin;
-						}break;
+					{
+						oOutput.m_nPositionVRelative = 4;
+						oOutput.m_eYAnchor = RtfShape::ay_margin;
+					}break;
 				}
 			}
 			if(m_ooxAnchor->m_oPositionV->m_oAlign.IsInit())
@@ -300,9 +301,12 @@ public:
 		
 		if( m_ooxAnchor->m_oGraphic.IsInit() )
 		{
-			OOXPictureGraphicReader oGraphicReader(m_ooxAnchor->m_oGraphic.GetPointer());
+			OOXPictureGraphicReader oPictureReader(m_ooxAnchor->m_oGraphic.GetPointer());
 
-			oGraphicReader.Parse( oParam, oOutput );
+			if (oPictureReader.Parse( oParam, oOutput) == false)
+			{
+				return false;
+			}
 		}
 		//изменяем scale в соответсявии с выходным размером
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )

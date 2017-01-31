@@ -61,7 +61,6 @@ namespace OOX
 			m_lMaxRid = 0;
 		}
 	protected:
-
         std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
 		size_t											m_lMaxRid;
 
@@ -75,7 +74,6 @@ namespace OOX
 		void Finalize(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent);
 
 	public:
-
 		void ExtractPictures(const OOX::CPath& oPath) const;
 
 		virtual smart_ptr<Image>     GetImage    (const RId& rId) const;
@@ -88,7 +86,9 @@ namespace OOX
 		const bool IsExist(const OOX::RId& rId) const;
 		const bool IsExternal(const OOX::RId& rId) const;
 
-		smart_ptr<OOX::File> Get(const FileType& oType);
+		smart_ptr<OOX::File>	Get(const FileType& oType);
+		void					Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
+
 		const RId Add(smart_ptr<OOX::File>& pFile);
 		void      Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile);
 
@@ -99,14 +99,11 @@ namespace OOX
 
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);
-
-
 	protected:
 
 		static UnknowTypeFile Unknown;
 
 	private:
-
 		const RId GetMaxRId();
 	};
 

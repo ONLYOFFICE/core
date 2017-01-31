@@ -42,16 +42,19 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	if (argc < 2) return 1;
+
 	std::wstring srcFileName	= argv[1];
 	int n1 = srcFileName.rfind(_T('.'));
-	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T(""); //ext_1.MakeLower();
+	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T("");
+	
+	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
 	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
 	
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
-	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
 
 	RtfConvertationManager rtfConvert;
 

@@ -119,12 +119,6 @@ namespace Strings
 		nG = 16 * ToDigit(color[4]) + ToDigit(color[5]);
 		nB = 16 * ToDigit(color[6]) + ToDigit(color[7]);
 	}
-    static bool ToBoolean(const std::wstring& strValue)
-	{
-        std::wstring s = boost::algorithm::to_lower_copy(strValue);
-		
-        return (s == L"true");
-	}
     static int ToInteger(const std::wstring& strValue)
 	{
         return _ttoi(strValue.c_str());
@@ -139,27 +133,7 @@ namespace Strings
 #endif
 		return d;
 	}
-	
-    static std::wstring FromInteger(int Value, int Base = 10)
-	{
-        std::wstring str = boost::lexical_cast<std::wstring>(Value);
 
-		return str;
-	}
-    static std::wstring FromDouble(double Value)
-	{
-        std::wstring str = boost::lexical_cast<std::wstring>(Value);
-
-		return str;
-	}
-    static std::wstring FromBoolean(bool Value)
-	{
-		if (Value)
-			return L"true";
-
-		return L"false";
-	}
-	
 }
 
 class Convert
@@ -167,7 +141,7 @@ class Convert
 public:	
     static std::wstring ToString(int i)
 	{
-		return boost::lexical_cast<std::wstring>( i );
+		return std::to_wstring( i );
 	}
     static  std::wstring ToStringHex( int i, int nLen )
 	{
@@ -394,15 +368,11 @@ public:
 		int		Year	= GETBITS(dt, 20, 28) + 1900;
 
 		//to 1899-12-31T05:37:46.66569 - iso_extended_string
-		std::wstring date_str = boost::lexical_cast<std::wstring>(Year) 
-								+ L"-" 
-								+ (Month < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Month) 
-								+ L"-" 
-								+ (Day < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Day)
-								+ L"T"
-								+ (Hour < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Hour)
-								+ L":" 
-								+ (Min < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(Min)
+		std::wstring date_str = std::to_wstring(Year) 
+								+ L"-" + (Month < 10 ? L"0": L"") + std::to_wstring(Month) 
+								+ L"-" + (Day < 10 ? L"0": L"") + std::to_wstring(Day)
+								+ L"T" + (Hour < 10 ? L"0": L"") + std::to_wstring(Hour)
+								+ L":" + (Min < 10 ? L"0": L"") + std::to_wstring(Min)
 								+ L":00Z";
 
 		return date_str;

@@ -1313,11 +1313,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPresetGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
@@ -1384,11 +1384,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPresetTextShape::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
@@ -1405,7 +1405,7 @@ namespace OOX
 						m_oAvLst = oReader;
 				}
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = (L"<a:prstTxWarp prst=\"") + m_oPrst.ToString() + (L"\">");
 
@@ -1455,18 +1455,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CGeomRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
                 std::wstring sResult = (L"<a:rect l=\"") + m_oL.ToString()
 					                 + (L"\" t=\"") + m_oT.ToString() 
@@ -1517,11 +1517,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CCustomGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;

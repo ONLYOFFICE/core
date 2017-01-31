@@ -42,8 +42,6 @@
 #include "FileTypes.h"
 
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"
-//BOOL XmlUtils::CStringWriter::m_bInitTable = false;
-//BYTE XmlUtils::CStringWriter::m_arTableUnicodes[65536];
 
 namespace OOX
 {
@@ -197,7 +195,6 @@ namespace OOX
 		}
 	}
 
-
 	void IFileContainer::ExtractPictures(const OOX::CPath& oPath) const
 	{
 		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = m_mContainer.begin(); it != m_mContainer.end(); ++it)
@@ -294,7 +291,14 @@ namespace OOX
 		return smart_ptr<OOX::File>(new UnknowTypeFile( Unknown ));
 	}
 
-
+	void IFileContainer::Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files)
+	{
+		for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.begin(); pPair != m_mContainer.end(); ++pPair)
+		{
+			if ( oType == pPair->second->type() )
+				files.push_back(pPair->second);
+		}
+	}
 	const RId IFileContainer::Add(smart_ptr<OOX::File>& pFile)
 	{
 		const RId rId = GetMaxRId().next();

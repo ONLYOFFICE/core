@@ -508,7 +508,8 @@ public:
     }
 
     static CPPTXShape* CreateByType(OOXMLShapes::ShapeType type);
-    virtual const ClassType GetClassType()const
+    
+	virtual const ClassType GetClassType()const
     {
         return NSBaseShape::pptx;
     }

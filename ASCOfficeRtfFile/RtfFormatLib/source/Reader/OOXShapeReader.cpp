@@ -630,6 +630,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	if (oOutput->m_nShapeType == NSOfficeDrawing::sptNotPrimitive && custom_path)
 	{
 		//
+		oOutput->m_nShapeType = sptRectangle;
 	}
 //-------------------------------------------------------------------------------------------------------------
 	if (m_vmlElement->m_oFilled.IsInit())

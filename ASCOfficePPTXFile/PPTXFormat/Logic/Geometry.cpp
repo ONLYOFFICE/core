@@ -40,12 +40,12 @@ namespace PPTX
 	{
 		void Geometry::ConvertToCustomVML(IRenderer* pOOXToVMLRenderer, std::wstring& strPath, std::wstring& strRect, LONG& lWidth, LONG& lHeight)
 		{
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+			if (!pOOXToVMLRenderer) return;
 
 			NSPresentationEditor::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
-				const PPTX::Logic::PrstGeom lpGeom = this->as<PPTX::Logic::PrstGeom>();
+				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
 
 				OOXMLShapes::ShapeType _lspt = PPTX2EditorAdvanced::GetShapeTypeFromStr(lpGeom.prst.get());
 				if(_lspt == OOXMLShapes::sptNil) 
@@ -57,7 +57,7 @@ namespace PPTX
 			}
 			else if (this->is<PPTX::Logic::CustGeom>())
 			{
-				const PPTX::Logic::CustGeom lpGeom = this->as<PPTX::Logic::CustGeom>();
+				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
 				std::wstring strShape = lpGeom.GetODString();
 				lpShapeElement = new NSPresentationEditor::CShapeElement(strShape);
 			}
@@ -130,7 +130,6 @@ namespace PPTX
                             std::to_wstring((int)(dkoefX * txRect.right))   + L"," +
                             std::to_wstring((int)(dkoefY * txRect.bottom));
 			}
-#endif
         }
 	}
 }

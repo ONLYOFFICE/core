@@ -67,7 +67,6 @@ public:
 
 	CTextAttributesEx		m_oText;
 
-
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;
 
@@ -81,7 +80,7 @@ public:
 
 	CBaseShape*				m_pShape;
 
-        std::wstring					m_strPPTXShape;
+	std::wstring			m_strPPTXShape;
 public:
 	CShape(NSBaseShape::ClassType ClassType, int ShapeType_) : m_rcBounds()
 	{

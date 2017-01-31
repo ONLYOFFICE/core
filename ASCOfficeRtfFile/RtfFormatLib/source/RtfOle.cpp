@@ -63,7 +63,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauth);
             std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
 			
-			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nRevised = PROP_DEF;
 		}
 		if (pCharProps->m_nDeleted != PROP_DEF)
@@ -73,7 +73,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
             std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauthDel);
             std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttmDel).c_str());
 			
-			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + boost::lexical_cast<std::wstring>(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
+			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nDeleted = PROP_DEF;
 		}
 //----------
@@ -88,8 +88,8 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:rPr>";
 		}
 		
-        sResult += L"<w:object w:dxaOrig=\"" + boost::lexical_cast<std::wstring>(m_nWidth) +
-                          L"\" w:dyaOrig=\"" + boost::lexical_cast<std::wstring>(m_nHeight) + L"\">";
+        sResult += L"<w:object w:dxaOrig=\"" + std::to_wstring(m_nWidth) +
+                          L"\" w:dyaOrig=\"" + std::to_wstring(m_nHeight) + L"\">";
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
@@ -122,7 +122,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 		default: 		sResult += L" Type=\"Embed\"";	break;
 	}
     sResult += L" ProgID=\"" + m_sOleClass + L"\"";
-    sResult += L" ShapeID=\"_x0000_s" + boost::lexical_cast<std::wstring>(poDocument->GetShapeId( oRenderParameter.nValue )) + L"\"";
+    sResult += L" ShapeID=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( oRenderParameter.nValue )) + L"\"";
 	sResult += L" DrawAspect=\"Content\"";
     sResult += L" ObjectID=\"" + poDocument->m_oIdGenerator.Generate_OleId() + L"\"";
 
@@ -130,7 +130,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
     std::wstring sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
 	
     std::wstring sFilenameRels;
-    sFilenameRels += L"oleObject" + boost::lexical_cast<std::wstring>(poDocument->m_oIdGenerator.Generate_OleIndex()) + L".";
+    sFilenameRels += L"oleObject" + std::to_wstring(poDocument->m_oIdGenerator.Generate_OleIndex()) + L".";
 	sFilenameRels += sExtension;
 	
     std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";

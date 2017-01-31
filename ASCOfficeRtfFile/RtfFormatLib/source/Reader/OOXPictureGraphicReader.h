@@ -48,7 +48,7 @@ private:
 public: 
 	OOXPictureGraphicReader(OOX::Drawing::CGraphic *ooxGraphic)
 	{
-		m_ooxGraphic = ooxGraphic;
+		m_ooxGraphic	= ooxGraphic;
 	}
 	bool Parse( ReaderParameter oParam , RtfShape& oOutput);
 	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& oOutput, std::wstring sTempPath )

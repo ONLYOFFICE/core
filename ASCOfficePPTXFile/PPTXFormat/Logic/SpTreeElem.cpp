@@ -135,7 +135,7 @@ namespace PPTX
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
-					int fopacity = (int)(((double)A / 255.0) * 65536);
+					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
                     strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 				}
 			}
@@ -150,7 +150,7 @@ namespace PPTX
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 					if (A != 255)
 					{
-						int fopacity = (int)(((double)A / 255.0) * 65536);
+						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
                         strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 					}
 				}

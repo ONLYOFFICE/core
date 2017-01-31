@@ -16,7 +16,12 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_x2t
 include(../../../Common/base.pri)
 
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
+DEFINES +=  UNICODE _UNICODE \
+            _USE_LIBXML2_READER_ \
+            _USE_XMLLITE_READER_ \
+            USE_LITE_READER \
+            LIBXML_READER_ENABLED \
+            DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \

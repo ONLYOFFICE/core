@@ -1284,7 +1284,7 @@ public:
 		}
 		else
 		{
-            strProp = boost::lexical_cast<std::wstring>( parameter);
+            strProp = std::to_wstring( parameter);
 		}
 
 		return strProp;

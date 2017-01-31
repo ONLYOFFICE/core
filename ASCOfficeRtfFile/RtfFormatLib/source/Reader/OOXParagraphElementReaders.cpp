@@ -697,14 +697,33 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_w_drawing:
 		{
+			bool bAddDrawing = false;
+
 			OOX::Logic::CDrawing* ooxDrawing = dynamic_cast<OOX::Logic::CDrawing*>(ooxItem);
-			RtfShapePtr pNewPicture ( new RtfShape() );
-			pNewPicture->m_oCharProperty = oNewProperty;
+			RtfShapePtr pNewDrawing ( new RtfShape() );
+			pNewDrawing->m_oCharProperty = oNewProperty;
 		
-			OOXPictureReader oPictureReader(ooxDrawing);
-			if( true == oPictureReader.Parse( oParam, (*pNewPicture) ) )
+			OOXDrawingReader oDrawingReader(ooxDrawing);
+			if( true == oDrawingReader.Parse( oParam, (*pNewDrawing) ) )
 			{
-				 oOutputParagraph.AddItem( pNewPicture );
+				 oOutputParagraph.AddItem( pNewDrawing );
+				 bAddDrawing = true;
+			}
+			if (!bAddDrawing && ooxDrawing->m_sXml.IsInit())
+			{	
+				OOXDrawingGraphicReader oGraphiceReader(*ooxDrawing->m_sXml);
+				OOX::Logic::CPicture *ooxPicture = oGraphiceReader.Parse( oParam, (*pNewDrawing) );
+
+				if (Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxPicture))
+				{
+					bAddDrawing = true;
+				}
+				if (ooxPicture)delete ooxPicture;
+			}
+			if (!bAddDrawing)
+			{
+				pNewDrawing->SetNotSupportShape();
+				oOutputParagraph.AddItem( pNewDrawing );
 			}
 		}break;
 		case OOX::et_w_pict:
@@ -896,9 +915,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					nFontSize = oNewProperty.m_nFontSize / 2;
 
 				sFieldText = L"SYMBOL";
-                sFieldText += boost::lexical_cast<std::wstring>( nChar );
+                sFieldText += std::to_wstring( nChar );
 				sFieldText += L" \\\\f \"" + sFont + L"\" \\\\s ";
-                sFieldText += boost::lexical_cast<std::wstring>( nFontSize );
+                sFieldText += std::to_wstring( nFontSize );
 				
 				pNewChar->setText( sFieldText );
 				

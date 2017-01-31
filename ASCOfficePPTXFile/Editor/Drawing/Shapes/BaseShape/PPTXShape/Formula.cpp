@@ -42,7 +42,7 @@
 
 double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManager)
 {
-	if ((0 == m_lIndex) || (-m_lIndex > pManager->Guides->size()) || (m_lIndex > pManager->Adjustments->size()))
+	if ((0 == m_lIndex) || (-m_lIndex > (int)pManager->Guides->size()) || (m_lIndex > (int)pManager->Adjustments->size()))
 		return 0.0;
 	if((m_lIndex < 0) && (dNonDefResult > (*pManager->Guides)[-m_lIndex-1]))
 		return (*pManager->Guides)[-m_lIndex-1];

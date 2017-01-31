@@ -60,11 +60,13 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
+		private:
+			virtual void fromXML2(XmlUtils::CXmlNode& node, bool bClear)
 			{
-				RunElems.clear();
+				if (bClear)
+				{
+					RunElems.clear();
+				}
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -94,18 +96,23 @@ namespace PPTX
 								//todo better check (a14 can be math, slicer)
 								if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 								{
-									fromXML(oNodeChoice);
+									fromXML2(oNodeChoice, false);
 								}
 								else if (oNode.GetNode(_T("mc:Fallback"), oNodeFall))
 								{
-									fromXML(oNodeFall);
+									fromXML2(oNodeFall, false);
 								}
 							}
 						}
 					}
 				}
-				
+
 				FillParentPointersForChilds();
+			}
+		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+				fromXML2(node, true);
 			}
 			virtual std::wstring toXML() const
 			{

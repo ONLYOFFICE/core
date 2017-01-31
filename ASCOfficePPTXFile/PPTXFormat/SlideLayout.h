@@ -478,11 +478,13 @@ namespace PPTX
 			Master = pFile.smart_dynamic_cast<PPTX::SlideMaster>();
 
 			if (Master.IsInit())
+			{
 				theme = Master->theme;
 			
-			if (theme.IsInit())
-			{	
-                tableStyles = theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+				if (theme.IsInit())
+				{	
+					tableStyles = theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+				}
 			}
 			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
 			{

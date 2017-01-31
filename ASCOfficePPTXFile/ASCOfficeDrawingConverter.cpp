@@ -1735,13 +1735,16 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 			
 			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";	
 
-			oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(pathDiagramDrawing)));
-			if (oFileDrawing.IsInit())
-				pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			if (NSFile::CFileBinary::Exists(pathDiagramDrawing.GetPath()))
+			{
+				oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(pathDiagramDrawing)));
+				if (oFileDrawing.IsInit())
+					pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
+			}
 		}
 	}
 
-	if (pDiagramDrawing)
+	if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
 	{
 		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
 		//to correct write blipFill rId to binary

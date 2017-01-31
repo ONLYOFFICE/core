@@ -257,54 +257,74 @@ namespace PPTX2EditorAdvanced
 			tablestyles->toPPTY(&oBinaryWriter);
 		}
 
-		// Presentation
+	// Presentation
 		oBinaryWriter.StartMainRecord(NSMainTables::Presentation);
 		presentation->toPPTY(&oBinaryWriter);
 
-		// themes
+	// themes
 		oBinaryWriter.StartMainRecord(NSMainTables::Themes);
-		ULONG nCountThemes = (ULONG)_themes.size();
+		
+		ULONG nCountThemes = 0;
+        for (size_t i = 0; i < _themes.size(); ++i)
+        {
+			if (_themes[i].IsInit()) nCountThemes++;
+        }		
 		oBinaryWriter.WriteULONG(nCountThemes);
-		for (ULONG i = 0; i < nCountThemes; ++i)
+		
+		for (size_t  i = 0; i < _themes.size(); ++i)
 		{
+			if (_themes[i].IsInit() == false) continue;
 			_themes[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slidemasters
+	// slidemasters
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideMasters);
-		ULONG nCountSM = (ULONG)_slideMasters.size();
+		
+		ULONG nCountSM = 0;
+        for (size_t i = 0; i < _slideMasters.size(); ++i)
+        {
+			if (_slideMasters[i].IsInit()) nCountSM++;
+        }
 		oBinaryWriter.WriteULONG(nCountSM);
-		for (ULONG i = 0; i < nCountSM; ++i)
+		
+		for (size_t i = 0; i < _slideMasters.size(); ++i)
 		{
+			if (_slideMasters[i].IsInit() == false) continue;
+			
 			_slideMasters[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slidelayouts
+	// slidelayouts
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideLayouts);
-        ULONG nCountL = 0;
-
-        for (ULONG i = 0; i < _layouts.size(); ++i)
+       
+		ULONG nCountL = 0;
+        for (size_t i = 0; i < _layouts.size(); ++i)
         {
-            if (_layouts[i].IsInit())nCountL++;
+			if (_layouts[i].IsInit())nCountL++;
         }
-
 		oBinaryWriter.WriteULONG(nCountL);
-        for (ULONG i = 0; i < _layouts.size(); ++i)
+
+        for (size_t i = 0; i < _layouts.size(); ++i)
 		{
-            if (_layouts[i].IsInit() == false)
-            {
-                continue;
-                //непонятки с 42 шаблоном в FY10_September_Partner_Call.pptx
-            }
+            if (_layouts[i].IsInit() == false)	continue;	//непонятки с 42 шаблоном в FY10_September_Partner_Call.pptx
+
 			_layouts[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slides
+	// slides
 		oBinaryWriter.StartMainRecord(NSMainTables::Slides);
-		ULONG nCountS = (ULONG)_slides.size();
+		
+		ULONG nCountS = 0;
+        for (size_t i = 0; i < _slides.size(); ++i)
+        {
+			if (_slides[i].IsInit())	nCountS++;
+        }
 		oBinaryWriter.WriteULONG(nCountS);
-		for (ULONG i = 0; i < nCountS; ++i)
+
+		for (size_t i = 0; i < _slides.size(); ++i)
 		{
+			if (_slides[i].IsInit() == false )	continue;
+
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
 
@@ -312,7 +332,7 @@ namespace PPTX2EditorAdvanced
 		{
 			// ПОКА нету NOTES
 
-			// notes
+		// notes
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
 			ULONG nCountN = (ULONG)_notes.size();
 			oBinaryWriter.WriteULONG(nCountN);
@@ -321,7 +341,7 @@ namespace PPTX2EditorAdvanced
 				_notes[i]->toPPTY(&oBinaryWriter);
 			}
 
-			// notesmasters
+		// notesmasters
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
 			ULONG nCountNM = (ULONG)_notesMasters.size();
 			oBinaryWriter.WriteULONG(nCountNM);

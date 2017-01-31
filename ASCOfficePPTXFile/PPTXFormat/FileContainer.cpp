@@ -81,7 +81,7 @@ namespace PPTX
 
         for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
+			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
 			OOX::CPath normPath = path / pRelation->Target();
 
             std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
@@ -112,7 +112,10 @@ namespace PPTX
 				{
 					long percent = Event->GetPercent();
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(path, *pRelation, map);													
+					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(path, *pRelation, map);
+
+					if (file.IsInit() == false)
+						continue;
 					
 					map.add(normPath, file);
 					Add(pRelation->rId(), file);
@@ -223,7 +226,7 @@ namespace PPTX
 		size_t nCount = rels.m_arrRelations.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
+			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
 
 			smart_ptr<OOX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(path, *pRelation);
 			Add(pRelation->rId(), _file);	

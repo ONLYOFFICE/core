@@ -35,10 +35,6 @@ INCLUDEPATH += \
     ../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
-    DEFINES += \
-        _ASC_USE_UNICODE_CONVERTER_ \
-        UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 

@@ -29,10 +29,6 @@ DEFINES += _DEBUG
 }
 
 core_mac {
-DEFINES += \
-    _ASC_USE_UNICODE_CONVERTER_ \
-    UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 

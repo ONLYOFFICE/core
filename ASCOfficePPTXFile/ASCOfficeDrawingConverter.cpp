@@ -1744,6 +1744,9 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	if (pDiagramDrawing)
 	{
 		result->InitElem(new PPTX::Logic::SpTree(*pDiagramDrawing->m_oShapeTree));
+		//to correct write blipFill rId to binary
+		m_strCurrentRelsPath = pDiagramDrawing->GetReadPath().GetPath();
+		SetCurrentRelsPath();
 	}
 	else
 	{//BG-FSC1.docx

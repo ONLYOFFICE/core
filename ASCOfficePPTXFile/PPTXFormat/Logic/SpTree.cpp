@@ -57,7 +57,8 @@ namespace PPTX
             pWriter->WriteAttribute(L"o:spid", strSpid);
 		
 			NSBinPptxRW::CXmlWriter oStylesWriter;
-			if (_T("") != pWriter->m_strStyleMain)
+			
+			if (!pWriter->m_strStyleMain.empty())
 			{
 				if (grpSpPr.xfrm.is_init())
 				{
@@ -101,21 +102,21 @@ namespace PPTX
 				if (grpSpPr.xfrm.is_init())
 				{
 					if (grpSpPr.xfrm->offX.is_init())
-						dL = (*grpSpPr.xfrm->offX);
+						dL = (*grpSpPr.xfrm->offX)	/ 12700.;
 					if (grpSpPr.xfrm->offY.is_init())
-						dT = (*grpSpPr.xfrm->offY);
+						dT = (*grpSpPr.xfrm->offY)	/ 12700.;
 					if (grpSpPr.xfrm->extX.is_init())
-						dW = (*grpSpPr.xfrm->extX);
+						dW = (*grpSpPr.xfrm->extX)	/ 12700.;
 					if (grpSpPr.xfrm->extY.is_init())
-						dH = (*grpSpPr.xfrm->extY);
+						dH = (*grpSpPr.xfrm->extY)	/ 12700.;
 				}
 
 				oStylesWriter.ClearNoAttack();
-				oStylesWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
-				oStylesWriter.WriteAttributeCSS_int(_T("left"), dL);
-				oStylesWriter.WriteAttributeCSS_int(_T("top"), dT);
-				oStylesWriter.WriteAttributeCSS_int(_T("width"), dW);
-				oStylesWriter.WriteAttributeCSS_int(_T("height"), dH);
+				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
+				oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL);
+				oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT);
+				oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW);
+				oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH);
 
 				if (grpSpPr.xfrm.is_init())
 				{
@@ -156,13 +157,13 @@ namespace PPTX
 			if (grpSpPr.xfrm.is_init())
 			{
 				if (grpSpPr.xfrm->chOffX.is_init())
-					dL = (*grpSpPr.xfrm->chOffX);
+					dL = (*grpSpPr.xfrm->chOffX)	/ 12700.;
 				if (grpSpPr.xfrm->chOffY.is_init())
-					dT = (*grpSpPr.xfrm->chOffY);
+					dT = (*grpSpPr.xfrm->chOffY)	/ 12700.;
 				if (grpSpPr.xfrm->chExtX.is_init())
-					dW = (*grpSpPr.xfrm->chExtX);
+					dW = (*grpSpPr.xfrm->chExtX)	/ 12700.;
 				if (grpSpPr.xfrm->chExtY.is_init())
-					dH = (*grpSpPr.xfrm->chExtY);
+					dH = (*grpSpPr.xfrm->chExtY)	/ 12700.;
 			}
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);

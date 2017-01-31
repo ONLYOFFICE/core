@@ -32,12 +32,12 @@
 #pragma once
 #include "OOXPictureGraphicReader.h"
 
-class OOXPictureInlineReader
+class OOXDrawingInlineReader
 {
 private:
-	OOX::Drawing::CInline *m_ooxInline;
+	OOX::Drawing::CInline *	m_ooxInline;
 public: 
-	OOXPictureInlineReader(OOX::Drawing::CInline *ooxInline)
+	OOXDrawingInlineReader(OOX::Drawing::CInline *ooxInline)
 	{
 		m_ooxInline = ooxInline;
 	}
@@ -83,8 +83,11 @@ public:
 		
 		if(m_ooxInline->m_oGraphic.IsInit())
 		{
-			OOXPictureGraphicReader oGraphicReader(m_ooxInline->m_oGraphic.GetPointer());
-			oGraphicReader.Parse( oParam, oOutput);
+			OOXPictureGraphicReader oPictureReader(m_ooxInline->m_oGraphic.GetPointer());
+			if (oPictureReader.Parse( oParam, oOutput) == false)
+			{
+				return false;
+			}
 		}
 		//изменяем scale в соответсявии с выходным размером
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )

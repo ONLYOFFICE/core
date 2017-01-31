@@ -457,7 +457,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 					rtfMath->m_bIsVal = true;
 					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
 
-                    oChar->setText( boost::lexical_cast<std::wstring>(oFont.m_nID) );
+                    oChar->setText( std::to_wstring(oFont.m_nID) );
 					rtfMath->m_oVal.AddItem( oChar );
 				}
 			}

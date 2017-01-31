@@ -577,20 +577,20 @@ namespace PPTX
 				if (spPr.xfrm.is_init())
 				{
 					if (spPr.xfrm->offX.is_init())
-						dL = (*spPr.xfrm->offX);
+						dL = (*spPr.xfrm->offX) / 12700.;
 					if (spPr.xfrm->offY.is_init())
-						dT = (*spPr.xfrm->offY);
+						dT = (*spPr.xfrm->offY) / 12700.;
 					if (spPr.xfrm->extX.is_init())
-						dW = (*spPr.xfrm->extX);
+						dW = (*spPr.xfrm->extX) / 12700.;
 					if (spPr.xfrm->extY.is_init())
-						dH = (*spPr.xfrm->extY);
+						dH = (*spPr.xfrm->extY) / 12700.;
 				}
 
-                oStylesWriter.WriteAttributeCSS     (_T("position"), _T("absolute"));
-                oStylesWriter.WriteAttributeCSS_int (_T("left"), dL);
-                oStylesWriter.WriteAttributeCSS_int (_T("top"), dT);
-                oStylesWriter.WriteAttributeCSS_int (_T("width"), dW);
-                oStylesWriter.WriteAttributeCSS_int (_T("height"), dH);
+                oStylesWriter.WriteAttributeCSS (_T("position"), _T("absolute"));
+                oStylesWriter.WriteAttributeCSS_int_pt (_T("left"),		dL);
+                oStylesWriter.WriteAttributeCSS_int_pt (_T("top"),		dT);
+                oStylesWriter.WriteAttributeCSS_int_pt (_T("width"),	dW);
+                oStylesWriter.WriteAttributeCSS_int_pt (_T("height"),	dH);
 			}
 
 			if (spPr.xfrm.is_init())
@@ -629,9 +629,7 @@ namespace PPTX
 					lH = spPr.xfrm->extY.get_value_or(43200);
 				}
 
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 				spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
-#endif
 
 				pWriter->StartNode(_T("v:shape"));
 

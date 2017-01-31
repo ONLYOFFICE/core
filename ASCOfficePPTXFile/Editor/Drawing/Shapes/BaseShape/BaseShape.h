@@ -53,10 +53,10 @@ namespace NSPresentationEditor
         CHandle_& operator =(const CHandle_& oSrc)
         {
             position		= oSrc.position;
-            xrange		= oSrc.xrange;
-            yrange		= oSrc.yrange;
+            xrange			= oSrc.xrange;
+            yrange			= oSrc.yrange;
             switchHandle	= oSrc.switchHandle;
-            polar		= oSrc.polar;
+            polar			= oSrc.polar;
             radiusrange		= oSrc.radiusrange;
             return (*this);
         }
@@ -65,27 +65,27 @@ namespace NSPresentationEditor
     class CBaseShape
     {
     public:
-        std::vector<long>			m_arAdjustments;
-        std::vector<double>			m_arGuides;
-        LONG					m_eJoin;
-        bool					m_bConcentricFill;
-        bool					m_bCustomShape;
+        std::vector<long>					m_arAdjustments;
+        std::vector<double>					m_arGuides;
+        LONG								m_eJoin;
+        bool								m_bConcentricFill;
+        bool								m_bCustomShape;
         std::vector<SimpleTypes::CPoint>	m_arConnectors;
-        std::vector<LONG>			m_arConnectorAngles;
+        std::vector<LONG>					m_arConnectorAngles;
 
-        std::vector<Aggplus::RECT>		m_arTextRects;
+        std::vector<Aggplus::RECT>			m_arTextRects;
 
-        std::vector<CHandle_>			m_arHandles;
+        std::vector<CHandle_>				m_arHandles;
 
-        std::wstring				m_strTransformXml;
+        std::wstring						m_strTransformXml;
 
-        std::wstring				m_strPath;
-        std::wstring				m_strRect;
+        std::wstring						m_strPath;
+        std::wstring						m_strRect;
 
-        LONG					m_lLimoX;
-        LONG					m_lLimoY;
+        LONG								m_lLimoX;
+        LONG								m_lLimoY;
 
-        CPath					m_oPath;
+        CPath								m_oPath;
 
         CBaseShape()
         {
@@ -94,14 +94,14 @@ namespace NSPresentationEditor
 
         virtual bool LoadFromXML(const std::wstring& xml)               = 0;
         virtual bool LoadFromXML(XmlUtils::CXmlNode& xmlNode)           = 0;
-        virtual bool LoadAdjustValuesList(const std::wstring& xml)	= 0;
+        virtual bool LoadAdjustValuesList(const std::wstring& xml)		= 0;
         virtual bool LoadGuidesList(const std::wstring& xml)            = 0;
-        virtual bool LoadAdjustHandlesList(const std::wstring& xml)	= 0;
-        virtual bool LoadConnectorsList(const std::wstring& xml)	= 0;
-        virtual bool LoadTextRect(const std::wstring& xml)		= 0;
-        virtual bool LoadPathList(const std::wstring& xml)		= 0;
-        virtual bool SetAdjustment(long index, long value)		= 0;
-        virtual void ReCalculate()					= 0;
+        virtual bool LoadAdjustHandlesList(const std::wstring& xml)		= 0;
+        virtual bool LoadConnectorsList(const std::wstring& xml)		= 0;
+        virtual bool LoadTextRect(const std::wstring& xml)				= 0;
+        virtual bool LoadPathList(const std::wstring& xml)				= 0;
+        virtual bool SetAdjustment(long index, long value)				= 0;
+        virtual void ReCalculate()										= 0;
 
         virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, CMetricInfo& MetricInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen) = 0;
         virtual void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo)

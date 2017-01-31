@@ -43,9 +43,9 @@ std::wstring RtfBookmarkStart::RenderToRtf(RenderParameter oRenderParameter)
 
 	sResult += L"{\\*\\bkmkstart";
 	if( PROP_DEF != nFirstColumn )
-        sResult += L"\\bkmkcolf" + boost::lexical_cast<std::wstring>( nFirstColumn);
+        sResult += L"\\bkmkcolf" + std::to_wstring( nFirstColumn);
 	if( PROP_DEF != nLastColumn )
-        sResult += L"\\bkmkcoll" + boost::lexical_cast<std::wstring>( nLastColumn);
+        sResult += L"\\bkmkcoll" + std::to_wstring( nLastColumn);
 	
 	sResult += L" ";
     RtfCharProperty* pCharProperty = NULL;
@@ -72,11 +72,11 @@ std::wstring RtfBookmarkStart::RenderToOOX(RenderParameter oRenderParameter)
 		nID = poDocument->m_oIdGenerator.Generate_BookmarkNumber();
 		poOOXWriter->m_aBookmarksId[m_sName] =  nID;
 	}
-    sResult += L" w:id =\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
+    sResult += L" w:id =\"" + std::to_wstring(nID) + L"\"";
 	if( PROP_DEF != nFirstColumn )
-        sResult += L" w:colFirst =\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
+        sResult += L" w:colFirst =\"" + std::to_wstring(nID) + L"\"";
 	if( PROP_DEF != nLastColumn )
-        sResult += L" w:colLast =\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
+        sResult += L" w:colLast =\"" + std::to_wstring(nID) + L"\"";
 
     sResult += L" w:name =\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"";
 	sResult += L"/>";
@@ -114,7 +114,7 @@ std::wstring RtfBookmarkEnd::RenderToOOX(RenderParameter oRenderParameter)
 		nID = poDocument->m_oIdGenerator.Generate_BookmarkNumber();
 		poOOXWriter->m_aBookmarksId[m_sName] = nID;
 	}
-    sResult += L" w:id =\"" + boost::lexical_cast<std::wstring>(nID) + L"\"";
+    sResult += L" w:id =\"" + std::to_wstring(nID) + L"\"";
 	sResult += L"/>";
 	return sResult;
 }
@@ -161,7 +161,7 @@ std::wstring RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
             sResult += srPr;
 			sResult += L"</w:rPr>";
 		}
-        sResult += L"<w:endnoteReference  w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"/>";
+        sResult += L"<w:endnoteReference  w:id=\"" + std::to_wstring(nID) + L"\"/>";
 		sResult += L"</w:r>";
 	}
 	else
@@ -184,7 +184,7 @@ std::wstring RtfFootnote::RenderToOOX(RenderParameter oRenderParameter)
             sResult += srPr;
             sResult += L"</w:rPr>";
 		}
-        sResult += L"<w:footnoteReference w:id=\"" + boost::lexical_cast<std::wstring>(nID) + L"\"/>";
+        sResult += L"<w:footnoteReference w:id=\"" + std::to_wstring(nID) + L"\"/>";
 		sResult += L"</w:r>";
 	}
 

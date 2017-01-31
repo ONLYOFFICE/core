@@ -21,7 +21,6 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-         USE_ATL_CSTRING \
         PPTX_DEF \
         PPT_DEF \
         ENABLE_PPT_TO_PPTX_CONVERT \
@@ -31,7 +30,6 @@ DEFINES +=  UNICODE \
         _USE_XMLLITE_READER_ \
         _PRESENTATION_WRITER_ \
         _SVG_CONVERT_TO_IMAGE_  \
-        BUILD_CONFIG_FULL_VERSION \
         DONT_WRITE_EMBEDDED_FONTS
         #DISABLE_FILE_DOWNLOADER
 

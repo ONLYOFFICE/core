@@ -31,6 +31,9 @@
  */
 
 #include "OOXPictureGraphicReader.h"
+#include "OOXDrawingGraphicReader.h"
+
+#include "../../../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 
 bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 {
@@ -79,27 +82,51 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 			}
 		}
 	}
-	if (!bTryPicture)
-	{
-		//рисуем "крест" (todooo получать с редактора реплейсмент картинку)
-		oOutput.m_nShapeType	= 1;
-		oOutput.m_bFilled		= 0;
-		oOutput.m_bLine			= 1;
-		oOutput.m_aTextItems	= TextItemContainerPtr( new TextItemContainer() );
-		
-		RtfParagraphPtr oParagraph ( new RtfParagraph() );
-	
-		oParagraph->m_oProperty					= oParam.oRtf->m_oDefaultParagraphProp;
-		oParagraph->m_oProperty.m_oCharProperty	= oParam.oRtf->m_oDefaultCharProp;
-		oParagraph->m_oProperty.m_nItap			= 0;
-		
-		RtfCharPtr oChar ( new RtfChar() );
-		oChar->m_oProperty = oParam.oRtf->m_oDefaultCharProp;
-		oChar->setText( L"The element is not supported in RTF format." );
-		
-		oParagraph->AddItem( oChar );	
-		oOutput.m_aTextItems->AddItem( oParagraph );	
-	}
-	return true;
+	return bTryPicture;
 }
 
+OOX::Logic::CPicture * OOXDrawingGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
+{
+	NSBinPptxRW::CDrawingConverter drawingConverter;
+
+	drawingConverter.SetRelsPath(oParam.oDocx->m_pDocument->m_oReadPath.GetPath());
+
+	std::wstring sVmlXml = drawingConverter.ConvertObjectToVml(m_sXml);
+
+	if (sVmlXml.empty())return NULL;
+
+	std::wstring sBegin	(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
+	std::wstring sEnd	(L"</main>");
+	
+	std::wstring strXml = sBegin + sVmlXml + sEnd;
+	
+	//XmlUtils::CXmlNode oMainNode;
+	//if (!oMainNode.FromXmlString(strXml))
+	//	return NULL;
+
+	//XmlUtils::CXmlNode pictNode = oMainNode.ReadNodeNoNS(L"pict");
+
+	//if (pictNode.IsValid())
+	//	return new OOX::Logic::CPicture(pictNode);
+	//else 
+	//	return NULL;
+
+	XmlUtils::CXmlLiteReader oSubReader;
+	
+	if (oSubReader.FromString(strXml) == false) return NULL;						
+	oSubReader.ReadNextNode();
+
+	OOX::Logic::CPicture *pPict = NULL;
+
+	int nStylesDepth1 = oSubReader.GetDepth();
+	while ( oSubReader.ReadNextSiblingNode( nStylesDepth1 ) )
+	{
+		std::wstring sName = oSubReader.GetName();
+		if (sName == L"w:pict")
+		{
+			pPict= new OOX::Logic::CPicture(oSubReader);
+			break;
+		}
+	}
+	return pPict;
+}

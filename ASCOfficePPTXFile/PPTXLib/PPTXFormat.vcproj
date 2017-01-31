@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source\;.\;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -663,26 +663,6 @@
 					RelativePath="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h"
 					>
 				</File>
-				<Filter
-					Name="System"
-					>
-					<File
-						RelativePath="..\.\Directory.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\File.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\.\File.h"
-						>
-					</File>
-					<File
-						RelativePath="..\.\Settings.h"
-						>
-					</File>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="ContentTypes"
@@ -715,6 +695,22 @@
 			<Filter
 				Name="Core"
 				>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\baseshape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTShape\pptshape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\BaseShape\PPTXShape\PPTXShape.h"
+					>
+				</File>
+				<File
+					RelativePath="..\Editor\Drawing\Shapes\shape.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="HandoutMasters"

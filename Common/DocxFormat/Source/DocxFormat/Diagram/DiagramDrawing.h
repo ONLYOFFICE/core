@@ -213,6 +213,7 @@ namespace OOX
         }
         virtual void read(const CPath& oRootPath, const CPath& oFilePath)
         {
+			m_oReadPath = oFilePath;
             IFileContainer::Read( oRootPath, oFilePath );
     //#ifdef USE_LITE_READER
 
@@ -259,7 +260,12 @@ namespace OOX
         {
             return type().DefaultFileName();
         }
+		const CPath& GetReadPath()
+		{
+			return m_oReadPath;
+		}
 
+		CPath									m_oReadPath;
 		NSCommon::nullable<PPTX::Logic::SpTree> m_oShapeTree;
 
     };

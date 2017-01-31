@@ -180,17 +180,17 @@ public:
 	int m_nLineDashing;
 
 //WordArt
-    std::wstring m_sGtextUNICODE;
-    std::wstring m_sGtextFont;
-	int		m_nGtextSize;
-	int		m_bGtext;
-	int		m_bGtextFVertical;
-	int		m_bGtextFKern;
-	int		m_bGtextFStretch;
-	int		m_bGtextFShrinkFit;
-	int		m_bGtextFBestFit;
+    std::wstring	m_sGtextUNICODE;
+    std::wstring	m_sGtextFont;
+	int				m_nGtextSize;
+	int				m_bGtext;
+	int				m_bGtextFVertical;
+	int				m_bGtextFKern;
+	int				m_bGtextFStretch;
+	int				m_bGtextFShrinkFit;
+	int				m_bGtextFBestFit;
 
-	RtfCharProperty			m_oCharProperty; // тут могут быть track changes ....
+	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	std::vector< std::pair<int, int> >	m_aWrapPoints;
@@ -217,11 +217,13 @@ public:
 	}
 	void SetDefault();
 
+	void SetNotSupportShape();
+
     std::wstring RenderToRtf		(RenderParameter oRenderParameter);
     std::wstring RenderToOOX		(RenderParameter oRenderParameter);
 
-    std::wstring RenderToOOXBegin(RenderParameter oRenderParameter);
-    std::wstring RenderToOOXEnd	(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXBegin	(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXEnd		(RenderParameter oRenderParameter);
 	
 	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 	{
@@ -258,6 +260,9 @@ typedef boost::shared_ptr<RtfShape> RtfShapePtr;
 class RtfShapeGroup : public RtfShape, public ItemContainer<RtfShapePtr>
 {
 public: 
+	RtfShapeGroup() {}
+	RtfShapeGroup(const RtfShape & shape) : RtfShape(shape) {}
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	bool IsValid()

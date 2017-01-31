@@ -1041,14 +1041,8 @@ namespace NSFile
 			for (int nIndex = 0; nIndex < 1000; ++nIndex)
 			{
 				wsFileName = wsTemp;
-#if defined(_WIN32) || defined (_WIN64)
-				wchar_t buff[32] ={};
-				size_t sz = 0;
-				_itow_s(nTime + nIndex, buff, sz, 10);
-				wsFileName.append(buff, sz);
-#else
 				wsFileName.append(std::to_wstring(nTime + nIndex));
-#endif
+
 				if (wsExt)
 				{
 					wsFileName.append(wsExt);

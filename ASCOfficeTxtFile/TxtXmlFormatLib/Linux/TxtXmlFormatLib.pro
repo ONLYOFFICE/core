@@ -21,7 +21,6 @@ DEFINES += UNICODE \
            _USE_LIBXML2_READER_ \
            _USE_XMLLITE_READER_ \
             USE_LITE_READER \
-            BUILD_CONFIG_FULL_VERSION \
             DONT_WRITE_EMBEDDED_FONTS \
             LIBXML_READER_ENABLED
 

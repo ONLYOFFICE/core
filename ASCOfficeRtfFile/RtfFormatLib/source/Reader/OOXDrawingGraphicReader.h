@@ -29,58 +29,26 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-// DocFormatTest.cpp : Defines the entry point for the console application.
-//
-#include <tchar.h>
-#include "../RtfFormatLib/source/ConvertationManager.h"
+#pragma once
 
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "OOXReaderBasic.h"
 
-#include <algorithm>
-#include <string>
+#include "../RtfPicture.h"
 
-int _tmain(int argc, _TCHAR* argv[])
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Drawing/Drawing.h"
+
+#define PICTURE_BUFFER_SIZE 1024
+
+class OOXDrawingGraphicReader
 {
-	if (argc < 2) return 1;
+private:
+	std::wstring m_sXml;
 
-	std::wstring srcFileName	= argv[1];
-	int n1 = srcFileName.rfind(_T('.'));
-	std::wstring ext_1 = n1 >= 0 ? srcFileName.substr(n1+1, srcFileName.length() - n1) : _T("");
-	
-	std::transform(ext_1.begin(), ext_1.end(), ext_1.begin(), ::tolower);
-
-	std::wstring dstFileName	= argc > 2 ? argv[2] : srcFileName + L"_my." + (ext_1 == L"rtf" ? L"docx" : L"rtf");
-	
-	std::wstring outputDir		= NSDirectory::GetFolderPath(dstFileName);
-	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
-
-
-	RtfConvertationManager rtfConvert;
-
-	rtfConvert.m_sTempFolder = dstTempPath;
-
-	COfficeUtils oCOfficeUtils(NULL);
-	
-	if (ext_1 == L"rtf")
-	{	
-		// rtf->docx
-		rtfConvert.ConvertRtfToOOX(srcFileName, dstTempPath);
-		
-		if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
-			return S_FALSE;
+public: 
+	OOXDrawingGraphicReader(std::wstring sXml)
+	{
+		m_sXml = sXml;
 	}
-	else
-	{	
-		// docx->rtf
-		if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), dstTempPath.c_str(), NULL, 0))
-			return S_FALSE;
-		
-		rtfConvert.ConvertOOXToRtf(dstFileName, dstTempPath);
-	}
-
-	NSDirectory::DeleteDirectory(dstTempPath);	
-
-	return 0;
-}
-
+	OOX::Logic::CPicture * Parse( ReaderParameter oParam , RtfShape& oOutput);
+};

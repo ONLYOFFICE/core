@@ -65,7 +65,7 @@ public:
 		
 		for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
 		{
-            sResult += L"<w:gridCol w:w=\"" + boost::lexical_cast<std::wstring>(m_aTableGrid[i]) + L"\"/>";
+            sResult += L"<w:gridCol w:w=\"" + std::to_wstring(m_aTableGrid[i]) + L"\"/>";
 		}
 		sResult += L"</w:tblGrid>";	
 

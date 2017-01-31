@@ -53,7 +53,7 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			oNewParameter.nType = RENDER_TO_OOX_PARAM_PLAIN;
             std::wstring sText = m_oLevelText->RenderToOOX( oNewParameter );
 
-            sResult += L"<w:abstractNum w:abstractNumId=\"" + boost::lexical_cast<std::wstring>(m_nLs) + L"\">";
+            sResult += L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_nLs) + L"\">";
 			sResult += L"<w:multiLevelType w:val=\"singleLevel\" />";
 			sResult += L"<w:lvl w:ilvl=\"0\">";
 			sResult += L"<w:numFmt w:val=\"bullet\"/>";
@@ -89,13 +89,13 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:abstractNum>";
 		}
 		else if( RENDER_TO_OOX_PARAM_OLDLIST_OVR == oRenderParameter.nType )
-            sResult += L"<w:num w:numId=\"" + boost::lexical_cast<std::wstring>(m_nLs) +
-                    L"\"><w:abstractNumId w:val=\"" + boost::lexical_cast<std::wstring>(m_nLs) + L"\"/></w:num>";
+            sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nLs) +
+                    L"\"><w:abstractNumId w:val=\"" + std::to_wstring(m_nLs) + L"\"/></w:num>";
 		else
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )
-                sResult += L"<w:numPr><w:ilvl w:val=\"" + boost::lexical_cast<std::wstring>(m_nLs) +
-                        L"\"/><w:numId w:val=\"%" + boost::lexical_cast<std::wstring>(m_nLs) + L"\"/></w:numPr>";
+                sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nLs) +
+                        L"\"/><w:numId w:val=\"%" + std::to_wstring(m_nLs) + L"\"/></w:numPr>";
 		}
 	}
 	return sResult;

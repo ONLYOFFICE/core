@@ -248,16 +248,16 @@ namespace NExtractTools
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;		}
 
-        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params);
+        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true);
     }
-    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params)
+    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions)
     {
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, bXmlOptions ? params.getXmlOptions() : L"") ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // xslx -> xslt
@@ -2053,11 +2053,11 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
+			nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
+			nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
        }
        else
        {
@@ -2065,9 +2065,9 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sXlstDir);
            std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
+				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, false);
            else
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
+				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, true);
            if(SUCCEEDED_X2T(nRes))
            {
                nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);

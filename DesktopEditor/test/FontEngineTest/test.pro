@@ -39,10 +39,10 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
 }
 
@@ -53,9 +53,6 @@ LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \
         -lshell32
-}
-
-linux-g++ | linux-g++-64 | linux-g++-32 {
 }
 
 SOURCES += main.cpp

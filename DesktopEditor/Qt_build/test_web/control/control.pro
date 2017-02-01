@@ -25,7 +25,7 @@ CONFIG(debug, debug|release) {
     message(release)
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     DEFINES += \
     LINUX \
     _LINUX \

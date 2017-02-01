@@ -12,7 +12,7 @@ CONFIG += staticlib
 DEFINES += \
     _QT
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     DEFINES += \
     _LINUX \
     _LINUX_QT

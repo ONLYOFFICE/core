@@ -58,16 +58,16 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
 
 ############### destination path ###############
 
-linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
 
     message(64 bit)
 

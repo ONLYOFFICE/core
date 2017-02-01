@@ -38,13 +38,13 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
     #LIBS += -L$$PWD/../icubuilds/linux64/usr/local/lib -licuuc -licudata
     LIBS        += $$PWD/../icubuilds/linux64/usr/local/lib/libicuuc.so.55
     LIBS        += $$PWD/../icubuilds/linux64/usr/local/lib/libicudata.so.55
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
 }
 

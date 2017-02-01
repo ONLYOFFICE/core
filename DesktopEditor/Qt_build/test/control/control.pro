@@ -24,14 +24,14 @@ CONFIG(debug, debug|release) {
     message(release)
 }
 
-linux-g++ | linux-g++-64 | linux-g++-32 {
+linux-* {
     DEFINES += \
     LINUX \
     _LINUX \
     _LINUX_QT
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-*:contains(QMAKE_HOST.arch, x86_64):{
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.x64
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.x64
@@ -41,7 +41,7 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64):{
 
     message(linux64)
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-*:!contains(QMAKE_HOST.arch, x86_64):{
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.ia32
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
     LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.ia32

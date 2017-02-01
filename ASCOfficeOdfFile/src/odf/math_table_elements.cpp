@@ -94,10 +94,10 @@ void math_mtr::oox_convert(oox::math_context & Context)
 	strm << L"<m:mr>";		
 		for (int i = 0; i < content_.size(); i++)
 		{
-		strm << L"<m:e>";
+		//strm << L"<m:e>"; // EqArray записался в числитель вместо знаменателя.docx - дублирование
 			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 			math_element->oox_convert(Context);
-		strm << L"</m:e>";
+		//strm << L"</m:e>";
 		}
 	strm << L"</m:mr>";
 }

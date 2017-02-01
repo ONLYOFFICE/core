@@ -231,9 +231,9 @@ namespace NExtractTools
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;		}
 
-        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params);
+        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true);
     }
-    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params)
+    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions)
     {
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
@@ -242,7 +242,8 @@ namespace NExtractTools
         m_oCXlsxSerializer.setFontDir(sFontPath);
 
         CString sTo1 = std_string2string(sTo);
-		return m_oCXlsxSerializer.saveToFile (sTo1, std_string2string(sXlsxDir), std_string2string(params.getXmlOptions())) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		CString sXmlOptions = bXmlOptions ? std_string2string(params.getXmlOptions()) : L"";
+		return m_oCXlsxSerializer.saveToFile (sTo1, std_string2string(sXlsxDir), sXmlOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // xslx -> xslt
@@ -2052,11 +2053,11 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
+			nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
        {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
+			nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
        }
        else
        {
@@ -2064,9 +2065,9 @@ namespace NExtractTools
            FileSystem::Directory::CreateDirectory(sXlstDir);
            std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
+				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, false);
            else
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
+				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, true);
            if(SUCCEEDED_X2T(nRes))
            {
                nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);

@@ -58,7 +58,7 @@ bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 
 	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
 
-    return NSDirectory::Exists(resultPath) || NSDirectory::Exists(mediaPath);
+	return NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath);
 }
 
 mediaitems::item::item(	std::wstring const & _href,

@@ -236,6 +236,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 
 					if (strTableContent)
 					{
+						std::wstring ttt = strTableContent.get();
 						CP_XML_STREAM() << strTableContent.get();
 					}
 				}

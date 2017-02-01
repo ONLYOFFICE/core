@@ -1261,6 +1261,10 @@ namespace NSHtmlRenderer
         m_pInternal->m_bPageOpened = false;
 
         m_pInternal->m_pFontManager = m_pInternal->m_oApplicationFonts.GenerateFontManager();
+        CFontsCache* pGraphicsFontCache = new CFontsCache();
+        pGraphicsFontCache->SetStreams(m_pInternal->m_oApplicationFonts.GetStreams());
+        pGraphicsFontCache->SetCacheSize(16);
+        m_pInternal->m_pFontManager->SetOwnerCache(pGraphicsFontCache);
 
         m_pInternal->m_oFont.SetDefaultParams();
         m_pInternal->m_oInstalledFont.SetDefaultParams();

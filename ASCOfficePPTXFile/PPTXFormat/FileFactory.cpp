@@ -69,74 +69,14 @@
 
 #include "FileMap.h"
 
-#include "../../DesktopEditor/common/Directory.h"
-
 
 namespace PPTX
 {
-	static std::wstring arDefDirectories [8][2] = //in ppt Directory
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& filename, OOX::Rels::CRelationShip& relation, FileMap& map)
 	{
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide",			L"slides"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",	L"slideLayouts"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",	L"slideMasters"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide",		L"notesSlides"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster",	L"notesMasters"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster",	L"handoutMasters"},		
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",		L"comments"},
-		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors",	L""}
-	};
-
-	static std::wstring FindFileInDirectory(std::wstring directory, std::wstring filename)
-	{
-		if (directory.empty()) return L"";
-
-		if (directory[directory.length() - 1] == FILE_SEPARATOR_CHAR)
-			directory.substr(0, directory.length() - 1);
-
-		CArray<std::wstring> arrFiles = NSDirectory::GetFiles(directory, true);
-
-		for (int i = 0 ; i < arrFiles.GetCount(); i++)
-		{
-			if (std::wstring::npos != arrFiles[i].find(filename))
-			{
-				return arrFiles[i].substr(directory.length() + 1);
-			}
-		}
-		return L"";
-	}
-
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& path, OOX::Rels::CRelationShip& relation, FileMap& map)
-	{
-		OOX::CPath filename = path / relation.Filename();
-
 		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false)
-		{//file_1_ (1).pptx
-			
-			std::wstring strDefDirectory;
-			for (int i = 0; i < 8; i++)
-			{
-				if (relation.Type() == arDefDirectories[i][0])
-				{
-					strDefDirectory = arDefDirectories[i][1];
-					break;
-				}
-			}
-			
-			OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation.Filename().GetFilename();
-			
-			filename = path / new_filename;
-			
-			if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
-			{
-				new_filename = FindFileInDirectory(path.GetPath(), relation.Filename().GetFilename()); // find true path by filename
-
-				filename = path / new_filename;
-
-				if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
-					return smart_ptr<OOX::File>(NULL);
-			}
-
-			relation = OOX::Rels::CRelationShip( relation.rId(), relation.Type(), new_filename);
+		{
+			return smart_ptr<OOX::File>(NULL);
 		}
 		
 		if (relation.Type() == OOX::Presentation::FileTypes::App)
@@ -202,7 +142,7 @@ namespace PPTX
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}
 
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& path, OOX::Rels::CRelationShip& relation)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& norm_filename, OOX::Rels::CRelationShip& relation)
 	{
 		bool bIsDownload = false;
 		std::wstring strFile = relation.Filename().GetPath();
@@ -216,7 +156,7 @@ namespace PPTX
         if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 			bIsDownload = true;
 		
-		OOX::CPath filename = path / relation.Filename();
+		OOX::CPath filename = norm_filename;
 
 		if (bIsDownload)
 			filename = relation.Filename();

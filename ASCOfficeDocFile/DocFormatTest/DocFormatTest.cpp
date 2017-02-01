@@ -33,7 +33,7 @@
 //
 #include "../DocFormatLib/DocFormatLib.h"
 
-#include "../win32/ASCOfficeCriticalSection.h"
+#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
@@ -41,6 +41,7 @@
 
 #include <string>
 #include <windows.h>
+#include <tchar.h>
 
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
@@ -58,7 +59,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::wstring outputDir		= NSDirectory::GetFolderPath(sDstDocx);
 	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
-	// doc->docx
 	COfficeDocFile docFile;
 
 	docFile.m_sTempFolder = outputDir;
@@ -71,7 +71,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		hRes = oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), sDstDocx, -1);
 	}
 	
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
+	NSDirectory::DeleteDirectory(dstTempPath);
 
 	return hRes;
 }

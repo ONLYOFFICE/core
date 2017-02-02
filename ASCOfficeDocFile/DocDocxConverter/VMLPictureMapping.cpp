@@ -71,26 +71,26 @@ namespace DocFileFormat
 {
     struct __BITMAPINFOHEADER
     {
-        DWORD      biSize;
-        LONG       biWidth;
-        LONG       biHeight;
-        WORD       biPlanes;
-        WORD       biBitCount;
-        DWORD      biCompression;
-        DWORD      biSizeImage;
-        LONG       biXPelsPerMeter;
-        LONG       biYPelsPerMeter;
-        DWORD      biClrUsed;
-        DWORD      biClrImportant;
+        _UINT32     biSize;
+        _INT32      biWidth;
+        _INT32      biHeight;
+        _UINT16     biPlanes;
+        _UINT16     biBitCount;
+        _UINT32     biCompression;
+        _UINT32     biSizeImage;
+        _INT32      biXPelsPerMeter;
+        _INT32      biYPelsPerMeter;
+        _UINT32     biClrUsed;
+        _UINT32     biClrImportant;
     };
 
     struct __BITMAPCOREHEADER
     {
-        DWORD   bcSize;                 /* used to get to color table */
-        WORD    bcWidth;
-        WORD    bcHeight;
-        WORD    bcPlanes;
-        WORD    bcBitCount;
+        _UINT32     bcSize;                 /* used to get to color table */
+        _UINT16     bcWidth;
+        _UINT16     bcHeight;
+        _UINT16     bcPlanes;
+        _UINT16     bcBitCount;
     };
     Global::BlipType GetFormatPict(unsigned char* data, int size)
 	{

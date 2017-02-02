@@ -36,6 +36,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+#ifndef RGB
+    #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
+#endif
 bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;

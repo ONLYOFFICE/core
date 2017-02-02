@@ -1646,7 +1646,7 @@ namespace PdfReader
 
 			MemUtilsFree(punRefSegs);
 
-			if (m_pCurStream->GetPos() - unDataStartPos != unSegLength)
+			if (unSegLength != 0xFFFFFFFF && m_pCurStream->GetPos() - unDataStartPos != unSegLength)
 				m_pCurStream->SetPos(unDataStartPos + unSegLength);
 		}
 

@@ -121,9 +121,11 @@ namespace PPTX
             theme_= (FileContainer::Get(OOX::Presentation::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
 
             if (theme_.IsInit())
+			{
                 theme_->SetColorMap(clrMap);
 
-            tableStyles_ = (theme_->presentation->Get(OOX::Presentation::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+				tableStyles_ = (theme_->presentation->Get(OOX::Presentation::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+			}
 		}
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

@@ -64,6 +64,7 @@ namespace PPTX
 		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 		void WrittenSetFalse();
+		OOX::CPath CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation );
 
 		long m_lPercent;
 		bool m_bCancelled;

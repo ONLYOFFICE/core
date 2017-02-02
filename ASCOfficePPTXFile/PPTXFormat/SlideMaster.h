@@ -76,7 +76,7 @@ namespace PPTX
 	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
-			//FileContainer::read(filename, map);
+			//FileContainer::read(filename, map);			
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlFile(filename.m_strFilename);
 
@@ -516,9 +516,11 @@ namespace PPTX
             theme = (FileContainer::Get(OOX::Presentation::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
 
             if (theme.IsInit())
+			{
                 theme->SetColorMap(clrMap);
-			//Theme->Master.reset((PPTX::WrapperFile*)this);
-            tableStyles = (theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+				//Theme->Master.reset((PPTX::WrapperFile*)this);
+				tableStyles = (theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+			}
 
 			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
 			{

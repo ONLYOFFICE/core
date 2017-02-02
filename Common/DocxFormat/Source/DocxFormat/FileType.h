@@ -53,7 +53,8 @@ namespace OOX
 
 		FileType(const WCHAR* defaultDirectory, const WCHAR* defaultFileName,
 							const std::wstring& overrideType, 
-							const std::wstring& relationType, bool bEnumerated = false, bool bEnumeratedGlobal = false ) : m_defaultDirectory(defaultDirectory),
+							const std::wstring& relationType, bool bEnumerated = false, bool bEnumeratedGlobal = false )
+		:	m_defaultDirectory(defaultDirectory),
 			m_defaultFileName(defaultFileName),
 			m_overrideType(overrideType),
 			m_relationType(relationType),

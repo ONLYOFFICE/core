@@ -30,13 +30,13 @@
  *
  */
 
+#include "FileFactory.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/File.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "FileTypes.h"
 
-#include "FileFactory.h"
 #include "App.h"
 #include "Core.h"
 #include "Theme.h"
@@ -69,11 +69,15 @@
 
 #include "FileMap.h"
 
+
 namespace PPTX
 {
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& path, const OOX::Rels::CRelationShip& relation, FileMap& map)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX(const OOX::CPath& filename, OOX::Rels::CRelationShip& relation, FileMap& map)
 	{
-		OOX::CPath filename = path / relation.Filename();
+		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false)
+		{
+			return smart_ptr<OOX::File>(NULL);
+		}
 		
 		if (relation.Type() == OOX::Presentation::FileTypes::App)
 			return smart_ptr<OOX::File>(new PPTX::App(filename, map));
@@ -138,7 +142,7 @@ namespace PPTX
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile());
 	}
 
-	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& path, const OOX::Rels::CRelationShip& relation)
+	const smart_ptr<OOX::File> FileFactory::CreateFilePPTX_OnlyMedia(const OOX::CPath& norm_filename, OOX::Rels::CRelationShip& relation)
 	{
 		bool bIsDownload = false;
 		std::wstring strFile = relation.Filename().GetPath();
@@ -152,7 +156,7 @@ namespace PPTX
         if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 			bIsDownload = true;
 		
-		OOX::CPath filename = path / relation.Filename();
+		OOX::CPath filename = norm_filename;
 
 		if (bIsDownload)
 			filename = relation.Filename();

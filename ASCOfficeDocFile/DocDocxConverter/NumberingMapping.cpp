@@ -307,13 +307,11 @@ namespace DocFileFormat
 				if (!FormatUtils::IsControlSymbol(xchBullet))
 				{
 					ret.push_back(lvl.xst[0]);
-					ret.push_back(L'\0');
 				}
 			}
 			else
 			{
 				ret.push_back(L'\xF0B7');
-				ret.push_back(L'\0');
 			}
 		}
 		else

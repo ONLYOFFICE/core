@@ -2090,7 +2090,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case tbw_txbxtwno:			sResult += L"<w:textboxTightWrap w:val=\"none\"/>";				break;
 		case tbw_txbxtwalways:		sResult += L"<w:textboxTightWrap w:val=\"allLines\"/>";			break;
 		case tbw_txbxtwfirstlast:	sResult += L"<w:textboxTightWrap w:val=\"firstAndLastLine\"/>";	break;
-		case tbw_txbxtwfirst:		sResult += L"<w:textboxTightWrap w:val=\"firstLineOnly\"/>";		break;
+		case tbw_txbxtwfirst:		sResult += L"<w:textboxTightWrap w:val=\"firstLineOnly\"/>";	break;
 		case tbw_txbxtwlast:		sResult += L"<w:textboxTightWrap w:val=\"lastLineOnly\"/>";		break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )

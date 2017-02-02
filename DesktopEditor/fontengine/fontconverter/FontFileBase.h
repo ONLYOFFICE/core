@@ -96,7 +96,7 @@ namespace NSFontConverter
         // BE = big endian
         int          GetS8    (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos >= m_nLen )
             {
@@ -111,7 +111,7 @@ namespace NSFontConverter
 
         int          GetU8    (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
             if ( nPos < 0 || nPos >= m_nLen )
             {
                 *pbSuccess = false;
@@ -122,7 +122,7 @@ namespace NSFontConverter
 
         int          GetS16BE (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + 1 >= m_nLen )
             {
@@ -138,7 +138,7 @@ namespace NSFontConverter
 
         int          GetU16BE (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + 1 >= m_nLen)
             {
@@ -152,7 +152,7 @@ namespace NSFontConverter
 
         int          GetS32BE (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + 3 >= m_nLen )
             {
@@ -171,7 +171,7 @@ namespace NSFontConverter
 
         unsigned int GetU32BE (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + 3 >= m_nLen )
             {
@@ -186,7 +186,7 @@ namespace NSFontConverter
         }
         unsigned int GetU32LE (int nPos, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + 3 >= m_nLen )
             {
@@ -201,7 +201,7 @@ namespace NSFontConverter
         }
         unsigned int GetUVarBE(int nPos, int nSize, bool *pbSuccess)
         {
-            *pbSuccess = true;
+            //*pbSuccess = true;
 
             if ( nPos < 0 || nPos + nSize > m_nLen )
             {

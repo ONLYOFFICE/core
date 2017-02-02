@@ -31,17 +31,22 @@
  */
 // OdfFileTest.cpp 
 
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include <stdio.h>
+#include <tchar.h>
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
-#include "../../src/ConvertOO2OOX.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../src/ConvertOO2OOX.h"
+
 
 #if defined(_WIN64)
-	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
-	#pragma comment(lib, "../../../build/bin/icu/win_32/icuuc.lib")
+	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
 #endif
+
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -50,12 +55,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	HRESULT hr = S_OK;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argc > 2 ? argv[2] : sSrcDoc + L"-my.docx"; //xlsx pptx
+	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.pptx"; //xlsx pptx
 	
-	std::wstring outputDir		= FileSystem::Directory::GetFolderPath(dstPath);
+	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	
-	std::wstring srcTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
-	std::wstring dstTempPath	= FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring srcTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
+	std::wstring dstTempPath	= NSDirectory::CreateDirectoryWithUniqueName(outputDir);
 
     // распаковываем исходник во временную директорию
 	COfficeUtils oCOfficeUtils(NULL);
@@ -64,14 +69,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	hr = ConvertOO2OOX(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", false, NULL);
 
-	FileSystem::Directory::DeleteDirectory(srcTempPath);
+	NSDirectory::DeleteDirectory(srcTempPath);
 
 	if (hr != S_OK)  return hr;
    
 	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
         return hr;
 	
-	FileSystem::Directory::DeleteDirectory(dstTempPath);
+	NSDirectory::DeleteDirectory(dstTempPath);
 
 ////////////////////////////////////////////////////////////////////////
 	return 0;

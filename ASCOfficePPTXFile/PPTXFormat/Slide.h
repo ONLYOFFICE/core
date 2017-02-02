@@ -407,14 +407,20 @@ namespace PPTX
 			Layout	= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));
 			Note	= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
 			comments = FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
-			Master	= Layout->Master;
-			theme	= Layout->theme;
 			
-            tableStyles_= theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(OOX::Presentation::FileTypes::TableStyles));
-
-			if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
+			if (Layout.IsInit())
 			{
-				Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+				Master	= Layout->Master;
+				theme	= Layout->theme;
+				
+				if (theme.IsInit())
+				{
+					tableStyles_= theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(OOX::Presentation::FileTypes::TableStyles));
+				}
+				if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
+				{
+					Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+				}
 			}
 		}
 

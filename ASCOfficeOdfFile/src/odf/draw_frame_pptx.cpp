@@ -71,14 +71,9 @@ namespace odf_reader {
 
 void draw_g::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	int i=0;
-	int size = content_.size();
-	while(true)
-    {
-		if (i>=size)break;
-		office_element_ptr const & elm = content_[i];
-        elm->pptx_convert(Context);
-		i++;
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+        content_[i]->pptx_convert(Context);
     }
 }
 void draw_frame::pptx_convert_placeHolder(oox::pptx_conversion_context & Context)

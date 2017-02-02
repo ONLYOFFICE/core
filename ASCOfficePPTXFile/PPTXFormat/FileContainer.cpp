@@ -42,11 +42,49 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include <map>
 
 namespace PPTX
 {
+	static std::wstring arDefDirectories [9][2] = //in ppt Directory
+	{
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide",			L"slides"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",	L"slideLayouts"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster",	L"slideMasters"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide",		L"notesSlides"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster",	L"notesMasters"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster",	L"handoutMasters"},		
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",		L"comments"},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors",	L""},
+		{L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",			L"theme"},
+	};
+
+	static std::wstring FindFileInDirectory(std::wstring directory, std::wstring filename)
+	{
+		if (directory.empty()) return L"";
+
+		if (directory[directory.length() - 1] == FILE_SEPARATOR_CHAR)
+			directory = directory.substr(0, directory.length() - 1);
+
+		int pos_ppt = directory.rfind(L"ppt");
+		if (pos_ppt >= 0)
+		{
+			directory = directory.substr(0, pos_ppt - 1); //root directory
+		}
+		CArray<std::wstring> arrFiles = NSDirectory::GetFiles(directory, true);
+
+		for (int i = 0 ; i < arrFiles.GetCount(); i++)
+		{
+			if (std::wstring::npos != arrFiles[i].find(filename))
+			{
+				return arrFiles[i];
+			}
+		}
+		return L"";
+	}
+
 	void FileContainer::read(const OOX::CPath& filename)
 	{
 		//not implement FileContainer.read
@@ -70,6 +108,39 @@ namespace PPTX
 		read(rels, path, map, Event);
 	}
 
+	OOX::CPath FileContainer::CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation )
+	{
+		OOX::CPath filename = path / relation->Target();
+		
+		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;
+		
+		//file_1_ (1).pptx			
+		std::wstring strDefDirectory;
+		for (int i = 0; i < 9; i++)
+		{
+			if (relation->Type() == arDefDirectories[i][0])
+			{
+				strDefDirectory = arDefDirectories[i][1];
+				break;
+			}
+		}
+		
+		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
+		
+		filename = path / new_filename;
+		
+		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
+		{
+			filename = FindFileInDirectory(path.GetPath(), relation->Filename().GetFilename()); // find true path by filename
+
+			if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
+				return filename;
+		}
+
+		*relation = OOX::Rels::CRelationShip( relation->rId(), relation->Type(), filename);
+
+		return filename;
+	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
 		bool bIsSlide = false;
@@ -81,10 +152,11 @@ namespace PPTX
 
         for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
-			OOX::CPath normPath = path / pRelation->Target();
+			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
 
-            std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
+ 			OOX::CPath normPath = CorrectPathRels(path, pRelation);
+
+			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
 
 			if (bIsSlide && (pRelation->Type() == OOX::Presentation::FileTypes::Slide))
 			{
@@ -112,7 +184,10 @@ namespace PPTX
 				{
 					long percent = Event->GetPercent();
 
-					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(path, *pRelation, map);													
+					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map);
+
+					if (file.IsInit() == false)
+						continue;
 					
 					map.add(normPath, file);
 					Add(pRelation->rId(), file);
@@ -223,9 +298,11 @@ namespace PPTX
 		size_t nCount = rels.m_arrRelations.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			const OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
+			OOX::Rels::CRelationShip* pRelation = rels.m_arrRelations[i];
 
-			smart_ptr<OOX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(path, *pRelation);
+			OOX::CPath normPath = CorrectPathRels(path, pRelation);
+
+			smart_ptr<OOX::File> _file = PPTX::FileFactory::CreateFilePPTX_OnlyMedia(normPath, *pRelation);
 			Add(pRelation->rId(), _file);	
 		}
 	}

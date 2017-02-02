@@ -95,7 +95,7 @@ std::wstring RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			if( PROP_DEF != m_nLs && PROP_DEF != m_nIlvl )
                 sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nLs) +
-                        L"\"/><w:numId w:val=\"%" + std::to_wstring(m_nLs) + L"\"/></w:numPr>";
+                        L"\"/><w:numId w:val=\"" + std::to_wstring(m_nLs) + L"\"/></w:numPr>";
 		}
 	}
 	return sResult;

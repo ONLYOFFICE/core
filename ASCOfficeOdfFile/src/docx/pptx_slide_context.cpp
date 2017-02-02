@@ -433,8 +433,6 @@ void pptx_slide_context::end_shape()
 
 void pptx_slide_context::end_table()
 {
-	impl_->objects_.push_back(impl_->object_description_);
-	default_set();
 }
 
 bool pptx_slide_context::empty() const

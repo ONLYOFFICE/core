@@ -2889,26 +2889,35 @@ namespace SimpleTypes
 
                 int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
-					return 0;
-
-					std::wstring strX = sValue.substr( 0, nPos );
+				{//only x position
+					std::wstring strX = sValue;
 					XmlUtils::replace_all(strX, L"@", L"");
 
-                    m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+					m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+					return 0;
+				}
+				std::wstring strX = sValue.substr( 0, nPos );
+				XmlUtils::replace_all(strX, L"@", L"");
+
+                m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
 
                 int nPos2 = (int)sValue.find( _T(","), nPos + 1 );
 				if ( -1 == nPos2 )
-					return 0;
-
-					std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1);
-					std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 ) ;
-
+				{// only x, y position
+					std::wstring strY = sValue.substr( nPos + 1);
 					XmlUtils::replace_all(strY, L"@", L"");
-					XmlUtils::replace_all(strZ, L"@", L"");
+					m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+					return 0;
+				}
 
-                    m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
-                    m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
+				std::wstring strY = sValue.substr( nPos + 1, nPos2 - nPos - 1);
+				std::wstring strZ = sValue.substr( nPos2 + 1, nLen - nPos2 - 1 ) ;
 
+				XmlUtils::replace_all(strY, L"@", L"");
+				XmlUtils::replace_all(strZ, L"@", L"");
+
+                m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+                m_nZ = strZ.empty() ? 0 : _wtoi(strZ.c_str() );
 
 				return 0;
 			}
@@ -2964,24 +2973,22 @@ namespace SimpleTypes
 					return 0;
 
                 int nPos = (int)sValue.find( _T(",") );
-				
+			
+				std::wstring strX, strY;
 				if ( -1 == nPos )
-				{
-					//only x coord
-					XmlUtils::replace_all(sValue, L"@", L"");
-                    m_nX = sValue.empty() ? 0 : _wtoi(sValue.c_str() );
+				{//only x coord
+					strX = sValue;
 				}
 				else
 				{
-					std::wstring strX = sValue.substr( 0, nPos );
-					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
-
-					XmlUtils::replace_all(strY, L"@", L"");
-					XmlUtils::replace_all(strX, L"@", L"");
-
-                    m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
-                    m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+					strX = sValue.substr( 0, nPos );
+					strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 				}
+				XmlUtils::replace_all(strY, L"@", L"");
+				XmlUtils::replace_all(strX, L"@", L"");
+
+                m_nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
+                m_nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
 
 				return 0;
 			}
@@ -3036,14 +3043,20 @@ namespace SimpleTypes
 					return 0;
 
                 int nPos = (int)sValue.find( _T(",") );
+
+				std::wstring strX, strY;
 				if ( -1 == nPos )
-					return 0;
+				{
+					strX = sValue.substr( 0, nPos );
+				}
+				else
+				{
+					strX = sValue.substr( 0, nPos );
+					strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
+				}
 
-					std::wstring strX = sValue.substr( 0, nPos );
-					std::wstring strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
-
-                    m_dX = strX.empty() ? 0 : _wtof(strX.c_str() );
-                    m_dY = strY.empty() ? 0 : _wtof(strY.c_str() );
+                m_dX = strX.empty() ? 0 : _wtof(strX.c_str() );
+                m_dY = strY.empty() ? 0 : _wtof(strY.c_str() );
 
 				return 0;
 			}
@@ -3188,62 +3201,62 @@ namespace SimpleTypes
 
 		enum ECssPropertyType
 		{
-			cssptUnknown					= 0000,
+			cssptUnknown						= 0000,
 
-			cssptFlip					  = 1000,
-			cssptHeight					= 1001,
-			cssptLeft					  = 1002,
-			cssptMarginBottom					  = 1003,
-			cssptMarginLeft					= 1004,
-			cssptMarginRight					   = 1005,
-			cssptMarginTop					= 1006,
+			cssptFlip							= 1000,
+			cssptHeight							= 1001,
+			cssptLeft							= 1002,
+			cssptMarginBottom					= 1003,
+			cssptMarginLeft						= 1004,
+			cssptMarginRight					= 1005,
+			cssptMarginTop						= 1006,
 			cssptMsoPositionHorizontal          = 1007,
-			cssptMsoPositionHorizontalRelative  = 1008,
-			cssptMsoPositionVertical            = 1009,
-			cssptMsoPositionVerticalRelative    = 1010,
-			cssptMsoWrapDistanceBottom          = 1011,
-			cssptMsoWrapDistanceLeft            = 1012,
-			cssptMsoWrapDistanceRight           = 1013,
-			cssptMsoWrapDistanceTop             = 1014,
-			cssptMsoWrapEdited					 = 1015,
-			cssptMsoWrapStyle					  = 1016,
-			cssptPosition					= 1017,
-			cssptRotation					= 1018,
-			cssptTop					   = 1019,
-			cssptVisibility					= 1020,
-			cssptWidth					 = 1021,
+			cssptMsoPositionHorizontalRelative	= 1008,
+			cssptMsoPositionVertical			= 1009,
+			cssptMsoPositionVerticalRelative	= 1010,
+			cssptMsoWrapDistanceBottom			= 1011,
+			cssptMsoWrapDistanceLeft			= 1012,
+			cssptMsoWrapDistanceRight			= 1013,
+			cssptMsoWrapDistanceTop				= 1014,
+			cssptMsoWrapEdited					= 1015,
+			cssptMsoWrapStyle					= 1016,
+			cssptPosition				= 1017,
+			cssptRotation				= 1018,
+			cssptTop					= 1019,
+			cssptVisibility				= 1020,
+			cssptWidth					= 1021,
 			cssptZIndex					= 1022,
-			csspctMsoWidthPercent				= 1023,
-			csspctMsoHeightPercent				= 1024,
+			csspctMsoWidthPercent		= 1023,
+			csspctMsoHeightPercent		= 1024,
 
 			//  Для элемента Textbox 14.1.2.22
-			cssptDirection					= 1100,
-			cssptLayoutFlow					= 1101,
-			cssptMsoDirectionAlt					= 1102,
-			cssptMsoFitShapeToText					= 1103,
-			cssptMsoFitTextToShape					= 1104,
-			cssptMsoLayoutFlowAlt					= 1105,
-			cssptMsoNextTextbox					= 1106,
-			cssptMsoRotate					= 1107,
-			cssptMsoTextScale					  = 1108,
-			cssptVTextAnchor					   = 1109,
+			cssptDirection				= 1100,
+			cssptLayoutFlow				= 1101,
+			cssptMsoDirectionAlt		= 1102,
+			cssptMsoFitShapeToText		= 1103,
+			cssptMsoFitTextToShape		= 1104,
+			cssptMsoLayoutFlowAlt		= 1105,
+			cssptMsoNextTextbox			= 1106,
+			cssptMsoRotate				= 1107,
+			cssptMsoTextScale			= 1108,
+			cssptVTextAnchor			= 1109,
 			
 			// Для элемента Textpath 14.1.2.23
-			cssptFont					  = 1200,
-			cssptFontFamily					= 1201,
-			cssptFontSize					= 1202,
-			cssptFontStyle					= 1203,
-			cssptFontVariant					   = 1204,
-			cssptFontWeight					= 1205,
-			cssptMsoTextShadow					 = 1206,
-			cssptTextDecoration					= 1207,
-			cssptVRotateLetters					= 1208,
-			cssptVSameLetterHeights             = 1209,
-			cssptVTextAlign					= 1210,
-			cssptVTextKern					= 1211,
-			cssptVTextReverse					  = 1212,
-			cssptVTextSpacingMode					= 1213,
-			cssptVTextSpacing					  = 1214,
+			cssptFont					= 1200,
+			cssptFontFamily				= 1201,
+			cssptFontSize				= 1202,
+			cssptFontStyle				= 1203,
+			cssptFontVariant			= 1204,
+			cssptFontWeight				= 1205,
+			cssptMsoTextShadow			= 1206,
+			cssptTextDecoration			= 1207,
+			cssptVRotateLetters			= 1208,
+			cssptVSameLetterHeights		= 1209,
+			cssptVTextAlign				= 1210,
+			cssptVTextKern				= 1211,
+			cssptVTextReverse			= 1212,
+			cssptVTextSpacingMode		= 1213,
+			cssptVTextSpacing			= 1214,
 		};
 
 		enum ECssFlip
@@ -3334,10 +3347,10 @@ namespace SimpleTypes
 		};
 		enum ECssLayoutFlow
 		{
-			csslayoutflowHorizontal            = 0,
-			csslayoutflowVertical					= 1,
-			csslayoutflowVerticalIdeographic   = 2,
-			csslayoutflowHorizontalIdeographic = 3,
+			csslayoutflowHorizontal				= 0,
+			csslayoutflowVertical				= 1,
+			csslayoutflowVerticalIdeographic	= 2,
+			csslayoutflowHorizontalIdeographic	= 3,
 		};
 		enum ECssDirectionAlt
 		{
@@ -3421,23 +3434,23 @@ namespace SimpleTypes
 
 		union UCssValue
 		{
-			ECssFlip             eFlip;
-			TCssUnitsValue       oValue;
-			ECssMsoPosHor        eMsoPosHor;
-			ECssMsoPosHorRel     eMsoPosHorRel;
-			ECssMsoPosVer        eMsoPosVer;
-			ECssMsoPosVerRel     eMsoPosVerRel;
-			double					dValue;
-			bool					bValue;
-			ECssMsoWrapStyle     eMsoWrapStyle;
-			ECssPosition         ePosition;
-			ECssVisibility       eVisibility;
-			TCssZIndexValue      oZIndex;
-			ECssDirection        eDirection;
-			ECssLayoutFlow       eLayoutFlow;
-			ECssDirectionAlt     eDirectionAlt;
-			ECssLayoutFlowAlt    eLayoutFlowAlt;
-			wchar_t					wsValue[CSS_MAX_NAME_LEN + 1];
+			ECssFlip			eFlip;
+			TCssUnitsValue		oValue;
+			ECssMsoPosHor		eMsoPosHor;
+			ECssMsoPosHorRel	eMsoPosHorRel;
+			ECssMsoPosVer		eMsoPosVer;
+			ECssMsoPosVerRel	eMsoPosVerRel;
+			double				dValue;
+			bool				bValue;
+			ECssMsoWrapStyle	eMsoWrapStyle;
+			ECssPosition		ePosition;
+			ECssVisibility		eVisibility;
+			TCssZIndexValue		oZIndex;
+			ECssDirection		eDirection;
+			ECssLayoutFlow		eLayoutFlow;
+			ECssDirectionAlt	eDirectionAlt;
+			ECssLayoutFlowAlt	eLayoutFlowAlt;
+			wchar_t				wsValue[CSS_MAX_NAME_LEN + 1];
 			ECssMsoRotate        eRotate;
 			ECssVTextAnchor      eVTextAnchor;
 			ECssFontStyle        eFontStyle;
@@ -4176,12 +4189,16 @@ namespace SimpleTypes
 
                 int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
+				{//only x position
+					SimpleTypes::CPoint oPt1 = sValue;
+					m_dX = oPt1.GetValue();
 					return 0;
+				}
 
-                    SimpleTypes::CPoint oPt1 = sValue.substr( 0, nPos );
+				SimpleTypes::CPoint oPt1 = sValue.substr( 0, nPos );
 				m_dX = oPt1.GetValue();
 
-                    SimpleTypes::CPoint oPt2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
+				SimpleTypes::CPoint oPt2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPt2.GetValue();
 
 				return 0;
@@ -4238,12 +4255,16 @@ namespace SimpleTypes
 
                 int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
+				{//only x position
+					SimpleTypes::CPercentage oPerc1 = sValue;
+					m_dX = oPerc1.GetValue();			
 					return 0;
+				}
 
-                    SimpleTypes::CPercentage oPerc1 = sValue.substr( 0, nPos );
+				SimpleTypes::CPercentage oPerc1 = sValue.substr( 0, nPos );
 				m_dX = oPerc1.GetValue();
 
-                    SimpleTypes::CPercentage oPerc2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
+				SimpleTypes::CPercentage oPerc2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oPerc2.GetValue();
 
 				return 0;
@@ -4300,12 +4321,16 @@ namespace SimpleTypes
 
                 int nPos = (int)sValue.find( _T(",") );
 				if ( -1 == nPos )
+				{//only x position
+					SimpleTypes::Vml::CVml_1_65536 oFraction1 = sValue;
+					m_dX = oFraction1.GetValue();			
 					return 0;
+				}
 
-                    SimpleTypes::Vml::CVml_1_65536 oFraction1 = sValue.substr( 0, nPos );
+				SimpleTypes::Vml::CVml_1_65536 oFraction1 = sValue.substr( 0, nPos );
 				m_dX = oFraction1.GetValue();
 
-                    SimpleTypes::Vml::CVml_1_65536 oFraction2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
+				SimpleTypes::Vml::CVml_1_65536 oFraction2 = sValue.substr( nPos + 1, nLen - nPos - 1 );
 				m_dY = oFraction2.GetValue();
 
 				return 0;

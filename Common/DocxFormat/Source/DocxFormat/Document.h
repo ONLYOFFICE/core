@@ -643,7 +643,7 @@ namespace OOX
 		nullable<OOX::Logic::CBackground     > m_oBackground;
 
 		std::vector<WritingElement *>			m_arrItems;
-		std::vector<std::wstring>					m_arrShapeTypes;
+		std::vector<std::wstring>				m_arrShapeTypes;
 
 	};
 

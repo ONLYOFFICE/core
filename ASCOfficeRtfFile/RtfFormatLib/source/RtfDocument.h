@@ -35,6 +35,7 @@
 #include "RtfGlobalTables.h"
 #include "RtfSection.h"
 #include "RtfMath.h"
+#include "RtfShape.h"
 
 struct _section
 {
@@ -56,6 +57,7 @@ public:
 	RtfStyleTable			m_oStyleTable;
 	RtfRevisionTable		m_oRevisionTable;
 	RtfInformation			m_oInformation;
+	RtfShapePtr				m_pBackground;
 
 	RtfListTable			m_oListTable;
 	RtfListOverrideTable	m_oListOverrideTable;
@@ -80,8 +82,10 @@ public:
 	void SetShapeId( int nShapeId )
 	{
 		for( int i = 0; i < (int)m_aShapeId.size(); i++ )
+		{
 			if( nShapeId == m_aShapeId[i] )
 				return;
+		}
 		m_aShapeId.push_back( nShapeId );
 	}
 	int GetShapeId(  int& nShapeId  )

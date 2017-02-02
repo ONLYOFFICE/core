@@ -155,7 +155,7 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 			oReader.m_oCurSectionProp.m_bSwitchMargin	= 1;
 		}
 	}
-    else if ( "gutter" == sCommand )
+	else if ( "gutter" == sCommand )
 	{
 		if ( hasParameter )
 		{
@@ -163,12 +163,12 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 			oReader.m_oCurSectionProp.m_nGutterMarginWidth = parameter;
 		}
 	}
-    else if ( "ogutter" == sCommand )
+	else if ( "ogutter" == sCommand )
 	{
 		if ( hasParameter )
 			oDocument.m_oProperty.m_nGutterWidthOutside = parameter;
 	}
-    else if ( "margmirror" == sCommand )
+	else if ( "margmirror" == sCommand )
 	{
 		if ( hasParameter && 0 == parameter )
 		{
@@ -194,7 +194,7 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
     COMMAND_RTF_BOOL( "useltbaln",		oDocument.m_oProperty.m_bUseTabAlignment,	sCommand, hasParameter, parameter )
 	//Footnotes and Endnotes
     COMMAND_RTF_INT	( "endnotes",		oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndSection )
-    COMMAND_RTF_INT	( "enddoc",		oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndDocument )
+    COMMAND_RTF_INT	( "enddoc",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndDocument )
     COMMAND_RTF_INT	( "ftntj",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_BeneathText )
     COMMAND_RTF_INT	( "ftnbj",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_BottomPage )
 
@@ -308,6 +308,15 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 	{
 		RtfInfoReader oInfoReader;
 		return StartSubReader( oInfoReader, oDocument, oReader );			
+	}
+	else if ( "background" == sCommand )
+	{
+		oDocument.m_pBackground = RtfShapePtr( new RtfShape() );
+		
+		oDocument.m_pBackground->m_bBackground = true;
+
+		RtfBackgroundReader oBackgroundReader( *oDocument.m_pBackground );
+		return StartSubReader( oBackgroundReader, oDocument, oReader );
 	}
     //else if ( "colorschememapping" == sCommand )
 	//{

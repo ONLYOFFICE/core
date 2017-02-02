@@ -1676,20 +1676,21 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {
 	if (oox_background == NULL) return;
 
+	_CP_OPT(odf_types::color) color;
+	convert (	oox_background->m_oColor.GetPointer(), 
+				oox_background->m_oThemeColor.GetPointer(), 
+				oox_background->m_oThemeTint.GetPointer(), 
+				oox_background->m_oThemeShade.GetPointer(), color);
+
+	odt_context->set_background(color, type);	
+	
 	if (oox_background->m_oDrawing.IsInit())
 	{
-		//подложка
+		convert(oox_background->m_oDrawing.GetPointer());
 	}
-	else
+	else if (oox_background->m_oBackground.IsInit())
 	{
-		//цветовая подложка
-		_CP_OPT(odf_types::color) color;
-		convert (	oox_background->m_oColor.GetPointer(), 
-					oox_background->m_oThemeColor.GetPointer(), 
-					oox_background->m_oThemeTint.GetPointer(), 
-					oox_background->m_oThemeShade.GetPointer(), color);
-
-		odt_context->set_background(color, type);
+		convert(oox_background->m_oBackground.GetPointer());
 	}
 }
 

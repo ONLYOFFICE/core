@@ -146,6 +146,10 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nFillOpacity )
 	DEFAULT_PROPERTY( m_nFillFocus )
 	DEFAULT_PROPERTY( m_nFillAngle )
+	DEFAULT_PROPERTY( m_nFillToBottom )
+	DEFAULT_PROPERTY( m_nFillToTop )
+	DEFAULT_PROPERTY( m_nFillToRight )
+	DEFAULT_PROPERTY( m_nFillToLeft )
 //Line
 	DEFAULT_PROPERTY_DEF( m_bLine, true )
 	DEFAULT_PROPERTY( m_nLineColor )
@@ -168,7 +172,7 @@ void RtfShape::SetDefault()
 	
 	m_aTextItems	= TextItemContainerPtr();
 	m_oPicture		= RtfPicturePtr();
-	
+	m_bBackground	= false;
 	m_bIsOle		= false;
 	m_bInGroup		= false;
 	
@@ -234,6 +238,9 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 		}
 		else
 		{
+			if (m_bBackground)
+				sResult += L"{\\*\\background";
+
 			sResult += L"{\\shp";
 			sResult += L"{\\*\\shpinst";
 			
@@ -281,7 +288,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			sResult += L"{\\sp{\\sn fLockRotation}{\\sv 1}}";		
 		
 			//picture
-			if( 0 != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 9)
+			if( 0 != m_oPicture && m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
 			{
 				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
@@ -296,6 +303,9 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			}
 			sResult += L"}";
 			sResult += L"}";
+			
+			if (m_bBackground)
+				sResult += L"}";
 		}
 	}
 	else	// anchor
@@ -400,14 +410,14 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"fAllowOverlap",	sResult,	m_bAllowOverlap);
 
 //Position relative
-    RENDER_RTF_SHAPE_PROP(L"pctHorizPos",	sResult,   m_nPositionHPct);
-    RENDER_RTF_SHAPE_PROP(L"pctVertPos",	sResult,   m_nPositionVPct);
-    RENDER_RTF_SHAPE_PROP(L"pctHoriz",		sResult,   m_nPctWidth);
-    RENDER_RTF_SHAPE_PROP(L"pctVert",	sResult,	m_nPctHeight);
-    RENDER_RTF_SHAPE_PROP(L"sizerelh",	sResult,	m_nPctWidthRelative);
-    RENDER_RTF_SHAPE_PROP(L"sizerelv",	sResult,	m_nPctHeightRelative);
-    RENDER_RTF_SHAPE_PROP(L"colStart",	sResult,	m_nColStart);
-    RENDER_RTF_SHAPE_PROP(L"colSpan",	sResult,	m_nColSpan);
+    RENDER_RTF_SHAPE_PROP(L"pctHorizPos",	sResult,	m_nPositionHPct);
+    RENDER_RTF_SHAPE_PROP(L"pctVertPos",	sResult,	m_nPositionVPct);
+    RENDER_RTF_SHAPE_PROP(L"pctHoriz",		sResult,	m_nPctWidth);
+    RENDER_RTF_SHAPE_PROP(L"pctVert",		sResult,	m_nPctHeight);
+    RENDER_RTF_SHAPE_PROP(L"sizerelh",		sResult,	m_nPctWidthRelative);
+    RENDER_RTF_SHAPE_PROP(L"sizerelv",		sResult,	m_nPctHeightRelative);
+    RENDER_RTF_SHAPE_PROP(L"colStart",		sResult,	m_nColStart);
+    RENDER_RTF_SHAPE_PROP(L"colSpan",		sResult,	m_nColSpan);
 //Rehydration
     //RENDER_RTF_SHAPE_PROP(L"metroBlob",    sResult,   m_sMetroBlob);
 
@@ -419,6 +429,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"shapeType",		sResult,	m_nShapeType);
     RENDER_RTF_SHAPE_PROP(L"fBehindDocument",sResult,	m_nZOrderRelative);
     RENDER_RTF_SHAPE_PROP(L"fHidden",		sResult,   	m_bHidden);
+	RENDER_RTF_SHAPE_PROP(L"fBackground",	sResult,   	m_bBackground);
     //Text
 	//sResult += L"{\\sp{\\sn fLockText}{\\sv 0}}";
 
@@ -430,10 +441,10 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"anchorText",    sResult,   m_nAnchorText);
     //else
 	{
-        RENDER_RTF_SHAPE_PROP(L"dxWrapDistLeft",	sResult,    RtfUtility::Twips2Emu( m_nWrapDistLeft ));
-        RENDER_RTF_SHAPE_PROP(L"dyWrapDistTop",		sResult,    RtfUtility::Twips2Emu( m_nWrapDistTop ));
-        RENDER_RTF_SHAPE_PROP(L"dxWrapDistRight",	sResult,    RtfUtility::Twips2Emu( m_nWrapDistRight ));
-        RENDER_RTF_SHAPE_PROP(L"dyWrapDistBottom",	sResult,   RtfUtility::Twips2Emu(  m_nWrapDistBottom ));
+        RENDER_RTF_SHAPE_PROP(L"dxWrapDistLeft",	sResult,	RtfUtility::Twips2Emu( m_nWrapDistLeft ));
+        RENDER_RTF_SHAPE_PROP(L"dyWrapDistTop",		sResult,	RtfUtility::Twips2Emu( m_nWrapDistTop ));
+        RENDER_RTF_SHAPE_PROP(L"dxWrapDistRight",	sResult,	RtfUtility::Twips2Emu( m_nWrapDistRight ));
+        RENDER_RTF_SHAPE_PROP(L"dyWrapDistBottom",	sResult,	RtfUtility::Twips2Emu(  m_nWrapDistBottom ));
     }
     RENDER_RTF_SHAPE_PROP(L"fFitShapeToText",   sResult,	m_bFitShapeToText);
     RENDER_RTF_SHAPE_PROP(L"fFitTextToShape",   sResult,	m_bFitTextToShape);
@@ -503,11 +514,16 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	
 	if (PROP_DEF != m_nFillOpacity)
 		RENDER_RTF_SHAPE_PROP(L"fillOpacity",	sResult,	( m_nFillOpacity * 65536 /100 ) );
-    RENDER_RTF_SHAPE_PROP(L"fillFocus",		sResult,   	m_nFillFocus );
+    RENDER_RTF_SHAPE_PROP(L"fillFocus",			sResult,   	m_nFillFocus );
     
 	if (PROP_DEF != m_nFillAngle)
 		RENDER_RTF_SHAPE_PROP(L"fillAngle",		sResult,   	m_nFillAngle * 65536 );
-    //Line
+	
+	RENDER_RTF_SHAPE_PROP(L"fillToBottom",	sResult,	m_nFillToBottom )
+	RENDER_RTF_SHAPE_PROP(L"fillToTop",		sResult,	m_nFillToTop )
+	RENDER_RTF_SHAPE_PROP(L"fillToRight",	sResult,	m_nFillToRight )
+	RENDER_RTF_SHAPE_PROP(L"fillToLeft",	sResult,	m_nFillToLeft )
+//Line
 	if( 0 == m_bLine )
 		sResult += L"{\\sp{\\sn fLine}{\\sv 0}}";
     RENDER_RTF_SHAPE_PROP(L"lineColor",             sResult,   	m_nLineColor );
@@ -642,9 +658,11 @@ std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 	
 	return sResult;
 }
-std::wstring RtfShape::GetShapeNodeName(int type)
+std::wstring RtfShape::GetShapeNodeName()
 {
-	switch(type)
+	if (m_bBackground) return L"v:background";
+	
+	switch(m_nShapeType)
 	{
 		case NSOfficeDrawing::sptRectangle:			return L"v:rect";
 		case NSOfficeDrawing::sptEllipse:			return L"v:oval";
@@ -707,7 +725,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	
     if (oRenderParameter.sValue.empty())
-		oRenderParameter.sValue = GetShapeNodeName(m_nShapeType);
+	{
+		oRenderParameter.sValue = GetShapeNodeName();
+	}
 
 	sResult += L"<" + oRenderParameter.sValue;
 
@@ -1285,7 +1305,9 @@ std::wstring RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
     std::wstring sResult;
 
     if (oRenderParameter.sValue.empty())
-		oRenderParameter.sValue = GetShapeNodeName(m_nShapeType);
+	{
+		oRenderParameter.sValue = GetShapeNodeName();
+	}
 
 	sResult += L"</" + oRenderParameter.sValue + L">";
 

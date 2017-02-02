@@ -274,28 +274,37 @@ int RtfWriter::GetCount()
 std::wstring RtfWriter::CreateRtfStart()
 {
 	RenderParameter oRenderParameter;
+	
 	oRenderParameter.poDocument = &m_oDocument;
-	oRenderParameter.poWriter = this;
-	oRenderParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
+	oRenderParameter.poWriter	= this;
+	oRenderParameter.nType		= RENDER_TO_RTF_PARAM_UNKNOWN;
 
     std::wstring sResult;
 	sResult += L"{\\rtf1\\ulc1";
 	sResult += m_oDocument.m_oProperty.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oFontTable.RenderToRtf( oRenderParameter );
 	sResult += m_oDocument.m_oColorTable.RenderToRtf( oRenderParameter );
-//---------- test 	
+	
     std::wstring sDefCharProp = m_oDocument.m_oDefaultCharProp.RenderToRtf( oRenderParameter );
-    if( false == sDefCharProp.empty() )
+    
+	if( false == sDefCharProp.empty() )
 		sResult += L"{\\*\\defchp " + sDefCharProp + L"}";
     std::wstring sDefParProp = m_oDocument.m_oDefaultParagraphProp.RenderToRtf( oRenderParameter );
-    if( false == sDefParProp.empty() )
+    
+	if( false == sDefParProp.empty() )
 		sResult += L"{\\*\\defpap " + sDefParProp+ L"}";
 	sResult += m_oDocument.m_oStyleTable.RenderToRtf( oRenderParameter );
-//---------- test 	
+ 	
 	sResult += m_oDocument.m_oListTable.RenderToRtf			( oRenderParameter );
 	sResult += m_oDocument.m_oListOverrideTable.RenderToRtf	( oRenderParameter );
 	sResult += m_oDocument.m_oRevisionTable.RenderToRtf		( oRenderParameter );
 	sResult += m_oDocument.m_oInformation.RenderToRtf		( oRenderParameter );
+
+	if (m_oDocument.m_pBackground)
+	{
+		sResult += m_oDocument.m_pBackground->RenderToRtf ( oRenderParameter );
+	}
+	
 	sResult += L"\\fet2";//0	Footnotes only or nothing at all (the default). 1 Endnotes only. 2	Both footnotes and endnotes
 	
     std::wstring sFootnote;
@@ -323,7 +332,6 @@ std::wstring RtfWriter::CreateRtfStart()
         if( !sFootnote.empty() )
             sResult += L"{\\*\\aftnsepc " + sFootnote + L"}";
 	}
-
 	sResult += L"\n\n";
 	return sResult;
 }

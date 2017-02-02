@@ -69,7 +69,6 @@ private:
 	}
 };
 
-
 class OOXShapeGroupReader
 {
 private:
@@ -90,4 +89,17 @@ public:
 	}
 
 	bool Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOutput);
+};
+
+class OOXBackgroundReader
+{
+private:
+	OOX::Logic::CBackground *m_ooxBackground;
+public: 
+	OOXBackgroundReader(OOX::Logic::CBackground *oox_background)
+	{
+		m_ooxBackground = oox_background;
+	}
+
+	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 };

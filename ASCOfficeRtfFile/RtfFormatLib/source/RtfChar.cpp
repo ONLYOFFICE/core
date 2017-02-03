@@ -125,20 +125,20 @@ std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
 		if (bDelete == false)
 		{
 			sResult += L"<w:t xml:space= \"preserve\">";
-                sResult += XmlUtils::EncodeXmlString( m_sChars );
+                sResult += XmlUtils::EncodeXmlString( m_sChars, true );
 			sResult += L"</w:t>";
 		}
 		else
 		{
 			sResult += L"<w:delText>";
-                sResult += XmlUtils::EncodeXmlString( m_sChars );
+                sResult += XmlUtils::EncodeXmlString( m_sChars, true );
 			sResult += L"</w:delText>";
 		}
     }
     else if( L"Math" == sParam && !m_sChars.empty())
     {
 		sResult += L"<m:t>";
-            sResult += XmlUtils::EncodeXmlString( m_sChars );
+            sResult += XmlUtils::EncodeXmlString( m_sChars, true );
 		sResult += L"</m:t>";
     }
 	return sResult;
@@ -210,7 +210,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
     while (sTextBack.length() < sText.length())
 		sTextBack += L"-";
 
-    for( int i = 0; i < sText.length() ; i++ )
+    for( size_t i = 0; i < sText.length() ; i++ )
     {
         bool bWriteUnicode = true;
 
@@ -222,7 +222,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
             // -> sTempAnsiChars
             std::string sTempAnsiChars = RtfUtility::convert_string(unicodeStr.begin()+i, unicodeStr.begin() + i + 1, nCodePage);
 
-            for( int k = 0; k < sTempAnsiChars.length(); k++ )
+            for( size_t k = 0; k < sTempAnsiChars.length(); k++ )
             {
                 unsigned char nCharCode = sTempAnsiChars[k];
                 bWriteUnicode = false;

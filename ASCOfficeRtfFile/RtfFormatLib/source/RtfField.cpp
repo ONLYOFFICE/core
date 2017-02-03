@@ -237,7 +237,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 
 			if (m_pInsert->m_pTextItems)
 			{
-                sResult += XmlUtils::EncodeXmlString( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr) );
+                sResult += XmlUtils::EncodeXmlString( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr), true );
 			}
 			sResult += L"</w:instrText></w:r>";
 			

@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  ShapeAspects.h
-//  UTILS
-//
-//  Created by alexey.musinov on 09.10.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #ifndef SHAPE_ASPECTS_H
 #define SHAPE_ASPECTS_H

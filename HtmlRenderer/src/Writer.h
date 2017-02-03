@@ -811,6 +811,19 @@ namespace NSHtmlRenderer
                return m_pRenderer->put_ClipMode(lMode);
             return S_OK;
         }
+
+        inline virtual HRESULT StartConvertCoordsToIdentity()
+        {
+            if (m_pRenderer)
+                m_pRenderer->StartConvertCoordsToIdentity();
+            return S_OK;
+        }
+        inline virtual HRESULT EndConvertCoordsToIdentity()
+        {
+            if (m_pRenderer)
+                m_pRenderer->EndConvertCoordsToIdentity();
+            return S_OK;
+        }
     };
 
 

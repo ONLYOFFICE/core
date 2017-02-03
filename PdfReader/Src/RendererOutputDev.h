@@ -240,6 +240,7 @@ namespace PdfReader
 		virtual void ClipToStrokePath(GrState *pGState);
 		virtual void ClipToPath(GrState *pGState, GrPath *pPath, double *pMatrix, bool bEO);
 		//----- Вывод текста
+        virtual void EndTextObject(GrState *pGState);
 		virtual void BeginStringOperator(GrState *pGState);
 		virtual void EndStringOperator(GrState *pGState);
 		virtual void DrawString(GrState *pGState, StringExt *seString);

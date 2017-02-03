@@ -247,6 +247,9 @@ public:
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
+	virtual HRESULT StartConvertCoordsToIdentity();
+	virtual HRESULT EndConvertCoordsToIdentity();
+
 	void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal);
 	inline void put_IntegerGrid(const bool& bEnabled)
 	{ 

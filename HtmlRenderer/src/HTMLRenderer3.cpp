@@ -1206,6 +1206,21 @@ namespace NSHtmlRenderer
         return S_OK;
     }
 
+    HRESULT CASCHTMLRenderer3::StartConvertCoordsToIdentity()
+    {
+        m_bUseTransformCoordsToIdentity = true;
+        if (m_pInternal->m_bIsGraphicsDumperMode)
+            return m_pInternal->m_oDumper.StartConvertCoordsToIdentity();
+        return S_OK;
+    }
+    HRESULT CASCHTMLRenderer3::EndConvertCoordsToIdentity()
+    {
+        m_bUseTransformCoordsToIdentity = false;
+        if (m_pInternal->m_bIsGraphicsDumperMode)
+            return m_pInternal->m_oDumper.EndConvertCoordsToIdentity();
+        return S_OK;
+    }
+
     // owner params ----------------------------------------------------------------------
     HRESULT CASCHTMLRenderer3::get_Mode(LONG *plMode)
     {

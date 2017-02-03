@@ -34,64 +34,9 @@
 
 #pragma once
 
-#include "../common/Types.h"
+#include "../common/IGrObject.h"
 #include "Matrix.h"
 #include <string>
-
-#ifdef __APPLE__
-#include <libkern/OSAtomic.h>
-#endif
-
-class IGrObject
-{
-protected:
-
-#ifdef __APPLE__
-    volatile int32_t m_lRef;
-#else
-    ULONG m_lRef;
-#endif
-    
-public:
-    IGrObject()
-    {
-        m_lRef = 1;
-    }
-    
-    virtual ~IGrObject()
-    {
-    }
-    
-#ifdef __APPLE__
-    virtual ULONG AddRef()
-    {
-        OSAtomicIncrement32(&m_lRef);
-        return (ULONG)m_lRef;
-    }
-    virtual ULONG Release()
-    {
-        int32_t ret = OSAtomicDecrement32(&m_lRef);
-        if (0 == m_lRef)
-            delete this;
-        
-        return (ULONG)ret;
-    }
-#else
-    virtual ULONG AddRef()
-    {
-        ++m_lRef;
-        return m_lRef;
-    }
-    
-    virtual ULONG Release()
-    {
-        ULONG ret = --m_lRef;
-        if (0 == m_lRef)
-            delete this;
-        return ret;
-    }
-#endif
-};
 
 // тип в DrawPath
 const long c_nStroke			= 0x0001;
@@ -177,6 +122,15 @@ const long c_nHtmlRendrerer3            = 0x0011;
 // IRenderer
 class IRenderer : public IGrObject
 {
+public:
+	bool m_bUseTransformCoordsToIdentity;
+
+public:
+	IRenderer()
+	{
+		m_bUseTransformCoordsToIdentity = false;
+	}
+
 public:
 // тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)				= 0;
@@ -332,7 +286,18 @@ public:
 // additiaonal params ----------------------------------------------------------------------
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand)			= 0;
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand)		= 0;
-	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand)	= 0;	
+	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand)	= 0;
+
+	virtual HRESULT StartConvertCoordsToIdentity()
+	{
+		m_bUseTransformCoordsToIdentity = true;
+		return S_OK;
+	}
+	virtual HRESULT EndConvertCoordsToIdentity()
+	{
+		m_bUseTransformCoordsToIdentity = false;
+		return S_OK;
+	}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

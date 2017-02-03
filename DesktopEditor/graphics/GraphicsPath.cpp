@@ -38,6 +38,7 @@ namespace Aggplus
 	CGraphicsPath::CGraphicsPath() : ISimpleGraphicsPath()
 	{
 		m_bEvenOdd = false;
+		m_pTransform = NULL;
 	}
 
 	CGraphicsPath::~CGraphicsPath()
@@ -406,14 +407,28 @@ namespace Aggplus
 
 	bool CGraphicsPath::_MoveTo(double x, double y)
 	{
+		if (NULL != m_pTransform)
+		{
+			m_pTransform->TransformPoint(x, y);
+		}
 		return (Ok == MoveTo(x, y));
 	}
 	bool CGraphicsPath::_LineTo(double x, double y)
 	{
+		if (NULL != m_pTransform)
+		{
+			m_pTransform->TransformPoint(x, y);
+		}
 		return (Ok == LineTo(x, y));
 	}
 	bool CGraphicsPath::_CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
+		if (NULL != m_pTransform)
+		{
+			m_pTransform->TransformPoint(x1, y1);
+			m_pTransform->TransformPoint(x2, y2);
+			m_pTransform->TransformPoint(x3, y3);
+		}
 		return (Ok == CurveTo(x1, y1, x2, y2, x3, y3));
 	}
 	bool CGraphicsPath::_Close()

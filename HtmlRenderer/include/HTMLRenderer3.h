@@ -173,6 +173,9 @@ namespace NSHtmlRenderer
         virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
         virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
+        virtual HRESULT StartConvertCoordsToIdentity();
+        virtual HRESULT EndConvertCoordsToIdentity();
+
     // owner params ----------------------------------------------------------------------
         virtual HRESULT get_Mode(LONG *plMode);
         virtual HRESULT put_Mode(LONG lMode);

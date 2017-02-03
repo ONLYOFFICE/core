@@ -295,6 +295,7 @@
 					MAC,
 					unix,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -325,6 +326,7 @@
 					MAC,
 					unix,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

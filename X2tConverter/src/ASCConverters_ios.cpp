@@ -226,16 +226,16 @@ namespace NExtractTools
 			}
 			else return AVS_FILEUTILS_ERROR_CONVERT;		}
 
-        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params);
+        return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true);
     }
-    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params)
+    int xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions)
     {
         // Save to file (from temp dir)
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
-
+        
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
-
-		return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        
+        return m_oCXlsxSerializer.saveToFile (sTo, sXlsxDir, bXmlOptions ? params.getXmlOptions() : L"") ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
 
     // xslx -> xslt
@@ -2016,47 +2016,48 @@ namespace NExtractTools
        return nRes;
    }
 
-   int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
-   {
-       int nRes = 0;
-       if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
-       {
-           if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
-           {
-               nRes = dir2zip(sFrom, sTo);
-           }
-           //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
-           else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
-           {
-               nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params);
-           }
-           else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
-       {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
-       }
-       else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
-       {
-           nRes = xlsx_dir2xlst_bin(sFrom, sTo, params);
-       }
-       else
-       {
-           std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + L"xlst_unpacked";
-           NSDirectory::CreateDirectory(sXlstDir);
-           std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + L"Editor.bin";
-           if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
-           else
-               nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params);
-           if(SUCCEEDED_X2T(nRes))
-           {
-               nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
-           }
-       }
-       return nRes;
-   }
+    int fromXlsxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
+    {
+        int nRes = 0;
+        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
+        {
+            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo)
+            {
+                nRes = dir2zip(sFrom, sTo);
+            }
+            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
+            else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS == nFormatTo)
+            {
+                nRes = xlsx_dir2ods(sFrom, sTo, sTemp, params);
+            }
+            else
+                nRes = AVS_FILEUTILS_ERROR_CONVERT;
+        }
+        else if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
+        {
+            nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
+        }
+        else if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo)
+        {
+            nRes = xlsx_dir2xlst_bin(sFrom, sTo, params, true);
+        }
+        else
+        {
+            std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+            NSDirectory::CreateDirectory(sXlstDir);
+            std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+            if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
+                nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, false);
+            else
+                nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, true);
+            if(SUCCEEDED_X2T(nRes))
+            {
+                nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+            }
+        }
+        return nRes;
+    }
+
    int fromXlstBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
    {
        int nRes = 0;

@@ -1317,6 +1317,7 @@
 					MAC,
 					unix,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1356,6 +1357,7 @@
 					MAC,
 					unix,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

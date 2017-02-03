@@ -63,8 +63,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 		if (odf_context()->drawing_context()->m_mapVmlShapeTypes.find( sId ) == 
 			odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
 		{
-			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(odf_context()->drawing_context()->m_mapVmlShapeTypes.begin(), 
-				std::pair<std::wstring, OOX::Vml::CShapeType*>(sId, vml_shape_type));
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(std::make_pair(sId, vml_shape_type));
 
 		}
 	}	
@@ -80,9 +79,9 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	}
 
 	//o:spt
-        //nullable<std::wstring>                                  m_oAdj;
-		//nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oMaster;
+        //nullable<std::wstring>								m_oAdj;
+		//nullable<SimpleTypes::Vml::CVmlPath>					m_oPath;
+		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oMaster;
 	//m_arrItems
 	//CVmlCommonElements
 }

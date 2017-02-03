@@ -38,10 +38,10 @@
 class OOXDocumentWriter
 {
 private: 
-	OOXWriter& m_oWriter;
-	RtfDocument& m_oDocument;
-	NFileWriter::CBufferedFileWriter* m_oFileWriter;
-	bool m_bFirst; //один параграф пишем другой храним в памяти
+	OOXWriter&							m_oWriter;
+	RtfDocument&						m_oDocument;
+	NFileWriter::CBufferedFileWriter*	m_oFileWriter;
+	bool								m_bFirst;		//один параграф пишем другой храним в памяти
 public: 
 	OOXDocumentWriter( OOXWriter& oWriter,RtfDocument& oDocument ): m_oWriter(oWriter), m_oDocument(oDocument)
 	{
@@ -64,7 +64,9 @@ public:
 	{
 		int nCount = 0;
 		for( int i = 0; i < m_oDocument.GetCount(); i++ )
+		{
 			nCount += m_oDocument[i].props->GetCount();
+		}
 		return nCount;
 	}
 };

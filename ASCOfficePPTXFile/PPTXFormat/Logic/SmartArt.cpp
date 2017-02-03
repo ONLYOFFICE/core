@@ -119,7 +119,8 @@ namespace PPTX
 			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
 			{
 				m_diag			= pDiagramDrawing->m_oShapeTree;
-				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>(dynamic_cast<PPTX::CCommonRels*>(pDiagramDrawing));
+				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>( new PPTX::CCommonRels());
+				m_oCommonRels->_read(pDiagramDrawing->m_oReadPath);
 			}
 			else
 			{

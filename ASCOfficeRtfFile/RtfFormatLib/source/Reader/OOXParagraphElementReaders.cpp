@@ -745,17 +745,24 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					RtfShapePtr pNewShape ( new RtfShape() );
 					pNewShape->m_oCharProperty = oNewProperty;
 					
-					OOXShapeReader *pShapeReader = NULL;
-					
-						 if (ooxPicture->m_oShape.IsInit())			pShapeReader = new OOXShapeReader(ooxPicture->m_oShape.GetPointer());
-					else if (ooxPicture->m_oShapeType.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeType.GetPointer());
-					else if (ooxPicture->m_oShapeArc.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeArc.GetPointer());
+					OOXShapeReader* pShapeReader = NULL;
+					if (ooxPicture->m_oShapeType.IsInit())
+					{	
+						pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeType.GetPointer());					
+						if(pShapeReader)
+						{
+							pShapeReader->Parse( oParam, pNewShape );
+							delete pShapeReader; pShapeReader = NULL;
+						}
+					}					
+						 if (ooxPicture->m_oShapeArc.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeArc.GetPointer());
 					else if (ooxPicture->m_oShapeRect.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRect.GetPointer());
 					else if (ooxPicture->m_oShapeRoundRect.IsInit())pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeRoundRect.GetPointer());
 					else if (ooxPicture->m_oShapeOval.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeOval.GetPointer());
 					else if (ooxPicture->m_oShapeLine.IsInit())		pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeLine.GetPointer());
 					else if (ooxPicture->m_oShapePolyLine.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapePolyLine.GetPointer());
 					else if (ooxPicture->m_oShapeCurve.IsInit())	pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeCurve.GetPointer());
+					else if (ooxPicture->m_oShape.IsInit())			pShapeReader = new OOXShapeReader(ooxPicture->m_oShape.GetPointer());		
 					
 					if (pShapeReader)
 					{

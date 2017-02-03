@@ -113,6 +113,8 @@ public:
 	bool m_bEvenOdd;
 	bool m_bIsMoveTo;
 
+	CMatrix* m_pTransform;
+
 public:
 
 	int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);

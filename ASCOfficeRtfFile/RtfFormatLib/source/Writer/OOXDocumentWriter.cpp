@@ -30,7 +30,6 @@
  *
  */
 #include "OOXDocumentWriter.h"
-//#include "OOXContentTypesWriter.h"
 #include "OOXRelsWriter.h"
 #include "OOXDocumentWriter.h"
 #include "OOXNumberingWriter.h"
@@ -41,33 +40,42 @@
 #include "OOXFootnoteWriter.h"
 #include "OOXStylesWriter.h"
 
-//#include "../../../../ASCOfficeDocxFile2/BinReader/ContentTypesWriter.h"
-
 std::wstring OOXDocumentWriter::CreateXmlStart()
 {
 	//пишем Footnotes
 	RenderParameter oNewParam;
-	oNewParam.poDocument = &m_oDocument;
-	oNewParam.poWriter = &m_oWriter;
-	oNewParam.poRels = &m_oWriter.m_oDocRels;
-	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-
-
+	oNewParam.poDocument	= &m_oDocument;
+	oNewParam.poWriter		= &m_oWriter;
+	oNewParam.poRels		= &m_oWriter.m_oDocRels;
+	oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
 	//пишем document.xml
-	std::wstring sResult = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
-	sResult += _T("<w:document");
-	sResult += _T(" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"");
-	sResult += _T(" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
-	sResult += _T(" xmlns:v=\"urn:schemas-microsoft-com:vml\"");
-	sResult += _T(" xmlns:o=\"urn:schemas-microsoft-com:office:office\"");
-	sResult += _T(" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"");
-	sResult += _T(" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"");
-	sResult += _T(" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"");
-	sResult += _T(" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"");
-	sResult += _T(">");
+	std::wstring sResult = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n";
+	sResult += L"<w:document";
+	sResult += L" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"";
+	sResult += L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"";
+	sResult += L" xmlns:v=\"urn:schemas-microsoft-com:vml\"";
+	sResult += L" xmlns:o=\"urn:schemas-microsoft-com:office:office\"";
+	sResult += L" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"";
+	sResult += L" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\"";
+	sResult += L" xmlns:w10=\"urn:schemas-microsoft-com:office:word\"";
+	sResult += L" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"";
+	sResult += L">";
 
-	sResult += _T("<w:body>");
+	if (m_oDocument.m_pBackground)
+	{
+		RtfColor color(m_oDocument.m_pBackground->m_nFillColor);
+
+		sResult += L"<w:background w:color=\"" + color.ToHexColor() + L"\">";
+		{
+			oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+			sResult += m_oDocument.m_pBackground->RenderToOOX(oNewParam);
+			oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		}
+		sResult += L"</w:background>";
+	}
+
+	sResult += L"<w:body>";
 	return sResult;
 }
 std::wstring OOXDocumentWriter::CreateXmlEnd( )
@@ -88,25 +96,25 @@ std::wstring OOXDocumentWriter::CreateXmlEnd( )
 	{
 		oNewParam.poRels = poFootnoteWriter->m_oRelsWriter.get();
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poFootnoteWriter->AddFootnoteBegin( _T("continuationSeparator"), 1, m_oDocument.m_oFootnoteCon->RenderToOOX( oNewParam ) );
+		poFootnoteWriter->AddFootnoteBegin( L"continuationSeparator", 1, m_oDocument.m_oFootnoteCon->RenderToOOX( oNewParam ) );
 	}
 	if( NULL != m_oDocument.m_oFootnoteSep )
 	{
 		oNewParam.poRels = poFootnoteWriter->m_oRelsWriter.get();
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poFootnoteWriter->AddFootnoteBegin( _T("separator"), 0, m_oDocument.m_oFootnoteSep->RenderToOOX(oNewParam) );
+		poFootnoteWriter->AddFootnoteBegin( L"separator", 0, m_oDocument.m_oFootnoteSep->RenderToOOX(oNewParam) );
 	}
 	if( NULL != m_oDocument.m_oEndnoteCon )
 	{
 		oNewParam.poRels = poEndnoteWriter->m_oRelsWriter.get();
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poEndnoteWriter->AddEndnoteBegin( _T("continuationSeparator"), 1, m_oDocument.m_oEndnoteSep->RenderToOOX(oNewParam) );
+		poEndnoteWriter->AddEndnoteBegin( L"continuationSeparator", 1, m_oDocument.m_oEndnoteSep->RenderToOOX(oNewParam) );
 	}
 	if( NULL != m_oDocument.m_oEndnoteSep )
 	{
 		oNewParam.poRels = poEndnoteWriter->m_oRelsWriter.get();
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poEndnoteWriter->AddEndnoteBegin( _T("separator"), 0, m_oDocument.m_oEndnoteSep->RenderToOOX(oNewParam) );
+		poEndnoteWriter->AddEndnoteBegin( L"separator", 0, m_oDocument.m_oEndnoteSep->RenderToOOX(oNewParam) );
 	}
 
 	//fontTable.xml
@@ -142,20 +150,20 @@ std::wstring OOXDocumentWriter::CreateXmlEnd( )
 	
 	if( false == sTempParaDef.empty() || false == sTempCharDef.empty() )
 	{
-		sStyles += _T("<w:docDefaults>");
+		sStyles += L"<w:docDefaults>";
 		if( false == sTempCharDef.empty() )
 		{
-			sStyles += _T("<w:rPrDefault><w:rPr>");
+			sStyles += L"<w:rPrDefault><w:rPr>";
 			sStyles += sTempCharDef ;
-			sStyles += _T("</w:rPr></w:rPrDefault>");
+			sStyles += L"</w:rPr></w:rPrDefault>";
 		}	
 		if( false == sTempParaDef.empty() )
 		{
-			sStyles += _T("<w:pPrDefault><w:pPr>");
+			sStyles += L"<w:pPrDefault><w:pPr>";
 			sStyles +=  sTempParaDef;
-			sStyles += _T("</w:pPr></w:pPrDefault>");
+			sStyles += L"</w:pPr></w:pPrDefault>";
 		}
-		sStyles += _T("</w:docDefaults>");
+		sStyles += L"</w:docDefaults>";
 	}
 
 	sStyles += m_oDocument.m_oStyleTable.RenderToOOX(oNewParam);
@@ -182,28 +190,28 @@ std::wstring OOXDocumentWriter::CreateXmlEnd( )
 	
 	sResult += m_oDocument[0].props->m_oProperty.RenderToOOX(oNewParam);
 
-	sResult += _T("</w:body>");
-	sResult += _T("</w:document>");
+	sResult += L"</w:body>";
+	sResult += L"</w:document>";
 
 	return sResult;
 }
 
 bool OOXDocumentWriter::SaveByItemStart( std::wstring sFolder )
 {
-	std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+	std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + L"word";
     NSDirectory::CreateDirectory(pathWord) ;
 
 	try
 	{
-		std::wstring sFilename = pathWord + FILE_SEPARATOR_STR + _T("document.xml");
+		std::wstring sFilename = pathWord + FILE_SEPARATOR_STR + L"document.xml";
 		m_oFileWriter = new NFileWriter::CBufferedFileWriter( sFilename );
 	}
 	catch(...)
 	{
 		return false;
 	}
-	m_oWriter.m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"), _T("word/document.xml") );
-	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"), _T("/word/document.xml") );
+	m_oWriter.m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"word/document.xml" );
+	m_oWriter.m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml", L"/word/document.xml" );
 
 	std::wstring sXml = CreateXmlStart( );
     std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
@@ -261,7 +269,7 @@ bool OOXDocumentWriter::SaveByItem()
 			else
 			{
 				//генерация ???
-				sXml = _T("<w:p><w:pPr>") + sectPr + _T("</w:pPr></w:p>");
+				sXml = L"<w:p><w:pPr>" + sectPr + L"</w:pPr></w:p>";
 			}
 	
 			std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);

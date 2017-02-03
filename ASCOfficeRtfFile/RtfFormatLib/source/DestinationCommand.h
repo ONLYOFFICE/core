@@ -509,9 +509,9 @@ public:
         else if( "author"		== sCommand )		m_eInternalState = is_author;
         else if( "manager"		== sCommand )		m_eInternalState = is_manager;
         else if( "company"		== sCommand )		m_eInternalState = is_company;
-        else if( "operator"	== sCommand )		m_eInternalState = is_operator;
-        else if( "category"	== sCommand )		m_eInternalState = is_category;
-        else if( "keywords"	== sCommand )		m_eInternalState = is_keywords;
+        else if( "operator"		== sCommand )		m_eInternalState = is_operator;
+        else if( "category"		== sCommand )		m_eInternalState = is_category;
+        else if( "keywords"		== sCommand )		m_eInternalState = is_keywords;
         else if( "comment"		== sCommand )		m_eInternalState = is_comment;
         else if( "doccomm"		== sCommand )		m_eInternalState = is_doccomm;
         else if( "hlinkbase"	== sCommand )		m_eInternalState = is_hlinkbase;
@@ -720,12 +720,12 @@ class RtfPictureReader :  public RtfAbstractReader
 	};
 
 private: 
-	RtfShape&	m_oShape;
-    std::wstring		m_sFile;
-    std::wstring		m_sData;
-	bool		m_bBin;
-    BYTE*		m_pbBin;
-	int			m_nBinLength;
+	RtfShape&		m_oShape;
+    std::wstring	m_sFile;
+    std::wstring	m_sData;
+	bool			m_bBin;
+    BYTE*			m_pbBin;
+	int				m_nBinLength;
 
 public: 
 	RtfPictureReader( RtfReader& oReader, RtfShape& oShape ) : m_oShape(oShape)
@@ -983,7 +983,31 @@ public:
 		return true;
 	}
 };
+class RtfBackgroundReader : public RtfShapeReader
+{
+public: 
+	RtfShape&		m_oShape;
 
+	RtfBackgroundReader( RtfShape& oShape ) : RtfShapeReader(oShape), m_oShape(oShape)
+	{
+	}
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+	{
+        if( "background" == sCommand )
+		{
+			return true;
+		}
+        else if( "shp" == sCommand )
+		{
+			RtfShapeReader	oShapeReader( m_oShape );
+
+			StartSubReader( oShapeReader, oDocument, oReader );
+		}
+		else
+			return RtfShapeReader::ExecuteCommand( oDocument,  oReader, sCommand, hasParameter, parameter);
+		return true;
+	}
+};
 class RtfOldShapeReader : public RtfAbstractReader
 {
 private: 

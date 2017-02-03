@@ -3306,12 +3306,10 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
 	{
-        if (m_bDrawOnlyText)
-            return;
+		if (m_bDrawOnlyText)
+			return;
 
-		// Вообще, размеры маски и самой картинки могут не совпадать (в этом случае мы должны срезайзить до размеров картинки)
-		// TO DO: Сделать, когда появится файл
-		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
+		if (nMaskWidth <= 0 || nMaskHeight <= 0)
 			DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 
 		double dPageHeight = pGState->GetPageHeight();
@@ -3334,25 +3332,79 @@ namespace PdfReader
 		pMask->Reset();
 		pImageStream->Reset();
 
-		unsigned char unPixel[4] ={ 0, 0, 0, 0 };
-		unsigned char unMask = 0;
-		for (int nY = nHeight - 1; nY >= 0; nY--)
+		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			for (int nX = 0; nX < nWidth; nX++)
+			unsigned char *pMaskBuffer = new unsigned char[nMaskWidth * nMaskHeight];
+			if (!pMaskBuffer)
 			{
-				int nIndex = 4 * (nX + nY * nWidth);
-				pImageStream->GetPixel(unPixel);
-				pMask->GetPixel(&unMask);
-				GrRGB oRGB;
-				pColorMap->GetRGB(unPixel, &oRGB);
-				pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
-				pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
-				pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+				delete pMask;
+				delete pImageStream;
+				return;
+			}
 
-				if (unMask && !bMaskInvert)
-					pBufferPtr[nIndex + 3] = 0;
-				else
-					pBufferPtr[nIndex + 3] = 255;
+			unsigned char unMask = 0;
+			for (int nY = nMaskHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nMaskWidth; nX++)
+				{
+					int nIndex = nX + nY * nMaskWidth;
+					pMask->GetPixel(&unMask);
+					pMaskBuffer[nIndex] = unMask;
+				}
+			}
+
+			double dScaleWidth  = (double)nWidth / (double)nMaskWidth;
+			double dScaleHeight = (double)nHeight / (double)nMaskHeight;
+
+			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+			for (int nY = nHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nWidth; nX++)
+				{
+					int nIndex = 4 * (nX + nY * nWidth);
+					pImageStream->GetPixel(unPixel);
+
+					int nNearestY = std::min((int)(nY / dScaleHeight), nMaskHeight - 1);
+					int nNearestX = std::min((int)(nX / dScaleWidth), nMaskWidth - 1);
+					unMask = pMaskBuffer[nNearestY * nMaskWidth + nNearestX];
+
+					GrRGB oRGB;
+					pColorMap->GetRGB(unPixel, &oRGB);
+					pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
+					pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
+					pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+
+					if (unMask && !bMaskInvert)
+						pBufferPtr[nIndex + 3] = 0;
+					else
+						pBufferPtr[nIndex + 3] = 255;
+				}
+			}
+
+			delete[] pMaskBuffer;
+		}
+		else
+		{
+			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+			unsigned char unMask = 0;
+			for (int nY = nHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nWidth; nX++)
+				{
+					int nIndex = 4 * (nX + nY * nWidth);
+					pImageStream->GetPixel(unPixel);
+					pMask->GetPixel(&unMask);
+					GrRGB oRGB;
+					pColorMap->GetRGB(unPixel, &oRGB);
+					pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
+					pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
+					pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+
+					if (unMask && !bMaskInvert)
+						pBufferPtr[nIndex + 3] = 0;
+					else
+						pBufferPtr[nIndex + 3] = 255;
+				}
 			}
 		}
 
@@ -3362,7 +3414,7 @@ namespace PdfReader
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
 		//  Исходное предобразование
-		//             |1  0  0|   |pCTM[0] pCTM[1] 0| 
+		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
 		arrMatrix[0] =     pCTM[0];

@@ -1684,6 +1684,10 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 
 	odt_context->set_background(color, type);	
 	
+	odt_context->start_drawings();
+		odt_context->drawing_context()->set_background_state(true);
+		odt_context->drawing_context()->start_drawing();
+
 	if (oox_background->m_oDrawing.IsInit())
 	{
 		convert(oox_background->m_oDrawing.GetPointer());
@@ -1692,6 +1696,8 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 	{
 		convert(oox_background->m_oBackground.GetPointer());
 	}
+	odt_context->drawing_context()->end_drawing();
+	odt_context->end_drawings();
 }
 
 void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf_writer::style_paragraph_properties * paragraph_properties)

@@ -1930,13 +1930,13 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fLine"					== m_sPropName ) m_oShape.m_bLine					= ( 0 == nValue ? false : true );
 	else if ( L"lineStartArrowhead"		== m_sPropName ) m_oShape.m_nLineStartArrow			= nValue;
 	else if ( L"lineColor"				== m_sPropName ) m_oShape.m_nLineColor				= nValue;
-	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth= nValue;
+	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth	= nValue;
 	else if ( L"lineStartArrowLength"	== m_sPropName ) m_oShape.m_nLineStartArrowLength	= nValue;
-	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow		= nValue;
+	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow			= nValue;
 	else if ( L"lineEndArrowWidth"		== m_sPropName ) m_oShape.m_nLineEndArrowWidth		= nValue;
 	else if ( L"lineEndArrowLength"		== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
 	else if ( L"lineWidth"				== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
-	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing		= nValue;
+	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
 	else if (L"cxstyle"					== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
 	else if (L"cxk"						== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
 	else

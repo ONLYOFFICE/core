@@ -48,8 +48,6 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 
-#define ARGB(a, r, g, b) ((unsigned int)( ( (unsigned char)(a) )| ( ( (unsigned char)(r) ) << 8 ) | ( ( (unsigned char)(g) ) << 16 ) | ( (unsigned char)(b) << 24 ) ) )
-
 using namespace cpdoccore;
 
 namespace Oox2Odf

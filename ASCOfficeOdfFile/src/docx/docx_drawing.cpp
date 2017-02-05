@@ -531,8 +531,8 @@ mso-position-vertical-relative:text;";
 				strStyle += L"height:"		+ boost::lexical_cast<std::wstring>(val.cy / 12700.) + L"pt;"; 
 				strStyle += L"z-index:"		+ boost::lexical_cast<std::wstring>(0xF000800 - val.id);
 			
-				CP_XML_ATTR(L"id",				L"Rect" + boost::lexical_cast<std::wstring>(val.id));
-				CP_XML_ATTR(L"o:spid",			L"_x0000_s" + boost::lexical_cast<std::wstring>(1024 + val.id));
+				CP_XML_ATTR(L"id",				L"Rect"		+ std::to_wstring(val.id));
+				CP_XML_ATTR(L"o:spid",			L"_x0000_s" + std::to_wstring(1024 + val.id));
 				CP_XML_ATTR(L"style",			strStyle);
 				CP_XML_ATTR(L"fillcolor",		L"#4f81bd [3204]");
 				CP_XML_ATTR(L"strokecolor",		L"#243f60 [1604]");

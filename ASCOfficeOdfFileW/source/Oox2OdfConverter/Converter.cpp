@@ -215,11 +215,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				OOX::Vml::CTextbox *vml = static_cast<OOX::Vml::CTextbox*>(oox_unknown);
 				convert(vml);
 			}break;
-			//case OOX::et_v_background:
-			//{
-			//	OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
-			//	convert(vml);
-			//}break;
+			case OOX::et_v_background:
+			{
+				OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
+				convert(vml);
+			}break;
 			case OOX::et_v_path:
 			{
 				OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);

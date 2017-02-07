@@ -173,9 +173,8 @@ namespace OOX
 	bool CPath::FileInDirectoryCorrect()
 	{
 		std::wstring fileDirectory = GetDirectory(false);
-		std::wstring lowerFileName = m_strFilename;
 
-		XmlUtils::GetLower(lowerFileName);
+        std::wstring lowerFileName = XmlUtils::GetLower(m_strFilename);
 
 		CArray<std::wstring> trueArray;
 
@@ -183,8 +182,7 @@ namespace OOX
 
 		for (int i = 0; i < trueArray.GetCount(); i++)
 		{
-			std::wstring lowerTest = trueArray[i];
-			XmlUtils::GetLower(lowerTest);
+            std::wstring lowerTest = XmlUtils::GetLower(trueArray[i]);
 
 			if (lowerTest == lowerFileName)
 			{

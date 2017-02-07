@@ -82,7 +82,8 @@ namespace XmlUtils
             Clear();
 
             NSFile::CFileBinary oFile;
-            oFile.OpenFile(sFilePath);
+            if (oFile.OpenFile(sFilePath) == false) return false;
+
             m_lStreamLen = (LONG)oFile.GetFileSize();
             m_pStream = new BYTE[m_lStreamLen];
             DWORD dwRead = 0;

@@ -33,6 +33,21 @@
 #include <algorithm>
 #include "../raster/Metafile/MetaFile.h"
 
+#if 0
+static void LOGGING(char* buffer, ...)
+{
+    FILE* f = fopen("path_to_log.txt", "a+");
+
+    va_list args;
+    va_start(args, buffer);
+    vfprintf(f, buffer, args);
+    fprintf(f, "\n");
+
+    fclose(f);
+    va_end(args);
+}
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
@@ -687,7 +702,7 @@ HRESULT CGraphicsRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, 
 HRESULT CGraphicsRenderer::BeginCommand(const DWORD& lType)
 {
 	m_lCurrentCommandType = lType;
-		
+	
 	switch (lType)
 	{
 	case c_nPageType:
@@ -1111,6 +1126,19 @@ HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dComma
 }
 HRESULT CGraphicsRenderer::CommandString(const LONG& lType, const std::wstring& sCommand)
 {
+	return S_OK;
+}
+
+HRESULT CGraphicsRenderer::StartConvertCoordsToIdentity()
+{
+	m_bUseTransformCoordsToIdentity = true;
+	m_pPath->m_pTransform = m_pRenderer->GetFullTransform();
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::EndConvertCoordsToIdentity()
+{
+	m_bUseTransformCoordsToIdentity = false;
+	m_pPath->m_pTransform = NULL;
 	return S_OK;
 }
 

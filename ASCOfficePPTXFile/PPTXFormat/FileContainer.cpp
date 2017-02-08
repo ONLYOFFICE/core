@@ -158,8 +158,9 @@ namespace PPTX
 
 			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
 
-			if (bIsSlide && (pRelation->Type() == OOX::Presentation::FileTypes::Slide))
-			{
+			if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink))			
+			{// + external audio, video ...
+				normPath = pRelation->Target();
 				long percent = Event->GetPercent();
 
 				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));

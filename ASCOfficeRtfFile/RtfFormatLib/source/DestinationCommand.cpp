@@ -155,7 +155,7 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 			oReader.m_oCurSectionProp.m_bSwitchMargin	= 1;
 		}
 	}
-    else if ( "gutter" == sCommand )
+	else if ( "gutter" == sCommand )
 	{
 		if ( hasParameter )
 		{
@@ -163,12 +163,12 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 			oReader.m_oCurSectionProp.m_nGutterMarginWidth = parameter;
 		}
 	}
-    else if ( "ogutter" == sCommand )
+	else if ( "ogutter" == sCommand )
 	{
 		if ( hasParameter )
 			oDocument.m_oProperty.m_nGutterWidthOutside = parameter;
 	}
-    else if ( "margmirror" == sCommand )
+	else if ( "margmirror" == sCommand )
 	{
 		if ( hasParameter && 0 == parameter )
 		{
@@ -194,7 +194,7 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
     COMMAND_RTF_BOOL( "useltbaln",		oDocument.m_oProperty.m_bUseTabAlignment,	sCommand, hasParameter, parameter )
 	//Footnotes and Endnotes
     COMMAND_RTF_INT	( "endnotes",		oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndSection )
-    COMMAND_RTF_INT	( "enddoc",		oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndDocument )
+    COMMAND_RTF_INT	( "enddoc",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_EndDocument )
     COMMAND_RTF_INT	( "ftntj",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_BeneathText )
     COMMAND_RTF_INT	( "ftnbj",			oDocument.m_oProperty.m_eFootnotePlacement, sCommand, true, RtfDocumentProperty::fp_BottomPage )
 
@@ -308,6 +308,15 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 	{
 		RtfInfoReader oInfoReader;
 		return StartSubReader( oInfoReader, oDocument, oReader );			
+	}
+	else if ( "background" == sCommand )
+	{
+		oDocument.m_pBackground = RtfShapePtr( new RtfShape() );
+		
+		oDocument.m_pBackground->m_bBackground = true;
+
+		RtfBackgroundReader oBackgroundReader( *oDocument.m_pBackground );
+		return StartSubReader( oBackgroundReader, oDocument, oReader );
 	}
     //else if ( "colorschememapping" == sCommand )
 	//{
@@ -1131,7 +1140,7 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		}
 	}
     COMMAND_RTF_INT ( "clwWidth",	cellProps->m_nWidth,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "clhidemark",cellProps->m_bHideMark,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "clhidemark",	cellProps->m_bHideMark,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clvertalt",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Top )
     COMMAND_RTF_INT ( "clvertalc",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Center )
     COMMAND_RTF_INT ( "clvertalb",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Bottom )
@@ -1921,13 +1930,13 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fLine"					== m_sPropName ) m_oShape.m_bLine					= ( 0 == nValue ? false : true );
 	else if ( L"lineStartArrowhead"		== m_sPropName ) m_oShape.m_nLineStartArrow			= nValue;
 	else if ( L"lineColor"				== m_sPropName ) m_oShape.m_nLineColor				= nValue;
-	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth= nValue;
+	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth	= nValue;
 	else if ( L"lineStartArrowLength"	== m_sPropName ) m_oShape.m_nLineStartArrowLength	= nValue;
-	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow		= nValue;
+	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow			= nValue;
 	else if ( L"lineEndArrowWidth"		== m_sPropName ) m_oShape.m_nLineEndArrowWidth		= nValue;
 	else if ( L"lineEndArrowLength"		== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
 	else if ( L"lineWidth"				== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
-	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing		= nValue;
+	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
 	else if (L"cxstyle"					== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
 	else if (L"cxk"						== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
 	else

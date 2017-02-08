@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  ImageUtils.h
-//  UTILS
-//
-//  Created by alexey.musinov on 30.04.15.
-//  Copyright (c) 2015 Ascensio System SIA. All rights reserved.
-//
 
 #ifndef _IMAGE_UTILS_H_
 #define _IMAGE_UTILS_H_

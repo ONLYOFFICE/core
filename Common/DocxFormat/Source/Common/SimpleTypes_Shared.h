@@ -112,21 +112,21 @@ namespace SimpleTypes
 
         virtual ECalendarType FromString(std::wstring &sValue)
 		{
-            if      ( _T("gregorian")            == sValue ) this->m_eValue = calendartypeGregorian;
-            else if ( _T("gregorianArabic")      == sValue ) this->m_eValue = calendartypeGregorianArabic;
-            else if ( _T("gregorianMeFrench")    == sValue ) this->m_eValue = calendartypeGregorianMeFrench;
-            else if ( _T("gregorianUs")          == sValue ) this->m_eValue = calendartypeGregorianUs;
-            else if ( _T("gregorianXlitEnglish") == sValue ) this->m_eValue = calendartypeGregorianXlitEnglish;
-            else if ( _T("gregorianXlitFrench")  == sValue ) this->m_eValue = calendartypeGregorianXlitFrench;
-            else if ( _T("hebrew")               == sValue ) this->m_eValue = calendartypeHebrew;
-            else if ( _T("hijri")                == sValue ) this->m_eValue = calendartypeHijri;
-            else if ( _T("japan")                == sValue ) this->m_eValue = calendartypeJapan;
-            else if ( _T("korea")                == sValue ) this->m_eValue = calendartypeKorea;
-            else if ( _T("none")                 == sValue ) this->m_eValue = calendartypeNone;
-            else if ( _T("saka")                 == sValue ) this->m_eValue = calendartypeSaka;
-            else if ( _T("taiwan")               == sValue ) this->m_eValue = calendartypeTaiwan;
-            else if ( _T("thai")                 == sValue ) this->m_eValue = calendartypeThai;
-            else                                             this->m_eValue = eDefValue;
+            if      ( L"gregorian"            == sValue ) this->m_eValue = calendartypeGregorian;
+            else if ( L"gregorianArabic"      == sValue ) this->m_eValue = calendartypeGregorianArabic;
+            else if ( L"gregorianMeFrench"    == sValue ) this->m_eValue = calendartypeGregorianMeFrench;
+            else if ( L"gregorianUs"          == sValue ) this->m_eValue = calendartypeGregorianUs;
+            else if ( L"gregorianXlitEnglish" == sValue ) this->m_eValue = calendartypeGregorianXlitEnglish;
+            else if ( L"gregorianXlitFrench"  == sValue ) this->m_eValue = calendartypeGregorianXlitFrench;
+            else if ( L"hebrew"               == sValue ) this->m_eValue = calendartypeHebrew;
+            else if ( L"hijri"                == sValue ) this->m_eValue = calendartypeHijri;
+            else if ( L"japan"                == sValue ) this->m_eValue = calendartypeJapan;
+            else if ( L"korea"                == sValue ) this->m_eValue = calendartypeKorea;
+            else if ( L"none"                 == sValue ) this->m_eValue = calendartypeNone;
+            else if ( L"saka"                 == sValue ) this->m_eValue = calendartypeSaka;
+            else if ( L"taiwan"               == sValue ) this->m_eValue = calendartypeTaiwan;
+            else if ( L"thai"                 == sValue ) this->m_eValue = calendartypeThai;
+            else											this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -135,21 +135,21 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case calendartypeGregorian            : return _T("gregorian");
-			case calendartypeGregorianArabic      : return _T("gregorianArabic");
-			case calendartypeGregorianMeFrench    : return _T("gregorianMeFrench");
-			case calendartypeGregorianUs          : return _T("gregorianUs");
-			case calendartypeGregorianXlitEnglish : return _T("gregorianXlitEnglish");
-			case calendartypeGregorianXlitFrench  : return _T("gregorianXlitFrench");
-			case calendartypeHebrew               : return _T("hebrew");
-			case calendartypeHijri                : return _T("hijri");
-			case calendartypeJapan                : return _T("japan");
-			case calendartypeKorea                : return _T("korea");
-			case calendartypeNone                 : return _T("none");
-			case calendartypeSaka                 : return _T("saka");
-			case calendartypeTaiwan               : return _T("taiwan");
-			case calendartypeThai                 : return _T("thai");
-			default                               : return _T("none");
+			case calendartypeGregorian            : return L"gregorian";
+			case calendartypeGregorianArabic      : return L"gregorianArabic";
+			case calendartypeGregorianMeFrench    : return L"gregorianMeFrench";
+			case calendartypeGregorianUs          : return L"gregorianUs";
+			case calendartypeGregorianXlitEnglish : return L"gregorianXlitEnglish";
+			case calendartypeGregorianXlitFrench  : return L"gregorianXlitFrench";
+			case calendartypeHebrew               : return L"hebrew";
+			case calendartypeHijri                : return L"hijri";
+			case calendartypeJapan                : return L"japan";
+			case calendartypeKorea                : return L"korea";
+			case calendartypeNone                 : return L"none";
+			case calendartypeSaka                 : return L"saka";
+			case calendartypeTaiwan               : return L"taiwan";
+			case calendartypeThai                 : return L"thai";
+			default                               : return L"none";
 			}
 		}
 
@@ -174,9 +174,9 @@ namespace SimpleTypes
 
         virtual EConformanceClass FromString(std::wstring &sValue)
 		{
-            if      ( _T("strict")       == sValue ) this->m_eValue = conformanceclassStrict;
-            else if ( _T("transitional") == sValue ) this->m_eValue = conformanceclassTransitional;
-            else                                     this->m_eValue = eDefValue;
+            if      ( L"strict"       == sValue )	this->m_eValue = conformanceclassStrict;
+            else if ( L"transitional" == sValue )	this->m_eValue = conformanceclassTransitional;
+            else									this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -185,9 +185,9 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case conformanceclassStrict       : return _T("strict");
-			case conformanceclassTransitional : return _T("transitional");
-			default                           : return _T("strict");
+			case conformanceclassStrict       : return L"strict";
+			case conformanceclassTransitional : return L"transitional";
+			default                           : return L"strict";
 			}
 		}
 
@@ -514,16 +514,16 @@ namespace SimpleTypes
 
         virtual EOnOff  FromString(std::wstring &sValue)
 		{
-            if      ( _T("true")  == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("True")  == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("1")     == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("t")     == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("on")    == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("f")     == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("0")     == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("false") == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("False") == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("off")   == sValue ) this->m_eValue = onoffFalse;
+            if      ( L"true"  == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"True"  == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"1"     == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"t"     == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"on"    == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"f"     == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"0"     == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"false" == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"False" == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"off"   == sValue ) this->m_eValue = onoffFalse;
             else                              this->m_eValue = eDefValue;
 
             return this->m_eValue;
@@ -533,9 +533,9 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case onoffFalse : return _T("false");
-			case onoffTrue  : return _T("true");
-			default         : return _T("false");
+			case onoffFalse : return L"false";
+			case onoffTrue  : return L"true";
+			default         : return L"false";
 			}
 		}
         std::wstring ToString2(EOnOffToString eType) const
@@ -544,39 +544,39 @@ namespace SimpleTypes
 			{
                 switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("false");
-				case onoffTrue: return _T("true");
-				default: return _T("false");
+				case onoffFalse:	return L"false";
+				case onoffTrue:		return L"true";
+				default:			return L"false";
 				}
 			}
 			else if (onofftostring1 == eType)
 			{
                 switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("0");
-				case onoffTrue: return _T("1");
-				default: return _T("0");
+				case onoffFalse:	return L"0";
+				case onoffTrue:		return L"1";
+				default:			return L"0";
 				}
 			}
 			else if (onofftostringOn == eType)
 			{
                 switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("off");
-				case onoffTrue: return _T("on");
-				default: return _T("off");
+				case onoffFalse:	return L"off";
+				case onoffTrue:		return L"on";
+				default:			return L"off";
 				}
 			}
 			else if (onofftostringT == eType)
 			{
                 switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("f");
-				case onoffTrue: return _T("t");
-				default: return _T("f");
+				case onoffFalse:	return L"f";
+				case onoffTrue:		return L"t";
+				default:			return L"f";
 				}
 			}
-			return _T("false");
+			return L"false";
 		}
 		std::wstring ToString3(EOnOffToString eType) const
 		{
@@ -584,39 +584,39 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("false");
-				case onoffTrue  : return _T("true");
-				default         : return _T("false");
+				case onoffFalse : return L"false";
+				case onoffTrue  : return L"true";
+				default         : return L"false";
 				}
 			}
 			else if(onofftostring1 == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("0");
-				case onoffTrue  : return _T("1");
-				default         : return _T("0");
+				case onoffFalse : return L"0";
+				case onoffTrue  : return L"1";
+				default         : return L"0";
 				}
 			}
 			else if(onofftostringOn == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("off");
-				case onoffTrue  : return _T("on");
-				default         : return _T("off");
+				case onoffFalse : return L"off";
+				case onoffTrue  : return L"on";
+				default         : return L"off";
 				}
 			}
 			else if(onofftostringT == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("f");
-				case onoffTrue  : return _T("t");
-				default         : return _T("f");
+				case onoffFalse : return L"f";
+				case onoffTrue  : return L"t";
+				default         : return L"f";
 				}
 			}
-			return _T("false");
+			return L"false";
 		}
 		bool ToBool() 
 		{
@@ -658,7 +658,7 @@ namespace SimpleTypes
 				m_sValue = sValue;
                 for ( size_t nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
 				{
-					m_sValue += _T("0");
+					m_sValue += L"0";
 				}
 			}
             else if ( 20 == sValue.length() )
@@ -826,9 +826,9 @@ namespace SimpleTypes
 
         virtual EVerticalAlignRun    FromString(std::wstring &sValue)
 		{
-            if      ( _T("baseline")    == sValue ) this->m_eValue = verticalalignrunBaseline;
-            else if ( _T("subscript")   == sValue ) this->m_eValue = verticalalignrunSubscript;
-            else if ( _T("superscript") == sValue ) this->m_eValue = verticalalignrunSuperscript;
+            if      ( L"baseline"    == sValue ) this->m_eValue = verticalalignrunBaseline;
+            else if ( L"subscript"   == sValue ) this->m_eValue = verticalalignrunSubscript;
+            else if ( L"superscript" == sValue ) this->m_eValue = verticalalignrunSuperscript;
             else                                    this->m_eValue = eDefValue;
 
             return this->m_eValue;
@@ -838,10 +838,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case verticalalignrunBaseline    : return _T("baseline");
-			case verticalalignrunSubscript   : return _T("subscript");
-			case verticalalignrunSuperscript : return _T("superscript");
-			default                          : return _T("baseline");
+			case verticalalignrunBaseline    : return L"baseline";
+			case verticalalignrunSubscript   : return L"subscript";
+			case verticalalignrunSuperscript : return L"superscript";
+			default                          : return L"baseline";
 			}
 		}
 
@@ -871,12 +871,12 @@ namespace SimpleTypes
 
         virtual EXAlign FromString(std::wstring &sValue)
 		{
-            if      ( _T("center")  == sValue ) this->m_eValue = xalignCenter;
-            else if ( _T("inside")  == sValue ) this->m_eValue = xalignInside;
-            else if ( _T("left")    == sValue ) this->m_eValue = xalignLeft;
-            else if ( _T("outside") == sValue ) this->m_eValue = xalignOutside;
-            else if ( _T("right")   == sValue ) this->m_eValue = xalignRight;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"center"  == sValue )	this->m_eValue = xalignCenter;
+            else if ( L"inside"  == sValue )	this->m_eValue = xalignInside;
+            else if ( L"left"    == sValue )	this->m_eValue = xalignLeft;
+            else if ( L"outside" == sValue )	this->m_eValue = xalignOutside;
+            else if ( L"right"   == sValue )	this->m_eValue = xalignRight;
+            else								this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -885,12 +885,12 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case xalignCenter  : return _T("center");
-			case xalignInside  : return _T("inside");
-			case xalignLeft    : return _T("left");
-			case xalignOutside : return _T("outside");
-			case xalignRight   : return _T("right");
-			default            : return _T("left");
+			case xalignCenter  : return L"center";
+			case xalignInside  : return L"inside";
+			case xalignLeft    : return L"left";
+			case xalignOutside : return L"outside";
+			case xalignRight   : return L"right";
+			default            : return L"left";
 			}
 		}
 
@@ -923,14 +923,14 @@ namespace SimpleTypes
 
         virtual EYAlign FromString(std::wstring &sValue)
 		{
-            if      ( _T("bottom")  == sValue ) this->m_eValue = yalignBottom;
-            else if ( _T("bot")		== sValue ) this->m_eValue = yalignBottom;
-            else if ( _T("center")  == sValue ) this->m_eValue = yalignCenter;
-            else if ( _T("inline")  == sValue ) this->m_eValue = yalignInline;
-            else if ( _T("inside")  == sValue ) this->m_eValue = yalignInside;
-            else if ( _T("outside") == sValue ) this->m_eValue = yalignOutside;
-            else if ( _T("top")     == sValue ) this->m_eValue = yalignTop;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"bottom"		== sValue ) this->m_eValue = yalignBottom;
+            else if ( L"bot"		== sValue ) this->m_eValue = yalignBottom;
+            else if ( L"center"		== sValue ) this->m_eValue = yalignCenter;
+            else if ( L"inline"		== sValue ) this->m_eValue = yalignInline;
+            else if ( L"inside"		== sValue ) this->m_eValue = yalignInside;
+            else if ( L"outside"	== sValue ) this->m_eValue = yalignOutside;
+            else if ( L"top"		== sValue ) this->m_eValue = yalignTop;
+            else								this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -939,13 +939,13 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case yalignBottom  : return _T("bottom");
-			case yalignCenter  : return _T("center");
-			case yalignInline  : return _T("inline");
-			case yalignInside  : return _T("inside");
-			case yalignOutside : return _T("outside");
-			case yalignTop     : return _T("top");
-			default            : return _T("top");
+			case yalignBottom  : return L"bottom";
+			case yalignCenter  : return L"center";
+			case yalignInline  : return L"inline";
+			case yalignInside  : return L"inside";
+			case yalignOutside : return L"outside";
+			case yalignTop     : return L"top";
+			default            : return L"top";
 			}
 		}
 
@@ -1180,22 +1180,22 @@ namespace SimpleTypes
 		}
         void ByColorName(std::wstring& sValue)
 		{
-            if      (sValue.find(_T("aqua"))	>= 0)this->m_eValue = colortypeAqua;
-            else if (sValue.find(_T("black"))	>= 0)this->m_eValue = colortypeBlack;
-            else if (sValue.find(_T("blue"))	>= 0)this->m_eValue = colortypeBlue;
-            else if (sValue.find(_T("fuchsia")) >= 0)this->m_eValue = colortypeFuchsia;
-            else if (sValue.find(_T("gray"))	>= 0)this->m_eValue = colortypeGray;
-            else if (sValue.find(_T("green"))	>= 0)this->m_eValue = colortypeGreen;
-            else if (sValue.find(_T("lime"))	>= 0)this->m_eValue = colortypeLime;
-            else if (sValue.find(_T("maroon"))	>= 0)this->m_eValue = colortypeMaroon;
-            else if (sValue.find(_T("navy"))	>= 0)this->m_eValue = colortypeNavy;
-            else if (sValue.find(_T("olive"))	>= 0)this->m_eValue = colortypeOlive;
-            else if (sValue.find(_T("purple"))	>= 0)this->m_eValue = colortypePurple;
-            else if (sValue.find(_T("red"))		>= 0)this->m_eValue = colortypeRed;
-            else if (sValue.find(_T("silver"))	>= 0)this->m_eValue = colortypeSilver;
-            else if (sValue.find(_T("teal"))	>= 0)this->m_eValue = colortypeTeal;
-            else if (sValue.find(_T("white"))	>= 0)this->m_eValue = colortypeWhite;
-            else if (sValue.find(_T("yellow"))	>= 0)this->m_eValue = colortypeYellow;
+			if      (std::wstring::npos != sValue.find(L"aqua"))	this->m_eValue = colortypeAqua;
+            else if (std::wstring::npos != sValue.find(L"black"))	this->m_eValue = colortypeBlack;
+            else if (std::wstring::npos != sValue.find(L"blue"))	this->m_eValue = colortypeBlue;
+            else if (std::wstring::npos != sValue.find(L"fuchsia"))	this->m_eValue = colortypeFuchsia;
+            else if (std::wstring::npos != sValue.find(L"gray"))	this->m_eValue = colortypeGray;
+            else if (std::wstring::npos != sValue.find(L"green"))	this->m_eValue = colortypeGreen;
+            else if (std::wstring::npos != sValue.find(L"lime"))	this->m_eValue = colortypeLime;
+            else if (std::wstring::npos != sValue.find(L"maroon"))	this->m_eValue = colortypeMaroon;
+            else if (std::wstring::npos != sValue.find(L"navy"))	this->m_eValue = colortypeNavy;
+            else if (std::wstring::npos != sValue.find(L"olive"))	this->m_eValue = colortypeOlive;
+            else if (std::wstring::npos != sValue.find(L"purple"))	this->m_eValue = colortypePurple;
+            else if (std::wstring::npos != sValue.find(L"red"))		this->m_eValue = colortypeRed;
+            else if (std::wstring::npos != sValue.find(L"silver"))	this->m_eValue = colortypeSilver;
+            else if (std::wstring::npos != sValue.find(L"teal"))	this->m_eValue = colortypeTeal;
+            else if (std::wstring::npos != sValue.find(L"white"))	this->m_eValue = colortypeWhite;
+            else if (std::wstring::npos != sValue.find(L"yellow"))	this->m_eValue = colortypeYellow;
             else this->m_eValue = colortypeNone;
 
 			SetRGB();
@@ -1227,14 +1227,14 @@ namespace SimpleTypes
 
         virtual ETrueFalse FromString(std::wstring &sValue)
 		{
-            if      ( _T("t")     == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("true")  == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("True")  == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("")      == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("f")     == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("false") == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("False") == sValue ) this->m_eValue = booleanFalse;
-            else                              this->m_eValue = booleanFalse;
+            if      ( L"t"     == sValue )	this->m_eValue = booleanTrue;
+            else if ( L"true"  == sValue )	this->m_eValue = booleanTrue;
+            else if ( L"True"  == sValue )	this->m_eValue = booleanTrue;
+            else if ( L""      == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"f"     == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"false" == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"False" == sValue )	this->m_eValue = booleanFalse;
+            else							this->m_eValue = booleanFalse;
 
             return this->m_eValue;
 		}
@@ -1243,9 +1243,9 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case booleanFalse : return _T("f");
-			case booleanTrue  : return _T("t");
-			default           : return _T("f");
+			case booleanFalse : return L"f";
+			case booleanTrue  : return L"t";
+			default           : return L"f";
 			}
 		}
 

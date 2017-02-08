@@ -2417,44 +2417,12 @@ bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::
 
 	std::wstring image_path = context_.get_mediaitems().media_path() + drawing_state->fill.texture_target.substr(6);
 
-	int rgbColor1 = STR::hex_str2int(sRgbColor1);
-	int rgbColor2 = STR::hex_str2int(sRgbColor2);
+	size_t rgbColor1 = STR::hex_str2int(sRgbColor1);
+	size_t rgbColor2 = STR::hex_str2int(sRgbColor2);
 
 	CBgraFrame bgraFrame;
 
-	if (bgraFrame.OpenFile(image_path))
-	{
-		int smpl = abs(bgraFrame.get_Stride() / bgraFrame.get_Width());
-
-		BYTE * rgb = bgraFrame.get_Data();
-		
-		BYTE R1 = (BYTE)(rgbColor1);
-		BYTE G1 = (BYTE)(rgbColor1 >> 8);
-		BYTE B1 = (BYTE)(rgbColor1 >> 16);
-
-		BYTE R2 = (BYTE)(rgbColor2);
-		BYTE G2 = (BYTE)(rgbColor2 >> 8);
-		BYTE B2 = (BYTE)(rgbColor2 >> 16);
-
-		for (int i = 0 ; i < bgraFrame.get_Width() * bgraFrame.get_Height(); i++)
-		{
-			if (rgb[i * smpl + 0 ] == 0x00 && rgb[i * smpl + 1 ] == 0x00 && rgb[i * smpl + 2 ] == 0x00)
-			{
-				rgb[i * smpl + 0 ] = R1;
-				rgb[i * smpl + 1 ] = G1;
-				rgb[i * smpl + 2 ] = B1;
-			}
-			else
-			{
-				rgb[i * smpl + 0 ] = R2;
-				rgb[i * smpl + 1 ] = G2;
-				rgb[i * smpl + 2 ] = B2;
-			}
-		}
-		bgraFrame.SaveFile(image_path, 1); 
-		return true;
-	}
-	return false;
+	return bgraFrame.ReColorPatternImage(image_path, rgbColor1, rgbColor2);
 }
 
 void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm) 

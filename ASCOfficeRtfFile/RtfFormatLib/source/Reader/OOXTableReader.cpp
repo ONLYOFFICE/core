@@ -164,7 +164,9 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		for( int i = 0; i < m_ooxTable->m_oTblGrid->m_arrGridCol.size(); i++ )
 		{
 			if (m_ooxTable->m_oTblGrid->m_arrGridCol[i] && m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW.IsInit())
-			oOutputTable.m_aTableGrid.push_back( m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW->ToTwips() );
+			{
+				oOutputTable.m_aTableGrid.push_back( m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW->ToTwips() );
+			}
 		}
 	}
 

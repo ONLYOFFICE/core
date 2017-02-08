@@ -73,11 +73,11 @@ public:
 
 public:
     
-	_CP_OPT(odf_types::length_or_percent) fo_min_width_;
-    _CP_OPT(odf_types::length_or_percent) fo_min_height_;
+	_CP_OPT(odf_types::length_or_percent)	fo_min_width_;
+    _CP_OPT(odf_types::length_or_percent)	fo_min_height_;
     
-    _CP_OPT(odf_types::length_or_percent) fo_max_width_;
-    _CP_OPT(odf_types::length_or_percent) fo_max_height_;
+    _CP_OPT(odf_types::length_or_percent)	fo_max_width_;
+    _CP_OPT(odf_types::length_or_percent)	fo_max_height_;
 
 ///////////////////////////////
 	_CP_OPT(odf_types::color)				svg_stroke_color_;

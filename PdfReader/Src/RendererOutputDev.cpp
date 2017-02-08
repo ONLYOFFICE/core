@@ -2827,13 +2827,32 @@ namespace PdfReader
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(pMatrix, &dShiftX, &dShiftY, true);
-		m_pRenderer->BeginCommand(c_nClipType);
-		m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);	
-		m_pRenderer->PathCommandEnd();
-		m_pRenderer->put_FontStringGID(true);
-		m_pRenderer->PathCommandText(wsText, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-		m_pRenderer->EndCommand(c_nClipType);
+
+        // TODO: нужна нормальная конвертация
+        int nLen = (int)wsText.length();
+        const wchar_t* pDataSrc = wsText.c_str();
+        if (1 == wsText.length())
+            m_pRenderer->PathCommandTextExCHAR(0, (LONG)pDataSrc[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+        else if (0 != nLen)
+        {
+            unsigned int* pGids = new unsigned int[nLen];
+            for (int nIndex = 0; nIndex < nLen; ++nIndex)
+                pGids[nIndex] = (unsigned int)pDataSrc[nIndex];
+
+            m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+
+            RELEASEARRAYOBJECTS(pGids);
+        }
 	}
+    void RendererOutputDev::EndTextObject(GrState *pGState)
+    {
+        if (NULL != m_pBufferTextClip)
+        {
+            UpdateClip(pGState);
+
+            RELEASEOBJECT(m_pBufferTextClip);
+        }
+    }
 	void RendererOutputDev::BeginStringOperator(GrState *pGState)
 	{
 		if (m_bTransparentGroup)
@@ -2846,9 +2865,7 @@ namespace PdfReader
 		// Обработка Clip
 		if (nRenderMode >= 4)
 		{
-			if (m_pBufferTextClip)
-				delete m_pBufferTextClip;
-
+            RELEASEOBJECT(m_pBufferTextClip);
 			m_pBufferTextClip = new GrTextClip();
 		}
 
@@ -2879,18 +2896,7 @@ namespace PdfReader
 			if (m_pBufferTextClip)
 				pGState->GetClip()->AppendTextClip(m_pBufferTextClip);
 
-			for (int nIndex = 0; nIndex < m_pBufferTextClip->GetTextsCount(); nIndex++)
-			{
-				WString wsFontName, wsFontPath;
-				int nFontStyle;
-				double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-				WString wsText = m_pBufferTextClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &nFontStyle);
-				double *pMatrix = m_pBufferTextClip->GetMatrix(nIndex);
-
-				ClipToText(std::wstring(wsFontName), std::wstring(wsFontPath), dFontSize, nFontStyle, pMatrix, std::wstring(wsText), dX, dY, dWidth, dHeight, dBaseLineOffset);
-			}
-
-			UpdateFont(pGState);
+            UpdateFont(pGState);
 		}
 
 		// Возвращаем параметры для Stroke
@@ -3300,12 +3306,10 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
 	{
-        if (m_bDrawOnlyText)
-            return;
+		if (m_bDrawOnlyText)
+			return;
 
-		// Вообще, размеры маски и самой картинки могут не совпадать (в этом случае мы должны срезайзить до размеров картинки)
-		// TO DO: Сделать, когда появится файл
-		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
+		if (nMaskWidth <= 0 || nMaskHeight <= 0)
 			DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 
 		double dPageHeight = pGState->GetPageHeight();
@@ -3328,25 +3332,79 @@ namespace PdfReader
 		pMask->Reset();
 		pImageStream->Reset();
 
-		unsigned char unPixel[4] ={ 0, 0, 0, 0 };
-		unsigned char unMask = 0;
-		for (int nY = nHeight - 1; nY >= 0; nY--)
+		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			for (int nX = 0; nX < nWidth; nX++)
+			unsigned char *pMaskBuffer = new unsigned char[nMaskWidth * nMaskHeight];
+			if (!pMaskBuffer)
 			{
-				int nIndex = 4 * (nX + nY * nWidth);
-				pImageStream->GetPixel(unPixel);
-				pMask->GetPixel(&unMask);
-				GrRGB oRGB;
-				pColorMap->GetRGB(unPixel, &oRGB);
-				pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
-				pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
-				pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+				delete pMask;
+				delete pImageStream;
+				return;
+			}
 
-				if (unMask && !bMaskInvert)
-					pBufferPtr[nIndex + 3] = 0;
-				else
-					pBufferPtr[nIndex + 3] = 255;
+			unsigned char unMask = 0;
+			for (int nY = nMaskHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nMaskWidth; nX++)
+				{
+					int nIndex = nX + nY * nMaskWidth;
+					pMask->GetPixel(&unMask);
+					pMaskBuffer[nIndex] = unMask;
+				}
+			}
+
+			double dScaleWidth  = (double)nWidth / (double)nMaskWidth;
+			double dScaleHeight = (double)nHeight / (double)nMaskHeight;
+
+			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+			for (int nY = nHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nWidth; nX++)
+				{
+					int nIndex = 4 * (nX + nY * nWidth);
+					pImageStream->GetPixel(unPixel);
+
+					int nNearestY = std::min((int)(nY / dScaleHeight), nMaskHeight - 1);
+					int nNearestX = std::min((int)(nX / dScaleWidth), nMaskWidth - 1);
+					unMask = pMaskBuffer[nNearestY * nMaskWidth + nNearestX];
+
+					GrRGB oRGB;
+					pColorMap->GetRGB(unPixel, &oRGB);
+					pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
+					pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
+					pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+
+					if (unMask && !bMaskInvert)
+						pBufferPtr[nIndex + 3] = 0;
+					else
+						pBufferPtr[nIndex + 3] = 255;
+				}
+			}
+
+			delete[] pMaskBuffer;
+		}
+		else
+		{
+			unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+			unsigned char unMask = 0;
+			for (int nY = nHeight - 1; nY >= 0; nY--)
+			{
+				for (int nX = 0; nX < nWidth; nX++)
+				{
+					int nIndex = 4 * (nX + nY * nWidth);
+					pImageStream->GetPixel(unPixel);
+					pMask->GetPixel(&unMask);
+					GrRGB oRGB;
+					pColorMap->GetRGB(unPixel, &oRGB);
+					pBufferPtr[nIndex + 0] = ColorToByte(oRGB.b);
+					pBufferPtr[nIndex + 1] = ColorToByte(oRGB.g);
+					pBufferPtr[nIndex + 2] = ColorToByte(oRGB.r);
+
+					if (unMask && !bMaskInvert)
+						pBufferPtr[nIndex + 3] = 0;
+					else
+						pBufferPtr[nIndex + 3] = 255;
+				}
 			}
 		}
 
@@ -3356,7 +3414,7 @@ namespace PdfReader
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
 		//  Исходное предобразование
-		//             |1  0  0|   |pCTM[0] pCTM[1] 0| 
+		//             |1  0  0|   |pCTM[0] pCTM[1] 0|
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
 		arrMatrix[0] =     pCTM[0];
@@ -3670,71 +3728,82 @@ namespace PdfReader
 		//	return;
 		//}
 
-		if (-1 == nPathIndex)
-		{
-			m_pRenderer->BeginCommand(c_nResetClipType);
-			m_pRenderer->EndCommand(c_nResetClipType);
+        int nPathIndexStart = (-1 == nPathIndex) ? 0 : nPathIndex;
 
-			for (int nIndex = 0; nIndex < pClip->GetPathsCount(); nIndex++)
-			{
-				GrPath *pPath   = pClip->GetPath(nIndex);
-				int     nFlag   = pClip->GetFlag(nIndex);
-				double *pMatrix = pClip->GetMatrix(nIndex);
+        m_pRenderer->BeginCommand(c_nResetClipType);
+        m_pRenderer->EndCommand(c_nResetClipType);
 
-				int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-				nClipFlag |= c_nClipRegionIntersect;
+        for (int nIndex = nPathIndexStart; nIndex < pClip->GetPathsCount(); nIndex++)
+        {
+            GrPath *pPath   = pClip->GetPath(nIndex);
+            int     nFlag   = pClip->GetFlag(nIndex);
+            double *pMatrix = pClip->GetMatrix(nIndex);
 
-				m_pRenderer->BeginCommand(c_nClipType);
-				m_pRenderer->put_ClipMode(nClipFlag);
-				DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->EndCommand(c_nClipType);
-			}
+            int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+            nClipFlag |= c_nClipRegionIntersect;
 
-			for (int nIndex = 0; nIndex < pClip->GetTextsCount(); nIndex++)
-			{
-				WString wsFontName, wsFontPath;
-				int lFontStyle;
-				double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-				WString wsText = pClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
-				int     nFlag   = pClip->GetFlag(nIndex);
+            m_pRenderer->BeginCommand(c_nClipType);
+            m_pRenderer->put_ClipMode(nClipFlag);
+            DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
+            m_pRenderer->EndCommand(c_nPathType);
+            m_pRenderer->EndCommand(c_nClipType);
+            m_pRenderer->PathCommandEnd();
+        }
 
-				m_pRenderer->put_FontName(wsFontName);
-				m_pRenderer->put_FontPath(wsFontPath);
-				m_pRenderer->put_FontSize(dFontSize);
-				m_pRenderer->put_FontStyle(lFontStyle);
+        int nTextClipCount = pClip->GetTextsCount();
+        if (-1 == nPathIndex && nTextClipCount > 0)
+        {
+            m_pRenderer->BeginCommand(c_nClipType);
+            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+            m_pRenderer->StartConvertCoordsToIdentity();
 
-				double dShiftX = 0, dShiftY = 0;
-				DoTransform(pClip->GetTextMatrix(nIndex), &dShiftX, &dShiftY, true);
+            for (int nIndex = 0; nIndex < nTextClipCount; nIndex++)
+            {
+                WString wsFontName, wsFontPath;
+                int lFontStyle;
+                double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
+                WString wsText = pClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+                int     nFlag   = pClip->GetFlag(nIndex);
 
-				int nFlags = 0;
-				m_pRenderer->BeginCommand(c_nClipType);
-				m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);
-				m_pRenderer->PathCommandEnd();
-				m_pRenderer->put_FontStringGID(true);
-				m_pRenderer->PathCommandText(wsText, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-				m_pRenderer->EndCommand(c_nClipType);
-			}
-		}
-		else
-		{
-			for (int nIndex = nPathIndex; nIndex < pClip->GetPathsCount(); nIndex++)
-			{
-				GrPath *pPath   = pClip->GetPath(nIndex);
-				int     nFlag   = pClip->GetFlag(nIndex);
-				double *pMatrix = pClip->GetMatrix(nIndex);
+                m_pRenderer->put_FontName(wsFontName);
+                m_pRenderer->put_FontPath(wsFontPath);
+                m_pRenderer->put_FontSize(dFontSize);
+                m_pRenderer->put_FontStyle(lFontStyle);
 
-				int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-				nClipFlag |= c_nClipRegionIntersect;
+                double dShiftX = 0, dShiftY = 0;
+                DoTransform(pClip->GetTextMatrix(nIndex), &dShiftX, &dShiftY, true);
 
-				m_pRenderer->BeginCommand(c_nClipType);
-				m_pRenderer->put_ClipMode(nClipFlag);
-				DoPath(pGState, pPath, pGState->GetPageHeight(), pMatrix);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->EndCommand(c_nClipType);
+                // TODO: нужна нормальная конвертация
+                int nLen = 0;
+                WString wsTextTmp = wsText;
+                if (wsTextTmp)
+                {
+                    while (*wsTextTmp)
+                        ++wsTextTmp;
 
-			}
-		}
+                    nLen = (int)(wsTextTmp - wsText);
+                }
+
+                if (1 == nLen)
+                    m_pRenderer->PathCommandTextExCHAR(0, (LONG)wsText[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+                else if (0 != nLen)
+                {
+                    unsigned int* pGids = new unsigned int[nLen];
+                    for (int nIndex = 0; nIndex < nLen; ++nIndex)
+                        pGids[nIndex] = (unsigned int)wsText[nIndex];
+
+                    m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+
+                    RELEASEARRAYOBJECTS(pGids);
+                }
+
+            }
+
+            m_pRenderer->EndCommand(c_nPathType);
+            m_pRenderer->EndCommand(c_nClipType);
+            m_pRenderer->PathCommandEnd();
+            m_pRenderer->EndConvertCoordsToIdentity();
+        }
 
 		if (m_pClip)
 			delete m_pClip;

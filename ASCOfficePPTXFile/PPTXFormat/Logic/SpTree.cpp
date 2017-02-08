@@ -41,7 +41,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap)
+		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, bool in_group)
 		{
 			smart_ptr<PPTX::Theme>			oTheme	= _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap>	oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -95,28 +95,31 @@ namespace PPTX
 			}
 			else
 			{
-				int dL = 0;
-				int dT = 0;
-				int dW = 0;
-				int dH = 0;				
+				int dL = 0, dT = 0, dW = 0, dH = 0;
 				if (grpSpPr.xfrm.is_init())
 				{
-					if (grpSpPr.xfrm->offX.is_init())
-						dL = (*grpSpPr.xfrm->offX)	/ 12700.;
-					if (grpSpPr.xfrm->offY.is_init())
-						dT = (*grpSpPr.xfrm->offY)	/ 12700.;
-					if (grpSpPr.xfrm->extX.is_init())
-						dW = (*grpSpPr.xfrm->extX)	/ 12700.;
-					if (grpSpPr.xfrm->extY.is_init())
-						dH = (*grpSpPr.xfrm->extY)	/ 12700.;
+					if (grpSpPr.xfrm->offX.is_init())	dL = *grpSpPr.xfrm->offX;
+					if (grpSpPr.xfrm->offY.is_init())	dT = *grpSpPr.xfrm->offY;
+					if (grpSpPr.xfrm->extX.is_init())	dW = *grpSpPr.xfrm->extX;
+					if (grpSpPr.xfrm->extY.is_init())	dH = *grpSpPr.xfrm->extY;
 				}
 
 				oStylesWriter.ClearNoAttack();
 				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
-				oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH);
+				if (in_group)
+				{
+					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100.);
+					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100.);
+					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100.);
+					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100.);
+				}
+				else
+				{
+					oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL /  12700.);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT /  12700.);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW /  12700.);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH /  12700.);
+				}
 
 				if (grpSpPr.xfrm.is_init())
 				{
@@ -150,33 +153,27 @@ namespace PPTX
 				pWriter->m_strAttributesMain.clear();
 			}
 
-			int dL = 0;
-			int dT = 0;
-			int dW = 0;
-			int dH = 0;
+			int dL = 0, dT = 0, dW = 0, dH = 0;
+
 			if (grpSpPr.xfrm.is_init())
 			{
-				if (grpSpPr.xfrm->chOffX.is_init())
-					dL = (*grpSpPr.xfrm->chOffX)	/ 12700.;
-				if (grpSpPr.xfrm->chOffY.is_init())
-					dT = (*grpSpPr.xfrm->chOffY)	/ 12700.;
-				if (grpSpPr.xfrm->chExtX.is_init())
-					dW = (*grpSpPr.xfrm->chExtX)	/ 12700.;
-				if (grpSpPr.xfrm->chExtY.is_init())
-					dH = (*grpSpPr.xfrm->chExtY)	/ 12700.;
+				if (grpSpPr.xfrm->chOffX.is_init())	dL = *grpSpPr.xfrm->chOffX;
+				if (grpSpPr.xfrm->chOffY.is_init())	dT = *grpSpPr.xfrm->chOffY;
+				if (grpSpPr.xfrm->chExtX.is_init())	dW = *grpSpPr.xfrm->chExtX;
+				if (grpSpPr.xfrm->chExtY.is_init())	dH = *grpSpPr.xfrm->chExtY;
 			}
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dL);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dL / 100.);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dT);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dT / 100.);
 			pWriter->WriteAttribute(_T("coordorigin"), oStylesWriter.GetXmlString());
 
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dW);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100.);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dH);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100.);
 			pWriter->WriteAttribute(_T("coordsize"), oStylesWriter.GetXmlString());
 
 			pWriter->EndAttributes();
@@ -186,15 +183,15 @@ namespace PPTX
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, _oTheme, _oClrMap);
+					SpTreeElems[i].as<PPTX::Logic::Shape>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::Pic>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, _oTheme, _oClrMap);
+					SpTreeElems[i].as<PPTX::Logic::Pic>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
 				}
 				else if (SpTreeElems[i].is<PPTX::Logic::SpTree>())
 				{
-					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, _oTheme, _oClrMap);
+					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, _oTheme, _oClrMap, true);
 				}				
 			}
 

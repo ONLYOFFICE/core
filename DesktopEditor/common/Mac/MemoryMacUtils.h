@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  MemoryMacUtils.h
-//  UTILS
-//
-//  Created by Alexey Musinov on 03.11.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #ifndef _MEMORY_MAC_UTILS_H_
 #define _MEMORY_MAC_UTILS_H_

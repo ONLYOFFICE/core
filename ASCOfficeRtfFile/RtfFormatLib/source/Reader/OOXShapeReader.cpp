@@ -36,6 +36,9 @@
 
 #include <boost/algorithm/string.hpp>
 
+#ifndef RGB
+    #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
+#endif
 bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;
@@ -249,7 +252,7 @@ bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop)
 }
 
 
- OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
+OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
 {
     m_arrElement = elem;
 
@@ -328,7 +331,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 					case SimpleTypes::filltypeFrame :			oOutput->m_nFillType = 3;	break;
 					case SimpleTypes::filltypeGradient:			oOutput->m_nFillType = 4;	break;
 					case SimpleTypes::filltypeGradientCenter:	oOutput->m_nFillType = 4;	break;
-					case SimpleTypes::filltypeGradientRadial:	oOutput->m_nFillType = 4;	break;
+					case SimpleTypes::filltypeGradientRadial:	oOutput->m_nFillType = 6;	break;
 					case SimpleTypes::filltypeGradientUnscaled:	oOutput->m_nFillType = 4;	break;
 					case SimpleTypes::filltypePattern:			oOutput->m_nFillType = 1;	break;
 					case SimpleTypes::filltypeTile:				oOutput->m_nFillType = 2;	break;
@@ -345,6 +348,21 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				if (fill->m_oFocus.IsInit())
 				{
 					oOutput->m_nFillFocus = fill->m_oFocus->GetValue();
+				}
+				if (fill->m_oFocusPosition.IsInit())
+				{
+					if (fill->m_oFocusPosition->GetY() > 0.99 || fill->m_oFocusPosition->GetX() > 0.99)
+						oOutput->m_nFillType = 5;
+
+					int toBottom	= (1. - fill->m_oFocusPosition->GetY()) * 65535;
+					int toTop		= (fill->m_oFocusPosition->GetY())		* 65535;
+					int toRight		= (1. - fill->m_oFocusPosition->GetX()) * 65535;
+					int toLeft		= (fill->m_oFocusPosition->GetX())		* 65535;
+
+					if (toBottom > 0)	oOutput->m_nFillToBottom	= toBottom;
+					if (toTop > 0)		oOutput->m_nFillToTop		= toTop;
+					if (toRight > 0)	oOutput->m_nFillToRight		= toRight;
+					if (toLeft > 0)		oOutput->m_nFillToLeft		= toLeft;
 				}
 			}break;
 			case OOX::et_v_stroke:
@@ -825,3 +843,58 @@ void OOXShapeReader::ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment)
 		}
 	}
  }
+
+
+bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
+{
+	if (!m_ooxBackground) return false;
+
+	oOutput->m_nShapeType	= 1;
+	oOutput->m_bBackground	= true;
+	oOutput->m_bFilled		= true;
+
+	if (m_ooxBackground->m_oColor.IsInit() && m_ooxBackground->m_oColor->GetValue() == SimpleTypes::hexcolorRGB)
+	{
+		unsigned char ucR = m_ooxBackground->m_oColor->Get_R(); 
+		unsigned char ucB = m_ooxBackground->m_oColor->Get_B(); 
+		unsigned char ucG = m_ooxBackground->m_oColor->Get_G(); 
+		unsigned char ucA = m_ooxBackground->m_oColor->Get_A(); 
+
+		oOutput->m_nFillColor = RGB(ucR, ucG , ucB);
+
+		if (ucA != 0xff)
+			oOutput->m_nFillOpacity = ucA / 255. * 100;
+	}	
+	else if (m_ooxBackground->m_oThemeColor.IsInit())
+	{
+//nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeShade;
+//nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeTint;	
+	}
+	
+	if (m_ooxBackground->m_oBackground.IsInit())
+	{
+		OOXShapeReader sub_reader(m_ooxBackground->m_oBackground.GetPointer());
+		sub_reader.Parse(oParam, oOutput);
+	}	
+	else if (m_ooxBackground->m_oDrawing.IsInit())
+	{
+		OOXDrawingReader oDrawingReader(m_ooxBackground->m_oDrawing.GetPointer());
+		
+		if( false == oDrawingReader.Parse( oParam, *oOutput ) )
+		{			 
+			if (!m_ooxBackground->m_oDrawing->m_sXml.IsInit())
+			{	
+				OOXDrawingGraphicReader oGraphiceReader(*m_ooxBackground->m_oDrawing->m_sXml);
+				OOX::Logic::CPicture *ooxPicture = oGraphiceReader.Parse( oParam, *oOutput );
+				if (ooxPicture)
+				{
+					OOXShapeReader sub_reader(ooxPicture);
+					sub_reader.Parse(oParam, oOutput);
+					
+					delete ooxPicture;
+				}
+			}
+		}
+	}
+	return true;
+}

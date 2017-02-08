@@ -60,77 +60,77 @@ namespace OOX
 			
 			virtual ~CVmlCommonElements(){}
 
-			virtual void			fromXML(XmlUtils::CXmlNode& oNode){}
-			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes	(oReader);
 				ReadElements	(oReader);
 			}
-			virtual std::wstring			toXML() const;
-			virtual EElementType	getType() const
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const
 			{
 				return et_v_shape_elements;
 			}
 			
-			// 1 AG_AllCoreAttributes
-			// 1.1 AG_CoreAttributes
-			nullable<std::wstring>                                               m_sId;
-			nullable<SimpleTypes::Vml::CCssStyle>                           m_oStyle;
-			nullable<std::wstring>                                               m_sHref;
-			nullable<std::wstring>                                               m_sTarget;
-			nullable<std::wstring>                                               m_sClass;
-			nullable<std::wstring>                                               m_sTitle;
-			nullable<std::wstring>                                               m_sAlt;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordSize;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordOrigin;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>                      m_oWrapCoords;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oPrint;
-			// 1.2 AG_OfficeCoreAttributes
-			nullable<std::wstring>                                               m_sSpId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOned;
-			nullable<SimpleTypes::CDecimalNumber<>>                         m_oRegroupId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oDoubleClickNotify;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oButton;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserHidden;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oBullet;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHr;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrStd;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
-			SimpleTypes::CDouble                                            m_oHrPct;
-			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>				m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderRightColor;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayout;
-			nullable<std::wstring>											m_oDgmNodeKind;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeAuto>			    m_oInsetMode;
-			// 2 AG_AllShapeAttributes
-			// 2.1 AG_ShapeAttributes
-			nullable<SimpleTypes::CColorType<>>                             m_oChromaKey;
-			nullable<SimpleTypes::CTrueFalse<>>				                m_oFilled;
-			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                        m_oOpacity;
-			nullable<SimpleTypes::CTrueFalse<>>                             m_oStroked;
-			nullable<SimpleTypes::CColorType<>>					            m_oStrokeColor;
-			nullable<SimpleTypes::CEmu>                                     m_oStrokeWeight;
-			nullable<SimpleTypes::CTrueFalse<>>                             m_oInsetPen;
-			// 2.2 AG_OfficeShapeAttributes
-			nullable<SimpleTypes::CDecimalNumber<>>							m_oSpt;
-			nullable<SimpleTypes::CConnectorType<>>							m_oConnectorType;
-			nullable<SimpleTypes::CBWMode<>>                                m_oBwMode;
-			nullable<SimpleTypes::CBWMode<>>                                m_oBwPure;
-			nullable<SimpleTypes::CBWMode<>>                                m_oBwNormal;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oForceDash;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOleIcon;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOle;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oPreferRelative;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oClipToWrap;
-			nullable<SimpleTypes::CTrueFalse<>>                             m_oClip;
+	// 1 AG_AllCoreAttributes
+	// 1.1 AG_CoreAttributes
+			nullable<std::wstring>									m_sId;
+			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
+			nullable<std::wstring>									m_sHref;
+			nullable<std::wstring>									m_sTarget;
+			nullable<std::wstring>									m_sClass;
+			nullable<std::wstring>									m_sTitle;
+			nullable<std::wstring>									m_sAlt;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordSize;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordOrigin;
+			nullable<SimpleTypes::Vml::CVml_Polygon2D>				m_oWrapCoords;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oPrint;
+	// 1.2 AG_OfficeCoreAttributes
+			nullable<std::wstring>									m_sSpId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOned;
+			nullable<SimpleTypes::CDecimalNumber<>>					m_oRegroupId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oDoubleClickNotify;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oButton;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserHidden;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oBullet;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHr;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrStd;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrNoShade;
+			SimpleTypes::CDouble									m_oHrPct;
+			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>			m_oHrAlign;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserDrawn;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderTopColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderLeftColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderBottomColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderRightColor;
+			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayout;
+			nullable<std::wstring>									m_oDgmNodeKind;
+			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayoutMru;
+			SimpleTypes::CInsetMode<SimpleTypes::insetmodeAuto>		m_oInsetMode;
+	// 2 AG_AllShapeAttributes
+	// 2.1 AG_ShapeAttributes
+			nullable<SimpleTypes::CColorType<>>						m_oChromaKey;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oFilled;
+			nullable<SimpleTypes::CColorType<>>						m_oFillColor;
+			nullable<SimpleTypes::Vml::CVml_1_65536>				m_oOpacity;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oStroked;
+			nullable<SimpleTypes::CColorType<>>						m_oStrokeColor;
+			nullable<SimpleTypes::CEmu>								m_oStrokeWeight;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oInsetPen;
+	// 2.2 AG_OfficeShapeAttributes
+			nullable<SimpleTypes::CDecimalNumber<>>					m_oSpt;
+			nullable<SimpleTypes::CConnectorType<>>					m_oConnectorType;
+			nullable<SimpleTypes::CBWMode<>>						m_oBwMode;
+			nullable<SimpleTypes::CBWMode<>>						m_oBwPure;
+			nullable<SimpleTypes::CBWMode<>>						m_oBwNormal;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oForceDash;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOleIcon;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOle;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oPreferRelative;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oClipToWrap;
+			nullable<SimpleTypes::CTrueFalse<>>						m_oClip;
 
 			void	ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void	ReadElements(XmlUtils::CXmlLiteReader& oReader) ;
@@ -150,18 +150,18 @@ namespace OOX
 			virtual ~CArc(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CArc::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:arc ");
 
@@ -233,17 +233,17 @@ namespace OOX
 			virtual ~CCurve(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CCurve::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:curve ");
 
@@ -404,11 +404,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -597,7 +597,7 @@ namespace OOX
 
 			// Attributes
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oAlignShape;
-			nullable<std::wstring>													m_sAltHref;
+			nullable<std::wstring>												m_sAltHref;
 			nullable<SimpleTypes::CDecimalNumber<>>								m_oAngle;
 			nullable<SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore>> m_oAspect;
 			nullable<SimpleTypes::CColorType<>>									m_oColor;
@@ -607,9 +607,9 @@ namespace OOX
 			nullable<SimpleTypes::CFixedPercentage >							m_oFocus;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>				m_oFocusPosition;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>				m_oFocusSize;
-			nullable<std::wstring>													m_sHref;
+			nullable<std::wstring>												m_sHref;
 			nullable<SimpleTypes::CRelationshipId>								m_rId;
-			nullable<std::wstring>													m_sId;
+			nullable<std::wstring>												m_sId;
 			nullable<SimpleTypes::CFillMethod<SimpleTypes::fillmethodSigma>>	m_oMethod;
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oOn;
 			nullable<SimpleTypes::Vml::CVml_1_65536>							m_oOpacity;
@@ -620,8 +620,8 @@ namespace OOX
 			nullable<SimpleTypes::CRelationshipId>								m_oRelId;
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>>		m_oRotate;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>						m_oSize;
-			nullable<std::wstring>													m_sSrc;
-			nullable<std::wstring>													m_sTitle;
+			nullable<std::wstring>												m_sSrc;
+			nullable<std::wstring>												m_sTitle;
 			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>				m_oType;
 
 			// Childs
@@ -631,7 +631,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CBackground 14.1.2.2 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CBackground : public WritingElement
+		class CBackground : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CBackground)
@@ -644,35 +644,24 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CBackground::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
-				if ( oReader.IsEmptyNode() )
-					return;
+				CVmlCommonElements::ReadAttributes( oReader );
+				CVmlCommonElements::ReadElements( oReader );
 
-				int nCurDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( _T("v:fill") == sName )
-						m_oFill = oReader;
-				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:background ");
-								
-				ComplexTypes_WriteAttribute2( _T("id=\""), m_sId );
-				
-				if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
-					sResult += _T("filled=\"false\" ");
 
-				ComplexTypes_WriteAttribute ( _T("fillcolor=\""),			m_oFillColor );
+				sResult += CVmlCommonElements::WriteAttributes();
+								
 				ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),			m_oBwMode );
 				ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),			m_oBwPure );
 				ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""),			m_oBwNormal );
@@ -680,8 +669,7 @@ namespace OOX
 
 				sResult += _T(">");
 
-				if ( m_oFill.IsInit() )
-					sResult += m_oFill->toXML();
+				sResult += CVmlCommonElements::WriteElements();
 
 				sResult += _T("</v:background>");
 
@@ -709,15 +697,6 @@ namespace OOX
 					wchar_t wsChar = wsName[0];
 					switch ( wsChar )
 					{
-					case 'f':
-						if      ( _T("fillcolor")  == wsName ) m_oFillColor          = oReader.GetText();
-						else if ( _T("filled")     == wsName ) m_oFilled             = oReader.GetText();
-						break;
-
-					case 'i':
-						if      ( _T("id")         == wsName ) m_sId  = oReader.GetText();
-						break;
-
 					case 'o':
 						if      ( _T("o:bwmode")   == wsName ) m_oBwMode             = oReader.GetText();
 						else if ( _T("o:bwnormal") == wsName ) m_oBwNormal           = oReader.GetText();
@@ -739,17 +718,11 @@ namespace OOX
 
 		public:
 
-			// Attributes
-			nullable<SimpleTypes::CBWMode<>>                     m_oBwMode;
-			nullable<SimpleTypes::CBWMode<>>                     m_oBwNormal;
-			nullable<SimpleTypes::CBWMode<>>                     m_oBwPure;
-			nullable<SimpleTypes::CColorType<>>					 m_oFillColor;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>    m_oFilled;
-			nullable<std::wstring>                                    m_sId;
-			nullable<SimpleTypes::CScreenSize<>>                 m_oTargetScreenSize;
-
-			// Childs
-			nullable<OOX::Vml::CFill>                            m_oFill;
+	// Attributes
+			nullable<SimpleTypes::CBWMode<>>					m_oBwMode;
+			nullable<SimpleTypes::CBWMode<>>					m_oBwNormal;
+			nullable<SimpleTypes::CBWMode<>>					m_oBwPure;
+			nullable<SimpleTypes::CScreenSize<>>				m_oTargetScreenSize;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -768,11 +741,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFormulas::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -788,7 +761,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:formulas>");
 
@@ -1029,17 +1002,17 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CImage::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:image ");
 
@@ -1176,18 +1149,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CImageData::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:imagedata ");
 
@@ -1343,16 +1316,16 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>                                         m_sAltHref;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oBiLevel;
-			SimpleTypes::CDouble                                      m_oBlackLevel;
-			nullable<SimpleTypes::CColorType<>>                       m_oChromaKey;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropLeft;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropTop;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropRight;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oCropBottom;
-			nullable<SimpleTypes::CTrueFalse<>>                       m_oDetectMouseClick;
-			nullable<SimpleTypes::CColorType<>>                       m_oEmbossColor;
+			nullable<std::wstring>								m_sAltHref;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oBiLevel;
+			SimpleTypes::CDouble								m_oBlackLevel;
+			nullable<SimpleTypes::CColorType<>>					m_oChromaKey;
+			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropLeft;
+			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropTop;
+			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropRight;
+			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropBottom;
+			nullable<SimpleTypes::CTrueFalse<>>					m_oDetectMouseClick;
+			nullable<SimpleTypes::CColorType<>>					m_oEmbossColor;
 			SimpleTypes::CDouble                                      m_oGain;
 			SimpleTypes::CDouble                                      m_oGamma;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGrayscale;
@@ -1379,17 +1352,17 @@ namespace OOX
 			virtual ~CLine(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLine::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:line ");
 
@@ -1465,16 +1438,16 @@ namespace OOX
 			virtual ~COval(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать COval::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:oval ");
 
@@ -1510,18 +1483,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPath::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:path ");
 
@@ -1788,17 +1761,17 @@ namespace OOX
 			virtual ~CRoundRect(){}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRoundRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:roundrect ");
 
@@ -1872,11 +1845,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CShadow::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1987,17 +1960,17 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>        m_oColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>        m_oColor2;
-			nullable<std::wstring>                                         m_oId;
-			nullable<SimpleTypes::Vml::CVml_Matrix>                   m_oMatrix;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oObscured;
-			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage       m_oOffset;
-			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage       m_oOffset2;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oOn;
-			nullable<SimpleTypes::Vml::CVml_1_65536>                  m_oOpacity;
-			SimpleTypes::Vml::CVml_Vector2D_Percentage                m_oOrigin;
-			SimpleTypes::CShadowType<SimpleTypes::shadowtypeSingle>   m_oType;
+			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>		m_oColor;
+			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>		m_oColor2;
+			nullable<std::wstring>									m_oId;
+			nullable<SimpleTypes::Vml::CVml_Matrix>					m_oMatrix;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oObscured;
+			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		m_oOffset;
+			SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		m_oOffset2;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oOn;
+			nullable<SimpleTypes::Vml::CVml_1_65536>				m_oOpacity;
+			SimpleTypes::Vml::CVml_Vector2D_Percentage				m_oOrigin;
+			SimpleTypes::CShadowType<SimpleTypes::shadowtypeSingle>	m_oType;
 		};
 		//--------------------------------------------------------------------------------
 		// CShape 14.1.2.19 (Part4)
@@ -2011,14 +1984,14 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_v_shape;
@@ -2089,14 +2062,14 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode){}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 				CVmlCommonElements::ReadAttributes( oReader );
 				CVmlCommonElements::ReadElements( oReader );
 			}
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_v_shapetype;
@@ -2161,9 +2134,9 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_v_ClientData;
@@ -2197,13 +2170,13 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::Vml::CVmlClientDataObjectType<>>               m_oObjectType;
+			nullable<SimpleTypes::Vml::CVmlClientDataObjectType<>>	m_oObjectType;
 
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>               m_oMoveWithCells;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>               m_oSizeWithCells;
-			nullable<std::wstring>													m_oAnchor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>						m_oRow;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>						m_oColumn;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oMoveWithCells;
+			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>>	m_oSizeWithCells;
+			nullable<std::wstring>									m_oAnchor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oRow;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oColumn;
 		};
 		//--------------------------------------------------------------------------------
 		// CStroke 14.1.2.21 (Part4)
@@ -2221,11 +2194,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CStroke::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2249,7 +2222,7 @@ namespace OOX
 						m_oColumn = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:stroke ");
 
@@ -2440,35 +2413,35 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>                                                     m_oId;
-			nullable<std::wstring>                                                     m_sAltHref;
-			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>        m_oColor;
-			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>        m_oColor2;
-			SimpleTypes::Vml::CVmlDashStyle<SimpleTypes::Vml::vmldashstyleSolid>  m_oDahsStyle;
-			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>       m_oEndArrow;
-			SimpleTypes::CStrokeArrowLength<SimpleTypes::strokearrowlengthMedium> m_oEndArrowLength;
-			SimpleTypes::CStrokeArrowWidth<SimpleTypes::strokearrowwidthMedium>   m_oEndArrowWidth;
-			SimpleTypes::CStrokeEndCap<SimpleTypes::strokeendcapFlat>             m_oEndCap;
-			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>                 m_oFillType;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>                    m_oForceDash;
-			nullable<std::wstring>                                                     m_sHref;
-			nullable<SimpleTypes::CRelationshipId>                                m_rId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                     m_oImageAlignShape;
-			SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore>             m_oImageAspect;
-			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>                       m_oImageSize; 
-			nullable<SimpleTypes::CTrueFalse<>>                                   m_oInsetPen;
-			SimpleTypes::CStrokeJoinStyle<SimpleTypes::strokejoinstyleRound>      m_oJoinStyle;
+			nullable<std::wstring>														m_oId;
+			nullable<std::wstring>														m_sAltHref;
+			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>				m_oColor;
+			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>				m_oColor2;
+			SimpleTypes::Vml::CVmlDashStyle<SimpleTypes::Vml::vmldashstyleSolid>		m_oDahsStyle;
+			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>				m_oEndArrow;
+			SimpleTypes::CStrokeArrowLength<SimpleTypes::strokearrowlengthMedium>		m_oEndArrowLength;
+			SimpleTypes::CStrokeArrowWidth<SimpleTypes::strokearrowwidthMedium>			m_oEndArrowWidth;
+			SimpleTypes::CStrokeEndCap<SimpleTypes::strokeendcapFlat>					m_oEndCap;
+			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>						m_oFillType;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>							m_oForceDash;
+			nullable<std::wstring>														m_sHref;
+			nullable<SimpleTypes::CRelationshipId>										m_rId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>							m_oImageAlignShape;
+			SimpleTypes::CImageAspect<SimpleTypes::imageaspectIgnore>					m_oImageAspect;
+			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>								m_oImageSize; 
+			nullable<SimpleTypes::CTrueFalse<>>											m_oInsetPen;
+			SimpleTypes::CStrokeJoinStyle<SimpleTypes::strokejoinstyleRound>			m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle<SimpleTypes::strokelinestyleSingle>>	m_oLineStyle;
-			SimpleTypes::CDecimalNumber<8>                                        m_oMiterLimit;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                     m_oOn;
-			nullable<SimpleTypes::CDouble>										  m_oOpacity;
-			nullable<SimpleTypes::CRelationshipId>                                m_oRelId;
-			nullable<std::wstring>                                                     m_sSrc;
-			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>       m_oStartArrow;
-			SimpleTypes::CStrokeArrowLength<SimpleTypes::strokearrowlengthMedium> m_oStartArrowLength;
-			SimpleTypes::CStrokeArrowWidth<SimpleTypes::strokearrowwidthMedium>   m_oStartArrowWidth;
-			nullable<std::wstring>                                                     m_sTitle;
-			SimpleTypes::CDouble                                                  m_oWeight;
+			SimpleTypes::CDecimalNumber<8>												m_oMiterLimit;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>							m_oOn;
+			nullable<SimpleTypes::CDouble>												m_oOpacity;
+			nullable<SimpleTypes::CRelationshipId>										m_oRelId;
+			nullable<std::wstring>														m_sSrc;
+			SimpleTypes::CStrokeArrowType<SimpleTypes::strokearrowtypeNone>				m_oStartArrow;
+			SimpleTypes::CStrokeArrowLength<SimpleTypes::strokearrowlengthMedium>		m_oStartArrowLength;
+			SimpleTypes::CStrokeArrowWidth<SimpleTypes::strokearrowwidthMedium>			m_oStartArrowWidth;
+			nullable<std::wstring>														m_sTitle;
+			SimpleTypes::CDouble														m_oWeight;
 
 			// Childs
 			nullable<OOX::VmlOffice::CStrokeChild>                                m_oLeft;
@@ -2494,11 +2467,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CTextbox::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2612,11 +2585,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CTextPath::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2625,7 +2598,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<v:textpath ");
 
@@ -2707,16 +2680,16 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CTrueFalse<>>						m_oFitPath;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oFitShape;
-			nullable<std::wstring>										m_oId;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oOn;
-			nullable<std::wstring>										m_sString;
-			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oTrim;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oXScale;
+			nullable<SimpleTypes::CTrueFalse<>>		m_oFitPath;
+			nullable<SimpleTypes::CTrueFalse<>>		m_oFitShape;
+			nullable<std::wstring>					m_oId;
+			nullable<SimpleTypes::CTrueFalse<>>		m_oOn;
+			nullable<std::wstring>					m_sString;
+			nullable<SimpleTypes::Vml::CCssStyle>	m_oStyle;
+			nullable<SimpleTypes::CTrueFalse<>>		m_oTrim;
+			nullable<SimpleTypes::CTrueFalse<>>		m_oXScale;
 			
-			nullable<std::wstring>                                     m_sStringOriginal;
+			nullable<std::wstring>					m_sStringOriginal;
 		};
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.7 (Part4)
@@ -2731,9 +2704,9 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_v_group;
@@ -2865,51 +2838,49 @@ namespace OOX
 			}
 
 		public:
-
-
 			// Attributes
 
 			// AG_AllCoreAttributes
-			nullable<std::wstring>                                               m_sId;
-			nullable<SimpleTypes::Vml::CCssStyle>                           m_oStyle;
-			nullable<std::wstring>                                               m_sHref;
-			nullable<std::wstring>                                               m_sTarget;
-			nullable<std::wstring>                                               m_sClass;
-			nullable<std::wstring>                                               m_sTitle;
-			nullable<std::wstring>                                               m_sAlt;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordSize;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>                       m_oCoordOrigin;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>                      m_oWrapCoords;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oPrint;
-			nullable<std::wstring>                                               m_sSpId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oOned;
-			nullable<SimpleTypes::CDecimalNumber<>>                         m_oRegroupId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oDoubleClickNotify;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oButton;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserHidden;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oBullet;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHr;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrStd;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oHrNoShade;
-			SimpleTypes::CDouble                                            m_oHrPct;
-			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>                 m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>				m_oAllowOverlap;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>              m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>                             m_oBorderRightColor;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayout;
-			nullable<std::wstring>                                               m_oDgmNodeKind;
-			nullable<SimpleTypes::CDiagramLayout<>>                         m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>           m_oInsetMode;
+			nullable<std::wstring>									m_sId;
+			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
+			nullable<std::wstring>									m_sHref;
+			nullable<std::wstring>									m_sTarget;
+			nullable<std::wstring>									m_sClass;
+			nullable<std::wstring>									m_sTitle;
+			nullable<std::wstring>									m_sAlt;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordSize;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordOrigin;
+			nullable<SimpleTypes::Vml::CVml_Polygon2D>				m_oWrapCoords;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oPrint;
+			nullable<std::wstring>									m_sSpId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOned;
+			nullable<SimpleTypes::CDecimalNumber<>>					m_oRegroupId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oDoubleClickNotify;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oButton;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserHidden;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oBullet;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHr;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrStd;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrNoShade;
+			SimpleTypes::CDouble									m_oHrPct;
+			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>			m_oHrAlign;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oAllowInCell;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oAllowOverlap;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserDrawn;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderTopColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderLeftColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderBottomColor;
+			nullable<SimpleTypes::CColorType<>>						m_oBorderRightColor;
+			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayout;
+			nullable<std::wstring>									m_oDgmNodeKind;
+			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayoutMru;
+			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>	m_oInsetMode;
 
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>               m_oFilled;
-			nullable<SimpleTypes::CColorType<>>					            m_oFillColor;
-			nullable<SimpleTypes::CEditAs<>>                                m_oEditAs;
-			nullable<SimpleTypes::Vml::CVml_TableLimits>                    m_oTableLimits;
-			SimpleTypes::Vml::CVml_TableProperties<0>                       m_oTableProperties;                 
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oFilled;
+			nullable<SimpleTypes::CColorType<>>						m_oFillColor;
+			nullable<SimpleTypes::CEditAs<>>						m_oEditAs;
+			nullable<SimpleTypes::Vml::CVml_TableLimits>			m_oTableLimits;
+			SimpleTypes::Vml::CVml_TableProperties<0>				m_oTableProperties;                 
 		};
 	} // namespace Vml
 } // namespace OOX
@@ -2934,11 +2905,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CShapeDefaults::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2971,7 +2942,7 @@ namespace OOX
 						m_oColorMenu = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:shapedefaults ");
 

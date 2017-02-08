@@ -31,7 +31,9 @@
  */
 #pragma once
 
+#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
+
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
 class OOXDocumentReader
@@ -58,6 +60,13 @@ public:
 
 		m_poReader		= oParam.oReader;
 		m_poDocument	= oParam.oRtf;
+
+		if ( m_ooxDocument->m_oBackground.IsInit())
+		{
+			m_poDocument->m_pBackground = RtfShapePtr(new RtfShape());
+			OOXBackgroundReader oBackgroundReader(m_ooxDocument->m_oBackground.GetPointer());
+			oBackgroundReader.Parse( oParam, m_poDocument->m_pBackground);
+		}
 		
 		int last_section_start = 0;
 		

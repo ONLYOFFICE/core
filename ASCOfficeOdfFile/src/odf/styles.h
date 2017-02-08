@@ -892,54 +892,26 @@ public:
     odf_types::common_padding_attlist			common_padding_attlist_;
     odf_types::common_shadow_attlist			common_shadow_attlist_;
     
-    // 15.2.10 
-    odf_types::common_background_color_attlist common_background_color_attlist_;
-    // 15.2.12
-    _CP_OPT(odf_types::style_ref) style_register_truth_ref_style_name_;
-    // 15.2.13 TODO
-    _CP_OPT(std::wstring) style_print_;
-        
-    // 15.2.14
-    _CP_OPT(odf_types::direction) style_print_page_order_;
-
-    // 15.2.15 TODO
-    _CP_OPT(std::wstring) style_first_page_number_;
-
-    // 15.2.16
-    _CP_OPT(odf_types::percent) style_scale_to_;
-    _CP_OPT(unsigned int) style_scale_to_pages_;
-
-    // 15.2.17
-    _CP_OPT(odf_types::table_centering) style_table_centering_;
-    // 15.2.18
-    _CP_OPT(odf_types::length) style_footnote_max_height_;
-
-    // 15.2.19
-    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
-
-    // 15.2.21
-    _CP_OPT(odf_types::layout_grid_mode) style_layout_grid_mode_;
-
-    // 15.2.22
-    _CP_OPT(odf_types::length) style_layout_grid_base_height_;
-
-    // 15.2.23
-    _CP_OPT(odf_types::length) style_layout_grid_ruby_height_;
-
-    // 15.2.24
-    _CP_OPT(unsigned int) style_layout_grid_lines_;
-
-    // 15.2.25
-    _CP_OPT(odf_types::color) style_layout_grid_color_;
-
-    // 15.2.26
-    _CP_OPT(bool) style_layout_grid_ruby_below_;  
-
-    // 15.2.27
-    _CP_OPT(bool) style_layout_grid_print_;
-
-    // 15.2.28
-    _CP_OPT(bool) style_layout_grid_display_;
+    odf_types::common_background_color_attlist	common_background_color_attlist_;
+ 	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
+  
+	_CP_OPT(odf_types::style_ref)			style_register_truth_ref_style_name_;
+    _CP_OPT(std::wstring)					style_print_;
+    _CP_OPT(odf_types::direction)			style_print_page_order_;
+    _CP_OPT(std::wstring)					style_first_page_number_;
+    _CP_OPT(odf_types::percent)				style_scale_to_;
+    _CP_OPT(unsigned int)					style_scale_to_pages_;
+    _CP_OPT(odf_types::table_centering)		style_table_centering_;
+    _CP_OPT(odf_types::length)				style_footnote_max_height_;
+    odf_types::common_writing_mode_attlist	common_writing_mode_attlist_;
+    _CP_OPT(odf_types::layout_grid_mode)	style_layout_grid_mode_;
+    _CP_OPT(odf_types::length)				style_layout_grid_base_height_;
+    _CP_OPT(odf_types::length)				style_layout_grid_ruby_height_;
+    _CP_OPT(unsigned int)					style_layout_grid_lines_;
+    _CP_OPT(odf_types::color)				style_layout_grid_color_;
+    _CP_OPT(bool)							style_layout_grid_ruby_below_;  
+	_CP_OPT(bool)							style_layout_grid_print_;
+    _CP_OPT(bool)							style_layout_grid_display_;
 
 };
 
@@ -992,7 +964,7 @@ public:
 
 };
 
-//          style:page-layout-properties
+// style:page-layout-properties
 class style_page_layout_properties : public office_element_impl<style_page_layout_properties>
 {
 public:
@@ -1005,7 +977,7 @@ public:
     void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
     
-	bool docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
+	bool docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id);
 
     style_page_layout_properties() { }
 
@@ -1020,7 +992,7 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_page_layout_properties);
 
-//          text:notes-configuration
+// text:notes-configuration
 class text_notes_configuration : public office_element_impl<text_notes_configuration>
 {
 public:

@@ -114,8 +114,19 @@ public:
 
 		if( m_ooxTableCellProps->m_oTcW.IsInit() && m_ooxTableCellProps->m_oTcW->m_oW.IsInit()) 
 		{
-			oOutputProperty.m_nWidth		= m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
-			oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
+			bool auto_ = false;
+			if (m_ooxTableCellProps->m_oTcW->m_oType.IsInit() && m_ooxTableCellProps->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthAuto)
+				auto_ = true;
+
+			if (auto_)
+			{
+				oOutputProperty.m_eWidthUnits = mu_Auto;
+			}
+			else
+			{
+				oOutputProperty.m_nWidth		= m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
+				oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
+			}
 		}
 		if( m_ooxTableCellProps->m_oHideMark.IsInit())
 			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool() ? 1 : 0;

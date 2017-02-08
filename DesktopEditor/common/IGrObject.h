@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,52 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#ifndef _BUILD_IGROBJECT_CROSSPLATFORM_H_
+#define _BUILD_IGROBJECT_CROSSPLATFORM_H_
 
-#import "NSFileManager+Utils.h"
+#include "Types.h"
 
-@implementation NSFileManager(Utils)
+#ifdef __APPLE__
+#include <libkern/OSAtomic.h>
+#endif
 
-- (BOOL)copyFolderAtPath:(NSString*)sourceFolder toDestinationFolderAtPath:(NSString*)destinationFolder {
-    destinationFolder = [destinationFolder stringByAppendingPathComponent:[sourceFolder lastPathComponent]];
-    
-    NSError * error = nil;
-    if ([self fileExistsAtPath:destinationFolder])
+class IGrObject
+{
+protected:
+
+#ifdef __APPLE__
+    volatile int32_t m_lRef;
+#else
+    ULONG m_lRef;
+#endif
+
+public:
+    IGrObject()
     {
-        if (![self removeItemAtPath:destinationFolder error:&error])
-        {
-            NSLog(@"Could not remove old files. Error:%@",error);
-            return NO;
-        }
+        m_lRef = 1;
     }
-    
-    error = nil;
-    if (!([self copyItemAtPath:sourceFolder toPath:destinationFolder error:&error]))
-    {
-        NSLog(@"Could not copy report at path %@ to path %@. error %@",sourceFolder, destinationFolder, error);
-        return NO;
-    }
-    
-    return YES;
-}
-- (NSString*)createTemporaryDirectory {
-    
-    NSError *error = nil;
-    NSString* path = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), [NSUUID UUID].UUIDString];
-    
-    if(![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
-    {
-        NSLog(@"Could not creat temp path %@. error %@", path, error);
-        return @"";
-    }
-    
-    return path;
-}
 
-- (void)createDirectory:(NSString*)directory {
-    NSError *error = nil;
-    if(![self createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error]) {
-        NSLog(@"Failed to create directory \"%@\". Error: %@", directory, error);
+    virtual ~IGrObject()
+    {
     }
-}
 
-@end
+#ifdef __APPLE__
+    virtual ULONG AddRef()
+    {
+        OSAtomicIncrement32(&m_lRef);
+        return (ULONG)m_lRef;
+    }
+    virtual ULONG Release()
+    {
+        int32_t ret = OSAtomicDecrement32(&m_lRef);
+        if (0 == m_lRef)
+            delete this;
+
+        return (ULONG)ret;
+    }
+#else
+    virtual ULONG AddRef()
+    {
+        ++m_lRef;
+        return m_lRef;
+    }
+
+    virtual ULONG Release()
+    {
+        ULONG ret = --m_lRef;
+        if (0 == m_lRef)
+            delete this;
+        return ret;
+    }
+#endif
+};
+
+#endif //_BUILD_IGROBJECT_CROSSPLATFORM_H_

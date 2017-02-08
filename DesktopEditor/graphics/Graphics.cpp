@@ -477,7 +477,7 @@ namespace Aggplus
 	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op)
 	{
         Aggplus::CMatrix m;
-        return InternalClip(pPath, m_bIntegerGrid ? &m : &m_oFullTransform, op);
+        return InternalClip(pPath, (m_bIntegerGrid || pPath->m_pTransform != NULL) ? &m : &m_oFullTransform, op);
 	}
 
     Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op)

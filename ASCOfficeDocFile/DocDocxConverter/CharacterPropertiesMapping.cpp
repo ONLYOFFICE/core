@@ -232,7 +232,8 @@ namespace DocFileFormat
 
 			case sprmOldCIss:
 			case sprmCIss:
-                appendValueElement( parent, L"vertAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
+				if (iter->argumentsSize > 0 && iter->Arguments[0] < 3)	//Metaevan.doc
+					appendValueElement( parent, L"vertAlign", FormatUtils::MapValueToWideString( iter->Arguments[0], &SuperscriptIndex[0][0], 3, 12 ), true );
 				break;	
 
 			case sprmCRgLid0_80:

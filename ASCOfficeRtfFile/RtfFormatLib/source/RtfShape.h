@@ -39,6 +39,7 @@ private:
 	bool m_bDelete;
 	
 public: 
+	bool m_bBackground;
 	bool m_bIsOle;
 	bool m_bInGroup; //local anchor
 
@@ -166,6 +167,10 @@ public:
 	int m_nFillOpacity;
 	int m_nFillFocus;
 	int m_nFillAngle;
+	int m_nFillToBottom;
+	int m_nFillToTop;
+	int m_nFillToRight;
+	int m_nFillToLeft;
 	//int m_bFillShape;				//есть копия заливки картинкой	
 //Line
 	int m_bLine;					//fLine Has a line
@@ -251,7 +256,7 @@ public:
 		}
 	}
     std::wstring RenderToRtfShapeProperty(RenderParameter oRenderParameter);
-    std::wstring GetShapeNodeName(int type);
+    std::wstring GetShapeNodeName();
 };
 
 

@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  TrackingImages.h
-//  UTILS
-//
-//  Created by alexey.musinov on 05.11.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #ifndef _TRACKING_IMAGES_H_
 #define _TRACKING_IMAGES_H_

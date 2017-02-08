@@ -44,6 +44,7 @@
 #include "../OdfFormat/style_paragraph_properties.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -63,8 +64,7 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 		if (odf_context()->drawing_context()->m_mapVmlShapeTypes.find( sId ) == 
 			odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
 		{
-			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(odf_context()->drawing_context()->m_mapVmlShapeTypes.begin(), 
-				std::pair<std::wstring, OOX::Vml::CShapeType*>(sId, vml_shape_type));
+			odf_context()->drawing_context()->m_mapVmlShapeTypes.insert(std::make_pair(sId, vml_shape_type));
 
 		}
 	}	
@@ -80,9 +80,9 @@ void OoxConverter::convert(OOX::Vml::CShapeType *vml_shape_type)
 	}
 
 	//o:spt
-        //nullable<std::wstring>                                  m_oAdj;
-		//nullable<SimpleTypes::Vml::CVmlPath>               m_oPath;
-		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oMaster;
+        //nullable<std::wstring>								m_oAdj;
+		//nullable<SimpleTypes::Vml::CVmlPath>					m_oPath;
+		//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oMaster;
 	//m_arrItems
 	//CVmlCommonElements
 }
@@ -387,6 +387,9 @@ void OoxConverter::convert(OOX::Vml::CArc *vml_arc)
 void OoxConverter::convert(OOX::Vml::CBackground *vml_background)
 {
 	if (vml_background == NULL) return;
+	
+	OOX::Vml::CVmlCommonElements *vml_common = static_cast<OOX::Vml::CVmlCommonElements *>(vml_background);
+	convert(vml_common);
 }
 
 void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
@@ -395,6 +398,28 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 
 	odf_context()->drawing_context()->start_area_properties();
 
+	std::wstring sImagePath;
+
+	_CP_OPT(unsigned int) nRgbColor1, nRgbColor2;
+	_CP_OPT(std::wstring) sRgbColor1, sRgbColor2;
+
+	if (vml_fill->m_oColor.IsInit())
+	{
+		nRgbColor1 = ((unsigned int)(((BYTE)(vml_fill->m_oColor->Get_B()) 
+					| ((unsigned int)((BYTE)(vml_fill->m_oColor->Get_G()))<<8))
+					| (((unsigned int)(BYTE)(vml_fill->m_oColor->Get_R()))<<16)));
+
+		sRgbColor1 = XmlUtils::IntToString(*nRgbColor1, L"%06X");
+	}
+	
+	if (vml_fill->m_oColor2.IsInit())
+	{
+		nRgbColor2 = ((unsigned int)(((BYTE)(vml_fill->m_oColor2->Get_B()) 
+					| ((unsigned int)((BYTE)(vml_fill->m_oColor2->Get_G()))<<8))
+					| (((unsigned int)(BYTE)(vml_fill->m_oColor2->Get_R()))<<16)));
+		sRgbColor2 = XmlUtils::IntToString(*nRgbColor2, L"%06X");
+	}
+
 	if (vml_fill->m_rId.IsInit())
 	{
 		//bitmap fill
@@ -402,37 +427,37 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		{
 			double Width=0, Height = 0;
             std::wstring sID = vml_fill->m_rId->GetValue();
-            std::wstring pathImage = find_link_by_id(sID,1);
+			
+			sImagePath	= find_link_by_id(sID, 1);
 
-            if (!pathImage.empty())
+            if (!sImagePath.empty())
 			{
-				odf_context()->drawing_context()->set_bitmap_link(pathImage);
-                _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
+				odf_context()->drawing_context()->set_bitmap_link( sImagePath );
+                _graphics_utils_::GetResolution( sImagePath.c_str(), Width, Height );
 			}
 			odf_context()->drawing_context()->set_image_style_repeat(1);
 		}
 		odf_context()->drawing_context()->end_bitmap_style();
 	}
-	else
+
+	switch (vml_fill->m_oType.GetValue())
 	{
-		switch (vml_fill->m_oType.GetValue())
-		{
 		case SimpleTypes::filltypeGradient       :
 		case SimpleTypes::filltypeGradientCenter :
 		case SimpleTypes::filltypeGradientRadial :
 		case SimpleTypes::filltypeGradientUnscaled:
 		{
 			odf_context()->drawing_context()->start_gradient_style();
-				if (SimpleTypes::filltypeGradient		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::linear);
-				if (SimpleTypes::filltypeGradientRadial == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::radial);
-				if (SimpleTypes::filltypeGradientCenter == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::axial);
-				if (SimpleTypes::filltypeGradientUnscaled == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::square);
+				if (SimpleTypes::filltypeGradient			== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::linear);
+				if (SimpleTypes::filltypeGradientRadial		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::radial);
+				if (SimpleTypes::filltypeGradientCenter		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::axial);
+				if (SimpleTypes::filltypeGradientUnscaled	== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::square);
 
 				_CP_OPT(double) no_set;
-				if (vml_fill->m_oColor.IsInit())
-					odf_context()->drawing_context()->set_gradient_start(vml_fill->m_oColor->ToString(), no_set);
-				if (vml_fill->m_oColor2.IsInit())
-					odf_context()->drawing_context()->set_gradient_end(vml_fill->m_oColor2->ToString(), no_set);
+				if (sRgbColor1)
+					odf_context()->drawing_context()->set_gradient_start(*sRgbColor1, no_set);
+				if (sRgbColor2)
+					odf_context()->drawing_context()->set_gradient_end(*sRgbColor2, no_set);
 
 				if (vml_fill->m_oFocusPosition.IsInit())
 					odf_context()->drawing_context()->set_gradient_center(vml_fill->m_oFocusPosition->GetX(), vml_fill->m_oFocusPosition->GetY());
@@ -441,23 +466,35 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		}break;
 		case SimpleTypes::filltypePattern:
 		{
+			if (!sImagePath.empty())
+			{
+				odf_context()->drawing_context()->set_image_style_repeat(2);
+				
+				if (!nRgbColor1) 
+					nRgbColor1 = odf_context()->drawing_context()->get_fill_color();
+
+				CBgraFrame bgraFrame;
+
+				bgraFrame.ReColorPatternImage(sImagePath, nRgbColor1.get_value_or(0xffffff), nRgbColor2.get_value_or(0x000000));
+			}
+			else
+			{
 			odf_context()->drawing_context()->start_hatch_style();
-				if (vml_fill->m_oColor2.IsInit())
-					odf_context()->drawing_context()->set_hatch_line_color(vml_fill->m_oColor2->ToString());
-				if (vml_fill->m_oColor.IsInit())
-					odf_context()->drawing_context()->set_hatch_area_color(vml_fill->m_oColor->ToString());
+				if (sRgbColor2)
+					odf_context()->drawing_context()->set_hatch_line_color(*sRgbColor2);
+				if (sRgbColor1)
+					odf_context()->drawing_context()->set_hatch_area_color(*sRgbColor1);
 				else
 					odf_context()->drawing_context()->set_hatch_area_color(L"#ffffff");
 
 			odf_context()->drawing_context()->end_hatch_style();
-
+			}
 		}break;
 		case SimpleTypes::filltypeSolid:
 		default:
-			if (vml_fill->m_oColor.IsInit())
-				odf_context()->drawing_context()->set_solid_fill(vml_fill->m_oColor->ToString());
+			if (sImagePath.empty() && sRgbColor1)
+				odf_context()->drawing_context()->set_solid_fill(*sRgbColor1);
 			break;
-		}
 	}
 //--------------------------------------------------------------------------------------------------------------------
 	if (vml_fill->m_oOpacity.IsInit() && vml_fill->m_oOpacity2.IsInit() )
@@ -589,7 +626,7 @@ void OoxConverter::convert(OOX::Vml::CStroke *vml_stroke)
 	if (vml_stroke->m_oColor.IsInit())
 	{
 		std::wstring hexColor = vml_stroke->m_oColor->ToString();
-		if (hexColor.length() < 1)hexColor = L"000000";
+		if (hexColor.empty())	hexColor = L"000000";
 		odf_context()->drawing_context()->set_solid_fill(hexColor);
 	}
 
@@ -819,9 +856,16 @@ void OoxConverter::convert(OOX::Vml::CVmlCommonElements *vml_common)
 
         if (oRgbColor)
 		{		
-			odf_context()->drawing_context()->start_area_properties();
+			unsigned int nRgbColor = ((unsigned int)(((BYTE)(	oRgbColor->Get_B()) 
+						| ((unsigned int)((BYTE)(	oRgbColor->Get_G()))<<8))
+						| (((unsigned int)(BYTE)(	oRgbColor->Get_R()))<<16)));
+			
+			odf_context()->drawing_context()->set_fill_color(nRgbColor);
+			
+				odf_context()->drawing_context()->start_area_properties();
                 odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().substr(2));//.Right(6));
 			odf_context()->drawing_context()->end_area_properties();
+			
 			delete oRgbColor;
 		}
 	}

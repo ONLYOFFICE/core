@@ -41,7 +41,7 @@ class OOXReader
 public: 
 
     RtfConvertationManager*						m_convertationManager;
-	std::wstring										m_sPath;
+	std::wstring								m_sPath;
 
 	int											m_nCurItap;			//для определение вложенности таблицы
 

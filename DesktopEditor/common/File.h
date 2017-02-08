@@ -1017,7 +1017,7 @@ namespace NSFile
 			size_t sz = 0;
 			if ( (0 == _wdupenv_s(&wsTempDir, &sz, L"TEMP")) && (wsFolder == NULL))
 			{
-				wsTemp = std::wstring(wsTempDir, sz);
+				wsTemp = std::wstring(wsTempDir, sz-1);
 #else
 			char *wsTempDirA;
 			if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))

@@ -250,10 +250,6 @@ public:
 		{
 			pFile->WriteFile((BYTE*)m_pMetaHeader, m_lMetaHeaderSize);
 		}
-		if (NULL != m_pMetaFile)
-		{
-			pFile->WriteFile((BYTE*)m_pMetaFile, m_lMetaFileSize);
-		}
 	}
 };
 

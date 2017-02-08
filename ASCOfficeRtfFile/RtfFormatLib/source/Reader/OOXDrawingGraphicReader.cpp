@@ -34,6 +34,7 @@
 #include "OOXDrawingGraphicReader.h"
 
 #include "../../../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 {
@@ -88,6 +89,16 @@ bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 OOX::Logic::CPicture * OOXDrawingGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
 {
 	NSBinPptxRW::CDrawingConverter drawingConverter;
+
+	OOX::CTheme *pTheme = oParam.oDocx->GetTheme();
+	if (pTheme)
+	{
+		NSCommon::smart_ptr<PPTX::Theme> theme(new PPTX::Theme());
+		PPTX::FileMap map;
+		theme->read(pTheme->m_oReadPath, map);
+	
+		(*drawingConverter.m_pTheme) = theme.smart_dynamic_cast<PPTX::WrapperFile>(); 
+	}
 
 	drawingConverter.SetRelsPath(oParam.oDocx->m_pDocument->m_oReadPath.GetPath());
 

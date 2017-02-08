@@ -41,7 +41,9 @@
 #include <cpdoccore/xml/attributes.h>
 
 #include <cpdoccore/odf/odf_document.h>
+
 #include "odfcontext.h"
+#include "draw_common.h"
 
 namespace cpdoccore { 
 
@@ -111,14 +113,29 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 		Context.add_page_properties(L""); // 
 		Context.add_page_properties(L"");
 	}
-//backcolor (for all pages) 
+//background (for all pages) 
     if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
 	{
         if (style_page_layout_properties * prop = firtsPageLayout->properties())
 		{
-			if (prop->docx_back_serialize(Context.output_stream(), Context))
+			oox::_oox_fill fill;
+			
+			Compute_GraphicFill(prop->style_page_layout_properties_attlist_.common_draw_fill_attlist_, 
+								prop->style_page_layout_properties_elements_.style_background_image_, 
+								Context.root()->odf_context().drawStyles(), fill);
+
+			if (prop->style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
 			{
-				Context.set_settings_property(odf_reader::_property(L"displayBackgroundShape",true));
+				if ((fill.bitmap) && (fill.bitmap->rId.empty()))
+				{
+					std::wstring href = fill.bitmap->xlink_href_;
+					fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, fill.bitmap->isInternal, href);
+				}		
+				int id = Context.get_drawing_context().get_current_shape_id();
+				if (prop->docx_background_serialize(Context.output_stream(), Context, fill, id))
+				{
+					Context.set_settings_property(odf_reader::_property(L"displayBackgroundShape", true));
+				}
 			}
 		}
 	}

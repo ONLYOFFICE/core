@@ -546,6 +546,7 @@
 					USE_LITE_READER,
 					PPT_DEF,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -577,6 +578,7 @@
 					USE_LITE_READER,
 					PPT_DEF,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

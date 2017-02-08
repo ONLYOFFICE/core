@@ -165,15 +165,8 @@ namespace PPTX
 
 				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
 
-                bool res = Event->Progress(0, percent + m_lPercent);
-
                 Add(pRelation->rId(), file);
 
-                if (res || m_bCancelled)
-                {
-                    m_bCancelled = true;
-                    break;
-                }
 			}
 			else
 			{
@@ -194,7 +187,7 @@ namespace PPTX
 					Add(pRelation->rId(), file);
 
 					smart_ptr<FileContainer> pContainer = file.smart_dynamic_cast<FileContainer>();
-                    bool res = Event->Progress(0, percent + m_lPercent);
+                    Event->Progress(0, percent + m_lPercent);
 
                     if (pContainer.IsInit())
 					{

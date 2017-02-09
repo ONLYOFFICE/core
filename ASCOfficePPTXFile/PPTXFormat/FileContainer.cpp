@@ -158,13 +158,15 @@ namespace PPTX
 
 			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
 
-			if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink))			
+            if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink ||
+                             pRelation->Type() == OOX::Presentation::FileTypes::Slide))
 			{// + external audio, video ...
-				normPath = pRelation->Target();
-				long percent = Event->GetPercent();
 
-				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+                smart_ptr<OOX::File> file;
 
+                file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+
+                normPath = pRelation->Target();
                 Add(pRelation->rId(), file);
 
 			}
@@ -201,8 +203,7 @@ namespace PPTX
                     //на презентация с hyperlink выходим при достижении 100%. Проценты считаются от количества обработанных файлов, а hyperlink не файл(Ligninger_og_uligheder.pptx)
                     if (m_bCancelled)
                     {
-                        m_bCancelled = true;
-                        break;
+                       break;
                     }
                 }
 			}

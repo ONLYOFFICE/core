@@ -68,7 +68,7 @@ public:
 		if (m_ooxAbstractNum->m_oTmpl.IsInit() && m_ooxAbstractNum->m_oTmpl->m_oVal.IsInit())
 			oNewList.m_nTemplateId = m_ooxAbstractNum->m_oTmpl->m_oVal->GetValue();
 
-		for (long i=0 ; i < m_ooxAbstractNum->m_arrLvl.size(); i++)
+		for (size_t i=0 ; i < m_ooxAbstractNum->m_arrLvl.size(); i++)
 		{
 			OOXLevelReader oLevelReader(m_ooxAbstractNum->m_arrLvl[i]);
 			RtfListLevelProperty oNewLevel;

@@ -40,7 +40,7 @@ public:
 	}
     void AddContent( std::wstring sType, std::wstring sTarget )
 	{
-		for( int i = 0 ;i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0 ;i < (int)m_aTargets.size(); i++ )
 			if( sTarget == m_aTargets[i] )
 				return;
 		m_aTargets.push_back( sTarget );
@@ -48,7 +48,7 @@ public:
 	}
     void AddExtension( std::wstring sType, std::wstring sTarget )
 	{
-		for( int i = 0 ;i < (int)m_aExtensions.size(); i++ )
+		for (size_t i = 0 ;i < (int)m_aExtensions.size(); i++ )
 			if( sTarget == m_aExtensions[i] )
 				return;
 		m_aExtensions.push_back( sTarget );
@@ -87,7 +87,7 @@ private:
 		sResult += _T("<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
 		sResult += _T("<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
 
-		for( int i = 0; i < (int)m_aExtensions.size(); i++ )
+		for (size_t i = 0; i < m_aExtensions.size(); i++ )
 		{
             sResult += _T("<Default Extension=\"");
 			sResult += m_aExtensions[i];
@@ -96,7 +96,7 @@ private:
 			sResult += _T("\"/>");
 		}
 
-		for( int i = 0; i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0; i < m_aTargets.size(); i++ )
 		{
             sResult += _T("<Override PartName=\"");
 			sResult += m_aTargets[i];

@@ -37,58 +37,93 @@
 #include "../RtfShape.h"
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Shape.h"
 
-bool ParseStyle(RtfShape* pShape, SimpleTypes::Vml::CCssProperty* prop);
+bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 
 class OOXShapeReader
 {
 public: 
 	OOXShapeReader(OOX::Vml::CVmlCommonElements * vmlElem)
 	{
+		m_ooxShape	 = NULL;
+		
 		m_vmlElement = vmlElem;
 		m_arrElement = vmlElem;
 	}
-    OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem);
+	OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem);
+	OOXShapeReader(OOX::Logic::CShape * ooxShape)
+	{
+		m_ooxShape	 = ooxShape;
+		m_vmlElement = NULL;
+		m_arrElement = NULL;
+	}
 
-	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
-	bool Parse2( ReaderParameter oParam , RtfShapePtr& oOutput);
-	
+	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, std::wstring sTempPath = L"" );
+
+	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
+	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput);
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
+	static bool Parse(ReaderParameter oParam, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	RtfShapePtr& pOutput);
 private:
+
+	bool Parse(ReaderParameter oParam, int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR);
+	void Parse(ReaderParameter oParam, OOX::Drawing::CColor						*oox_color,			unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, OOX::Drawing::CSchemeColor				*oox_ShemeClr,		unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform	*oox_ScrgbClr,		unsigned int & nColor, _CP_OPT(double) &opacity);
+	void Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
+	
+	void Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties *oox_line_prop , RtfShapePtr& pOutput);
+    
+    void Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillProperties	*oox_grad_fill,		RtfShapePtr& pOutput);
+    void Parse(ReaderParameter oParam, OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	RtfShapePtr& pOutput);
+    void Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	RtfShapePtr& pOutput);
+
+//---------------------------------------------------------------------------
 	OOX::Vml::CVmlCommonElements						*m_vmlElement;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement;
 
+	OOX::Logic::CShape									*m_ooxShape;
+
 	bool ParseStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
-		for (long i=0; i< props.size(); i++)
+		for (size_t i=0; i< props.size(); i++)
 		{
-			ParseStyle( pShape.get(), props[i].get());
+			ParseStyle( pShape, props[i].get());
 		}
 		return true;
 	}
+
 };
 
 class OOXShapeGroupReader
 {
 private:
-	OOX::Vml::CGroup *m_vmlGroup;
+	OOX::Vml::CGroup		*m_vmlGroup;
+	OOX::Logic::CGroupShape	*m_ooxGroup;
 public: 
 	OOXShapeGroupReader(OOX::Vml::CGroup *vmlGroup)
 	{
+		m_ooxGroup = NULL;
 		m_vmlGroup = vmlGroup;
 	}
-
-	bool ParseStyles(RtfShapeGroupPtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	OOXShapeGroupReader(OOX::Logic::CGroupShape *ooxGroup)
 	{
-		for (long i=0; i< props.size(); i++)
+		m_vmlGroup = NULL;
+		m_ooxGroup = ooxGroup;
+	}
+	bool ParseStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	{
+		for (size_t i = 0; i < props.size(); i++)
 		{
-			ParseStyle( dynamic_cast<RtfShape*>(pGroupShape.get()), props[i].get());
+			ParseStyle( pGroupShape, props[i].get());
 		}
 		return true;
 	}
 
-	bool Parse( ReaderParameter oParam , RtfShapeGroupPtr& oOutput);
+	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 };
 
 class OOXBackgroundReader

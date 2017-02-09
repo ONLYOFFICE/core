@@ -51,8 +51,7 @@ public:
 		sResult += L"\n";
 		if( RENDER_TO_RTF_PARAM_NESTED == oRenderParameter.nType )
 		{
-
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < (int)m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
@@ -63,7 +62,7 @@ public:
 		else
 		{
 			sResult += m_oProperty.RenderToRtf( oRenderParameter );
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
@@ -85,7 +84,7 @@ public:
             std::wstring sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
 			oXmlWriter.WriteString(sXml);
 		}
-		for(int i = 0 ; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0 ; i < (int)m_aArray.size(); i++)
 		{
 			oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );
 		}

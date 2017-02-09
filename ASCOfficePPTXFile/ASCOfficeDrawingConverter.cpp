@@ -993,8 +993,9 @@ HRESULT CDrawingConverter::AddShapeType(const std::wstring& bsXml)
 	return S_OK;
 }
 
-std::wstring CDrawingConverter::ConvertObjectToVml	(const std::wstring& sXml)
+PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXml, 	std::wstring** ppMainProps)
 {
+	PPTX::Logic::SpTreeElem oElem;
     std::wstring sBegin(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
     
     std::wstring sEnd(L"</main>");
@@ -1002,16 +1003,11 @@ std::wstring CDrawingConverter::ConvertObjectToVml	(const std::wstring& sXml)
 
 	XmlUtils::CXmlNode oMainNode;
 	if (!oMainNode.FromXmlString(strXml))
-		return L"";
+		return oElem;
 
 	XmlUtils::CXmlNodes oNodes;
     if (!oMainNode.GetNodes(L"*", oNodes))
-		return L"";
-
-	PPTX::Logic::SpTreeElem oElem;
-
-	std::wstring *pMainProps = new std::wstring();
-	std::wstring **ppMainProps = &pMainProps;
+		return oElem;
 
 	for (LONG i = 0; i < oNodes.GetCount(); ++i)
 	{
@@ -1298,14 +1294,98 @@ std::wstring CDrawingConverter::ConvertObjectToVml	(const std::wstring& sXml)
 			}
 		}
 	}
+	return oElem;
+}
 
+std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, LONG lDocType)
+{
+	std::wstring *pMainProps	= new std::wstring();
+
+	PPTX::Logic::SpTreeElem oElem = ObjectFromXml(sXml, &pMainProps);
+	
+	if (oElem.is_init() == false) return L"";
+
+	NSBinPptxRW::CXmlWriter oXmlWriter;
+	oXmlWriter.m_lDocType			= lDocType;
+	oXmlWriter.m_bIsUseOffice2007	= false;
+
+	oXmlWriter.m_bIsTop = true;
+	
+	oXmlWriter.WriteString(L"<w:drawing>");
+
+	bool bIsInline = false;
+	
+	std::wstring strMainProps = *pMainProps;
+	std::wstring strMainPropsTail;
+    
+	int nIndexF = strMainProps.find(L"</wp:inline>");
+	if (-1 != nIndexF)
+	{
+		bIsInline = true;
+		strMainProps = strMainProps.substr(0, nIndexF);
+	}
+	else
+	{
+        nIndexF = strMainProps.find(L"</wp:anchor>");
+		strMainProps = strMainProps.substr(0, nIndexF);
+	}
+
+	if (-1 == nIndexF)
+	{
+		oElem.toXmlWriter(&oXmlWriter);
+		return oXmlWriter.GetXmlString();
+	}
+
+    int nIndexTail = strMainProps.find(L"<wp14:sizeRel");
+	if(-1 != nIndexTail)
+	{
+        strMainPropsTail    = strMainProps.substr( nIndexTail );
+        strMainProps        = strMainProps.substr(0, nIndexTail);
+	}
+
+	oXmlWriter.WriteString(strMainProps);
+
+	if (oElem.is<PPTX::Logic::SpTree>())
+	{
+        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
+	}
+	else if (oElem.is<PPTX::Logic::Pic>())
+	{
+        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	}
+	else
+	{
+        oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+	}
+	oElem.toXmlWriter(&oXmlWriter);
+    oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
+
+	oXmlWriter.WriteString(strMainPropsTail);
+    oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");
+
+    oXmlWriter.WriteString(L"</w:drawing>");
+
+	delete pMainProps;
+
+	return oXmlWriter.GetXmlString();
+}
+
+std::wstring CDrawingConverter::ObjectToVML	(const std::wstring& sXml)
+{
+	std::wstring *pMainProps	= new std::wstring();
+	
+	PPTX::Logic::SpTreeElem oElem = ObjectFromXml(sXml, &pMainProps);
+	
 	if (oElem.is_init() == false) return L"";
 	
 	NSBinPptxRW::CXmlWriter oXmlWriter;
 	oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_DOCX;
 	oXmlWriter.m_bIsUseOffice2007 = true;
 
-	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
+	oXmlWriter.m_bIsTop = true;
 	
 	if (NULL == m_pOOXToVMLRenderer)
 		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
@@ -4521,7 +4601,7 @@ HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, const std::ws
 HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstring& bsMainProps, std::wstring & sXml)
 {
 	bool bIsInline = false;
-	std::wstring strMainProps = (std::wstring)bsMainProps;
+	std::wstring strMainProps = bsMainProps;
 	std::wstring strMainPropsTail;
     int nIndexF = strMainProps.find(L"</wp:inline>");
 	if (-1 != nIndexF)

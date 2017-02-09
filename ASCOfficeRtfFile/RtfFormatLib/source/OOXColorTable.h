@@ -64,7 +64,7 @@ public:
 	}
 	bool GetItem( ThemeColor eTheme, RtfColor& oOutput )
 	{
-		for( int i = 0 ; i < m_aTable.size(); i++ )
+		for (size_t i = 0 ; i < m_aTable.size(); i++ )
 			if( m_aTable[i].oTheme == eTheme )
 			{
 				oOutput = m_aTable[i].oColor;

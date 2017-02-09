@@ -155,7 +155,7 @@ public:
 		}
 		if (m_ooxStyle->m_arrTblStylePr.size() > 0  && RtfStyle::stTable == eStyleType )
 		{
-			for (long i = 0; i < m_ooxStyle->m_arrTblStylePr.size(); i++)
+			for (size_t i = 0; i < m_ooxStyle->m_arrTblStylePr.size(); i++)
 			{
 				RtfTableStylePtr oTableStyle =boost::static_pointer_cast<RtfTableStyle, RtfStyle>(oNewStyle);
 

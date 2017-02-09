@@ -582,8 +582,9 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CTableColumn* pTableColumn = new OOX::Spreadsheet::CTableColumn();
 				res = Read1(length, &BinaryTableReader::ReadTableColumn, this, pTableColumn);
+				
 				pTableColumn->m_oId.Init();
-				pTableColumn->m_oId->SetValue(pTableColumns->m_arrItems.size() + 1);
+				pTableColumn->m_oId->SetValue((unsigned int)pTableColumns->m_arrItems.size() + 1);
 				pTableColumns->m_arrItems.push_back(pTableColumn);
 			}
 			else
@@ -673,10 +674,12 @@ namespace BinXlsxRW {
 		int Read()
 		{
 			int res = ReadTable(&BinarySharedStringTableReader::ReadSharedStringTableContent, this);
+			
 			m_oSharedStrings.m_oCount.Init();
-			m_oSharedStrings.m_oCount->SetValue(m_oSharedStrings.m_arrItems.size());
+			m_oSharedStrings.m_oCount->SetValue((unsigned int)m_oSharedStrings.m_arrItems.size());
+			
 			m_oSharedStrings.m_oUniqueCount.Init();
-			m_oSharedStrings.m_oUniqueCount->SetValue(m_oSharedStrings.m_arrItems.size());
+			m_oSharedStrings.m_oUniqueCount->SetValue((unsigned int)m_oSharedStrings.m_arrItems.size());
 			return res;
 		};
 		int ReadSharedStringTableContent(BYTE type, long length, void* poResult)
@@ -825,57 +828,65 @@ namespace BinXlsxRW {
 			{
 				m_oStyles.m_oBorders.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadBorders, this, poResult);
+				
 				m_oStyles.m_oBorders->m_oCount.Init();
-				m_oStyles.m_oBorders->m_oCount->SetValue(m_oStyles.m_oBorders->m_arrItems.size());
+				m_oStyles.m_oBorders->m_oCount->SetValue((unsigned int)m_oStyles.m_oBorders->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Fills == type)
 			{
 				m_oStyles.m_oFills.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadFills, this, poResult);
+				
 				m_oStyles.m_oFills->m_oCount.Init();
-				m_oStyles.m_oFills->m_oCount->SetValue(m_oStyles.m_oFills->m_arrItems.size());
+				m_oStyles.m_oFills->m_oCount->SetValue((unsigned int)m_oStyles.m_oFills->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Fonts == type)
 			{
 				m_oStyles.m_oFonts.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadFonts, this, poResult);
+				
 				m_oStyles.m_oFonts->m_oCount.Init();
-				m_oStyles.m_oFonts->m_oCount->SetValue(m_oStyles.m_oFonts->m_arrItems.size());
+				m_oStyles.m_oFonts->m_oCount->SetValue((unsigned int)m_oStyles.m_oFonts->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::NumFmts == type)
 			{
 				m_oStyles.m_oNumFmts.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadNumFmts, this, poResult);
+				
 				m_oStyles.m_oNumFmts->m_oCount.Init();
-				m_oStyles.m_oNumFmts->m_oCount->SetValue(m_oStyles.m_oNumFmts->m_arrItems.size());
+				m_oStyles.m_oNumFmts->m_oCount->SetValue((unsigned int)m_oStyles.m_oNumFmts->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellStyleXfs == type)
 			{
 				m_oStyles.m_oCellStyleXfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellStyleXfs, this, poResult);
+				
 				m_oStyles.m_oCellStyleXfs->m_oCount.Init();
-				m_oStyles.m_oCellStyleXfs->m_oCount->SetValue(m_oStyles.m_oCellStyleXfs->m_arrItems.size());
+				m_oStyles.m_oCellStyleXfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellStyleXfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellXfs == type)
 			{
 				m_oStyles.m_oCellXfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellXfs, this, poResult);
+				
 				m_oStyles.m_oCellXfs->m_oCount.Init();
-				m_oStyles.m_oCellXfs->m_oCount->SetValue(m_oStyles.m_oCellXfs->m_arrItems.size());
+				m_oStyles.m_oCellXfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellXfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::CellStyles == type)
 			{
 				m_oStyles.m_oCellStyles.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadCellStyles, this, poResult);
+				
 				m_oStyles.m_oCellStyles->m_oCount.Init();
-				m_oStyles.m_oCellStyles->m_oCount->SetValue(m_oStyles.m_oCellStyles->m_arrItems.size());
+				m_oStyles.m_oCellStyles->m_oCount->SetValue((unsigned int)m_oStyles.m_oCellStyles->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::Dxfs == type)
 			{
 				m_oStyles.m_oDxfs.Init();
 				res = Read1(length, &BinaryStyleTableReader::ReadDxfs, this, m_oStyles.m_oDxfs.GetPointer());
+				
 				m_oStyles.m_oDxfs->m_oCount.Init();
-				m_oStyles.m_oDxfs->m_oCount->SetValue(m_oStyles.m_oDxfs->m_arrItems.size());
+				m_oStyles.m_oDxfs->m_oCount->SetValue((unsigned int)m_oStyles.m_oDxfs->m_arrItems.size());
 			}
 			else if(c_oSerStylesTypes::TableStyles == type)
 			{
@@ -1385,8 +1396,9 @@ namespace BinXlsxRW {
 			else if(c_oSer_TableStyles::TableStyles == type)
 			{
 				res = Read1(length, &BinaryStyleTableReader::ReadTableCustomStyles, this, pTableStyles);
+				
 				pTableStyles->m_oCount.Init();
-				pTableStyles->m_oCount->SetValue(pTableStyles->m_arrItems.size());
+				pTableStyles->m_oCount->SetValue((unsigned int)pTableStyles->m_arrItems.size());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1428,8 +1440,9 @@ namespace BinXlsxRW {
 			else if(c_oSer_TableStyle::Elements == type)
 			{
 				res = Read1(length, &BinaryStyleTableReader::ReadTableCustomStyleElements, this, pTableStyle);
+				
 				pTableStyle->m_oCount.Init();
-				pTableStyle->m_oCount->SetValue(pTableStyle->m_arrItems.size());
+				pTableStyle->m_oCount->SetValue((unsigned int)pTableStyle->m_arrItems.size());
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -1898,11 +1911,11 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSerWorksheetsTypes::Worksheet == type)
 			{
-				m_pCurSheet = new OOX::Spreadsheet::CSheet();
-				m_pCurWorksheet = new OOX::Spreadsheet::CWorksheet();
-				m_pCurVmlDrawing = new OOX::CVmlDrawing(true);
+				m_pCurSheet			= new OOX::Spreadsheet::CSheet();
+				m_pCurWorksheet		= new OOX::Spreadsheet::CWorksheet();
+				m_pCurVmlDrawing	= new OOX::CVmlDrawing(true);
 
-				m_pCurVmlDrawing->m_lObjectIdVML = 1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1;
+				m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
 
                 m_pOfficeDrawingConverter->SetObjectIdVML(m_pCurVmlDrawing->m_lObjectIdVML);
 
@@ -1984,8 +1997,9 @@ namespace BinXlsxRW {
 			{
 				m_pCurWorksheet->m_oMergeCells.Init();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadMergeCells, this, poResult);
+				
 				m_pCurWorksheet->m_oMergeCells->m_oCount.Init();
-				m_pCurWorksheet->m_oMergeCells->m_oCount->SetValue(m_pCurWorksheet->m_oMergeCells->m_arrItems.size());
+				m_pCurWorksheet->m_oMergeCells->m_oCount->SetValue((unsigned int)m_pCurWorksheet->m_oMergeCells->m_arrItems.size());
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
@@ -2051,10 +2065,10 @@ namespace BinXlsxRW {
 								std::map<std::wstring, unsigned int>::const_iterator pair = mapAuthors.find(sAuthor);
 								int nAuthorId;
 								if(mapAuthors.end() != pair)
-									nAuthorId = pair->second;
+									nAuthorId = (int)pair->second;
 								else
 								{
-									nAuthorId = mapAuthors.size();
+									nAuthorId = (int)mapAuthors.size();
 									mapAuthors[sAuthor] = nAuthorId;
 									aAuthors.push_back(new std::wstring(sAuthor));
 								}
@@ -2084,8 +2098,9 @@ namespace BinXlsxRW {
 				BinaryTableReader oBinaryTableReader(m_oBufferedStream);
 				m_pCurWorksheet->m_oTableParts.Init();
 				oBinaryTableReader.Read(length, m_pCurWorksheet);
+				
 				m_pCurWorksheet->m_oTableParts->m_oCount.Init();
-				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue(m_pCurWorksheet->m_oTableParts->m_arrItems.size());
+				m_pCurWorksheet->m_oTableParts->m_oCount->SetValue((unsigned int)m_pCurWorksheet->m_oTableParts->m_arrItems.size());
 			}
             else if(c_oSerWorksheetsTypes::SparklineGroups == type)
             {
@@ -2994,7 +3009,7 @@ namespace BinXlsxRW {
 					if(bMoveText)
 					{
 						int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
-						if(nValue >=0 && nValue < m_pSharedStrings->m_arrItems.size())
+						if(nValue >=0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 						{
 							OOX::Spreadsheet::CSi *pSi = static_cast<OOX::Spreadsheet::CSi *>(m_pSharedStrings->m_arrItems[nValue]);
 							if(NULL != pSi && pSi->m_arrItems.size() > 0)
@@ -3762,7 +3777,7 @@ namespace BinXlsxRW {
 					if(bValidFormat)
 					{
 						//Читаем из файла версию и длину base64
-						int nIndex = nSigLength;
+						int nIndex = (int)nSigLength;
 						int nType = 0;
                         std::string version = "";
                         std::string dst_len = "";

@@ -32,61 +32,71 @@
 
 #include "OOXPictureGraphicReader.h"
 #include "OOXDrawingGraphicReader.h"
+#include "OOXShapeReader.h"
 
 #include "../../../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
-bool OOXPictureGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
+int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 {
-	if (m_ooxGraphic == NULL) return false;
+	if (m_ooxGraphic == NULL) return 0;
 	
 	bool bTryPicture = false;
 	switch(m_ooxGraphic->m_eGraphicType)
 	{
+		case OOX::Drawing::graphictypeShape:
+		{
+			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
+			{
+				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
+
+				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_w_Shape)
+				{
+					OOXShapeReader shapeReader(dynamic_cast<OOX::Logic::CShape*>(m_ooxGraphic->m_arrItems[i]));
+					return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
+				}
+			}
+		}break;
+		case OOX::Drawing::graphictypeGroupShape:
+		{
+			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
+			{
+				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
+
+				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_w_GroupShape)
+				{
+					OOXShapeGroupReader groupReader(dynamic_cast<OOX::Logic::CGroupShape*>(m_ooxGraphic->m_arrItems[i]));
+					return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
+				}
+			}
+		}break;
 		case OOX::Drawing::graphictypePicture:
 		case OOX::Drawing::graphictypeLockedCanvas:
 		case OOX::Drawing::graphictypeChart:		
 		case OOX::Drawing::graphictypeDiagram:
-			bTryPicture = true;
-			break;
-		case OOX::Drawing::graphictypeShape:
-		case OOX::Drawing::graphictypeGroupShape:
-			break;
-	}
-	if (bTryPicture)
-	{
-		bTryPicture = false;
-		for (long i=0; i < m_ooxGraphic->m_arrItems.size(); i++)
-		{
-			if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
-
-			if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_pic_pic)
+		{//find picture or replacement picture 
+			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
 			{
-				OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
-				if ( (picture) && (picture->m_oBlipFill.m_oBlip.IsInit()))
+				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
+
+				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_pic_pic)
 				{
-					std::wstring sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
-
-					if (oParam.oReader->m_currentContainer)
-					{
-						smart_ptr<OOX::File> oFile = oParam.oReader->m_currentContainer->Find(sImageId);
-						
-						if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
-						{
-							OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-							std::wstring sImagePath = pImage->filename().GetPath();
-							bTryPicture = WriteDataToPicture( sImagePath, *oOutput.m_oPicture, L"" );
-						}
-					}
+					pOutput->m_nShapeType = 75;
+				
+					OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
+					if (picture) 
+						if (OOXShapeReader::Parse(oParam, &picture->m_oBlipFill, pOutput))
+							return 1;
 				}
 			}
-		}
+		}break;
 	}
-	return bTryPicture;
+
+	return 2;
 }
 
-OOX::Logic::CPicture * OOXDrawingGraphicReader::Parse( ReaderParameter oParam , RtfShape& oOutput)
+//OOX::Logic::CPicture*
+OOX::Logic::CDrawing* OOXDrawingGraphicConverter::Convert( ReaderParameter oParam , RtfShapePtr pOutput)
 {
 	NSBinPptxRW::CDrawingConverter drawingConverter;
 
@@ -102,42 +112,37 @@ OOX::Logic::CPicture * OOXDrawingGraphicReader::Parse( ReaderParameter oParam , 
 
 	drawingConverter.SetRelsPath(oParam.oDocx->m_pDocument->m_oReadPath.GetPath());
 
-	std::wstring sVmlXml = drawingConverter.ConvertObjectToVml(m_sXml);
+	std::wstring sXml;
+	sXml = drawingConverter.ObjectToDrawingML(m_sXml, XMLWRITER_DOC_TYPE_DOCX);
 
-	if (sVmlXml.empty())return NULL;
+//	sXml = drawingConverter.ObjectToVML(m_sXml);
+
+	if (sXml.empty())return NULL;
 
 	std::wstring sBegin	(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
 	std::wstring sEnd	(L"</main>");
 	
-	std::wstring strXml = sBegin + sVmlXml + sEnd;
+	std::wstring strXml = sBegin + sXml + sEnd;
 	
-	//XmlUtils::CXmlNode oMainNode;
-	//if (!oMainNode.FromXmlString(strXml))
-	//	return NULL;
-
-	//XmlUtils::CXmlNode pictNode = oMainNode.ReadNodeNoNS(L"pict");
-
-	//if (pictNode.IsValid())
-	//	return new OOX::Logic::CPicture(pictNode);
-	//else 
-	//	return NULL;
-
 	XmlUtils::CXmlLiteReader oSubReader;
 	
 	if (oSubReader.FromString(strXml) == false) return NULL;						
 	oSubReader.ReadNextNode();
 
-	OOX::Logic::CPicture *pPict = NULL;
-
 	int nStylesDepth1 = oSubReader.GetDepth();
 	while ( oSubReader.ReadNextSiblingNode( nStylesDepth1 ) )
 	{
 		std::wstring sName = oSubReader.GetName();
-		if (sName == L"w:pict")
+		//if (sName == L"w:pict")
+		//{
+		//	return new OOX::Logic::CPicture(oSubReader);
+		//}
+		if (sName == L"w:drawing")
 		{
-			pPict= new OOX::Logic::CPicture(oSubReader);
-			break;
+			return new OOX::Logic::CDrawing(oSubReader);
 		}
 	}
-	return pPict;
+
+	return NULL;
+	//return pPict;
 }

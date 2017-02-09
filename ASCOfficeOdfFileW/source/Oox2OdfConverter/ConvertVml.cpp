@@ -925,7 +925,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 					{
                         if (vml->m_oSpt.IsInit())
 						{
-                            OOX::Vml::SptType sptType = static_cast<OOX::Vml::SptType>(vml->m_oSpt->GetValue());
+                            SimpleTypes::Vml::SptType sptType = static_cast<SimpleTypes::Vml::SptType>(vml->m_oSpt->GetValue());
                             odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 							bSet = true;
 						}
@@ -953,7 +953,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 				case OOX::et_v_shapetype:
 				{
 					OOX::Vml::CShapeType * vml = static_cast<OOX::Vml::CShapeType*>(vml_group->m_arrItems[i]);
-                    OOX::Vml::SptType sptType = vml->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(vml->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+                    SimpleTypes::Vml::SptType sptType = vml->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(vml->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 
                     odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 						OoxConverter::convert(vml);			

@@ -121,7 +121,7 @@ std::wstring RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 	//else
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_NESTED;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 			sResult += m_aArray[i]->RenderToRtf( oNewParameter );
 	}
 	sResult += L"}";
@@ -145,7 +145,7 @@ std::wstring RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	if (m_bIsVal || m_bIsBool)
 	{
 		oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sVal += m_aArray[i]->RenderToOOX(oNewParam);
 		}
@@ -159,7 +159,7 @@ std::wstring RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	else
 	{
 		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
-		for( int i = 0; i < m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sContent += m_aArray[i]->RenderToOOX(oNewParam);
 		}

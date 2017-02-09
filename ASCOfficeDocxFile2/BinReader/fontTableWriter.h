@@ -121,7 +121,7 @@ namespace Writers
 				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 				if(NULL != pFontInfo)
 				{
-					for(int i = 0; i < 10; ++i)
+					for (size_t i = 0; i < 10; ++i)
 					{
 						BYTE cElem = pFontInfo->m_aPanose[i];
 						if(0 != cElem)

@@ -40,15 +40,16 @@
 
 #define PICTURE_BUFFER_SIZE 1024
 
-class OOXDrawingGraphicReader
+class OOXDrawingGraphicConverter
 {
 private:
 	std::wstring m_sXml;
 
 public: 
-	OOXDrawingGraphicReader(std::wstring sXml)
+	OOXDrawingGraphicConverter(std::wstring sXml)
 	{
 		m_sXml = sXml;
 	}
-	OOX::Logic::CPicture * Parse( ReaderParameter oParam , RtfShape& oOutput);
+	//OOX::Logic::CPicture* Parse( ReaderParameter oParam , RtfShapePtr pOutput);
+	OOX::Logic::CDrawing* Convert( ReaderParameter oParam, RtfShapePtr pOutput);
 };

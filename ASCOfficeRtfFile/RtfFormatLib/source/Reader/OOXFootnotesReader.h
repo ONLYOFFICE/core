@@ -61,9 +61,9 @@ public:
 		{
 			if( oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size() > 0 )
 			{
-				for (long i = 0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
+				for (size_t i = 0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
 				{
-					for( int j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size(); j++ )
+					for (size_t j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size(); j++ )
 					{
 						if (m_ooxEndNotes->m_arrEndnote[i]->m_oId.IsInit() && 
 							m_ooxEndNotes->m_arrEndnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j])
@@ -86,7 +86,7 @@ public:
 				}
 			}
 
-			for (long i =0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
+			for (size_t i =0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
 			{
 				ParseOne(m_ooxEndNotes->m_arrEndnote[i], oParam, false, nSeparatorId, nContinueId);
 			}
@@ -96,9 +96,9 @@ public:
 		{
 			if( oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size() > 0 )
 			{
-				for (long i = 0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
+				for (size_t i = 0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
 				{
-					for( int j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size(); j++ )
+					for (size_t j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size(); j++ )
 					{
 						if (m_ooxFootNotes->m_arrFootnote[i]->m_oId.IsInit() && 
 							m_ooxFootNotes->m_arrFootnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j])
@@ -120,7 +120,7 @@ public:
 					}
 				}
 			}
-			for (long i =0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
+			for (size_t i =0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
 			{
 				ParseOne(m_ooxFootNotes->m_arrFootnote[i], oParam, true, nSeparatorId, nContinueId);
 			}
@@ -135,7 +135,7 @@ public:
 		int nId = ooxFtnEdn->m_oId->GetValue();
 		OOXTextItemReader oTextItemReader;
 		
-		for (long i = 0 ; i < ooxFtnEdn->m_arrItems.size(); i++)
+		for (size_t i = 0 ; i < ooxFtnEdn->m_arrItems.size(); i++)
 		{			
 			if( nSeparatorId == nId )
 			{

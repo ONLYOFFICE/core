@@ -88,8 +88,8 @@ public:
 			case SimpleTypes::tblwidthDxa://сделаем не по документации, а как все остальные юниты !!!
 				{
 					oOutputProperty.nTableIndentUnits	= 3;
-					oOutputProperty.nTableIndent		= dValue;
-					oOutputProperty.m_nLeft				= oOutputProperty.nTableIndent;
+					oOutputProperty.nTableIndent		= (int)dValue;
+					oOutputProperty.m_nLeft				= (int)oOutputProperty.nTableIndent;
 				}break;
 			case SimpleTypes::tblwidthPct:
 				{
@@ -170,23 +170,23 @@ public:
 			//todooo сделать вариант с процентми
 			if( m_ooxTableProps->m_oTblCellMar->m_oBottom.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW.IsInit())
 			{
-				oOutputProperty.m_nDefCellMarBottomUnits = 3;
-				oOutputProperty.m_nDefCellMarBottom = m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW->GetValue();
+				oOutputProperty.m_nDefCellMarBottomUnits= 3;
+				oOutputProperty.m_nDefCellMarBottom		= (int)m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW->GetValue();
 			}
 			if(m_ooxTableProps->m_oTblCellMar->m_oStart.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oStart->m_oW.IsInit())
 			{
-				oOutputProperty.m_nDefCellMarLeftUnits = 3;
-				oOutputProperty.m_nDefCellMarLeft = m_ooxTableProps->m_oTblCellMar->m_oStart->m_oW->GetValue();
+				oOutputProperty.m_nDefCellMarLeftUnits	= 3;
+				oOutputProperty.m_nDefCellMarLeft		= (int)m_ooxTableProps->m_oTblCellMar->m_oStart->m_oW->GetValue();
 			}
 			if(m_ooxTableProps->m_oTblCellMar->m_oEnd.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oEnd->m_oW.IsInit() )
 			{
-				oOutputProperty.m_nDefCellMarRightUnits = 3;
-				oOutputProperty.m_nDefCellMarRight = m_ooxTableProps->m_oTblCellMar->m_oEnd->m_oW->GetValue();
+				oOutputProperty.m_nDefCellMarRightUnits	= 3;
+				oOutputProperty.m_nDefCellMarRight		= (int)m_ooxTableProps->m_oTblCellMar->m_oEnd->m_oW->GetValue();
 			}
 			if(m_ooxTableProps->m_oTblCellMar->m_oTop.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oTop->m_oW.IsInit())
 			{
-				oOutputProperty.m_nDefCellMarTopUnits = 3;
-				oOutputProperty.m_nDefCellMarTop = m_ooxTableProps->m_oTblCellMar->m_oTop->m_oW->GetValue();
+				oOutputProperty.m_nDefCellMarTopUnits	= 3;
+				oOutputProperty.m_nDefCellMarTop		= (int)m_ooxTableProps->m_oTblCellMar->m_oTop->m_oW->GetValue();
 			}
 		}
 		if( m_ooxTableProps->m_oTblCellSpacing.IsInit() && m_ooxTableProps->m_oTblCellSpacing->m_oW.IsInit())
@@ -201,10 +201,10 @@ public:
 				oOutputProperty.m_nDefCellSpLeftUnits	= 3;
 				oOutputProperty.m_nDefCellSpRightUnits	= 3;
 
-				oOutputProperty.m_nDefCellSpTop		= nValue;
-				oOutputProperty.m_nDefCellSpBottom	= nValue;
-				oOutputProperty.m_nDefCellSpLeft	= nValue;
-				oOutputProperty.m_nDefCellSpRight	= nValue;
+				oOutputProperty.m_nDefCellSpTop		= (int)nValue;
+				oOutputProperty.m_nDefCellSpBottom	= (int)nValue;
+				oOutputProperty.m_nDefCellSpLeft	= (int)nValue;
+				oOutputProperty.m_nDefCellSpRight	= (int)nValue;
 			}
 		}
 		if( m_ooxTableProps->m_oTblLook.IsInit())
@@ -239,12 +239,12 @@ public:
 				{
 					case SimpleTypes::tblwidthDxa:
 					{
-						oOutputProperty.m_nWidth	= m_ooxTableProps->m_oTblW->m_oW->GetValue();
+						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
 						oOutputProperty.m_eMUWidth	= mu_Twips;		
 					}break;
 					case SimpleTypes::tblwidthPct:	
 					{
-						oOutputProperty.m_nWidth	= m_ooxTableProps->m_oTblW->m_oW->GetValue();
+						oOutputProperty.m_nWidth	= (int)m_ooxTableProps->m_oTblW->m_oW->GetValue();
 						oOutputProperty.m_eMUWidth	= mu_Percent;	
 					}break;
 				}

@@ -115,7 +115,7 @@ public:
 		}
 		if (m_ooxSettings->m_oFootnotePr.IsInit())
 		{
-			for (long i = 0; i < m_ooxSettings->m_oFootnotePr->m_arrFootnote.size(); i++)
+			for (size_t i = 0; i < m_ooxSettings->m_oFootnotePr->m_arrFootnote.size(); i++)
 			{
 				if( m_ooxSettings->m_oFootnotePr->m_arrFootnote[i]->m_oId.IsInit())
 				{
@@ -162,7 +162,7 @@ public:
 	
 		if (m_ooxSettings->m_oEndnotePr.IsInit())
 		{
-			for (long i = 0; i < m_ooxSettings->m_oEndnotePr->m_arrEndnote.size(); i++)
+			for (size_t i = 0; i < m_ooxSettings->m_oEndnotePr->m_arrEndnote.size(); i++)
 			{
 				if( m_ooxSettings->m_oEndnotePr->m_arrEndnote[i]->m_oId.IsInit())
 				{

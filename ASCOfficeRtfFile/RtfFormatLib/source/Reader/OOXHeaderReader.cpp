@@ -47,7 +47,7 @@ bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItem
 	oOutput = TextItemContainerPtr ( new TextItemContainer() );
 	oOOXTextItemReader.m_oTextItems = oOutput;
 
-	for (long i=0; i < pHdrFtr->m_arrItems.size(); i++)
+	for (size_t i=0; i < pHdrFtr->m_arrItems.size(); i++)
 	{
 		oOOXTextItemReader.Parse(pHdrFtr->m_arrItems[i], oParam );
 	}

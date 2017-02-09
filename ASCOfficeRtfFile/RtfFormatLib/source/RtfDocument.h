@@ -81,7 +81,7 @@ public:
 	IdGenerator m_oIdGenerator;
 	void SetShapeId( int nShapeId )
 	{
-		for( int i = 0; i < (int)m_aShapeId.size(); i++ )
+		for (size_t i = 0; i < m_aShapeId.size(); i++ )
 		{
 			if( nShapeId == m_aShapeId[i] )
 				return;
@@ -97,12 +97,15 @@ public:
 		{
 			bool bUnique = true;
 			nNewShapeId = m_oIdGenerator.Generate_ShapeId();
-			for( int i = 0; i < (int)m_aShapeId.size(); i++ )
+			
+			for (size_t i = 0; i < m_aShapeId.size(); i++ )
+			{
 				if( nNewShapeId == m_aShapeId[i] )
 				{
 					bUnique = false;
 					break;
 				}
+			}
 			if( true == bUnique )
 			{
 				nShapeId = nNewShapeId;

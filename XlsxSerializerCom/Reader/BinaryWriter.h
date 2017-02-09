@@ -2973,9 +2973,9 @@ namespace BinXlsxRW {
 					int nDataLengthSize = sizeof(long);
 					int nJunkSize = 2;
                     std::string sGfxDataA = std::string(sGfxData.begin(), sGfxData.end());
-                    int nDataSize = sGfxDataA.length();
+                    int nDataSize = (int)sGfxDataA.length();
 					BYTE* pBuffer = new BYTE[nDataSize];
-                    if(false != Base64::Base64Decode((const char*)sGfxDataA.c_str(), sGfxDataA.length(), pBuffer, &nDataSize))
+                    if(false != Base64::Base64Decode((const char*)sGfxDataA.c_str(), (int)sGfxDataA.length(), pBuffer, &nDataSize))
 					{
 						int nLength = *((long*)(pBuffer + nSignatureSize));
 						NSBinPptxRW::CBinaryFileReader oBufferedStream;

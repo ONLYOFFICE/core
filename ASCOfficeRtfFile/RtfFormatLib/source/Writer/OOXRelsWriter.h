@@ -51,9 +51,11 @@ public:
 
     std::wstring AddRelationship( std::wstring sType, std::wstring sTarget, bool bTargetModeInternal = true )
 	{
-		for( int i = 0 ;i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0 ;i < m_aTargets.size(); i++ )
+		{
 			if( sTarget == m_aTargets[i] )
 				return m_aIDs[i];
+		}
 		m_aTargets.push_back( sTarget );
 		m_aTypes.push_back( sType );
         std::wstring sId = m_oDocument.m_oIdGenerator.Generate_rId();
@@ -68,7 +70,7 @@ public:
 
 		sResult += _T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 		
-		for( int i = 0; i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0; i < m_aTargets.size(); i++ )
 		{
             sResult += _T("<Relationship Id=\"");
 			sResult += m_aIDs[i];

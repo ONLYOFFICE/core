@@ -201,7 +201,7 @@ namespace OOX
 				if(false == m_oFills->m_oCount.IsInit())
 				{
 					m_oFills->m_oCount.Init();
-					m_oFills->m_oCount->SetValue(m_oFills->m_arrItems.size());
+					m_oFills->m_oCount->SetValue((unsigned int)m_oFills->m_arrItems.size());
 				}
 				//borders
 				if(false == m_oBorders.IsInit())
@@ -218,12 +218,12 @@ namespace OOX
 				if(false == m_oBorders->m_oCount.IsInit())
 				{
 					m_oBorders->m_oCount.Init();
-					m_oBorders->m_oCount->SetValue(m_oBorders->m_arrItems.size());
+					m_oBorders->m_oCount->SetValue((unsigned int)m_oBorders->m_arrItems.size());
 				}
 				//cellXfs
 				if(m_oCellXfs.IsInit())
 				{
-					for(unsigned int i = 0, length = m_oCellXfs->m_arrItems.size(); i < length; ++i)
+					for(size_t i = 0, length = m_oCellXfs->m_arrItems.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CXfs* xfs = m_oCellXfs->m_arrItems[i];
 						if (false == xfs->m_oXfId.IsInit())
@@ -250,7 +250,7 @@ namespace OOX
 				if(false == m_oCellStyles->m_oCount.IsInit())
 				{
 					m_oCellStyles->m_oCount.Init();
-					m_oCellStyles->m_oCount->SetValue(m_oCellStyles->m_arrItems.size());
+					m_oCellStyles->m_oCount->SetValue((unsigned int)m_oCellStyles->m_arrItems.size());
 				}
 				//cellStyleXfs
 				if(false == m_oCellStyleXfs.IsInit())
@@ -272,7 +272,7 @@ namespace OOX
 				if(false == m_oCellStyleXfs->m_oCount.IsInit())
 				{
 					m_oCellStyleXfs->m_oCount.Init();
-					m_oCellStyleXfs->m_oCount->SetValue(m_oCellStyleXfs->m_arrItems.size());
+					m_oCellStyleXfs->m_oCount->SetValue((unsigned int)m_oCellStyleXfs->m_arrItems.size());
 				}
 				//dxfs
 				if(false == m_oDxfs.IsInit())

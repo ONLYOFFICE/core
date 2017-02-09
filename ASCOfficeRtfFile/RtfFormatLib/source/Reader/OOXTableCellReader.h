@@ -66,7 +66,7 @@ public:
 			oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
 		}
 
-		for(int i = 0; i < m_ooxTableCell->m_arrItems.size(); i++ )
+		for (size_t i = 0; i < m_ooxTableCell->m_arrItems.size(); i++ )
 		{
 			switch(m_ooxTableCell->m_arrItems[i]->getType())
 			{

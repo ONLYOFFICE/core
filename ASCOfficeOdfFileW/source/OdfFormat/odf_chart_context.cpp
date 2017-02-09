@@ -1626,7 +1626,7 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 
 	bool add = false;
 
-    for (long i = 0; i < cells.size(); i++)
+    for (size_t i = 0; i < cells.size(); i++)
     {
 		if (cells[i].cash_only)
 			continue;
@@ -1690,7 +1690,7 @@ void odf_chart_context::Impl::create_local_table()
 	int min_row = 0xffff;
 	
 	//выкинем дублирующие ref
-	for (long i = 0; i < cash_.size(); i++)
+	for (size_t i = 0; i < cash_.size(); i++)
 	{
 		for (long j = i + 1; j < cash_.size(); j++)
 		{
@@ -1701,7 +1701,7 @@ void odf_chart_context::Impl::create_local_table()
 		}
 	}
 
-	for (long i = 0; i < cash_.size(); i++)
+	for (size_t i = 0; i < cash_.size(); i++)
 	{
 		std::vector<std::wstring> refs;
 		boost::algorithm::split(refs,cash_[i].ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
@@ -1746,7 +1746,7 @@ void odf_chart_context::Impl::create_local_table()
 				row_header	= true;
 		}
 
-		for (long j = 0; j < cash_[i].data_str.size(); j++)
+		for (size_t j = 0; j < cash_[i].data_str.size(); j++)
 		{
 			_cell_cash c = {0, 0, false, false, L""};
 

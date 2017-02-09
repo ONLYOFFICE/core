@@ -124,7 +124,6 @@ public:
 		{
 			RtfParagraphProperty oNewProperty;
 			OOXpPrReader opPrReader(m_ooxLvlNum->m_oPPr.GetPointer());
-			bool bStartNewSectoion;
 			
             CcnfStyle style;
             if( true == opPrReader.Parse( oParam, oNewProperty, style) )

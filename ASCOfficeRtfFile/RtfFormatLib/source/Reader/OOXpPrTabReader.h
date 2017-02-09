@@ -48,7 +48,7 @@ public:
 
 		oOutputProperty.SetDefault();
 
-		for( int i = 0; i < m_ooxTabs->m_arrTabs.size() ; i++ )
+		for (size_t i = 0; i < m_ooxTabs->m_arrTabs.size() ; i++ )
 		{
 			if (m_ooxTabs->m_arrTabs[i] == NULL) continue;
 

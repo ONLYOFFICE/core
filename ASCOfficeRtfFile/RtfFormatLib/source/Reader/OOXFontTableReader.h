@@ -44,7 +44,7 @@ public:
 	}
 	bool Parse( ReaderParameter oParam )
 	{
-		for (long i = 0; i < m_fontTable->m_arrFonts.size(); i++)
+		for (size_t i = 0; i < m_fontTable->m_arrFonts.size(); i++)
 		{
 			OOXFontReader oFontReader(m_fontTable->m_arrFonts[i]);
 			RtfFont oNewFont;

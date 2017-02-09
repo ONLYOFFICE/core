@@ -268,32 +268,7 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
     std::wstring sResult;
 	if( RENDER_TO_RTF_PARAM_COLOR_TBL == oRenderParameter.nType )
 	{
-        //std::wstring sTheme;
-		//switch(m_eTheme)
-		//{
-		//	case cmaindarkone: sTheme = L"\\cmaindarkone";break;
-		//	case cmainlightone: sTheme = L"\\cmainlightone";break;
-		//	case cmaindarktwo: sTheme = L"\\cmaindarktwo";break;
-		//	case cmainlighttwo: sTheme = L"\\cmainlighttwo";break;
-		//	case caccentthree: sTheme = L"\\caccentthree";break;
-		//	case caccenttwo: sTheme = L"\\caccenttwo";break;
-		//	case caccentfour: sTheme = L"\\caccentfour";break;
-		//	case caccentfive: sTheme = L"\\caccentfive";break;
-		//	case caccentsix: sTheme = L"\\caccentsix";break;
-		//	case chyperlink: sTheme = L"\\chyperlink";break;
-		//	case cfollowedhyperlink: sTheme = L"\\cfollowedhyperlink";break;
-		//	case cbackgroundone: sTheme = L"\\cbackgroundone";break;
-		//	case ctextone: sTheme = L"\\ctextone";break;
-		//	case cbackgroundtwo: sTheme = L"\\cbackgroundtwo";break;
-		//	case ctexttwo: sTheme = L"\\ctexttwo";break;
-		//}
-		//if( L"" != sTheme )
-		//{
-		//	sResult += sTheme;
-        //	sResult += L"\\ctint" + std::to_wstring(m_byteTint) + L"\\cshade" + std::to_wstring(m_byteShade) + L"", , );
-		//}
-		sResult+= L"\\red" + std::to_wstring(m_byteRed) + L"\\green" + std::to_wstring(m_byteGreen) + L"\\blue" + std::to_wstring(m_byteBlue);
-		//важно
+		sResult	+= L"\\red" + std::to_wstring(m_byteRed) + L"\\green" + std::to_wstring(m_byteGreen) + L"\\blue" + std::to_wstring(m_byteBlue);
 		sResult += L";";
 	}
 	else
@@ -947,7 +922,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		
         if (ccBuf > 0) str_lang.append(buf);
 #else
-        for (int i = 0; i < 136; i++)
+        for (size_t i = 0; i < 136; i++)
         {
             if (LCID_ms_convert[i].LCID_int == m_nLanguage)
             {
@@ -1015,7 +990,7 @@ std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nIndent, sResult, L"li" )
 	RENDER_RTF_INT( m_nIndentStart, sResult, L"lin" )
 
-	for( int i = 0 ; i < (int)m_oTabs.m_aTabs.size(); i++ )
+	for (size_t i = 0 ; i < m_oTabs.m_aTabs.size(); i++ )
 	{
 		sResult += L"\\jclisttab";
 		sResult +=  m_oTabs.m_aTabs[i].RenderToRtf( oRenderParameter );
@@ -1118,7 +1093,7 @@ std::wstring RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 	else if( 1 == m_nListSimple )
         sResult += L"\\listsimple" + std::to_wstring(m_nListSimple);
 
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	for (size_t i = 0; i < (int)m_aArray.size(); i++ )
 	{
 		sResult +=  m_aArray[i].RenderToRtf( oRenderParameter );
 	}
@@ -1159,7 +1134,8 @@ std::wstring RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	
+	for (size_t i = 0; i < m_aArray.size(); i++ )
 		sResult +=  m_aArray[i].RenderToOOX(oNewParam);
 
 	sResult += L"</w:abstractNum>";
@@ -2784,7 +2760,7 @@ std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	sResult +=  RtfTableProperty::RenderToRtf(  oRenderParameter  );
 
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	for (size_t i = 0; i < m_aArray.size(); i++ )
 		sResult +=  m_aArray[i].RenderToRtf(  oRenderParameter  );
 
 	if (m_pOldRowProperty)

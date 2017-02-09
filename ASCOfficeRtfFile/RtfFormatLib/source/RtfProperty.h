@@ -193,21 +193,22 @@ public:
 	enum _ThemeColor {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo};
 	
 	bool		m_bAuto;
-	_ThemeColor	m_eTheme;
 
     BYTE		m_byteRed;
     BYTE		m_byteGreen;
     BYTE		m_byteBlue;
+//for rtf read only
+	BYTE		m_byteShade;
+	BYTE		m_byteTint;
+	_ThemeColor	m_eTheme;
 
-    BYTE		m_byteTint;
-    BYTE		m_byteShade;
+	int			m_index;
 
 //--------------------------------------------------------
 	RtfColor()
 	{
 		SetDefault();
-	}
-	
+	}	
 	RtfColor(int nHex)
 	{
 		SetHEX( nHex );
@@ -235,34 +236,43 @@ public:
 		m_byteRed	= 0;
 		m_byteGreen = 0;
 		m_byteBlue	= 0;
+
+		m_byteShade	= 0;
 		m_byteTint	= 255;
-		m_byteShade = 0;
-		m_eTheme	= TC_NONE;
+		m_eTheme	= RtfColor::TC_NONE;
+		m_index		= -1;
 	}
     BYTE GetR()
 	{
-        BYTE	byteRed = SetShade( m_byteRed );
-				byteRed = SetTint( byteRed );
-		return byteRed;
+		return m_byteRed;
 	}
     BYTE GetG()
 	{
-        BYTE	byteGreen = SetShade( m_byteGreen );
-				byteGreen = SetTint( byteGreen );
-		return byteGreen;
+		return m_byteGreen;
 	}
     BYTE GetB()
 	{
-        BYTE	byteBlue = SetShade( m_byteBlue );
-				byteBlue = SetTint( byteBlue );
-		return byteBlue;
+ 		return m_byteBlue;
 	}
 	
 	bool operator==(const RtfColor& oColor)
 	{
 		return  m_byteRed == oColor.m_byteRed && m_byteGreen == oColor.m_byteGreen && m_byteBlue == oColor.m_byteBlue &&
-				m_byteTint == oColor.m_byteTint && m_byteShade == oColor.m_byteShade && m_eTheme == oColor.m_eTheme;
+				m_eTheme == oColor.m_eTheme && m_byteTint	== oColor.m_byteTint && m_byteShade == oColor.m_byteShade;
 	}
+	const RtfColor& operator=( const RtfColor& oColor )
+	{
+		m_byteRed	= oColor.m_byteRed;
+		m_byteGreen	= oColor.m_byteGreen;
+		m_byteBlue	= oColor.m_byteBlue;
+
+		m_eTheme	= oColor.m_eTheme;
+		m_byteShade	= oColor.m_byteShade;
+		m_byteTint	= oColor.m_byteTint;
+
+		return (*this);
+	}
+
 	void SetHEX(int color)
 	{
 		SetDefault();
@@ -270,6 +280,18 @@ public:
 		m_byteRed	= (color&0xFF0000) >> 16;
 		m_byteGreen = (color&0xFF00) >> 8;
 		m_byteBlue	= (color&0xFF);
+	}
+	int GetRGB()const
+	{
+		return (m_byteRed << 16) | (m_byteGreen << 8) | m_byteBlue;
+	}	
+	void SetRGB(unsigned int color)
+	{
+		SetDefault();
+
+		m_byteRed	= (color & 0xFF);
+		m_byteGreen = (color & 0xFF00)		>> 8;
+		m_byteBlue	= (color & 0xFF0000)	>> 16;
 	}
 	void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
@@ -279,86 +301,27 @@ public:
 		m_byteGreen = green;
 		m_byteBlue	= blue;
 	}
-	void SetHSL(double nHue, double nSat, double nLum)
-	{													// Given H,S,L in range of 0-1
-        double v;
-        double r,g,b;
-        r = nLum;   // default to gray
-        g = nLum;
-        b = nLum;
-        v = (nLum <= 0.5) ? (nLum * (1.0 + nSat)) : (nLum + nSat - nLum * nSat);
-
-        if (v > 0)
-		{
-              double m;
-              double sv;
-              int sextant;
-              double fract, vsf, mid1, mid2;
-
-              m = nLum + nLum - v;
-              sv = (v - m ) / v;
-              nHue *= 6.0;
-              sextant = (int)nHue;
-              fract = nHue - sextant;
-              vsf = v * sv * fract;
-              mid1 = m + vsf;
-              mid2 = v - vsf;
-              switch (sextant)
-              {
-                    case 0:
-                          r = v;
-                          g = mid1;
-                          b = m;
-                          break;
-                    case 1:
-                          r = mid2;
-                          g = v;
-                          b = m;
-                          break;
-                    case 2:
-                          r = m;
-                          g = v;
-                          b = mid1;
-                          break;
-                    case 3:
-                          r = m;
-                          g = mid2;
-                          b = v;
-                          break;
-                    case 4:
-                          r = mid1;
-                          g = m;
-                          b = v;
-                          break;
-                    case 5:
-                          r = v;
-                          g = m;
-                          b = mid2;
-                          break;
-              }
-        }
-        m_byteRed	= (BYTE)(r * 255.0f);
-        m_byteGreen = (BYTE)(g * 255.0f);
-        m_byteBlue	= (BYTE)(b * 255.0f);
-        m_byteRed	= (BYTE)(r * 255);
-        m_byteGreen = (BYTE)(g * 255);
-        m_byteBlue	= (BYTE)(b * 255);
+	void GetHSL(double &dH, double &dS,double &dL)
+	{
+		RGB2HSL(m_byteRed, m_byteGreen, m_byteBlue, dH, dS, dL);
+	}
+	void SetHSL(double dH, double dS,double dL)
+	{
+		HSL2RGB(dH, dS, dL, m_byteRed, m_byteGreen, m_byteBlue);
 	}
 	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
 	{
-		m_byteRed	= (BYTE)(nRedPer * 255 / 100);
-		m_byteGreen = (BYTE)(nGreenPer * 255/ 100);
-		m_byteBlue	= (BYTE)(nBluePer * 255 / 100);
+		m_byteRed	= (BYTE)(nRedPer	* 255 / 100);
+		m_byteGreen = (BYTE)(nGreenPer	* 255 / 100);
+		m_byteBlue	= (BYTE)(nBluePer	* 255 / 100);
 	}
     void SetHEXString(std::wstring hex)
 	{
 		if ( L"auto" != hex )
 		{
-			SetDefault();
 			int color	= Strings::ToColor(hex);
-			m_byteRed	= (color&0xFF);
-			m_byteGreen = (color&0xFF00)	>> 8;
-			m_byteBlue	= (color&0xFF0000)	>> 16;
+		
+			SetRGB(color);
 		}
 		else
 			SetDefault();
@@ -367,48 +330,31 @@ public:
 	{
 		if (m_bAuto) return L"auto";
 
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
-        std::wstring sRed = XmlUtils::IntToString(byteRed, L"%02X");
-
-        BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
-        std::wstring sGreen = XmlUtils::IntToString(byteGreen, L"%02X");;
-
-        BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
-        std::wstring sBlue = XmlUtils::IntToString(byteBlue, L"%02X");
+        std::wstring sRed	= XmlUtils::IntToString(m_byteRed,		L"%02X");
+        std::wstring sGreen = XmlUtils::IntToString(m_byteGreen,	L"%02X");;
+        std::wstring sBlue	= XmlUtils::IntToString(m_byteBlue,		L"%02X");
 
 		if (bBGR)	return sBlue + sGreen + sRed ;
 		else		return sRed + sGreen + sBlue ;
 	}
 	
-	int ToInt()const
-	{
-        std::wstring sResult;
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
-        
-		BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
-       
-		BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
-
-		int nColor = (byteRed << 16) | (byteGreen << 8) | byteBlue;
-		return nColor;
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
-    BYTE SetShade(BYTE bColor)const
+    BYTE SetShade(BYTE bShade)
 	{
+		m_byteShade = bShade;
         //return (BYTE)( ( 1.0 - m_byteShade / 255 ) * bColor );
-		return bColor;
+		return bShade;
 	}
-    BYTE SetTint(BYTE bColor)const
-	 {
-        //return (BYTE)( ( 1.0 - m_byteTint / 255 ) * ( 255 - bColor ) + bColor );
-		return bColor;
+	BYTE SetTint(BYTE bTint)
+	{
+		m_byteTint = bTint;
+
+		double dH,  dS,  dL;
+		GetHSL(dH, dS,dL);
+		dL = dL * bTint / 255. + (1 - bTint / 255.); 
+		SetHSL(dH, dS, dL);
+		return bTint;
 	 }
     static bool GetHighlightByColor( RtfColor oOutputColor,std::wstring& oStr ) //todo
 	{
@@ -572,7 +518,7 @@ public:
 
         long nMinDelta = 0x7FFFFFFF; //MAXLONG;
 		int nIndex = -1;
-		for( int i = 0; i < (int)sColors.size(); i++ )
+		for (int i = 0; i < (int)sColors.size(); i++ )
 		{
 			int nCurDelta = ( sColors[i].GetR() - GetR() ) * ( sColors[i].GetR() - GetR() ) + 
 							( sColors[i].GetG() - GetG() ) * ( sColors[i].GetG() - GetG() ) + 
@@ -605,7 +551,76 @@ public:
 		return L"none";
 	}
 private:
-    std::wstring WriteOOXAttribute( std::wstring sParam )
+	inline void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL)
+	{
+        int nmin   = (std::min)( unR, (std::min)( unG, unB ) );
+        int nmax   = (std::max)( unR, (std::max)( unG, unB ) );
+        int nDelta = nmax - nmin;
+        double dmax   = ( nmax + nmin ) / 255.0;
+		double dDelta = nDelta / 255.0;
+
+        dL = dmax / 2.0;
+
+		if ( 0 == nDelta ) //This is a gray, no chroma...
+		{
+			dH = 0.0;
+			dS = 0.0;
+		}
+		else //Chromatic data...
+		{
+            if ( dL < 0.5 ) dS = dDelta / dmax;
+            else            dS = dDelta / ( 2.0 - dmax );
+
+			dDelta = dDelta * 1530.0;
+
+            double dR = ( nmax - unR ) / dDelta;
+            double dG = ( nmax - unG ) / dDelta;
+            double dB = ( nmax - unB ) / dDelta;
+
+            if      ( unR == nmax ) dH = dB - dG;
+            else if ( unG == nmax ) dH = c_d_1_3 + dR - dB;
+            else if ( unB == nmax ) dH = c_d_2_3 + dG - dR;
+
+			if ( dH < 0.0 ) dH += 1.0;
+			if ( dH > 1.0 ) dH -= 1.0;
+		}
+	}
+
+	inline void HSL2RGB(double dH, double dS, double dL, unsigned char &unR, unsigned char& unG, unsigned char& unB)
+	{
+		if ( 0 == dS )
+		{
+			unR = static_cast<unsigned char>(255 * dL);
+			unG = static_cast<unsigned char>(255 * dL);
+			unB = static_cast<unsigned char>(255 * dL);
+		}
+		else
+		{
+			double dV2;
+			if ( dL < 0.5 ) dV2 = dL * ( 1.0 + dS );
+			else            dV2 = dL + dS - dS * dL;
+
+			double dV1 = 2.0 * dL - dV2;
+
+			unR	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH + c_d_1_3 ) );
+			unG	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH ) );
+			unB = static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH - c_d_1_3 ) );
+		} 
+	}
+	inline double Hue2RGB(double dV1, double dV2, double dH)
+	{
+		if ( dH < 0.0 ) dH += 1.0;
+		if ( dH > 1.0 ) dH -= 1.0;
+		if ( dH < c_d_1_6 ) return dV1 + ( dV2 - dV1 ) * 6.0 * dH;
+		if ( dH < 0.5     ) return dV2;
+		if ( dH < c_d_2_3 ) return dV1 + ( dV2 - dV1 ) * ( c_d_2_3 - dH ) * 6.0;
+		return dV1;
+	}
+	const double c_d_1_6 = 1.0 / 6.0;
+	const double c_d_1_3 = 1.0 / 3.0;
+	const double c_d_2_3 = 2.0 / 3.0;
+				
+	std::wstring WriteOOXAttribute( std::wstring sParam )
 	 {
          std::wstring sResult;
          if ( m_eTheme == TC_NONE )
@@ -628,9 +643,9 @@ private:
              std::wstring sTheme;
              if ( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-                sResult += L"theme" + sParam + L"Color=\"" + sTheme +L"\"";
-                sResult += L" theme" + sParam + L"Shade=\"" + std::to_wstring(m_byteShade) + L"\"";
-                sResult += L" theme" + sParam + L"Tint=\"" + std::to_wstring(m_byteTint) + L"\"";
+                sResult += L"theme"		+ sParam + L"Color=\""	+ sTheme + L"\"";
+                sResult += L" theme"	+ sParam + L"Shade=\""	+ std::to_wstring(m_byteShade) + L"\"";
+                sResult += L" theme"	+ sParam + L"Tint=\""	+ std::to_wstring(m_byteTint) + L"\"";
 			 }
          }
          return sResult;
@@ -942,7 +957,7 @@ public:
     std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
         std::wstring sResult;
-		for( int i = 0; i < (int)m_aTabs.size(); i++ )
+		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
 		{
 			sResult += m_aTabs[i].RenderToRtf( oRenderParameter );
 		}
@@ -951,7 +966,7 @@ public:
     std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
         std::wstring sTabs;
-		for( int i = 0; i < (int)m_aTabs.size(); i++ )
+		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
 		{
 			sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
 		}
@@ -1218,7 +1233,7 @@ public:
 
 		sResult += swBullet.c_str();
         //std::wstring sOOXNumber = GetLevelTextOOX();
-        //for( int i = 0; i < sOOXNumber.length(); i++ )
+        //for (size_t i = 0; i < sOOXNumber.length(); i++ )
         //	if ( sOOXNumber[i] == '%' && i != sOOXNumber.length() - 1 )
 		//	{
 		//		sResult += swBullet;
@@ -1400,13 +1415,14 @@ public:
         std::wstring sResult = m_sText;
         if ( sResult.length() > 0 )
 		{
-			int nLevelTextLength = sResult[0];
+			size_t nLevelTextLength = sResult[0];
 			nLevelTextLength--;
-            for( int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
+           
+			for (int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
 			{
 				int nReplaceNumber = m_sNumber[i];
 				nReplaceNumber--;
-                if ( nReplaceNumber >= 0 && nReplaceNumber < sResult.length() )
+                if ( nReplaceNumber >= 0 && nReplaceNumber < (int)sResult.length() )
 				{
 					int nLevel = sResult[ nReplaceNumber ];
 
@@ -1435,7 +1451,7 @@ public:
 		m_sNumber	= L"";
 
 		 int nNumberIndex = 0; //индекс символа который отвечает за уровень символа
-         for( int i = 0; i < sText.length() ; i++ )
+         for (size_t i = 0; i < sText.length() ; i++ )
 		 {
              if ( sText[i] == '%' && i + 1 < sText.length() && isdigit( sText[ i + 1 ] ))
 			 {
@@ -1526,11 +1542,11 @@ public:
 		{
             std::wstring sResult;
 			int nOverrideCount = (int)m_aOverrideLevels.size();
-			for( int i = 0; i < nOverrideCount; i++ )
+			for (int i = 0; i < nOverrideCount; i++ )
 				if ( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
                     nOverrideCount--;
             sResult += L"\\listoverridecount" + std::to_wstring( nOverrideCount );
-			for( int i = 0; i < nOverrideCount; i++ )
+			for (int i = 0; i < nOverrideCount; i++ )
 			{
 				if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 				{
@@ -1550,7 +1566,7 @@ public:
         std::wstring RenderToOOX(RenderParameter oRenderParameter)
 		{
             std::wstring sResult;
-			for( int i = 0; i < (int)m_aOverrideLevels.size(); i++ )
+			for (size_t i = 0; i < (int)m_aOverrideLevels.size(); i++ )
 			{
 				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
 				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )

@@ -39,7 +39,7 @@ namespace CSVWriter
 	void escapeJson(const std::wstring& sInput, NSStringUtils::CStringBuilder& oBuilder)
 	{
 		//http://stackoverflow.com/questions/7724448/simple-json-string-escape-for-c
-		for (int i = 0; i < sInput.length(); ++i)
+		for (size_t i = 0; i < sInput.length(); ++i)
 		{
 			WCHAR c = sInput[i];
 			switch (c)

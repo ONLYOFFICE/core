@@ -899,7 +899,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	s
 			for (size_t i = 0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
 				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
 		}
-		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
+		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
 				oox_bitmap_fill->m_oSrcRect->m_oL.GetValue() /100. * Width / currentSystemDPI,

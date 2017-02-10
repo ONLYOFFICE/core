@@ -251,7 +251,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 				oNewParametr.nType = RENDER_TO_OOX_PARAM_RUN;
 				sResult +=  m_pResult->m_pTextItems->m_aArray[0]->RenderToOOX(oNewParametr);
 
-				for (int i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)
+				for (size_t i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)
 				{
 					RtfParagraph *paragraph = dynamic_cast<RtfParagraph *>(m_pResult->m_pTextItems->m_aArray[i].get());
 					if (paragraph)

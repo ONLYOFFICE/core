@@ -222,7 +222,9 @@ namespace NSBinPptxRW
         void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, LONG lDocType);
         void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
 
-		std::wstring ConvertObjectToVml	(const std::wstring& sXml);
+		PPTX::Logic::SpTreeElem ObjectFromXml(const std::wstring& sXml, std::wstring** pMainProps);
+		std::wstring ObjectToVML		(const std::wstring& sXml);
+		std::wstring ObjectToDrawingML	(const std::wstring& sXml, LONG lDocType);
 
         std::wstring SaveObjectBackground(LONG lStart, LONG lLength);
 

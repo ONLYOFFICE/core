@@ -32,7 +32,10 @@
 #pragma once
 #include "RtfPicture.h"
 
-class RtfShape: public IRenderableProperty
+class RtfShape;
+typedef boost::shared_ptr<RtfShape> RtfShapePtr;
+
+class RtfShape: public IRenderableProperty, public ItemContainer<RtfShapePtr>
 {
 private:
 	bool m_bInsert;
@@ -40,6 +43,7 @@ private:
 	
 public: 
 	bool m_bBackground;
+	bool m_bIsGroup;
 	bool m_bIsOle;
 	bool m_bInGroup; //local anchor
 
@@ -165,12 +169,15 @@ public:
 	int m_nFillColor2;				//fillBackColor
 	int m_nFillType;
 	int m_nFillOpacity;
+	int m_nFillOpacity2;
 	int m_nFillFocus;
 	int m_nFillAngle;
 	int m_nFillToBottom;
 	int m_nFillToTop;
 	int m_nFillToRight;
 	int m_nFillToLeft;
+	int m_nFillShadeType;
+	std::vector< std::pair<int, int> >	m_aFillShadeColors;
 	//int m_bFillShape;				//есть копия заливки картинкой	
 //Line
 	int m_bLine;					//fLine Has a line
@@ -257,22 +264,8 @@ public:
 	}
     std::wstring RenderToRtfShapeProperty(RenderParameter oRenderParameter);
     std::wstring GetShapeNodeName();
+   
+	std::wstring GroupRenderToRtf(RenderParameter oRenderParameter);
+    std::wstring GroupRenderToOOX(RenderParameter oRenderParameter);
 };
 
-
-typedef boost::shared_ptr<RtfShape> RtfShapePtr;
-
-class RtfShapeGroup : public RtfShape, public ItemContainer<RtfShapePtr>
-{
-public: 
-	RtfShapeGroup() {}
-	RtfShapeGroup(const RtfShape & shape) : RtfShape(shape) {}
-
-    std::wstring RenderToRtf(RenderParameter oRenderParameter);
-    std::wstring RenderToOOX(RenderParameter oRenderParameter);
-	bool IsValid()
-	{
-		return true;
-	}
-};
-typedef boost::shared_ptr<RtfShapeGroup> RtfShapeGroupPtr;

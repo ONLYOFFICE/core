@@ -38,7 +38,17 @@
 #include "RtfDefine.h"
 
 #include "boost/shared_ptr.hpp"
- 
+#include <boost/optional.hpp>
+
+template <class T>
+struct optional
+{
+    typedef T Base;
+    typedef boost::optional<T> Type;
+};
+
+#define _CP_OPT(V) optional<V>::Type
+
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 
 
@@ -122,18 +132,22 @@ public:
 	{
 		//todooo - add map for seach
 
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
 			if( m_aArray[i] == piRend )
-				return i;
+				return (int)i;
+		}
 		return -1;
 	}
 	void RemoveItem( T piRend )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < (int)m_aArray.size(); i++ )
+		{
 			if( m_aArray[i] == piRend )
 			{
 				m_aArray.erase(m_aArray.begin()+i);
 			}
+		}
 	}
 	void RemoveItem( int nIndex = -1 )
 	{
@@ -203,7 +217,7 @@ template<class T> class ItemSingleContainer: public ItemContainer<T>
 public: 
     int AddItem( T piRend)
 	{
-        for( size_t i = 0; i < ItemContainer<T>::m_aArray.size(); i++ )
+        for( int i = 0; i < (int)ItemContainer<T>::m_aArray.size(); i++ )
 		{
             if( ItemContainer<T>::m_aArray[i] == piRend )
 				return i;
@@ -250,7 +264,7 @@ public:
     std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
         std::wstring sResult;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )//идем с конца - из за св-в секций
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 
@@ -265,7 +279,7 @@ public:
 	{
         std::wstring sResult;
        
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
             sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}

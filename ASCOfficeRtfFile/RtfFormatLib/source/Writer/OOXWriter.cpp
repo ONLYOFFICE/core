@@ -167,7 +167,7 @@ bool OOXWriter::SaveByItemEnd()
 	nResult &= m_oRels.Save(m_sTargetFolder);
 	nResult &= m_oDocRels.Save(pathWord.GetPath());
 	
-	for( int i = 0; i < (int)m_oCustomRelsWriter.size(); i++ )
+	for (size_t i = 0; i < m_oCustomRelsWriter.size(); i++ )
 		m_oCustomRelsWriter[i]->Save(pathWord.GetPath());
 	return nResult;
 }

@@ -1480,14 +1480,14 @@ namespace BinDocxRW
 							OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.operator->();
 							if(bHdr)
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
+								nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
 								m_oBinaryHeaderFooterTableWriter->m_aHeaders.push_back(pHdrFtr);
 								m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef.m_oType->GetValue());
 								m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.push_back(pSectPr);
 							}
 							else
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
+								nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
 								m_oBinaryHeaderFooterTableWriter->m_aFooters.push_back(pHdrFtr);
 								m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef.m_oType->GetValue());
 								m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.push_back(pSectPr);
@@ -5074,7 +5074,7 @@ namespace BinDocxRW
 				}
 			}
 	//Если первый элемент символ надо выставить в его настройки шрифт
-			if(nIndexStart < pRun->m_arrItems.size() && OOX::et_w_sym == pRun->m_arrItems[nIndexStart]->getType())
+			if(nIndexStart < (int)pRun->m_arrItems.size() && OOX::et_w_sym == pRun->m_arrItems[nIndexStart]->getType())
 			{
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(pRun->m_arrItems[nIndexStart]);
 				if(oSym->m_oFont.IsInit())

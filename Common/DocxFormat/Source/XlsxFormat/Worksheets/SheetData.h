@@ -331,7 +331,7 @@ namespace OOX
 			static bool parse3DRef(const std::wstring& sRef, std::wstring& workbook, std::wstring& sheetFrom, std::wstring& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
 			{
 				bool bRes = false;
-				int nIndex = sRef.find('!');
+				int nIndex = (int)sRef.find('!');
 				std::wstring sCellRef;
 
 				if (std::wstring::npos != nIndex)

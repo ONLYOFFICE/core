@@ -36,7 +36,7 @@
 #include <vector>
 #include <map>
 
-#include <Logic/Biff_structures/BorderFillInfo.h>
+#include "Biff_structures/BorderFillInfo.h"
 
 #include "../Crypt/Decryptor.h"
 

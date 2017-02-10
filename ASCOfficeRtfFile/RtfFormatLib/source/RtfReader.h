@@ -279,7 +279,7 @@ public:
 		//удаляем символы вслед за юникодом
 		if( nSkipChars > 0 )
 		{
-            int nLength = sResult.length();
+            int nLength = (int)sResult.length();
 			if( nSkipChars >= nLength )
 			{
 				nSkipChars -= nLength;

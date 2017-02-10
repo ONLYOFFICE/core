@@ -57,7 +57,7 @@ public:
 	{
 		if (m_ooxElem == NULL) return false;
 
-		for(int i = 0; i < m_ooxElem->m_arrItems.size(); i++)
+		for (size_t i = 0; i < m_ooxElem->m_arrItems.size(); i++)
 		{
 			RtfMathPtr pNewMath;
 			if (ParseElement(oParam, m_ooxElem->m_arrItems[i], pNewMath))

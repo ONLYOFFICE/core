@@ -339,9 +339,9 @@ public:
 				if(ThemeColor.bColor)
                     sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
                 if(ThemeColor.bTint)
-                    sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringColor() + L"\"";
+                    sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringTint() + L"\"";
 				if(ThemeColor.bShade)
-                    sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringColor() + L"\"";
+                    sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringShade() + L"\"";
 			}
             sShd += L"/>";
 		}

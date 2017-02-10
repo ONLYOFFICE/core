@@ -63,13 +63,13 @@ public:
 		sResult += m_oProperty.RenderToOOX(oRenderParameter);
 		sResult += L"<w:tblGrid>";
 		
-		for( int i = 0; i < (int)m_aTableGrid.size(); i++ )
+		for (size_t i = 0; i < (int)m_aTableGrid.size(); i++ )
 		{
             sResult += L"<w:gridCol w:w=\"" + std::to_wstring(m_aTableGrid[i]) + L"\"/>";
 		}
 		sResult += L"</w:tblGrid>";	
 
-		for(int i = 0; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0; i < (int)m_aArray.size(); i++)
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter );
 		}
@@ -81,7 +81,7 @@ public:
         std::wstring result;
 		
 		result += L"\n";
-		for(int i = 0 ; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0 ; i < (int)m_aArray.size(); i++)
 		{
 			result += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -97,7 +97,7 @@ public:
 
 
 		//m_aArray - строки
-		for( int nCurRow = 0; nCurRow < (int)m_aArray.size(); nCurRow++ ) 
+		for (size_t nCurRow = 0; nCurRow < (int)m_aArray.size(); nCurRow++ ) 
 		{
 			nLastCellx = 0;
 			RtfTableRowPtr oCurRow = m_aArray[ nCurRow ];
@@ -132,7 +132,7 @@ public:
 			}
 
 			int nCellx = 0;
-			for( int nCurCell = 0; nCurCell < (int)oCurRow->GetCount(); nCurCell++ )
+			for (int nCurCell = 0; nCurCell < oCurRow->GetCount(); nCurCell++ )
 			{
 				RtfTableCellPtr oCurCell = oCurRow->operator []( nCurCell );
 				
@@ -146,7 +146,7 @@ public:
 				AddToArray( aCellx, nLastCellx + nWidthAfter );
 		}
 		//вычисляем Span
-		for(int i = 0; i < (int)m_aArray.size();i++) 
+		for (size_t i = 0; i < (int)m_aArray.size();i++) 
 		{
 			RtfTableRowPtr oCurRow= m_aArray[ i ];
 			//индекс последнего минимального элемента
@@ -177,7 +177,8 @@ public:
 
 			//добавляем gridBefore
 			if( 0 != nWidthBefore )
-				for( int k = nLastIndex; k < (int)aCellx.size(); k++ )
+			{
+				for (int k = nLastIndex; k < (int)aCellx.size(); k++ )
 				{
 					if( aCellx[k] == nWidthBefore )
 					{
@@ -186,11 +187,13 @@ public:
 						break;
 					}
 				}
-			for(int j = 0; j < (int)oCurRow->GetCount() ; j++)
+			}
+			for (int j = 0; j < oCurRow->GetCount() ; j++)
 			{
 				RtfTableCellPtr oCurCell = oCurRow->operator []( j );
 				int nCellx = nWidthBefore + nDelta + oCurCell->m_oProperty.m_nCellx;
-				for(int k = nLastIndex; k < (int)aCellx.size(); k++)
+				
+				for (int k = nLastIndex; k < (int)aCellx.size(); k++)
 				{
 					if( aCellx[k] == nCellx )
 					{
@@ -211,7 +214,7 @@ public:
 			}
 			//добавляем gridAfter
 			if( 0 != nWidthAfter )
-				for(int k = nLastIndex; k < (int)aCellx.size(); k++)
+				for (int k = nLastIndex; k < (int)aCellx.size(); k++)
 				{
 					if( aCellx[k] == nLastCellx + nWidthAfter )
 					{
@@ -222,7 +225,7 @@ public:
 				}
 		}
 		//вычисляем gridTable
-		for( int i = 0; i < (int)aCellx.size(); i++ )
+		for (size_t i = 0; i < (int)aCellx.size(); i++ )
 		{
 			if( i == 0 )
 				m_aTableGrid.push_back( aCellx[0] );
@@ -248,7 +251,7 @@ public:
 				m_oProperty.m_eMUWidth = mu_Twips;
 			}
 
-			for(int i = 0; i < (int)m_aArray.size(); i++) 
+			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow = m_aArray[i];
 				int nCellCount = oCurRow->GetCount();
@@ -258,7 +261,7 @@ public:
 				{
 					int nCellWidth = m_oProperty.m_nWidth / nCellCount;
 					int nCurCellX = 0;
-					for( int j = 0; j < nCellCount; j++ )
+					for (int j = 0; j < nCellCount; j++ )
 					{
 						nCurCellX += nCellWidth;
 						RtfTableCellPtr oCellPtr = (*oCurRow)[j];
@@ -270,7 +273,7 @@ public:
 		}
 		else
 		{
-			for(int i = 0; i < (int)m_aArray.size(); i++) 
+			for (size_t i = 0; i < (int)m_aArray.size(); i++) 
 			{
 				RtfTableRowPtr oCurRow= m_aArray[ i ];
 
@@ -289,7 +292,7 @@ public:
 					if( (int)m_aTableGrid.size() > nGridBefore - 1)
 					{
 						int nWidthBefore = 0;
-						for( int k = 0; k < nGridBefore ; k++ )
+						for (int k = 0; k < nGridBefore ; k++ )
 							nWidthBefore += m_aTableGrid[k];
 						oCurRow->m_oProperty.m_nWidthStartInvCell = nWidthBefore;
 						oCurRow->m_oProperty.m_eMUStartInvCell = mu_Twips;
@@ -314,7 +317,7 @@ public:
 
 				int nCurWidth = 0;
 				int nCurIndex = 0;
-				for(int j = 0; j < (int)oCurRow->m_oProperty.GetCount(); j++)
+				for (int j = 0; j < oCurRow->m_oProperty.GetCount(); j++)
 				{
 					RtfTableCellPtr oCurCell = oCurRow->operator [](j);
 
@@ -345,7 +348,7 @@ private:
 	void AddToArray( std::vector<int>& aArray, int nValue )//todo можно применить то что он упорядоченный
 	{
 		bool bNeedAdd = true;
-		for(int k = 0; k < (int)aArray.size(); k++)
+		for (size_t k = 0; k < aArray.size(); k++)
 		{
 			if( aArray[k] == nValue )
 			{

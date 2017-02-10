@@ -115,17 +115,17 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -186,10 +186,10 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -259,10 +259,10 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -325,17 +325,17 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -397,17 +397,17 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -485,10 +485,10 @@ namespace OOX
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -555,17 +555,17 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& node)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

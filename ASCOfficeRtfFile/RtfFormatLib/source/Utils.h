@@ -61,8 +61,11 @@
     #define CP_SYMBOL 42
 #endif
 
+#define GETBIT(from, num)				((from & (1 << num)) != 0)
 #define GETBITS(from, numL, numH)		((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
-#define SETBITS(to	, numL, numH, val)	{to &= ~(((1 << (numH - numL + 1)) - 1) << numL); to |= ((val & ((1 << (numH - numL + 1)) - 1)) << numL);}
+
+#define SETBIT(to, num, setorclear)		{setorclear ? to |= (1 << num) : to &= ~(1 << num);}
+#define SETBITS(to, numL, numH, val)	{to &= ~(((1 << (numH - numL + 1)) - 1) << numL); to |= ((val & ((1 << (numH - numL + 1)) - 1)) << numL);}
 
 namespace Strings
 {	
@@ -461,7 +464,7 @@ public:
             dwBytesRead = (DWORD)file.GetPosition();
             while( 0 != dwBytesRead )
             {
-                for( int i = 0; i < (int)dwBytesRead; i++ )
+                for (size_t i = 0; i < (int)dwBytesRead; i++ )
                 {
                     BYTE byteData = byteBuffer[ i ];
                     BYTE byteFirst = aLookup[ byteData / 0x10 ];
@@ -597,17 +600,19 @@ public:
         if (file.CreateFile(sFilename) != S_OK) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
-        int nLengthText = (int)sData.length();
-		int nLengthData = nLengthText/2;
+        size_t nLengthText	= sData.length();
+		size_t nLengthData	= nLengthText/2;
+		
 		BYTE * buf2 = new BYTE[ nLengthData];
 		BYTE nByte=0;
-		for( int i=0; i < nLengthData ; i++ )
+		
+		for (size_t i = 0; i < nLengthData ; i++ )
 		{
 			nByte = ToByte( buf[2 * i] ) << 4;
 			nByte |= ToByte( buf[2 * i + 1] );
 			buf2[i] = nByte;
 		}
-		file.WriteFile(buf2 ,nLengthData);	
+		file.WriteFile(buf2 ,(DWORD)nLengthData);	
 		delete[] buf2;
 		file.CloseFile();
 
@@ -620,7 +625,7 @@ public:
 		BYTE * buf2 = new BYTE[ nSize];
 		(*ppData) = buf2;
 		BYTE nByte=0;
-		for( int i=0; i < nSize ; i++ )
+		for (long i=0; i < nSize ; i++ )
 		{
 			nByte = ToByte(buf[ 2*i])<<4;
 			nByte |= ToByte(buf[ 2*i+1]);
@@ -687,7 +692,7 @@ public:
 
         int nCodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
 
-        for( int i = 0; i < nCodePagesLength; i++ )
+        for (int i = 0; i < nCodePagesLength; i++ )
             if( aCodePages[i][0] == nCharset )
                 return aCodePages[i][1];
 
@@ -697,7 +702,7 @@ public:
     static std::wstring convert_string(std::string::const_iterator start, std::string::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
-        for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+        for (size_t i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
         {
             if (nCodepage == NSUnicodeConverter::Encodings[i].WindowsCodePage)
             {
@@ -717,7 +722,7 @@ public:
     static std::string convert_string(std::wstring::const_iterator start, std::wstring::const_iterator end, int nCodepage = 0)
     {
         std::string sCodePage;
-        for (int i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
+        for (size_t i = 0; i < UNICODE_CONVERTER_ENCODINGS_COUNT; ++i)
         {
             if (nCodepage == NSUnicodeConverter::Encodings[i].WindowsCodePage)
             {
@@ -745,7 +750,7 @@ public:
 #endif
         int nCodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
 
-        for( int i = 0; i < nCodePagesLength; i++ )
+        for (int i = 0; i < nCodePagesLength; i++ )
             if( aCodePages[i][1] == nCodepage )
                 return aCodePages[i][0];
 

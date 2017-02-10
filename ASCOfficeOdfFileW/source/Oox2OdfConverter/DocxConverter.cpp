@@ -2464,7 +2464,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 		}
 		else if (oox_pic->m_oShapeType.IsInit())
 		{
-            OOX::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+            SimpleTypes::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
@@ -2481,9 +2481,9 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			
 			if (oox_pic->m_oShape.IsInit())
 			{
-                OOX::Vml::SptType sptType = oox_pic->m_oShape->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(oox_pic->m_oShape->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+                SimpleTypes::Vml::SptType sptType = oox_pic->m_oShape->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShape->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
                
-				if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+				if (sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 				{
 					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
@@ -2514,9 +2514,9 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					{
 						shape_type = it->second;
 
-						sptType = shape_type->m_oSpt.IsInit() ? static_cast<OOX::Vml::SptType>(shape_type->m_oSpt->GetValue()) : OOX::Vml::sptNotPrimitive;
+						sptType = shape_type->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(shape_type->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 						
-						if (!bSet && sptType != OOX::Vml::SptType::sptNotPrimitive)
+						if (!bSet && sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 						{
 							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 							bSet = true;
@@ -2527,7 +2527,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
                         int pos = oox_pic->m_oShape->m_sType->find(_T("#_x0000_t"));
 						if (pos >= 0)
 						{				
-                            sptType = (OOX::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->substr(pos + 9, oox_pic->m_oShape->m_sType->length() - pos - 9).c_str());
+                            sptType = (SimpleTypes::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->substr(pos + 9, oox_pic->m_oShape->m_sType->length() - pos - 9).c_str());
 							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
 							bSet = true;
 						}
@@ -2570,12 +2570,12 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	bool bSet = false;
 	if (oox_obj->m_oShape.IsInit())
 	{
-        OOX::Vml::SptType sptType = OOX::Vml::SptType::sptNotPrimitive;
+        SimpleTypes::Vml::SptType sptType = SimpleTypes::Vml::SptType::sptNotPrimitive;
 		
 		if ((oox_obj->m_oShapeType.IsInit()) && (oox_obj->m_oShapeType->m_oSpt.IsInit()))
-			sptType = static_cast<OOX::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue());
+			sptType = static_cast<SimpleTypes::Vml::SptType>(oox_obj->m_oShapeType->m_oSpt->GetValue());
 
-        if (sptType != OOX::Vml::SptType::sptNotPrimitive)
+        if (sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 		{
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
 			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));

@@ -65,7 +65,7 @@ public:
 				oParam.oRtf->m_oLatentStyleTable.m_nPriority= Strings::ToInteger( nUIPriority );
 
 			oXmlReader.ReadNodeList( L"w:lsdException" );
-			for( int i = 0; i < oXmlReader.GetLengthList(); i++ )
+			for (size_t i = 0; i < oXmlReader.GetLengthList(); i++ )
 			{
 				RtfStyleException oNewException;
 				oNewException.m_sName	= oXmlReader.ReadNodeAttribute( L"w:name", L"" );

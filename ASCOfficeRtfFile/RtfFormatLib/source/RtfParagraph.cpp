@@ -56,7 +56,7 @@ std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
     std::wstring sResult ;
 	if( RENDER_TO_RTF_PARAM_CHAR == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -69,7 +69,7 @@ std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 		if( NULL != m_oOldList )
 			sResult += m_oOldList->RenderToRtf( oRenderParameter ) ;
 
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -88,14 +88,14 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
     std::wstring sResult ;
 	if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
 	else if( RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
@@ -110,7 +110,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		else
 		{
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 			}
@@ -167,7 +167,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 		
         std::wstring ParagraphContent;
-		for( int i = 0; i < m_aArray.size(); i++)
+		for (size_t i = 0; i < m_aArray.size(); i++)
 		{
 			ParagraphContent += m_aArray[i]->RenderToOOX(oNewParam);
 		}

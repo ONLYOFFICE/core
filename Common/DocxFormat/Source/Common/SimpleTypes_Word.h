@@ -5048,7 +5048,7 @@ namespace SimpleTypes
 
         bool Parse(std::wstring &sValue)
 		{
-            int nLength = sValue.length();
+            size_t nLength = sValue.length();
 
 			bool bResult = true;
 			if(nLength > 0)

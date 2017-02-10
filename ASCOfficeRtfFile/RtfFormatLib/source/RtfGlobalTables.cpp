@@ -40,7 +40,7 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 	//{
 	//	int nCodepage = poDocument->m_oProperty.m_nAnsiCodePage;
 	//	int nCharset = RtfUtility::CodepageToCharset( nCodepage );
-	//	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	//	for (size_t i = 0; i < (int)m_aArray.size(); i++ )
 	//		{
 	//			m_aArray[i].m_nCharset = nCharset;
 	//			m_aArray[i].m_nCodePage = nCodepage;
@@ -53,7 +53,8 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 		sResult += _T("{\\fonttbl");
 		RenderParameter oNewParameter = oRenderParameter;
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_FONT_TBL;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
             sResult += m_aArray[i].RenderToRtf( oNewParameter );
 		}
@@ -68,13 +69,13 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
-		for( int i = 0; i < (int)m_aPictureList.GetCount(); i++ )
+		for (size_t i = 0; i < m_aPictureList.GetCount(); i++ )
 		{
             sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
 			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);
             sResult += L"</w:numPicBullet>";
 		}
-		for( int i = 0; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0; i < m_aArray.size(); i++)
 			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
 	}
 	else
@@ -83,7 +84,7 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.nType = RENDER_TO_OOX_PARAM_OLDLIST_ABS;
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
 		
-		for( int i = 0; i < (int)poDocument->m_aOldLists.size(); i++ )
+		for (size_t i = 0; i < poDocument->m_aOldLists.size(); i++ )
 		{
 			sResult += poDocument->m_aOldLists[i]->RenderToOOX( oNewParam );
 		}
@@ -98,7 +99,7 @@ std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		
-		for( int i = 0; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0; i < m_aArray.size(); i++)
 			sResult += m_aArray[i].RenderToOOX(oNewParam);
 	}
 	else
@@ -107,7 +108,7 @@ std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.nType = RENDER_TO_OOX_PARAM_OLDLIST_OVR;
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
 		
-		for( int i = 0; i < (int)poDocument->m_aOldLists.size(); i++ )
+		for (size_t i = 0; i < poDocument->m_aOldLists.size(); i++ )
 			sResult += poDocument->m_aOldLists[i]->RenderToOOX( oNewParam );
 	}
 	return sResult;

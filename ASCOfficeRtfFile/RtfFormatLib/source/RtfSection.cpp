@@ -186,7 +186,7 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 //footnote, endnote property
     std::wstring sFootnoteProp;
-	for( int i = 0; i < m_aSpecialFootnotes.size(); i++ )
+	for (size_t i = 0; i < m_aSpecialFootnotes.size(); i++ )
 	{
         sFootnoteProp += L"<w:footnote w:id=\"" + std::to_wstring(m_aSpecialFootnotes[i]) + L"\" />";
 	}
@@ -223,7 +223,7 @@ std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 
     std::wstring sEndnoteProp;
     //todooo проверить id
-    for( int i = 0; i < m_aSpecialEndnotes.size(); i++ )
+    for (size_t i = 0; i < m_aSpecialEndnotes.size(); i++ )
 	{
         sEndnoteProp += L"<w:endnote w:id=\"" + std::to_wstring(m_aSpecialEndnotes[i]) + L"\"/>";
 	}
@@ -566,12 +566,14 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		if( m_nColumnNumber != m_oCollumnProperty.m_aCollumnProperty.size() )
 			bEqualWidth = true;
 		else
-			for( int i = 0; i < (int)m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			{
 				if( PROP_DEF == m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
 				{
 					bEqualWidth = true;
 					break;
 				}
+			}
         sCollumnFormating += L"<w:cols w:num=\"" + std::to_wstring(m_nColumnNumber) + L"\"";
 		if( PROP_DEF != m_nColumnSpace )
             sCollumnFormating += L" w:space=\"" + std::to_wstring(m_nColumnSpace) + L"\"";
@@ -580,7 +582,7 @@ std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		else
 		{
 			sCollumnFormating += L" w:equalWidth=\"false\">";
-			for( int i = 0; i < (int)m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
 			{
 				sCollumnFormating += L"<w:col";
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )

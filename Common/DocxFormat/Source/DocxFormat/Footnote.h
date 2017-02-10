@@ -154,7 +154,7 @@ namespace OOX
 		}		
 		const unsigned int  GetCount() const
 		{
-			return m_arrFootnote.size();
+			return (unsigned int)m_arrFootnote.size();
 		}
 
 	public:

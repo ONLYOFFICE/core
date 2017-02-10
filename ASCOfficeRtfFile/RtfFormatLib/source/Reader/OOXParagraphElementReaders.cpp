@@ -104,7 +104,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 	
 	RtfStylePtr poExternalStyle;
 
-	for (long i = 0; i< m_ooxElement->m_arrItems.size(); i++)
+	for (size_t i = 0; i< m_ooxElement->m_arrItems.size(); i++)
 	{
 		if (m_ooxElement->m_arrItems[i] == NULL) continue;
 
@@ -370,7 +370,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement->m_arrItems[i]);
 
-				for (long i = 0 ; i < pSmartTag->m_arrItems.size(); i++)
+				for (size_t i = 0 ; i < pSmartTag->m_arrItems.size(); i++)
 				{
 					OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
 					if (pRun == NULL) continue;
@@ -700,25 +700,30 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			bool bAddDrawing = false;
 
 			OOX::Logic::CDrawing* ooxDrawing = dynamic_cast<OOX::Logic::CDrawing*>(ooxItem);
+			
 			RtfShapePtr pNewDrawing ( new RtfShape() );
 			pNewDrawing->m_oCharProperty = oNewProperty;
 		
 			OOXDrawingReader oDrawingReader(ooxDrawing);
-			if( true == oDrawingReader.Parse( oParam, (*pNewDrawing) ) )
+			int result = oDrawingReader.Parse( oParam, pNewDrawing );
+
+			if (result == 1)
 			{
 				 oOutputParagraph.AddItem( pNewDrawing );
 				 bAddDrawing = true;
 			}
-			if (!bAddDrawing && ooxDrawing->m_sXml.IsInit())
+			else if (result == 2 && ooxDrawing->m_sXml.IsInit())
 			{	
-				OOXDrawingGraphicReader oGraphiceReader(*ooxDrawing->m_sXml);
-				OOX::Logic::CPicture *ooxPicture = oGraphiceReader.Parse( oParam, (*pNewDrawing) );
+				OOXDrawingGraphicConverter oGraphicConverter(*ooxDrawing->m_sXml);
+				OOX::Logic::CDrawing* ooxNewDrawing = oGraphicConverter.Convert( oParam, pNewDrawing );
+				//OOX::Logic::CPicture *ooxPicture = oGraphiceReader.Parse( oParam, pNewDrawing );
 
-				if (Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxPicture))
+				if (Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxNewDrawing/*ooxPicture*/))
 				{
 					bAddDrawing = true;
 				}
-				if (ooxPicture)delete ooxPicture;
+				//if (ooxPicture)delete ooxPicture;
+				if (ooxNewDrawing) delete ooxNewDrawing;
 			}
 			if (!bAddDrawing)
 			{
@@ -733,7 +738,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			{
 				if (ooxPicture->m_oShapeGroup.IsInit())
 				{
-					RtfShapeGroupPtr pNewShape ( new RtfShapeGroup() );
+					RtfShapePtr pNewShape ( new RtfShape() );
 					pNewShape->m_oCharProperty = oNewProperty;
 					
 					OOXShapeGroupReader oShapeGroupReader(ooxPicture->m_oShapeGroup.GetPointer());
@@ -870,14 +875,14 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
 			if (!ooxAlt->m_arrChoiceItems.empty())
 			{
-				for (int i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
+				for (size_t i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
 				{
 					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
 				}					
 			}
 			else
 			{
-				for (int i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
+				for (size_t i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
 				{
 					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
 				}
@@ -963,7 +968,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		orPrReader.Parse( oParam, oNewProperty );
 	}
 
-	for (long i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
+	for (size_t i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
 	{
 		Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
 	}
@@ -1700,7 +1705,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		if(m_ooxSectionProperty->m_oCols->m_oSpace.IsInit())
 			oOutput.m_nColumnSpace = m_ooxSectionProperty->m_oCols->m_oSpace->ToTwips(); //todooo twips????	
 
-		for( int i = 0; i < m_ooxSectionProperty->m_oCols->m_arrColumns.size(); i++ )
+		for (size_t i = 0; i < m_ooxSectionProperty->m_oCols->m_arrColumns.size(); i++ )
 		{
 			RtfSectionProperty::ColumnProperty::CollumnVar oNewColumn;
 			
@@ -1920,7 +1925,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oBorderReader.Parse( oParam, oOutput.m_oBorderBottom );
 		}
 	}
-	for (long i =0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size() > 0; i++ )
+	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size() > 0; i++ )
 	{
 		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i]);
 		
@@ -1957,7 +1962,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			}
 		}
 	}
-	for (long i =0 ; i < m_ooxSectionProperty->m_arrFooterReference.size() > 0; i++ )
+	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrFooterReference.size() > 0; i++ )
 	{
 		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i]);
 		

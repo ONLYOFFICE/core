@@ -39,7 +39,7 @@
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Shape.h"
 
-bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
+bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 
 class OOXShapeReader
 {
@@ -88,11 +88,11 @@ private:
 
 	OOX::Logic::CShape									*m_ooxShape;
 
-	bool ParseStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	bool ParseVmlStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (size_t i=0; i< props.size(); i++)
 		{
-			ParseStyle( pShape, props[i].get());
+			ParseVmlStyle( pShape, props[i].get());
 		}
 		return true;
 	}
@@ -115,11 +115,11 @@ public:
 		m_vmlGroup = NULL;
 		m_ooxGroup = ooxGroup;
 	}
-	bool ParseStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	bool ParseVmlStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (size_t i = 0; i < props.size(); i++)
 		{
-			ParseStyle( pGroupShape, props[i].get());
+			ParseVmlStyle( pGroupShape, props[i].get());
 		}
 		return true;
 	}

@@ -92,7 +92,7 @@ SimpleTypes::Vml::SptType static PrstTx2ShapeType(SimpleTypes::ETextShapeType ty
 }
 
 
-bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
+bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
 	if (pShape == NULL)	return false;
 	if (prop == NULL)	return false;
@@ -572,10 +572,45 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 					}
 					if (text_path->m_oStyle.IsInit())
 					{
-						ParseStyles( pOutput, text_path->m_oStyle->m_arrProperties );
+						ParseVmlStyles( pOutput, text_path->m_oStyle->m_arrProperties );
 					}
 				}
 
+			}break;
+			case OOX::et_o_signatureline:
+			{
+				OOX::VmlOffice::CSignatureLine *signature = dynamic_cast<OOX::VmlOffice::CSignatureLine*>(m_arrElement->m_arrItems[i]);
+				if ( signature )
+				{
+					if (signature->m_oIsSignatureLine.GetValue() == SimpleTypes::booleanTrue)
+						pOutput->m_bIsSignatureLine = 1;
+
+					if (signature->m_oAllowComments.GetValue() == SimpleTypes::booleanTrue)
+						pOutput->m_bSigSetupAllowComments = 1;
+
+					if (signature->m_oProvId.IsInit())
+						pOutput->m_sSigSetupProvId = signature->m_oProvId->ToString();
+
+					if (signature->m_oId.IsInit())
+						pOutput->m_sSigSetupId = signature->m_oId->ToString();
+
+					if (signature->m_sSuggestedSigner.IsInit())
+						pOutput->m_sSigSetupSuggSigner = signature->m_sSuggestedSigner.get();
+					
+					if (signature->m_sSuggestedSigner2.IsInit())
+						pOutput->m_sSigSetupSuggSigner2 = signature->m_sSuggestedSigner2.get();
+					
+					if (signature->m_sSuggestedSignerEmail.IsInit())
+						pOutput->m_sSigSetupSuggSignerEmail = signature->m_sSuggestedSignerEmail.get();
+
+			//nullable<std::wstring>							m_sAddXml;
+			//nullable<SimpleTypes::CExt<>>						m_oExt;
+			//SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>	m_oShowSignDate;
+			//nullable<std::wstring>								m_sSigningInstructions;
+			//SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oSigningInstructionsSet;
+			//nullable<std::wstring>								m_sSigProvUrl;
+
+				}
 			}break;
             default: break;
         }
@@ -1309,7 +1344,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 	
 	if ( m_vmlElement->m_oStyle.IsInit())
 	{
-		if( false == ParseStyles( pOutput, m_vmlElement->m_oStyle->m_arrProperties ) )
+		if( false == ParseVmlStyles( pOutput, m_vmlElement->m_oStyle->m_arrProperties ) )
 			return false;
 	}
 
@@ -1382,7 +1417,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 		
 		if ( m_vmlGroup->m_oStyle.IsInit())
 		{
-			if( false == ParseStyles( pOutput, m_vmlGroup->m_oStyle->m_arrProperties ) )
+			if( false == ParseVmlStyles( pOutput, m_vmlGroup->m_oStyle->m_arrProperties ) )
 				return false;
 		}
 
@@ -1635,7 +1670,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 
 	//Выставляем тип картинки
 	pOutput.eDataType = RtfPicture::GetPictureType( sPath );
-	//ecли тип не поддерживается rtf конвертируем в png
+
+//ecли тип не поддерживается rtf конвертируем в png
 	if( RtfPicture::dt_none == pOutput.eDataType )
 	{
 		//в туже папку что и исходная картинка
@@ -1656,68 +1692,82 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 			pOutput.m_bIsCopy = true;//выставляем флаг чтобы потом удалить файл
 		}
 	}
-	else
+	else if( RtfPicture::dt_apm ==  pOutput.eDataType )
 	{
-		if( RtfPicture::dt_apm ==  pOutput.eDataType )
+		//убираем заголовок apm (22 byte)
+		CFile file_inp; //mpa
+		CFile file_out;//wmf
+
+        std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
+
+		int res = file_inp.OpenFile(sPath);
+		if (res != S_OK) return false;
+
+        res = file_out.CreateFile(sTargetFile);
+		if (res != S_OK) return false;
+
+		DWORD dwBytesRead = 0;
+		DWORD dwBytesWrite = 0;
+		BYTE pBuffer[1024];
+		DWORD nHeaderLen = 22;
+
+		dwBytesRead = file_inp.GetPosition();
+		file_inp.ReadFile(pBuffer, 1024);
+		dwBytesRead = file_inp.GetPosition() - dwBytesRead;
+			
+		while( 0 != dwBytesRead )
 		{
-			//убираем заголовок apm (22 byte)
-			CFile file_inp; //mpa
-			CFile file_out;//wmf
-
-            std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
-
-			int res = file_inp.OpenFile(sPath);
-			if (res != S_OK) return false;
-
-            res = file_out.CreateFile(sTargetFile);
-			if (res != S_OK) return false;
-
-			DWORD dwBytesRead = 0;
-			DWORD dwBytesWrite = 0;
-			BYTE pBuffer[1024];
-			DWORD nHeaderLen = 22;
+			if( nHeaderLen > 0 )
+			{
+				if(dwBytesRead > nHeaderLen )
+				{
+					file_out.WriteFile(pBuffer + nHeaderLen, dwBytesRead - nHeaderLen);
+					nHeaderLen = 0;
+				}
+				else
+					nHeaderLen -= dwBytesRead;
+			}
+			else
+				file_out.WriteFile( pBuffer, dwBytesRead);
 
 			dwBytesRead = file_inp.GetPosition();
 			file_inp.ReadFile(pBuffer, 1024);
 			dwBytesRead = file_inp.GetPosition() - dwBytesRead;
-				
-			while( 0 != dwBytesRead )
+		}
+		file_inp.CloseFile();
+		file_out.CloseFile();
+
+		pOutput.eDataType = RtfPicture::dt_wmf;
+		//Запоминаем имя
+		pOutput.m_sPicFilename = sTargetFile;
+		pOutput.m_bIsCopy = true;
+	}
+	else
+	{
+		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
+		{
+			MetaFile::CMetaFile meta(NULL);
+			if (meta.LoadFromFile(sPath.c_str()))
 			{
-				if( nHeaderLen > 0 )
-				{
-					if(dwBytesRead > nHeaderLen )
-					{
-						file_out.WriteFile(pBuffer + nHeaderLen, dwBytesRead - nHeaderLen);
-						nHeaderLen = 0;
-					}
-					else
-						nHeaderLen -= dwBytesRead;
-				}
-				else
-					file_out.WriteFile( pBuffer, dwBytesRead);
-
-				dwBytesRead = file_inp.GetPosition();
-				file_inp.ReadFile(pBuffer, 1024);
-				dwBytesRead = file_inp.GetPosition() - dwBytesRead;
+				double dX, dY, dW, dH;
+				meta.GetBounds(&dX, &dY, &dW, &dH);
+				meta.Close();
+				
+				pOutput.m_nWidthGoal	= dW * 15;  //pixels to twip 
+				pOutput.m_nHeightGoal	= dH * 15;  //pixels to twip;
 			}
-			file_inp.CloseFile();
-			file_out.CloseFile();
-
-			pOutput.eDataType = RtfPicture::dt_wmf;
-			//Запоминаем имя
-			pOutput.m_sPicFilename = sTargetFile;
-			pOutput.m_bIsCopy = true;
+			//Запоминаем только имя
+			pOutput.m_sPicFilename = sPath;
+			pOutput.m_bIsCopy = false; //не удалять 
 		}
 		else
-		{
-			typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm}DataType;
-			int cxFormats [6] = {0, 4, 3, 10, 10, 10};
+		{//png, jpeg
 			CBgraFrame image;
-			
-			if (image.OpenFile(sPath, cxFormats[pOutput.eDataType]) == FALSE ) return false;
+		
+			if (image.OpenFile(sPath, 0) == FALSE ) return false;
 			//правильно выставляем размеры
-			pOutput.m_nWidthGoal = image.get_Width()	* 15;  //pixels to twip 
-			pOutput.m_nHeightGoal = image.get_Height()	* 15;  //pixels to twip;
+			pOutput.m_nWidthGoal	= image.get_Width()		* 15;  //pixels to twip 
+			pOutput.m_nHeightGoal	= image.get_Height()	* 15;  //pixels to twip;
 
 			//Запоминаем только имя
 			pOutput.m_sPicFilename = sPath;

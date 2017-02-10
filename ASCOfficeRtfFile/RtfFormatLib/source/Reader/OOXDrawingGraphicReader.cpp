@@ -84,9 +84,8 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 					pOutput->m_nShapeType = 75;
 				
 					OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
-					if (picture) 
-						if (OOXShapeReader::Parse(oParam, pOutput, &picture->m_oBlipFill))
-							return 1;
+					OOXShapeReader::Parse(oParam, pOutput, &picture->m_oBlipFill); // тут если false приходит - картинка-потеряшка
+					return 1;
 				}
 			}
 		}break;

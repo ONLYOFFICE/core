@@ -131,9 +131,9 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nRelZOrder )
 
 //Rehydration
-	m_sMetroBlob = L"";
-	m_sMetroBlobRels = L"";
-	m_sMetroBlobData = L"";
+	m_sMetroBlob.clear();
+	m_sMetroBlobRels.clear();
+	m_sMetroBlobData.clear();
 //Connectors
 	DEFAULT_PROPERTY( m_nConnectionType )
 	DEFAULT_PROPERTY( m_nConnectorStyle )
@@ -171,6 +171,9 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_bGtextFStretch )
 	DEFAULT_PROPERTY( m_bGtextFShrinkFit )
 	DEFAULT_PROPERTY( m_bGtextFBestFit )
+
+	DEFAULT_PROPERTY( m_bIsSignatureLine);
+	DEFAULT_PROPERTY( m_bSigSetupAllowComments);
 	
 	m_aTextItems	= TextItemContainerPtr();
 	m_oPicture		= RtfPicturePtr();
@@ -233,7 +236,11 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			else
 			{
 				sResult += L"{\\*\\shppict";
+
+				m_oPicture->dump_shape_properties = RenderToRtfShapeProperty( oRenderParameter );
+
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
+				
 				sResult += L"}";
 				sResult += L"{\\nonshppict";
 				sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
@@ -610,7 +617,42 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
         RENDER_RTF_SHAPE_PROP(L"gtextFShrinkFit",   sResult,	m_bGtextFShrinkFit);
         RENDER_RTF_SHAPE_PROP(L"gtextFBestFit",     sResult,	m_bGtextFBestFit);
 	}
+	if ( PROP_DEF != m_bIsSignatureLine)
+	{
+		RENDER_RTF_SHAPE_PROP(L"fIsSignatureLine",			sResult,  m_bIsSignatureLine);
+		RENDER_RTF_SHAPE_PROP(L"fSigSetupAllowComments",    sResult,  m_bSigSetupAllowComments);
 
+        if( !m_sSigSetupId.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupId}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupProvId.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupProvId}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSigner.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSigner2.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner2}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSignerEmail.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSignerEmail}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+	}
 	return sResult;
 }
 std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
@@ -1346,6 +1388,31 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L" string=\"" + XmlUtils::EncodeXmlString(m_sGtextUNICODE) + L"\"";
 		sResult += L"/>";
 	}
+	if ( PROP_DEF != m_bIsSignatureLine)
+	{
+		sResult += L"<o:signatureline v:ext=\"edit\"";
+		
+		if (!m_sSigSetupId.empty())
+			sResult += L" id=\"" + m_sSigSetupId + L"\"";
+		
+		if (!m_sSigSetupProvId.empty())
+			sResult += L" provid=\"" + m_sSigSetupProvId + L"\"";
+
+		if (!m_sSigSetupSuggSigner.empty())
+			sResult += L" o:suggestedsigner=\"" + m_sSigSetupSuggSigner + L"\"";
+		
+		if (!m_sSigSetupSuggSigner2.empty())
+			sResult += L" o:suggestedsigner2=\"" + m_sSigSetupSuggSigner2 + L"\"";
+
+		if (!m_sSigSetupSuggSignerEmail.empty())
+			sResult += L" o:suggestedsigneremail=\"" + m_sSigSetupSuggSignerEmail + L"\"";
+				
+		if (m_bSigSetupAllowComments == 1)
+			sResult += L" allowcomments=\"t\"";
+	 
+		sResult += L" issignatureline=\"t\"/>";
+	}
+
 	return sResult;
 }
 std::wstring RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)

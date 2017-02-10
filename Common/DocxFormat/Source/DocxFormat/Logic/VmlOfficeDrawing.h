@@ -65,12 +65,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Реализовать CStrokeChild::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
@@ -230,18 +230,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CCallout::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:callout ");
 
@@ -326,18 +326,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CClipPath::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:clippath o:v=\"") + m_oV.ToString() + _T("\"/>");
 				return sResult;
@@ -378,11 +378,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CColorMenu::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -458,7 +458,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CColorMru::fromXML(XmlUtils::CXmlNode& oNode)
 			}
@@ -469,7 +469,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:colormru ");
 
@@ -556,18 +556,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CComplex::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:complex ");
 				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
@@ -611,18 +611,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRelation::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:rel ");
 
@@ -656,10 +656,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CExt<>> m_oExt;
-			nullable<std::wstring>             m_sIdCntr;
-			nullable<std::wstring>             m_sIdDest;
-			nullable<std::wstring>             m_sIdSrc;
+			nullable<SimpleTypes::CExt<>>		m_oExt;
+			nullable<std::wstring>				m_sIdCntr;
+			nullable<std::wstring>				m_sIdDest;
+			nullable<std::wstring>				m_sIdSrc;
 		};
 		//--------------------------------------------------------------------------------
 		// CRelationTable 14.2.2.25 (Part 4)
@@ -683,11 +683,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRelationTable::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -764,11 +764,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CDiagram::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -836,7 +836,7 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoFormat;
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoLayout;
-			nullable<std::wstring>                       m_sConstrainbounds;
+			nullable<std::wstring>					m_sConstrainbounds;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgBaseTextScale;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgFontSize;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oDmgScaleX;
@@ -866,11 +866,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEntry::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -926,11 +926,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEquationXml::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -945,7 +945,7 @@ namespace OOX
 					// TO DO: Сделать чтение формул OOMML и Wc3MathML
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:equationXml ");
 				ComplexTypes_WriteAttribute ( _T("contentType=\""), m_oContentType );
@@ -991,18 +991,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CExtrusion::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:extrusion ");
 
@@ -1226,18 +1226,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFieldCodes::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
 
 				m_sText = oReader.GetText2();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:FieldCodes>") + m_sText + _T("</o:FieldCodes>");
 				return sResult;
@@ -1328,18 +1328,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CIdMap::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:idmap ");
 
@@ -1369,8 +1369,8 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>             m_sData;
-			nullable<SimpleTypes::CExt<>> m_oExt;
+			nullable<std::wstring>			m_sData;
+			nullable<SimpleTypes::CExt<>>	m_oExt;
 		};
 		//--------------------------------------------------------------------------------
 		// CInk 14.2.2.15 (Part 4)
@@ -1388,11 +1388,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CInk::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1433,7 +1433,7 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>> m_oAnnotation;
 			nullable<SimpleTypes::CContentType> m_oContentType;
-			nullable<std::wstring>                   m_sI;
+			nullable<std::wstring>				m_sI;
 		};
 		//--------------------------------------------------------------------------------
 		// CLinkType 14.2.2.17 (Part 4)
@@ -1451,11 +1451,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLinkType::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1463,7 +1463,7 @@ namespace OOX
 				std::wstring sText = oReader.GetText2();
 				m_oValue = sText;
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:LinkType>") + m_oValue.ToString() + _T("</o:LinkType>");
 				return sResult;
@@ -1494,11 +1494,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLock::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1606,11 +1606,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLockedField::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1618,7 +1618,7 @@ namespace OOX
 				std::wstring sText = oReader.GetText2();
 				m_oValue = sText;
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:LockedField>") + m_oValue.ToString() + _T("</o:LockedField>");
 				return sResult;
@@ -1650,7 +1650,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				if ( _T("o:OLEObject") != oNode.GetName() )
 					return;
@@ -1665,7 +1665,7 @@ namespace OOX
 
 				//todo FieldCodes, LinkType, LockedField
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1684,7 +1684,7 @@ namespace OOX
 						m_oLockedField = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:OLEObject ");
 
@@ -1735,18 +1735,18 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::COLEDrawAspect<>> m_oDrawAspect;
-			nullable<SimpleTypes::CRelationshipId>  m_oId;
-			nullable<std::wstring>                       m_sObjectId;
-			nullable<std::wstring>                       m_sProgId;
-			nullable<std::wstring>                       m_sShapeId;
-			nullable<SimpleTypes::COLEType<>>       m_oType;
-			nullable<SimpleTypes::COLEUpdateMode<>> m_oUpdateMode;
+			nullable<SimpleTypes::COLEDrawAspect<>>		m_oDrawAspect;
+			nullable<SimpleTypes::CRelationshipId>		m_oId;
+			nullable<std::wstring>						m_sObjectId;
+			nullable<std::wstring>						m_sProgId;
+			nullable<std::wstring>						m_sShapeId;
+			nullable<SimpleTypes::COLEType<>>			m_oType;
+			nullable<SimpleTypes::COLEUpdateMode<>>		m_oUpdateMode;
 
 			// Childs
-			nullable<OOX::VmlOffice::CFieldCodes>         m_oFieldCodes;
-			nullable<OOX::VmlOffice::CLinkType>           m_oLinkType;
-			nullable<OOX::VmlOffice::CLockedField>        m_oLockedField;
+			nullable<OOX::VmlOffice::CFieldCodes>		m_oFieldCodes;
+			nullable<OOX::VmlOffice::CLinkType>			m_oLinkType;
+			nullable<OOX::VmlOffice::CLockedField>		m_oLockedField;
 		};
 		//--------------------------------------------------------------------------------
 		// CProxy 14.2.2.21 (Part 4)
@@ -1764,18 +1764,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CProxy::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:proxy ");
 
@@ -1807,10 +1807,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CDecimalNumber<0>                     m_oConnectLoc;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oEnd;
-			std::wstring                                            m_sIdRef;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oStart;
+			SimpleTypes::CDecimalNumber<0>						m_oConnectLoc;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oEnd;
+			std::wstring										m_sIdRef;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oStart;
 		};
 		//--------------------------------------------------------------------------------
 		// CR 14.2.2.22 (Part 4)
@@ -1834,11 +1834,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CR::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1856,7 +1856,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:r id=\"") + m_sId + _T("\" ");
 
@@ -1897,10 +1897,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CHow<>>			m_oHow;
-			std::wstring									m_sId;
-			nullable<std::wstring>						m_sIdRef;
-			nullable<SimpleTypes::CRType<>>			m_oType;
+			nullable<SimpleTypes::CHow<>>	m_oHow;
+			std::wstring					m_sId;
+			nullable<std::wstring>			m_sIdRef;
+			nullable<SimpleTypes::CRType<>>	m_oType;
 			
 			// Childs
 			std::vector<OOX::VmlOffice::CProxy*>	m_arrProxy;
@@ -1927,11 +1927,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRegroupTable::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1949,7 +1949,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:regrouptable ");
 
@@ -2012,11 +2012,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRules::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2034,7 +2034,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:rules ");
 
@@ -2091,11 +2091,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CShapeLayout::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2114,7 +2114,7 @@ namespace OOX
 						m_oRules = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:shapelayout ");
 
@@ -2176,18 +2176,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSignatureLine::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:signatureline ");
 
@@ -2249,19 +2249,19 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring>                                  m_sAddXml;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oAllowComments;
-			nullable<SimpleTypes::CExt<>>                      m_oExt;
-			nullable<SimpleTypes::CGuid>                       m_oId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>  m_oIsSignatureLine;
-			nullable<SimpleTypes::CGuid>                       m_oProvId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>  m_oShowSignDate;
-			nullable<std::wstring>                                  m_sSigningInstructions;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oSigningInstructionsSet;
-			nullable<std::wstring>                                  m_sSigProvUrl;
-			nullable<std::wstring>                                  m_sSuggestedSigner;
-			nullable<std::wstring>                                  m_sSuggestedSigner2;
-			nullable<std::wstring>                                  m_sSuggestedSignerEmail;
+			nullable<std::wstring>								m_sAddXml;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oAllowComments;
+			nullable<SimpleTypes::CExt<>>						m_oExt;
+			nullable<SimpleTypes::CGuid>						m_oId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>	m_oIsSignatureLine;
+			nullable<SimpleTypes::CGuid>						m_oProvId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>	m_oShowSignDate;
+			nullable<std::wstring>								m_sSigningInstructions;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oSigningInstructionsSet;
+			nullable<std::wstring>								m_sSigProvUrl;
+			nullable<std::wstring>								m_sSuggestedSigner;
+			nullable<std::wstring>								m_sSuggestedSigner2;
+			nullable<std::wstring>								m_sSuggestedSignerEmail;
 		};
 		//--------------------------------------------------------------------------------
 		// CSkew 14.2.2.31 (Part 4)
@@ -2279,18 +2279,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSkew::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<o:skew ");
 
@@ -2333,12 +2333,12 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CExt<>>                      m_oExt;
-			nullable<std::wstring>                                  m_sId;
-			nullable<std::wstring>                                  m_sMatrix;
-			nullable<std::wstring>                                  m_sOffset;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oOn;
-			nullable<std::wstring>                                  m_sOrigin;
+			nullable<SimpleTypes::CExt<>>						m_oExt;
+			nullable<std::wstring>								m_sId;
+			nullable<std::wstring>								m_sMatrix;
+			nullable<std::wstring>								m_sOffset;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oOn;
+			nullable<std::wstring>								m_sOrigin;
 		};
 	} // namespace Vml
 } // namespace OOX

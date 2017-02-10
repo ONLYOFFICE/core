@@ -81,13 +81,9 @@ std::wstring RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 
     std::wstring sResult = L"{\\pict";
 
-	//if(-1 != m_nShapeId)
-	//{
-	//	sResult.AppendFormat(L"{\\*\\picprop\\shplid%d", m_nShapeId);
-	//	sResult += m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
-	//}
-	//else
-	//	sResult.AppendFormat(L"{\\*\\picprop" + m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
+	if (!dump_shape_properties.empty())
+		sResult += L"{\\*\\picprop" + dump_shape_properties + L"}";
+
 	RENDER_RTF_INT( (int)m_dScaleX, sResult, L"picscalex" )
 	RENDER_RTF_INT( (int)m_dScaleY, sResult, L"picscaley" )
 	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )

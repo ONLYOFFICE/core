@@ -56,7 +56,7 @@ public:
 			oDocDefaultsReader.Parse( oParam );
 		}
 		
-		for (long i=0; i< m_ooxStyles->m_arrStyle.size(); i++)
+		for (size_t i = 0; i< m_ooxStyles->m_arrStyle.size(); i++)
 		{
 			RtfStylePtr oNewStyle;
 			OOXStyleReader oStyleReader(m_ooxStyles->m_arrStyle[i]);
@@ -68,7 +68,7 @@ public:
 		}
 		//только чтобы добавить связи между стилями
 		
-		for (long i=0; i< m_ooxStyles->m_arrStyle.size(); i++)
+		for (size_t i=0; i< m_ooxStyles->m_arrStyle.size(); i++)
 		{
 			OOXStyleReader oStyleReader(m_ooxStyles->m_arrStyle[i]);
 			oStyleReader.ParseRelations( oParam );

@@ -322,9 +322,12 @@ public:
             }
         }
 
-        int newLen = (int)m_arAdjustments.size();
-        for (int i = newLen; i < nOldLen; ++i)
+        size_t newLen = m_arAdjustments.size();
+        
+		for (size_t i = newLen; i < nOldLen; ++i)
+		{
             m_arAdjustments.push_back(oOldAdj[i]);
+		}
         return true;
     }
 

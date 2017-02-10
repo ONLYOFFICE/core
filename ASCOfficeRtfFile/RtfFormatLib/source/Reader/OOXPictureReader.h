@@ -46,24 +46,22 @@ public:
 		m_ooxDrawing	= ooxDrawing;
 	}
  
-	bool Parse( ReaderParameter oParam , RtfShape& oOutput)
+	int Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	{
-		if (m_ooxDrawing == NULL) return false;
-
-		std::wstring sXml = m_ooxDrawing->m_sXml.IsInit() ? *m_ooxDrawing->m_sXml : L"";
+		if (m_ooxDrawing == NULL) return 0;
 
 		if (m_ooxDrawing->m_oInline.IsInit())
 		{
 			OOXDrawingInlineReader oDrawingInlineReader(m_ooxDrawing->m_oInline.GetPointer());
-			return oDrawingInlineReader.Parse( oParam, oOutput );
+			return oDrawingInlineReader.Parse( oParam, pOutput );
 		}
 
 		if (m_ooxDrawing->m_oAnchor.IsInit())
 		{
 			OOXDrawingAnchorReader oDrawingAnchorReader(m_ooxDrawing->m_oAnchor.GetPointer());
-			return oDrawingAnchorReader.Parse( oParam, oOutput );
+			return oDrawingAnchorReader.Parse( oParam, pOutput );
 		}
 
-		return false;
+		return 0;
 	}
 };

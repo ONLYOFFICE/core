@@ -44,25 +44,23 @@ public:
 		m_ooxAnchor = ooxAnchor;
 	}
 	
-	bool Parse( ReaderParameter oParam , RtfShape& oOutput)
+	int Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	{
-		if (m_ooxAnchor == NULL) return false;
+		if (m_ooxAnchor == NULL) return 0;
 
-		oOutput.m_oPicture			= RtfPicturePtr( new RtfPicture() );
-		oOutput.m_eAnchorTypeShape	= RtfShape::st_anchor;
-		oOutput.m_nShapeType		= 75;//NSOfficeDrawing::sptPictureFrame;
+		pOutput->m_eAnchorTypeShape	= RtfShape::st_anchor;
 
-		oOutput.m_bAllowOverlap		= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool()	: false;
-		oOutput.m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit()	? m_ooxAnchor->m_oBehindDoc->ToBool()		: false;
-		oOutput.m_bHidden			= m_ooxAnchor->m_oHidden.IsInit()		? m_ooxAnchor->m_oHidden->ToBool()			: false;
-		oOutput.m_bLayoutInCell		= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool()	: false;
-		oOutput.m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
-		oOutput.m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
+		pOutput->m_bAllowOverlap	= m_ooxAnchor->m_oAllowOverlap.IsInit() ? m_ooxAnchor->m_oAllowOverlap->ToBool()	: false;
+		pOutput->m_nZOrderRelative	= m_ooxAnchor->m_oBehindDoc.IsInit()	? m_ooxAnchor->m_oBehindDoc->ToBool()		: false;
+		pOutput->m_bHidden			= m_ooxAnchor->m_oHidden.IsInit()		? m_ooxAnchor->m_oHidden->ToBool()			: false;
+		pOutput->m_bLayoutInCell	= m_ooxAnchor->m_oLayoutInCell.IsInit() ? m_ooxAnchor->m_oLayoutInCell->ToBool()	: false;
+		pOutput->m_bLockAnchor		= m_ooxAnchor->m_oLocked.IsInit()		? m_ooxAnchor->m_oLocked->ToBool()			: false;
+		pOutput->m_nZOrder			= m_ooxAnchor->m_oRelativeHeight.IsInit() ? true : false;
 			
-		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
-		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? m_ooxAnchor->m_oDistT->ToTwips() : PROP_DEF;
-		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? m_ooxAnchor->m_oDistR->ToTwips() : PROP_DEF;
-		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? m_ooxAnchor->m_oDistB->ToTwips() : PROP_DEF;
+		int nDistLeft	= m_ooxAnchor->m_oDistL.IsInit() ? (int)m_ooxAnchor->m_oDistL->ToTwips() : PROP_DEF;
+		int nDistTop	= m_ooxAnchor->m_oDistT.IsInit() ? (int)m_ooxAnchor->m_oDistT->ToTwips() : PROP_DEF;
+		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? (int)m_ooxAnchor->m_oDistR->ToTwips() : PROP_DEF;
+		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? (int)m_ooxAnchor->m_oDistB->ToTwips() : PROP_DEF;
 
 		bool bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
 
@@ -74,19 +72,19 @@ public:
 
 		if( m_ooxAnchor->m_oSimplePos.IsInit())
 		{
-			nLeft	= m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
-			nTop	= m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
+			nLeft	= (int)m_ooxAnchor->m_oSimplePos->m_oX.ToTwips() ;
+			nTop	= (int)m_ooxAnchor->m_oSimplePos->m_oY.ToTwips();
 		}
 		
 		if( m_ooxAnchor->m_oExtent.IsInit() )
 		{
-			nWidth	= m_ooxAnchor->m_oExtent->m_oCx.ToTwips();
-			nHeight = m_ooxAnchor->m_oExtent->m_oCy.ToTwips();
+			nWidth	= (int)m_ooxAnchor->m_oExtent->m_oCx.ToTwips();
+			nHeight = (int)m_ooxAnchor->m_oExtent->m_oCy.ToTwips();
 
-			if( PROP_DEF != oOutput.m_nLeft && PROP_DEF != oOutput.m_nTop )//всегда !!
+			if( PROP_DEF != pOutput->m_nLeft && PROP_DEF != pOutput->m_nTop )//всегда !!
 			{
-				oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
-				oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
+				pOutput->m_nRight	= pOutput->m_nLeft	+ nWidth;
+				pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;
 			}
 		}
 		if( m_ooxAnchor->m_oPositionH.IsInit() )
@@ -97,43 +95,43 @@ public:
 				{
 					case SimpleTypes::relfromhCharacter: 
 					{
-						oOutput.m_nPositionHRelative	= 3;
-						oOutput.m_eXAnchor				= RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative	= 3;
+						pOutput->m_eXAnchor				= RtfShape::ax_margin;
 					}break;
 					case SimpleTypes::relfromhColumn: 					
 					{
-						oOutput.m_nPositionHRelative = 2;
-						oOutput.m_eXAnchor = RtfShape::ax_column;
+						pOutput->m_nPositionHRelative = 2;
+						pOutput->m_eXAnchor = RtfShape::ax_column;
 					}break;
 					case SimpleTypes::relfromhInsideMargin: 					
 					{
-						oOutput.m_nPositionHRelative = 6;
-						oOutput.m_eXAnchor = RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative = 6;
+						pOutput->m_eXAnchor = RtfShape::ax_margin;
 					}break;
 					case SimpleTypes::relfromhLeftMargin: 					
 					{
-						oOutput.m_nPositionHRelative = 4;
-						oOutput.m_eXAnchor = RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative = 4;
+						pOutput->m_eXAnchor = RtfShape::ax_margin;
 					}break;
 					case SimpleTypes::relfromhMargin: 					
 					{
-						oOutput.m_nPositionHRelative = 0;
-						oOutput.m_eXAnchor = RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative = 0;
+						pOutput->m_eXAnchor = RtfShape::ax_margin;
 					}break;
 					case SimpleTypes::relfromhOutsideMargin: 					
 					{
-						oOutput.m_nPositionHRelative = 7;
-						oOutput.m_eXAnchor = RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative = 7;
+						pOutput->m_eXAnchor = RtfShape::ax_margin;
 					}break;
 					case SimpleTypes::relfromhPage          : 					
 					{
-						oOutput.m_nPositionHRelative = 1;
-						oOutput.m_eXAnchor = RtfShape::ax_page;
+						pOutput->m_nPositionHRelative = 1;
+						pOutput->m_eXAnchor = RtfShape::ax_page;
 					}break;
 					case SimpleTypes::relfromhRightMargin   : 					
 					{
-						oOutput.m_nPositionHRelative = 5;
-						oOutput.m_eXAnchor = RtfShape::ax_margin;
+						pOutput->m_nPositionHRelative = 5;
+						pOutput->m_eXAnchor = RtfShape::ax_margin;
 					}break;
 				}
 			}
@@ -141,15 +139,15 @@ public:
 			{
 				switch(m_ooxAnchor->m_oPositionH->m_oAlign->GetValue())
 				{
-					case SimpleTypes::alignhCenter  : oOutput.m_nPositionH = 2; break;
-					case SimpleTypes::alignhInside  : oOutput.m_nPositionH = 4; break;
-					case SimpleTypes::alignhLeft    : oOutput.m_nPositionH = 1; break;
-					case SimpleTypes::alignhOutside : oOutput.m_nPositionH = 5; break;
-					case SimpleTypes::alignhRight   : oOutput.m_nPositionH = 3; break;
+					case SimpleTypes::alignhCenter  : pOutput->m_nPositionH = 2; break;
+					case SimpleTypes::alignhInside  : pOutput->m_nPositionH = 4; break;
+					case SimpleTypes::alignhLeft    : pOutput->m_nPositionH = 1; break;
+					case SimpleTypes::alignhOutside : pOutput->m_nPositionH = 5; break;
+					case SimpleTypes::alignhRight   : pOutput->m_nPositionH = 3; break;
 				}
 			}
 			if (m_ooxAnchor->m_oPositionH->m_oPosOffset.IsInit())
-				oOutput.m_nLeft = m_ooxAnchor->m_oPositionH->m_oPosOffset->ToTwips();
+				pOutput->m_nLeft = (int)m_ooxAnchor->m_oPositionH->m_oPosOffset->ToTwips();
 		}
 		if(m_ooxAnchor->m_oPositionV.IsInit())
 		{
@@ -159,43 +157,43 @@ public:
 				{
 					case SimpleTypes::relfromvBottomMargin  : 
 					{
-						oOutput.m_nPositionVRelative = 5;
-						oOutput.m_eYAnchor = RtfShape::ay_margin;
+						pOutput->m_nPositionVRelative = 5;
+						pOutput->m_eYAnchor = RtfShape::ay_margin;
 					}break;
 					case SimpleTypes::relfromvInsideMargin  :
 					{
-						oOutput.m_nPositionVRelative = 6;
-						oOutput.m_eYAnchor = RtfShape::ay_margin;
+						pOutput->m_nPositionVRelative = 6;
+						pOutput->m_eYAnchor = RtfShape::ay_margin;
 					}break;
 				case SimpleTypes::relfromvLine          :
 					{
-						oOutput.m_nPositionVRelative = 3;
-						oOutput.m_eYAnchor = RtfShape::ay_Para;
+						pOutput->m_nPositionVRelative = 3;
+						pOutput->m_eYAnchor = RtfShape::ay_Para;
 					}break;
 				case SimpleTypes::relfromvMargin        :
 					{
-						oOutput.m_nPositionVRelative = 0;
-						oOutput.m_eYAnchor = RtfShape::ay_margin;
+						pOutput->m_nPositionVRelative = 0;
+						pOutput->m_eYAnchor = RtfShape::ay_margin;
 					}break;
 					case SimpleTypes::relfromvOutsideMargin : 
 					{
-						oOutput.m_nPositionVRelative = 7;
-						oOutput.m_eYAnchor = RtfShape::ay_margin;
+						pOutput->m_nPositionVRelative = 7;
+						pOutput->m_eYAnchor = RtfShape::ay_margin;
 					}break;
 					case SimpleTypes::relfromvPage          :
 					{
-						oOutput.m_nPositionVRelative = 1;
-						oOutput.m_eYAnchor = RtfShape::ay_page;
+						pOutput->m_nPositionVRelative = 1;
+						pOutput->m_eYAnchor = RtfShape::ay_page;
 					}break;
 					case SimpleTypes::relfromvParagraph     :
 					{
-						oOutput.m_nPositionVRelative = 2;
-						oOutput.m_eYAnchor = RtfShape::ay_Para;
+						pOutput->m_nPositionVRelative = 2;
+						pOutput->m_eYAnchor = RtfShape::ay_Para;
 					}break;
 					case SimpleTypes::relfromvTopMargin     :
 					{
-						oOutput.m_nPositionVRelative = 4;
-						oOutput.m_eYAnchor = RtfShape::ay_margin;
+						pOutput->m_nPositionVRelative = 4;
+						pOutput->m_eYAnchor = RtfShape::ay_margin;
 					}break;
 				}
 			}
@@ -203,44 +201,44 @@ public:
 			{
 				switch(m_ooxAnchor->m_oPositionV->m_oAlign->GetValue())
 				{
-					case SimpleTypes::alignvBottom  : oOutput.m_nPositionV = 3; break;
-					case SimpleTypes::alignvCenter  : oOutput.m_nPositionV = 2; break;
-					case SimpleTypes::alignvInside  : oOutput.m_nPositionV = 4; break;
-					case SimpleTypes::alignvOutside : oOutput.m_nPositionV = 5; break;
-					case SimpleTypes::alignvTop     : oOutput.m_nPositionV = 1; break;
+					case SimpleTypes::alignvBottom  : pOutput->m_nPositionV = 3; break;
+					case SimpleTypes::alignvCenter  : pOutput->m_nPositionV = 2; break;
+					case SimpleTypes::alignvInside  : pOutput->m_nPositionV = 4; break;
+					case SimpleTypes::alignvOutside : pOutput->m_nPositionV = 5; break;
+					case SimpleTypes::alignvTop     : pOutput->m_nPositionV = 1; break;
 				}
 			}
 			if(m_ooxAnchor->m_oPositionV->m_oPosOffset.IsInit())
-				oOutput.m_nTop = m_ooxAnchor->m_oPositionV->m_oPosOffset->ToTwips();
+				pOutput->m_nTop = (int)m_ooxAnchor->m_oPositionV->m_oPosOffset->ToTwips();
 		}
 
 		if(m_ooxAnchor->m_oWrapNone.IsInit())
-			oOutput.m_nWrapType = 3;
+			pOutput->m_nWrapType = 3;
 		if(m_ooxAnchor->m_oWrapSquare.IsInit())
 		{
-			oOutput.m_nWrapType = 2;
+			pOutput->m_nWrapType = 2;
 			if (m_ooxAnchor->m_oWrapSquare->m_oWrapText.IsInit())
 			{
 				switch(m_ooxAnchor->m_oWrapSquare->m_oWrapText->GetValue())
 				{
-				case SimpleTypes::wraptextBothSides : oOutput.m_nWrapSideType = 0; break;
-				case SimpleTypes::wraptextLargest   : oOutput.m_nWrapSideType = 3; break;
-				case SimpleTypes::wraptextLeft      : oOutput.m_nWrapSideType = 1; break;
-				case SimpleTypes::wraptextRight     : oOutput.m_nWrapSideType = 2; break;
+				case SimpleTypes::wraptextBothSides : pOutput->m_nWrapSideType = 0; break;
+				case SimpleTypes::wraptextLargest   : pOutput->m_nWrapSideType = 3; break;
+				case SimpleTypes::wraptextLeft      : pOutput->m_nWrapSideType = 1; break;
+				case SimpleTypes::wraptextRight     : pOutput->m_nWrapSideType = 2; break;
 				}
 			}
 		}
 		if(m_ooxAnchor->m_oWrapThrough.IsInit())
 		{
-			oOutput.m_nWrapType = 5;
+			pOutput->m_nWrapType = 5;
 			if (m_ooxAnchor->m_oWrapThrough->m_oWrapText.IsInit())
 			{
 				switch(m_ooxAnchor->m_oWrapThrough->m_oWrapText->GetValue())
 				{
-				case SimpleTypes::wraptextBothSides : oOutput.m_nWrapSideType = 0; break;
-				case SimpleTypes::wraptextLargest   : oOutput.m_nWrapSideType = 3; break;
-				case SimpleTypes::wraptextLeft      : oOutput.m_nWrapSideType = 1; break;
-				case SimpleTypes::wraptextRight     : oOutput.m_nWrapSideType = 2; break;
+				case SimpleTypes::wraptextBothSides : pOutput->m_nWrapSideType = 0; break;
+				case SimpleTypes::wraptextLargest   : pOutput->m_nWrapSideType = 3; break;
+				case SimpleTypes::wraptextLeft      : pOutput->m_nWrapSideType = 1; break;
+				case SimpleTypes::wraptextRight     : pOutput->m_nWrapSideType = 2; break;
 				}
 			}
 			if (m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon.IsInit())///??? todooo twips ? pt?
@@ -251,28 +249,28 @@ public:
 					nValueX = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
 					nValueY = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
 					
-					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
+					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
 				}
-				for( int i = 0; i < m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo.size(); i++ )
+				for (size_t i = 0; i < m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
 					nValueX = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
 					nValueY = m_ooxAnchor->m_oWrapThrough->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
 					
-					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
+					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY));
 				}
 			}
 		}
 		if(m_ooxAnchor->m_oWrapTight.IsInit())
 		{
-			oOutput.m_nWrapType = 4;
+			pOutput->m_nWrapType = 4;
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapText.IsInit())
 			{
 				switch(m_ooxAnchor->m_oWrapTight->m_oWrapText->GetValue())
 				{
-				case SimpleTypes::wraptextBothSides : oOutput.m_nWrapSideType = 0; break;
-				case SimpleTypes::wraptextLargest   : oOutput.m_nWrapSideType = 3; break;
-				case SimpleTypes::wraptextLeft      : oOutput.m_nWrapSideType = 1; break;
-				case SimpleTypes::wraptextRight     : oOutput.m_nWrapSideType = 2; break;
+				case SimpleTypes::wraptextBothSides : pOutput->m_nWrapSideType = 0; break;
+				case SimpleTypes::wraptextLargest   : pOutput->m_nWrapSideType = 3; break;
+				case SimpleTypes::wraptextLeft      : pOutput->m_nWrapSideType = 1; break;
+				case SimpleTypes::wraptextRight     : pOutput->m_nWrapSideType = 2; break;
 				}
 			}
 			if (m_ooxAnchor->m_oWrapTight->m_oWrapPolygon.IsInit())
@@ -284,49 +282,36 @@ public:
 					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oX.ToTwips();
 					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_oStart->m_oY.ToTwips();
 					
-					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
+					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 
-				for( int i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
+				for (size_t i = 0; i < m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo.size(); i++ )
 				{
 					nValueX = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oX.ToTwips();
 					nValueY = m_ooxAnchor->m_oWrapTight->m_oWrapPolygon->m_arrLineTo[i]->m_oY.ToTwips();
 					
-					oOutput.m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
+					pOutput->m_aWrapPoints.push_back( std::pair<int,int>(nValueX, nValueY) );
 				}
 			}
 		}
 		if(m_ooxAnchor->m_oWrapTopAndBottom.IsInit())
-			oOutput.m_nWrapType = 1;
+			pOutput->m_nWrapType = 1;
 		
+		int result = 0;
 		if( m_ooxAnchor->m_oGraphic.IsInit() )
 		{
-			OOXPictureGraphicReader oPictureReader(m_ooxAnchor->m_oGraphic.GetPointer());
+			OOXGraphicReader oGraphicReader(m_ooxAnchor->m_oGraphic.GetPointer());
 
-			if (oPictureReader.Parse( oParam, oOutput) == false)
-			{
-				return false;
-			}
+			result = oGraphicReader.Parse( oParam, pOutput);			
 		}
-		//изменяем scale в соответсявии с выходным размером
-		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )
+		if( PROP_DEF == pOutput->m_nBottom && pOutput->m_nTop !=PROP_DEF )
 		{
-			int nNewScale = (int)(100 * ( 1.0 * nWidth / oOutput.m_oPicture->m_nWidthGoal ));
-			oOutput.m_oPicture->m_dScaleX	= nNewScale;
+			pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;
 		}
-		if( PROP_DEF != nHeight && PROP_DEF != oOutput.m_oPicture->m_nHeightGoal )
+		if( PROP_DEF == pOutput->m_nRight && pOutput->m_nLeft !=PROP_DEF )
 		{
-			int nNewScale = (int)(100 * ( 1.0 * nHeight / oOutput.m_oPicture->m_nHeightGoal ));
-			oOutput.m_oPicture->m_dScaleY	= nNewScale;
+			pOutput->m_nRight	= pOutput->m_nLeft	+ nWidth;
 		}
-		if( PROP_DEF == oOutput.m_nBottom && oOutput.m_nTop !=PROP_DEF )
-		{
-			oOutput.m_nBottom	= oOutput.m_nTop	+ nHeight;
-		}
-		if( PROP_DEF == oOutput.m_nRight && oOutput.m_nLeft !=PROP_DEF )
-		{
-			oOutput.m_nRight	= oOutput.m_nLeft	+ nWidth;
-		}
-		return true;
+		return result;
 	}
 };

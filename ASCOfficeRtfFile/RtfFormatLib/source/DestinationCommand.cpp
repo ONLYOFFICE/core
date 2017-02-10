@@ -1140,7 +1140,7 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		}
 	}
     COMMAND_RTF_INT ( "clwWidth",	cellProps->m_nWidth,		sCommand, hasParameter, parameter )
-    COMMAND_RTF_BOOL( "clhidemark",cellProps->m_bHideMark,		sCommand, hasParameter, parameter )
+    COMMAND_RTF_BOOL( "clhidemark",	cellProps->m_bHideMark,		sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "clvertalt",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Top )
     COMMAND_RTF_INT ( "clvertalc",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Center )
     COMMAND_RTF_INT ( "clvertalb",	cellProps->m_eAlign,		sCommand, true, RtfCellProperty::ca_Bottom )
@@ -1653,7 +1653,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 	
     COMMAND_RTF_INT ( "objw",		m_oOle.m_nWidth,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "objh",		m_oOle.m_nHeight,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "objemb",	m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_emb )
+    COMMAND_RTF_INT ( "objemb",		m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_emb )
     COMMAND_RTF_INT ( "objlink",	m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_link )
 	
     else if ( "objclass" == sCommand )
@@ -1760,6 +1760,31 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 		m_oShape.m_sGtextFont = sValue;
 		return;
 	}
+	else if ( L"wzSigSetupId" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupId = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupProvId" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupProvId = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSigner" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSigner = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSigner2" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSigner2 = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSignerEmail" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSignerEmail = sValue;
+		return;
+	}
 //числовые
 	int nValue = 0;
 
@@ -1802,7 +1827,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	    
         boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 		
-		for (int i = 2 ; i < splitted.size(); i++)
+		for (size_t i = 2 ; i < splitted.size(); i++)
 		{
 			XmlUtils::replace_all(splitted[i], L")", L"");
 			XmlUtils::replace_all(splitted[i], L"(", L"");
@@ -1829,7 +1854,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	    
         boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 		
-		for (int i = 2 ; i < splitted.size(); i++)
+		for (size_t i = 2 ; i < splitted.size(); i++)
 		{
 			XmlUtils::replace_all(splitted[i], L")", L"");
 			XmlUtils::replace_all(splitted[i], L"(", L"");
@@ -1847,7 +1872,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
             }
             catch(...){}
 
-			m_oShape.m_aPVerticles.push_back( std::pair<int, int>(x, y) );
+			m_oShape.m_aPVerticles.push_back( std::make_pair(x, y) );
 		}
 	}	
 	else if ( L"pSegmentInfo" == m_sPropName )
@@ -1856,7 +1881,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	    
         boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 		
-		for (int i = 2 ; i < splitted.size(); i++)
+		for (size_t i = 2 ; i < splitted.size(); i++)
 		{
             int val = 0;
             try
@@ -1922,6 +1947,34 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fillOpacity"	== m_sPropName ) m_oShape.m_nFillOpacity	= nValue * 100 / 65536;
 	else if ( L"fillAngle"		== m_sPropName ) m_oShape.m_nFillAngle		= nValue / 65536;
 	else if ( L"fillFocus"		== m_sPropName ) m_oShape.m_nFillFocus		= nValue;
+	else if ( L"fillShadeType"	== m_sPropName ) m_oShape.m_nFillShadeType	= nValue;
+	else if ( L"fillShadeColors"== m_sPropName )
+	{
+		std::vector< std::wstring > splitted;
+	    
+        boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		
+		for (size_t i = 2 ; i < splitted.size(); i++)
+		{
+			XmlUtils::replace_all(splitted[i], L")", L"");
+			XmlUtils::replace_all(splitted[i], L"(", L"");
+			int pos = splitted[i].find(L",");
+
+            int col = 0, pos_col = 0;
+            try
+            {
+				col = _wtoi(splitted[i].substr(0, pos).c_str());
+            }
+            catch(...){}
+            try
+            {
+                pos_col = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str()) * 100 / 65536;
+            }
+            catch(...){}
+
+			m_oShape.m_aFillShadeColors.push_back( std::make_pair(col, pos_col) );
+		}
+	}
 
 	else if ( L"fGtext"			== m_sPropName ) m_oShape.m_bGtext			= nValue;
 	else if ( L"gtextSize"		== m_sPropName ) m_oShape.m_nGtextSize		= nValue;
@@ -1930,15 +1983,18 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"fLine"					== m_sPropName ) m_oShape.m_bLine					= ( 0 == nValue ? false : true );
 	else if ( L"lineStartArrowhead"		== m_sPropName ) m_oShape.m_nLineStartArrow			= nValue;
 	else if ( L"lineColor"				== m_sPropName ) m_oShape.m_nLineColor				= nValue;
-	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth= nValue;
+	else if ( L"lineStartArrowWidth"	== m_sPropName ) m_oShape.m_nLineStartArrowWidth	= nValue;
 	else if ( L"lineStartArrowLength"	== m_sPropName ) m_oShape.m_nLineStartArrowLength	= nValue;
-	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow		= nValue;
+	else if ( L"lineEndArrowhead"		== m_sPropName ) m_oShape.m_nLineEndArrow			= nValue;
 	else if ( L"lineEndArrowWidth"		== m_sPropName ) m_oShape.m_nLineEndArrowWidth		= nValue;
 	else if ( L"lineEndArrowLength"		== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
 	else if ( L"lineWidth"				== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
-	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing		= nValue;
-	else if (L"cxstyle"					== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
-	else if (L"cxk"						== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
+	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
+	else if ( L"cxstyle"				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
+	else if ( L"cxk"					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
+//office signature
+	else if ( L"fIsSignatureLine"		== m_sPropName ) m_oShape.m_bIsSignatureLine		= nValue;
+	else if ( L"fSigSetupAllowComments"	== m_sPropName ) m_oShape.m_bSigSetupAllowComments	= nValue;
 	else
 	{
         std::wstring name	= m_sPropName;
@@ -2350,7 +2406,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 
 			oReader.m_oState->m_oCurOldList = oOldList;
 			bool bExist = false;
-			for( int i = 0; i < (int)oDocument.m_aOldLists.size(); i++ )
+			for (size_t i = 0; i < oDocument.m_aOldLists.size(); i++ )
 				if ( oReader.m_oState->m_oCurOldList == *oDocument.m_aOldLists[i] )
 				{
 					bExist = true;
@@ -2535,7 +2591,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	}
     else if ( "shpgrp" == sCommand )
 	{
-		RtfShapeGroupPtr oNewShape ( new RtfShapeGroup() );
+		RtfShapePtr oNewShape ( new RtfShape() );
 		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
 		
 		RtfShapeGroupReader oShapeGroupReader( *oNewShape );

@@ -387,28 +387,28 @@ public:
 		 {
             if( "colortbl" == sKey )
 				return true;
-            else if( "cmaindarkone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarkone;
+            else if( "cmaindarkone"	== sKey )					oCurColor.m_eTheme = RtfColor::cmaindarkone;
             else if( "cmainlightone"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlightone;
-            else if( "cmaindarktwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarktwo;
+            else if( "cmaindarktwo"		== sKey )				oCurColor.m_eTheme = RtfColor::cmaindarktwo;
             else if( "cmainlighttwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cmainlighttwo;
             else if( "caccentone"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentone;
             else if( "caccenttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::caccenttwo;
-            else if( "caccentthree"	== sKey )				oCurColor.m_eTheme = RtfColor::caccentthree;
+            else if( "caccentthree"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentthree;
             else if( "caccentfour"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfour;
             else if( "caccentfive"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentfive;
             else if( "caccentsix"		== sKey )				oCurColor.m_eTheme = RtfColor::caccentsix;
             else if( "chyperlink"		== sKey )				oCurColor.m_eTheme = RtfColor::chyperlink;
-            else if( "cfollowedhyperlink" == sKey )			oCurColor.m_eTheme = RtfColor::cfollowedhyperlink;
+            else if( "cfollowedhyperlink" == sKey )				oCurColor.m_eTheme = RtfColor::cfollowedhyperlink;
             else if( "cbackgroundone"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundone;
-            else if( "ctextone"		== sKey )				oCurColor.m_eTheme = RtfColor::ctextone;
+            else if( "ctextone"			== sKey )				oCurColor.m_eTheme = RtfColor::ctextone;
             else if( "cbackgroundtwo"	== sKey )				oCurColor.m_eTheme = RtfColor::cbackgroundtwo;
-            else if( "ctexttwo"		== sKey )				oCurColor.m_eTheme = RtfColor::ctexttwo;
+            else if( "ctexttwo"			== sKey )				oCurColor.m_eTheme = RtfColor::ctexttwo;
 			
-            else if( "ctint" == sKey	&& true == bHasPar )	oCurColor.m_byteTint = nPar;
-            else if( "cshade" == sKey	&& true == bHasPar )	oCurColor.m_byteShade = nPar;
-            else if( "red" == sKey		&& true == bHasPar )	oCurColor.m_byteRed = nPar;
-            else if( "green" == sKey	&& true == bHasPar )	oCurColor.m_byteGreen = nPar;
-            else if( "blue" == sKey	&& true == bHasPar )	oCurColor.m_byteBlue = nPar;
+            else if( "ctint"	== sKey	&& true == bHasPar )	oCurColor.m_byteTint	= nPar;
+            else if( "cshade"	== sKey	&& true == bHasPar )	oCurColor.m_byteShade	= nPar;
+            else if( "red"		== sKey	&& true == bHasPar )	oCurColor.m_byteRed		= nPar;
+            else if( "green"	== sKey	&& true == bHasPar )	oCurColor.m_byteGreen	= nPar;
+            else if( "blue"		== sKey	&& true == bHasPar )	oCurColor.m_byteBlue	= nPar;
 			else
 			{
 				return false;
@@ -746,11 +746,11 @@ public:
 	{
 		if( NULL != m_oShape.m_oPicture && RtfPicture::dt_wmf == m_oShape.m_oPicture->eDataType )
 		{
-			if( PROP_DEF != m_oShape.m_oPicture->m_nWidthGoal && PROP_DEF != (int)m_oShape.m_oPicture->m_dScaleX &&
-				PROP_DEF != m_oShape.m_oPicture->m_nHeightGoal && PROP_DEF != (int)m_oShape.m_oPicture->m_dScaleY )
+			if( PROP_DEF != m_oShape.m_oPicture->m_nWidthGoal	&& PROP_DEF != (int)m_oShape.m_oPicture->m_dScaleX &&
+				PROP_DEF != m_oShape.m_oPicture->m_nHeightGoal	&& PROP_DEF != (int)m_oShape.m_oPicture->m_dScaleY )
 			{
 				PLACEABLEMETAHEADER oPLACEABLEMETAHEADER;
-				oPLACEABLEMETAHEADER.Right = long( (m_oShape.m_oPicture->m_dScaleX / 100.0) * m_oShape.m_oPicture->m_nWidthGoal * ( 96.0 / 1440 ) ); //to pixel
+				oPLACEABLEMETAHEADER.Right	= long( (m_oShape.m_oPicture->m_dScaleX / 100.0) * m_oShape.m_oPicture->m_nWidthGoal * ( 96.0 / 1440 ) ); //to pixel
 				oPLACEABLEMETAHEADER.Bottom = long( (m_oShape.m_oPicture->m_dScaleY / 100.0) * m_oShape.m_oPicture->m_nHeightGoal * ( 96.0 / 1440 ) );
 				oPLACEABLEMETAHEADER.CalculateChecksum();
                 m_sData = oPLACEABLEMETAHEADER.ToString() + m_sData;
@@ -948,10 +948,10 @@ public:
 class RtfShapeGroupReader : public RtfShapeReader
 {
 public: 
-	RtfShapeGroup&	m_oShapeGroup;
-	bool			m_bHeader; //чтобы отличать заголовок от вложенных групп
+	RtfShape&	m_oShapeGroup;
+	bool		m_bHeader; //чтобы отличать заголовок от вложенных групп
 
-	RtfShapeGroupReader( RtfShapeGroup& oShape ) : RtfShapeReader(oShape), m_oShapeGroup(oShape)
+	RtfShapeGroupReader( RtfShape& oShape ) : RtfShapeReader(oShape), m_oShapeGroup(oShape)
 	{
 		m_bHeader = true;
 	}
@@ -963,8 +963,8 @@ public:
 				m_bHeader = false;
 			else
 			{
-				RtfShapeGroupPtr	pNewShape			( new RtfShapeGroup() );
-				RtfShapeGroupReader oShapeGroupReader	( *pNewShape );
+				RtfShapePtr	pNewShape ( new RtfShape() );
+				RtfShapeGroupReader oShapeGroupReader ( *pNewShape );
 
 				StartSubReader( oShapeGroupReader, oDocument, oReader );
 				m_oShapeGroup.AddItem( pNewShape );
@@ -1387,7 +1387,7 @@ private:
             return;
         nStartTokenize = arResult[0].length();
 
-        for (int i = 1 ; i < arResult.size(); i++)
+        for (size_t i = 1 ; i < arResult.size(); i++)
         {
             std::wstring sResTokenize = arResult[i];
 
@@ -1427,7 +1427,7 @@ private:
 			else
 				nCommand = 0;
 
-            nStartTokenize += sResTokenize.length();
+            nStartTokenize += (int)sResTokenize.length();
 		}
 		if( L"" == sCharCode || L"" == sCharFont )
 			return;

@@ -40,21 +40,21 @@ class OOXReader
 {
 public: 
 
-    RtfConvertationManager*						m_convertationManager;
-	std::wstring								m_sPath;
+    RtfConvertationManager*							m_convertationManager;
+	std::wstring									m_sPath;
 
-	int											m_nCurItap;			//для определение вложенности таблицы
+	int												m_nCurItap;			//для определение вложенности таблицы
 
-	int											m_nCurFittextId;
+	int												m_nCurFittextId;
 	std::map<int, std::wstring>						m_aBookmarks;
 
-	std::map<int, int>							m_mapPictureBullet;
-	std::map<int, TextItemContainerPtr>			m_mapFootnotes;
-	std::map<int, TextItemContainerPtr>			m_mapEndnotes;
+	std::map<int, int>								m_mapPictureBullet;
+	std::map<int, TextItemContainerPtr>				m_mapFootnotes;
+	std::map<int, TextItemContainerPtr>				m_mapEndnotes;
 
 	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapShapeTypes;	
 //------------------------------------------------------------------------
-	OOXIdGenerator			m_oOOXIdGenerator;
+	OOXIdGenerator					m_oOOXIdGenerator;
 
 //Theme Fonts
 	std::wstring					m_smajorAscii;
@@ -67,12 +67,12 @@ public:
 	std::wstring					m_sminorHAnsi;
 
 //defaultStyles
-	RtfCharStylePtr			m_oDefCharStyle;
-	RtfParagraphStylePtr	m_oDefParStyle;
-	RtfTableStylePtr		m_oDefTableStyle;
+	RtfCharStylePtr					m_oDefCharStyle;
+	RtfParagraphStylePtr			m_oDefParStyle;
+	RtfTableStylePtr				m_oDefTableStyle;
 
 //TempFolder
-	std::wstring m_sTempFolder;
+	std::wstring					m_sTempFolder;
 
 	OOXReader( RtfDocument& oDocument, std::wstring  path );
 	bool Parse();

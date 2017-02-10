@@ -40,6 +40,218 @@
 // Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes
 {
+	namespace Vml
+	{
+		enum SptType
+		{    
+			sptMin = 0,    
+			sptNotPrimitive = sptMin,    
+			sptRectangle = 1,    
+			sptRoundRectangle = 2,    
+			sptEllipse = 3,    
+			sptDiamond = 4,    
+			sptIsocelesTriangle = 5,    
+			sptRightTriangle = 6,    
+			sptParallelogram = 7,    
+			sptTrapezoid = 8,    
+			sptHexagon = 9,    
+			sptOctagon = 10,    
+			sptPlus = 11,    
+			sptStar = 12,    
+			sptArrow = 13,    
+			sptThickArrow = 14,   
+			sptHomePlate = 15,    
+			sptCube = 16,    
+			sptBalloon = 17,    
+			sptSeal = 18,    
+			sptArc = 19,    
+			sptLine = 20,    
+			sptPlaque = 21,   
+			sptCan = 22,    
+			sptDonut = 23,    
+			sptTextSimple = 24,    
+			sptTextOctagon = 25,    
+			sptTextHexagon = 26,    
+			sptTextCurve = 27,    
+			sptTextWave = 28,    
+			sptTextRing = 29,    
+			sptTextOnCurve = 30,    
+			sptTextOnRing = 31,    
+			sptStraightConnector1 = 32,    
+			sptBentConnector2 = 33,    
+			sptBentConnector3 = 34,    
+			sptBentConnector4 = 35,    
+			sptBentConnector5 = 36,    
+			sptCurvedConnector2 = 37,    
+			sptCurvedConnector3 = 38,    
+			sptCurvedConnector4 = 39,    
+			sptCurvedConnector5 = 40,    
+			sptCallout1 = 41,    
+			sptCallout2 = 42,    
+			sptCallout3 = 43,   
+			sptAccentCallout1 = 44,    
+			sptAccentCallout2 = 45,    
+			sptAccentCallout3 = 46,    
+			sptBorderCallout1 = 47,    
+			sptBorderCallout2 = 48,    
+			sptBorderCallout3 = 49,    
+			sptAccentBorderCallout1 = 50,    
+			sptAccentBorderCallout2 = 51,    
+			sptAccentBorderCallout3 = 52,    
+			sptRibbon = 53,    
+			sptRibbon2 = 54,    
+			sptChevron = 55,    
+			sptPentagon = 56,  
+			sptNoSmoking = 57,    
+			sptSeal8 = 58,    
+			sptSeal16 = 59,    
+			sptSeal32 = 60,    
+			sptWedgeRectCallout = 61,    
+			sptWedgeRRectCallout = 62,    
+			sptWedgeEllipseCallout = 63,    
+			sptWave = 64,    
+			sptFoldedCorner = 65,    
+			sptLeftArrow = 66,    
+			sptDownArrow = 67,    
+			sptUpArrow = 68,    
+			sptLeftRightArrow = 69,   
+			sptUpDownArrow = 70,    
+			sptIrregularSeal1 = 71,    
+			sptIrregularSeal2 = 72,    
+			sptLightningBolt = 73,    
+			sptHeart = 74,   
+			sptPictureFrame = 75,    
+			sptQuadArrow = 76,    
+			sptLeftArrowCallout = 77,    
+			sptRightArrowCallout = 78,    
+			sptUpArrowCallout = 79,    
+			sptDownArrowCallout = 80,    
+			sptLeftRightArrowCallout = 81,    
+			sptUpDownArrowCallout = 82,    
+			sptQuadArrowCallout = 83,    
+			sptBevel = 84,    
+			sptLeftBracket = 85,    
+			sptRightBracket = 86,    
+			sptLeftBrace = 87,    
+			sptRightBrace = 88,    
+			sptLeftUpArrow = 89,    
+			sptBentUpArrow = 90,    
+			sptBentArrow = 91,    
+			sptSeal24 = 92,    
+			sptStripedRightArrow = 93,    
+			sptNotchedRightArrow = 94,    
+			sptBlockArc = 95,    
+			sptSmileyFace = 96,    
+			sptVerticalScroll = 97,    
+			sptHorizontalScroll = 98,    
+			sptCircularArrow = 99,    
+			sptNotchedCircularArrow = 100,    
+			sptUturnArrow = 101,    
+			sptCurvedRightArrow = 102,    
+			sptCurvedLeftArrow = 103,    
+			sptCurvedUpArrow = 104,    
+			sptCurvedDownArrow = 105,   
+			sptCloudCallout = 106,    
+			sptEllipseRibbon = 107,    
+			sptEllipseRibbon2 = 108,    
+			sptFlowChartProcess = 109,    
+			sptFlowChartDecision = 110,    
+			sptFlowChartInputOutput = 111,    
+			sptFlowChartPredefinedProcess = 112,    
+			sptFlowChartInternalStorage = 113,    
+			sptFlowChartDocument = 114,    
+			sptFlowChartMultidocument = 115,    
+			sptFlowChartTerminator = 116,    
+			sptFlowChartPreparation = 117,    
+			sptFlowChartManualInput = 118,   
+			sptFlowChartManualOperation = 119,   
+			sptFlowChartConnector = 120,    
+			sptFlowChartPunchedCard = 121,    
+			sptFlowChartPunchedTape = 122,    
+			sptFlowChartSummingJunction = 123,   
+			sptFlowChartOr = 124,    
+			sptFlowChartCollate = 125,    
+			sptFlowChartSort = 126,    
+			sptFlowChartExtract = 127,    
+			sptFlowChartMerge = 128,    
+			sptFlowChartOfflineStorage = 129,    
+			sptFlowChartOnlineStorage = 130,    
+			sptFlowChartMagneticTape = 131,    
+			sptFlowChartMagneticDisk = 132,    
+			sptFlowChartMagneticDrum = 133,    
+			sptFlowChartDisplay = 134,    
+			sptFlowChartDelay = 135,   
+			sptTextPlainText = 136,    
+			sptTextStop = 137,    
+			sptTextTriangle = 138,    
+			sptTextTriangleInverted = 139,    
+			sptTextChevron = 140,    
+			sptTextChevronInverted = 141,    
+			sptTextRingInside = 142,    
+			sptTextRingOutside = 143,    
+			sptTextArchUpCurve = 144,    
+			sptTextArchDownCurve = 145,    
+			sptTextCircleCurve = 146,    
+			sptTextButtonCurve = 147,    
+			sptTextArchUpPour = 148,    
+			sptTextArchDownPour = 149,    
+			sptTextCirclePour = 150,    
+			sptTextButtonPour = 151,    
+			sptTextCurveUp = 152,    
+			sptTextCurveDown = 153,   
+			sptTextCascadeUp = 154,   
+			sptTextCascadeDown = 155,   
+			sptTextWave1 = 156,    
+			sptTextWave2 = 157,    
+			sptTextWave3 = 158,    
+			sptTextWave4 = 159,    
+			sptTextInflate = 160,    
+			sptTextDeflate = 161,    
+			sptTextInflateBottom = 162,    
+			sptTextDeflateBottom = 163,    
+			sptTextInflateTop = 164, 
+			sptTextDeflateTop = 165,    
+			sptTextDeflateInflate = 166,    
+			sptTextDeflateInflateDeflate = 167,    
+			sptTextFadeRight = 168,    
+			sptTextFadeLeft = 169,    
+			sptTextFadeUp = 170,    
+			sptTextFadeDown = 171,    
+			sptTextSlantUp = 172,    
+			sptTextSlantDown = 173,    
+			sptTextCanUp = 174,    
+			sptTextCanDown = 175,    
+			sptFlowChartAlternateProcess = 176,    
+			sptFlowChartOffpageConnector = 177,    
+			sptCallout90 = 178,    
+			sptAccentCallout90 = 179,    
+			sptBorderCallout90 = 180,    
+			sptAccentBorderCallout90 = 181,   
+			sptLeftRightUpArrow = 182,    
+			sptSun = 183,    
+			sptMoon = 184,    
+			sptBracketPair = 185,    
+			sptBracePair = 186,    
+			sptSeal4 = 187,    
+			sptDoubleWave = 188,    
+			sptActionButtonBlank = 189,    
+			sptActionButtonHome = 190,    
+			sptActionButtonHelp = 191,    
+			sptActionButtonInformation = 192,    
+			sptActionButtonForwardNext = 193,    
+			sptActionButtonBackPrevious = 194,   
+			sptActionButtonEnd = 195,    
+			sptActionButtonBeginning = 196,    
+			sptActionButtonReturn = 197,    
+			sptActionButtonDocument = 198,    
+			sptActionButtonSound = 199,    
+			sptActionButtonMovie = 200,   
+			sptHostControl = 201,    
+			sptTextBox = 202,   
+			sptMax,    
+			sptNil = 0x0FFF
+		};
+	}
 	//--------------------------------------------------------------------------------
 	// EditAs 14.1.3.1 (Part 4)
 	//--------------------------------------------------------------------------------		
@@ -283,31 +495,31 @@ namespace SimpleTypes
 		{
 			if ( 0 == nType )
 			{
-                    switch (this->m_eValue)
+				switch (this->m_eValue)
 				{
-				case filltypeFrame			: return _T("frame");
-				case filltypeGradient		: return _T("gradient");
-				case filltypeGradientRadial	: return _T("gradientRadial");
-				case filltypePattern		: return _T("pattern");
-				case filltypeSolid			: return _T("solid");
-				case filltypeTile			: return _T("tile");
-				default						: return _T("solid");
+					case filltypeFrame			: return _T("frame");
+					case filltypeGradient		: return _T("gradient");
+					case filltypeGradientRadial	: return _T("gradientRadial");
+					case filltypePattern		: return _T("pattern");
+					case filltypeSolid			: return _T("solid");
+					case filltypeTile			: return _T("tile");
+					default						: return _T("solid");
 				}
 			}
 			else
 			{
-                    switch (this->m_eValue)
+				switch (this->m_eValue)
 				{
-				case filltypeBackground		  : return _T("background");
-				case filltypeFrame			  : return _T("frame");
-				case filltypeGradient		  : return _T("gradient");
-				case filltypeGradientCenter	  : return _T("gradientCenter");
-				case filltypeGradientRadial	  : return _T("gradientRadial");
-				case filltypeGradientUnscaled : return _T("gradientUnscaled");
-				case filltypePattern		  : return _T("pattern");
-				case filltypeSolid			  : return _T("solid");
-				case filltypeTile			  : return _T("tile");
-				default						 : return _T("solid");
+					case filltypeBackground		  : return _T("background");
+					case filltypeFrame			  : return _T("frame");
+					case filltypeGradient		  : return _T("gradient");
+					case filltypeGradientCenter	  : return _T("gradientCenter");
+					case filltypeGradientRadial	  : return _T("gradientRadial");
+					case filltypeGradientUnscaled : return _T("gradientUnscaled");
+					case filltypePattern		  : return _T("pattern");
+					case filltypeSolid			  : return _T("solid");
+					case filltypeTile			  : return _T("tile");
+					default						: return _T("solid");
 				}
 			}
 		}
@@ -438,13 +650,13 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'l':
-                    if      ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
+                    if ( _T("long")   == sValue ) this->m_eValue = strokearrowlengthLong;
 				break;
 			case 'm':
-                    if      ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
+                    if ( _T("medium") == sValue ) this->m_eValue = strokearrowlengthMedium;
 				break;
 			case 's':
-                    if      ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
+                    if ( _T("short")  == sValue ) this->m_eValue = strokearrowlengthShort;
 				break;
 			}
 
@@ -455,10 +667,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case strokearrowlengthLong   : return _T("long");
-			case strokearrowlengthMedium : return _T("medium");
-			case strokearrowlengthShort  : return _T("short");
-			default					: return _T("medium");
+				case strokearrowlengthLong   : return _T("long");
+				case strokearrowlengthMedium : return _T("medium");
+				case strokearrowlengthShort  : return _T("short");
+				default					: return _T("medium");
 			}
 		}
 
@@ -563,13 +775,13 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'm':
-                    if      ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
+                    if ( _T("medium") == sValue ) this->m_eValue = strokearrowwidthMedium;
 				break;
 			case 'n':
-                    if      ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
+                    if ( _T("narrow") == sValue ) this->m_eValue = strokearrowwidthNarrow;
 				break;
 			case 'w':
-                    if      ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
+                    if ( _T("wide")   == sValue ) this->m_eValue = strokearrowwidthWide;
 				break;
 			}
 
@@ -580,10 +792,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case strokearrowwidthMedium : return _T("medium");
-			case strokearrowwidthNarrow : return _T("narrow");
-			case strokearrowwidthWide   : return _T("wide");
-			default					: return _T("medium");
+				case strokearrowwidthMedium : return _T("medium");
+				case strokearrowwidthNarrow : return _T("narrow");
+				case strokearrowwidthWide   : return _T("wide");
+				default					: return _T("medium");
 			}
 		}
 
@@ -619,13 +831,13 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'f':
-                    if      ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
+                    if ( _T("flat")   == sValue ) this->m_eValue = strokeendcapFlat;
 				break;
 			case 'r':
-                    if      ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
+                    if ( _T("round")  == sValue ) this->m_eValue = strokeendcapRound;
 				break;
 			case 's':
-                    if      ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
+                    if ( _T("square") == sValue ) this->m_eValue = strokeendcapSqaure;
 				break;
 			}
 
@@ -777,10 +989,10 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'o':
-                    if      ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
+                    if ( _T("officeopenxmlmath") == sValue ) this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 				break;
 			case 'm':
-                    if      ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
+                    if ( _T("mathml")            == sValue ) this->m_eValue = alternatemathcontenttypeMathMl;
 				break;
 			}
 
@@ -1033,10 +1245,10 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'a':
-                    if      ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
+                    if ( _T("auto")   == sValue ) this->m_eValue = colormodeAuto;
 				break;
 			case 'c':
-                    if      ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
+                    if ( _T("custom") == sValue ) this->m_eValue = colormodeCustom;
 				break;
 			}
 
@@ -1086,16 +1298,16 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'c':
-                    if      ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
+                    if ( _T("curved")   == sValue ) this->m_eValue = connectortypeCurved;
 				break;
 			case 'e':
-                    if      ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
+                    if ( _T("elbow")    == sValue ) this->m_eValue = connectortypeElbow;
 				break;
 			case 'n':
-                    if      ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
+                    if ( _T("none")     == sValue ) this->m_eValue = connectortypeNone;
 				break;
 			case 's':
-                    if      ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
+                    if ( _T("straight") == sValue ) this->m_eValue = connectortypeStraight;
 				break;
 			}
 
@@ -1106,11 +1318,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case connectortypeCurved  : return _T("curved");			
-			case connectortypeElbow   : return _T("elbow");			
-			case connectortypeNone    : return _T("none");			
-			case connectortypeStraight: return _T("straight");			
-			default					  : return _T("none");
+				case connectortypeCurved  : return _T("curved");			
+				case connectortypeElbow   : return _T("elbow");			
+				case connectortypeNone    : return _T("none");			
+				case connectortypeStraight: return _T("straight");			
+				default					  : return _T("none");
 			}
 		}
 
@@ -1147,16 +1359,16 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'c':
-                    if      ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
+                    if ( _T("custom")   == sValue ) this->m_eValue = connecttypeCustom;
 				break;
 			case 'n':
-                    if      ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
+                    if ( _T("none")     == sValue ) this->m_eValue = connecttypeNone;
 				break;
 			case 'r':
-                    if      ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
+                    if ( _T("rect")     == sValue ) this->m_eValue = connecttypeRect;
 				break;
 			case 's':
-                    if      ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
+                    if ( _T("segments") == sValue ) this->m_eValue = connecttypeSegments;
 				break;
 			}
 
@@ -1167,11 +1379,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case connecttypeCustom  : return _T("custom");			
-			case connecttypeNone    : return _T("none");			
-			case connecttypeRect    : return _T("rect");			
-			case connecttypeSegments: return _T("segments");			
-			default					: return _T("none");
+				case connecttypeCustom  : return _T("custom");			
+				case connecttypeNone    : return _T("none");			
+				case connecttypeRect    : return _T("rect");			
+				case connecttypeSegments: return _T("segments");			
+				default					: return _T("none");
 			}
 		}
 
@@ -1247,16 +1459,16 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case '0':
-                    if      ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
+                    if ( _T("0") == sValue ) this->m_eValue = diagramlayout0;
 				break;
 			case '1':
-                    if      ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
+                    if ( _T("1") == sValue ) this->m_eValue = diagramlayout1;
 				break;
 			case '2':
-                    if      ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
+                    if ( _T("2") == sValue ) this->m_eValue = diagramlayout2;
 				break;
 			case '3':
-                    if      ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
+                    if ( _T("3") == sValue ) this->m_eValue = diagramlayout3;
 				break;
 			}
 
@@ -1267,11 +1479,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case diagramlayout0 : return _T("0");			
-			case diagramlayout1 : return _T("1");			
-			case diagramlayout2 : return _T("2");			
-			case diagramlayout3 : return _T("3");			
-			default             : return _T("0");
+				case diagramlayout0 : return _T("0");			
+				case diagramlayout1 : return _T("1");			
+				case diagramlayout2 : return _T("2");			
+				case diagramlayout3 : return _T("3");			
+				default             : return _T("0");
 			}
 		}
 
@@ -1307,22 +1519,22 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'X':
-                    if      ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
+                    if ( _T("XY") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'Y':
-                    if      ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
+                    if ( _T("YZ") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'Z':
-                    if      ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
+                    if ( _T("ZX") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			case 'x':
-                    if      ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
+                    if ( _T("xy") == sValue ) this->m_eValue = extrusionplaneXY;
 				break;
 			case 'y':
-                    if      ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
+                    if ( _T("yz") == sValue ) this->m_eValue = extrusionplaneYZ;
 				break;
 			case 'z':
-                    if      ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
+                    if ( _T("zx") == sValue ) this->m_eValue = extrusionplaneZX;
 				break;
 			}
 
@@ -1372,13 +1584,13 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'b':
-                    if      ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
+                    if ( _T("boundingCube") == sValue ) this->m_eValue = extrusionrenderBoundingCube;
 				break;
 			case 's':
-                    if      ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
+                    if ( _T("solid")        == sValue ) this->m_eValue = extrusionrenderSolid;
 				break;
 			case 'w':
-                    if      ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
+                    if ( _T("wireFrame")    == sValue ) this->m_eValue = extrusionrenderWireFrame;
 				break;
 			}
 
@@ -1389,10 +1601,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case extrusionrenderBoundingCube: return _T("boundingCube");			
-			case extrusionrenderSolid:        return _T("solid");			
-			case extrusionrenderWireFrame:    return _T("wireFrame");			
-			default :					return _T("solid");
+				case extrusionrenderBoundingCube: return _T("boundingCube");			
+				case extrusionrenderSolid:        return _T("solid");			
+				case extrusionrenderWireFrame:    return _T("wireFrame");			
+				default :					return _T("solid");
 			}
 		}
 
@@ -1467,22 +1679,22 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'b':
-                    if      ( _T("bottom") == sValue ) this->m_eValue = howBottom;
+                    if ( _T("bottom") == sValue ) this->m_eValue = howBottom;
 				break;
 			case 'c':
-                    if      ( _T("center") == sValue ) this->m_eValue = howCenter;
+                    if ( _T("center") == sValue ) this->m_eValue = howCenter;
 				break;
 			case 'l':
-                    if      ( _T("left")   == sValue ) this->m_eValue = howLeft;
+                    if ( _T("left")   == sValue ) this->m_eValue = howLeft;
 				break;
 			case 'm':
-                    if      ( _T("middle") == sValue ) this->m_eValue = howMiddle;
+                    if ( _T("middle") == sValue ) this->m_eValue = howMiddle;
 				break;
 			case 'r':
-                    if      ( _T("right")  == sValue ) this->m_eValue = howRight;
+                    if ( _T("right")  == sValue ) this->m_eValue = howRight;
 				break;
 			case 't':
-                    if      ( _T("top")    == sValue ) this->m_eValue = howTop;
+                    if ( _T("top")    == sValue ) this->m_eValue = howTop;
 				break;
 			}
 
@@ -1493,13 +1705,13 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case howBottom: return _T("bottom");			
-			case howCenter: return _T("center");			
-			case howLeft  : return _T("left");			
-			case howMiddle: return _T("middle");			
-			case howRight : return _T("right");			
-			case howTop   : return _T("top");			
-			default       : return _T("top");
+				case howBottom: return _T("bottom");			
+				case howCenter: return _T("center");			
+				case howLeft  : return _T("left");			
+				case howMiddle: return _T("middle");			
+				case howRight : return _T("right");			
+				case howTop   : return _T("top");			
+				default       : return _T("top");
 			}
 		}
 
@@ -1535,13 +1747,13 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'c':
-                    if      ( _T("center") == sValue ) this->m_eValue = hralignCenter;
+                    if ( _T("center") == sValue ) this->m_eValue = hralignCenter;
 				break;
 			case 'l':
-                    if      ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
+                    if ( _T("left")   == sValue ) this->m_eValue = hralignLeft;
 				break;
 			case 'r':
-                    if      ( _T("right")  == sValue ) this->m_eValue = hralignRight;
+                    if ( _T("right")  == sValue ) this->m_eValue = hralignRight;
 				break;
 			}
 
@@ -1552,10 +1764,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case hralignCenter: return _T("center");			
-			case hralignLeft  : return _T("left");			
-			case hralignRight : return _T("right");			
-			default           : return _T("left");
+				case hralignCenter: return _T("center");			
+				case hralignLeft  : return _T("left");			
+				case hralignRight : return _T("right");			
+				default           : return _T("left");
 			}
 		}
 
@@ -1590,10 +1802,10 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'a':
-                    if      ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
+                    if ( _T("auto")   == sValue ) this->m_eValue = insetmodeAuto;
 				break;
 			case 'c':
-                    if      ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
+                    if ( _T("custom") == sValue ) this->m_eValue = insetmodeCustom;
 				break;
 			}
 
@@ -1604,9 +1816,9 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case insetmodeAuto   : return _T("auto");			
-			case insetmodeCustom : return _T("custom");			
-			default					: return _T("auto");
+				case insetmodeAuto   : return _T("auto");			
+				case insetmodeCustom : return _T("custom");			
+				default					: return _T("auto");
 			}
 		}
 
@@ -1642,9 +1854,9 @@ namespace SimpleTypes
 		{
             switch (this->m_eValue)
 			{
-			case oledrawaspectContent	: return _T("Content");
-			case oledrawaspectIcon		: return _T("Icon");
-			default						: return _T("Content");
+				case oledrawaspectContent	: return _T("Content");
+				case oledrawaspectIcon		: return _T("Icon");
+				default						: return _T("Content");
 			}
 		}
 
@@ -1702,12 +1914,12 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case olelinktypeBitmap:  return _T("Bitmap");			
-			case olelinktypeEmf:     return _T("EnhancedMetaFile");			
-			case olelinktypeJpeg:    return _T("Jpeg");			
-			case olelinktypePicture: return _T("Picture");			
-			case olelinktypePng:     return _T("Png");			
-			default :					return _T("Bitmap");
+				case olelinktypeBitmap:  return _T("Bitmap");			
+				case olelinktypeEmf:     return _T("EnhancedMetaFile");			
+				case olelinktypeJpeg:    return _T("Jpeg");			
+				case olelinktypePicture: return _T("Picture");			
+				case olelinktypePng:     return _T("Png");			
+				default :				 return _T("Bitmap");
 			}
 		}
 
@@ -1944,10 +2156,10 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'f':
-                    if      ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
+                    if ( _T("f") == sValue || _T("false") == sValue ) this->m_eValue = bordershadowFalse;
 				break;
 			case 't':
-                    if      ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
+                    if ( _T("t") == sValue || _T("true") == sValue  ) this->m_eValue = bordershadowTrue;
 				break;
 			}
 
@@ -2074,34 +2286,34 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case bordertypeDash:					 return _T("dash");			
-			case bordertypeDashDotDot:            return _T("dashDotDot");			
-			case bordertypeDashDotStroked:        return _T("dashDotStroked");			
-			case bordertypeDashedSmall:           return _T("dashedSmall");			
-			case bordertypeDot:					  return _T("dot");			
-			case bordertypeDotDash:					return _T("dotDash");			
-			case bordertypeDouble:					return _T("double");			
-			case bordertypeDoubleWave:            return _T("doubleWave");			
-			case bordertypeHairline:					return _T("hairline");			
-			case bordertypeHTMLInset:             return _T("HTMLInset");			
-			case bordertypeHTMLOutset:            return _T("HTMLOutset");			
-			case bordertypeNone:					 return _T("none");			
-			case bordertypeSingle:					return _T("single");	
-			case bordertypeThick:					return _T("thick");
-			case bordertypeThickBetweenThin:      return _T("thickBetweenThin");
-			case bordertypeThickBetweenThinLarge: return _T("thickBetweenThinLarge");
-			case bordertypeThickBetweenThinSmall: return _T("thickBetweenThinSmall");
-			case bordertypeThickThin:             return _T("thickThin");
-			case bordertypeThickThinLarge:        return _T("thickThinLarge");
-			case bordertypeThickThinSmall:        return _T("thickThinSmall");
-			case bordertypeThinThick:             return _T("thinThick");
-			case bordertypeThinThickLarge:        return _T("thinThickLarge");
-			case bordertypeThinThickSmall:        return _T("thinThickSmall");
-			case bordertypeThreeDEmboss:          return _T("threeDEmboss");
-			case bordertypeThreeDEngrave:         return _T("threeDEngrave");
-			case bordertypeTriple:					return _T("triple");
-			case bordertypeWave:					 return _T("wave");
-			default :					    return _T("none");
+				case bordertypeDash:					 return _T("dash");			
+				case bordertypeDashDotDot:            return _T("dashDotDot");			
+				case bordertypeDashDotStroked:        return _T("dashDotStroked");			
+				case bordertypeDashedSmall:           return _T("dashedSmall");			
+				case bordertypeDot:					  return _T("dot");			
+				case bordertypeDotDash:					return _T("dotDash");			
+				case bordertypeDouble:					return _T("double");			
+				case bordertypeDoubleWave:            return _T("doubleWave");			
+				case bordertypeHairline:					return _T("hairline");			
+				case bordertypeHTMLInset:             return _T("HTMLInset");			
+				case bordertypeHTMLOutset:            return _T("HTMLOutset");			
+				case bordertypeNone:					 return _T("none");			
+				case bordertypeSingle:					return _T("single");	
+				case bordertypeThick:					return _T("thick");
+				case bordertypeThickBetweenThin:      return _T("thickBetweenThin");
+				case bordertypeThickBetweenThinLarge: return _T("thickBetweenThinLarge");
+				case bordertypeThickBetweenThinSmall: return _T("thickBetweenThinSmall");
+				case bordertypeThickThin:             return _T("thickThin");
+				case bordertypeThickThinLarge:        return _T("thickThinLarge");
+				case bordertypeThickThinSmall:        return _T("thickThinSmall");
+				case bordertypeThinThick:             return _T("thinThick");
+				case bordertypeThinThickLarge:        return _T("thinThickLarge");
+				case bordertypeThinThickSmall:        return _T("thinThickSmall");
+				case bordertypeThreeDEmboss:          return _T("threeDEmboss");
+				case bordertypeThreeDEngrave:         return _T("threeDEngrave");
+				case bordertypeTriple:					return _T("triple");
+				case bordertypeWave:					 return _T("wave");
+				default :					    return _T("none");
 			}
 		}
 
@@ -2138,18 +2350,18 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'c':
-                    if      ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
+                    if ( _T("char")   == sValue ) this->m_eValue = horizontalanchorChar;
 				break;
 			case 'm':
-                    if      ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
+                    if ( _T("margin") == sValue ) this->m_eValue = horizontalanchorMargin;
 				break;
 
 			case 'p':
-                    if      ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
+                    if ( _T("page")   == sValue ) this->m_eValue = horizontalanchorPage;
 				break;
 
 			case 't':
-                    if      ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
+                    if ( _T("text")   == sValue ) this->m_eValue = horizontalanchorText;
 				break;
 			}
 
@@ -2160,11 +2372,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case horizontalanchorChar:   return _T("char");			
-			case horizontalanchorMargin: return _T("margin");			
-			case horizontalanchorPage:   return _T("page");			
-			case horizontalanchorText:   return _T("text");					
-			default :					   return _T("char");
+				case horizontalanchorChar:   return _T("char");			
+				case horizontalanchorMargin: return _T("margin");			
+				case horizontalanchorPage:   return _T("page");			
+				case horizontalanchorText:   return _T("text");					
+				default :					   return _T("char");
 			}
 		}
 
@@ -2201,18 +2413,18 @@ namespace SimpleTypes
 			switch ( wChar )
 			{
 			case 'l':
-                    if      ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
+                    if ( _T("line")   == sValue ) this->m_eValue = verticalanchorLine;
 				break;
 			case 'm':
-                    if      ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
+                    if ( _T("margin") == sValue ) this->m_eValue = verticalanchorMargin;
 				break;
 
 			case 'p':
-                    if      ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
+                    if ( _T("page")   == sValue ) this->m_eValue = verticalanchorPage;
 				break;
 
 			case 't':
-                    if      ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
+                    if ( _T("text")   == sValue ) this->m_eValue = verticalanchorText;
 				break;
 			}
 
@@ -2223,11 +2435,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case verticalanchorLine:   return _T("line");			
-			case verticalanchorMargin: return _T("margin");			
-			case verticalanchorPage:   return _T("page");			
-			case verticalanchorText:   return _T("text");					
-			default :					 return _T("line");
+				case verticalanchorLine:   return _T("line");			
+				case verticalanchorMargin: return _T("margin");			
+				case verticalanchorPage:   return _T("page");			
+				case verticalanchorText:   return _T("text");					
+				default :					 return _T("line");
 			}
 		}
 
@@ -2284,11 +2496,11 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case wrapsideBoth:    return _T("both");			
-			case wrapsideLargest: return _T("largest");			
-			case wrapsideLeft:    return _T("left");			
-			case wrapsideRight:   return _T("right");					
-			default :             return _T("both");
+				case wrapsideBoth:    return _T("both");			
+				case wrapsideLargest: return _T("largest");			
+				case wrapsideLeft:    return _T("left");			
+				case wrapsideRight:   return _T("right");					
+				default :             return _T("both");
 			}
 		}
 
@@ -2347,12 +2559,12 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case wraptypeNone:         return _T("none");			
-			case wraptypeSquare:       return _T("square");			
-			case wraptypeThrough:      return _T("through");			
-			case wraptypeTight:        return _T("tight");					
-			case wraptypeTopAndBottom: return _T("topAndBottom");					
-			default :					 return _T("none");
+				case wraptypeNone:         return _T("none");			
+				case wraptypeSquare:       return _T("square");			
+				case wraptypeThrough:      return _T("through");			
+				case wraptypeTight:        return _T("tight");					
+				case wraptypeTopAndBottom: return _T("topAndBottom");					
+				default :					 return _T("none");
 			}
 		}
 
@@ -2370,25 +2582,25 @@ namespace SimpleTypes
 	{
 		enum EVmlClientDataObjectType
 		{
-			vmlclientdataobjecttypeButton      = 0,
-			vmlclientdataobjecttypeCheckbox      = 1,
-			vmlclientdataobjecttypeDialog      = 2,
-			vmlclientdataobjecttypeDrop      = 3,
-			vmlclientdataobjecttypeEdit      = 4,
-			vmlclientdataobjecttypeGBox      = 5,
-			vmlclientdataobjecttypeGroup      = 6,
-			vmlclientdataobjecttypeLabel      = 7,
-			vmlclientdataobjecttypeLineA      = 8,
-			vmlclientdataobjecttypeList      = 9,
-			vmlclientdataobjecttypeMovie      = 10,
-			vmlclientdataobjecttypeNote      = 11,
-			vmlclientdataobjecttypePict      = 12,
-			vmlclientdataobjecttypeRadio      = 13,
-			vmlclientdataobjecttypeRect      = 14,
-			vmlclientdataobjecttypeRectA      = 15,
-			vmlclientdataobjecttypeScroll      = 16,
-			vmlclientdataobjecttypeShape      = 17,
-			vmlclientdataobjecttypeSpin      = 18
+			vmlclientdataobjecttypeButton		= 0,
+			vmlclientdataobjecttypeCheckbox		= 1,
+			vmlclientdataobjecttypeDialog		= 2,
+			vmlclientdataobjecttypeDrop			= 3,
+			vmlclientdataobjecttypeEdit			= 4,
+			vmlclientdataobjecttypeGBox			= 5,
+			vmlclientdataobjecttypeGroup		= 6,
+			vmlclientdataobjecttypeLabel		= 7,
+			vmlclientdataobjecttypeLineA		= 8,
+			vmlclientdataobjecttypeList			= 9,
+			vmlclientdataobjecttypeMovie		= 10,
+			vmlclientdataobjecttypeNote			= 11,
+			vmlclientdataobjecttypePict			= 12,
+			vmlclientdataobjecttypeRadio		= 13,
+			vmlclientdataobjecttypeRect			= 14,
+			vmlclientdataobjecttypeRectA		= 15,
+			vmlclientdataobjecttypeScroll		= 16,
+			vmlclientdataobjecttypeShape		= 17,
+			vmlclientdataobjecttypeSpin			= 18
 		};
 		template<EVmlClientDataObjectType eDefValue = vmlclientdataobjecttypeButton>
 		class CVmlClientDataObjectType : public CSimpleType<EVmlClientDataObjectType, eDefValue>
@@ -2427,28 +2639,28 @@ namespace SimpleTypes
 
 			virtual std::wstring         ToString  () const 
 			{
-                    switch(this->m_eValue)
+				switch(this->m_eValue)
 				{
-				case vmlclientdataobjecttypeButton:      return _T("Button");
-				case vmlclientdataobjecttypeCheckbox:      return _T("Checkbox");
-				case vmlclientdataobjecttypeDialog:      return _T("Dialog");
-				case vmlclientdataobjecttypeDrop:      return _T("Drop");
-				case vmlclientdataobjecttypeEdit:      return _T("Edit");
-				case vmlclientdataobjecttypeGBox:      return _T("GBox");
-				case vmlclientdataobjecttypeGroup:      return _T("Group");
-				case vmlclientdataobjecttypeLabel:      return _T("Label");
-				case vmlclientdataobjecttypeLineA:      return _T("LineA");
-				case vmlclientdataobjecttypeList:      return _T("List");
-				case vmlclientdataobjecttypeMovie:      return _T("Movie");
-				case vmlclientdataobjecttypeNote:      return _T("Note");
-				case vmlclientdataobjecttypePict:      return _T("Pict");
-				case vmlclientdataobjecttypeRadio:      return _T("Radio");
-				case vmlclientdataobjecttypeRect:      return _T("Rect");
-				case vmlclientdataobjecttypeRectA:      return _T("RectA");
-				case vmlclientdataobjecttypeScroll:      return _T("Scroll");
-				case vmlclientdataobjecttypeShape:      return _T("Shape");
-				case vmlclientdataobjecttypeSpin:      return _T("Spin");
-				default :					 return _T("Button");
+					case vmlclientdataobjecttypeButton:		return _T("Button");
+					case vmlclientdataobjecttypeCheckbox:	return _T("Checkbox");
+					case vmlclientdataobjecttypeDialog:		return _T("Dialog");
+					case vmlclientdataobjecttypeDrop:		return _T("Drop");
+					case vmlclientdataobjecttypeEdit:		return _T("Edit");
+					case vmlclientdataobjecttypeGBox:		return _T("GBox");
+					case vmlclientdataobjecttypeGroup:      return _T("Group");
+					case vmlclientdataobjecttypeLabel:      return _T("Label");
+					case vmlclientdataobjecttypeLineA:      return _T("LineA");
+					case vmlclientdataobjecttypeList:		return _T("List");
+					case vmlclientdataobjecttypeMovie:      return _T("Movie");
+					case vmlclientdataobjecttypeNote:		return _T("Note");
+					case vmlclientdataobjecttypePict:		return _T("Pict");
+					case vmlclientdataobjecttypeRadio:      return _T("Radio");
+					case vmlclientdataobjecttypeRect:		return _T("Rect");
+					case vmlclientdataobjecttypeRectA:      return _T("RectA");
+					case vmlclientdataobjecttypeScroll:		return _T("Scroll");
+					case vmlclientdataobjecttypeShape:      return _T("Shape");
+					case vmlclientdataobjecttypeSpin:		return _T("Spin");
+					default :								return _T("Button");
 				}
 			}
 
@@ -2499,13 +2711,13 @@ namespace SimpleTypes
 
 			virtual std::wstring         ToString  () const 
 			{
-                    switch(this->m_eValue)
+				switch(this->m_eValue)
 				{
-				case vmlcallouttypeRectangle:      return _T("rectangle");			
-				case vmlcallouttypeRoundRectangle: return _T("roundedrectangle");			
-				case vmlcallouttypeOval:           return _T("oval");			
-				case vmlcallouttypeCloud:          return _T("cloud");					
-				default :					 return _T("rectangle");
+					case vmlcallouttypeRectangle:      return _T("rectangle");			
+					case vmlcallouttypeRoundRectangle: return _T("roundedrectangle");			
+					case vmlcallouttypeOval:           return _T("oval");			
+					case vmlcallouttypeCloud:          return _T("cloud");					
+					default :					 return _T("rectangle");
 				}
 			}
 
@@ -2526,7 +2738,7 @@ namespace SimpleTypes
 				return m_sValue;
 			}
 
-			void    SetValue(std::wstring &sValue)
+			void SetValue(std::wstring &sValue)
 			{
 				m_sValue = sValue;
 			}
@@ -2707,12 +2919,12 @@ namespace SimpleTypes
 				return m_dValue;
 			}
 
-			void   SetValue(double dValue)
+			void SetValue(double dValue)
 			{
 					m_dValue = (std::max)( 0.0, (std::min)( 1.0, dValue) );
 			}
 
-			void   SetValue(int nValue)
+			void SetValue(int nValue)
 			{
 					m_dValue = (std::max)( 0.0, (std::min)( 65536.0, (double) nValue) ) / 65536.0;
 			}

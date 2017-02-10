@@ -42,174 +42,174 @@
 
 namespace PPTX
 {
-	OOX::Vml::SptType static Spt2ShapeType(SimpleTypes::EShapeType type) 
+	SimpleTypes::Vml::SptType static Spt2ShapeType(SimpleTypes::EShapeType type) 
 	{
 		switch(type)
 		{
-			case	SimpleTypes::shapetypeRect	:			return	OOX::Vml::sptRectangle	;
-			case	SimpleTypes::shapetypeRoundRect	:		return	OOX::Vml::sptRoundRectangle	;
-			case	SimpleTypes::shapetypeEllipse	:		return	OOX::Vml::sptEllipse	;
-			case	SimpleTypes::shapetypeDiamond	:		return	OOX::Vml::sptDiamond	;
-			case	SimpleTypes::shapetypeTriangle	:		return	OOX::Vml::sptIsocelesTriangle	;
-			case	SimpleTypes::shapetypeRtTriangle	:	return	OOX::Vml::sptRightTriangle	;
-			case	SimpleTypes::shapetypeParallelogram	:	return	OOX::Vml::sptParallelogram	;
-			case	SimpleTypes::shapetypeTrapezoid	:		return	OOX::Vml::sptTrapezoid	;
-			case	SimpleTypes::shapetypeHexagon	:		return	OOX::Vml::sptHexagon	;
-			case	SimpleTypes::shapetypeOctagon	:		return	OOX::Vml::sptOctagon	;
-			case	SimpleTypes::shapetypePlus	:			return	OOX::Vml::sptPlus	;
-			case	SimpleTypes::shapetypeStar5	:			return	OOX::Vml::sptStar	;
-			case	SimpleTypes::shapetypeRightArrow:		return	OOX::Vml::sptArrow	;
-			case	SimpleTypes::shapetypeThickArrow:		return	OOX::Vml::sptThickArrow	;
-			case	SimpleTypes::shapetypeHomePlate	:		return	OOX::Vml::sptHomePlate	;
-			case	SimpleTypes::shapetypeCube	:			return	OOX::Vml::sptCube	;
-			case	SimpleTypes::shapetypeBallon	:		return	OOX::Vml::sptBalloon	;
-//			case	SimpleTypes::shapetypeIrregularSeal1:	return	OOX::Vml::sptSeal	;
-			case	SimpleTypes::shapetypeArc	:			return	OOX::Vml::sptArc	;
-			case	SimpleTypes::shapetypeLine	:			return	OOX::Vml::sptLine	;
-			case	SimpleTypes::shapetypePlaque	:		return	OOX::Vml::sptPlaque	;
-			case	SimpleTypes::shapetypeCan	:			return	OOX::Vml::sptCan	;
-			case	SimpleTypes::shapetypeDonut	:			return	OOX::Vml::sptDonut	;
-//			case	SimpleTypes::shapetypeTextSimple	:	return	OOX::Vml::sptTextSimple	;
-//			case	SimpleTypes::shapetypeTextOctagon	:	return	OOX::Vml::sptTextOctagon	;
-//			case	SimpleTypes::shapetypeTextHexagon	:	return	OOX::Vml::sptTextHexagon	;
-//			case	SimpleTypes::shapetypeTextCurve	:		return	OOX::Vml::sptTextCurve	;
-//			case	SimpleTypes::shapetypeTextWave	:		return	OOX::Vml::sptTextWave	;
-//			case	SimpleTypes::shapetypeTextRing	:		return	OOX::Vml::sptTextRing	;
-//			case	SimpleTypes::shapetypeTextOnCurve	:	return	OOX::Vml::sptTextOnCurve	;
-//			case	SimpleTypes::shapetypeTextOnRing	:	return	OOX::Vml::sptTextOnRing	;
-			case	SimpleTypes::shapetypeStraightConnector1:	return	OOX::Vml::sptStraightConnector1	;
-			case	SimpleTypes::shapetypeBentConnector2	:	return	OOX::Vml::sptBentConnector2	;
-			case	SimpleTypes::shapetypeBentConnector3	:	return	OOX::Vml::sptBentConnector3	;
-			case	SimpleTypes::shapetypeBentConnector4	:	return	OOX::Vml::sptBentConnector4	;
-			case	SimpleTypes::shapetypeBentConnector5	:	return	OOX::Vml::sptBentConnector5	;
-			case	SimpleTypes::shapetypeCurvedConnector2	:	return	OOX::Vml::sptCurvedConnector2	;
-			case	SimpleTypes::shapetypeCurvedConnector3	:	return	OOX::Vml::sptCurvedConnector3	;
-			case	SimpleTypes::shapetypeCurvedConnector4	:	return	OOX::Vml::sptCurvedConnector4	;
-			case	SimpleTypes::shapetypeCurvedConnector5	:	return	OOX::Vml::sptCurvedConnector5	;
-			case	SimpleTypes::shapetypeCallout1	:			return	OOX::Vml::sptCallout1	;
-			case	SimpleTypes::shapetypeCallout2	:			return	OOX::Vml::sptCallout2	;
-			case	SimpleTypes::shapetypeCallout3	:			return	OOX::Vml::sptCallout3	;
-			case	SimpleTypes::shapetypeAccentCallout1	:	return	OOX::Vml::sptAccentCallout1	;
-			case	SimpleTypes::shapetypeAccentCallout2	:	return	OOX::Vml::sptAccentCallout2	;
-			case	SimpleTypes::shapetypeAccentCallout3	:	return	OOX::Vml::sptAccentCallout3	;
-			case	SimpleTypes::shapetypeAccentBorderCallout1	:	return	OOX::Vml::sptAccentBorderCallout1	;
-			case	SimpleTypes::shapetypeAccentBorderCallout2	:	return	OOX::Vml::sptAccentBorderCallout2	;
-			case	SimpleTypes::shapetypeAccentBorderCallout3	:	return	OOX::Vml::sptAccentBorderCallout3	;
-			case	SimpleTypes::shapetypeRibbon	:				return	OOX::Vml::sptRibbon	;
-			case	SimpleTypes::shapetypeRibbon2	:				return	OOX::Vml::sptRibbon2	;
-			case	SimpleTypes::shapetypeChevron	:				return	OOX::Vml::sptChevron	;
-			case	SimpleTypes::shapetypePentagon	:				return	OOX::Vml::sptPentagon	;
-			case	SimpleTypes::shapetypeNoSmoking	:				return	OOX::Vml::sptNoSmoking	;
-			case	SimpleTypes::shapetypeStar8	:					return	OOX::Vml::sptSeal8	;
-			case	SimpleTypes::shapetypeStar16	:				return	OOX::Vml::sptSeal16	;
-			case	SimpleTypes::shapetypeStar32	:				return	OOX::Vml::sptSeal32	;
-			case	SimpleTypes::shapetypeWedgeRectCallout	:		return	OOX::Vml::sptWedgeRectCallout	;
-			case	SimpleTypes::shapetypeWedgeRoundRectCallout	:	return	OOX::Vml::sptWedgeRRectCallout	;
-			case	SimpleTypes::shapetypeWedgeEllipseCallout	:	return	OOX::Vml::sptWedgeEllipseCallout	;
-			case	SimpleTypes::shapetypeWave	:					return	OOX::Vml::sptWave	;
-			case	SimpleTypes::shapetypeFoldedCorner	:			return	OOX::Vml::sptFoldedCorner	;
-			case	SimpleTypes::shapetypeLeftArrow	:				return	OOX::Vml::sptLeftArrow	;
-			case	SimpleTypes::shapetypeDownArrow	:				return	OOX::Vml::sptDownArrow	;
-			case	SimpleTypes::shapetypeUpArrow	:				return	OOX::Vml::sptUpArrow	;
-			case	SimpleTypes::shapetypeLeftRightArrow	:		return	OOX::Vml::sptLeftRightArrow	;
-			case	SimpleTypes::shapetypeUpDownArrow	:			return	OOX::Vml::sptUpDownArrow	;
-			case	SimpleTypes::shapetypeIrregularSeal1	:		return	OOX::Vml::sptIrregularSeal1	;
-			case	SimpleTypes::shapetypeIrregularSeal2	:		return	OOX::Vml::sptIrregularSeal2	;
-			case	SimpleTypes::shapetypeLightningBolt	:			return	OOX::Vml::sptLightningBolt	;
-			case	SimpleTypes::shapetypeHeart	:					return	OOX::Vml::sptHeart	;
-			case	SimpleTypes::shapetypeQuadArrow	:				return	OOX::Vml::sptQuadArrow	;
-			case	SimpleTypes::shapetypeLeftArrowCallout	:		return	OOX::Vml::sptLeftArrowCallout	;
-			case	SimpleTypes::shapetypeRightArrowCallout	:		return	OOX::Vml::sptRightArrowCallout	;
-			case	SimpleTypes::shapetypeUpArrowCallout	:		return	OOX::Vml::sptUpArrowCallout	;
-			case	SimpleTypes::shapetypeDownArrowCallout	:		return	OOX::Vml::sptDownArrowCallout	;
-			case	SimpleTypes::shapetypeLeftRightArrowCallout	:	return	OOX::Vml::sptLeftRightArrowCallout	;
-			case	SimpleTypes::shapetypeUpDownArrowCallout	:	return	OOX::Vml::sptUpDownArrowCallout	;
-			case	SimpleTypes::shapetypeQuadArrowCallout	:		return	OOX::Vml::sptQuadArrowCallout	;
-			case	SimpleTypes::shapetypeBevel	:					return	OOX::Vml::sptBevel	;
-			case	SimpleTypes::shapetypeLeftBracket	:			return	OOX::Vml::sptLeftBracket	;
-			case	SimpleTypes::shapetypeRightBracket	:			return	OOX::Vml::sptRightBracket	;
-			case	SimpleTypes::shapetypeLeftBrace	:				return	OOX::Vml::sptLeftBrace	;
-			case	SimpleTypes::shapetypeRightBrace	:			return	OOX::Vml::sptRightBrace	;
-			case	SimpleTypes::shapetypeLeftUpArrow	:			return	OOX::Vml::sptLeftUpArrow	;
-			case	SimpleTypes::shapetypeBentUpArrow	:			return	OOX::Vml::sptBentUpArrow	;
-			case	SimpleTypes::shapetypeBentArrow	:				return	OOX::Vml::sptBentArrow	;
-			case	SimpleTypes::shapetypeStar24	:				return	OOX::Vml::sptSeal24	;
-			case	SimpleTypes::shapetypeStripedRightArrow	:		return	OOX::Vml::sptStripedRightArrow	;
-			case	SimpleTypes::shapetypeNotchedRightArrow	:		return	OOX::Vml::sptNotchedRightArrow	;
-			case	SimpleTypes::shapetypeBlockArc	:				return	OOX::Vml::sptBlockArc	;
-			case	SimpleTypes::shapetypeSmileyFace	:			return	OOX::Vml::sptSmileyFace	;
-			case	SimpleTypes::shapetypeVerticalScroll	:		return	OOX::Vml::sptVerticalScroll	;
-			case	SimpleTypes::shapetypeHorizontalScroll	:		return	OOX::Vml::sptHorizontalScroll	;
-			case	SimpleTypes::shapetypeCircularArrow	:			return	OOX::Vml::sptCircularArrow	;
-//			case	SimpleTypes::shapetypeNotchedCircularArrow	:		return	OOX::Vml::sptNotchedCircularArrow	;
-			case	SimpleTypes::shapetypeUturnArrow	:				return	OOX::Vml::sptUturnArrow	;
-			case	SimpleTypes::shapetypeCurvedRightArrow	:			return	OOX::Vml::sptCurvedRightArrow	;
-			case	SimpleTypes::shapetypeCurvedLeftArrow	:			return	OOX::Vml::sptCurvedLeftArrow	;
-			case	SimpleTypes::shapetypeCurvedUpArrow	:				return	OOX::Vml::sptCurvedUpArrow	;
-			case	SimpleTypes::shapetypeCurvedDownArrow	:			return	OOX::Vml::sptCurvedDownArrow	;
-			case	SimpleTypes::shapetypeCloudCallout	:				return	OOX::Vml::sptCloudCallout	;
-			case	SimpleTypes::shapetypeEllipseRibbon	:				return	OOX::Vml::sptEllipseRibbon	;
-			case	SimpleTypes::shapetypeEllipseRibbon2	:			return	OOX::Vml::sptEllipseRibbon2	;
-			case	SimpleTypes::shapetypeFlowChartProcess	:			return	OOX::Vml::sptFlowChartProcess	;
-			case	SimpleTypes::shapetypeFlowChartDecision	:			return	OOX::Vml::sptFlowChartDecision	;
-			case	SimpleTypes::shapetypeFlowChartInputOutput	:		return	OOX::Vml::sptFlowChartInputOutput	;
-			case	SimpleTypes::shapetypeFlowChartInternalStorage	:	return	OOX::Vml::sptFlowChartInternalStorage	;
-			case	SimpleTypes::shapetypeFlowChartDocument	:			return	OOX::Vml::sptFlowChartDocument	;
-			case	SimpleTypes::shapetypeFlowChartMultidocument	:	return	OOX::Vml::sptFlowChartMultidocument	;
-			case	SimpleTypes::shapetypeFlowChartTerminator	:		return	OOX::Vml::sptFlowChartTerminator	;
-			case	SimpleTypes::shapetypeFlowChartPreparation	:		return	OOX::Vml::sptFlowChartPreparation	;
-			case	SimpleTypes::shapetypeFlowChartManualInput	:		return	OOX::Vml::sptFlowChartManualInput	;
-			case	SimpleTypes::shapetypeFlowChartManualOperation	:	return	OOX::Vml::sptFlowChartManualOperation	;
-			case	SimpleTypes::shapetypeFlowChartConnector	:		return	OOX::Vml::sptFlowChartConnector	;
-			case	SimpleTypes::shapetypeFlowChartPunchedCard	:		return	OOX::Vml::sptFlowChartPunchedCard	;
-			case	SimpleTypes::shapetypeFlowChartPunchedTape	:		return	OOX::Vml::sptFlowChartPunchedTape	;
-			case	SimpleTypes::shapetypeFlowChartSummingJunction	:	return	OOX::Vml::sptFlowChartSummingJunction	;
-			case	SimpleTypes::shapetypeFlowChartOr	:			return	OOX::Vml::sptFlowChartOr	;
-			case	SimpleTypes::shapetypeFlowChartCollate	:		return	OOX::Vml::sptFlowChartCollate	;
-			case	SimpleTypes::shapetypeFlowChartSort	:			return	OOX::Vml::sptFlowChartSort	;
-			case	SimpleTypes::shapetypeFlowChartExtract	:		return	OOX::Vml::sptFlowChartExtract	;
-			case	SimpleTypes::shapetypeFlowChartMerge	:		return	OOX::Vml::sptFlowChartMerge	;
-			//case	SimpleTypes::shapetypeChartOfflineStorage	:	return	OOX::Vml::sptFlowChartOfflineStorage	;
-			case	SimpleTypes::shapetypeFlowChartOnlineStorage:	return	OOX::Vml::sptFlowChartOnlineStorage	;
-			case	SimpleTypes::shapetypeFlowChartMagneticTape	:	return	OOX::Vml::sptFlowChartMagneticTape	;
-			case	SimpleTypes::shapetypeFlowChartMagneticDisk	:	return	OOX::Vml::sptFlowChartMagneticDisk	;
-			case	SimpleTypes::shapetypeFlowChartMagneticDrum	:	return	OOX::Vml::sptFlowChartMagneticDrum	;
-			case	SimpleTypes::shapetypeFlowChartDisplay	:		return	OOX::Vml::sptFlowChartDisplay	;
-			case	SimpleTypes::shapetypeFlowChartDelay	:		return	OOX::Vml::sptFlowChartDelay	;
-//			case	SimpleTypes::shapetypeTextWave3	:				return	OOX::Vml::sptTextWave3	;
-			case	SimpleTypes::shapetypeTextInflateBottom	:		return	OOX::Vml::sptTextInflateBottom	;
-			case	SimpleTypes::shapetypeTextDeflateBottom	:		return	OOX::Vml::sptTextDeflateBottom	;
-			case	SimpleTypes::shapetypeTextInflateTop	:		return	OOX::Vml::sptTextInflateTop	;
-			case	SimpleTypes::shapetypeTextDeflateTop	:		return	OOX::Vml::sptTextDeflateTop	;
-			case	SimpleTypes::shapetypeTextDeflateInflate:		return	OOX::Vml::sptTextDeflateInflate	;
-			case	SimpleTypes::shapetypeTextFadeRight	:			return	OOX::Vml::sptTextFadeRight	;
-			case	SimpleTypes::shapetypeTextFadeLeft	:			return	OOX::Vml::sptTextFadeLeft	;
-			case	SimpleTypes::shapetypeTextFadeUp	:			return	OOX::Vml::sptTextFadeUp	;
-			case	SimpleTypes::shapetypeTextFadeDown	:			return	OOX::Vml::sptTextFadeDown	;
-			case	SimpleTypes::shapetypeBorderCallout1	:		return	OOX::Vml::sptBorderCallout1	;
-			case	SimpleTypes::shapetypeBorderCallout2	:		return	OOX::Vml::sptBorderCallout2	;
-			case	SimpleTypes::shapetypeBorderCallout3	:		return	OOX::Vml::sptBorderCallout3	;
-			case	SimpleTypes::shapetypeLeftRightUpArrow	:		return	OOX::Vml::sptLeftRightUpArrow	;
-			case	SimpleTypes::shapetypeSun	:					return	OOX::Vml::sptSun	;
-			case	SimpleTypes::shapetypeMoon	:					return	OOX::Vml::sptMoon	;
-			case	SimpleTypes::shapetypeBracketPair	:			return	OOX::Vml::sptBracketPair	;
-			case	SimpleTypes::shapetypeBracePair	:				return	OOX::Vml::sptBracePair	;
-			case	SimpleTypes::shapetypeStar4	:					return	OOX::Vml::sptSeal4	;
-			case	SimpleTypes::shapetypeDoubleWave	:			return	OOX::Vml::sptDoubleWave	;
-			case	SimpleTypes::shapetypeActionButtonBlank	:		return	OOX::Vml::sptActionButtonBlank	;
-			case	SimpleTypes::shapetypeActionButtonHome	:		return	OOX::Vml::sptActionButtonHome	;
-			case	SimpleTypes::shapetypeActionButtonHelp	:		return	OOX::Vml::sptActionButtonHelp	;
-			case	SimpleTypes::shapetypeActionButtonInformation	:	return	OOX::Vml::sptActionButtonInformation	;
-			case	SimpleTypes::shapetypeActionButtonForwardNext	:	return	OOX::Vml::sptActionButtonForwardNext	;
-			case	SimpleTypes::shapetypeActionButtonBackPrevious	:	return	OOX::Vml::sptActionButtonBackPrevious	;
-			case	SimpleTypes::shapetypeActionButtonEnd	:			return	OOX::Vml::sptActionButtonEnd	;
-			case	SimpleTypes::shapetypeActionButtonBeginning	:		return	OOX::Vml::sptActionButtonBeginning	;
-			case	SimpleTypes::shapetypeActionButtonReturn	:		return	OOX::Vml::sptActionButtonReturn	;
-			case	SimpleTypes::shapetypeActionButtonDocument	:		return	OOX::Vml::sptActionButtonDocument	;
-			case	SimpleTypes::shapetypeActionButtonSound	:			return	OOX::Vml::sptActionButtonSound	;
-			case	SimpleTypes::shapetypeActionButtonMovie	:			return	OOX::Vml::sptActionButtonMovie	;
+			case	SimpleTypes::shapetypeRect	:			return	SimpleTypes::Vml::sptRectangle	;
+			case	SimpleTypes::shapetypeRoundRect	:		return	SimpleTypes::Vml::sptRoundRectangle	;
+			case	SimpleTypes::shapetypeEllipse	:		return	SimpleTypes::Vml::sptEllipse	;
+			case	SimpleTypes::shapetypeDiamond	:		return	SimpleTypes::Vml::sptDiamond	;
+			case	SimpleTypes::shapetypeTriangle	:		return	SimpleTypes::Vml::sptIsocelesTriangle	;
+			case	SimpleTypes::shapetypeRtTriangle	:	return	SimpleTypes::Vml::sptRightTriangle	;
+			case	SimpleTypes::shapetypeParallelogram	:	return	SimpleTypes::Vml::sptParallelogram	;
+			case	SimpleTypes::shapetypeTrapezoid	:		return	SimpleTypes::Vml::sptTrapezoid	;
+			case	SimpleTypes::shapetypeHexagon	:		return	SimpleTypes::Vml::sptHexagon	;
+			case	SimpleTypes::shapetypeOctagon	:		return	SimpleTypes::Vml::sptOctagon	;
+			case	SimpleTypes::shapetypePlus	:			return	SimpleTypes::Vml::sptPlus	;
+			case	SimpleTypes::shapetypeStar5	:			return	SimpleTypes::Vml::sptStar	;
+			case	SimpleTypes::shapetypeRightArrow:		return	SimpleTypes::Vml::sptArrow	;
+			case	SimpleTypes::shapetypeThickArrow:		return	SimpleTypes::Vml::sptThickArrow	;
+			case	SimpleTypes::shapetypeHomePlate	:		return	SimpleTypes::Vml::sptHomePlate	;
+			case	SimpleTypes::shapetypeCube	:			return	SimpleTypes::Vml::sptCube	;
+			case	SimpleTypes::shapetypeBallon	:		return	SimpleTypes::Vml::sptBalloon	;
+//			case	SimpleTypes::shapetypeIrregularSeal1:	return	SimpleTypes::Vml::sptSeal	;
+			case	SimpleTypes::shapetypeArc	:			return	SimpleTypes::Vml::sptArc	;
+			case	SimpleTypes::shapetypeLine	:			return	SimpleTypes::Vml::sptLine	;
+			case	SimpleTypes::shapetypePlaque	:		return	SimpleTypes::Vml::sptPlaque	;
+			case	SimpleTypes::shapetypeCan	:			return	SimpleTypes::Vml::sptCan	;
+			case	SimpleTypes::shapetypeDonut	:			return	SimpleTypes::Vml::sptDonut	;
+//			case	SimpleTypes::shapetypeTextSimple	:	return	SimpleTypes::Vml::sptTextSimple	;
+//			case	SimpleTypes::shapetypeTextOctagon	:	return	SimpleTypes::Vml::sptTextOctagon	;
+//			case	SimpleTypes::shapetypeTextHexagon	:	return	SimpleTypes::Vml::sptTextHexagon	;
+//			case	SimpleTypes::shapetypeTextCurve	:		return	SimpleTypes::Vml::sptTextCurve	;
+//			case	SimpleTypes::shapetypeTextWave	:		return	SimpleTypes::Vml::sptTextWave	;
+//			case	SimpleTypes::shapetypeTextRing	:		return	SimpleTypes::Vml::sptTextRing	;
+//			case	SimpleTypes::shapetypeTextOnCurve	:	return	SimpleTypes::Vml::sptTextOnCurve	;
+//			case	SimpleTypes::shapetypeTextOnRing	:	return	SimpleTypes::Vml::sptTextOnRing	;
+			case	SimpleTypes::shapetypeStraightConnector1:	return	SimpleTypes::Vml::sptStraightConnector1	;
+			case	SimpleTypes::shapetypeBentConnector2	:	return	SimpleTypes::Vml::sptBentConnector2	;
+			case	SimpleTypes::shapetypeBentConnector3	:	return	SimpleTypes::Vml::sptBentConnector3	;
+			case	SimpleTypes::shapetypeBentConnector4	:	return	SimpleTypes::Vml::sptBentConnector4	;
+			case	SimpleTypes::shapetypeBentConnector5	:	return	SimpleTypes::Vml::sptBentConnector5	;
+			case	SimpleTypes::shapetypeCurvedConnector2	:	return	SimpleTypes::Vml::sptCurvedConnector2	;
+			case	SimpleTypes::shapetypeCurvedConnector3	:	return	SimpleTypes::Vml::sptCurvedConnector3	;
+			case	SimpleTypes::shapetypeCurvedConnector4	:	return	SimpleTypes::Vml::sptCurvedConnector4	;
+			case	SimpleTypes::shapetypeCurvedConnector5	:	return	SimpleTypes::Vml::sptCurvedConnector5	;
+			case	SimpleTypes::shapetypeCallout1	:			return	SimpleTypes::Vml::sptCallout1	;
+			case	SimpleTypes::shapetypeCallout2	:			return	SimpleTypes::Vml::sptCallout2	;
+			case	SimpleTypes::shapetypeCallout3	:			return	SimpleTypes::Vml::sptCallout3	;
+			case	SimpleTypes::shapetypeAccentCallout1	:	return	SimpleTypes::Vml::sptAccentCallout1	;
+			case	SimpleTypes::shapetypeAccentCallout2	:	return	SimpleTypes::Vml::sptAccentCallout2	;
+			case	SimpleTypes::shapetypeAccentCallout3	:	return	SimpleTypes::Vml::sptAccentCallout3	;
+			case	SimpleTypes::shapetypeAccentBorderCallout1	:	return	SimpleTypes::Vml::sptAccentBorderCallout1	;
+			case	SimpleTypes::shapetypeAccentBorderCallout2	:	return	SimpleTypes::Vml::sptAccentBorderCallout2	;
+			case	SimpleTypes::shapetypeAccentBorderCallout3	:	return	SimpleTypes::Vml::sptAccentBorderCallout3	;
+			case	SimpleTypes::shapetypeRibbon	:				return	SimpleTypes::Vml::sptRibbon	;
+			case	SimpleTypes::shapetypeRibbon2	:				return	SimpleTypes::Vml::sptRibbon2	;
+			case	SimpleTypes::shapetypeChevron	:				return	SimpleTypes::Vml::sptChevron	;
+			case	SimpleTypes::shapetypePentagon	:				return	SimpleTypes::Vml::sptPentagon	;
+			case	SimpleTypes::shapetypeNoSmoking	:				return	SimpleTypes::Vml::sptNoSmoking	;
+			case	SimpleTypes::shapetypeStar8	:					return	SimpleTypes::Vml::sptSeal8	;
+			case	SimpleTypes::shapetypeStar16	:				return	SimpleTypes::Vml::sptSeal16	;
+			case	SimpleTypes::shapetypeStar32	:				return	SimpleTypes::Vml::sptSeal32	;
+			case	SimpleTypes::shapetypeWedgeRectCallout	:		return	SimpleTypes::Vml::sptWedgeRectCallout	;
+			case	SimpleTypes::shapetypeWedgeRoundRectCallout	:	return	SimpleTypes::Vml::sptWedgeRRectCallout	;
+			case	SimpleTypes::shapetypeWedgeEllipseCallout	:	return	SimpleTypes::Vml::sptWedgeEllipseCallout	;
+			case	SimpleTypes::shapetypeWave	:					return	SimpleTypes::Vml::sptWave	;
+			case	SimpleTypes::shapetypeFoldedCorner	:			return	SimpleTypes::Vml::sptFoldedCorner	;
+			case	SimpleTypes::shapetypeLeftArrow	:				return	SimpleTypes::Vml::sptLeftArrow	;
+			case	SimpleTypes::shapetypeDownArrow	:				return	SimpleTypes::Vml::sptDownArrow	;
+			case	SimpleTypes::shapetypeUpArrow	:				return	SimpleTypes::Vml::sptUpArrow	;
+			case	SimpleTypes::shapetypeLeftRightArrow	:		return	SimpleTypes::Vml::sptLeftRightArrow	;
+			case	SimpleTypes::shapetypeUpDownArrow	:			return	SimpleTypes::Vml::sptUpDownArrow	;
+			case	SimpleTypes::shapetypeIrregularSeal1	:		return	SimpleTypes::Vml::sptIrregularSeal1	;
+			case	SimpleTypes::shapetypeIrregularSeal2	:		return	SimpleTypes::Vml::sptIrregularSeal2	;
+			case	SimpleTypes::shapetypeLightningBolt	:			return	SimpleTypes::Vml::sptLightningBolt	;
+			case	SimpleTypes::shapetypeHeart	:					return	SimpleTypes::Vml::sptHeart	;
+			case	SimpleTypes::shapetypeQuadArrow	:				return	SimpleTypes::Vml::sptQuadArrow	;
+			case	SimpleTypes::shapetypeLeftArrowCallout	:		return	SimpleTypes::Vml::sptLeftArrowCallout	;
+			case	SimpleTypes::shapetypeRightArrowCallout	:		return	SimpleTypes::Vml::sptRightArrowCallout	;
+			case	SimpleTypes::shapetypeUpArrowCallout	:		return	SimpleTypes::Vml::sptUpArrowCallout	;
+			case	SimpleTypes::shapetypeDownArrowCallout	:		return	SimpleTypes::Vml::sptDownArrowCallout	;
+			case	SimpleTypes::shapetypeLeftRightArrowCallout	:	return	SimpleTypes::Vml::sptLeftRightArrowCallout	;
+			case	SimpleTypes::shapetypeUpDownArrowCallout	:	return	SimpleTypes::Vml::sptUpDownArrowCallout	;
+			case	SimpleTypes::shapetypeQuadArrowCallout	:		return	SimpleTypes::Vml::sptQuadArrowCallout	;
+			case	SimpleTypes::shapetypeBevel	:					return	SimpleTypes::Vml::sptBevel	;
+			case	SimpleTypes::shapetypeLeftBracket	:			return	SimpleTypes::Vml::sptLeftBracket	;
+			case	SimpleTypes::shapetypeRightBracket	:			return	SimpleTypes::Vml::sptRightBracket	;
+			case	SimpleTypes::shapetypeLeftBrace	:				return	SimpleTypes::Vml::sptLeftBrace	;
+			case	SimpleTypes::shapetypeRightBrace	:			return	SimpleTypes::Vml::sptRightBrace	;
+			case	SimpleTypes::shapetypeLeftUpArrow	:			return	SimpleTypes::Vml::sptLeftUpArrow	;
+			case	SimpleTypes::shapetypeBentUpArrow	:			return	SimpleTypes::Vml::sptBentUpArrow	;
+			case	SimpleTypes::shapetypeBentArrow	:				return	SimpleTypes::Vml::sptBentArrow	;
+			case	SimpleTypes::shapetypeStar24	:				return	SimpleTypes::Vml::sptSeal24	;
+			case	SimpleTypes::shapetypeStripedRightArrow	:		return	SimpleTypes::Vml::sptStripedRightArrow	;
+			case	SimpleTypes::shapetypeNotchedRightArrow	:		return	SimpleTypes::Vml::sptNotchedRightArrow	;
+			case	SimpleTypes::shapetypeBlockArc	:				return	SimpleTypes::Vml::sptBlockArc	;
+			case	SimpleTypes::shapetypeSmileyFace	:			return	SimpleTypes::Vml::sptSmileyFace	;
+			case	SimpleTypes::shapetypeVerticalScroll	:		return	SimpleTypes::Vml::sptVerticalScroll	;
+			case	SimpleTypes::shapetypeHorizontalScroll	:		return	SimpleTypes::Vml::sptHorizontalScroll	;
+			case	SimpleTypes::shapetypeCircularArrow	:			return	SimpleTypes::Vml::sptCircularArrow	;
+//			case	SimpleTypes::shapetypeNotchedCircularArrow	:		return	SimpleTypes::Vml::sptNotchedCircularArrow	;
+			case	SimpleTypes::shapetypeUturnArrow	:				return	SimpleTypes::Vml::sptUturnArrow	;
+			case	SimpleTypes::shapetypeCurvedRightArrow	:			return	SimpleTypes::Vml::sptCurvedRightArrow	;
+			case	SimpleTypes::shapetypeCurvedLeftArrow	:			return	SimpleTypes::Vml::sptCurvedLeftArrow	;
+			case	SimpleTypes::shapetypeCurvedUpArrow	:				return	SimpleTypes::Vml::sptCurvedUpArrow	;
+			case	SimpleTypes::shapetypeCurvedDownArrow	:			return	SimpleTypes::Vml::sptCurvedDownArrow	;
+			case	SimpleTypes::shapetypeCloudCallout	:				return	SimpleTypes::Vml::sptCloudCallout	;
+			case	SimpleTypes::shapetypeEllipseRibbon	:				return	SimpleTypes::Vml::sptEllipseRibbon	;
+			case	SimpleTypes::shapetypeEllipseRibbon2	:			return	SimpleTypes::Vml::sptEllipseRibbon2	;
+			case	SimpleTypes::shapetypeFlowChartProcess	:			return	SimpleTypes::Vml::sptFlowChartProcess	;
+			case	SimpleTypes::shapetypeFlowChartDecision	:			return	SimpleTypes::Vml::sptFlowChartDecision	;
+			case	SimpleTypes::shapetypeFlowChartInputOutput	:		return	SimpleTypes::Vml::sptFlowChartInputOutput	;
+			case	SimpleTypes::shapetypeFlowChartInternalStorage	:	return	SimpleTypes::Vml::sptFlowChartInternalStorage	;
+			case	SimpleTypes::shapetypeFlowChartDocument	:			return	SimpleTypes::Vml::sptFlowChartDocument	;
+			case	SimpleTypes::shapetypeFlowChartMultidocument	:	return	SimpleTypes::Vml::sptFlowChartMultidocument	;
+			case	SimpleTypes::shapetypeFlowChartTerminator	:		return	SimpleTypes::Vml::sptFlowChartTerminator	;
+			case	SimpleTypes::shapetypeFlowChartPreparation	:		return	SimpleTypes::Vml::sptFlowChartPreparation	;
+			case	SimpleTypes::shapetypeFlowChartManualInput	:		return	SimpleTypes::Vml::sptFlowChartManualInput	;
+			case	SimpleTypes::shapetypeFlowChartManualOperation	:	return	SimpleTypes::Vml::sptFlowChartManualOperation	;
+			case	SimpleTypes::shapetypeFlowChartConnector	:		return	SimpleTypes::Vml::sptFlowChartConnector	;
+			case	SimpleTypes::shapetypeFlowChartPunchedCard	:		return	SimpleTypes::Vml::sptFlowChartPunchedCard	;
+			case	SimpleTypes::shapetypeFlowChartPunchedTape	:		return	SimpleTypes::Vml::sptFlowChartPunchedTape	;
+			case	SimpleTypes::shapetypeFlowChartSummingJunction	:	return	SimpleTypes::Vml::sptFlowChartSummingJunction	;
+			case	SimpleTypes::shapetypeFlowChartOr	:			return	SimpleTypes::Vml::sptFlowChartOr	;
+			case	SimpleTypes::shapetypeFlowChartCollate	:		return	SimpleTypes::Vml::sptFlowChartCollate	;
+			case	SimpleTypes::shapetypeFlowChartSort	:			return	SimpleTypes::Vml::sptFlowChartSort	;
+			case	SimpleTypes::shapetypeFlowChartExtract	:		return	SimpleTypes::Vml::sptFlowChartExtract	;
+			case	SimpleTypes::shapetypeFlowChartMerge	:		return	SimpleTypes::Vml::sptFlowChartMerge	;
+			//case	SimpleTypes::shapetypeChartOfflineStorage	:	return	SimpleTypes::Vml::sptFlowChartOfflineStorage	;
+			case	SimpleTypes::shapetypeFlowChartOnlineStorage:	return	SimpleTypes::Vml::sptFlowChartOnlineStorage	;
+			case	SimpleTypes::shapetypeFlowChartMagneticTape	:	return	SimpleTypes::Vml::sptFlowChartMagneticTape	;
+			case	SimpleTypes::shapetypeFlowChartMagneticDisk	:	return	SimpleTypes::Vml::sptFlowChartMagneticDisk	;
+			case	SimpleTypes::shapetypeFlowChartMagneticDrum	:	return	SimpleTypes::Vml::sptFlowChartMagneticDrum	;
+			case	SimpleTypes::shapetypeFlowChartDisplay	:		return	SimpleTypes::Vml::sptFlowChartDisplay	;
+			case	SimpleTypes::shapetypeFlowChartDelay	:		return	SimpleTypes::Vml::sptFlowChartDelay	;
+//			case	SimpleTypes::shapetypeTextWave3	:				return	SimpleTypes::Vml::sptTextWave3	;
+			case	SimpleTypes::shapetypeTextInflateBottom	:		return	SimpleTypes::Vml::sptTextInflateBottom	;
+			case	SimpleTypes::shapetypeTextDeflateBottom	:		return	SimpleTypes::Vml::sptTextDeflateBottom	;
+			case	SimpleTypes::shapetypeTextInflateTop	:		return	SimpleTypes::Vml::sptTextInflateTop	;
+			case	SimpleTypes::shapetypeTextDeflateTop	:		return	SimpleTypes::Vml::sptTextDeflateTop	;
+			case	SimpleTypes::shapetypeTextDeflateInflate:		return	SimpleTypes::Vml::sptTextDeflateInflate	;
+			case	SimpleTypes::shapetypeTextFadeRight	:			return	SimpleTypes::Vml::sptTextFadeRight	;
+			case	SimpleTypes::shapetypeTextFadeLeft	:			return	SimpleTypes::Vml::sptTextFadeLeft	;
+			case	SimpleTypes::shapetypeTextFadeUp	:			return	SimpleTypes::Vml::sptTextFadeUp	;
+			case	SimpleTypes::shapetypeTextFadeDown	:			return	SimpleTypes::Vml::sptTextFadeDown	;
+			case	SimpleTypes::shapetypeBorderCallout1	:		return	SimpleTypes::Vml::sptBorderCallout1	;
+			case	SimpleTypes::shapetypeBorderCallout2	:		return	SimpleTypes::Vml::sptBorderCallout2	;
+			case	SimpleTypes::shapetypeBorderCallout3	:		return	SimpleTypes::Vml::sptBorderCallout3	;
+			case	SimpleTypes::shapetypeLeftRightUpArrow	:		return	SimpleTypes::Vml::sptLeftRightUpArrow	;
+			case	SimpleTypes::shapetypeSun	:					return	SimpleTypes::Vml::sptSun	;
+			case	SimpleTypes::shapetypeMoon	:					return	SimpleTypes::Vml::sptMoon	;
+			case	SimpleTypes::shapetypeBracketPair	:			return	SimpleTypes::Vml::sptBracketPair	;
+			case	SimpleTypes::shapetypeBracePair	:				return	SimpleTypes::Vml::sptBracePair	;
+			case	SimpleTypes::shapetypeStar4	:					return	SimpleTypes::Vml::sptSeal4	;
+			case	SimpleTypes::shapetypeDoubleWave	:			return	SimpleTypes::Vml::sptDoubleWave	;
+			case	SimpleTypes::shapetypeActionButtonBlank	:		return	SimpleTypes::Vml::sptActionButtonBlank	;
+			case	SimpleTypes::shapetypeActionButtonHome	:		return	SimpleTypes::Vml::sptActionButtonHome	;
+			case	SimpleTypes::shapetypeActionButtonHelp	:		return	SimpleTypes::Vml::sptActionButtonHelp	;
+			case	SimpleTypes::shapetypeActionButtonInformation	:	return	SimpleTypes::Vml::sptActionButtonInformation	;
+			case	SimpleTypes::shapetypeActionButtonForwardNext	:	return	SimpleTypes::Vml::sptActionButtonForwardNext	;
+			case	SimpleTypes::shapetypeActionButtonBackPrevious	:	return	SimpleTypes::Vml::sptActionButtonBackPrevious	;
+			case	SimpleTypes::shapetypeActionButtonEnd	:			return	SimpleTypes::Vml::sptActionButtonEnd	;
+			case	SimpleTypes::shapetypeActionButtonBeginning	:		return	SimpleTypes::Vml::sptActionButtonBeginning	;
+			case	SimpleTypes::shapetypeActionButtonReturn	:		return	SimpleTypes::Vml::sptActionButtonReturn	;
+			case	SimpleTypes::shapetypeActionButtonDocument	:		return	SimpleTypes::Vml::sptActionButtonDocument	;
+			case	SimpleTypes::shapetypeActionButtonSound	:			return	SimpleTypes::Vml::sptActionButtonSound	;
+			case	SimpleTypes::shapetypeActionButtonMovie	:			return	SimpleTypes::Vml::sptActionButtonMovie	;
 		default:
-			return OOX::Vml::sptNotPrimitive;
+			return SimpleTypes::Vml::sptNotPrimitive;
 		}
 	}
 
@@ -569,24 +569,38 @@ namespace PPTX
 			}
 		}
 
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group)
 		{
-			std::wstring strPath = _T("");
-			std::wstring strTextRect = _T("");
+			std::wstring strPath, strTextRect;
+			bool bOle = false;
+			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
 
-			LONG lW = 43200;
-			LONG lH = 43200;
+			LONG lW = 43200, lH = 43200;
+			int dL = 0, dT = 0, dW = 0, dH = 0;
+			
+			if (spPr.Geometry.is<PrstGeom>())
+			{
+				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+				
+				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
+				vmlPrst =  Spt2ShapeType( ooxPrst.GetValue());
+			}   
+
 			if (spPr.xfrm.is_init())
 			{
+				if (spPr.xfrm->offX.is_init())	dL = *spPr.xfrm->offX;
+				if (spPr.xfrm->offY.is_init())	dT = *spPr.xfrm->offY;
+				if (spPr.xfrm->extX.is_init())	dW = *spPr.xfrm->extX;
+				if (spPr.xfrm->extY.is_init())	dH = *spPr.xfrm->extY;
+
 				lW = spPr.xfrm->extX.get_value_or(43200);
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
-			bool bOle = false;
 
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 
-            std::wstring strId  = L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
-            std::wstring strSpid = L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
+            std::wstring strId		= L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
+            std::wstring strSpid	= L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
             std::wstring strFillAttr;
@@ -594,266 +608,143 @@ namespace PPTX
             std::wstring strFillNode;
             std::wstring strStrokeNode;;
 
-            CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
 			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle);
 
-            if (!pWriter->m_strStyleMain.empty())
+			pWriter->StartNode(L"v:shape");
+
+			pWriter->StartAttributes();
+
+            pWriter->WriteAttribute(L"id",		strId);
+            pWriter->WriteAttribute(L"o:spid",	strSpid);
+
+			if (vmlPrst != SimpleTypes::Vml::sptNotPrimitive)
+				pWriter->WriteAttribute(L"o:spt", (int)vmlPrst);
+
+			NSBinPptxRW::CXmlWriter oStylesWriter;
+			if (pWriter->m_strStyleMain.empty())
 			{
-                pWriter->StartNode(L"v:shape");
-
-				pWriter->StartAttributes();
-
-                pWriter->WriteAttribute(L"id",		strId);
-                pWriter->WriteAttribute(L"o:spid",	strSpid);
-
-				if (spPr.Geometry.is<PrstGeom>())
+				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
+				if (in_group)
 				{
-					const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-					
-					SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
-					OOX::Vml::SptType vmlPrst =  Spt2ShapeType( ooxPrst.GetValue());
-
-					if (vmlPrst != OOX::Vml::sptNotPrimitive)
-						pWriter->WriteAttribute(L"o:spt", (int)vmlPrst);
-				}
-
-				NSBinPptxRW::CXmlWriter oStylesWriter;
-				if (spPr.xfrm.is_init())
-				{
-					if (spPr.xfrm->rot.is_init())
-					{
-						int nRot = (int)((double)(*(spPr.xfrm->rot)) / 60000.0);
-						oStylesWriter.WriteAttributeCSS_int(_T("rotation"), nRot);
-					}
-					bool bIsFH = spPr.xfrm->flipH.get_value_or(false);
-					bool bIsFV = spPr.xfrm->flipV.get_value_or(false);
-					if (bIsFH && bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("xy"));
-					}
-					else if (bIsFH)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("x"));
-					}
-					else if (bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("y"));
-					}
-				}
-
-				if (txBody.is_init())
-				{
-					if (txBody->bodyPr.anchor.is_init())
-					{
-						std::wstring _strAnchor = txBody->bodyPr.anchor->get();
-						if (_strAnchor == _T("t"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
-						else if (_strAnchor == _T("b"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("bottom"));
-						else if (_strAnchor == _T("ctr"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("middle"));
-					}
-				}
-				else if (TextBoxBodyPr.is_init())
-				{
-					if (TextBoxBodyPr->anchor.is_init())
-					{
-						std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
-						if (_strAnchor == _T("t"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
-						else if (_strAnchor == _T("b"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("bottom"));
-						else if (_strAnchor == _T("ctr"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("middle"));
-					}
-				}
-
-				if (oStylesWriter.GetSize() == 0)
-				{
-					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
+					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100);
 				}
 				else
 				{
-					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
+					oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH / 12700);
 				}
-				if(!bOle)
-				{
-					pWriter->WriteAttribute(_T("coordsize"), (std::wstring)_T("100000,100000"));
-					pWriter->WriteAttribute(_T("path"), strPath);
-				}
-
-				if (!pWriter->m_strAttributesMain.empty())
-				{
-					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain.clear();
-				}
-
-				pWriter->WriteString(strFillAttr);
-				pWriter->WriteString(strStrokeAttr);
-
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(_T("v:path"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("textboxrect"), strTextRect);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("v:path"));
-
-				pWriter->WriteString(strFillNode);
-				pWriter->WriteString(strStrokeNode);
-				pWriter->WriteString(pWriter->m_strNodes);
-				pWriter->m_strNodes = _T("");
-
-				if (TextBoxShape.is_init())
-				{
-					pWriter->StartNode(_T("v:textbox"));
-					pWriter->EndAttributes();
-					pWriter->WriteString(*TextBoxShape);
-					pWriter->EndNode(_T("v:textbox"));
-				}
-
-				pWriter->EndNode(_T("v:shape"));
-
-				pWriter->m_strStyleMain = _T("");
 			}
-			else
+			if (spPr.xfrm.is_init())
 			{
-				int dL = 0;
-				int dT = 0;
-				int dW = 0;
-				int dH = 0;
-
-				NSBinPptxRW::CXmlWriter oStylesWriter;
-				if (spPr.xfrm.is_init())
+				if (spPr.xfrm->rot.is_init())
 				{
-					if (spPr.xfrm->offX.is_init())
-						dL = (*spPr.xfrm->offX)	/ 12700.;
-					if (spPr.xfrm->offY.is_init())
-						dT = (*spPr.xfrm->offY)	/ 12700.;
-					if (spPr.xfrm->extX.is_init())
-						dW = (*spPr.xfrm->extX) / 12700.;
-					if (spPr.xfrm->extY.is_init())
-						dH = (*spPr.xfrm->extY	/ 12700.);
+					int nRot = (int)((double)(*(spPr.xfrm->rot)) / 60000.0);
+					oStylesWriter.WriteAttributeCSS_int(L"rotation", nRot);
 				}
-				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
-				oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW);
-				oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH);
-
-				if (spPr.xfrm.is_init())
+				bool bIsFH = spPr.xfrm->flipH.get_value_or(false);
+				bool bIsFV = spPr.xfrm->flipV.get_value_or(false);
+				if (bIsFH && bIsFV)
 				{
-					if (spPr.xfrm->rot.is_init())
-					{
-						int nRot = (int)((double)(*(spPr.xfrm->rot)) / 60000.0);
-						oStylesWriter.WriteAttributeCSS_int(_T("rotation"), nRot);
-					}
-					bool bIsFH = spPr.xfrm->flipH.get_value_or(false);
-					bool bIsFV = spPr.xfrm->flipV.get_value_or(false);
-					if (bIsFH && bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("xy"));
-					}
-					else if (bIsFH)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("x"));
-					}
-					else if (bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("y"));
-					}
+					oStylesWriter.WriteAttributeCSS(L"flip", L"xy");
 				}
-
-				if (txBody.is_init())
+				else if (bIsFH)
 				{
-					if (txBody->bodyPr.anchor.is_init())
-					{
-						std::wstring _strAnchor = txBody->bodyPr.anchor->get();
-						if (_strAnchor == _T("t"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
-						else if (_strAnchor == _T("b"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("bottom"));
-						else if (_strAnchor == _T("ctr"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("middle"));
-					}
+					oStylesWriter.WriteAttributeCSS(L"flip", L"x");
 				}
-				else if (TextBoxBodyPr.is_init())
+				else if (bIsFV)
 				{
-					if (TextBoxBodyPr->anchor.is_init())
-					{
-						std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
-						if (_strAnchor == _T("t"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("top"));
-						else if (_strAnchor == _T("b"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("bottom"));
-						else if (_strAnchor == _T("ctr"))
-							oStylesWriter.WriteAttributeCSS(_T("v-text-anchor"), _T("middle"));
-					}
+					oStylesWriter.WriteAttributeCSS(L"flip", L"y");
 				}
-
-				pWriter->StartNode(_T("v:shape"));
-
-				pWriter->StartAttributes();
-
-				pWriter->WriteAttribute(_T("id"), strId);
-				pWriter->WriteAttribute(_T("o:spid"), strSpid);
-
-				if (spPr.Geometry.is<PrstGeom>())
-				{
-					const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-					
-					SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
-					OOX::Vml::SptType vmlPrst =  Spt2ShapeType( ooxPrst.GetValue());
-
-					if (vmlPrst != OOX::Vml::sptNotPrimitive)
-						pWriter->WriteAttribute(L"o:spt", (int)vmlPrst);
-				}
-				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
-
-				if(!bOle)
-				{
-					pWriter->WriteAttribute(_T("coordsize"), (std::wstring)_T("100000,100000"));
-					pWriter->WriteAttribute(_T("path"), strPath);
-				}
-
-				if (!pWriter->m_strAttributesMain.empty())
-				{
-					pWriter->WriteString(pWriter->m_strAttributesMain);
-					pWriter->m_strAttributesMain.clear();
-				}
-
-				pWriter->WriteString(strFillAttr);
-				pWriter->WriteString(strStrokeAttr);
-
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(_T("v:path"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("textboxrect"), strTextRect);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("v:path"));
-
-				pWriter->WriteString(strFillNode);
-				pWriter->WriteString(strStrokeNode);
-
-				if (TextBoxShape.is_init())
-				{
-					pWriter->StartNode(_T("v:textbox"));
-					pWriter->EndAttributes();
-					pWriter->WriteString(*TextBoxShape);
-					pWriter->EndNode(_T("v:textbox"));
-				}
-
-				pWriter->EndNode(_T("v:shape"));
 			}
+
+			if (txBody.is_init())
+			{
+				if (txBody->bodyPr.anchor.is_init())
+				{
+					std::wstring _strAnchor = txBody->bodyPr.anchor->get();
+					if (_strAnchor == L"t")
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
+					else if (_strAnchor == L"b")
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"bottom");
+					else if (_strAnchor == L"ctr")
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
+				}
+			}
+			else if (TextBoxBodyPr.is_init())
+			{
+				if (TextBoxBodyPr->anchor.is_init())
+				{
+					std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
+					if (_strAnchor == L"t")
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
+					else if (_strAnchor == L"b")
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"bottom");
+					else if (_strAnchor == _T("ctr"))
+						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
+				}
+			}
+
+			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
+
+			if(!bOle)
+			{
+				oStylesWriter.ClearNoAttack();
+				oStylesWriter.m_oWriter.AddSize(30);
+				oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
+				oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
+				oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
+				pWriter->WriteAttribute(L"coordsize", oStylesWriter.GetXmlString());
+
+				pWriter->WriteAttribute(L"path", strPath);
+			}
+
+			if (!pWriter->m_strAttributesMain.empty())
+			{
+				pWriter->WriteString(pWriter->m_strAttributesMain);
+				pWriter->m_strAttributesMain.clear();
+			}
+
+			pWriter->WriteString(strFillAttr);
+			pWriter->WriteString(strStrokeAttr);
+
+			pWriter->EndAttributes();
+
+			pWriter->StartNode(L"v:path");
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"textboxrect", strTextRect);
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"v:path");
+
+			pWriter->WriteString(strFillNode);
+			pWriter->WriteString(strStrokeNode);
+			
+			pWriter->WriteString(pWriter->m_strNodes);
+			pWriter->m_strNodes.clear();
+
+			if (TextBoxShape.is_init())
+			{
+				pWriter->StartNode(L"v:textbox");
+				pWriter->EndAttributes();
+				pWriter->WriteString(*TextBoxShape);
+				pWriter->EndNode(L"v:textbox");
+			}
+
+			pWriter->EndNode(L"v:shape");
+
+			pWriter->m_strStyleMain.clear();
 		}
 		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
 		{
-			std::wstring strFillAttr = _T("");
-			std::wstring strFillNode = _T("");
+			std::wstring strFillAttr, strFillNode;
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
 
-			pWriter->StartNode(_T("v:background"));
+			pWriter->StartNode(L"v:background");
 
 			pWriter->StartAttributes();
 
@@ -871,7 +762,7 @@ namespace PPTX
 
 			pWriter->WriteString(strFillNode);
 
-			pWriter->EndNode(_T("v:background"));
+			pWriter->EndNode(L"v:background");
 		}
 	} // namespace Logic
 } // namespace PPTX

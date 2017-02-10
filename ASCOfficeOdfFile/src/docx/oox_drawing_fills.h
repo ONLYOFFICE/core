@@ -143,9 +143,10 @@ namespace oox {
 		}
 	};
 
-    void oox_serialize_fill(std::wostream & strm, const _oox_fill & val);
-    void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double)  opacity);
-    void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf_types::percent)  opacity);
+    void vml_serialize_background	(std::wostream & strm, const _oox_fill & val, const std::wstring & color, int id);
+    void oox_serialize_fill			(std::wostream & strm, const _oox_fill & val);
+    void oox_serialize_srgb			(std::wostream & strm,std::wstring color,_CP_OPT(double)  opacity);
+    void oox_serialize_srgb			(std::wostream & strm,std::wstring color,_CP_OPT(odf_types::percent)  opacity);
 
 }
 }

@@ -106,13 +106,15 @@ public:
 			case OOX::et_w_sdtContent:
 			{
 				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
-				for (int i = 0; i < pSdt->m_arrItems.size(); i++)
+				for (size_t i = 0; i < pSdt->m_arrItems.size(); i++)
 				{
 					Parse( pSdt->m_arrItems[i], oParam );
 				}
 
 			}break;
-		}
+            default:
+                break;
+        }
 		return true;
 	}
 };

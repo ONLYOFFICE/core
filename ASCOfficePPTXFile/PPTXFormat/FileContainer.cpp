@@ -158,21 +158,17 @@ namespace PPTX
 
 			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
 
-			if (bIsSlide && (pRelation->Type() == OOX::Presentation::FileTypes::Slide))
-			{
-				long percent = Event->GetPercent();
+            if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink ||
+                             pRelation->Type() == OOX::Presentation::FileTypes::Slide))
+			{// + external audio, video ...
 
-				smart_ptr<OOX::File> file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
+                smart_ptr<OOX::File> file;
 
-                bool res = Event->Progress(0, percent + m_lPercent);
+                file = smart_ptr<OOX::File>(new OOX::HyperLink(pRelation->Target()));
 
+                normPath = pRelation->Target();
                 Add(pRelation->rId(), file);
 
-                if (res || m_bCancelled)
-                {
-                    m_bCancelled = true;
-                    break;
-                }
 			}
 			else
 			{
@@ -193,7 +189,7 @@ namespace PPTX
 					Add(pRelation->rId(), file);
 
 					smart_ptr<FileContainer> pContainer = file.smart_dynamic_cast<FileContainer>();
-                    bool res = Event->Progress(0, percent + m_lPercent);
+                    Event->Progress(0, percent + m_lPercent);
 
                     if (pContainer.IsInit())
 					{
@@ -207,8 +203,7 @@ namespace PPTX
                     //на презентация с hyperlink выходим при достижении 100%. Проценты считаются от количества обработанных файлов, а hyperlink не файл(Ligninger_og_uligheder.pptx)
                     if (m_bCancelled)
                     {
-                        m_bCancelled = true;
-                        break;
+                       break;
                     }
                 }
 			}

@@ -113,7 +113,7 @@ public:
 	}
     void putString( std::string sText )
 	{
-        int nExtBufSize = sText.length();
+        size_t nExtBufSize = sText.length();
 		//копируем буфер в темповый буфер
 		unsigned char* aTempBuf = new unsigned char[ m_nSizeAbs ];
 		memcpy( aTempBuf, m_aBuffer, m_nSizeAbs );

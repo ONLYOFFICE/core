@@ -64,8 +64,10 @@ public:
 	void clear				();
 	void set_styles_context	(odf_style_context*  styles_context);//для embedded 
 
-	void set_header_state	(bool Val);
-	void set_footer_state	(bool Val);
+	void set_header_state		(bool Val);
+	void set_footer_state		(bool Val);
+	void set_background_state	(bool Val);
+	
 	void check_anchor		();
 
 	void set_margin_left	(double valPt);
@@ -173,6 +175,7 @@ public:
 	void set_type_fill		(int type);//for area - temp for objects
 	void set_solid_fill		(std::wstring hexColor);
 	void set_opacity		(double percent);
+
 //////////////////////////////////////////////////////////////
 	void start_area_properties();
 	void end_area_properties();
@@ -187,6 +190,8 @@ public:
 		std::wstring add_marker_style(int type);
 	void end_line_properties		();
 	
+	_CP_OPT(unsigned int)	get_fill_color ();
+	void					set_fill_color (unsigned int color);
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..

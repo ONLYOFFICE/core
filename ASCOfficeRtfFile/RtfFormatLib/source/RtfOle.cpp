@@ -209,7 +209,7 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		RtfOle2ToOle1Stream* piStream = static_cast<RtfOle2ToOle1Stream*>(oStream);
 		BYTE* pSource = (BYTE*)pTarget;
-		for( int i = 0; i < (int)dwWrite; i++ )
+		for( DWORD i = 0; i < dwWrite; i++ )
 			piStream->aBuffer.push_back( pSource[i] );
 		return dwWrite;
 	}

@@ -75,7 +75,6 @@ namespace BinXlsxRW {
 
 				if (length + stCurPos > stLen)
 				{
-					//ОЎИБ А ЧTЕНИя БИНАРНИ А - пропускаем элемент
 					m_oBufferedStream.Seek(start_pos + stLen);
 					return c_oSerConstants::ReadOk;
 				} 

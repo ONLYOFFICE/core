@@ -209,7 +209,7 @@ bool RtfWriter::SaveByItemEnd()
         //WriteFile ( hTargetFile, sRtf, ( DWORD ) sRtf.length(), &dwBytesWrite, NULL );
 
 		//копируем заголовки из массива и параграфы из темповых файлов
-		for( int i = 0 ; i < (int)m_aTempFiles.size() && i < (int)m_aTempFilesSectPr.size(); i++ )
+		for (size_t i = 0 ; i < m_aTempFiles.size() && i < m_aTempFilesSectPr.size(); i++ )
 		{
 			//свойства секции
 
@@ -256,19 +256,24 @@ bool RtfWriter::SaveByItemEnd()
 	catch(...)
 	{}
 
-	for( int i = 0; i < (int)m_aTempFiles.size(); i++ )
+	for (size_t i = 0; i < m_aTempFiles.size(); i++ )
 		Utils::RemoveDirOrFile( m_aTempFiles[i] );
+
 	m_aTempFiles.clear();
-	for( int i = 0; i < (int)m_aTempFilesSectPr.size(); i++ )
+
+	for (size_t i = 0; i < m_aTempFilesSectPr.size(); i++ )
 		Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
+
 	m_aTempFilesSectPr.clear();
 	return true;
 }
 int RtfWriter::GetCount()
 {
 	int nCount = 0;
-	for( int i = 0; i < m_oDocument.GetCount(); i++ )
+	for (int i = 0; i < m_oDocument.GetCount(); i++ )
+	{
 		nCount += m_oDocument[i].props->GetCount();
+	}
 	return nCount;
 }
 std::wstring RtfWriter::CreateRtfStart()

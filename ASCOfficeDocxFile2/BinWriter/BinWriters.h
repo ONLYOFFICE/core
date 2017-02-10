@@ -149,8 +149,8 @@ namespace BinDocxRW
 				switch(border.m_oVal.get().GetValue())
 				{
 				case SimpleTypes::bordervalueNone:
-				case SimpleTypes::bordervalueNil:m_oStream.WriteBYTE(border_None);break;
-				default:m_oStream.WriteBYTE(border_Single);break;
+                case SimpleTypes::bordervalueNil:   m_oStream.WriteBYTE(border_None);   break;
+                default:                            m_oStream.WriteBYTE(border_Single); break;
 				}
 
 			}
@@ -306,8 +306,8 @@ namespace BinDocxRW
 				m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				switch(Shd.m_oVal.get().GetValue())
 				{
-				case SimpleTypes::shdNil: m_oStream.WriteBYTE(shd_Nil);break;
-				default: m_oStream.WriteBYTE(shd_Clear);break;
+                case SimpleTypes::shdNil:   m_oStream.WriteBYTE(shd_Nil);break;
+                default:                    m_oStream.WriteBYTE(shd_Clear);break;
 				}
 			}
 			//Value
@@ -538,7 +538,9 @@ namespace BinDocxRW
 						case SimpleTypes::themeMinorBidi:
 						case SimpleTypes::themeMinorEastAsia:
 						case SimpleTypes::themeMinorHAnsi:sFontAscii = m_poTheme->GetMinorFont();break;
-						}
+                        default:
+                            break;
+                        }
 					}
 					else if(oFont.m_sAscii.IsInit())
 							sFontAscii = oFont.m_sAscii.get();
@@ -556,7 +558,9 @@ namespace BinDocxRW
 						case SimpleTypes::themeMinorBidi:
 						case SimpleTypes::themeMinorEastAsia:
 						case SimpleTypes::themeMinorHAnsi:sFontHAnsi = m_poTheme->GetMinorFont();break;
-						}
+                        default:
+                            break;
+                        }
 					}
 					else if(oFont.m_sHAnsi.IsInit())
 						sFontHAnsi = oFont.m_sHAnsi.get();
@@ -573,7 +577,8 @@ namespace BinDocxRW
 						case SimpleTypes::themeMinorBidi:
 						case SimpleTypes::themeMinorEastAsia:
 						case SimpleTypes::themeMinorHAnsi:sFontCS = m_poTheme->GetMinorFont();break;
-						}
+                        default: break;
+                        }
 					}
 					else if(oFont.m_sCs.IsInit())
 						sFontCS = oFont.m_sCs.get();
@@ -590,7 +595,8 @@ namespace BinDocxRW
 						case SimpleTypes::themeMinorBidi:
 						case SimpleTypes::themeMinorEastAsia:
 						case SimpleTypes::themeMinorHAnsi:sFontAE = m_poTheme->GetMinorFont();break;
-						}
+                        default: break;
+                        }
 					}
 					else if(oFont.m_sEastAsia.IsInit())
 						sFontAE = oFont.m_sEastAsia.get();
@@ -1394,7 +1400,8 @@ namespace BinDocxRW
 						{
 						case SimpleTypes::pageorientPortrait: Orientation = orientation_Portrait;break;
 						case SimpleTypes::pageorientLandscape: Orientation = orientation_Landscape;break;
-						}
+                        default: break;
+                        }
 					}
 				}
 		//W
@@ -1480,14 +1487,14 @@ namespace BinDocxRW
 							OOX::CHdrFtr* pHdrFtr = (OOX::CHdrFtr*)oFile.operator->();
 							if(bHdr)
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
+								nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
 								m_oBinaryHeaderFooterTableWriter->m_aHeaders.push_back(pHdrFtr);
 								m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef.m_oType->GetValue());
 								m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.push_back(pSectPr);
 							}
 							else
 							{
-								nIndex = m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
+								nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
 								m_oBinaryHeaderFooterTableWriter->m_aFooters.push_back(pHdrFtr);
 								m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef.m_oType->GetValue());
 								m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.push_back(pSectPr);
@@ -3049,6 +3056,8 @@ namespace BinDocxRW
 						OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
 						WriteDocumentContent(pBdo->m_arrItems);
 					}break;
+                default:
+                    break;
 				}
 			}
 	//SectPr  & Background
@@ -3236,6 +3245,8 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+                default:
+                    break;
 				}
 			}
 		}
@@ -3268,7 +3279,9 @@ namespace BinDocxRW
 				case OOX::et_w_commentRangeEnd:		nCurPos = m_oBcw.WriteItemStart(c_oSerParType::CommentEnd);		break;
 
 				case OOX::et_w_commentReference:	nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::CommentReference);break;
-				}
+                default:
+                    break;
+                }
 
 				int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_CommentsType::Id);
 				m_oBcw.m_oStream.WriteLONG(oId->GetValue());
@@ -3738,6 +3751,8 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+                default:
+                    break;
 				}
 			}
 		}
@@ -4062,6 +4077,8 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+                default:
+                    break;
 				}
 			}
 		}
@@ -4179,7 +4196,9 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
-				}
+                default:
+                    break;
+                }
 			}
 		}
 		void WriteMathFName(const OOX::Logic::CFName &pFName)
@@ -4414,7 +4433,9 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
-				}
+                default:
+                    break;
+                }
 			}
 		}
 		void WriteMathMaxDist(const OOX::Logic::CMaxDist &pMaxDist)
@@ -5074,7 +5095,7 @@ namespace BinDocxRW
 				}
 			}
 	//Если первый элемент символ надо выставить в его настройки шрифт
-			if(nIndexStart < pRun->m_arrItems.size() && OOX::et_w_sym == pRun->m_arrItems[nIndexStart]->getType())
+			if(nIndexStart < (int)pRun->m_arrItems.size() && OOX::et_w_sym == pRun->m_arrItems[nIndexStart]->getType())
 			{
 				OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(pRun->m_arrItems[nIndexStart]);
 				if(oSym->m_oFont.IsInit())
@@ -5123,7 +5144,9 @@ namespace BinDocxRW
 						case SimpleTypes::brtypeColumn:			nBreakType = c_oSerRunType::columnbreak;	break;
 						case SimpleTypes::brtypePage:			nBreakType = c_oSerRunType::pagebreak;		break;
 						case SimpleTypes::brtypeTextWrapping:	nBreakType = c_oSerRunType::linebreak;		break;
-						}
+                        default:
+                            break;
+                        }
 						if(-1 != nBreakType)
 						{
 							m_oBcw.m_oStream.WriteBYTE(nBreakType);
@@ -5351,6 +5374,8 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
+                default:
+                    break;
 				}
 			}
 		}
@@ -6913,7 +6938,9 @@ namespace BinDocxRW
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
-				}
+                default:
+                    break;
+                }
 			}			
 		}
 		void WriteColorSchemeMapping(const OOX::Settings::CColorSchemeMapping& oColorSchemeMapping)

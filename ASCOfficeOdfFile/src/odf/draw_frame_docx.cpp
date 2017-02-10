@@ -893,17 +893,17 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
 	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing->fill, bTxbx);	
 
-	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.length() < 1))
+	if ((drawing->fill.bitmap) && (drawing->fill.bitmap->rId.empty()))
 	{
 		std::wstring href = drawing->fill.bitmap->xlink_href_;
 		drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal, href);
 	}
 
 ////////////////////////////////////////////////////
-	drawing->additional.push_back(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
+	drawing->additional.push_back(odf_reader::_property(L"border_width_left",		Compute_BorderWidth(graphicProperties, sideLeft)));
 	drawing->additional.push_back(odf_reader::_property(L"border_width_top",		Compute_BorderWidth(graphicProperties, sideTop)));
-	drawing->additional.push_back(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
-	drawing->additional.push_back(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(graphicProperties, sideBottom))); 
+	drawing->additional.push_back(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(graphicProperties, sideRight)));
+	drawing->additional.push_back(odf_reader::_property(L"border_width_bottom",		Compute_BorderWidth(graphicProperties, sideBottom))); 
 	
 	if (graphicProperties.common_border_attlist_.fo_border_)
 	{

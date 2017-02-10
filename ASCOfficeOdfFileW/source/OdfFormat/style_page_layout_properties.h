@@ -62,6 +62,7 @@ public:
 	_CP_OPT(odf_types::length)							fo_page_width_;    
     _CP_OPT(odf_types::length)							fo_page_height_;    
     
+	odf_types::common_draw_fill_attlist					common_draw_fill_attlist_;
 	odf_types::common_num_format_attlist				common_num_format_attlist_;
     odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
 

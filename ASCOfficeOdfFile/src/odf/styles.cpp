@@ -54,7 +54,6 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-
 #include "draw_common.h"
 
 namespace cpdoccore { 
@@ -904,12 +903,12 @@ void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring
 // style-page-layout-properties-attlist
 void style_page_layout_properties_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"fo:page-width", fo_page_width_);
-    CP_APPLY_ATTR(L"fo:page-height", fo_page_height_);
+    CP_APPLY_ATTR(L"fo:page-width",		fo_page_width_);
+    CP_APPLY_ATTR(L"fo:page-height",	fo_page_height_);
     common_num_format_attlist_.add_attributes(Attributes);
     common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:paper-tray-name", style_paper_tray_name_);
-    CP_APPLY_ATTR(L"style:print-orientation", style_print_orientation_);
+    CP_APPLY_ATTR(L"style:paper-tray-name",		style_paper_tray_name_);
+    CP_APPLY_ATTR(L"style:print-orientation",	style_print_orientation_);
    
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
@@ -919,7 +918,8 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_padding_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
-    
+	common_draw_fill_attlist_.add_attributes(Attributes);
+
 	CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
     CP_APPLY_ATTR(L"style:print",					style_print_);
     CP_APPLY_ATTR(L"style:print-page-order",		style_print_page_order_);
@@ -1260,18 +1260,26 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const s
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
-bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
-{
-	if (!style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)return false;
 
-    if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
+bool style_page_layout_properties::docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id)
+{
+	if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ && 
+		style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent)
+		return true; //??
     //прозрачный фон
+	
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:background")
 		{
-			std::wstring color = style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
-			CP_XML_ATTR(L"w:color",color);
+			std::wstring color = L"ffffff";
+			
+			if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)
+				color = style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
+			
+			CP_XML_ATTR(L"w:color", color);
+
+			oox::vml_serialize_background(CP_XML_STREAM(), fill, color, id);
 		}
 	}
 	return true;

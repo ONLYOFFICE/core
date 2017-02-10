@@ -63,7 +63,7 @@ public:
 
 		int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
 
-		for( int i = 0; i < m_ooxRowTable->m_arrItems.size(); i++)
+		for (size_t i = 0; i < m_ooxRowTable->m_arrItems.size(); i++)
 		{
 			if (m_ooxRowTable->m_arrItems[i]			== NULL)		continue;
 			if (m_ooxRowTable->m_arrItems[i]->getType() != OOX::et_w_tc)continue;//todooo bookmarks

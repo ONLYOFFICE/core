@@ -58,7 +58,7 @@ namespace DocWrapper {
 	{
 		//подбор перенесен в js
 		return;
-		for (int i = 0; i < fontTable->m_arrFonts.size(); ++i)
+		for (size_t i = 0; i < fontTable->m_arrFonts.size(); ++i)
 			addToFontMap(*fontTable->m_arrFonts[i]);
 	}
 	

@@ -47,7 +47,7 @@ public:
 	{
 		if (m_ooxNumbering == NULL) return false;
 
-        for (long i=0; i < m_ooxNumbering->m_arrNumPicBullet.size(); i++)
+        for (size_t i=0; i < m_ooxNumbering->m_arrNumPicBullet.size(); i++)
 		{
 			if (m_ooxNumbering->m_arrNumPicBullet[i] == NULL) continue;
 			
@@ -75,12 +75,12 @@ public:
 			}
 		}
 
-		for (long i=0; i < m_ooxNumbering->m_arrAbstractNum.size(); i++)
+		for (size_t i = 0; i < m_ooxNumbering->m_arrAbstractNum.size(); i++)
 		{
 			OOXAbstractNumReader oParagraph(m_ooxNumbering->m_arrAbstractNum[i]);
 			oParagraph.Parse( oParam );
 		}
-		for (long i=0; i < m_ooxNumbering->m_arrNum.size(); i++)
+		for (size_t i = 0; i < m_ooxNumbering->m_arrNum.size(); i++)
 		{
 			OOXNumberingMapReader oParagraph(m_ooxNumbering->m_arrNum[i]);
 			oParagraph.Parse( oParam );

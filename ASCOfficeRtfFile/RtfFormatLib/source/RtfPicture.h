@@ -57,10 +57,12 @@ public:
 	int m_nCropR;
 	int m_nCropB;
 
-	bool m_bIsCopy; // true - надо удалять m_sPicFilename, false - не надо удалять
-    std::wstring m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
+	bool			m_bIsCopy;		// true - надо удалять m_sPicFilename, false - не надо удалять
+    std::wstring	m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
 
     std::vector<std::wstring> m_aTempFiles;
+	
+	std::wstring dump_shape_properties;
 
 	RtfPicture()
 	{
@@ -70,7 +72,7 @@ public:
 	~RtfPicture()
 	{
 		SetDefault();
-		for( int i = 0; i < (int)m_aTempFiles.size(); i++ ) 
+		for (size_t i = 0; i < m_aTempFiles.size(); i++ ) 
 			Utils::RemoveDirOrFile( m_aTempFiles[i] );
 	}
 	int GetType()
@@ -93,23 +95,23 @@ public:
 	{
 		eDataType = dt_none;
 		DEFAULT_PROPERTY( m_nWidth )
-			DEFAULT_PROPERTY( m_nWidthGoal )
-			DEFAULT_PROPERTY( m_nHeight )
-			DEFAULT_PROPERTY( m_nHeightGoal )
+		DEFAULT_PROPERTY( m_nWidthGoal )
+		DEFAULT_PROPERTY( m_nHeight )
+		DEFAULT_PROPERTY( m_nHeightGoal )
 
-			DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
-			DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
-			DEFAULT_PROPERTY( m_bScaled )
+		DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
+		DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
+		DEFAULT_PROPERTY( m_bScaled )
 
-			DEFAULT_PROPERTY( m_nCropL )
-			DEFAULT_PROPERTY( m_nCropT )
-			DEFAULT_PROPERTY( m_nCropR )
-			DEFAULT_PROPERTY( m_nCropB )
-			
-            if( true == m_bIsCopy && !m_sPicFilename.empty() )
-			{
-				Utils::RemoveDirOrFile( m_sPicFilename );
-			}
+		DEFAULT_PROPERTY( m_nCropL )
+		DEFAULT_PROPERTY( m_nCropT )
+		DEFAULT_PROPERTY( m_nCropR )
+		DEFAULT_PROPERTY( m_nCropB )
+		
+        if( true == m_bIsCopy && !m_sPicFilename.empty() )
+		{
+			Utils::RemoveDirOrFile( m_sPicFilename );
+		}
 		m_sPicFilename = L"";
 	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);

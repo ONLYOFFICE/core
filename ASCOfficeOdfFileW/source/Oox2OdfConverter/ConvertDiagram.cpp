@@ -48,8 +48,6 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 
-#define ARGB(a, r, g, b) ((unsigned int)( ( (unsigned char)(a) )| ( ( (unsigned char)(r) ) << 8 ) | ( ( (unsigned char)(g) ) << 16 ) | ( (unsigned char)(b) << 24 ) ) )
-
 using namespace cpdoccore;
 
 namespace Oox2Odf
@@ -305,9 +303,80 @@ void OoxConverter::convert(PPTX::Logic::PathBase *oox_path)
 
 }
 
-void OoxConverter::convert(PPTX::Logic::BlipFill *oox_fill)
+void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 {
-	if (!oox_fill) return;
+	if (oox_bitmap_fill == NULL)return;
+
+	odf_context()->drawing_context()->start_bitmap_style();
+	{
+		double Width=0, Height = 0;
+		if (oox_bitmap_fill->blip.IsInit())
+		{
+            std::wstring sID, pathImage;
+            if (oox_bitmap_fill->blip->embed.IsInit())
+            {
+                sID         = oox_bitmap_fill->blip->embed->get();
+                pathImage   = find_link_by_id(sID,1);
+
+                if (!pathImage.empty())
+                {
+                    odf_context()->drawing_context()->set_bitmap_link(pathImage);
+                    _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
+                }
+            }
+            else if (oox_bitmap_fill->blip->link.IsInit())
+			{
+                sID  = pathImage = oox_bitmap_fill->blip->link->get();
+
+                odf_context()->drawing_context()->set_bitmap_link(pathImage);
+				//...
+			}
+			//for (size_t i = 0 ; i < oox_bitmap_fill->blip->m_arrEffects.size(); i++)
+			//{
+			//	convert(oox_bitmap_fill->blip->m_arrEffects[i]);
+			//}
+		}
+		if (oox_bitmap_fill->srcRect.IsInit() && Width >0  && Height >0)//часть изображения
+		{
+			odf_context()->drawing_context()->set_image_client_rect_inch(
+				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 )  /100. * Width / currentSystemDPI,
+                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 )    /100. * Height/ currentSystemDPI,
+                (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / currentSystemDPI,
+                (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ currentSystemDPI);
+		}
+		if (oox_bitmap_fill->tile.IsInit())
+		{
+			odf_context()->drawing_context()->set_image_style_repeat(2);
+			
+			if (oox_bitmap_fill->tile->algn.IsInit())
+				odf_context()->drawing_context()->set_bitmap_tile_align(oox_bitmap_fill->tile->algn->GetBYTECode());
+
+			if (oox_bitmap_fill->tile->flip.IsInit())	{}
+
+			if (oox_bitmap_fill->tile->sx.IsInit() && Width >0)	
+			{
+				odf_context()->drawing_context()->set_bitmap_tile_scale_x(*oox_bitmap_fill->tile->sx / 100. * Width);
+			}
+			if (oox_bitmap_fill->tile->sy.IsInit()&& Height >0)
+			{
+				odf_context()->drawing_context()->set_bitmap_tile_scale_y(*oox_bitmap_fill->tile->sy / 100. * Height);
+			}		
+			if (oox_bitmap_fill->tile->tx.IsInit() && Width >0)
+			{
+				odf_context()->drawing_context()->set_bitmap_tile_translate_x(*oox_bitmap_fill->tile->tx * 100. / Width );
+			}
+			if (oox_bitmap_fill->tile->ty.IsInit() && Height >0)
+			{
+				odf_context()->drawing_context()->set_bitmap_tile_translate_y(*oox_bitmap_fill->tile->ty * 100. / Height );
+			}
+		}
+		if (oox_bitmap_fill->stretch.IsInit())
+		{
+			odf_context()->drawing_context()->set_image_style_repeat(1);
+			if (oox_bitmap_fill->stretch->fillRect.IsInit()){} //заполнение неполного объема
+		}
+	}
+	odf_context()->drawing_context()->end_bitmap_style();
 }
 void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill)
 {

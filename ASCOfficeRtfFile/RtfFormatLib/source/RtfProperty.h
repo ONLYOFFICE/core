@@ -547,7 +547,8 @@ public:
 			case 13: return L"red";
 			case 14: return L"white";
 			case 15: return L"yellow";
-		}
+            default: break;
+        }
 		return L"none";
 	}
 private:
@@ -1719,7 +1720,8 @@ public:
             case stCharacter :	sResult += L"{\\*\\cs"  + std::to_wstring( m_nID);                  break;
             case stSection :	sResult += L"{\\*\\ds"  + std::to_wstring( m_nID);                  break;
             case stTable :		sResult += L"{\\*\\ts"  + std::to_wstring( m_nID) + L"\\tsrowd";    break;
-		}
+            default: break;
+        }
 		return sResult;
 	}
     std::wstring RenderToRtfEnd( RenderParameter oRenderParameter );
@@ -2129,14 +2131,16 @@ public:
 		{
 			case RtfTableProperty::hr_phmrg: m_eHRef = hr_phmrg;break;
 			case RtfTableProperty::hr_phpg: m_eHRef = hr_phpg;break;
-			case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
-		}
+            case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
+            default: break;
+        }
 		switch ( oProp.m_eVRef )
 		{
 			case RtfTableProperty::vr_pvmrg: m_eVRef = vr_pvmrg;break;
 			case RtfTableProperty::vr_pvpg: m_eVRef = vr_pvpg;break;
 			case RtfTableProperty::vr_pvpara: m_eVRef = vr_pvpara;break;
-		}
+            default: break;
+        }
 		switch ( oProp.m_eHPos )
 		{
 			case RtfTableProperty::hp_posxc: m_eHPos = hp_posxc;break;
@@ -2144,7 +2148,8 @@ public:
 			case RtfTableProperty::hp_posxo: m_eHPos = hp_posxo;break;
 			case RtfTableProperty::hp_posxl: m_eHPos = hp_posxl;break;
 			case RtfTableProperty::hp_posxr: m_eHPos = hp_posxr;break;
-		}
+            default: break;
+        }
 		switch ( oProp.m_eVPos )
 		{
 			case RtfTableProperty::vp_posyc: m_eVPos = vp_posyc;break;
@@ -2152,7 +2157,8 @@ public:
 			case RtfTableProperty::vp_posyout: m_eVPos = vp_posyout;break;
 			case RtfTableProperty::vp_posyt: m_eVPos = vp_posyt;break;
 			case RtfTableProperty::vp_posyb: m_eVPos = vp_posyb;break;
-		}
+            default: break;
+        }
 	}
 };
 

@@ -108,6 +108,7 @@ bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 				case SimpleTypes::Vml::cssflipY:	pShape->m_bFlipV = true; break;
 				case SimpleTypes::Vml::cssflipXY:	pShape->m_bFlipH = true; pShape->m_bFlipV = true; break; 
 				case SimpleTypes::Vml::cssflipYX :	pShape->m_bFlipH = true; pShape->m_bFlipV = true; break; 
+                default: break;
 			}
 			break;
 		case SimpleTypes::Vml::cssptWidth : 
@@ -300,7 +301,8 @@ bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 		case SimpleTypes::Vml::cssptVTextReverse                   : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacingMode               : 			break;
 		case SimpleTypes::Vml::cssptVTextSpacing                   : 			break;		
-	}
+        default: break;
+    }
 	return true;
 }
 
@@ -575,7 +577,8 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 				}
 
 			}break;
-		}
+            default: break;
+        }
 	}
 	//проверяем на inline
 	if((PROP_DEF == pOutput->m_nLeft/* || 0 == pOutput->m_nLeft */) && ( PROP_DEF == pOutput->m_nTop/* || 0 == pOutput->m_nTop */) && 
@@ -630,7 +633,8 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, int indexSchemeColor, BYTE& u
 			result = theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
 		case SimpleTypes::shemecolorvalHlink:
 			result = theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
-	}
+        default: break;
+    }
 	return result;
 }
 void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSchemeColor *oox_ShemeClr, unsigned int & nColor, _CP_OPT(double) &opacity)
@@ -662,7 +666,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CColor *oox_col
 		case OOX::Drawing::colorScRgb:	Parse(oParam, &oox_color->m_oScrgbClr,	nColor, opacity);		break;
 		case OOX::Drawing::colorSRgb:	Parse(oParam, &oox_color->m_oSrgbClr,	nColor, opacity);		break;
 		case OOX::Drawing::colorSys:	Parse(oParam, &oox_color->m_oSysClr,	nColor, opacity);		break;		
-	}	
+        default: break;
+    }
 }
 void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform *oox_Clr, unsigned int & nColor, _CP_OPT(double) &opacity)
 {
@@ -684,7 +689,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFill
 		case OOX::Drawing::colorScRgb:	Parse(oParam, &oox_solid_fill->m_oScrgbClr,	nColor, opacity);		break;
 		case OOX::Drawing::colorSRgb:	Parse(oParam, &oox_solid_fill->m_oSrgbClr,	nColor, opacity);		break;
 		case OOX::Drawing::colorSys:	Parse(oParam, &oox_solid_fill->m_oSysClr,	nColor, opacity);		break;		
-	}	
+        default: break;
+    }
 }
 //-----------------------------------------------------------------------------------------------------------------
 void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CSolidColorFillProperties *oox_solid_fill, std::wstring *change_sheme_color)
@@ -908,7 +914,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Dr
 		}break;
 		case OOX::Drawing::filltypeNo:	
 			pOutput->m_bLine = false;	break;
-	}
+        default: break;
+    }
 	if (oox_line_prop->m_oW.IsInit())
 	{
 		pOutput->m_nLineWidth = oox_line_prop->m_oW->ToPoints() * 12700;
@@ -945,7 +952,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Dr
 			case SimpleTypes::presetlinedashvalSysDashDotDot:	pOutput->m_nLineDashing = 4; break;
 			case SimpleTypes::presetlinedashvalSysDot		:	pOutput->m_nLineDashing = 2; break;
 			case SimpleTypes::presetlinedashvalSolid		:	break;
-		}
+            default: break;
+        }
 	}
 	//nullable<SimpleTypes::CPenAlignment<>>            m_oAlgn;
 	//nullable<SimpleTypes::CLineCap<>>                 m_oCap;
@@ -985,7 +993,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, OOX::D
 				case OOX::Drawing::filltypeNo:
 					pOutput->m_bFilled = false;	
 					break;
-			}
+                default: break;
+            }
 		}
 		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems.size()))
 		{
@@ -1003,7 +1012,8 @@ void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, OOX::D
 				case OOX::Drawing::filltypeNo:
 					pOutput->m_bFilled = false;	
 					break;
-			}
+                default: break;
+            }
 		}
 	}
 
@@ -1066,7 +1076,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 			case SimpleTypes::shapetypeRoundRect:	pOutput->m_nShapeType = NSOfficeDrawing::sptRoundRectangle;	break;
 			case SimpleTypes::shapetypeLine:		pOutput->m_nShapeType = NSOfficeDrawing::sptLine;			break;
 			case SimpleTypes::shapetypeArc:			pOutput->m_nShapeType = NSOfficeDrawing::sptArc;			break;
-		}
+            default: break;
+        }
 		
 		if (pOutput->m_nShapeType == PROP_DEF)
 		{
@@ -1335,7 +1346,8 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 		case SimpleTypes::connectortypeElbow   : pOutput->m_nConnectorStyle = 1; break;		
 		case SimpleTypes::connectortypeNone    : pOutput->m_nConnectorStyle = 3; break;		
 		case SimpleTypes::connectortypeStraight: pOutput->m_nConnectorStyle = 0; break;		
-		}
+        default: break;
+        }
 	}
 
 //---------------------

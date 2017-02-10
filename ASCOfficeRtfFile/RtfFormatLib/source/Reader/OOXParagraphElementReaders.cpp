@@ -427,7 +427,9 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					}
 				}
 			}break;
-		}
+            default:
+                break;
+        }
 	}
 	return true;
 }
@@ -508,7 +510,8 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						OOXFieldSeparatePtr oNewField ( new OOXFieldSeparate() );
 						oOutputParagraph.AddItem( oNewField );
 					}break;
-				}
+                default: break;
+                }
 			}
 		}break;
 		case OOX::et_w_instrText:
@@ -940,7 +943,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				oOutputParagraph.AddItem( oNewField );	
 			}
 		}break;
-	}
+        default:
+            break;
+    }
 	return true;
 }
 bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle )
@@ -1068,7 +1073,8 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		case SimpleTypes::jcThaiDistribute  : break;
 		case SimpleTypes::jcLeft            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
 		case SimpleTypes::jcRight           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
-		}
+        default: break;
+        }
 	}
 	if( m_ooxParaProps->m_oTextAlignment.IsInit() && m_ooxParaProps->m_oTextAlignment->m_oVal.IsInit())
 	{
@@ -1079,7 +1085,8 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		case SimpleTypes::textalignBottom   : oOutputProperty.m_eFontAlign = RtfParagraphProperty::fa_favar;	break;
 		case SimpleTypes::textalignCenter   : oOutputProperty.m_eFontAlign = RtfParagraphProperty::fa_facenter;	break;
 		case SimpleTypes::textalignTop      : oOutputProperty.m_eFontAlign = RtfParagraphProperty::fa_fahang;	break;
-		}
+        default: break;
+        }
 	}
 	if( m_ooxParaProps->m_oInd.IsInit() )
 	{
@@ -1172,7 +1179,8 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		case SimpleTypes::textboxtightwrapFirstLineOnly    : oOutputProperty.m_eTextBoxWrap = RtfParagraphProperty::tbw_txbxtwfirst;	break;
 		case SimpleTypes::textboxtightwrapLastLineOnly     : oOutputProperty.m_eTextBoxWrap = RtfParagraphProperty::tbw_txbxtwlast;		break;
 		case SimpleTypes::textboxtightwrapNone             : oOutputProperty.m_eTextBoxWrap = RtfParagraphProperty::tbw_txbxtwno;		break;
-		}
+        default: break;
+        }
 	}
 	if( m_ooxParaProps->m_oNumPr.IsInit() )
 	{
@@ -1340,7 +1348,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		case SimpleTypes::texteffectNone            : oOutputProperty.m_nAnimated = 0; break;
 		case SimpleTypes::texteffectShimmer         : oOutputProperty.m_nAnimated = 6; break;
 		case SimpleTypes::texteffectSparkle         : oOutputProperty.m_nAnimated = 3; break;
-
+        default: break;
 		}
 	}
 	if (m_ooxRunProps->m_oRStyle.IsInit() && m_ooxRunProps->m_oRStyle->m_sVal.IsInit())
@@ -1449,7 +1457,8 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		case SimpleTypes::verticalalignrunBaseline    : break;
 		case SimpleTypes::verticalalignrunSubscript   : oOutputProperty.m_bSub = 1;		break;
 		case SimpleTypes::verticalalignrunSuperscript : oOutputProperty.m_bSuper = 1;	break;
-		}
+        default: break;
+        }
 	}
 	if( m_ooxRunProps->m_oHighlight.IsInit() && m_ooxRunProps->m_oHighlight->m_oVal.IsInit() )
 	{
@@ -1491,7 +1500,8 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		case SimpleTypes::underlineWavyDouble      : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Double_wave;			break;
 		case SimpleTypes::underlineWavyHeavy       : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Heavy_wave;			break;
 		case SimpleTypes::underlineWords           : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Word;					break;
-		}
+        default: break;
+        }
 
 		if ((m_ooxRunProps->m_oU->m_oColor.IsInit()) && (m_ooxRunProps->m_oU->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 		{
@@ -1584,7 +1594,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::hanchorMargin : oOutputProperty.m_eHRef = RtfFrame::hr_phmrg;	break;
 			case SimpleTypes::hanchorPage   : oOutputProperty.m_eHRef = RtfFrame::hr_phpg;	break;
 			case SimpleTypes::hanchorText   : oOutputProperty.m_eHRef = RtfFrame::hr_phcol;	break;
-		}
+            default: break;
+        }
 	}
 	oOutputProperty.m_nHPos = m_ooxFramePr->m_oX.IsInit() ? m_ooxFramePr->m_oX->ToTwips() : PROP_DEF;//???
 	oOutputProperty.m_nVPos = m_ooxFramePr->m_oY.IsInit() ? m_ooxFramePr->m_oY->ToTwips() : PROP_DEF;//???
@@ -1598,7 +1609,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::xalignLeft    : oOutputProperty.m_eHPos = RtfFrame::hp_posxl;	break;
 			case SimpleTypes::xalignOutside : oOutputProperty.m_eHPos = RtfFrame::hp_posxo;	break;
 			case SimpleTypes::xalignRight   : oOutputProperty.m_eHPos = RtfFrame::hp_posxr;	break;
-		}
+            default: break;
+        }
 	}
 
 	if (m_ooxFramePr->m_oVAnchor.IsInit())
@@ -1608,7 +1620,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::vanchorMargin : oOutputProperty.m_eVRef = RtfFrame::vr_pvmrg;	break;
 			case SimpleTypes::vanchorPage   : oOutputProperty.m_eVRef = RtfFrame::vr_pvpg;	break;
 			case SimpleTypes::vanchorText   : oOutputProperty.m_eVRef = RtfFrame::vr_pvpara;break;
-		}
+            default: break;
+        }
 	}
 	if (m_ooxFramePr->m_oYAlign.IsInit())
 	{
@@ -1620,7 +1633,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::yalignInside  : oOutputProperty.m_eVPos = RtfFrame::vp_posyin;break;
 			case SimpleTypes::yalignOutside : oOutputProperty.m_eVPos = RtfFrame::vp_posyout;break;
 			case SimpleTypes::yalignTop     : oOutputProperty.m_eVPos = RtfFrame::vp_posyt;	break;
-		}
+            default: break;
+        }
 	}
 	oOutputProperty.m_bLockAnchor = m_ooxFramePr->m_oAnchorLock.IsInit()? m_ooxFramePr->m_oAnchorLock->ToBool() : false;
 	if (m_ooxFramePr->m_oWrap.IsInit())
@@ -1633,7 +1647,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			//case SimpleTypes::wrapNotBeside : break;
 			case SimpleTypes::wrapThrough   : oOutputProperty.m_eWrap = RtfFrame::tw_wrapthrough;	break;
 			case SimpleTypes::wrapTight     : oOutputProperty.m_eWrap = RtfFrame::tw_wraptight;		break;
-		}
+            default: break;
+        }
 	}
 	if (m_ooxFramePr->m_oDropCap.IsInit())
 	{
@@ -1642,7 +1657,8 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::dropcapDrop   : oOutputProperty.m_DropcapType = 1; break;
 			case SimpleTypes::dropcapMargin : oOutputProperty.m_DropcapType = 2; break;
 			case SimpleTypes::dropcapNone   : break;
-		}
+            default: break;
+        }
 	}
 	oOutputProperty.m_DropcapLines = m_ooxFramePr->m_oLines.IsInit() ? m_ooxFramePr->m_oLines->GetValue() : 0; //todoo ??? или 1 ???
 
@@ -1693,7 +1709,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::sectionmarkNextColumn : oOutput.m_eSectionBreak = RtfSectionProperty::sb_sbkcol;	break;
 			case SimpleTypes::sectionmarkNextPage   : oOutput.m_eSectionBreak = RtfSectionProperty::sb_sbkpage; break;
 			case SimpleTypes::sectionmarkOddPage    : oOutput.m_eSectionBreak = RtfSectionProperty::sb_sbkodd;	break;
-		}
+            default: break;
+        }
 	}
 	if( m_ooxSectionProperty->m_oCols.IsInit() )
 	{
@@ -1731,7 +1748,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 					case SimpleTypes::restartnumberContinious : break;// ???? todooo проверить
 					case SimpleTypes::restartnumberEachPage   : oOutput.m_eEndnotesRestart = RtfSectionProperty::er_saftnrestart; break;
 					case SimpleTypes::restartnumberEachSect   : oOutput.m_eEndnotesRestart = RtfSectionProperty::er_saftnrstcont; break;
-				}
+                    default: break;
+                }
 			}
 		}
 		if (m_ooxSectionProperty->m_oEndnotePr->m_oNumStart.IsInit() && 
@@ -1759,7 +1777,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::ftnposDocEnd      : break;// todooo !!!
 			case SimpleTypes::ftnposPageBottom  : oOutput.m_eFootnotesJust = RtfSectionProperty::fj_sftnbj; break;
 			case SimpleTypes::ftnposSectEnd     : break;// todooo !!!
-			}
+            default: break;
+            }
 		}
 		if (m_ooxSectionProperty->m_oFootnotePr->m_oNumStart.IsInit() && 
 					m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal.IsInit())
@@ -1773,7 +1792,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::restartnumberContinious : oOutput.m_eFootnotesRestart = RtfSectionProperty::fr_sftnrstcont; break;
 			case SimpleTypes::restartnumberEachPage   : oOutput.m_eFootnotesRestart = RtfSectionProperty::fr_sftnrstpg; break;
 			case SimpleTypes::restartnumberEachSect   : oOutput.m_eFootnotesRestart = RtfSectionProperty::fr_sftnrestart; break;
-			}
+            default: break;
+            }
 		}
 		if(m_ooxSectionProperty->m_oFootnotePr->m_oNumFmt.IsInit())
 		{
@@ -1801,7 +1821,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 				case SimpleTypes::linenumberrestartContinious : oOutput.m_eLineNumberRestart = RtfSectionProperty::lnr_linecont; break;
 				case SimpleTypes::linenumberrestartNewPage    : oOutput.m_eLineNumberRestart = RtfSectionProperty::lnr_lineppage; break;
 				case SimpleTypes::linenumberrestartNewSection : oOutput.m_eLineNumberRestart = RtfSectionProperty::lnr_linerestart; break;
-			}
+                default: break;
+            }
 		}
 	}
 	if (m_ooxSectionProperty->m_oPgSz.IsInit())
@@ -1859,7 +1880,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::verticaljcBottom : oOutput.m_eVerticalAlignment = RtfSectionProperty::va_vertalb;	break;
 			case SimpleTypes::verticaljcCenter : oOutput.m_eVerticalAlignment = RtfSectionProperty::va_vertalc;	break;
 			case SimpleTypes::verticaljcTop    : oOutput.m_eVerticalAlignment = RtfSectionProperty::va_vertalt;	break;
-
+            default: break;
 		}
 	}
 	if (m_ooxSectionProperty->m_oTextDirection.IsInit() &&
@@ -1874,7 +1895,8 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::textdirectionTb  : oOutput.m_nTextFollow = 0; break;
 			case SimpleTypes::textdirectionTbV : oOutput.m_nTextFollow = 5; break;
 				//oOutput.m_nTextFollow = 2; bottom to top ( .. todooo переделать DocxFormat
-		}
+            default: break;
+        }
 	}
 	if (m_ooxSectionProperty->m_oPgBorders.IsInit() )
 	{
@@ -1886,23 +1908,26 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 				case SimpleTypes::pageborderdisplayAllPages     : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 0; break;
 				case SimpleTypes::pageborderdisplayFirstPage    : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 1; break;
 				case SimpleTypes::pageborderdisplayNotFirstPage : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 2; break;
-			}
+                default: break;
+            }
 		}
 		if (m_ooxSectionProperty->m_oPgBorders->m_oZOrder.IsInit())
 		{
             switch(m_ooxSectionProperty->m_oPgBorders->m_oZOrder->GetValue())
-			{
-			case SimpleTypes::pageborderzorderBack  : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 8; break;
-			case SimpleTypes::pageborderzorderFront : break;
-			}
-		}
+            {
+            case SimpleTypes::pageborderzorderBack  : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 8; break;
+            case SimpleTypes::pageborderzorderFront : break;
+            default: break;
+            }
+        }
 		if (m_ooxSectionProperty->m_oPgBorders->m_oOffsetFrom.IsInit())
 		{
 			switch(m_ooxSectionProperty->m_oPgBorders->m_oOffsetFrom->GetValue())
 			{
 			case SimpleTypes::pageborderoffsetPage : oOutput.m_nBorderMeasure = oOutput.m_nBorderMeasure | 32; break;
 			case SimpleTypes::pageborderoffsetText : break;
-			}
+            default: break;
+            }
 		}
 		if (m_ooxSectionProperty->m_oPgBorders->m_oLeft.IsInit() )
 		{
@@ -1959,8 +1984,10 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 						oOutput.m_sIDHeaderFirst = sID;
 					}
 				}break;
-			}
-		}
+            default:
+                break;
+            }
+        }
 	}
 	for (size_t i =0 ; i < m_ooxSectionProperty->m_arrFooterReference.size() > 0; i++ )
 	{
@@ -1996,7 +2023,9 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 						oOutput.m_sIDFooterFirst = sID;
 					}
 				}break;
-			}
+            default:
+                break;
+            }
 		}
 	}
 

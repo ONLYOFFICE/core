@@ -85,20 +85,6 @@ public:
 			
 			result = oGraphicReader.Parse( oParam, pOutput);			
 		}
-		//изменяем scale в соответсявии с выходным размером
-		if (pOutput->m_oPicture)
-		{	
-			if( PROP_DEF != nWidth && PROP_DEF != pOutput->m_oPicture->m_nWidthGoal )
-			{
-				double dNewScale = 100 * ( 1.0 * nWidth / pOutput->m_oPicture->m_nWidthGoal ) ;
-				pOutput->m_oPicture->m_dScaleX = dNewScale;
-			}
-			if( PROP_DEF != nHeight && PROP_DEF != pOutput->m_oPicture->m_nHeightGoal )
-			{
-				double dNewScale = 100 * ( 1.0 * nHeight / pOutput->m_oPicture->m_nHeightGoal );
-				pOutput->m_oPicture->m_dScaleY = dNewScale;
-			}
-		}
 		return result;
 	}
 };

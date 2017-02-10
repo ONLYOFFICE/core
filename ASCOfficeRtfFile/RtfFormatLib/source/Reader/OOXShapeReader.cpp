@@ -362,7 +362,6 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						std::wstring sImagePath = pImage->filename().GetPath();
 
 						pOutput->m_oPicture = RtfPicturePtr( new RtfPicture() );
-						//todooo проверить что за путь тут выставляется
 						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
 
 						pOutput->m_nFillType = 2;
@@ -449,7 +448,6 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 						OOX::Image* pImage = (OOX::Image*)oFile.operator->();
 						std::wstring sImagePath = pImage->filename().GetPath();
 						
-						//todooo проверить что за путь тут выставляется
 						WriteDataToPicture( sImagePath, *pOutput->m_oPicture, oParam.oReader->m_sPath );
 					}
 				}
@@ -688,15 +686,16 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFill
 		case OOX::Drawing::colorSys:	Parse(oParam, &oox_solid_fill->m_oSysClr,	nColor, opacity);		break;		
 	}	
 }
-void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties *oox_solid_fill, RtfShapePtr& pOutput)
+//-----------------------------------------------------------------------------------------------------------------
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CSolidColorFillProperties *oox_solid_fill, std::wstring *change_sheme_color)
 {
 	if (!oox_solid_fill)return;
 
 	unsigned int nColor = 0xffffff; //white
 	_CP_OPT(double) opacity;
 	
-	//if (change_sheme_color && oox_solid_fill->m_eType == OOX::Drawing::colorSheme)
-	//	oox_solid_fill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+	if (change_sheme_color && oox_solid_fill->m_eType == OOX::Drawing::colorSheme)
+		oox_solid_fill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 	
 	Parse(oParam, oox_solid_fill, nColor, opacity);
 
@@ -707,8 +706,7 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFill
 		pOutput->m_nFillOpacity = *opacity;
 	}
 }
-//-----------------------------------------------------------------------------------------------------------------
-bool OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill, RtfShapePtr& pOutput)
+bool OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill)
 {
 	if (oox_bitmap_fill == NULL)return false;
 
@@ -743,6 +741,50 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CBlipFillProper
 	}
 	if (oox_bitmap_fill->m_oSrcRect.IsInit())//часть изображения
 	{
+		int nCropedWidthGoal = pOutput->m_oPicture->m_nWidthGoal;
+		if( PROP_DEF != nCropedWidthGoal )
+		{
+			//делаем crop
+			double nCropLeft = oox_bitmap_fill->m_oSrcRect->m_oL.GetValue() / 100. ;
+			//pOutput->m_oPicture->m_nCropL = nCropLeft * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
+			pOutput->m_oPicture->m_nCropL = (int)(nCropLeft * pOutput->m_oPicture->m_nWidthGoal);
+			pOutput->m_nCropFromLeft = (int)(nCropLeft* 65536);
+			nCropedWidthGoal -= pOutput->m_oPicture->m_nCropL;
+
+			double nCropRight =oox_bitmap_fill->m_oSrcRect->m_oR.GetValue() / 100. ;
+			//pOutput->m_oPicture->m_nCropR = nCropRight * pOutput->m_oPicture->m_nWidthGoal * pOutput->m_oPicture->m_nScaleX / 100;
+			pOutput->m_oPicture->m_nCropR = (int)(nCropRight * pOutput->m_oPicture->m_nWidthGoal);
+			pOutput->m_nCropFromRight = (int)(nCropRight * 65536);
+			nCropedWidthGoal -= pOutput->m_oPicture->m_nCropR;
+		}
+		int nCropedHeightGoal = pOutput->m_oPicture->m_nHeightGoal;
+		if( PROP_DEF != nCropedHeightGoal )
+		{
+			double nCropTop = oox_bitmap_fill->m_oSrcRect->m_oT.GetValue() / 100. ;
+			//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
+			pOutput->m_oPicture->m_nCropT = (int)(nCropTop * pOutput->m_oPicture->m_nHeightGoal);
+			pOutput->m_nCropFromTop = (int)(nCropTop * 65536);
+			nCropedHeightGoal -= pOutput->m_oPicture->m_nCropT;
+
+			double nCropBottom = oox_bitmap_fill->m_oSrcRect->m_oB.GetValue() / 100. ;
+			//pOutput->m_oPicture->m_nCropT = nCropTop * pOutput->m_oPicture->m_nHeightGoal * pOutput->m_oPicture->m_dScaleY / 100;
+			pOutput->m_oPicture->m_nCropB = (int)(nCropBottom * pOutput->m_oPicture->m_nHeightGoal);
+			pOutput->m_nCropFromBottom = (int)(nCropBottom * 65536);
+			nCropedHeightGoal -= pOutput->m_oPicture->m_nCropB;
+		}
+		//устанавливаем scale
+		if( PROP_DEF != pOutput->m_nLeft && PROP_DEF != pOutput->m_nRight && PROP_DEF != nCropedWidthGoal && 0 != nCropedWidthGoal )
+		{
+			int nWidth = pOutput->m_nRight - pOutput->m_nLeft;
+			double dNewScale = 100 * ( 1.0 * nWidth / nCropedWidthGoal );
+			pOutput->m_oPicture->m_dScaleX = dNewScale;
+		}
+		if( PROP_DEF != pOutput->m_nTop && PROP_DEF != pOutput->m_nBottom && PROP_DEF != nCropedHeightGoal && 0 != nCropedHeightGoal )
+		{
+			int nHeight = pOutput->m_nBottom - pOutput->m_nTop;
+			double dNewScale = 100 * ( 1.0 * nHeight / nCropedHeightGoal );
+			pOutput->m_oPicture->m_dScaleY = dNewScale;
+		}
 		//int w = pOutput->m_oPicture->m_nWidthGoal * 4 / 3;
 		//int h = pOutput->m_oPicture->m_nHeightGoal * 4 / 3;
 		//pOutput->m_oPicture->m_nCropL = (int)(oox_bitmap_fill->m_oSrcRect->m_oL.GetValue() / 10. * w) ;
@@ -762,7 +804,7 @@ bool OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CBlipFillProper
 	return result;
 }
 
-void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillProperties *oox_grad_fill, RtfShapePtr& pOutput)
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CGradientFillProperties *oox_grad_fill, std::wstring *change_sheme_color)
 {
 	if (!oox_grad_fill)return;
 
@@ -793,16 +835,8 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillPr
 		}
 	}	
 
-	if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size()>1 && oox_grad_fill->m_oGsLst->m_arrGs[0])
+	if (oox_grad_fill->m_oGsLst.IsInit() && oox_grad_fill->m_oGsLst->m_arrGs.size() > 1 && oox_grad_fill->m_oGsLst->m_arrGs[0])
 	{
-		//if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[0]->m_eType == OOX::Drawing::colorSheme)
-		//{
-		//	oox_grad_fill->m_oGsLst->m_arrGs[0]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-		//	
-		//	if (oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1])
-		//		oox_grad_fill->m_oGsLst->m_arrGs[oox_grad_fill->m_oGsLst->m_arrGs.size()-1]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-		//}
-
 		bool bColorsSet = false;
 		if (oox_grad_fill->m_oGsLst->m_arrGs.size() > 2)
 		{
@@ -815,6 +849,11 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillPr
 		{
 			unsigned int hexColor;
 			_CP_OPT(double) opacity;
+	
+			if (change_sheme_color && oox_grad_fill->m_oGsLst->m_arrGs[i]->m_eType == OOX::Drawing::colorSheme)
+			{
+				oox_grad_fill->m_oGsLst->m_arrGs[i]->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+			}
 			Parse(oParam, (OOX::Drawing::CColor*)(oox_grad_fill->m_oGsLst->m_arrGs[i]), hexColor, opacity);
 
 			if (i == 0)
@@ -837,14 +876,14 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillPr
 		}
 	}
 }
-void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CPatternFillProperties *oox_pattern_fill, RtfShapePtr& pOutput)
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CPatternFillProperties *oox_pattern_fill, std::wstring *change_sheme_color)
 {
 	if (!oox_pattern_fill)return;
 
 }
 
 
-void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties *oox_line_prop , RtfShapePtr& pOutput)
+void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CLineProperties *oox_line_prop, std::wstring *change_sheme_color)
 {
 	if (!oox_line_prop)return;
 
@@ -858,6 +897,9 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties
 			break;
 		case OOX::Drawing::filltypeSolid:	
 		{
+			if (change_sheme_color && oox_line_prop->m_oSolidFill->m_eType == OOX::Drawing::colorSheme)
+				oox_line_prop->m_oSolidFill->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
+			
 			unsigned int nColor = 0; //black
 			_CP_OPT(double) opacity;
 			
@@ -890,7 +932,20 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties
 	}
 	if (oox_line_prop->m_oPrstDash.IsInit() && oox_line_prop->m_oPrstDash->m_oVal.IsInit())
 	{
-		pOutput->m_nLineDashing = oox_line_prop->m_oPrstDash->m_oVal->GetValue();
+		switch(oox_line_prop->m_oPrstDash->m_oVal->GetValue())
+		{
+			case SimpleTypes::presetlinedashvalDash			:	pOutput->m_nLineDashing = 6; break;
+			case SimpleTypes::presetlinedashvalDashDot		:	pOutput->m_nLineDashing = 8; break;
+			case SimpleTypes::presetlinedashvalDot			:	pOutput->m_nLineDashing = 5; break;
+			case SimpleTypes::presetlinedashvalLgDash 		:	pOutput->m_nLineDashing = 7; break;
+			case SimpleTypes::presetlinedashvalLgDashDot	:	pOutput->m_nLineDashing = 9; break;
+			case SimpleTypes::presetlinedashvalLgDashDotDot	:	pOutput->m_nLineDashing = 10; break;
+			case SimpleTypes::presetlinedashvalSysDash		:	pOutput->m_nLineDashing = 1; break;
+			case SimpleTypes::presetlinedashvalSysDashDot	:	pOutput->m_nLineDashing = 3; break;
+			case SimpleTypes::presetlinedashvalSysDashDotDot:	pOutput->m_nLineDashing = 4; break;
+			case SimpleTypes::presetlinedashvalSysDot		:	pOutput->m_nLineDashing = 2; break;
+			case SimpleTypes::presetlinedashvalSolid		:	break;
+		}
 	}
 	//nullable<SimpleTypes::CPenAlignment<>>            m_oAlgn;
 	//nullable<SimpleTypes::CLineCap<>>                 m_oCap;
@@ -901,9 +956,78 @@ void OOXShapeReader::Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties
 	//nullable<OOX::Drawing::CLineJoinBevel>            m_oBevel;
 	//nullable<OOX::Drawing::CLineJoinMiterProperties>  m_oMiter;
 	//nullable<OOX::Drawing::CLineJoinRound>            m_oRound;
-
 }
+void OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CStyleMatrixReference *style_matrix_ref)
+{
+	if (!style_matrix_ref) return;
+
+	int fmt_index = style_matrix_ref->m_oIdx.GetValue()-1;
+
+	OOX::CTheme *theme = oParam.oDocx->GetTheme();
+	if (!theme || fmt_index <0) return;
+
+    std::wstring color = style_matrix_ref->m_oShemeClr.m_oVal.ToString();
+	
+	if (style_matrix_ref->getType() == OOX::et_a_fillRef)
+	{
+		if (fmt_index < 1000 && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems.size()) 
+		{
+			switch(theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]->getType())
+			{
+				case OOX::et_a_blipFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index]/*, &color*/);break;
+				case OOX::et_a_gradFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_pattFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_solidFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::Drawing::filltypeNo:
+					pOutput->m_bFilled = false;	
+					break;
+			}
+		}
+		else if (fmt_index > 1000 && ((fmt_index-1000) < theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems.size()))
+		{
+			fmt_index -= 1000; 
+			switch(theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index]->getType())
+			{
+				case OOX::et_a_blipFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CBlipFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index]/*, &color*/);break;
+				case OOX::et_a_gradFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CGradientFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_pattFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CPatternFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::et_a_solidFill:	
+					Parse(oParam, pOutput, (OOX::Drawing::CSolidColorFillProperties *)theme->m_oThemeElements.m_oFmtScheme.m_oBgFillStyleLst.m_arrItems[fmt_index], &color);break;
+				case OOX::Drawing::filltypeNo:
+					pOutput->m_bFilled = false;	
+					break;
+			}
+		}
+	}
+
+	if (style_matrix_ref->getType() == OOX::et_a_lnRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn.size())
+	{
+		Parse(oParam, pOutput, theme->m_oThemeElements.m_oFmtScheme.m_oLineStyleLst.m_arrLn[fmt_index], &color);
+	}
+
+	//if (style_matrix_ref->getType() == OOX::et_a_effectRef && fmt_index < theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle.size())
+	//{
+	//	if (theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index])
+	//	{
+	//		Parse(oParam, theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index]->m_oEffectList.GetPointer(), &color);
+	//	}
+	//	//todooo
+	//	//Parse(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oEffectDag.GetPointer(), &color);
+	//	//Parse(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oScene3D.GetPointer(), &color);
+	//	//Parse(theme->m_oThemeElements.m_oFmtScheme.m_oEffectStyleLst.m_arrEffectStyle[fmt_index].m_oSp3D.GetPointer(), &color);
+	//}
+}
+
+
 //-----------------------------------------------------------------------------------------------------------------------------
+
 bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 {
 	if (!m_vmlElement && !m_arrElement && !m_ooxShape) return false;
@@ -957,34 +1081,36 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 			}
 		}
 	}
+
+	OOX::Drawing::CShapeStyle* oox_sp_style = m_ooxShape->m_oShapeStyle.GetPointer();
+	
 	bool use_fill_from_style = false;
 	pOutput->m_bFilled = true;	
 	switch (m_ooxShape->m_oSpPr->m_eFillType)
 	{
-		case OOX::Drawing::filltypeBlip:		Parse(oParam, m_ooxShape->m_oSpPr->m_oBlipFill.GetPointer(), pOutput);	break;
-		case OOX::Drawing::filltypeGradient:	Parse(oParam, m_ooxShape->m_oSpPr->m_oGradFill.GetPointer(), pOutput);	break;
-		case OOX::Drawing::filltypePattern:		Parse(oParam, m_ooxShape->m_oSpPr->m_oPattFill.GetPointer(), pOutput);	break;
-		case OOX::Drawing::filltypeSolid:		Parse(oParam, m_ooxShape->m_oSpPr->m_oSolidFill.GetPointer(), pOutput);	break;
+		case OOX::Drawing::filltypeBlip:		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oBlipFill.GetPointer());	break;
+		case OOX::Drawing::filltypeGradient:	Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oGradFill.GetPointer());	break;
+		case OOX::Drawing::filltypePattern:		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oPattFill.GetPointer());	break;
+		case OOX::Drawing::filltypeSolid:		Parse(oParam, pOutput), m_ooxShape->m_oSpPr->m_oSolidFill.GetPointer();	break;
 		case OOX::Drawing::filltypeGroup:
 		case OOX::Drawing::filltypeNo:			
 			pOutput->m_bFilled = false;	break;
 		default:
 			use_fill_from_style = true; break;
 	}
-	//if ((use_fill_from_style && oox_sp_style) && (oox_sp_style->m_oFillRef.getType() == OOX::et_a_fillRef))
-	//{
-	//	Parse(oParam, &oox_sp_style->m_oFillRef);
-	//}
+	if ((use_fill_from_style && oox_sp_style) && (oox_sp_style->m_oFillRef.getType() == OOX::et_a_fillRef))
+	{
+		Parse(oParam, pOutput, &oox_sp_style->m_oFillRef);
+	}
 
 	if (m_ooxShape->m_oSpPr->m_oLn.IsInit())
 	{
-		Parse(oParam, m_ooxShape->m_oSpPr->m_oLn.GetPointer(), pOutput);	
+		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oLn.GetPointer());	
 	}
-	//else if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
-	//{
-	//	Parse(&oox_sp_style->m_oLnRef);
-	//}
-
+	else if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
+	{
+		Parse(oParam, pOutput, &oox_sp_style->m_oLnRef);
+	}
 
 	if (m_ooxShape->m_oCNvConnSpPr.IsInit())
 	{		
@@ -1378,7 +1504,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 					pNewShape->m_bInGroup = true;
 					pNewShape->m_nShapeType = 75;
 
-					if (OOXShapeReader::Parse(oParam, &picture->m_oBlipFill, pNewShape))
+					if (OOXShapeReader::Parse(oParam, pNewShape, &picture->m_oBlipFill))
 						pOutput->AddItem( pNewShape );
 				}
 			}
@@ -1489,8 +1615,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 {
 	OOX::CPath ooxPath = sPath;	//для target 
 
-	if (sTempPath.length() > 0)
-		ooxPath = sTempPath;
+	if (!sTempPath.empty())
+		ooxPath = sTempPath + FILE_SEPARATOR_STR;
 
 	pOutput.m_dScaleX = 100;
 	pOutput.m_dScaleY = 100;
@@ -1505,8 +1631,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 		if (image.OpenFile(sPath) == FALSE ) return false;
 		
 		//правильно выставляем размеры
-		pOutput.m_nWidthGoal = image.get_Width(); 
-		pOutput.m_nHeightGoal = image.get_Height();
+		pOutput.m_nWidthGoal	= image.get_Width()	* 15;  //pixels to twip (  1440 / 96 )
+		pOutput.m_nHeightGoal	= image.get_Height()* 15;  //pixels to twip (  1440 / 96 )
 	
         std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 		
@@ -1578,8 +1704,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 			
 			if (image.OpenFile(sPath, cxFormats[pOutput.eDataType]) == FALSE ) return false;
 			//правильно выставляем размеры
-			pOutput.m_nWidthGoal = image.get_Width(); 
-			pOutput.m_nHeightGoal = image.get_Height();
+			pOutput.m_nWidthGoal = image.get_Width()	* 15;  //pixels to twip 
+			pOutput.m_nHeightGoal = image.get_Height()	* 15;  //pixels to twip;
 
 			//Запоминаем только имя
 			pOutput.m_sPicFilename = sPath;

@@ -85,7 +85,7 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 				
 					OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
 					if (picture) 
-						if (OOXShapeReader::Parse(oParam, &picture->m_oBlipFill, pOutput))
+						if (OOXShapeReader::Parse(oParam, pOutput, &picture->m_oBlipFill))
 							return 1;
 				}
 			}

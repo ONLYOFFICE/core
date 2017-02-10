@@ -360,7 +360,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
 				sResult += L"}}";
 			}
-			else if (m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 9)
+			else if (m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
 			{
 				sResult += L"{\\sp{\\sn fillType}{\\sv 2}}";
 				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
@@ -846,7 +846,8 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         //sStyle += L"right: " + std::to_wstring() + L";"			, m_nRelRight);
         sStyle += L"width: " + std::to_wstring(nWidth) + L";height: " + std::to_wstring(nHeight) + L";";
 	}
-	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal && PROP_DEF != (int)m_oPicture->m_dScaleX && PROP_DEF != (int)m_oPicture->m_dScaleY )
+	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal	&& PROP_DEF != m_oPicture->m_nHeightGoal 
+							 && PROP_DEF != (int)m_oPicture->m_dScaleX	&& PROP_DEF != (int)m_oPicture->m_dScaleY )
 	{
 		float nWidth = (int)(m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.);
 		if( PROP_DEF != m_oPicture->m_nCropL )

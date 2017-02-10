@@ -36,6 +36,65 @@
 #include "../../DesktopEditor/raster/JBig2/source/Encoder/jbig2enc.h"
 #include "../../DesktopEditor/raster/JBig2/source/LeptonLib/allheaders.h"
 
+// TODO: write JPG from Photoshop...
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../DesktopEditor/cximage/CxImage/ximage.h"
+namespace NSImageReSaver
+{
+    static void CorrectImage(const wchar_t* wsFileName, BYTE*& pBuffer, int& nBufferSize, unsigned int& unWidth, unsigned int& unHeight)
+    {
+        pBuffer = NULL;
+        nBufferSize = 0;
+
+        CImageFileFormatChecker oChecker(wsFileName);
+        if (oChecker.eFileType != _CXIMAGE_FORMAT_JPG)
+            return;
+
+        NSFile::CFileBinary oFile;
+        if (!oFile.OpenFile(wsFileName))
+            return;
+
+        if (20 > oFile.GetFileSize())
+            return;
+
+        BYTE data[20];
+        DWORD dwRead = 0;
+        if (!oFile.ReadFile(data, 20, dwRead))
+            return;
+
+        std::string sFind((char*)data, 20);
+        oFile.CloseFile();
+
+        if (std::string::npos == sFind.find("Photoshop") && std::string::npos == sFind.find("photoshop"))
+            return;
+
+        CBgraFrame oFrame;
+        if (!oFrame.OpenFile(wsFileName))
+            return;
+
+        int nImageW = oFrame.get_Width();
+        int nImageH = oFrame.get_Height();
+        BYTE* pData = oFrame.get_Data();
+        int nStride = 4 * nImageW;
+
+        CxImage oCxImage;
+        if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (oFrame.get_Stride() >= 0) ? true : false))
+            return;
+
+        oCxImage.SetJpegQualityF(85.0f);
+
+        if (!oCxImage.Encode(pBuffer, nBufferSize, CXIMAGE_FORMAT_JPG))
+            return;
+
+        if (!pBuffer || !nBufferSize)
+            return;
+
+        unWidth = (unsigned int)nImageW;
+        unHeight = (unsigned int)nImageH;
+    }
+}
+
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
@@ -48,6 +107,18 @@ namespace PdfWriter
 	}
     void CImageDict::LoadJpeg(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight, bool bGrayScale)
 	{
+        BYTE* pCorrectBuffer = NULL;
+        int nBufferSize = 0;
+        NSImageReSaver::CorrectImage(wsFilePath, pCorrectBuffer, nBufferSize, unWidth, unHeight);
+
+        if (pCorrectBuffer != NULL)
+        {
+            this->LoadJpeg(pCorrectBuffer, nBufferSize, unWidth, unHeight, bGrayScale);
+            free(pCorrectBuffer);
+            return;
+        }
+
+
 		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
 			return;

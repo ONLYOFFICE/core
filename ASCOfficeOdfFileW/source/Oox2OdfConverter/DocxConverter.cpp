@@ -2467,7 +2467,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
             SimpleTypes::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
-			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 			
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
 			OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
@@ -2486,7 +2486,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 				if (sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 				{
 					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
-					odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+					odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 					bSet = true;
 				}
                 else if ((oox_pic->m_oShape->m_oConnectorType.IsInit()) && (oox_pic->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
@@ -2518,7 +2518,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 						
 						if (!bSet && sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 						{
-							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+							odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 							bSet = true;
 						}
 					}
@@ -2528,7 +2528,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 						if (pos >= 0)
 						{				
                             sptType = (SimpleTypes::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->substr(pos + 9, oox_pic->m_oShape->m_sType->length() - pos - 9).c_str());
-							odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+							odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 							bSet = true;
 						}
 					}
@@ -2578,7 +2578,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
         if (sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
 		{
 			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
-			odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 			bSet = true;
 		}
         else if ((oox_obj->m_oShape->m_oConnectorType.IsInit()) && (oox_obj->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))

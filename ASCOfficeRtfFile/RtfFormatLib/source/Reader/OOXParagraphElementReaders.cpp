@@ -874,21 +874,21 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			oOutputParagraph.AddItem( pNewChar );
 		}break;
 		case OOX::et_mc_alternateContent:
-		{//выбираем всегда более старую версию 
+		{
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
 			if (!ooxAlt->m_arrChoiceItems.empty())
-			{
-				for (size_t i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
-				{
-					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
-				}					
-			}
-			else
 			{
 				for (size_t i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
 				{
 					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
 				}
+			}
+			else
+			{
+				for (size_t i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
+				{
+					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
+				}					
 			}
 		}break;
 		case OOX::et_w_sym:

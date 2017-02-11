@@ -657,12 +657,12 @@ void OoxConverter::convert(OOX::Drawing::CShapeProperties *   oox_spPr, OOX::Dra
 
 	odf_context()->drawing_context()->start_line_properties();
 	{
-		if (oox_spPr->m_oLn.IsInit())
-			convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
-		else if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
+		if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
 		{
 			convert(&oox_sp_style->m_oLnRef);
 		}
+		if (oox_spPr->m_oLn.IsInit())
+			convert(oox_spPr->m_oLn.GetPointer());	//CLineProperties
 	}
 	odf_context()->drawing_context()->end_line_properties();
 //-----------------------------------------------------------------------------------------------------------------------------

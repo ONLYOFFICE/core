@@ -33,64 +33,13 @@
 #include "OOXTextItemReader.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h"
-//#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/Common.h"
-#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Vml.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 
 #include <boost/algorithm/string.hpp>
 
 #ifndef RGB
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
 #endif
-
-SimpleTypes::Vml::SptType static PrstTx2ShapeType(SimpleTypes::ETextShapeType type) 
-{
-	switch(type)
-	{
-//		case SimpleTypes::textshapetypeTextArchDown:		return	SimpleTypes::Vml::sptTextArchDown;
-		case SimpleTypes::textshapetypeTextArchDownPour:	return	SimpleTypes::Vml::sptTextArchDownPour ;
-//		case SimpleTypes::textshapetypeTextArchUp:			return	SimpleTypes::Vml::sptTextArchUp ;
-		case SimpleTypes::textshapetypeTextArchUpPour:		return	SimpleTypes::Vml::sptTextArchUpPour ;
-//		case SimpleTypes::textshapetypeTextButton:			return	SimpleTypes::Vml::sptTextButton ;
-		case SimpleTypes::textshapetypeTextButtonPour:		return	SimpleTypes::Vml::sptTextButtonPour ;
-		case SimpleTypes::textshapetypeTextCanDown:			return	SimpleTypes::Vml::sptTextCanDown ;
-		case SimpleTypes::textshapetypeTextCanUp:			return	SimpleTypes::Vml::sptTextCanUp ;
-		case SimpleTypes::textshapetypeTextCascadeDown:		return	SimpleTypes::Vml::sptTextCascadeDown;
-		case SimpleTypes::textshapetypeTextCascadeUp:		return	SimpleTypes::Vml::sptTextCascadeUp ;
-		case SimpleTypes::textshapetypeTextChevron:			return	SimpleTypes::Vml::sptTextChevron ;
-		case SimpleTypes::textshapetypeTextChevronInverted:	return	SimpleTypes::Vml::sptTextChevronInverted ;
-//		case SimpleTypes::textshapetypeTextCircle:			return	SimpleTypes::Vml::sptTextCircle ;
-		case SimpleTypes::textshapetypeTextCirclePour:		return	SimpleTypes::Vml::sptTextCirclePour ;
-		case SimpleTypes::textshapetypeTextCurveDown:		return	SimpleTypes::Vml::sptTextCurveDown ;
-		case SimpleTypes::textshapetypeTextCurveUp:			return	SimpleTypes::Vml::sptTextCurveUp ;
-		case SimpleTypes::textshapetypeTextDeflate:			return	SimpleTypes::Vml::sptTextDeflate ;
-		case SimpleTypes::textshapetypeTextDeflateBottom:	return	SimpleTypes::Vml::sptTextDeflateBottom;
-		case SimpleTypes::textshapetypeTextDeflateInflate:	return	SimpleTypes::Vml::sptTextDeflateInflate ;
-//		case SimpleTypes::textshapetypeTextDeflateInflateDeflate: return	SimpleTypes::Vml::sptDeflateInflateDeflate;
-		case SimpleTypes::textshapetypeTextDeflateTop:		return	SimpleTypes::Vml::sptTextDeflateTop ;
-//		case SimpleTypes::textshapetypeTextDoubleWave1:		return	SimpleTypes::Vml::sptTextDoubleWave ;
-		case SimpleTypes::textshapetypeTextFadeDown:		return	SimpleTypes::Vml::sptTextFadeDown ;
-		case SimpleTypes::textshapetypeTextFadeLeft:		return	SimpleTypes::Vml::sptTextFadeLeft ;
-		case SimpleTypes::textshapetypeTextFadeRight:		return	SimpleTypes::Vml::sptTextFadeRight ;
-		case SimpleTypes::textshapetypeTextFadeUp:			return	SimpleTypes::Vml::sptTextFadeUp ;
-		case SimpleTypes::textshapetypeTextInflate:			return	SimpleTypes::Vml::sptTextPlainText ;
-		case SimpleTypes::textshapetypeTextInflateBottom:	return	SimpleTypes::Vml::sptTextPlainText ;
-		case SimpleTypes::textshapetypeTextInflateTop:		return	SimpleTypes::Vml::sptTextInflateTop	;
-		case SimpleTypes::textshapetypeTextPlain:			return	SimpleTypes::Vml::sptTextPlainText ;
-		case SimpleTypes::textshapetypeTextRingInside:		return	SimpleTypes::Vml::sptTextRingInside ;
-		case SimpleTypes::textshapetypeTextRingOutside:		return	SimpleTypes::Vml::sptTextRingOutside ;
-		case SimpleTypes::textshapetypeTextSlantDown:		return	SimpleTypes::Vml::sptTextSlantDown ;
-		case SimpleTypes::textshapetypeTextSlantUp:			return	SimpleTypes::Vml::sptTextSlantUp;
-		case SimpleTypes::textshapetypeTextStop:			return	SimpleTypes::Vml::sptTextStop ;
-		case SimpleTypes::textshapetypeTextTriangle:		return	SimpleTypes::Vml::sptTextTriangle ;
-		case SimpleTypes::textshapetypeTextTriangleInverted:return	SimpleTypes::Vml::sptTextTriangleInverted ;
-		case SimpleTypes::textshapetypeTextWave1:			return	SimpleTypes::Vml::sptTextWave1 ;
-		case SimpleTypes::textshapetypeTextWave2:			return	SimpleTypes::Vml::sptTextWave2 ;
-		case SimpleTypes::textshapetypeTextWave4:			return	SimpleTypes::Vml::sptTextWave4 ;
-	default:
-		return SimpleTypes::Vml::sptNotPrimitive;
-	}
-}
-
 
 bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop)
 {
@@ -1087,7 +1036,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			pOutput->m_bGtext = 1;
 			if (m_ooxShape->m_oTxBodyProperties->m_oPrstTxWrap.IsInit())
-				pOutput->m_nShapeType	= PrstTx2ShapeType(m_ooxShape->m_oTxBodyProperties->m_oPrstTxWrap->m_oPrst.GetValue());
+				pOutput->m_nShapeType	= OOX::PrstTx2VmlShapeType(m_ooxShape->m_oTxBodyProperties->m_oPrstTxWrap->m_oPrst.GetValue());
 			else
 				pOutput->m_nShapeType	= SimpleTypes::Vml::sptTextPlainText;
 
@@ -1104,30 +1053,56 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		OOX::Drawing::CPresetGeometry2D * geometry = m_ooxShape->m_oSpPr->m_oPrstGeom.GetPointer();
 		SimpleTypes::EShapeType type = geometry->m_oPrst.GetValue();
 			
-		switch(type)
-		{
-			case SimpleTypes::shapetypeRect:		pOutput->m_nShapeType = NSOfficeDrawing::sptRectangle;		break;
-			case SimpleTypes::shapetypeEllipse:		pOutput->m_nShapeType = NSOfficeDrawing::sptEllipse;		break;
-			case SimpleTypes::shapetypeRoundRect:	pOutput->m_nShapeType = NSOfficeDrawing::sptRoundRectangle;	break;
-			case SimpleTypes::shapetypeLine:		pOutput->m_nShapeType = NSOfficeDrawing::sptLine;			break;
-			case SimpleTypes::shapetypeArc:			pOutput->m_nShapeType = NSOfficeDrawing::sptArc;			break;
-            default: break;
-        }
-		
-		if (pOutput->m_nShapeType == PROP_DEF)
+		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
+
+		if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive)
 		{
 			pOutput->m_nShapeType = 0; //custom
 
 			NSPresentationEditor::CShapeElement* pShapeElement = NULL;
 			if(type != OOXMLShapes::sptNil) 
-			{
 				pShapeElement = new NSPresentationEditor::CShapeElement(NSBaseShape::pptx, (int)type);
-				//std::wstring strAdjustValues = lpGeom.GetODString();
-				//lpShapeElement->m_oShape.m_pShape->LoadAdjustValuesList(strAdjustValues);
+			if (pShapeElement)
+			{
+				
+				delete pShapeElement;
 			}
 		}
 	}
+	if (m_ooxShape->m_oSpPr->m_oXfrm.IsInit())
+	{
+		double rot = m_ooxShape->m_oSpPr->m_oXfrm->m_oRot.GetAngle();
+		if (rot > 0.01)
+			pOutput->m_nRotation = rot * 65535;
 
+		if (m_ooxShape->m_oSpPr->m_oXfrm->m_oFlipH.ToBool())	pOutput->m_bFlipH = 1;	
+		if (m_ooxShape->m_oSpPr->m_oXfrm->m_oFlipV.ToBool())	pOutput->m_bFlipV = 1;
+
+		if (pOutput->m_bInGroup)
+		{
+			if (m_ooxShape->m_oSpPr->m_oXfrm->m_oOff.IsInit())
+			{
+				pOutput->m_nRelLeft	= m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
+				pOutput->m_nRelTop	= m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
+			}
+			else
+			{
+				pOutput->m_nRelLeft	= 0;
+				pOutput->m_nRelTop	= 0;
+			}
+			if (m_ooxShape->m_oSpPr->m_oXfrm->m_oExt.IsInit())
+			{
+				pOutput->m_nRelRight	= pOutput->m_nRelLeft + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+				pOutput->m_nRelBottom	= pOutput->m_nRelTop + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
+			}
+			else
+			{
+				pOutput->m_nRelRight	= 0;
+				pOutput->m_nRelBottom	= 0;
+			}
+			pOutput->m_nRelRotation = pOutput->m_nRotation;
+		}
+	}
 	OOX::Drawing::CShapeStyle* oox_sp_style = m_ooxShape->m_oShapeStyle.GetPointer();
 	
 	bool use_fill_from_style = false;
@@ -1137,7 +1112,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		case OOX::Drawing::filltypeBlip:		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oBlipFill.GetPointer());	break;
 		case OOX::Drawing::filltypeGradient:	Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oGradFill.GetPointer());	break;
 		case OOX::Drawing::filltypePattern:		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oPattFill.GetPointer());	break;
-		case OOX::Drawing::filltypeSolid:		Parse(oParam, pOutput), m_ooxShape->m_oSpPr->m_oSolidFill.GetPointer();	break;
+		case OOX::Drawing::filltypeSolid:		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oSolidFill.GetPointer());	break;
 		case OOX::Drawing::filltypeGroup:
 		case OOX::Drawing::filltypeNo:			
 			pOutput->m_bFilled = false;	break;
@@ -1149,13 +1124,13 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		Parse(oParam, pOutput, &oox_sp_style->m_oFillRef);
 	}
 
+	if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
+	{
+		Parse(oParam, pOutput, &oox_sp_style->m_oLnRef);
+	}
 	if (m_ooxShape->m_oSpPr->m_oLn.IsInit())
 	{
 		Parse(oParam, pOutput, m_ooxShape->m_oSpPr->m_oLn.GetPointer());	
-	}
-	else if ((oox_sp_style) && (oox_sp_style->m_oLnRef.getType() == OOX::et_a_lnRef))
-	{
-		Parse(oParam, pOutput, &oox_sp_style->m_oLnRef);
 	}
 
 	if (m_ooxShape->m_oCNvConnSpPr.IsInit())
@@ -1495,15 +1470,46 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 		if( m_ooxGroup->m_oGroupSpPr.IsInit() && m_ooxGroup->m_oGroupSpPr->m_oXfrm.IsInit())
 		{
-			if( m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff.IsInit() )
+			double rot = m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oRot.GetAngle();
+			if (rot > 0.01)
+				pOutput->m_nRotation = rot * 65535;		
+			
+			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oFlipH.ToBool())	pOutput->m_bFlipH = 1;	
+			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oFlipV.ToBool())	pOutput->m_bFlipV = 1;
+			
+			if( m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChOff.IsInit() )
 			{
-				pOutput->m_nGroupLeft	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oX.ToPoints();
-				pOutput->m_nGroupTop	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oY.ToPoints();
+				pOutput->m_nGroupLeft	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChOff->m_oX.GetValue();
+				pOutput->m_nGroupTop	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChOff->m_oY.GetValue();
 			}
-			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt.IsInit())
+			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChExt.IsInit())
 			{
-				pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCx.ToPoints();
-				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCy.ToPoints();
+				pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChExt->m_oCx.GetValue();
+				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oChExt->m_oCy.GetValue();
+			}
+			if (pOutput->m_bInGroup)
+			{
+				if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff.IsInit())
+				{
+					pOutput->m_nRelLeft	= m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
+					pOutput->m_nRelTop	= m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
+				}
+				else
+				{
+					pOutput->m_nRelLeft	= 0;
+					pOutput->m_nRelTop	= 0;
+				}
+				if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt.IsInit())
+				{
+					pOutput->m_nRelRight	= pOutput->m_nRelLeft + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+					pOutput->m_nRelBottom	= pOutput->m_nRelTop + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
+				}
+				else
+				{
+					pOutput->m_nRelRight	= 0;
+					pOutput->m_nRelBottom	= 0;
+				}
+				pOutput->m_nRelRotation = pOutput->m_nRotation;
 			}
 		}
 

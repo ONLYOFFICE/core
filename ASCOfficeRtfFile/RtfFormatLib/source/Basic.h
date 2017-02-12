@@ -37,17 +37,8 @@
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include "boost/shared_ptr.hpp"
-#include <boost/optional.hpp>
-
-template <class T>
-struct optional
-{
-    typedef T Base;
-    typedef boost::optional<T> Type;
-};
-
-#define _CP_OPT(V) optional<V>::Type
+#include <boost/shared_ptr.hpp>
+#include "../../../ASCOfficeOdfFile/include/cpdoccore/CPOptional.h"
 
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 

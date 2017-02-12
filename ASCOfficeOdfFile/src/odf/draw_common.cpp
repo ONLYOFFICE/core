@@ -666,7 +666,7 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 	
 	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
 	
-	for (int i = 0; i < transforms.size(); i++)
+	for (size_t i = 0; i < transforms.size(); i++)
 	{			
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);

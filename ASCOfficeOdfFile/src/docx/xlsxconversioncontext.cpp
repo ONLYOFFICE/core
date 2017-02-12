@@ -134,7 +134,7 @@ void xlsx_conversion_context::end_document()
 {
 	std::wstringstream workbook_content;
 
-	for (int i = 0; i < sheets_.size(); i++)
+	for (size_t i = 0; i < sheets_.size(); i++)
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];
 		
@@ -191,7 +191,7 @@ void xlsx_conversion_context::end_document()
     }
 	//добавляем диаграммы
 
-    for (int i = 0; i < charts_.size(); i++)
+    for (size_t i = 0; i < charts_.size(); i++)
     {
 		package::chart_content_ptr content = package::chart_content::create();
 
@@ -271,7 +271,7 @@ void xlsx_conversion_context::serialize_bookViews(std::wostream & strm)
 				{
 					if (sActiveTable)
 					{
-						for (int i = 0; i < sheets_.size(); i++)
+						for (size_t i = 0; i < sheets_.size(); i++)
 						{
 							if (sheets_[i]->name() == *sActiveTable)
 							{

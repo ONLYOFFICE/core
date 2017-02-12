@@ -57,7 +57,7 @@ class document_context;
 class office_element;
 typedef shared_ptr<office_element>::Type	office_element_ptr;
 typedef weak_ptr<office_element>::Type		office_element_weak_ptr;
-typedef std::vector<office_element_ptr>	office_element_ptr_array;
+typedef std::vector<office_element_ptr>		office_element_ptr_array;
 
 class office_element : public xml::element<wchar_t>,
     public common::read_doc_element,

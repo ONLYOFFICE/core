@@ -187,8 +187,10 @@ void odf_document::Impl::parse_fonts()
             break;
         }
 
-        BOOST_FOREACH(office_element_ptr & elm, fontFaceDecls->style_font_face_)
-        {
+		for (size_t i = 0; i < fontFaceDecls->style_font_face_.size(); i++)
+		{
+			office_element_ptr & elm = fontFaceDecls->style_font_face_[i];
+
             style_font_face* fontFace = dynamic_cast<style_font_face*>( elm.get() );
             if (!fontFace)
             {
@@ -243,8 +245,10 @@ void odf_document::Impl::parse_manifests()
 	if (!document)return;
 
 	int res =-1;
-	BOOST_FOREACH(office_element_ptr & elm, document->manifests_)
-    {
+	for (size_t i = 0; i < document->manifests_.size(); i++)
+	{	
+		office_element_ptr & elm = document->manifests_[i];
+
 		manifest_entry * entry = dynamic_cast<manifest_entry *>(elm.get());
 		if (!entry)continue;
 
@@ -281,15 +285,18 @@ void odf_document::Impl::parse_settings()
 	office_settings * settings = dynamic_cast<office_settings*>(document->office_settings_.get());
 	if (!settings)	return;
 
-	BOOST_FOREACH(office_element_ptr & elm, settings->content_)
-    {
+	for (size_t i = 0; i < settings->content_.size(); i++)
+	{	
+		office_element_ptr & elm = settings->content_[i];
+
 		settings_config_item_set * item_set = dynamic_cast<settings_config_item_set *>(elm.get());
 		if (!item_set)continue;
 
 		if (item_set->config_name_ == L"ooo:configuration-settings")
 		{
-			BOOST_FOREACH(office_element_ptr & elm_sett, item_set->content_)
-			{		
+			for (size_t j = 0; j < item_set->content_.size(); j++)
+			{	
+				office_element_ptr & elm_sett = item_set->content_[j];
 				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
 				if (!sett)continue;
 
@@ -298,8 +305,10 @@ void odf_document::Impl::parse_settings()
 		}
 		else if (item_set->config_name_ == L"ooo:view-settings")
 		{
-			BOOST_FOREACH(office_element_ptr & elm_sett, item_set->content_)
-			{		
+			for (size_t j = 0; j < item_set->content_.size(); j++)
+			{	
+				office_element_ptr & elm_sett = item_set->content_[j];
+	
 				settings_config_item * sett = dynamic_cast<settings_config_item *>(elm_sett.get());
 				if (sett)
 					context_->Settings().add_view(sett->config_name_, sett->content_);
@@ -308,13 +317,13 @@ void odf_document::Impl::parse_settings()
 					settings_config_item_map_indexed *map_sett = dynamic_cast<settings_config_item_map_indexed *>(elm_sett.get());
 					if ((map_sett) && (map_sett->config_name_ == L"Views"))
 					{
-						for (int i = 0; i < map_sett->content_.size(); i++)
+						for (size_t i = 0; i < map_sett->content_.size(); i++)
 						{
 							settings_config_item_map_entry *entry = dynamic_cast<settings_config_item_map_entry *>(map_sett->content_[i].get());
 							if (!entry) continue;
 							
 							context_->Settings().start_view();
-							for (int j = 0; j < entry->content_.size(); j++)
+							for (size_t j = 0; j < entry->content_.size(); j++)
 							{
 								settings_config_item * sett = dynamic_cast<settings_config_item *>(entry->content_[j].get());
 								if (sett)
@@ -323,14 +332,14 @@ void odf_document::Impl::parse_settings()
 								settings_config_item_map_named *map_v = dynamic_cast<settings_config_item_map_named *>(entry->content_[j].get());
 								if (map_v)
 								{
-									for (int n = 0; n < map_v->content_.size(); n++)
+									for (size_t n = 0; n < map_v->content_.size(); n++)
 									{
 										settings_config_item_map_entry *entry_v = dynamic_cast<settings_config_item_map_entry *>(map_v->content_[n].get());
 										if (!entry_v) continue;
 										
 										context_->Settings().start_table_view(entry_v->config_name_);
 										
-										for (int k = 0; k < entry_v->content_.size(); k++)
+										for (size_t k = 0; k < entry_v->content_.size(); k++)
 										{
 											sett = dynamic_cast<settings_config_item *>(entry_v->content_[k].get());
 											if (sett)
@@ -378,9 +387,11 @@ void odf_document::Impl::parse_styles()
             }
 
             // parse page layout
-            BOOST_FOREACH(office_element_ptr & elm, automaticStyles->style_page_layout_)
-            {
-                style_page_layout * pageLayout = dynamic_cast<style_page_layout *>(elm.get());
+			for (size_t i = 0; i < automaticStyles->style_page_layout_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->style_page_layout_[i];
+
+				style_page_layout * pageLayout = dynamic_cast<style_page_layout *>(elm.get());
                 if (!pageLayout)
                 {
                     _CP_LOG << L"[warning] error reading page layout\n";
@@ -390,9 +401,11 @@ void odf_document::Impl::parse_styles()
                 context_->pageLayoutContainer().add_page_layout(pageLayout);
             } // end parse page layout
 
-            BOOST_FOREACH(office_element_ptr & elm, automaticStyles->styles_.style_style_)
-            {
-                style * styleInst = dynamic_cast<style*>(elm.get());
+			for (size_t i = 0; i < automaticStyles->styles_.style_style_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->styles_.style_style_[i];
+
+				style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
                     _CP_LOG << L"[warning] error reading style\n";
@@ -412,9 +425,11 @@ void odf_document::Impl::parse_styles()
                     );
             }
             // list styles
-            BOOST_FOREACH(office_element_ptr & elm, automaticStyles->styles_.text_list_style_)
-            {
-                text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
+			for (size_t i = 0; i < automaticStyles->styles_.text_list_style_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->styles_.text_list_style_[i];
+
+				text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
                     _CP_LOG << L"[warning] error list style\n";
@@ -436,9 +451,11 @@ void odf_document::Impl::parse_styles()
                 break;
             }
 
-            BOOST_FOREACH(office_element_ptr & elm, masterStyles->style_master_page_)
-            {
-                style_master_page * masterPage = dynamic_cast<style_master_page *>(elm.get());
+			for (size_t i = 0; i < masterStyles->style_master_page_.size(); i++)
+			{	
+				office_element_ptr & elm = masterStyles->style_master_page_[i];
+
+				style_master_page * masterPage = dynamic_cast<style_master_page *>(elm.get());
                 if (!masterPage)
                 {
                     _CP_LOG << L"[warning] error reading master page\n";
@@ -464,9 +481,11 @@ void odf_document::Impl::parse_styles()
             }
 
             // default styles
-            BOOST_FOREACH(office_element_ptr & elm, docStyles->style_default_style_)
-            {
-                default_style * styleInst = dynamic_cast<default_style *>(elm.get());
+			for (size_t i = 0; i < docStyles->style_default_style_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->style_default_style_[i];
+
+				default_style * styleInst = dynamic_cast<default_style *>(elm.get());
                 if (!styleInst)
                 {
                     _CP_LOG << L"[warning] error reading default style\n";
@@ -483,9 +502,11 @@ void odf_document::Impl::parse_styles()
                     L"",
                     L"");                                            
             }
-            BOOST_FOREACH(office_element_ptr & elm, docStyles->style_presentation_page_layout_)
-            {
-                style_presentation_page_layout * pageLayout = dynamic_cast<style_presentation_page_layout *>(elm.get());
+			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->style_presentation_page_layout_[i];
+
+				style_presentation_page_layout * pageLayout = dynamic_cast<style_presentation_page_layout *>(elm.get());
 
                 if (!pageLayout)
                     continue;
@@ -494,9 +515,11 @@ void odf_document::Impl::parse_styles()
             }
         
             // common styles
-            BOOST_FOREACH(office_element_ptr & elm, docStyles->styles_.style_style_)
-            {
-                style * styleInst = dynamic_cast<style*>(elm.get());
+			for (size_t i = 0; i < docStyles->styles_.style_style_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->styles_.style_style_[i];
+
+				style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
                     _CP_LOG << L"[warning] error reading style\n";
@@ -519,8 +542,10 @@ void odf_document::Impl::parse_styles()
             }
 
             // list styles
-            BOOST_FOREACH(office_element_ptr & elm, docStyles->styles_.text_list_style_)
-            {
+			for (size_t i = 0; i < docStyles->styles_.text_list_style_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->styles_.text_list_style_[i];
+
                 text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
@@ -531,9 +556,11 @@ void odf_document::Impl::parse_styles()
                 context_->listStyleContainer().add_list_style(listStyle);
             }
 
-            BOOST_FOREACH(const office_element_ptr & elm, docStyles->text_notes_configuration_)
-            {
-                const text_notes_configuration * conf = dynamic_cast<const text_notes_configuration *>(elm.get());
+			for (size_t i = 0; i < docStyles->text_notes_configuration_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->text_notes_configuration_[i];
+
+				const text_notes_configuration * conf = dynamic_cast<const text_notes_configuration *>(elm.get());
                 if (!conf)
                     continue;
                 
@@ -542,53 +569,65 @@ void odf_document::Impl::parse_styles()
                                 
             }
 
-            BOOST_FOREACH(const office_element_ptr & elm, docStyles->styles_.number_styles_)
-            {
-                const number_style_base * style = dynamic_cast<const number_style_base *>(elm.get());
+			for (size_t i = 0; i < docStyles->styles_.number_styles_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->styles_.number_styles_[i];
+
+				const number_style_base * style = dynamic_cast<const number_style_base *>(elm.get());
 
                 if (!style)
                     continue;
 
                 context_->numberStyles().add(style->get_style_name(), elm);
             }
-           BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_gradient_)
-            {
-                draw_gradient * style = dynamic_cast<draw_gradient *>(elm.get());
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_gradient_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_gradient_[i];
+
+				draw_gradient * style = dynamic_cast<draw_gradient *>(elm.get());
 
                 if (!style)
                     continue;
 
 				context_->drawStyles().add(L"gradient:" + style->get_style_name(), elm);
             }
-            BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_fill_image_)
-            {
-                draw_fill_image * style = dynamic_cast<draw_fill_image *>(elm.get());
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_fill_image_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_fill_image_[i];
+
+				draw_fill_image * style = dynamic_cast<draw_fill_image *>(elm.get());
 
                 if (!style)
                     continue;
 
 				context_->drawStyles().add(L"bitmap:" + style->get_style_name(), elm);
             }
-			BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_opacity_)
-            {
-                draw_opacity * style = dynamic_cast<draw_opacity *>(elm.get());
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_opacity_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_opacity_[i];
+
+				draw_opacity * style = dynamic_cast<draw_opacity *>(elm.get());
 
                 if (!style)
                     continue;
 
 				context_->drawStyles().add(L"opacity:" + style->get_style_name(), elm);
             }
-			BOOST_FOREACH(const office_element_ptr & elm, docStyles->draw_styles_.draw_hatch_)
-            {
-                draw_hatch * style = dynamic_cast<draw_hatch *>(elm.get());
+			for (size_t i = 0; i < docStyles->draw_styles_.draw_hatch_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->draw_styles_.draw_hatch_[i];
+
+				draw_hatch * style = dynamic_cast<draw_hatch *>(elm.get());
 
                 if (!style)
                     continue;
 
 				context_->drawStyles().add(L"hatch:" + style->get_style_name(), elm);
             }
-            BOOST_FOREACH(const office_element_ptr & elm, docStyles->templates_.table_templates_)
-            {
+			for (size_t i = 0; i < docStyles->templates_.table_templates_.size(); i++)
+			{	
+				office_element_ptr & elm = docStyles->templates_.table_templates_[i];
+
 				table_table_template * style = dynamic_cast<table_table_template *>(elm.get());
 
                 if (!style)
@@ -626,9 +665,11 @@ void odf_document::Impl::parse_styles()
                 break;
             }
 
-            BOOST_FOREACH(office_element_ptr & elm, automaticStyles->styles_.style_style_)
-            {
-                style * styleInst = dynamic_cast<style*>(elm.get());
+			for (size_t i = 0; i < automaticStyles->styles_.style_style_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->styles_.style_style_[i];
+
+				style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
                     _CP_LOG << L"[warning] error reading style\n";
@@ -650,9 +691,11 @@ void odf_document::Impl::parse_styles()
                     );
             }
 
-            BOOST_FOREACH(office_element_ptr & elm, automaticStyles->styles_.text_list_style_)
-            {
-                text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
+			for (size_t i = 0; i < automaticStyles->styles_.text_list_style_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->styles_.text_list_style_[i];
+
+				text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
                     _CP_LOG << L"[warning] error reading list style\n";
@@ -662,9 +705,11 @@ void odf_document::Impl::parse_styles()
                 context_->listStyleContainer().add_list_style(listStyle);
             }
 
-            BOOST_FOREACH(const office_element_ptr & elm, automaticStyles->styles_.number_styles_)
-            {
-                const number_style_base * style = dynamic_cast<const number_style_base *>(elm.get());
+			for (size_t i = 0; i < automaticStyles->styles_.number_styles_.size(); i++)
+			{	
+				office_element_ptr & elm = automaticStyles->styles_.number_styles_[i];
+
+				const number_style_base * style = dynamic_cast<const number_style_base *>(elm.get());
 
                 if (!style)  continue;
 

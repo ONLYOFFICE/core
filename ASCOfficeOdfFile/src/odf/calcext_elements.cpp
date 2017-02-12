@@ -91,7 +91,7 @@ void calcext_conditional_formats::add_child_element( xml::sax * Reader, const st
 }
 void calcext_conditional_formats::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -116,7 +116,7 @@ void calcext_conditional_format::xlsx_convert(oox::xlsx_conversion_context & Con
 
 	Context.start_conditional_format(*calcext_target_range_address_);
 
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -149,7 +149,7 @@ void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	Context.set_conditional_format_dataBar(calcext_data_bar_attr_.calcext_min_length_, calcext_data_bar_attr_.calcext_max_length_);
 
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -170,7 +170,7 @@ void calcext_color_scale::add_child_element( xml::sax * Reader, const std::wstri
 void calcext_color_scale::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	Context.start_conditional_format_rule(3);
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -196,7 +196,7 @@ void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (calcext_show_value_)
 		Context.set_conditional_format_showval(*calcext_show_value_);
 	
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}

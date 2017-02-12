@@ -387,7 +387,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 		
 		if (!Context.get_paragraph_keep())// например Appendix I_IPP.odt - tracked elements (
 		{
-			for (int i = 0; i < content_.size(); i++)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
 				content_[i]->docx_convert(Context); 
 			}
@@ -1238,7 +1238,7 @@ void text_tracked_changes::add_child_element( xml::sax * Reader, const std::wstr
 
 void text_tracked_changes::docx_convert(oox::docx_conversion_context & Context)
 {
-    for (int i = 0; i < content_.size(); i++)
+    for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->docx_convert(Context);
 	}
@@ -1263,7 +1263,7 @@ void text_changed_region::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_text_tracked_context().start_change (*text_id_);
 	
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->docx_convert(Context);
 	}
@@ -1296,7 +1296,7 @@ void text_unknown_base_change::docx_convert(oox::docx_conversion_context & Conte
 
 //тут удаленный текст. не по стандарту сделать бы и форматы - стилями чтоли ....
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		Context.get_text_tracked_context().start_changes_content();
 		{
@@ -1311,7 +1311,7 @@ void text_unknown_base_change::docx_convert(oox::docx_conversion_context & Conte
 
 			//if (para)
 			//{
-			//	for (int j = 0; j < para->content_.size(); j++)
+			//	for (size_t j = 0; j < para->content_.size(); j++)
 			//	{
 			//		para->content_[j]->docx_convert(Context);
 			//	}

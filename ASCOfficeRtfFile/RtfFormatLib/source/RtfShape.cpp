@@ -500,7 +500,6 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	}
     if( !m_aPSegmentInfo.empty())
     {
-        sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv ";
         sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv 2;" + std::to_wstring( m_aPSegmentInfo.size() );
         for (size_t i = 0; i < m_aPSegmentInfo.size(); i ++ )
             sResult += L";" + std::to_wstring( m_aPSegmentInfo[i] );

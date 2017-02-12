@@ -139,7 +139,7 @@ void oox_chart_series::setValues(int ind, std::vector<std::wstring> & values)
 	if (ind == 0)	values_[ind].strRef_.present = true;
 	else			values_[ind].numRef_.present = true;
 
-	for (int i = 0; i < values.size(); i++)
+	for (size_t i = 0; i < values.size(); i++)
 	{
 		boost::algorithm::trim(values[i]);
 		if (ind == 0)
@@ -240,7 +240,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 									{
 										CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
 									}
-									for (int j = 0; j < values_[i].numRef_.num_cache.size(); j++)
+									for (size_t j = 0; j < values_[i].numRef_.num_cache.size(); j++)
 									{				
 										std::wstring & v = values_[i].numRef_.num_cache[j];
 
@@ -275,7 +275,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								CP_XML_ATTR(L"val", values_[i].numRef_.num_cache_count);
 							}
 
-							for (int j = 0; j < values_[i].numRef_.num_cache.size(); j++)
+							for (size_t j = 0; j < values_[i].numRef_.num_cache.size(); j++)
 							{				
 								std::wstring & v = values_[i].numRef_.num_cache[j];
 								
@@ -312,7 +312,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 								{
 									CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
 								}
-								for (int j = 0; j < values_[i].strRef_.str_cache.size(); j++)
+								for (size_t j = 0; j < values_[i].strRef_.str_cache.size(); j++)
 								{								
 									std::wstring & v = values_[i].strRef_.str_cache[j];
 
@@ -336,7 +336,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							{
 								CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
 							}
-							for (int j = 0; j < values_[i].strRef_.str_cache.size(); j++)
+							for (size_t j = 0; j < values_[i].strRef_.str_cache.size(); j++)
 							{								
 								std::wstring & v = values_[i].strRef_.str_cache[j];
 								CP_XML_NODE(L"c:pt")
@@ -405,7 +405,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 
 		bool bEmpty_dPt = true;
-		for (int i = 0 ; i < content_.points_.size(); i++)
+		for (size_t i = 0 ; i < content_.points_.size(); i++)
 		{
 			if (content_.points_[i].bEnabled)
 			{
@@ -415,9 +415,9 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		}
 
 		int indPoint = 0;
-		for (int i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
+		for (size_t i = 0 ; !bEmpty_dPt && i < content_.points_.size(); i++)
 		{
-			for (int j = 0 ; j < content_.points_[i].repeated_; j++)
+			for (size_t j = 0 ; j < content_.points_[i].repeated_; j++)
 			{
 				CP_XML_NODE(L"c:dPt")
 				{

@@ -88,11 +88,11 @@ void table_named_expressions::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			for (int i = 0; i < named_expression_.size(); i++)
+			for (size_t i = 0; i < named_expression_.size(); i++)
 			{
 				named_expression_[i]->serialize(CP_XML_STREAM());
 			}
-			for (int i = 0; i < named_range_.size(); i++)
+			for (size_t i = 0; i < named_range_.size(); i++)
 			{
 				named_range_[i]->serialize(CP_XML_STREAM());
 			}

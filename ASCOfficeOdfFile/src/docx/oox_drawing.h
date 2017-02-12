@@ -40,6 +40,8 @@
 #include "mediaitems.h"
 #include "oox_drawing_fills.h"
 
+#include "../odf/svg_parser.h"
+
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace cpdoccore {
@@ -83,13 +85,19 @@ namespace oox {
 		void serialize_shape	(std::wostream & strm);
 		void serialize_xfrm		(std::wostream & strm, const std::wstring & namespace_ = L"a", bool always_position = false);
 		void serialize_bodyPr	(std::wostream & strm, const std::wstring & namespace_ = L"a");
-    };
-   
+    };   
 	typedef _CP_PTR(_oox_drawing) oox_drawing_ptr;
 
 	void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
     void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
+    
+}
 }
 
+namespace svg_path
+{
+	void oox_serialize	(std::wostream & strm, _point & val);
+	void oox_serialize	(std::wostream & strm, _polyline & val);
+	void oox_serialize	(std::wostream & strm, std::vector<_polyline> & path);
 }

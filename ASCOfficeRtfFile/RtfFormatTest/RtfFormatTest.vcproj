@@ -396,6 +396,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ASCOfficeOdfFile\src\odf\svg_parser.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 				>
 			</File>
@@ -411,12 +415,6 @@
 				RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
 		</Filter>
 		<File
 			RelativePath="..\..\build\bin\icu\win_32\icudt.lib"

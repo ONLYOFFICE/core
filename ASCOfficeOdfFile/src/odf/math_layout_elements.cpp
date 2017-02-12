@@ -193,7 +193,7 @@ void math_msqrt::oox_convert(oox::math_context & Context)
 		strm << L"<m:deg/>";
 		
 		strm << L"<m:e>";		
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 				math_element->oox_convert(Context);
@@ -297,7 +297,7 @@ void math_mstyle::oox_convert(oox::math_context & Context)
 		}
 	}
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 		math_element->oox_convert(Context);

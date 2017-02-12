@@ -35,8 +35,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace cpdoccore 
-{ 
 namespace svg_path
 {
     void skipSpaces(int& io_rPos, const std::wstring& rStr, const int nLen)
@@ -808,6 +806,5 @@ namespace svg_path
     }
 
 
-}
 }
 

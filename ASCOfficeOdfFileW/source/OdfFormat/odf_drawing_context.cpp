@@ -908,7 +908,7 @@ void odf_drawing_context::end_shape()
 
 					enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ = shape_define->enhanced_path;
 
-					for (long i=0; i < shape_define->equations.size();i++)
+					for (size_t i = 0; i < shape_define->equations.size();i++)
 					{
 						office_element_ptr elm_eq;
 						create_element(L"draw", L"equation", elm_eq, impl_->odf_context_);					
@@ -922,7 +922,7 @@ void odf_drawing_context::end_shape()
 						end_element();
 					}
 				//-----------------------------
-					for (long i=0; i < shape_define->handles.size();i++)
+					for (size_t i = 0; i < shape_define->handles.size();i++)
 					{
 						office_element_ptr elm_h;
 						create_element(L"draw", L"handle", elm_h, impl_->odf_context_);					
@@ -2128,7 +2128,7 @@ bool odf_drawing_context::is_exist_content()
 
 void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
-	for (int i=0; i< impl_->tops_elements_.size(); i++)
+	for (size_t i=0; i< impl_->tops_elements_.size(); i++)
 	{
 		root_elm->add_child_element(impl_->tops_elements_[i]);
 	}	
@@ -2144,7 +2144,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() <1 )return;
 
-	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
 		if (text_context->text_elements_list_[i].level ==0)
 		{

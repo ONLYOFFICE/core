@@ -207,7 +207,7 @@ void xlsx_drawing_context::end_group()
 	group_rect.cy -= group_rect.y;
 	group_rect.cx -= group_rect.x;
 
-	for (int i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
+	for (size_t i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
 	{
 		_rect & r = impl_->groups_.back()->child_objects_[i].svg_rect_.get();
 		
@@ -615,7 +615,7 @@ void xlsx_drawing_context::process_objects(xlsx_table_metrics & table_metrics)
 }
 void xlsx_drawing_context::process_objects(std::vector<drawing_object_description> objects, xlsx_table_metrics & table_metrics, xlsx_drawings_ptr xlsx_drawings_)
 {
-	for (int i = 0 ; i < objects.size(); i++)
+	for (size_t i = 0 ; i < objects.size(); i++)
 	{
 		drawing_object_description & obj = objects[i];
 

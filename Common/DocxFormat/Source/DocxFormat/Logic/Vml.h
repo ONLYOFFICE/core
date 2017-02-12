@@ -1631,21 +1631,21 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oArrowOk;
-			nullable<std::wstring>                                         m_oConnectAngles;
-			nullable<std::wstring>                                         m_oConnectLocs;
-			SimpleTypes::CConnectType<SimpleTypes::connecttypeNone>   m_oConnectType;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oExtrusionOk;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oFillOk;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGradientShapeOk;
-			nullable<std::wstring>                                         m_oId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oInsetPenOk;
-			SimpleTypes::Vml::CVml_Vector2D_Units                     m_oLimo;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oShadowOk;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>         m_oStrokeOk;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>                m_oTextBoxRect;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oTextPathOk;
-			nullable<SimpleTypes::Vml::CVmlPath>                      m_oV;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oArrowOk;
+			nullable<std::wstring>									m_oConnectAngles;
+			nullable<std::wstring>									m_oConnectLocs;
+			SimpleTypes::CConnectType<SimpleTypes::connecttypeNone>	m_oConnectType;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oExtrusionOk;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oFillOk;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oGradientShapeOk;
+			nullable<std::wstring>									m_oId;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oInsetPenOk;
+			SimpleTypes::Vml::CVml_Vector2D_Units					m_oLimo;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oShadowOk;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oStrokeOk;
+			nullable<SimpleTypes::Vml::CVml_Polygon2D>				m_oTextBoxRect;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oTextPathOk;
+			nullable<SimpleTypes::Vml::CVmlPath>					m_oV;
 		};
 		//--------------------------------------------------------------------------------
 		// CPolyLine 14.1.2.15 (Part4)

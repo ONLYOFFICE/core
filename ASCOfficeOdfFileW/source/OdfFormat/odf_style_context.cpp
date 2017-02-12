@@ -80,7 +80,7 @@ void odf_style_context::set_odf_context(odf_conversion_context * Context)
 
 odf_style_state_ptr odf_style_context::last_state(style_family::type family)
 {
-	for (long i = style_state_list_.size()-1; i>=0; i--)
+	for (size_t i = style_state_list_.size()-1; i>=0; i--)
 	{
 		if (style_state_list_[i]->get_family_type() == family || family == style_family::None )
 		{
@@ -144,7 +144,7 @@ void odf_style_context::reset_defaults()
 
 void odf_style_context::process_automatic_for_styles(office_element_ptr root )
 {//автоматические стили для эементнов стилей
-	for (long i =0; i < style_state_list_.size(); i++)
+	for (size_t i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->writable_ == false) continue;
 
@@ -154,7 +154,7 @@ void odf_style_context::process_automatic_for_styles(office_element_ptr root )
 }
 void odf_style_context::process_automatic_styles(office_element_ptr root )
 {//автоматические стили для элементов
-	for (long i =0; i < style_state_list_.size(); i++)
+	for (size_t i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->writable_ == false) continue;
 
@@ -167,7 +167,7 @@ void odf_style_context::process_office_styles(office_element_ptr root )
 {
 	number_styles_context_.process_styles(root );
 	
-	for (long i =0; i < style_state_list_.size(); i++)
+	for (size_t i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->writable_ == false) continue;
 
@@ -179,7 +179,7 @@ void odf_style_context::process_office_styles(office_element_ptr root )
 }
 std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_family::type family, bool root, bool automatic)
 {
-	for (long i =0; i < style_state_list_.size(); i++)
+	for (size_t i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -199,7 +199,7 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_fami
 //office_element_ptr odf_style_context::find_odf_style(int oox_id_style, style_family::type family, bool root, _CP_OPT(bool) automatic)
 //{
 //	//for (std::list<odf_style_state>::iterator it = style_state_list_.begin(); it != style_state_list_.end(); it++)
-//	for (int i=0;i<style_state_list_.size(); i++)
+//	for (size_t i=0;i<style_state_list_.size(); i++)
 //	{
 //		if (style_state_list_[i]->odf_style_)
 //		{
@@ -218,7 +218,7 @@ std::wstring odf_style_context::find_odf_style_name(int oox_id_style, style_fami
 //}
 std::wstring odf_style_context::find_conditional_style_name(int oox_id_style, style_family::type family)
 {
-	for (long i =0; i < style_state_list_.size(); i++)
+	for (size_t i =0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -235,7 +235,7 @@ std::wstring odf_style_context::find_conditional_style_name(int oox_id_style, st
 }
 office_element_ptr odf_style_context::find_conditional_style(int oox_id_style, style_family::type family)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i = 0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -252,7 +252,7 @@ office_element_ptr odf_style_context::find_conditional_style(int oox_id_style, s
 }
 bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::type family, odf_style_state_ptr & state, bool root, bool automatic)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i = 0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -275,7 +275,7 @@ bool odf_style_context::find_odf_style_state(int oox_id_style, style_family::typ
 }
 bool odf_style_context::find_odf_default_style_state(style_family::type family, odf_style_state_ptr & state)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i=0;i<style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->default_ == false) continue;
 
@@ -290,7 +290,7 @@ bool odf_style_context::find_odf_default_style_state(style_family::type family, 
 
 bool odf_style_context::find_odf_style_state(std::wstring style_name, style_family::type family, odf_style_state_ptr & state)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i = 0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -308,7 +308,7 @@ bool odf_style_context::find_odf_style_state(std::wstring style_name, style_fami
 
 bool odf_style_context::find_odf_style(std::wstring style_name, style_family::type family, style *& style_)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i = 0; i < style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{
@@ -325,7 +325,7 @@ bool odf_style_context::find_odf_style(std::wstring style_name, style_family::ty
 }
 office_element_ptr odf_style_context::find_odf_style_default(style_family::type family)
 {
-	for (int i=0; i < current_default_styles_.size(); i++)
+	for (size_t i=0; i < current_default_styles_.size(); i++)
 	{
 		if (current_default_styles_[i]->odf_style_)
 		{
@@ -336,7 +336,7 @@ office_element_ptr odf_style_context::find_odf_style_default(style_family::type 
 }
 std::wstring odf_style_context::find_odf_style_name_default(style_family::type family)
 {
-	for (int i = 0; i < current_default_styles_.size(); i++)
+	for (size_t i = 0; i < current_default_styles_.size(); i++)
 	{
 		if (current_default_styles_[i]->odf_style_)
 		{
@@ -390,7 +390,7 @@ std::wstring odf_style_context::find_free_name(style_family::type  family)
 	int count = style_family_counts_[(int)family];
 
 	//доооолго .. проще хранить
-	//for (int i=0;i<style_state_list_.size(); i++)
+	//for (size_t i=0;i<style_state_list_.size(); i++)
 	//{
 	//	if ((style_state_list_[i]->odf_style_) && (style_state_list_[i]->get_family_type() == family))
 	//	{
@@ -402,7 +402,7 @@ std::wstring odf_style_context::find_free_name(style_family::type  family)
 }
 office_element_ptr & odf_style_context::add_or_find(std::wstring name, style_family::type family, bool automatic , bool root, int oox_id)
 {
-	for (int i=0;i<style_state_list_.size(); i++)
+	for (size_t i=0;i<style_state_list_.size(); i++)
 	{
 		if (style_state_list_[i]->odf_style_)
 		{

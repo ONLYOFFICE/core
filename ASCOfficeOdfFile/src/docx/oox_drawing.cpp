@@ -35,8 +35,48 @@
 #include "oox_drawing.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "../odf/svg_parser.h"
 #include "../odf/datatypes/custom_shape_types_convert.h"
+
+using namespace cpdoccore;
+
+namespace svg_path
+{
+	void oox_serialize(std::wostream & strm, std::vector<_polyline> & path)
+	{
+		CP_XML_WRITER(strm)
+		{
+			for (size_t i = 0; i < path.size(); i++)
+			{	
+				oox_serialize(strm, path[i]);
+			}
+		}
+	}
+	void oox_serialize(std::wostream & strm, _polyline & val)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(val.command)
+			{
+				for (size_t i = 0; i < val.points.size(); i++)
+				{	
+					oox_serialize(CP_XML_STREAM(), val.points[i]);
+				}
+			}
+		}
+	}
+	void oox_serialize(std::wostream & strm, _point & val)
+	{
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"a:pt")
+			{
+				if (val.x)CP_XML_ATTR(L"x", (int)(val.x.get()));
+				if (val.y)CP_XML_ATTR(L"y", (int)(val.y.get()));
+			}
+		}
+	}
+
+}
 
 namespace cpdoccore {
 
@@ -53,41 +93,6 @@ static const std::wstring _ooxShapeType[]=
 	L"polygon", 
 };
 
-void svg_path::oox_serialize(std::wostream & strm, std::vector<svg_path::_polyline> & path)
-{
-	CP_XML_WRITER(strm)
-	{
-		BOOST_FOREACH(svg_path::_polyline & p, path)
-		{	
-			oox_serialize(strm, p);
-		}
-	}
-}
-void svg_path::oox_serialize(std::wostream & strm, svg_path::_polyline const & val)
-{
-    CP_XML_WRITER(strm)
-    {
-		CP_XML_NODE(val.command)
-		{
-			BOOST_FOREACH(svg_path::_point const & p, val.points)
-			{		
-				oox_serialize(CP_XML_STREAM(), p);
-			}
-		}
-    }
-}
-
-void svg_path::oox_serialize(std::wostream & strm, svg_path::_point const & val)
-{
-    CP_XML_WRITER(strm)
-    {
-		CP_XML_NODE(L"a:pt")
-		{
-			if (val.x)CP_XML_ATTR(L"x", (int)(val.x.get()));
-			if (val.y)CP_XML_ATTR(L"y", (int)(val.y.get()));
-		}
-    }
-}
 
 namespace oox {
 

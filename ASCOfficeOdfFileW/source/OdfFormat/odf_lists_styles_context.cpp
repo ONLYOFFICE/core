@@ -56,7 +56,7 @@ void odf_lists_styles_context::set_odf_context(odf_conversion_context * Context)
 
 void odf_lists_styles_context::process_styles(office_element_ptr root )
 {
-	for (long i=0; i< lists_format_array_.size(); i++)
+	for (size_t i = 0; i < lists_format_array_.size(); i++)
 	{
 		if (lists_format_array_[i].elements.size() < 1) continue;
 
@@ -70,7 +70,7 @@ void odf_lists_styles_context::add_style(int style_num, int based_num)
 
 	std::wstring style_name;
 
-	for (long i=0 ; i < lists_format_array_.size(); i++)
+	for (size_t i = 0 ; i < lists_format_array_.size(); i++)
 	{
 		if (lists_format_array_[i].oox_based_number == based_num)
 		{
@@ -81,7 +81,7 @@ void odf_lists_styles_context::add_style(int style_num, int based_num)
 }
 std::wstring odf_lists_styles_context::get_style_name1(int oox_style_num)
 {
-	for (long i=0 ; i < lists_format_array_.size(); i++)
+	for (size_t i=0 ; i < lists_format_array_.size(); i++)
 	{
 		if (lists_format_array_[i].oox_based_number == oox_style_num)
 		{

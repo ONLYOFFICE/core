@@ -32,9 +32,10 @@
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 
+#include "../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
 #include <boost/algorithm/string.hpp>
 
 #ifndef RGB
@@ -1045,8 +1046,11 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		}
 	}	
 	
+	std::wstring strXml;
 	if (m_ooxShape->m_oSpPr->m_oCustGeom.IsInit())
 	{
+		pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive;
+		strXml = m_ooxShape->m_oSpPr->m_oCustGeom->toXML();
 	}
 	if (m_ooxShape->m_oSpPr->m_oPrstGeom.IsInit())
 	{
@@ -1054,20 +1058,31 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		SimpleTypes::EShapeType type = geometry->m_oPrst.GetValue();
 			
 		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
-
 		if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive)
-		{
-			pOutput->m_nShapeType = 0; //custom
+			strXml = m_ooxShape->m_oSpPr->m_oPrstGeom->toXML();
+	}
+	if (pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive && !strXml.empty())
+	{
+		XmlUtils::CXmlNode xmlNode;
+		xmlNode.FromXmlString(strXml);
+		PPTX::Logic::Geometry geom(xmlNode);
 
-			NSPresentationEditor::CShapeElement* pShapeElement = NULL;
-			if(type != OOXMLShapes::sptNil) 
-				pShapeElement = new NSPresentationEditor::CShapeElement(NSBaseShape::pptx, (int)type);
-			if (pShapeElement)
-			{
-				
-				delete pShapeElement;
-			}
+		std::wstring strVmlPath, strVmlRect;
+
+		LONG lW = 43200, lH = 43200;
+
+		if ((m_ooxShape->m_oSpPr->m_oXfrm.IsInit()) && (m_ooxShape->m_oSpPr->m_oXfrm->m_oExt.IsInit()))
+		{
+			lW = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+			lH = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
 		}
+
+		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
+		geom.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
+		delete renderer;
+
+		if (!strVmlPath.empty())
+			ParseVmlPath(pOutput, strVmlPath, lW, lH);
 	}
 	if (m_ooxShape->m_oSpPr->m_oXfrm.IsInit())
 	{
@@ -1193,6 +1208,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 // геометрия --------------------------------------------------------------------------------------------------------
 
 	SimpleTypes::Vml::CVmlPath * custom_path = NULL;
+	int Width = 0, Height = 0;
 
 	if (OOX::Vml::CShapeType* shape_type = dynamic_cast<OOX::Vml::CShapeType*>(m_vmlElement))
 	{
@@ -1215,6 +1231,11 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 			}
 		}
 		custom_path = shape_type->m_oPath.GetPointer();
+		if (shape_type->m_oCoordOrigin.IsInit())
+		{
+			Width = shape_type->m_oCoordOrigin->GetX();
+			Height = shape_type->m_oCoordOrigin->GetY();
+		}
 	}
 	if (OOX::Vml::CShape* shape = dynamic_cast<OOX::Vml::CShape*>(m_vmlElement))
 	{
@@ -1249,6 +1270,11 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nShapeType = NSOfficeDrawing::sptNotPrimitive;
 		}
 		custom_path = shape->m_oPath.GetPointer();
+		if (shape->m_oCoordOrigin.IsInit())
+		{
+			Width = shape->m_oCoordOrigin->GetX();
+			Height = shape->m_oCoordOrigin->GetY();
+		}
 	}
 	else if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
 	{
@@ -1282,7 +1308,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 
 	if (pOutput->m_nShapeType == NSOfficeDrawing::sptNotPrimitive && custom_path)
 	{
-		return false;
+		ParseVmlPath(pOutput, custom_path->GetValue(), Width, Height);
 	}
 //-------------------------------------------------------------------------------------------------------------
 	if (m_vmlElement->m_oFilled.IsInit())
@@ -1566,7 +1592,36 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	return true;
 }
 
-void OOXShapeReader::ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment)
+void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &custom_path, int W, int H)
+{
+	std::vector<svg_path::_polyline> o_Polyline;
+	
+	bool res = svg_path::parseSvgD(o_Polyline, custom_path, false);
+
+	int val = 0;
+	for (size_t i = 0; i < o_Polyline.size(); i++)
+	{
+			 if (o_Polyline[i].command == L"a:moveTo")		val = 0x4000;
+		else if (o_Polyline[i].command == L"a:lnTo")		val = 0x0000;
+		else if (o_Polyline[i].command == L"a:cubicBezTo")	val = 0x2000;
+		
+		val = val | o_Polyline[i].points.size();
+		
+		pOutput->m_aPSegmentInfo.push_back(val);
+
+		for (size_t j = 0; j < o_Polyline[i].points.size(); j++)
+		{
+			pOutput->m_aPVerticles.push_back(std::make_pair((int)(o_Polyline[i].points[j].x.get_value_or(0)/* / 10000. * W*/),
+															(int)(o_Polyline[i].points[j].y.get_value_or(0)/* / 10000. * H*/)));
+		}
+	}
+	pOutput->m_aPSegmentInfo.push_back(val);
+	pOutput->m_aPVerticles.push_back(pOutput->m_aPVerticles[0]);
+	pOutput->m_aPSegmentInfo.push_back(0x6001);
+	pOutput->m_aPSegmentInfo.push_back(0x8000);
+}
+
+void OOXShapeReader::ParseAdjustment (RtfShape& oShape, std::wstring sAdjustment)
 {
 	std::vector< std::wstring > splitted;
 	
@@ -1780,6 +1835,5 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 			pOutput.m_bIsCopy = false; //не удалять 
 		}
 	}
-
 	return true;
 }

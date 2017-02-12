@@ -80,7 +80,7 @@ void table_database_ranges::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			for (int i = 0; i < database_ranges_.size(); i++)
+			for (size_t i = 0; i < database_ranges_.size(); i++)
 			{
 				database_ranges_[i]->serialize(CP_XML_STREAM());
 			}

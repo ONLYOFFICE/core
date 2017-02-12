@@ -88,7 +88,8 @@ private:
 
 	OOX::Logic::CShape									*m_ooxShape;
 
-	bool ParseVmlStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	void ParseVmlPath	(RtfShapePtr& pShape, const std::wstring &custom_path, int W, int H);
+	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (size_t i=0; i< props.size(); i++)
 		{

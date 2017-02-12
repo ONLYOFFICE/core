@@ -67,7 +67,7 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
     Context.get_table_context().start_cell_content();
 	Context.get_text_context().set_cell_text_properties(text_properties);
     
-	for (int i = 0 ; i < elements_.size(); i++)
+	for (size_t i = 0 ; i < elements_.size(); i++)
     {
         elements_[i]->xlsx_convert(Context);
     }
@@ -191,7 +191,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
                     CP_XML_STREAM();
 
-					for (int i = 0 ; i < content_.size(); i++)
+					for (size_t i = 0 ; i < content_.size(); i++)
                     {
 						office_element_ptr & elm = content_[i];
 
@@ -233,7 +233,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-   	for (int i = 0; i < table_table_row_.size(); i++)
+   	for (size_t i = 0; i < table_table_row_.size(); i++)
 	{
         table_table_row_[i]->xlsx_convert(Context);
     }
@@ -241,7 +241,7 @@ void table_table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table_header_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-   	for (int i = 0; i < table_table_row_.size(); i++)
+   	for (size_t i = 0; i < table_table_row_.size(); i++)
 	{
         table_table_row_[i]->xlsx_convert(Context);
     }
@@ -274,7 +274,7 @@ void table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 			}
 
 		}
-   		for (int i = 0; i < table_table_row_.size(); i++)
+   		for (size_t i = 0; i < table_table_row_.size(); i++)
         {
             table_table_row_[i]->xlsx_convert(Context);
         }
@@ -293,7 +293,7 @@ void table_rows_no_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_rows_and_groups::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
- 	for (int i = 0; i < content_.size(); i++)
+ 	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->xlsx_convert(Context);
     }
@@ -336,7 +336,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
  	if (conditional_formats_)
 		conditional_formats_->xlsx_convert(Context);
 
-	for (int i = 0 ; i < table_named_.size(); i++)
+	for (size_t i = 0 ; i < table_named_.size(); i++)
 	{
 		table_named_[i]->xlsx_convert(Context);
 	}
@@ -349,7 +349,7 @@ void table_columns::xlsx_convert(oox::xlsx_conversion_context & Context)
     if (table_table_columns_)
         table_table_columns_->xlsx_convert(Context);
 
-  	for (int i = 0; i < table_table_column_.size(); i++)
+  	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
         table_table_column_[i]->xlsx_convert(Context);
     }
@@ -374,7 +374,7 @@ void table_columns_and_groups::xlsx_convert(oox::xlsx_conversion_context & Conte
         table_columns_no_group_.xlsx_convert(Context);
     */
 
-  	for (int i = 0; i < content_.size(); i++)
+  	for (size_t i = 0; i < content_.size(); i++)
     {
 		office_element_ptr & elm = content_[i];
         elm->xlsx_convert(Context);
@@ -383,7 +383,7 @@ void table_columns_and_groups::xlsx_convert(oox::xlsx_conversion_context & Conte
 
 void table_table_header_columns::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-  	for (int i = 0; i < table_table_column_.size(); i++)
+  	for (size_t i = 0; i < table_table_column_.size(); i++)
     {
         table_table_column_[i]->xlsx_convert(Context);
     }    

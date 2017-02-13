@@ -126,7 +126,7 @@ namespace PPTX
 
 		void Controls::AddObjectsTo (const std::vector<SpTreeElem> *spTreeElements, NSShapeImageGen::CImageManager*	pImageManager) const
 		{
-			for (long i=0; i < arrControls.size(); ++i)
+			for (size_t i=0; i < arrControls.size(); ++i)
 			{
 				if (arrControls[i].spid.IsInit() == false) continue;
 

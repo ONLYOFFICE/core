@@ -134,7 +134,7 @@ namespace NSGuidesVML
         void ConvertHandles (std::vector<CHandle_>& arHnd)
         {
 
-            for (int nIndex=0; nIndex<arHnd.size(); nIndex++)
+            for (size_t nIndex=0; nIndex<arHnd.size(); nIndex++)
             {
                 CHandle_ oHandle;
                 //TODO переименовать названия формул и прокинуть текстовые атрибуты topleft, rightbottom в полях хендла
@@ -399,7 +399,7 @@ namespace NSGuidesVML
         void ConvertGuides ( std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<std::wstring, long> &mapGuides )
         {
             //стандартные формулы для пптх будем добавлять, если только они встретятся
-            for (int nIndex=32; nIndex < strGuides.size(); ++nIndex)
+            for (size_t nIndex=32; nIndex < strGuides.size(); ++nIndex)
             {
                 NSGuidesOOXML::CFormula pFormula = strGuides[nIndex];
 

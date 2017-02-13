@@ -2592,7 +2592,10 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
     else if ( "shpgrp" == sCommand )
 	{
 		RtfShapePtr oNewShape ( new RtfShape() );
-		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
+		
+		oNewShape->m_bIsGroup		= true;
+		oNewShape->m_nShapeType		= 1;
+		oNewShape->m_oCharProperty	= oReader.m_oState->m_oCharProp;
 		
 		RtfShapeGroupReader oShapeGroupReader( *oNewShape );
 		oAbstrReader.StartSubReader( oShapeGroupReader, oDocument, oReader );

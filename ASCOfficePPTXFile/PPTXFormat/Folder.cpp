@@ -63,7 +63,7 @@ namespace PPTX
         long files = CountFiles(path);
 		if(files == 0)
             return;
-        m_lPercent = floor(1000000. / files);
+        m_lPercent = (long)floor(1000000. / files);
 		FileContainer::read(rels, path, map, Event);
 
         long percent = Event->GetPercent();

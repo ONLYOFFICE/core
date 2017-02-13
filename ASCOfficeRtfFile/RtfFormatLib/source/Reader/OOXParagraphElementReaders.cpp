@@ -40,6 +40,20 @@
 
 bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle )
 {
+	if (m_drawingParagraph)
+	{
+		if (m_drawingParagraph->m_oParagraphProperty.IsInit())
+		{
+			OOXpPrReader opPrReader(m_drawingParagraph->m_oParagraphProperty.GetPointer());
+			
+			opPrReader.Parse( oParam, oOutputParagraph.m_oProperty, oConditionalTableStyle);
+		}
+		m_ooxElement = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(m_drawingParagraph);
+
+		bool res = Parse2(oParam, oOutputParagraph, oConditionalTableStyle, RtfStylePtr() );
+
+		return true;		
+	}	
 	if (m_ooxParagraph == NULL) return false;
 
 	//надо default стиль применять до OOXParagraphReader
@@ -91,7 +105,7 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 
 	m_ooxElement = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(m_ooxParagraph);
 
-	bool res = Parse2(oParam ,oOutputParagraph, oConditionalTableStyle, poExternalStyle );
+	bool res = Parse2(oParam, oOutputParagraph, oConditionalTableStyle, poExternalStyle );
 
 	return res;
 }
@@ -161,6 +175,13 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
                 }
 				
 				oSubParReader.Parse2( oParam, oOutputParagraph, oConditionalTableStyle, poStyle);
+			}break;
+			case OOX::et_a_r:
+			{
+				OOX::Drawing::CRun * pRun = dynamic_cast<OOX::Drawing::CRun*>(m_ooxElement->m_arrItems[i]);
+				
+				OOXRunReader oRunReader(pRun);				
+				oRunReader.Parse ( oParam, oOutputParagraph, poExternalStyle );
 			}break;
 			case OOX::et_w_r:
 			{
@@ -950,41 +971,68 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 }
 bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle )
 {
-	if (m_ooxRun == NULL) return false;
-
-	RtfCharProperty oNewProperty;
-	oNewProperty.SetDefaultOOX();
-	//применяем default
-	oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
+	if (m_ooxRun == NULL && m_drawingRun == NULL) return false;
 	
-	//применяем внешний стиль
-	//oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
-	oNewProperty.Merge( m_oCharProperty );
-
-	if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
+	if (m_drawingRun)
 	{
-		RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( poStyle );
-		oNewProperty.Merge( oCharStyle->m_oCharProp );
+		RtfCharProperty oNewProperty;
+		oNewProperty.SetDefaultOOX();
+		
+		if (m_drawingRun->m_oRunProperty.IsInit())
+		{
+			OOXrPrReader orPrReader(m_drawingRun->m_oRunProperty.GetPointer());
+			orPrReader.Parse( oParam, oNewProperty );
+		}
+
+		if (m_drawingRun->m_oText.IsInit())
+		{
+			std::wstring sValue = m_drawingRun->m_oText->m_sText;
+		
+			RtfCharPtr pNewChar ( new RtfChar() );
+			
+			pNewChar->m_oProperty = oNewProperty;
+			pNewChar->setText( sValue );
+			
+			oOutputParagraph.AddItem( pNewChar );		
+		}
 	}
-
-	if (m_ooxRun->m_oRunProperty)
+	else
 	{
-		OOXrPrReader orPrReader(m_ooxRun->m_oRunProperty);
-		orPrReader.Parse( oParam, oNewProperty );
-	}
+		RtfCharProperty oNewProperty;
+		oNewProperty.SetDefaultOOX();
+		//применяем default
+		oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
+		
+		//применяем внешний стиль
+		//oNewProperty.Merge( oOutputParagraph.m_oProperty.m_oCharProperty );
+		oNewProperty.Merge( m_oCharProperty );
 
-	for (size_t i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
-	{
-		Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
+		if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
+		{
+			RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( poStyle );
+			oNewProperty.Merge( oCharStyle->m_oCharProp );
+		}
+
+		if (m_ooxRun->m_oRunProperty)
+		{
+			OOXrPrReader orPrReader(m_ooxRun->m_oRunProperty);
+			orPrReader.Parse( oParam, oNewProperty );
+		}
+
+		for (size_t i =0 ; i < m_ooxRun->m_arrItems.size(); i++)
+		{
+			Parse(oParam, oOutputParagraph, poStyle, oNewProperty, m_ooxRun->m_arrItems[i]);
+		}
 	}
 	return true;
 }
 
 
-bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle )
+bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle )
 {
-	if (m_ooxParaProps == NULL) return false;
+	if (m_drawingParaProps) return ParseDrawing( oParam, oOutputProperty);
 
+	if (m_ooxParaProps == NULL) return false;
 	//применяем внешний стиль 
 	if( NULL != oParam.poTableStyle )
 	{
@@ -1326,8 +1374,10 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 	}
 	return true;
 }
-bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProperty)
+bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProperty)
 {
+	if (m_drawingRunProps) ParseDrawing( oParam, oOutputProperty );
+
 	if (m_ooxRunProps == NULL) return false;
 
 	//сначала применяем стили
@@ -1580,6 +1630,209 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 	return true;
 }
+bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty)
+{
+	if (m_drawingParaProps == NULL) return false;
+
+	if (m_drawingParaProps->m_oLvl.IsInit())
+		oOutputProperty.m_nOutlinelevel = m_drawingParaProps->m_oLvl->GetValue();
+
+	if( m_drawingParaProps->m_oAlgn.IsInit())
+	{
+		switch(m_drawingParaProps->m_oAlgn->GetValue())
+		{
+		case SimpleTypes::jcBoth            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qj;break;
+		case SimpleTypes::jcCenter          : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qc;break;
+		case SimpleTypes::jcDistribute      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qd;break;
+		case SimpleTypes::jcEnd             : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
+		case SimpleTypes::jcHighKashida     : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk20;break;
+		case SimpleTypes::jcLowKashida      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk0; break;
+		case SimpleTypes::jcMediumKashida   : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk10; break;
+		case SimpleTypes::jcNumTab          : break;
+		case SimpleTypes::jcStart           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
+		case SimpleTypes::jcThaiDistribute  : break;
+		case SimpleTypes::jcLeft            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
+		case SimpleTypes::jcRight           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
+        default: break;
+        }
+	}
+
+	//if( m_drawingParaProps->m_oInd.IsInit() )
+	//{
+	//	int nFirstLine = PROP_DEF;
+
+	//	if (m_drawingParaProps->m_oInd->m_oHanging.IsInit())
+	//		nFirstLine = m_drawingParaProps->m_oInd->m_oHanging->ToTwips();
+	//	if( PROP_DEF != nFirstLine )
+	//		oOutputProperty.m_nIndFirstLine = -nFirstLine;
+
+	//	if (m_drawingParaProps->m_oInd->m_oFirstLine.IsInit())
+	//		oOutputProperty.m_nIndFirstLine = m_drawingParaProps->m_oInd->m_oFirstLine->ToTwips();
+
+	//	if (m_drawingParaProps->m_oInd->m_oStart.IsInit())
+	//		oOutputProperty.m_nIndStart = m_drawingParaProps->m_oInd->m_oStart->ToTwips();
+
+	//	if (m_drawingParaProps->m_oInd->m_oEnd.IsInit())
+	//		oOutputProperty.m_nIndEnd = m_drawingParaProps->m_oInd->m_oEnd->ToTwips();
+	//}
+
+	if (	m_drawingParaProps->m_oBeforeSpacing.IsInit() 
+		&&	m_drawingParaProps->m_oBeforeSpacing->m_oLineSpacingPoints.IsInit() 
+		&&	m_drawingParaProps->m_oBeforeSpacing->m_oLineSpacingPoints->m_oVal.IsInit())
+			oOutputProperty.m_nSpaceBefore = m_drawingParaProps->m_oBeforeSpacing->m_oLineSpacingPoints->m_oVal->GetValue();
+	
+	if (	m_drawingParaProps->m_oAfterSpacing.IsInit() 
+		&&	m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints.IsInit()
+		&&	m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints->m_oVal.IsInit())
+			oOutputProperty.m_nSpaceAfter = m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints->m_oVal->GetValue();
+	//
+	//if (m_drawingParaProps->m_oSpacing->m_oBeforeAutospacing.IsInit())
+	//	oOutputProperty.m_nSpaceBeforeAuto = m_drawingParaProps->m_oSpacing->m_oBeforeAutospacing->ToBool();
+	//if (m_drawingParaProps->m_oSpacing->m_oAfterAutospacing.IsInit())
+	//	oOutputProperty.m_nSpaceAfterAuto = m_drawingParaProps->m_oSpacing->m_oAfterAutospacing->ToBool();
+	//if (m_drawingParaProps->m_oSpacing->m_oBeforeLines.IsInit())
+	//	oOutputProperty.m_nSpaceBeforeLine = m_drawingParaProps->m_oSpacing->m_oBeforeLines->GetValue();
+	//if (m_drawingParaProps->m_oSpacing->m_oAfterLines.IsInit())
+	//	oOutputProperty.m_nSpaceAfterLine = m_drawingParaProps->m_oSpacing->m_oAfterLines->GetValue();
+	
+	//if( m_drawingParaProps->m_oLineSpacing.IsInit())
+	//{
+	//	if ( m_drawingParaProps->m_oSpacing->m_oLineRule.IsInit())
+	//	{
+	//		if (m_drawingParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleExact)
+	//		{
+	//			oOutputProperty.m_nSpaceBetween		= - m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();//twips ??? todooo
+	//			oOutputProperty.m_nSpaceMultiLine	= 0;
+	//		}
+	//		else if (m_drawingParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleAtLeast)
+	//		{
+	//			oOutputProperty.m_nSpaceBetween		= m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();
+	//			oOutputProperty.m_nSpaceMultiLine	= 0;
+	//		}
+	//		else //auto
+	//		{
+	//			oOutputProperty.m_nSpaceBetween		= m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();
+	//			oOutputProperty.m_nSpaceMultiLine	= 1;
+	//		}
+	//	}
+	//}
+
+	if (m_drawingParaProps->m_oRtl.IsInit())
+		oOutputProperty.m_bRtl = m_drawingParaProps->m_oRtl->ToBool() ? 1 : 0;
+
+	if( m_drawingParaProps->m_oDefRunProperty.IsInit() )
+	{
+		OOXrPrReader orPrReader(m_drawingParaProps->m_oDefRunProperty.GetPointer());
+		orPrReader.Parse( oParam, oOutputProperty.m_oCharProperty );
+	}
+
+	return true;
+}
+bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutputProperty)
+{
+	if (m_drawingRunProps == NULL) return false;
+
+
+	if (m_drawingRunProps->m_oBold.IsInit())
+		oOutputProperty.m_bBold = m_drawingRunProps->m_oBold->ToBool() ? 1 : 0;
+
+	//if (m_drawingRunProps->m_oCaps.IsInit())
+	//	oOutputProperty.m_bCaps = m_drawingRunProps->m_oCaps->ToBool() ? 1 : 0;
+
+	if( m_drawingRunProps->m_oSz.IsInit())
+		oOutputProperty.m_nFontSize = m_drawingRunProps->m_oSz->GetValue() / 50;
+
+	if (m_drawingRunProps->m_oItalic.IsInit())
+		oOutputProperty.m_bItalic = m_drawingRunProps->m_oItalic->ToBool() ? 1 : 0;
+
+	if( m_drawingRunProps->m_oLatinFont.IsInit() && m_drawingRunProps->m_oLatinFont->m_oTypeFace.IsInit())
+	{
+		std::wstring font = m_drawingRunProps->m_oLatinFont->m_oTypeFace->GetValue();
+	}
+	//if (m_drawingRunProps->m_oComplexFont.IsInit() && m_drawingRunProps->m_oComplexFont->m_oTypeFace.IsInit())
+	//	oOutputProperty.m_nComplexScript = m_drawingRunProps->m_oCs->m_oVal.ToBool() ? 1 : 0;;
+
+	if (m_drawingRunProps->m_oOutline.IsInit())
+	{
+		//oOutputProperty.m_bOutline = m_drawingRunProps->m_oOutline->ToBool() ? 1 : 0;
+	}
+
+	//if (m_drawingRunProps->m_oSmallCaps.IsInit())
+	//	oOutputProperty.m_bScaps = m_drawingRunProps->m_oSmallCaps->m_oVal.ToBool() ? 1 : 0;
+
+	//if (m_drawingRunProps->m_oShadow.IsInit())
+	//	oOutputProperty.m_bShadow = m_drawingRunProps->m_oShadow->m_oVal.ToBool() ? 1 : 0;
+
+	//if (m_drawingRunProps->m_oStrike.IsInit())
+	//	oOutputProperty.m_bStrike = m_drawingRunProps->m_oStrike->m_oVal.ToBool() ? 1 : 0;
+
+	//if (m_drawingRunProps->m_oDStrike.IsInit())
+	//	oOutputProperty.m_nStriked = m_drawingRunProps->m_oDStrike->m_oVal.ToBool() ? 1 : 0;
+	
+	//if( m_drawingRunProps->m_oVertAlign.IsInit() && m_drawingRunProps->m_oVertAlign->m_oVal.IsInit())
+	//{
+	//	switch(m_drawingRunProps->m_oVertAlign->m_oVal->GetValue())
+	//	{
+	//	case SimpleTypes::verticalalignrunBaseline    : break;
+	//	case SimpleTypes::verticalalignrunSubscript   : oOutputProperty.m_bSub = 1;		break;
+	//	case SimpleTypes::verticalalignrunSuperscript : oOutputProperty.m_bSuper = 1;	break;
+ //       default: break;
+ //       }
+	//}
+	//if( m_drawingRunProps->m_oHighlight.IsInit() && m_drawingRunProps->m_oHighlight->m_oVal.IsInit() )
+	//{
+	//	//switch(m_drawingRunProps->m_oHighlight->m_oVal->GetValue())
+	//	//{//незачем
+	//	//}
+	//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
+	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_G(),
+	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_B()));
+	//}
+	if( m_drawingRunProps->m_oSolidFill.IsInit() )
+	{
+		//m_drawingRunProps->m_oSolidFill
+		//OOXColorReader oColorReader;
+		//RtfColor oColor;
+		//if( true == oColorReader.Parse( oParam, m_drawingRunProps->m_oColor.get2(), oColor ) )
+		//{
+		//	oOutputProperty.m_nForeColor = oParam.oRtf->m_oColorTable.AddItem( oColor );
+		//}
+	}
+	if( m_drawingRunProps->m_oUnderline.IsInit())
+	{
+		switch(m_drawingRunProps->m_oUnderline->GetValue())
+		{
+		case SimpleTypes::underlineDash            : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Dashed;				break;
+		case SimpleTypes::underlineDashDotDotHeavy : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick_dash_dot_dotted;break;
+		case SimpleTypes::underlineDashDotHeavy    : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick_dash_dotted;	break;
+		case SimpleTypes::underlineDashedHeavy     : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick_dashed;			break;
+		case SimpleTypes::underlineDashLong        : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Long_dashe;			break;
+		case SimpleTypes::underlineDashLongHeavy   : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick_long_dashed;	break;
+		case SimpleTypes::underlineDotDash         : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Dash_dotted;			break;
+		case SimpleTypes::underlineDotDotDash      : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Dash_dot_dotted;		break;
+		case SimpleTypes::underlineDotted          : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Dotted;				break;
+		case SimpleTypes::underlineDottedHeavy     : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick_dotted;			break;
+		case SimpleTypes::underlineDouble          : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Double;				break;
+		case SimpleTypes::underlineNone            : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_none;					break;
+		case SimpleTypes::underlineSingle          : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Single;				break;
+		case SimpleTypes::underlineThick           : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Thick;				break;
+		case SimpleTypes::underlineWave            : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Wave;					break;
+		case SimpleTypes::underlineWavyDouble      : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Double_wave;			break;
+		case SimpleTypes::underlineWavyHeavy       : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Heavy_wave;			break;
+		case SimpleTypes::underlineWords           : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Word;					break;
+        default: break;
+        }
+
+		//if ((m_drawingRunProps->m_oU->m_oColor.IsInit()) && (m_drawingRunProps->m_oU->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
+		//{
+		//	RtfColor oColor(m_drawingRunProps->m_oU->m_oColor->Get_R(), m_drawingRunProps->m_oU->m_oColor->Get_G(), m_drawingRunProps->m_oU->m_oColor->Get_B());	
+		//	oOutputProperty.m_nUnderlineColor =  oParam.oRtf->m_oColorTable.AddItem( oColor );
+		//}//todooo theme color, tint, shadow
+	}
+
+	return true;
+}
+
 bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty)
 {
 	if (m_ooxFramePr == NULL) return false;

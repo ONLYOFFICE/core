@@ -995,7 +995,7 @@ namespace OOX{
 		}
 		CT_extLst::~CT_extLst()
 		{
-            for(int i = 0, length = m_ext.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ext.size(); ++i)
 				delete m_ext[i];
             m_ext.clear();
 		}
@@ -1018,7 +1018,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_ext.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ext.size(); ++i)
 			{
 				CT_Extension* pElem = m_ext[i];
 				if(NULL != pElem)
@@ -2385,7 +2385,7 @@ namespace OOX{
 		{
 			if(NULL != m_legendPos)
 				delete m_legendPos;
-            for(int i = 0, length = m_legendEntry.size(); i < length; ++i)
+            for(size_t i = 0; i < m_legendEntry.size(); ++i)
 				delete m_legendEntry[i];
             m_legendEntry.clear();
 			if(NULL != m_layout)
@@ -2463,7 +2463,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:legendPos");
                 m_legendPos->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_legendEntry.size(); i < length; ++i)
+            for(size_t i = 0; i < m_legendEntry.size(); ++i)
 			{
 				CT_LegendEntry* pElem = m_legendEntry[i];
 				if(NULL != pElem)
@@ -3781,7 +3781,7 @@ namespace OOX{
 		{
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 				delete m_pt[i];
             m_pt.clear();
 			if(NULL != m_extLst)
@@ -3823,7 +3823,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 			{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -5687,15 +5687,15 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_invertIfNegative)
 				delete m_invertIfNegative;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 				delete m_trendline[i];
             m_trendline.clear();
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 				delete m_errBars[i];
             m_errBars.clear();
 			if(NULL != m_xVal)
@@ -5832,7 +5832,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:invertIfNegative");
                 m_invertIfNegative->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size();++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -5846,7 +5846,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -5855,7 +5855,7 @@ namespace OOX{
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -6431,13 +6431,13 @@ namespace OOX{
 		}
 		CT_DLbls::~CT_DLbls()
 		{
-            for(int i = 0, length = m_dLbl.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dLbl.size(); ++i)
 				delete m_dLbl[i];
             m_dLbl.clear();
-            for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+            for(size_t i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
 				toDelete(*m_ItemsElementName0[i], m_Items[i]);
             m_Items.clear();
-            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ItemsElementName0.size(); ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
 			if(NULL != m_extLst)
@@ -6597,7 +6597,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_dLbl.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dLbl.size(); ++i)
 			{
 				CT_DLbl* pElem = m_dLbl[i];
 				if(NULL != pElem)
@@ -6606,7 +6606,7 @@ namespace OOX{
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Items.size(); ++i)
 			{
 				ItemsChoiceType3 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
@@ -6906,10 +6906,10 @@ namespace OOX{
 		{
 			if(NULL != m_idx)
 				delete m_idx;
-			for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+			for(size_t i = 0; i < m_Items.size(), i < m_ItemsElementName0.size(); ++i)
 				toDelete(*m_ItemsElementName0[i], m_Items[i]);
             m_Items.clear();
-            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ItemsElementName0.size(); ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
 			if(NULL != m_extLst)
@@ -7074,7 +7074,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Items.size(); ++i)
 			{
 				ItemsChoiceType4 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
@@ -8187,7 +8187,7 @@ namespace OOX{
 				delete m_formatCode;
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 				delete m_pt[i];
             m_pt.clear();
 			if(NULL != m_extLst)
@@ -8245,7 +8245,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 			{
 				CT_NumVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -8582,7 +8582,7 @@ namespace OOX{
 		}
 		CT_lvl::~CT_lvl()
 		{
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 				delete m_pt[i];
             m_pt.clear();
 		}
@@ -8605,7 +8605,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_pt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pt.size(); ++i)
 			{
 				CT_StrVal* pElem = m_pt[i];
 				if(NULL != pElem)
@@ -8628,7 +8628,7 @@ namespace OOX{
 		{
 			if(NULL != m_ptCount)
 				delete m_ptCount;
-            for(int i = 0, length = m_lvl.size(); i < length; ++i)
+            for(size_t i = 0; i < m_lvl.size(); ++i)
 				delete m_lvl[i];
             m_lvl.clear();
 			if(NULL != m_extLst)
@@ -8670,7 +8670,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:ptCount");
                 m_ptCount->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_lvl.size(); i < length; ++i)
+            for(size_t i = 0; i < m_lvl.size(); ++i)
 			{
 				CT_lvl* pElem = m_lvl[i];
 				if(NULL != pElem)
@@ -8703,7 +8703,7 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -8716,7 +8716,7 @@ namespace OOX{
 				delete m_showNegBubbles;
 			if(NULL != m_sizeRepresents)
 				delete m_sizeRepresents;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -8794,7 +8794,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_BubbleSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -8828,7 +8828,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:sizeRepresents");
                 m_sizeRepresents->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -8852,7 +8852,7 @@ namespace OOX{
 		}
 		CT_bandFmts::~CT_bandFmts()
 		{
-            for(int i = 0, length = m_bandFmt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_bandFmt.size(); ++i)
 				delete m_bandFmt[i];
             m_bandFmt.clear();
 		}
@@ -8875,7 +8875,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_bandFmt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_bandFmt.size(); ++i)
 			{
 				CT_BandFmt* pElem = m_bandFmt[i];
 				if(NULL != pElem)
@@ -8899,12 +8899,12 @@ namespace OOX{
 		{
 			if(NULL != m_wireframe)
 				delete m_wireframe;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_bandFmts)
 				delete m_bandFmts;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -8958,7 +8958,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:wireframe");
                 m_wireframe->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -8972,7 +8972,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:bandFmts");
                 m_bandFmts->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -9177,12 +9177,12 @@ namespace OOX{
 		{
 			if(NULL != m_wireframe)
 				delete m_wireframe;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_bandFmts)
 				delete m_bandFmts;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -9236,7 +9236,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:wireframe");
                 m_wireframe->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_SurfaceSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -9250,7 +9250,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:bandFmts");
                 m_bandFmts->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -9403,7 +9403,7 @@ namespace OOX{
 		}
 		CT_custSplit::~CT_custSplit()
 		{
-            for(int i = 0, length = m_secondPiePt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_secondPiePt.size(); ++i)
 				delete m_secondPiePt[i];
             m_secondPiePt.clear();
 		}
@@ -9426,7 +9426,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_secondPiePt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_secondPiePt.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_secondPiePt[i];
 				if(NULL != pElem)
@@ -9458,7 +9458,7 @@ namespace OOX{
 				delete m_ofPieType;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -9473,7 +9473,7 @@ namespace OOX{
 				delete m_custSplit;
 			if(NULL != m_secondPieSize)
 				delete m_secondPieSize;
-            for(int i = 0, length = m_serLines.size(); i < length; ++i)
+            for(size_t i = 0; i < m_serLines.size(); ++i)
 				delete m_serLines[i];
             m_serLines.clear();
 			if(NULL != m_extLst)
@@ -9568,7 +9568,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -9607,7 +9607,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:secondPieSize");
                 m_secondPieSize->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_serLines.size(); i < length; ++i)
+            for(size_t i = 0; i < m_serLines.size(); ++i)
 			{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
@@ -9650,7 +9650,7 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_explosion)
 				delete m_explosion;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
@@ -9761,7 +9761,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:explosion");
                 m_explosion->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -9855,7 +9855,7 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -9866,7 +9866,7 @@ namespace OOX{
 				delete m_gapDepth;
 			if(NULL != m_shape)
 				delete m_shape;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -9960,7 +9960,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -9989,7 +9989,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:shape");
                 m_shape->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -10125,12 +10125,12 @@ namespace OOX{
 				delete m_invertIfNegative;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 				delete m_trendline[i];
             m_trendline.clear();
 			if(NULL != m_errBars)
@@ -10272,7 +10272,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -10286,7 +10286,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -10428,7 +10428,7 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -10437,10 +10437,10 @@ namespace OOX{
 				delete m_gapWidth;
 			if(NULL != m_overlap)
 				delete m_overlap;
-            for(int i = 0, length = m_serLines.size(); i < length; ++i)
+            for(size_t i = 0; i < m_serLines.size(); ++i)
 				delete m_serLines[i];
             m_serLines.clear();
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -10534,7 +10534,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_BarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10558,7 +10558,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:overlap");
                 m_overlap->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_serLines.size(); i < length; ++i)
+            for(size_t i = 0; i < m_serLines.size(); ++i)
 			{
 				CT_ChartLines* pElem = m_serLines[i];
 				if(NULL != pElem)
@@ -10567,7 +10567,7 @@ namespace OOX{
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -10639,7 +10639,7 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -10705,7 +10705,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10790,7 +10790,7 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -10840,7 +10840,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10875,7 +10875,7 @@ namespace OOX{
 		{
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -10933,7 +10933,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_PieSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -10987,15 +10987,15 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 				delete m_trendline[i];
             m_trendline.clear();
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 				delete m_errBars[i];
             m_errBars.clear();
 			if(NULL != m_xVal)
@@ -11124,7 +11124,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -11138,7 +11138,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -11147,7 +11147,7 @@ namespace OOX{
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -11238,12 +11238,12 @@ namespace OOX{
 				delete m_scatterStyle;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -11308,7 +11308,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_ScatterSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11322,7 +11322,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11365,7 +11365,7 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
@@ -11476,7 +11476,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -11567,12 +11567,12 @@ namespace OOX{
 				delete m_radarStyle;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -11637,7 +11637,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_RadarSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11651,7 +11651,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11680,7 +11680,7 @@ namespace OOX{
 		}
 		CT_StockChart::~CT_StockChart()
 		{
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -11691,7 +11691,7 @@ namespace OOX{
 				delete m_hiLowLines;
 			if(NULL != m_upDownBars)
 				delete m_upDownBars;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -11752,7 +11752,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -11781,7 +11781,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:upDownBars");
                 m_upDownBars->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -11826,12 +11826,12 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 				delete m_trendline[i];
             m_trendline.clear();
 			if(NULL != m_errBars)
@@ -11962,7 +11962,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:marker");
                 m_marker->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -11976,7 +11976,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -12149,7 +12149,7 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -12158,7 +12158,7 @@ namespace OOX{
 				delete m_dropLines;
 			if(NULL != m_gapDepth)
 				delete m_gapDepth;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -12235,7 +12235,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12259,7 +12259,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:gapDepth");
                 m_gapDepth->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12341,7 +12341,7 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -12356,7 +12356,7 @@ namespace OOX{
 				delete m_marker;
 			if(NULL != m_smooth)
 				delete m_smooth;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -12451,7 +12451,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_LineSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12490,7 +12490,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:smooth");
                 m_smooth->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12524,7 +12524,7 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
@@ -12533,7 +12533,7 @@ namespace OOX{
 				delete m_dropLines;
 			if(NULL != m_gapDepth)
 				delete m_gapDepth;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -12610,7 +12610,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12634,7 +12634,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:gapDepth");
                 m_gapDepth->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12677,15 +12677,15 @@ namespace OOX{
 				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
             m_dPt.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 				delete m_trendline[i];
             m_trendline.clear();
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 				delete m_errBars[i];
             m_errBars.clear();
 			if(NULL != m_cat)
@@ -12806,7 +12806,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:pictureOptions");
                 m_pictureOptions->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_dPt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_dPt.size(); ++i)
 			{
 				CT_DPt* pElem = m_dPt[i];
 				if(NULL != pElem)
@@ -12820,7 +12820,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dLbls");
                 m_dLbls->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_trendline.size(); i < length; ++i)
+            for(size_t i = 0; i < m_trendline.size(); ++i)
 			{
 				CT_Trendline* pElem = m_trendline[i];
 				if(NULL != pElem)
@@ -12829,7 +12829,7 @@ namespace OOX{
                     pElem->toXML(sNodeName, writer);
 				}
 			}
-            for(int i = 0, length = m_errBars.size(); i < length; ++i)
+            for(size_t i = 0; i < m_errBars.size(); ++i)
 			{
 				CT_ErrBars* pElem = m_errBars[i];
 				if(NULL != pElem)
@@ -12872,14 +12872,14 @@ namespace OOX{
 				delete m_grouping;
 			if(NULL != m_varyColors)
 				delete m_varyColors;
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 				delete m_ser[i];
             m_ser.clear();
 			if(NULL != m_dLbls)
 				delete m_dLbls;
 			if(NULL != m_dropLines)
 				delete m_dropLines;
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 				delete m_axId[i];
             m_axId.clear();
 			if(NULL != m_extLst)
@@ -12950,7 +12950,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:varyColors");
                 m_varyColors->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_ser.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ser.size(); ++i)
 			{
 				CT_AreaSer* pElem = m_ser[i];
 				if(NULL != pElem)
@@ -12969,7 +12969,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dropLines");
                 m_dropLines->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_axId.size(); i < length; ++i)
+            for(size_t i = 0; i < m_axId.size(); ++i)
 			{
 				CT_UnsignedInt* pElem = m_axId[i];
 				if(NULL != pElem)
@@ -12999,16 +12999,16 @@ namespace OOX{
 		{
 			if(NULL != m_layout)
 				delete m_layout;
-			for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+			for(size_t i = 0; i < m_Items.size() && i < m_ItemsElementName0.size(); ++i)
 				toDelete(*m_ItemsElementName0[i], m_Items[i]);
             m_Items.clear();
-            for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ItemsElementName0.size(); ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
-			for(int i = 0, length = m_Items1.size(), length2 = m_ItemsElementName1.size(); i < length && i < length2; ++i)
+			for(size_t i = 0; i < m_Items1.size() && i < m_ItemsElementName1.size(); ++i)
 				toDelete(*m_ItemsElementName1[i], m_Items1[i]);
             m_Items1.clear();
-            for(int i = 0, length = m_ItemsElementName1.size(); i < length; ++i)
+            for(size_t i = 0; i < m_ItemsElementName1.size(); ++i)
 				delete m_ItemsElementName1[i];
             m_ItemsElementName1.clear();
 			if(NULL != m_dTable)
@@ -13242,12 +13242,12 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:layout");
                 m_layout->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Items.size(); ++i)
 			{
 				ItemsChoiceType5 eType = *m_ItemsElementName0[i];
 				toXML(writer, false, eType, m_Items[i]);
 			}
-            for(int i = 0, length = m_Items1.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Items1.size(); ++i)
 			{
 				ItemsChoiceType6 eType = *m_ItemsElementName1[i];
 				toXML(writer, false, eType, m_Items1[i]);
@@ -14230,7 +14230,7 @@ namespace OOX{
 		}
 		CT_pivotFmts::~CT_pivotFmts()
 		{
-            for(int i = 0, length = m_pivotFmt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pivotFmt.size(); ++i)
 				delete m_pivotFmt[i];
             m_pivotFmt.clear();
 		}
@@ -14253,7 +14253,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_pivotFmt.size(); i < length; ++i)
+            for(size_t i = 0; i < m_pivotFmt.size(); ++i)
 			{
 				CT_PivotFmt* pElem = m_pivotFmt[i];
 				if(NULL != pElem)
@@ -14578,7 +14578,7 @@ namespace OOX{
 				delete m_name;
 			if(NULL != m_fmtId)
 				delete m_fmtId;
-            for(int i = 0, length = m_extLst.size(); i < length; ++i)
+            for(size_t i = 0; i < m_extLst.size(); ++i)
 				delete m_extLst[i];
             m_extLst.clear();
 		}
@@ -14628,7 +14628,7 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:fmtId");
                 m_fmtId->toXML(sNodeName, writer);
 			}
-            for(int i = 0, length = m_extLst.size(); i < length; ++i)
+            for(size_t i = 0; i < m_extLst.size(); ++i)
 			{
 				CT_extLst* pElem = m_extLst[i];
 				if(NULL != pElem)
@@ -14756,7 +14756,7 @@ namespace OOX{
 		}
 		AlternateContent::~AlternateContent()
 		{
-            for(int i = 0, length = m_Choice.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Choice.size(); ++i)
 				delete m_Choice[i];
             m_Choice.clear();
 			if(NULL != m_Fallback)
@@ -14787,7 +14787,7 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-            for(int i = 0, length = m_Choice.size(); i < length; ++i)
+            for(size_t i = 0; i < m_Choice.size(); ++i)
 			{
 				AlternateContentChoice* pElem = m_Choice[i];
 				if(NULL != pElem)

@@ -40,6 +40,7 @@
 class OOXParagraphReader
 {
 private:
+	OOX::Drawing::CParagraph							*m_drawingParagraph;
 	OOX::Logic::CParagraph								*m_ooxParagraph;
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElement;
 public: 
@@ -47,15 +48,25 @@ public:
 
 	OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph)
 	{
-		m_ooxElement	= NULL; 
-		m_ooxParagraph	= ooxParagraph;
+		m_ooxElement		= NULL; 
+		m_ooxParagraph		= ooxParagraph;
+		m_drawingParagraph	= NULL;
+		
+		m_oCharProperty.SetDefault();
+	}
+	OOXParagraphReader (OOX::Drawing::CParagraph *ooxParagraph)
+	{
+		m_ooxElement		= NULL; 
+		m_ooxParagraph		= NULL;
+		m_drawingParagraph	= ooxParagraph;
 		
 		m_oCharProperty.SetDefault();
 	}
 	OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement)
 	{
-		m_ooxParagraph	= NULL;
-		m_ooxElement	= ooxElement;
+		m_drawingParagraph	= NULL;
+		m_ooxParagraph		= NULL;
+		m_ooxElement		= ooxElement;
 	}
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle);
 	bool Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle);

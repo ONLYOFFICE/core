@@ -43,15 +43,24 @@
 class OOXrPrReader
 {
 private:
-	OOX::Logic::CRunProperty *m_ooxRunProps;
+	bool ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutputProperty);
+
+	OOX::Drawing::CRunProperty *	m_drawingRunProps;
+	OOX::Logic::CRunProperty *		m_ooxRunProps;
 public: 
 	bool m_bDefStyle;
 	
 	OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps)
 	{
-		m_bDefStyle = true;
-		m_ooxRunProps = ooxRunProps;
+		m_bDefStyle			= true;
+		m_ooxRunProps		= ooxRunProps;
+		m_drawingRunProps	= NULL;
 	}
-	
+	OOXrPrReader(OOX::Drawing::CRunProperty *ooxRunProps)
+	{
+		m_bDefStyle			= true;
+		m_ooxRunProps		= NULL;
+		m_drawingRunProps	= ooxRunProps;
+	}	
 	bool Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProperty);
 };

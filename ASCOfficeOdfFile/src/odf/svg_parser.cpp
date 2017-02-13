@@ -832,22 +832,10 @@ namespace svg_path
 
             switch(aCurrChar)
             {
-                case 'z' :
+                case 'x' :
                 {
                     nPos++;
-                    skipSpaces(nPos, rSvgDStatement, nLen);
-
                     bIsClosed = true;
-
-                    if( aCurrPoly.points.size() > 0)
-                    {
-                        const _point aFirst( aCurrPoly.points[0]);
-						nLastX = aFirst.x.get();
-						nLastY = aFirst.y.get();
-                    }
- 					
-					aCurrPoly.command=L"z";   
-					Polyline.push_back(aCurrPoly);
 
                 } break;
                 case 'm' :
@@ -906,7 +894,9 @@ namespace svg_path
 					}    
                 }break;
 
-                case 'c' :
+				case 'v' :
+					bRelative = true;
+				case 'c' :
                 {
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
@@ -924,7 +914,16 @@ namespace svg_path
                         if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
                         if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
 
- 						aCurrPoly.command = L"c";
+                        if(bRelative)
+                        {
+                            nX1 += nLastX;
+                            nY1 += nLastY;
+                            nX2 += nLastX;
+                            nY2 += nLastY;
+                            nX += nLastX;
+                            nY += nLastY;
+                        }
+						aCurrPoly.command = L"c";
 
 						aCurrPoly.points.push_back(_point(nX1, nY1));
 						aCurrPoly.points.push_back(_point(nX2, nY2));

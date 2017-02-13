@@ -5182,7 +5182,7 @@ namespace BinDocxRW
 								m_eFldState = SimpleTypes::fldchartypeEnd;
 								if(m_aFldChars.size() > 0)
 								{
-									int nIndex = m_aFldChars.size() - 1;
+									int nIndex = (int)m_aFldChars.size() - 1;
 									FldStruct* pFldStruct = m_aFldChars[nIndex];
 									RELEASEOBJECT(pFldStruct);
 									m_aFldChars.erase(m_aFldChars.begin() + nIndex);

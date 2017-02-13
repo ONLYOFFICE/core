@@ -1049,7 +1049,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 	std::wstring strXml;
 	if (m_ooxShape->m_oSpPr->m_oCustGeom.IsInit())
 	{
-		pOutput->m_nShapeType == SimpleTypes::Vml::sptNotPrimitive;
+		pOutput->m_nShapeType = SimpleTypes::Vml::sptNotPrimitive;
 		strXml = m_ooxShape->m_oSpPr->m_oCustGeom->toXML();
 	}
 	if (m_ooxShape->m_oSpPr->m_oPrstGeom.IsInit())
@@ -1160,15 +1160,29 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		//OoxConverter::Parse(m_ooxShape->m_oCNvConnSpPr.GetPointer());		
 		pOutput->m_bFilled = false;	//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
 	}
+	OOX::Drawing::CTextBodyProperties * text_properties = NULL;
+	OOXTextItemReader oTextItemReader;
+	
 	if (m_ooxShape->m_oTxBody.IsInit() && m_ooxShape->m_oTxBody->m_oTxtbxContent.IsInit())
 	{
-		OOXTextItemReader oTextItemReader;
-		
 		for (size_t i=0; i < m_ooxShape->m_oTxBody->m_oTxtbxContent->m_arrItems.size(); i++)
 		{
 			oTextItemReader.Parse( m_ooxShape->m_oTxBody->m_oTxtbxContent->m_arrItems[i], oParam );
 		}	
-		
+
+		text_properties = m_ooxShape->m_oTxBodyProperties.GetPointer();
+	}
+	else if (m_ooxShape->m_oTxBodyAlt.IsInit())
+	{
+		for (size_t i=0; i < m_ooxShape->m_oTxBodyAlt->m_arrItems.size(); i++)
+		{
+			oTextItemReader.Parse( m_ooxShape->m_oTxBodyAlt->m_arrItems[i], oParam );
+		}	
+		text_properties = m_ooxShape->m_oTxBodyAlt->m_oBodyPr.GetPointer();
+	}
+
+	if (oTextItemReader.m_oTextItems)
+	{
 		if (pOutput->m_bGtext == 1)
 		{
 			RenderParameter oRenderParameter;
@@ -1180,21 +1194,11 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			pOutput->m_aTextItems = oTextItemReader.m_oTextItems;
 		}
-		//for (size_t i=0 ; i < m_ooxShape->m_oTxBody->m_oTxtbxContent->m_arrItems.size();i++)
-		//{
-		//	Parse(m_ooxShape->m_oTxBody->m_oTxtbxContent->m_arrItems[i]);
-		//}
-		//odt_context->drawing_context()->set_text( odt_context->text_context());
-		//
-		////наложим внешние настройки для текста
-		//OoxConverter::Parse(m_ooxShape->m_oTxBodyProperties.GetPointer());
-		//	
-		//if (m_ooxShape->m_oShapeStyle.IsInit() && m_ooxShape->m_oShapeStyle->m_oFontRef.getType() == OOX::et_a_fontRef)
-		//{
-		//	OoxConverter::Parse(&m_ooxShape->m_oShapeStyle->m_oFontRef);
-		//}
-	}
 
+		if (text_properties)
+		{
+		}
+	}
 
 	return true;			
 }

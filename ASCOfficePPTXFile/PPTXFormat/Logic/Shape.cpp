@@ -127,6 +127,198 @@ namespace PPTX
 			return XmlUtils::CreateNode(_T("p:sp"), oAttr, oValue);
 		}		
 
+		void Shape::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->StartNode(_T("wps:wsp"));
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+				pWriter->StartNode(_T("xdr:sp"));
+			else
+				pWriter->StartNode(_T("p:sp"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("useBgFill"), attrUseBgFill);
+			pWriter->EndAttributes();
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			{
+				//nvSpPr.cNvPr.toXmlWriter2(_T("wps"), pWriter);
+				nvSpPr.cNvSpPr.toXmlWriter2(_T("wps"), pWriter);
+			}
+			else
+				nvSpPr.toXmlWriter(pWriter);
+			
+			bool bIsPresentStyle = false;
+			if (style.is_init() && (style->fillRef.idx.is_init() || style->fillRef.Color.Color.is_init()))
+			{
+				bIsPresentStyle = true;
+			}
+			if (pWriter->m_lGroupIndex > 1 && !bIsPresentStyle)
+			{
+				pWriter->m_lFlag += 0x02;
+			}
+			spPr.toXmlWriter(pWriter);
+			if (pWriter->m_lGroupIndex > 1 && !bIsPresentStyle)
+			{
+				pWriter->m_lFlag -= 0x02;
+			}
+
+			if (style.is_init())
+			{
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+					style->m_ns = _T("wps");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+					style->m_ns = _T("xdr");
+
+                pWriter->Write(style);
+            }
+
+			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+			{
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && txBody.is_init())
+					txBody->m_ns = _T("xdr");
+				pWriter->Write(txBody);
+			}
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+			{	
+				bool bIsWritedBodyPr = false;
+				if (TextBoxShape.is_init())
+				{
+					pWriter->WriteString(_T("<wps:txbx>"));
+					pWriter->WriteString(*TextBoxShape);
+					pWriter->WriteString(_T("</wps:txbx>"));
+
+					if (TextBoxBodyPr.is_init())
+					{
+						TextBoxBodyPr->m_namespace = _T("wps");
+						TextBoxBodyPr->toXmlWriter(pWriter);
+						bIsWritedBodyPr = true;
+					}
+				}
+				else if (txBody.is_init())
+				{
+					txBody->m_ns = _T("wps");
+					pWriter->Write(txBody);
+				}
+
+                if (!bIsWritedBodyPr)
+				{
+					pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
+				}
+			}
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				pWriter->EndNode(_T("wps:wsp"));
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+				pWriter->EndNode(_T("xdr:sp"));
+			else
+				pWriter->EndNode(_T("p:sp"));
+		}
+		
+		void Shape::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+        {
+            LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						attrUseBgFill = pReader->GetBool();
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						nvSpPr.fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						spPr.fromPPTY(pReader);
+						break;
+					}
+					case 2:
+					{
+						style = new ShapeStyle();
+						style->m_ns = _T("p");
+						style->fromPPTY(pReader);
+						break;
+					}
+					case 3:
+					{
+						txBody = new TxBody();
+						txBody->fromPPTY(pReader);
+						break;
+					}
+					case 4:
+					{
+						if (NULL != pReader->m_pMainDocument)
+						{
+                            LONG lLenRec = pReader->GetLong();
+
+                            LONG lPosition = pReader->GetPos();
+                            LONG lSize_Reader = pReader->GetSize();
+							BYTE* pData_Reader = pReader->GetData();
+			
+							std::wstring sXmlContent;
+							pReader->m_pMainDocument->getXmlContent(*pReader, lLenRec, sXmlContent);
+
+							std::wstring strC = _T("<w:txbxContent>");
+							strC += sXmlContent;
+							strC += _T("</w:txbxContent>");
+							TextBoxShape = strC;
+
+							//pReader->Seek(lPosition + lLenRec);
+							pReader->Init(pData_Reader, lPosition + lLenRec, lSize_Reader - (lPosition + lLenRec));
+						}
+						else
+						{
+							pReader->SkipRecord();
+						}
+						break;
+					}
+					case 5:
+					{
+						TextBoxBodyPr = new PPTX::Logic::BodyPr();
+						TextBoxBodyPr->fromPPTY(pReader);
+						break;
+					}
+					case 6:
+					{
+						txXfrm = new PPTX::Logic::Xfrm();
+						txXfrm->fromPPTY(pReader);
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+
+
+
 		void Shape::FillParentPointersForChilds()
 		{
 			nvSpPr.SetParentPointer(this);
@@ -137,6 +329,61 @@ namespace PPTX
 				txBody->SetParentPointer(this);
 			levelUp = NULL;
 		}
+		
+		void Shape::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)const
+		{
+			pWriter->StartRecord(SPTREE_TYPE_SHAPE);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteBool2(0, attrUseBgFill);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			pWriter->WriteRecord1(0, nvSpPr);
+			pWriter->WriteRecord1(1, spPr);
+			pWriter->WriteRecord2(2, style);
+
+			if (pWriter->m_pMainDocument != NULL)
+			{
+				if (TextBoxShape.is_init())
+				{					
+                    long lDataSize = 0;
+                    ULONG lPos = pWriter->GetPosition();
+					pWriter->SetPosition(lPos);
+					pWriter->StartRecord(4);
+					pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
+					pWriter->EndRecord();
+					
+					if (TextBoxBodyPr.is_init())
+					{
+						pWriter->StartRecord(5);
+						TextBoxBodyPr->toPPTY(pWriter);
+						pWriter->EndRecord();
+					}
+				}
+				else if (txBody.is_init())
+				{
+					std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);
+
+                    long lDataSize = 0;
+                    ULONG lPos = pWriter->GetPosition();
+					pWriter->SetPosition(lPos);
+					pWriter->StartRecord(4);
+					pWriter->m_pMainDocument->getBinaryContent(strContent, *pWriter, lDataSize);
+					pWriter->EndRecord();
+
+					pWriter->WriteRecord1(5, txBody->bodyPr);
+				}
+			}
+			else
+			{
+				pWriter->WriteRecord2(3, txBody);
+			}
+
+			pWriter->WriteRecord2(6, txXfrm);
+			
+			pWriter->EndRecord();
+		}
+
 
 		void Shape::GetRect(Aggplus::RECT& pRect)const
 		{

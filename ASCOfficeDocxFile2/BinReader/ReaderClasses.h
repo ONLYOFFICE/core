@@ -876,7 +876,7 @@ public:
 				pCStringWriter->WriteString(CellPr);
                 pCStringWriter->WriteString(L"</w:tcPr>");
 			}
-			for(int i = 0, length = TblStylePr.size(); i < length; ++i)
+			for(int i = 0, length = (int)TblStylePr.size(); i < length; ++i)
 			{
 				pCStringWriter->WriteString(TblStylePr[i]);
 			}
@@ -1241,7 +1241,7 @@ public:
 	}
 	~docLvl()
 	{
-		for(int i = 0,length = Text.size(); i < length; i++)
+		for(int i = 0,length = (int)Text.size(); i < length; i++)
 		{
 			delete Text[i];
 		}
@@ -1297,7 +1297,7 @@ public:
 		if(bText)
 		{
             std::wstring sText;
-			for(int i = 0, length = Text.size(); i < length; ++i)
+			for(int i = 0, length = (int)Text.size(); i < length; ++i)
 			{
 				docLvlText* item = Text[i];
 				if(item->bText)
@@ -1360,7 +1360,7 @@ public:
 	}
 	~docANum()
 	{
-		for(int i = 0, length = Lvls.size(); i < length; i++)
+		for(int i = 0, length = (int)Lvls.size(); i < length; i++)
 		{
 			delete Lvls[i];
 		}
@@ -1380,7 +1380,7 @@ public:
                 std::wstring sCorrectNumStyleLink = XmlUtils::EncodeXmlString(NumStyleLink);
                 oWriterANum.WriteString(L"<w:numStyleLink w:val=\"" + sCorrectNumStyleLink + L"\"/>");
 			}
-			for(int i = 0, length = Lvls.size(); i < length; ++i)
+			for(int i = 0, length = (int)Lvls.size(); i < length; ++i)
 			{
 				Lvls[i]->Write(oWriterANum, i);
 			}
@@ -1453,7 +1453,8 @@ public:
             std::vector<std::wstring> aItems;
             std::wstring sCurItem;
             bool bDQuot = false;
-            for(int i = 0, length = fld.length(); i < length; ++i)
+            
+			for(int i = 0, length = (int)fld.length(); i < length; ++i)
             {
                 wchar_t sCurLetter = fld[i];
                 if('\"' == sCurLetter)
@@ -1476,7 +1477,8 @@ public:
             }
             if(sCurItem.length() > 0)
                 aItems.push_back(sCurItem);
-			for(int i = 0, length = aItems.size(); i < length; ++i)
+			
+			for(int i = 0, length = (int)aItems.size(); i < length; ++i)
             {
                 std::wstring item = aItems[i];
 				if(bNextLink)
@@ -1500,7 +1502,7 @@ public:
 				res = new WriteHyperlink();
                 boost::algorithm::trim(sLink);
 
-                int nAnchorIndex = sLink.find(L"#");
+                int nAnchorIndex = (int)sLink.find(L"#");
 				if(-1 != nAnchorIndex)
 				{
                     res->href   = sLink.substr(0, nAnchorIndex);
@@ -1589,7 +1591,7 @@ public:
 	}
 	~CComment()
 	{
-		for(int i = 0, length = replies.size(); i < length; ++i)
+		for(size_t i = 0; i <replies.size(); ++i)
 		{
 			delete replies[i];
 		}
@@ -1597,32 +1599,37 @@ public:
 	}
 	int getCount()
 	{
-		return replies.size() + 1;
+		return (int)replies.size() + 1;
 	}
 	void setFormatStart(int IdFormatStart)
 	{
 		bIdFormat = true;
 		IdFormat = IdFormatStart;
-		for(int i = 0, length = replies.size(); i < length; ++i)
+		
+		for(size_t i = 0; i < replies.size(); ++i)
 		{
-			CComment* pComment = replies[i];
+			CComment* pComment	= replies[i];
 			pComment->bIdFormat = true;
-			pComment->IdFormat = IdFormatStart + i + 1;
+			pComment->IdFormat	= (int)(IdFormatStart + i + 1);
 		} 
 	}
     std::wstring writeRef(const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter)
 	{
         std::wstring sRes;
         sRes += (writeRef(this, sBefore, sRef, sAfter));
-		for(int i = 0, length = replies.size(); i < length; ++i)
+		
+		for(size_t i = 0; i< replies.size(); ++i)
+		{
             sRes += (writeRef(replies[i], sBefore, sRef, sAfter));
+		}
 		return sRes;
 	}
     std::wstring writeTemplates(funcArg fReadFunction)
 	{
         std::wstring sRes;
         sRes += (fReadFunction(this));
-		for(int i = 0, length = replies.size(); i < length; ++i)
+		
+		for(size_t i = 0; i < replies.size(); ++i)
             sRes += (fReadFunction(replies[i]));
 		return sRes;
 	}
@@ -1708,7 +1715,7 @@ public:
 
             bool bFirst = true;
 			int nPrevIndex = 0;
-            for(int i = 0, length = sText.length(); i < length; i++)
+            for(size_t i = 0; i < sText.length(); i++)
 			{
                 wchar_t cToken = sText[i];
 				if('\n' == cToken)
@@ -1717,7 +1724,7 @@ public:
 					nPrevIndex = i + 1;
 				}
 			}
-            writeContentWritePart(pComment, sText, nPrevIndex, sText.length(), bFirst, sRes);
+            writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), bFirst, sRes);
 		}
         sRes += L"</w:comment>";
 		return sRes;
@@ -1736,7 +1743,7 @@ w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L
 			else
                 sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
 			//расставляем paraIdParent
-			for(int i = 0, length = pComment->replies.size(); i < length; i++)
+			for(size_t i = 0; i < pComment->replies.size(); i++)
 				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
 		}
 		return sRes;
@@ -1782,7 +1789,7 @@ public:
 		{
 			m_mapComments[pComment->IdOpen] = pComment;
 			addAuthor(pComment);
-			for(int i = 0, length = pComment->replies.size(); i < length; i++)
+			for(size_t i = 0; i < pComment->replies.size(); i++)
 				addAuthor(pComment->replies[i]);
 		}
 	}
@@ -1866,7 +1873,7 @@ public:
 	}
 	~CDrawingPropertyWrap()
 	{
-		for(int i = 0, length = Points.size(); i < length; ++i)
+		for(size_t i = 0; i < Points.size(); ++i)
 			delete Points[i];
 		Points.clear();
 	}
@@ -2211,7 +2218,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                             sXml += L"<wp:start x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
                         }
 
-                        for(int i = 0, length = DrawingPropertyWrap.Points.size(); i < length; ++i)
+                        for(size_t i = 0; i < DrawingPropertyWrap.Points.size(); ++i)
                         {
                             CDrawingPropertyWrapPoint* pWrapPoint = DrawingPropertyWrap.Points[i];
                             if(pWrapPoint->bX && pWrapPoint->bY)

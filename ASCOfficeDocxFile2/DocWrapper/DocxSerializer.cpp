@@ -219,7 +219,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 		//проверяем формат
 		bool bValidFormat = false;
         std::wstring sSignature(g_sFormatSignature);
-        int nSigLength = sSignature.length();
+        int nSigLength = (int)sSignature.length();
 		if(nBase64DataSize > nSigLength)
 		{
             std::string sCurSig((char*)pBase64Data, nSigLength);

@@ -124,10 +124,9 @@ static void GetColorWithEffect(const std::wstring& sColor, const int& R, const i
     }
     else if (0 == sColor.find(L"blackwhite"))
     {
-        int nparam = (int)nparam;
-        resR = (R < nparam) ? 0 : 255;
-        resG = (G < nparam) ? 0 : 255;
-        resB = (B < nparam) ? 0 : 255;
+        resR = (R < (int)param) ? 0 : 255;
+        resG = (G < (int)param) ? 0 : 255;
+        resB = (B < (int)param) ? 0 : 255;
         isEffect = true;
     }
 
@@ -148,7 +147,7 @@ namespace NS_DWC_Common
 {
 	void CorrentCropString(std::wstring& s)
 	{
-		int nLen = s.length();
+		size_t nLen = s.length();
         if (nLen > 0 && (s[nLen - 1] == ((wchar_t)'f')))
 		{
             s.erase(nLen - 1);
@@ -280,7 +279,7 @@ namespace NS_DWC_Common
 		{
 			std::wstring str;
 
-			int pos = colorStr.find(' ');
+			int pos = (int)colorStr.find(' ');
 			if( pos < 0 )
 				str = colorStr;
 			else
@@ -544,7 +543,7 @@ namespace PPTX
 	{
 		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
         wchar_t* pData	= (wchar_t*)strParams.c_str();
-		int nCount		= strParams.length();
+		int nCount		= (int)		strParams.length();
 
 		int nPosition	= 0;
         wchar_t* pDataMem = pData;
@@ -598,7 +597,7 @@ namespace PPTX
 
 		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
         wchar_t* pData	= (wchar_t*)strParams.c_str();
-		int nCount		= strParams.length();
+		int nCount		= (int)		strParams.length();
 
 		int nPosition	= 0;
         wchar_t* pDataMem = pData;
@@ -677,7 +676,7 @@ namespace PPTX
 
 		// здесь не будем плодить тормозов - напишем без всяких Mid, Find, чтобы был только один проход
         wchar_t* pData	= (wchar_t*)strParams.c_str();
-        int nCount      = strParams.length();
+        int nCount      = (int)		strParams.length();
 
 		int nPosition	= 0;
         wchar_t* pDataMem = pData;
@@ -754,7 +753,7 @@ namespace PPTX
 		Clear();
 
         wchar_t* pData	= (wchar_t*)strParams.c_str();
-        int nCount      = strParams.length();
+        int nCount      = (int)		strParams.length();
 
 		int nPosition	 = 0;
 		int nPositionOld = 0;
@@ -1318,7 +1317,7 @@ std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, LONG
 	std::wstring strMainProps = *pMainProps;
 	std::wstring strMainPropsTail;
     
-	int nIndexF = strMainProps.find(L"</wp:inline>");
+	int nIndexF = (int)strMainProps.find(L"</wp:inline>");
 	if (-1 != nIndexF)
 	{
 		bIsInline = true;
@@ -1326,7 +1325,7 @@ std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, LONG
 	}
 	else
 	{
-        nIndexF = strMainProps.find(L"</wp:anchor>");
+        nIndexF = (int)strMainProps.find(L"</wp:anchor>");
 		strMainProps = strMainProps.substr(0, nIndexF);
 	}
 
@@ -1336,7 +1335,7 @@ std::wstring CDrawingConverter::ObjectToDrawingML(const std::wstring& sXml, LONG
 		return oXmlWriter.GetXmlString();
 	}
 
-    int nIndexTail = strMainProps.find(L"<wp14:sizeRel");
+    int nIndexTail = (int)strMainProps.find(L"<wp14:sizeRel");
 	if(-1 != nIndexTail)
 	{
         strMainPropsTail    = strMainProps.substr( nIndexTail );
@@ -1791,7 +1790,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.operator->());										
 			if (pDiagramData)
 			{
-				for (int i = 0; (pDiagramData->m_oExtLst.IsInit()) && i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
+				for (size_t i = 0; (pDiagramData->m_oExtLst.IsInit()) && i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
 				{
 					if (pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 					{
@@ -1810,7 +1809,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		{
 		   OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
 
-			int a1 = pathDiagramData.GetFilename().find(L".");
+			int a1 = (int)pathDiagramData.GetFilename().find(L".");
 			std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
 			
 			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";	
@@ -1957,7 +1956,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			std::vector<std::wstring> oArray;
             boost::algorithm::split(oArray, strPoints, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-			int nSize = oArray.size();
+			int nSize = (int)oArray.size();
 			if ((nSize % 2 == 0) && nSize > 3)
 			{
 				int* _POINTS = new int[nSize];
@@ -2252,9 +2251,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 							int pos1 = 0, pos2 = 0;
 
-							while(pos1 < tmpString.length() && pos2 < tmpString.length())
+							while(pos1 < (int)tmpString.length() && pos2 < (int)tmpString.length())
 							{
-                                pos2 = tmpString.find(L"\n", pos1);
+                                pos2 = (int)tmpString.find(L"\n", pos1);
 								if (pos2 > 0)
 								{
 									wordArtString.push_back(tmpString.substr(pos1, pos2 - pos1));
@@ -2422,9 +2421,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
                             std::vector<std::wstring> arSplit;
                             boost::algorithm::split(arSplit, strColors, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-                            for (int i = 0 ; i < arSplit.size(); i++)
+                            for (size_t i = 0 ; i < arSplit.size(); i++)
                             {
-                                int p = arSplit[i].find(L" ");
+                                int p = (int)arSplit[i].find(L" ");
 
                                 std::wstring strPos = resToken.substr(0, p);
                                 std::wstring strColor = resToken.substr(p + 1);
@@ -2511,9 +2510,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				else if (eFillType == etGradFill)
 				{					
                     strRPr += L"<w14:gradFill><w14:gsLst>";
-					int nSize = arColors.size();
-					bool bRevert = false;
-					int nColorsLen = arColors.size();
+					int		nSize		= (int)arColors.size();
+					bool	bRevert		= false;
+					int		nColorsLen	= (int)arColors.size();
 
 					int nDiff = nSize - 1;
 					if (nFocus != 1 && nFocus != 0)
@@ -2553,7 +2552,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						if (nAngle != 90)
 							dNewZero *= -1;
 
-						for (int i = 0; i < nColorsLen-1; i++)
+						for (int i = 0; i < nColorsLen - 1; i++)
 						{
 							arColorsNew.push_back(arColors.at(i));
 
@@ -2562,9 +2561,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						}
 
 						arColorsNew.push_back(arColors.at(nColorsLen - 1));
-						arPosNew.push_back(dNewZero);
+						arPosNew.push_back((int)dNewZero);
 
-						for (int i = nColorsLen-2; i >= 0; i--)
+						for (int i = nColorsLen - 2; i >= 0; i--)
 						{
 							arColorsNew.push_back(arColors.at(i));
 
@@ -2592,7 +2591,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						}
 					}
 
-					for (int i = 0; i < arColorsNew.size(); i++)
+					for (size_t i = 0; i < arColorsNew.size(); i++)
 					{
 						int pos = arPosNew.at(i);
                         std::wstring color  = arColorsNew.at(i)->toXML();
@@ -2622,7 +2621,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				if (sStrokeWeight.is_init())
 				{
 					std::wstring strW(*sStrokeWeight);
-                    int p = strW.find(L"pt");
+                    int p = (int)strW.find(L"pt");
                     if (p >= 0)
                         strW.erase(p);
 
@@ -3419,7 +3418,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		std::vector<std::wstring> arPoints;
         boost::algorithm::split(arPoints, strWrapPoints, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-		int nCountP = arPoints.size();
+		int nCountP = (int)arPoints.size();
 		if (nCountP > 1 && ((nCountP % 2) == 0))
 		{
             strWrapPointsResult = L"<wp:wrapPolygon edited=\"1\">";
@@ -3701,7 +3700,7 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
     strCoordSize = std::to_wstring(lCoordW) + L"," + std::to_wstring(lCoordH);
     oXmlWriter.WriteAttribute(L"coordsize", strCoordSize);
 
-	int nAdjCount = pPPTShape->m_arAdjustments.size();
+	int nAdjCount = (int)pPPTShape->m_arAdjustments.size();
 	if (nAdjCount > 0)
 	{
         oXmlWriter.WriteString(L" adj=\"");
@@ -3726,7 +3725,7 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
 	oXmlWriter.EndAttributes();
 
 	std::vector<CFormula>& arGuides = pPPTShape->m_oManager.m_arFormulas;
-	int nGuides = arGuides.size();
+	int nGuides = (int)arGuides.size();
 	if (nGuides != 0)
 	{
         oXmlWriter.StartNode(L"v:formulas");
@@ -3820,7 +3819,7 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
             oXmlWriter.WriteString(L"\"/>");
 		}
 
-		int nHandles = pPPTShape->m_arHandles.size();
+		int nHandles = (int)pPPTShape->m_arHandles.size();
 		if (0 < nHandles)
 		{
             oXmlWriter.StartNode(L"v:handles");
@@ -4603,7 +4602,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	bool bIsInline = false;
 	std::wstring strMainProps = bsMainProps;
 	std::wstring strMainPropsTail;
-    int nIndexF = strMainProps.find(L"</wp:inline>");
+    int nIndexF = (int)strMainProps.find(L"</wp:inline>");
 	if (-1 != nIndexF)
 	{
 		bIsInline = true;
@@ -4611,14 +4610,14 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	}
 	else
 	{
-        nIndexF = strMainProps.find(L"</wp:anchor>");
+        nIndexF = (int)strMainProps.find(L"</wp:anchor>");
 		strMainProps = strMainProps.substr(0, nIndexF);
 	}
 
 	if (-1 == nIndexF)
 		return S_FALSE;
 
-    int nIndexTail = strMainProps.find(L"<wp14:sizeRel");
+    int nIndexTail = (int)strMainProps.find(L"<wp14:sizeRel");
 	if(-1 != nIndexTail)
 	{
         strMainPropsTail    = strMainProps.substr( nIndexTail );
@@ -4943,7 +4942,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 							{
 								run->rPr = new PPTX::Logic::RunProperties();							
 									
-								for (long r = 0; r < attNames.size(); r++)
+								for (size_t r = 0; r < attNames.size(); r++)
 								{
                                     if (attNames[r] == L"color" && attValues[r].length() == 7)
 									{
@@ -5465,7 +5464,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 
 	//if (-1 != m_pReader->m_nCurrentRelsStack)
 	{
-		int nIndex = m_pReader->m_stackRels.size() - 1;
+		int nIndex = (int)m_pReader->m_stackRels.size() - 1;
 
 		if (0 <= nIndex)
 		{

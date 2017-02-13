@@ -260,7 +260,7 @@ namespace NSBinPptxRW
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(6); // type + len + start attr
 
-				int index =0;
+				size_t index =0;
 				while (true)
 				{
 					BYTE _at = m_oReader.GetUChar_TypeNode();

@@ -1069,20 +1069,27 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 
 		std::wstring strVmlPath, strVmlRect;
 
-		LONG lW = 43200, lH = 43200;
+		LONG lW = 0, lH = 0;
 
-		if ((m_ooxShape->m_oSpPr->m_oXfrm.IsInit()) && (m_ooxShape->m_oSpPr->m_oXfrm->m_oExt.IsInit()))
-		{
-			lW = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
-			lH = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
-		}
+		//if ((m_ooxShape->m_oSpPr->m_oXfrm.IsInit()) && (m_ooxShape->m_oSpPr->m_oXfrm->m_oExt.IsInit()))
+		//{
+		//	lW = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+		//	lH = m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
+		//}
 
 		COOXToVMLGeometry *renderer = new COOXToVMLGeometry();
 		geom.ConvertToCustomVML(renderer, strVmlPath, strVmlRect, lW, lH);
 		delete renderer;
 
 		if (!strVmlPath.empty())
-			ParseVmlPath(pOutput, strVmlPath, lW, lH);
+			ParseVmlPath(pOutput, strVmlPath);
+
+		pOutput->m_nShapePath = 4; //complex
+		
+		pOutput->m_nGeoLeft		= 0;	
+		pOutput->m_nGeoTop		= 0;		
+		pOutput->m_nGeoRight	= 100000;
+		pOutput->m_nGeoBottom	= 100000;
 	}
 	if (m_ooxShape->m_oSpPr->m_oXfrm.IsInit())
 	{
@@ -1303,12 +1310,18 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 	else if (OOX::Vml::CPolyLine* polyline = dynamic_cast<OOX::Vml::CPolyLine*>(m_vmlElement))
 	{
 		pOutput->m_nShapeType	= NSOfficeDrawing::sptNotPrimitive;
-		//polyline->m_oPoints
 	}
 
 	if (pOutput->m_nShapeType == NSOfficeDrawing::sptNotPrimitive && custom_path)
 	{
-		ParseVmlPath(pOutput, custom_path->GetValue(), Width, Height);
+		ParseVmlPath(pOutput, custom_path->GetValue());
+		
+		pOutput->m_nShapePath = 4; //complex
+		
+		pOutput->m_nGeoLeft		= 0;	
+		pOutput->m_nGeoTop		= 0;		
+		pOutput->m_nGeoRight	= Width;
+		pOutput->m_nGeoBottom	= Height;
 	}
 //-------------------------------------------------------------------------------------------------------------
 	if (m_vmlElement->m_oFilled.IsInit())
@@ -1592,20 +1605,27 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	return true;
 }
 
-void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &custom_path, int W, int H)
+void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &custom_path)
 {
 	std::vector<svg_path::_polyline> o_Polyline;
 	
-	bool res = svg_path::parseSvgD(o_Polyline, custom_path, false);
+	bool res = svg_path::parseVml(o_Polyline, custom_path);
 
 	int val = 0;
 	for (size_t i = 0; i < o_Polyline.size(); i++)
 	{
-			 if (o_Polyline[i].command == L"a:moveTo")		val = 0x4000;
-		else if (o_Polyline[i].command == L"a:lnTo")		val = 0x0000;
-		else if (o_Polyline[i].command == L"a:cubicBezTo")	val = 0x2000;
-		
-		val = val | o_Polyline[i].points.size();
+		if (o_Polyline[i].command == L"m")
+		{
+			val = 0x4000;
+		}
+		else if (o_Polyline[i].command == L"l")	
+		{
+			val = 0x0000 | 1;
+		}
+		else if (o_Polyline[i].command == L"c")
+		{
+			val = 0x2000 | 1;
+		}	
 		
 		pOutput->m_aPSegmentInfo.push_back(val);
 
@@ -1615,8 +1635,7 @@ void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &cus
 															(int)(o_Polyline[i].points[j].y.get_value_or(0)/* / 10000. * H*/)));
 		}
 	}
-	pOutput->m_aPSegmentInfo.push_back(val);
-	pOutput->m_aPVerticles.push_back(pOutput->m_aPVerticles[0]);
+
 	pOutput->m_aPSegmentInfo.push_back(0x6001);
 	pOutput->m_aPSegmentInfo.push_back(0x8000);
 }

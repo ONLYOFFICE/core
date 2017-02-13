@@ -57,19 +57,10 @@ namespace svg_path
 		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
 
 	};
-	//m - 1 point
-	//c - 3 point
-	//s - 2 point
-	//l - 1 point
-	//z - finish
-	//h - 0.5 point :)
-	//v - 0.5 point
-	//q - 2 point
-	//t - 1 point
-	//a - [[[[
 
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ, bool closed);
+	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
+	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ);
+	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
 }
 
 

@@ -1087,12 +1087,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::ObjectFromXml(const std::wstring& sXm
 								std::wstring strVMLShapeXml = GetVMLShapeXml(oElem);
 							#endif
 							}
-
-							if (strCurrentRelsPath != m_strCurrentRelsPath)
-							{
-								m_strCurrentRelsPath = strCurrentRelsPath;
-								SetCurrentRelsPath();
-							}
 						}
 					}
 				}

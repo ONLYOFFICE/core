@@ -93,12 +93,13 @@ public:
 class OOXFontReader2
 {
 private:
-	ComplexTypes::Word::CFonts * m_ooxFont;
+	ComplexTypes::Word::CFonts	*m_ooxFont;
 public: 
 	OOXFontReader2(ComplexTypes::Word::CFonts * ooxFont)
 	{
-		m_ooxFont = ooxFont;
+		m_ooxFont		= ooxFont;
 	}
+
 	bool Parse( ReaderParameter oParam, int& nFont)
 	{
 		if (!m_ooxFont) return false;
@@ -148,6 +149,93 @@ public:
 				oCurFont.m_sName = sFont;
 				nFont = oParam.oRtf->m_oFontTable.GetCount() + 1;
 				oCurFont.m_nID = nFont;
+				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
+			}
+		}
+		return true;
+	}
+private: 
+	std::wstring GetThemeFont( std::wstring sTheme, OOXReader & oReader )
+	 {
+		std::wstring sFont;
+		if		( L"majorAscii"		== sTheme )	sFont = oReader.m_smajorAscii;
+		else if ( L"majorBidi"		== sTheme )	sFont = oReader.m_smajorBidi;
+		else if ( L"majorEastAsia"	== sTheme )	sFont = oReader.m_smajorEastAsia;
+		else if ( L"majorHAnsi"		== sTheme )	sFont = oReader.m_smajorHAnsi;
+		else if ( L"minorAscii"		== sTheme )	sFont = oReader.m_sminorAscii;
+		else if ( L"minorBidi"		== sTheme )	sFont = oReader.m_sminorBidi;
+		else if ( L"minorEastAsia"	== sTheme )	sFont = oReader.m_sminorEastAsia;
+		else if ( L"minorHAnsi"		== sTheme )	sFont = oReader.m_sminorHAnsi;
+		
+		return sFont;
+	 }
+};
+
+
+class OOXFontReader3
+{
+private:
+	OOX::Drawing::CTextFont		*m_asciiFont;
+	OOX::Drawing::CTextFont		*m_csFont;
+	OOX::Drawing::CTextFont		*m_asianFont;
+public: 
+
+	OOXFontReader3(OOX::Drawing::CTextFont * asciiFont, OOX::Drawing::CTextFont * asianFont, OOX::Drawing::CTextFont * csFont)
+	{
+		m_asciiFont	= asciiFont;
+		m_asianFont	= asianFont;
+		m_csFont	= csFont;
+	}
+	bool Parse( ReaderParameter oParam, int& nFont)
+	{
+		if (!m_asciiFont && !m_csFont && !m_asianFont) return false;
+
+		std::wstring sAscii, sCs, sEastAsia;
+		
+		if ((m_asciiFont)	&& (m_asciiFont->m_oTypeFace.IsInit()))	sAscii		= m_asciiFont->m_oTypeFace->GetValue();
+		if ((m_csFont)		&& (m_csFont->m_oTypeFace.IsInit()))	sCs			= m_csFont->m_oTypeFace->GetValue();
+		if ((m_asianFont)	&& (m_asianFont->m_oTypeFace.IsInit()))	sEastAsia	= m_asianFont->m_oTypeFace->GetValue();
+
+		std::wstring sFont;	
+		std::wstring sTempFont;
+		
+			 if( !sAscii.empty() )		sFont = sAscii;
+		else if( !sCs.empty() )			sFont = sCs;
+		else if( !sEastAsia.empty() )	sFont = sEastAsia;
+
+
+		if( !sFont.empty() )
+		{
+			RtfFont oCurFont;
+			if( true == oParam.oRtf->m_oFontTable.GetFont( sFont, oCurFont ) )
+				nFont = oCurFont.m_nID;
+			else
+			{
+				nFont = oParam.oRtf->m_oFontTable.GetCount() + 1;
+				oCurFont.m_nID		= nFont;
+				oCurFont.m_sName	= sFont;
+				
+				if( !sAscii.empty() )
+				{
+					if (m_asciiFont->m_oPanose.IsInit())	
+						oCurFont.m_sPanose	= m_asciiFont->m_oPanose->GetValue();
+					oCurFont.m_nCharset	= m_asciiFont->m_oCharset.GetValue();
+					oCurFont.m_nPitch	= m_asciiFont->m_oPitchFamily.GetValue();
+				}
+				else if( !sCs.empty() )
+				{
+					if (m_csFont->m_oPanose.IsInit())	
+						oCurFont.m_sPanose	= m_csFont->m_oPanose->GetValue();
+					oCurFont.m_nCharset = m_csFont->m_oCharset.GetValue();
+					oCurFont.m_nPitch	= m_csFont->m_oPitchFamily.GetValue();
+				}
+				else if( !sEastAsia.empty() )
+				{
+					if (m_asianFont->m_oPanose.IsInit())	
+						oCurFont.m_sPanose	= m_asianFont->m_oPanose->GetValue();
+					oCurFont.m_nCharset = m_asianFont->m_oCharset.GetValue();
+					oCurFont.m_nPitch	= m_asianFont->m_oPitchFamily.GetValue();
+				}
 				oParam.oRtf->m_oFontTable.AddItem( oCurFont );
 			}
 		}

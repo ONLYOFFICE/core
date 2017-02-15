@@ -738,16 +738,20 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			}
 			else if (result == 2 && ooxDrawing->m_sXml.IsInit())
 			{	
+				OOX::IFileContainer* store_container = oParam.oReader->m_currentContainer;
+
 				OOXDrawingGraphicConverter oGraphicConverter(*ooxDrawing->m_sXml);
 				OOX::Logic::CDrawing* ooxNewDrawing = oGraphicConverter.Convert( oParam, pNewDrawing );
 				//OOX::Logic::CPicture *ooxPicture = oGraphiceReader.Parse( oParam, pNewDrawing );
 
+				oParam.oReader->m_currentContainer = oGraphicConverter.m_ooxGraphicRels;
 				if (Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxNewDrawing/*ooxPicture*/))
 				{
 					bAddDrawing = true;
 				}
 				//if (ooxPicture)delete ooxPicture;
 				if (ooxNewDrawing) delete ooxNewDrawing;
+				oParam.oReader->m_currentContainer = store_container;
 			}
 			if (!bAddDrawing)
 			{
@@ -1685,37 +1689,35 @@ bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& o
 		&&	m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints.IsInit()
 		&&	m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints->m_oVal.IsInit())
 			oOutputProperty.m_nSpaceAfter = m_drawingParaProps->m_oAfterSpacing->m_oLineSpacingPoints->m_oVal->GetValue();
-	//
-	//if (m_drawingParaProps->m_oSpacing->m_oBeforeAutospacing.IsInit())
-	//	oOutputProperty.m_nSpaceBeforeAuto = m_drawingParaProps->m_oSpacing->m_oBeforeAutospacing->ToBool();
-	//if (m_drawingParaProps->m_oSpacing->m_oAfterAutospacing.IsInit())
-	//	oOutputProperty.m_nSpaceAfterAuto = m_drawingParaProps->m_oSpacing->m_oAfterAutospacing->ToBool();
-	//if (m_drawingParaProps->m_oSpacing->m_oBeforeLines.IsInit())
-	//	oOutputProperty.m_nSpaceBeforeLine = m_drawingParaProps->m_oSpacing->m_oBeforeLines->GetValue();
-	//if (m_drawingParaProps->m_oSpacing->m_oAfterLines.IsInit())
-	//	oOutputProperty.m_nSpaceAfterLine = m_drawingParaProps->m_oSpacing->m_oAfterLines->GetValue();
-	
-	//if( m_drawingParaProps->m_oLineSpacing.IsInit())
-	//{
-	//	if ( m_drawingParaProps->m_oSpacing->m_oLineRule.IsInit())
-	//	{
-	//		if (m_drawingParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleExact)
-	//		{
-	//			oOutputProperty.m_nSpaceBetween		= - m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();//twips ??? todooo
-	//			oOutputProperty.m_nSpaceMultiLine	= 0;
-	//		}
-	//		else if (m_drawingParaProps->m_oSpacing->m_oLineRule->GetValue() == SimpleTypes::linespacingruleAtLeast)
-	//		{
-	//			oOutputProperty.m_nSpaceBetween		= m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();
-	//			oOutputProperty.m_nSpaceMultiLine	= 0;
-	//		}
-	//		else //auto
-	//		{
-	//			oOutputProperty.m_nSpaceBetween		= m_drawingParaProps->m_oSpacing->m_oLine->ToTwips();
-	//			oOutputProperty.m_nSpaceMultiLine	= 1;
-	//		}
-	//	}
-	//}
+
+	if (m_drawingParaProps->m_oBuChar.IsInit() || m_drawingParaProps->m_oBuAutoNum.IsInit())
+	{
+		oOutputProperty.m_nListLevel	= 0;
+		oOutputProperty.m_nListId		= oParam.oRtf->m_oListTable.GetCount() + 1;
+
+		RtfListProperty oNewList;
+		oNewList.m_nID = oOutputProperty.m_nListId;
+		oNewList.m_nListSimple = 1;
+
+		RtfListLevelProperty oNewLevel;
+		if (m_drawingParaProps->m_oBuChar.IsInit() && m_drawingParaProps->m_oBuChar->m_sChar.IsInit())
+		{
+			oNewLevel.m_sText		= m_drawingParaProps->m_oBuChar->m_sChar.get();
+			oNewLevel.m_nNumberType = 23;
+		}
+		else if ( m_drawingParaProps->m_oBuAutoNum.IsInit() )
+		{
+			if (m_drawingParaProps->m_oBuAutoNum->m_sType.IsInit())
+				oNewLevel.m_nNumberType = oNewLevel.GetFormat( m_drawingParaProps->m_oBuAutoNum->m_sType.get());
+			else
+				oNewLevel.m_nNumberType = 0;
+
+			if (m_drawingParaProps->m_oBuAutoNum->m_nStartAt.IsInit())
+				oNewLevel.m_nStart =  m_drawingParaProps->m_oBuAutoNum->m_nStartAt->GetValue();
+		}
+		
+		oNewList.AddItem( oNewLevel );
+		oParam.oRtf->m_oListTable.AddItem( oNewList );	}
 
 	if (m_drawingParaProps->m_oRtl.IsInit())
 		oOutputProperty.m_bRtl = m_drawingParaProps->m_oRtl->ToBool() ? 1 : 0;
@@ -1745,9 +1747,12 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 	if (m_drawingRunProps->m_oItalic.IsInit())
 		oOutputProperty.m_bItalic = m_drawingRunProps->m_oItalic->ToBool() ? 1 : 0;
 
-	if( m_drawingRunProps->m_oLatinFont.IsInit() && m_drawingRunProps->m_oLatinFont->m_oTypeFace.IsInit())
+	if( m_drawingRunProps->m_oLatinFont.IsInit() || m_drawingRunProps->m_oComplexFont.IsInit() || m_drawingRunProps->m_oAsianFont.IsInit())
 	{
-		std::wstring font = m_drawingRunProps->m_oLatinFont->m_oTypeFace->GetValue();
+		OOXFontReader3 oFontReader3(m_drawingRunProps->m_oLatinFont.GetPointer(), 
+									m_drawingRunProps->m_oAsianFont.GetPointer(),
+									m_drawingRunProps->m_oComplexFont.GetPointer());
+		oFontReader3.Parse( oParam, oOutputProperty.m_nFont);
 	}
 	//if (m_drawingRunProps->m_oComplexFont.IsInit() && m_drawingRunProps->m_oComplexFont->m_oTypeFace.IsInit())
 	//	oOutputProperty.m_nComplexScript = m_drawingRunProps->m_oCs->m_oVal.ToBool() ? 1 : 0;;

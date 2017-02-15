@@ -1104,8 +1104,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 		{
 			if (m_ooxShape->m_oSpPr->m_oXfrm->m_oOff.IsInit())
 			{
-				pOutput->m_nRelLeft	= m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
-				pOutput->m_nRelTop	= m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
+				pOutput->m_nRelLeft	= (int)m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
+				pOutput->m_nRelTop	= (int)m_ooxShape->m_oSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
 			}
 			else
 			{
@@ -1114,8 +1114,8 @@ bool OOXShapeReader::Parse( ReaderParameter oParam, RtfShapePtr& pOutput)
 			}
 			if (m_ooxShape->m_oSpPr->m_oXfrm->m_oExt.IsInit())
 			{
-				pOutput->m_nRelRight	= pOutput->m_nRelLeft + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
-				pOutput->m_nRelBottom	= pOutput->m_nRelTop + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
+				pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+				pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + m_ooxShape->m_oSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
 			}
 			else
 			{
@@ -1341,7 +1341,7 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput)
 		pOutput->m_nLineColor = (m_vmlElement->m_oStrokeColor->Get_B() << 16) + (m_vmlElement->m_oStrokeColor->Get_G() << 8) + m_vmlElement->m_oStrokeColor->Get_R();
 
 	if( m_vmlElement->m_oStrokeWeight.IsInit())
-		pOutput->m_nLineWidth = m_vmlElement->m_oStrokeWeight->ToEmu();
+		pOutput->m_nLineWidth = (int)m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
 	{
@@ -1515,7 +1515,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 		{
 			double rot = m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oRot.GetAngle();
 			if (rot > 0.01)
-				pOutput->m_nRotation = rot * 65535;		
+				pOutput->m_nRotation = (int)(rot * 65535);		
 			
 			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oFlipH.ToBool())	pOutput->m_bFlipH = 1;	
 			if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oFlipV.ToBool())	pOutput->m_bFlipV = 1;
@@ -1534,8 +1534,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			{
 				if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff.IsInit())
 				{
-					pOutput->m_nRelLeft	= m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
-					pOutput->m_nRelTop	= m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
+					pOutput->m_nRelLeft	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oX.ToEmu();
+					pOutput->m_nRelTop	= (int)m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oOff->m_oY.ToEmu();
 				}
 				else
 				{
@@ -1544,8 +1544,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				}
 				if (m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt.IsInit())
 				{
-					pOutput->m_nRelRight	= pOutput->m_nRelLeft + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
-					pOutput->m_nRelBottom	= pOutput->m_nRelTop + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
+					pOutput->m_nRelRight	= (int)pOutput->m_nRelLeft + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCx.GetValue();
+					pOutput->m_nRelBottom	= (int)pOutput->m_nRelTop + m_ooxGroup->m_oGroupSpPr->m_oXfrm->m_oExt->m_oCy.GetValue();
 				}
 				else
 				{
@@ -1700,7 +1700,7 @@ bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 		
 			unsigned char opacity = m_ooxBackground->m_oColor->Get_A();
 			if (opacity != 0xff)
-				pOutput->m_nFillOpacity = opacity / 255. * 100;	
+				pOutput->m_nFillOpacity = (int)(opacity / 255. * 100);	
 		}
 		if (m_ooxBackground->m_oColor->GetValue() == SimpleTypes::colormodeAuto)
 			rtfColor.m_bAuto = true;
@@ -1837,8 +1837,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 				meta.GetBounds(&dX, &dY, &dW, &dH);
 				meta.Close();
 				
-				pOutput.m_nWidthGoal	= dW * 15;  //pixels to twip 
-				pOutput.m_nHeightGoal	= dH * 15;  //pixels to twip;
+				pOutput.m_nWidthGoal	= (int)(dW * 15);  //pixels to twip 
+				pOutput.m_nHeightGoal	= (int)(dH * 15);  //pixels to twip;
 			}
 			//Запоминаем только имя
 			pOutput.m_sPicFilename = sPath;

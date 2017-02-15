@@ -361,6 +361,8 @@ namespace OOX
 		et_a_spcAft,	// <a:spcAft>
 		et_a_spcBef,	// <a:spcBef>
 		et_a_lnSpc,		// <a:lnSpc>	
+		et_a_buChar,
+		et_a_buAutoNum,
 
 		et_ds_schemaRef, // <ds:shemeRef>
 		et_ds_schemaRefs, // <ds:schemaRefs>		

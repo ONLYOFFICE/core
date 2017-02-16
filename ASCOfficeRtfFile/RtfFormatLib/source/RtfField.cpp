@@ -100,7 +100,10 @@ std::wstring RtfFieldInst::RenderToOOX(RenderParameter oRenderParameter)
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
-	return L"";
+	if (m_pTextItems)
+		return m_pTextItems->RenderToOOX(oRenderParameter);
+	else 
+		return L"";
 }
 std::wstring RtfField::RenderToRtf(RenderParameter oRenderParameter)
 {

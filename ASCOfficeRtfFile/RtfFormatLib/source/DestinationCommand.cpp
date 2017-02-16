@@ -1622,7 +1622,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 			m_oField.m_pResult = oNewFieldInst;
 		}
 		
-		oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt
+		//oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt
 		//{\field{\*\fldinst...}{\*\fldrslt...} ??? }
 		//{\field{\*\fldinst...}{\*\fldrslt...}}{ ??? }
 	}

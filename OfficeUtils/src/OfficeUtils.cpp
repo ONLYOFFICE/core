@@ -41,14 +41,14 @@ COfficeUtils::COfficeUtils(OnProgressCallback* fCallback)
 
 HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& zipFile, const std::wstring& unzipDir,  wchar_t* password, SHORT extract_without_path)
 {
-  if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
-  {
-    return S_OK;
-  }
-  else
-  {
-    return S_FALSE;
-  }
+	if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
 }
 
 

@@ -1381,10 +1381,20 @@ private:
         std::vector<std::wstring> arResult;
         boost::algorithm::split(arResult, sField, boost::algorithm::is_any_of(L" \""), boost::algorithm::token_compress_on);
 
-        if (arResult.size()< 1)
+		while (!arResult.empty())
+		{
+			if (arResult[0].empty())
+				arResult.erase( arResult.begin(), arResult.begin() + 1 );
+			else
+				break;
+		}
+
+        if (arResult.empty())
             return;
-        if (L"SYMBOL" != arResult[0])
+
+        if (L"SYMBOL" != arResult[0] && L"HYPERLINK" != arResult[0])
             return;
+
         nStartTokenize = arResult[0].length();
 
         for (size_t i = 1 ; i < arResult.size(); i++)
@@ -1429,42 +1439,55 @@ private:
 
             nStartTokenize += (int)sResTokenize.length();
 		}
-		if( L"" == sCharCode || L"" == sCharFont )
-			return;
-		
-		int nCharCode = Strings::ToInteger( sCharCode );
-		std::string sCharA; sCharA += char(nCharCode );
 
-		RtfFont oSymbolFont;
-		if( true == oDocument.m_oFontTable.GetFont( sCharFont, oSymbolFont ) )
-			oReader.m_oState->m_oCharProp.m_nFont = oSymbolFont.m_nID;
-		else
+		std::wstring sResult;
+		if ( L"SYMBOL" == arResult[0])
 		{
-			oSymbolFont.m_sName = sCharFont;
-			oSymbolFont.m_nID = oDocument.m_oFontTable.GetCount() + 1;
-			oSymbolFont.m_nCodePage = CP_SYMBOL;
-			oReader.m_oState->m_oCharProp.m_nFont = oSymbolFont.m_nID;
-			oDocument.m_oFontTable.DirectAddItem( oSymbolFont );
+			if ( L"" == sCharCode || L"" == sCharFont ) return;
+			int nCharCode = Strings::ToInteger( sCharCode );
+			std::string sCharA; sCharA += char(nCharCode );
+
+			RtfFont oSymbolFont;
+			if( true == oDocument.m_oFontTable.GetFont( sCharFont, oSymbolFont ) )
+				oReader.m_oState->m_oCharProp.m_nFont = oSymbolFont.m_nID;
+			else
+			{
+				oSymbolFont.m_sName = sCharFont;
+				oSymbolFont.m_nID = oDocument.m_oFontTable.GetCount() + 1;
+				oSymbolFont.m_nCodePage = CP_SYMBOL;
+				oReader.m_oState->m_oCharProp.m_nFont = oSymbolFont.m_nID;
+				oDocument.m_oFontTable.DirectAddItem( oSymbolFont );
+			}
+
+			int nSkipChar = 0;
+			
+			RtfAbstractReader reader;			
+			sResult	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
+		}
+		else if ( L"HYPERLINK" == arResult[0])
+		{
+			sResult = sCharCode;
 		}
 
-		int nSkipChar = 0;
-		
-		RtfAbstractReader reader;
-		
-        std::wstring sResultSymbol	= reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
-	//свойства копировать ? ващето есть дубль - проверить	
-		m_oField.m_pResult = RtfFieldInstPtr ( new RtfFieldInst() );
-		m_oField.m_pResult->SetDefault();
+		if (sResult.empty()) return;
+	
+		RtfFieldInstPtr newResult = RtfFieldInstPtr ( new RtfFieldInst() );
+		newResult->SetDefault();
 		
 		RtfParagraphPtr pNewPar	( new RtfParagraph() );
 		RtfCharPtr		pNewChar( new RtfChar() );
 		
-		pNewChar->setText( sResultSymbol );
-		pNewChar->m_oProperty = oReader.m_oState->m_oCharProp;
+		pNewChar->setText( sResult);
+		pNewChar->m_oProperty = m_oField.m_pResult->m_oCharProperty;
 
 		pNewPar->AddItem( pNewChar );
-		m_oField.m_pResult->m_pTextItems->AddItem( pNewPar );
-		m_oField.m_bTextOnly = true;
+		newResult->m_pTextItems->AddItem( pNewPar );
+		newResult->m_oCharProperty = m_oField.m_pResult->m_oCharProperty;
+
+		m_oField.m_pResult = newResult;
+		
+		if ( L"SYMBOL" == arResult[0])
+			m_oField.m_bTextOnly = true;
 	 }
 };
 

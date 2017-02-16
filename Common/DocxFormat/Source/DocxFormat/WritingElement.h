@@ -37,9 +37,13 @@
 namespace OOX
 {
 #define WritingElement_AdditionConstructors(Class) \
-	Class(XmlUtils::CXmlNode& oNode)\
+	explicit Class(XmlUtils::CXmlNode& oNode)\
 	{\
 		fromXML( oNode );\
+	}\
+    explicit Class(const XmlUtils::CXmlNode& node)\
+	{\
+		fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
 	}\
 	Class(XmlUtils::CXmlLiteReader& oReader)\
 	{\
@@ -54,7 +58,12 @@ namespace OOX
 	{\
 		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
-	}
+	}\
+    const Class& operator =(XmlUtils::CXmlNode& node)				\
+	{																\
+		fromXML(node);												\
+		return *this;												\
+	}																\
 
 #define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
 	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\
@@ -335,37 +344,51 @@ namespace OOX
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
 		
-		et_p_cNvPicPr,		// <p:cNvPicPr>
-		et_p_cNvPr,			// <p:cNvPr>
-		et_p_pic,			// <p:pic>
-		et_p_Shape,			// <p:sp>
-		et_p_ShapeTree,		// <p:spTree>
-		et_p_spPr,			// <p:spPr>
-		et_p_style,			// <p:style>
-		et_p_groupSpPr,		// <p:grpSpPr>
-		et_p_NvGrpSpPr,
-		et_p_xfrm,
-		et_p_r,
-		et_p_fld,
-		et_p_br,
-		et_p_MathPara,
+        et_p_cNvPicPr,        // <p:cNvPicPr>
+        et_p_cNvPr,            // <p:cNvPr>
+        et_p_pic,            // <p:pic>
+        et_p_Shape,            // <p:sp>
+        et_p_ShapeTree,        // <p:spTree>
+        et_p_spPr,            // <p:spPr>
+        et_p_style,            // <p:style>
+        et_p_groupSpPr,        // <p:grpSpPr>
+        et_p_NvGrpSpPr,
+        et_p_xfrm,
+        et_p_r,
+        et_p_fld,
+        et_p_br,
+        et_p_MathPara,
 
-		et_a_p,			// <a:p>
-		et_a_pPr,		// <a:pPr>
-		et_a_r,			// <a:p>
-		et_a_rPr,		// <a:pPr>
-		et_a_t,			// <a:t>
-		et_a_br,		// <a:br>
-		et_a_spcPts,	// <a:spcPts>
-		et_a_spcPct,	// <a:spcPct>
-		et_a_spcAft,	// <a:spcAft>
-		et_a_spcBef,	// <a:spcBef>
-		et_a_lnSpc,		// <a:lnSpc>	
-		et_a_buChar,
-		et_a_buAutoNum,
+        et_a_textFit,
 
-		et_ds_schemaRef, // <ds:shemeRef>
-		et_ds_schemaRefs, // <ds:schemaRefs>		
+        et_a_hyperlink,
+        et_a_fld,
+        et_a_p,            // <a:p>
+        et_a_pPr,        // <a:pPr>
+        et_a_r,            // <a:p>
+        et_a_rPr,        // <a:pPr>
+        et_a_t,            // <a:t>
+        et_a_br,        // <a:br>
+        et_a_spcPts,    // <a:spcPts>
+        et_a_spcPct,    // <a:spcPct>
+        et_a_spcAft,    // <a:spcAft>
+        et_a_spcBef,    // <a:spcBef>
+        et_a_lnSpc,        // <a:lnSpc>    
+        et_a_tab,
+        et_a_rtl,
+
+        et_a_buNone,
+        et_a_buChar,
+        et_a_buAutoNum,
+        et_a_buClr,
+        et_a_buClrTx,
+        et_a_buFontTx,
+        et_a_buBlip,
+        et_a_buSzPct,
+        et_a_buSzPts,
+        et_a_buSzTx,
+
+        et_ds_schemaRef, // <ds:shemeRef>	
 		
 		et_m_acc, //m:acc
 		et_m_accPr, //m:accPr

@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(EffectElement)
+			WritingElement_AdditionConstructors(EffectElement)
+			PPTX_LOGIC_BASE2(EffectElement)
 
 			EffectElement& operator=(const EffectElement& oSrc)
 			{
@@ -54,8 +55,21 @@ namespace PPTX
 				ref = oSrc.ref;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_effect;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), ref)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"ref", ref);

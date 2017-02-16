@@ -49,9 +49,57 @@ namespace PPTX
 		class Ln : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Ln)
+			WritingElement_AdditionConstructors(Ln)
+			PPTX_LOGIC_BASE2(Ln)
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				//m_eDashType   = OOX::Drawing::linedashtypeUnknown;
+
+                std::wstring sName = oReader.GetName();
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					sName = oReader.GetName();
+					if (_T("a:bevel") == sName	||
+						_T("a:miter") == sName  ||
+						_T("a:round") == sName )
+					{
+						Join.fromXML(oReader);
+					}
+					else if ( _T("a:tailEnd") == sName )
+						tailEnd = oReader;
+					else if ( _T("a:headEnd") == sName )
+						headEnd = oReader;
+
+					else if (	_T("a:gradFill")	== sName ||
+								_T("a:noFill")		== sName ||
+								_T("a:pattFill")	== sName ||
+								_T("a:solidFill")	== sName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( _T("a:custDash") == sName )
+					{
+						//custDash = oReader;
+						//m_eDashType = OOX::Drawing::linedashtypeCustom;
+					}
+					else if ( _T("a:prstDash") == sName )
+					{
+						prstDash = oReader;
+						//m_eDashType = OOX::Drawing::linedashtypePreset;
+					}
+					//else if ( _T("a:extLst") == sName )
+					//	extLst = oReader;
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = _T("a:ln");
@@ -67,9 +115,19 @@ namespace PPTX
 				headEnd = node.ReadNodeNoNS(_T("headEnd"));
 				tailEnd = node.ReadNodeNoNS(_T("tailEnd"));
 
-				Normalize();
-				
 				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cmpd"), cmpd )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"),    w )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();				
 			}
 			virtual std::wstring toXML() const
 			{
@@ -272,12 +330,16 @@ namespace PPTX
 			}
 
 		public:
+//			OOX::Drawing::ELineDashType	m_eDashType;   // Тип штриха
+
 			UniFill						Fill;
 			nullable<PrstDash>			prstDash;
 			//custDash (Custom Dash)  ยง20.1.8.21 
 			LineJoin					Join;
 			nullable<LineEnd>			headEnd;
 			nullable<LineEnd>			tailEnd;
+
+//			nullable<ExtLst>			extLst;
 
 			nullable_limit<Limit::PenAlign>		algn;
 			nullable_limit<Limit::LineCap>		cap;

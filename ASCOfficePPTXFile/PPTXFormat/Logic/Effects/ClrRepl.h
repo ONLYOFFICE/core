@@ -45,7 +45,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(ClrRepl)
+			WritingElement_AdditionConstructors(ClrRepl)
+			PPTX_LOGIC_BASE2(ClrRepl)
 
 			ClrRepl& operator=(const ClrRepl& oSrc)
 			{
@@ -55,8 +56,24 @@ namespace PPTX
 				Color = oSrc.Color;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrRepl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Color.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);

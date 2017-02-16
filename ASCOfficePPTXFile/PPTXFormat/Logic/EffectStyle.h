@@ -46,7 +46,8 @@ namespace PPTX
 		class EffectStyle : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(EffectStyle)
+			WritingElement_AdditionConstructors(EffectStyle)
+			PPTX_LOGIC_BASE2(EffectStyle)
 
 			EffectStyle& operator=(const EffectStyle& oSrc)
 			{
@@ -58,8 +59,11 @@ namespace PPTX
 				sp3d = oSrc.sp3d;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_effectStyle;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
             virtual std::wstring toXML() const;

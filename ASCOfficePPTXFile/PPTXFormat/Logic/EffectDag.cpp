@@ -35,7 +35,24 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void EffectDag::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+            Effects.clear();
+			ReadAttributes( oReader );
 
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				
+				UniEffect uni;
+				Effects.push_back(uni);
+				Effects.back().fromXML(oReader);
+			}
+		}
 		void EffectDag::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_name	= node.GetName();

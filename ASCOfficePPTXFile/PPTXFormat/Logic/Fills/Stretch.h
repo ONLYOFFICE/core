@@ -44,7 +44,8 @@ namespace PPTX
 		class Stretch : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Stretch)
+			WritingElement_AdditionConstructors(Stretch)
+			PPTX_LOGIC_BASE2(Stretch)
 
 			Stretch& operator=(const Stretch& oSrc)
 			{
@@ -54,8 +55,19 @@ namespace PPTX
 				fillRect = oSrc.fillRect;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_stretch;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					if (_T("fillRect") == XmlUtils::GetNameNoNS(oReader.GetName()))
+						fillRect = oReader;
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;

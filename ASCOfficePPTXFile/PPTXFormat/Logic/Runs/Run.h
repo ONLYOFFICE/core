@@ -43,7 +43,8 @@ namespace PPTX
 		class Run : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Run)
+			WritingElement_AdditionConstructors(Run)
+			PPTX_LOGIC_BASE2(Run)
 
 			Run& operator=(const Run& oSrc)
 			{
@@ -57,9 +58,29 @@ namespace PPTX
 			}
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_p_r;
+				return OOX::et_a_r;
 			}
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if ( L"a:rPr" == sName )
+					{
+						rPr =  oReader ;
+					}
+					else if ( L"a:t" == sName )
+					{
+						if (!text.IsInit())
+							text = oReader.GetText2();
+					}
+
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;

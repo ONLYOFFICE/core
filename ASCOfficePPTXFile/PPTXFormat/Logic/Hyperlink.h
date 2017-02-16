@@ -45,9 +45,45 @@ namespace PPTX
 		class Hyperlink : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Hyperlink)
+			WritingElement_AdditionConstructors(Hyperlink)
+			PPTX_LOGIC_BASE2(Hyperlink)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_hyperlink;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (sName == L"snd")
+					{
+						snd	= oReader;
+						break;
+					}
+
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), id )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("invalidUrl"), invalidUrl )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("action"), action )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tgtFrame"), tgtFrame )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tooltip"), tooltip )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("history"), history)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("highlightClick"), highlightClick )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("endSnd"), endSnd )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());

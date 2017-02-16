@@ -42,7 +42,8 @@ namespace PPTX
 		class BuNone : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuNone)
+			WritingElement_AdditionConstructors(BuNone)
+			PPTX_LOGIC_BASE2(BuNone)
 
 			BuNone& operator=(const BuNone& oSrc)
 			{
@@ -51,8 +52,13 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buNone;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

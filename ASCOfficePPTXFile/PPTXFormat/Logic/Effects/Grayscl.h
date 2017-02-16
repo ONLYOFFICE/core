@@ -43,7 +43,8 @@ namespace PPTX
 		class Grayscl : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Grayscl)
+			WritingElement_AdditionConstructors(Grayscl)
+			PPTX_LOGIC_BASE2(Grayscl)
 
 			Grayscl& operator=(const Grayscl& oSrc)
 			{
@@ -52,8 +53,13 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_grayscl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

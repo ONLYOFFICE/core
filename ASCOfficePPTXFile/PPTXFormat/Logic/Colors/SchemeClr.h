@@ -44,12 +44,24 @@ namespace PPTX
 		class SchemeClr : public ColorBase
 		{
 		public:
-			PPTX_LOGIC_BASE(SchemeClr)
+			WritingElement_AdditionConstructors(SchemeClr)
+			PPTX_LOGIC_BASE2(SchemeClr)
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_schemeClr;
+			}	
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring sNodeNamespace;

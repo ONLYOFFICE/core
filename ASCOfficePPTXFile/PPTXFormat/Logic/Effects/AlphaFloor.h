@@ -43,7 +43,8 @@ namespace PPTX
 		class AlphaFloor : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaFloor)
+			WritingElement_AdditionConstructors(AlphaFloor)
+			PPTX_LOGIC_BASE2(AlphaFloor)
 
 			AlphaFloor& operator=(const AlphaFloor& oSrc)
 			{
@@ -52,12 +53,16 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaFloor;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-
 			virtual std::wstring toXML() const
 			{
 				return _T("<a:alphaFloor/>");

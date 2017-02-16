@@ -43,7 +43,8 @@ namespace PPTX
 		class SoftEdge : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(SoftEdge)
+			WritingElement_AdditionConstructors(SoftEdge)
+			PPTX_LOGIC_BASE2(SoftEdge)
 
 			SoftEdge& operator=(const SoftEdge& oSrc)
 			{
@@ -53,8 +54,20 @@ namespace PPTX
 				rad = oSrc.rad;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_softEdge;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("rad"), rad)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"rad", rad);

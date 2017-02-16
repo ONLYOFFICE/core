@@ -48,8 +48,11 @@ namespace PPTX
 			explicit UniColor(XmlUtils::CXmlNode& node);
 			const UniColor& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual OOX::EElementType getType () const;
+
 			virtual void GetColorFrom(XmlUtils::CXmlNode& element);
             virtual bool is_init()const{return (Color.IsInit());};
 

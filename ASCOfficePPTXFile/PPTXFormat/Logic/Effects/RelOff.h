@@ -43,7 +43,8 @@ namespace PPTX
 		class RelOff : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(RelOff)
+			WritingElement_AdditionConstructors(RelOff)
+			PPTX_LOGIC_BASE2(RelOff)
 
 			RelOff& operator=(const RelOff& oSrc)
 			{
@@ -54,8 +55,21 @@ namespace PPTX
 				ty = oSrc.ty;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_relOff;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tx"), tx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ty"), ty)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"tx", tx);

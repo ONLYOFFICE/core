@@ -52,7 +52,8 @@ namespace PPTX
 		class TextParagraphPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TextParagraphPr)
+			WritingElement_AdditionConstructors(TextParagraphPr)
+			PPTX_LOGIC_BASE2(TextParagraphPr)
 
 			TextParagraphPr& operator=(const TextParagraphPr& oSrc)
 			{
@@ -88,7 +89,45 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+						if ( _T("a:lnSpc") == sName )
+						lnSpc = oReader;
+					else if ( _T("a:defRPr") == sName )
+						defRPr = oReader;
+					else if ( _T("a:spcAft") == sName )
+						spcAft = oReader;
+					else if ( _T("a:spcBef") == sName )
+						spcBef = oReader;
+					//else if ( _T("a:extLst") == sName )
+					//	extLst = oReader;
+
+					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("buNone"))
+						ParagraphBullet.fromXML(oReader);
+					else if ( _T("a:buClr") == sName || sName == _T("a:buClrTx"))
+						buColor.fromXML(oReader);
+					else if ( _T("a:buFont") == sName ||  _T("a:buFontTx") == sName )
+						buTypeface.fromXML( oReader);
+					else if ( _T("a:buSzTx") == sName || sName == _T("a:buSzPct")  || sName == _T("a:buSzPts"))
+						buSize.fromXML(oReader);				
+				}
+			}
+
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_pPr;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -138,6 +177,19 @@ namespace PPTX
 				Normalize();
 							
 				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("rtl"),		rtl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"),		lvl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"),	algn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fontAlgn"),fontAlgn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"),	marR)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"),	marL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("indent"),	indent)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("defTabSz"),defTabSz)					
+				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual std::wstring toXML() const
 			{
@@ -466,7 +518,7 @@ namespace PPTX
 			BulletTypeface			buTypeface;
 			Bullet					ParagraphBullet;
 
-			std::vector<Tab>			tabLst;// (Tab List)
+			std::vector<Tab>		tabLst;// (Tab List)
 			nullable<RunProperties> defRPr;
 
 			// Attribs

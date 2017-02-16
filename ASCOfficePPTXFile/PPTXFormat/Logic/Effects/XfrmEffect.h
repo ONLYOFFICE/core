@@ -43,7 +43,8 @@ namespace PPTX
 		class XfrmEffect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(XfrmEffect)
+			WritingElement_AdditionConstructors(XfrmEffect)
+			PPTX_LOGIC_BASE2(XfrmEffect)
 
 			XfrmEffect& operator=(const XfrmEffect& oSrc)
 			{
@@ -59,8 +60,27 @@ namespace PPTX
 				
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_xfrm;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("kx"), kx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ky"), ky)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx"), tx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ty"), ty)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"kx", kx);

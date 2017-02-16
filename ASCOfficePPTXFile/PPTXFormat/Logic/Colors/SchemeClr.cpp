@@ -49,6 +49,23 @@ namespace PPTX
 			Modifiers.clear();
 			node.LoadArray(_T("*"), Modifiers);
 		}
+		void SchemeClr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring strName = oReader.GetName();
+
+				ColorModifier m;
+				Modifiers.push_back(m);
+				Modifiers.back().fromXML(oReader);
+			}
+		}
 
 		std::wstring SchemeClr::toXML() const
 		{

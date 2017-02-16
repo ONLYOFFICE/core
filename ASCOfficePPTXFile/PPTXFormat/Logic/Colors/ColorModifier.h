@@ -42,8 +42,40 @@ namespace PPTX
 		class ColorModifier : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ColorModifier)
-		public:
+			WritingElement_AdditionConstructors(ColorModifier)
+			PPTX_LOGIC_BASE2(ColorModifier)
+
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstClr;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				name = oReader.GetName();
+
+				ReadAttributes( oReader );
+
+				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
+				{
+					ReadAttributes2( oReader );
+				}
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_string sTmp;
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), sTmp)
+				WritingElement_ReadAttributes_End( oReader )
+
+                if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
+					*val = (*val) * 1000; 
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= node.GetName();

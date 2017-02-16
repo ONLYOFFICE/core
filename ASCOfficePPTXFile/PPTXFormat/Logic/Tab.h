@@ -43,9 +43,31 @@ namespace PPTX
 		class Tab : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Tab)
+			WritingElement_AdditionConstructors(Tab)
+			PPTX_LOGIC_BASE2(Tab)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+
+				}
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_tab;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"pos", pos);

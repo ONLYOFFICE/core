@@ -45,9 +45,36 @@ namespace PPTX
 		class Path : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Path)
+			WritingElement_AdditionConstructors(Path)
+			PPTX_LOGIC_BASE2(Path)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_path;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("fillToRect") == strName)
+						rect = oReader;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle    ( oReader, _T("path"), path )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"path", path);

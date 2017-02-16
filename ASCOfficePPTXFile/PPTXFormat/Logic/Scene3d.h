@@ -46,17 +46,37 @@ namespace PPTX
 		class Scene3d : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Scene3d)
+			WritingElement_AdditionConstructors(Scene3d)
+			PPTX_LOGIC_BASE2(Scene3d)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_scene3d;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:camera")
+						camera = oReader;
+                	if (strName == L"a:lightRig")
+						lightRig = oReader;
+                	if (strName == L"a:backdrop")
+						backdrop = oReader;
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-                std::wstring sCameraNodeName = _T("a:camera");
-                std::wstring sLightRigNodeName = _T("a:lightRig");
-                std::wstring sBackdropNodeName = _T("a:backdrop");
-                camera		= node.ReadNode(sCameraNodeName);
-                lightRig	= node.ReadNode(sLightRigNodeName);
-                backdrop	= node.ReadNode(sBackdropNodeName);
+                camera		= node.ReadNode(L"a:camera");
+                lightRig	= node.ReadNode(L"a:lightRig");
+                backdrop	= node.ReadNode(L"a:backdrop");
 				
 				FillParentPointersForChilds();
 			}

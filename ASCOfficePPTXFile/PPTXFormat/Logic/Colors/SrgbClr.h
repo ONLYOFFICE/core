@@ -43,9 +43,47 @@ namespace PPTX
 		class SrgbClr : public ColorBase
 		{
 		public:
-			PPTX_LOGIC_BASE(SrgbClr)
+			WritingElement_AdditionConstructors(SrgbClr)
+			PPTX_LOGIC_BASE2(SrgbClr)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_srgbClr;
+			}	
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring val;
+
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+               
+				if (6 == val.length())
+                {
+                    red		= HexString2Int(val.substr(0, 2));
+                    green	= HexString2Int(val.substr(2, 2));
+                    blue	= HexString2Int(val.substr(4, 2));
+                }	
+			
+			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					ColorModifier m;
+					Modifiers.push_back(m);
+					Modifiers.back().fromXML(oReader);
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring val = node.GetAttribute(_T("val"));

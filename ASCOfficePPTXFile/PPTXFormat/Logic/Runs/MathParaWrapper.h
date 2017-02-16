@@ -50,8 +50,9 @@ namespace PPTX
 		class MathParaWrapper : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(MathParaWrapper)
+			WritingElement_AdditionConstructors(MathParaWrapper)
 
+			MathParaWrapper() {}
 			MathParaWrapper& operator=(const MathParaWrapper& oSrc);
 
 			virtual OOX::EElementType getType () const
@@ -59,6 +60,7 @@ namespace PPTX
 				return OOX::et_p_MathPara;
 			}
 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
 			virtual std::wstring toXML() const;

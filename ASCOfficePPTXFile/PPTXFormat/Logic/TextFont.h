@@ -39,16 +39,29 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class TextFont : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TextFont)
+			WritingElement_AdditionConstructors(TextFont)
+			PPTX_LOGIC_BASE2(TextFont)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return m_eType;
+			}			
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name = node.GetName();
+				m_eType = OOX::et_Unknown;
+				m_name	= node.GetName();
+
+				if ( _T("a:cs") == m_name )
+					m_eType = OOX::et_a_cs;
+				else if ( _T("a:ea") == m_name )
+					m_eType = OOX::et_a_ea;
+				else if ( _T("a:latin") == m_name )
+					m_eType = OOX::et_a_latin;
+				else if ( _T("a:sym") == m_name )
+					m_eType = OOX::et_a_sym;
 
 				node.ReadAttributeBase(L"charset", charset);
 				node.ReadAttributeBase(L"panose", panose);
@@ -56,24 +69,99 @@ namespace PPTX
 
 				typeface = node.GetAttribute(_T("typeface"));
 			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_eType = OOX::et_Unknown;
+				m_name = oReader.GetName();
+				
+				if ( _T("a:cs") == m_name )
+					m_eType = OOX::et_a_cs;
+				else if ( _T("a:ea") == m_name )
+					m_eType = OOX::et_a_ea;
+				else if ( _T("a:latin") == m_name )
+					m_eType = OOX::et_a_latin;
+				else if ( _T("a:sym") == m_name )
+					m_eType = OOX::et_a_sym;
+				else
+					return;
+
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
 			virtual std::wstring toXML() const
 			{
+				std::wstring name = m_name;
+				if (name.empty())
+				{
+					switch ( m_eType )
+					{
+						case OOX::et_a_cs:    name = _T("a:cs");	break;
+						case OOX::et_a_ea:    name = _T("a:ea");	break;
+						case OOX::et_a_latin: name = _T("a:latin"); break;
+						case OOX::et_a_sym:   name = _T("a:sym");	break;
+						default: return _T("");
+					}
+				}
+
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("typeface"), typeface);
 				oAttr.Write(_T("pitchFamily"), pitchFamily);
 				oAttr.Write(_T("charset"), charset);
 				oAttr.Write(_T("panose"), panose);
 
-				return XmlUtils::CreateNode(m_name, oAttr);
+				return XmlUtils::CreateNode(name, oAttr);
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				if ( oReader.GetAttributesCount() <= 0 )
+					return;
+				
+				if ( !oReader.MoveToFirstAttribute() )
+					return;
+				
+				std::wstring wsName = oReader.GetName();
+				while( !wsName.empty() )
+				{
+					wchar_t wsChar0 = wsName[0]; 
+
+					switch ( wsChar0 )
+					{
+					case 'c':
+						if      ( _T("charset")     == wsName ) charset = oReader.GetText();
+						break;
+
+					case 'p':
+						if      ( _T("panose")      == wsName ) panose = oReader.GetText();
+						else if ( _T("pitchFamily") == wsName ) pitchFamily = oReader.GetText();
+						break;
+
+					case 't':
+						if      ( _T("typeface")    == wsName ) typeface = oReader.GetText();
+						break;
+					}
+
+					if ( !oReader.MoveToNextAttribute() )
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
 			}
 
 			void Merge(nullable<TextFont>& font)const
 			{
 				if(!font.is_init())
 					font = TextFont();
-				if(charset.is_init()) font->charset = *charset;
-				if(panose.is_init()) font->panose = *panose;
-				if(pitchFamily.is_init()) font->pitchFamily = *pitchFamily;
+				
+				if(charset.is_init())		font->charset		= *charset;
+				if(panose.is_init())		font->panose		= *panose;
+				if(pitchFamily.is_init())	font->pitchFamily	= *pitchFamily;
+				
 				font->typeface = typeface;
 			}
 
@@ -154,10 +242,10 @@ namespace PPTX
 			nullable_string charset;
 			nullable_string panose;
 			nullable_string pitchFamily;
-			std::wstring typeface;
-		//private:
-		public:
-			std::wstring m_name;
+			std::wstring	typeface;
+
+			std::wstring		m_name;
+			OOX::EElementType	m_eType;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

@@ -44,7 +44,8 @@ namespace PPTX
 		class Fld : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Fld)
+			WritingElement_AdditionConstructors(Fld)			
+			PPTX_LOGIC_BASE2(Fld)
 
 			Fld& operator=(const Fld& oSrc)
 			{
@@ -61,12 +62,48 @@ namespace PPTX
 			}
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_p_fld;
+				return OOX::et_a_fld;
 			}
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (_T("rPr") == strName)
+					{
+						if (!rPr.IsInit())
+							rPr = oReader;
+					}
+					else if (_T("pPr") == strName)
+					{
+						if (!pPr.IsInit())
+							pPr = oReader;
+					}
+					else if (_T("t") == strName)
+					{
+						if (!text.IsInit())
+							text = oReader.GetText2();
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"), id)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				id		= node.GetAttribute(_T("id"));
+				id = node.GetAttribute(_T("id"));
 				node.ReadAttributeBase(L"type", type);
 
 				XmlUtils::CXmlNodes oNodes;

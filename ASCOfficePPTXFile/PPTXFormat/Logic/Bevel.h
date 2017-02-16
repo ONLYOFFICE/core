@@ -44,9 +44,27 @@ namespace PPTX
 		class Bevel : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Bevel)
+			WritingElement_AdditionConstructors(Bevel)
+			PPTX_LOGIC_BASE2(Bevel)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_bevel;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("w"), w)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("h"), h)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prst"), prst)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());

@@ -43,7 +43,8 @@ namespace PPTX
 		class AlphaRepl : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaRepl)
+			WritingElement_AdditionConstructors(AlphaRepl)
+			PPTX_LOGIC_BASE2(AlphaRepl)
 
 			AlphaRepl& operator=(const AlphaRepl& oSrc)
 			{
@@ -53,8 +54,22 @@ namespace PPTX
 				a = oSrc.a;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaRepl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("a"), a)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"a", a);

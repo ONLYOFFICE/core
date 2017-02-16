@@ -44,9 +44,23 @@ namespace PPTX
 		class PrstDash : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(PrstDash)
+			WritingElement_AdditionConstructors(PrstDash)
+			PPTX_LOGIC_BASE2(PrstDash)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstDash;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"val", val);

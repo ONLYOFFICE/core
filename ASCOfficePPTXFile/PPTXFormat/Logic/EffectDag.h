@@ -44,10 +44,10 @@ namespace PPTX
 
 		class EffectDag : public WrapperWritingElement
 		{
-		public:
+		public:			
+			WritingElement_AdditionConstructors(EffectDag)
+			PPTX_LOGIC_BASE2(EffectDag)
 			
-			PPTX_LOGIC_BASE(EffectDag)
-
 			EffectDag& operator=(const EffectDag& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -59,10 +59,21 @@ namespace PPTX
 				m_name = oSrc.m_name;
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_effectDag;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, L"name",	name)
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"type",	type)
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
             virtual void fromXML(XmlUtils::CXmlNode& node);
-
 
             virtual std::wstring toXML() const;
 
@@ -93,7 +104,7 @@ namespace PPTX
 			std::vector<UniEffect>						Effects;
 			nullable_string								name;
 			nullable_limit<Limit::EffectContainerType>	type;
-			std::wstring										m_name;
+			std::wstring								m_name;
 		protected:
             virtual void FillParentPointersForChilds();
 		};

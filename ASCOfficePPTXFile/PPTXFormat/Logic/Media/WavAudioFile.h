@@ -43,7 +43,8 @@ namespace PPTX
 		class WavAudioFile : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(WavAudioFile)
+			WritingElement_AdditionConstructors(WavAudioFile)
+			PPTX_LOGIC_BASE2(WavAudioFile)
 
 			WavAudioFile& operator=(const WavAudioFile& oSrc)
 			{
@@ -55,7 +56,22 @@ namespace PPTX
 				m_name = oSrc.m_name;
 				return *this;
 			}
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_snd; //todooo расширить ...
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), name )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());

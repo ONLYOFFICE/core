@@ -46,16 +46,46 @@ namespace PPTX
 		class LightRig : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LightRig)
+			WritingElement_AdditionConstructors(LightRig)
+			PPTX_LOGIC_BASE2(LightRig)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_lightRig;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:rot")
+					{
+						rot = oReader;
+						break;
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("dir"), dir)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rig"), rig)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				dir = node.GetAttribute(_T("dir"));
 				rig = node.GetAttribute(_T("rig"));
 
-                std::wstring sRotNodeName = _T("a:rot");
-                rot = node.ReadNode(sRotNodeName);
+                rot = node.ReadNode(L"a:rot");
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const

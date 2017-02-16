@@ -40,11 +40,11 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Glow : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Glow)
+			WritingElement_AdditionConstructors(Glow)
+			PPTX_LOGIC_BASE2(Glow)
 
 			Glow& operator=(const Glow& oSrc)
 			{
@@ -55,14 +55,40 @@ namespace PPTX
 				rad = oSrc.rad;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrRepl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Color.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rad"), rad)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);
 				node.ReadAttributeBase(L"rad", rad);
+				
 				FillParentPointersForChilds();
-
 				Normalize();
 			}
 

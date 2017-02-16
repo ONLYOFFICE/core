@@ -43,7 +43,8 @@ namespace PPTX
 		class Gs : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Gs)
+			WritingElement_AdditionConstructors(Gs)
+			PPTX_LOGIC_BASE2(Gs)
 
 			Gs& operator=(const Gs& oSrc)
 			{
@@ -55,8 +56,33 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_gs;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					color.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_int tmp;
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("pos"), tmp)
+				WritingElement_ReadAttributes_End	( oReader )
+
+				pos = tmp.get_value_or(0);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				pos		= node.ReadAttributeInt(L"pos");

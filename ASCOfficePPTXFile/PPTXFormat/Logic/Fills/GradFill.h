@@ -48,7 +48,8 @@ namespace PPTX
 		class GradFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GradFill)
+			WritingElement_AdditionConstructors(GradFill)
+			PPTX_LOGIC_BASE2(GradFill)
 
 			GradFill& operator=(const GradFill& oSrc)
 			{
@@ -67,8 +68,47 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_gradFill;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("path") == strName)
+						path = oReader;
+					else if (_T("lin") == strName)
+						lin = oReader;
+					else if (_T("tileRect") == strName)
+						tileRect = oReader;
+					else if (_T("gsLst") == strName)
+					{
+						int nCurDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						{
+							std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+							Gs g; GsLst.push_back(g);
+							GsLst.back().fromXML(oReader);
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rotWithShape"), rotWithShape )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("flip"), flip )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());

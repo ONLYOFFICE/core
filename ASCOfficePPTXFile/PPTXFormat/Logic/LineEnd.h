@@ -44,9 +44,26 @@ namespace PPTX
 		class LineEnd : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LineEnd)
+			WritingElement_AdditionConstructors(LineEnd)
+			PPTX_LOGIC_BASE2(LineEnd)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buSzPts;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w"), w )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("len"), len )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();

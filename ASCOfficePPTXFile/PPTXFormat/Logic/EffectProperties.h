@@ -44,7 +44,8 @@ namespace PPTX
 		class EffectProperties : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(EffectProperties)
+			WritingElement_AdditionConstructors(EffectProperties)
+			PPTX_LOGIC_BASE2(EffectProperties)
 
 			EffectProperties& operator=(const EffectProperties& oSrc)
 			{
@@ -54,7 +55,23 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				if (List.IsInit())
+					return List->getType();
+				return OOX::et_Unknown;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = oReader.GetName();
+					
+				if (strName == _T("effectLst"))
+					List.reset(new Logic::EffectLst(oReader));
+				else if(strName == _T("effectDag"))
+					List.reset(new Logic::EffectDag(oReader));
+				else 
+					List.reset();
+			}
 			
 			virtual bool is_init() const {return (List.IsInit());};
 

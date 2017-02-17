@@ -275,7 +275,7 @@ namespace BinXlsxRW{
 		oXlsx.Write(oPath, sAdditionalContentTypes);
 		//zip
 		COfficeUtils oOfficeUtils(NULL);
-		oOfficeUtils.CompressFileOrDirectory(sTempDir, sDstFile, -1);
+		oOfficeUtils.CompressFileOrDirectory(sTempDir, sDstFile, true);
 		//clean
 		NSDirectory::DeleteDirectory(sTempDir);
 	}

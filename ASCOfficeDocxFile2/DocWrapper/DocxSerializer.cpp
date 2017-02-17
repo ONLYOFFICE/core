@@ -61,7 +61,7 @@ bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const std::wstring& sSrcFileN
 
     if(S_OK == oCOfficeUtils.ExtractToDirectory(sSrcFileName, strDirSrc, NULL, 0))
 		if(saveToFile(strEditorBin, strDirSrc, sXMLOptions))
-            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName, -1))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName))
 				return true;
 	return false;
 }
@@ -88,7 +88,7 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const std::wstring& sSrcFileN
 
         if(loadFromFile(sEditorBin, strDirDst, sXMLOptions, sThemePath, sMediaPath, sEmbedPath))
         {
-            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName, -1))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, sDstFileName, true))
 				return true;
         }
     }

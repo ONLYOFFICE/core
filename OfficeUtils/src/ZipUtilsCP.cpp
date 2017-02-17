@@ -499,7 +499,7 @@ int oneZipFile(zipFile & zf, zip_fileinfo & zi, std::wstring & file_name, std::w
 	}
 	return 0;
 }
-int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, int compressionLevel )
+int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int compressionLevel )
 { 
 	if ( ( dir != NULL ) && ( outputFile != NULL ) )
 	{
@@ -548,38 +548,40 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				zipDeque.pop_front();
 			}
 
-			CArray<std::wstring> aCurFiles = NSDirectory::GetFiles(szText);
-			CArray<std::wstring> aCurDirectories = NSDirectory::GetDirectories(szText);
+			std::vector<std::wstring> aCurFiles			= NSDirectory::GetFiles(szText);
+			std::vector<std::wstring> aCurDirectories	= NSDirectory::GetDirectories(szText);
 			
-			for(int i = 0; i < aCurDirectories.GetCount(); ++i)
+			if (sorted)
 			{
-				std::wstring sCurDirectory = aCurDirectories[i];
-				std::wstring sDirName = NSSystemPath::GetFileName(sCurDirectory);
-				StringDeque.push_back( sCurDirectory );
+				std::sort(aCurFiles.begin(), aCurFiles.end());
+				std::sort(aCurDirectories.begin(), aCurDirectories.end());
+			}
+			for(size_t i = 0; i < aCurDirectories.size(); ++i)
+			{
+				std::wstring sDirName = NSSystemPath::GetFileName(aCurDirectories[i]);
+				StringDeque.push_back( aCurDirectories[i] );
 				zipDeque.push_back( zipDir + sDirName );
 			}
 		
-			for (int i = 0; i < aCurFiles.GetCount(); ++i)
+			for (size_t i = 0; i < aCurFiles.size(); ++i)
 			{
 				std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 				
 				if (std::wstring::npos != cFileName.find(L"mimetype")) // возможно и полное соответствие
 				{
-					std::wstring cFilePath = aCurFiles[i];
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
 					
 					oneZipFile(zf, zi, file, zipFileName, 0, compressionLevel);
 
-					aCurFiles.RemoveAt(i);
+					aCurFiles.erase(aCurFiles.begin() + i, aCurFiles.begin() + i + 1);
 					break;
 				}
 			}
 
-			for (int i = 0; i < aCurFiles.GetCount(); ++i)
+			for (size_t i = 0; i < aCurFiles.size(); ++i)
 			{
-				std::wstring cFilePath = aCurFiles[i];
-				std::wstring cFileName = NSSystemPath::GetFileName(cFilePath);
+				std::wstring cFileName = NSSystemPath::GetFileName(aCurFiles[i]);
 				file = NSSystemPath::Combine(szText, cFileName);
 				zipFileName = zipDir + cFileName;
 
@@ -953,10 +955,12 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
 		  StringDeque.pop_front();
 
-		  CArray<std::wstring> aCurFiles = NSDirectory::GetFiles(szText);
-		  filescount += aCurFiles.GetCount();
-		  CArray<std::wstring> aCurDirectories = NSDirectory::GetDirectories(szText);
-		  for(int i = 0; i < aCurDirectories.GetCount(); ++i)
+		  std::vector<std::wstring> aCurFiles = NSDirectory::GetFiles(szText);
+		 
+		  filescount += aCurFiles.size();
+		  std::vector<std::wstring> aCurDirectories = NSDirectory::GetDirectories(szText);
+		 
+		  for(size_t i = 0; i < aCurDirectories.size(); ++i)
 		  {
 			  std::wstring sCurDirectory = aCurDirectories[i];
 			  StringDeque.push_back( sCurDirectory );

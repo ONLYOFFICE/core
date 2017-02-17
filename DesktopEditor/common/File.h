@@ -36,7 +36,6 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "Array.h"
 #include "errno.h"
 #include "Base64.h"
 #include <time.h>

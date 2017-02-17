@@ -34,7 +34,6 @@
 #include <stdio.h>
 #include <tchar.h>
 
-
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../src/ConvertOO2OOX.h"
@@ -55,7 +54,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	HRESULT hr = S_OK;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.docx"; //xlsx pptx
+	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.xlsx"; //xlsx pptx docx
 	
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	
@@ -73,7 +72,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	if (hr != S_OK)  return hr;
    
-	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
+	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), true))
         return hr;
 	
 	NSDirectory::DeleteDirectory(dstTempPath);

@@ -360,7 +360,7 @@ namespace NExtractTools
                         std::wstring sToResultDir = NSDirectory::GetFolderPath(sToResult);
                         std::wstring sTo = sToResultDir + FILE_SEPARATOR_STR + _T("changes.zip");
                         COfficeUtils oCOfficeUtils(NULL);
-                        oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo, -1);
+                        oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo);
                     }
                     break;
                 }

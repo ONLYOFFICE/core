@@ -73,9 +73,9 @@ namespace PPTX
 		{
 			directory = directory.substr(0, pos_ppt - 1); //root directory
 		}
-		CArray<std::wstring> arrFiles = NSDirectory::GetFiles(directory, true);
+        std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(directory, true);
 
-		for (int i = 0 ; i < arrFiles.GetCount(); i++)
+        for (size_t i = 0 ; i < arrFiles.size(); i++)
 		{
 			if (std::wstring::npos != arrFiles[i].find(filename))
 			{

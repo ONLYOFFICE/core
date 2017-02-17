@@ -43,9 +43,26 @@ namespace PPTX
 		class Rect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Rect)
+			WritingElement_AdditionConstructors(Rect)
+			PPTX_LOGIC_BASE2(Rect)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_rect;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("t"), t )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), l )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r"), r )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("b"), b )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();

@@ -44,7 +44,7 @@ const wchar_t * abstract_xml::name = L"abstract-xml";
 
 std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream) const
 {
-	for (int i = 0; i < xml_content_.size(); i++)
+	for (size_t i = 0; i < xml_content_.size(); i++)
     {
         xml_content_[i]->text_to_stream(_Wostream);
     }
@@ -53,7 +53,7 @@ std::wostream & abstract_xml::text_to_stream(std::wostream & _Wostream) const
 
 std::wostream & abstract_xml::xml_to_stream(std::wostream & _Wostream) const
 {
-	for (int i = 0; i < xml_content_.size(); i++)
+	for (size_t i = 0; i < xml_content_.size(); i++)
     {
 		xml_content_[i]->xml_to_stream(_Wostream);
     }

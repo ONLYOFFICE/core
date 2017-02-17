@@ -40,8 +40,6 @@
 #include "datatypes/common_attlists.h"
 #include "../docx/xlsxconversioncontext.h"
 
-#include "svg_parser.h"
-
 namespace cpdoccore 
 {
 

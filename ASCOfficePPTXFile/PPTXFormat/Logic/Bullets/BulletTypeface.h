@@ -44,7 +44,8 @@ namespace PPTX
 		class BulletTypeface : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BulletTypeface)
+			WritingElement_AdditionConstructors(BulletTypeface)
+			PPTX_LOGIC_BASE2(BulletTypeface)
 
 			BulletTypeface& operator=(const BulletTypeface& oSrc)
 			{
@@ -55,8 +56,22 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				if (m_Typeface.IsInit())
+					return m_Typeface->getType();
+				return OOX::et_Unknown;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = oReader.GetName();
+				if (strName == _T("a:buFontTx"))
+					m_Typeface.reset(new Logic::BuFontTx(oReader));
+				else if (strName == _T("a:buFont"))
+					m_Typeface.reset(new Logic::TextFont(oReader));
+				else 
+					m_Typeface.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring strName = node.GetName();
@@ -65,7 +80,8 @@ namespace PPTX
 					m_Typeface.reset(new Logic::BuFontTx(node));
 				else if (strName == _T("a:buFont"))
 					m_Typeface.reset(new Logic::TextFont(node));
-				else m_Typeface.reset();
+				else 
+					m_Typeface.reset();
 			}
 
 			virtual void ReadBulletTypefaceFrom(XmlUtils::CXmlNode& element)

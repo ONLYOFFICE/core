@@ -117,14 +117,14 @@ void odt_conversion_context::start_document()
 void odt_conversion_context::end_document()
 {
 	//add sections to root
-	for (long i=0; i< sections_.size(); i++)
+	for (size_t i = 0; i< sections_.size(); i++)
 	{
 		root_document_->add_child_element(sections_[i].elm);
 	}
 	sections_.clear();
 	
 	//add last elements to root 
-	for (long i=0; i< current_root_elements_.size(); i++)
+	for (size_t i = 0; i< current_root_elements_.size(); i++)
 	{
 		root_document_->add_child_element(current_root_elements_[i].elm);
 	}
@@ -246,7 +246,7 @@ void odt_conversion_context::end_drawings()
 		bool bSet = false;
 		if (( anchor == anchor_type::Page || anchor == anchor_type::Paragraph) || (is_header_ || is_footer_))
 		{
-			for (long i = text_context()->current_level_.size()-1; i>=0; i--)
+			for (long i = (long)text_context()->current_level_.size() - 1 ; i>=0; i--)
 			{
 				text_p *p = dynamic_cast<text_p*>(text_context()->current_level_[i].elm.get());
 				text_h *h = dynamic_cast<text_h*>(text_context()->current_level_[i].elm.get());
@@ -513,7 +513,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	if (!columns)return;
 	
 	double width_all = 0;
-	for (int i = 0; i < width_space.size() ; i++)
+	for (size_t i = 0; i < width_space.size() ; i++)
 	{
 		if (width_space[i].first >= 0) 
 		
@@ -527,7 +527,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 
 	section_properties->style_editable_ = false;
 
-	for (int i = 0; i < width_space.size() && width_all > 0 ; i++)
+	for (size_t i = 0; i < width_space.size() && width_all > 0 ; i++)
 	{
 		office_element_ptr col_elm;
 		
@@ -634,7 +634,7 @@ void odt_conversion_context::flush_section()
 {
 	if (sections_.size() > 0 && sections_.back().empty)
 	{
-		for (long i=0; i< current_root_elements_.size(); i++)
+		for (size_t i=0; i< current_root_elements_.size(); i++)
 		{
 			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break

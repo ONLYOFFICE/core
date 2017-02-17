@@ -199,7 +199,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////////////////
 	oox_drawing_ = oox_drawing_ptr(new oox::_pptx_drawing());
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
@@ -217,7 +217,7 @@ void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////в принципе достаточно общая часть ...	
 	Context.get_text_context().start_object();
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
@@ -233,7 +233,7 @@ void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
 	Context.get_slide_context().set_chart(href);
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }
@@ -244,7 +244,7 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_slide_context().set_text_box();	//rect с наваротами
 	Context.get_text_context().start_object();
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->pptx_convert(Context);
     }

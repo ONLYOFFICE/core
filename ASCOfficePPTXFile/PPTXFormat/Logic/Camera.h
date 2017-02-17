@@ -45,9 +45,41 @@ namespace PPTX
 		class Camera : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Camera)
+			WritingElement_AdditionConstructors(Camera)
+			PPTX_LOGIC_BASE2(Camera)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_camera;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:rot")
+					{
+						rot = oReader;
+						break;
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("prst"), prst)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fov"), fov)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoom"), zoom)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				prst	= node.GetAttribute(_T("prst"));

@@ -43,7 +43,8 @@ namespace PPTX
 		class BuBlip : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuBlip)
+			WritingElement_AdditionConstructors(BuBlip)
+			PPTX_LOGIC_BASE2(BuBlip)
 
 			BuBlip& operator=(const BuBlip& oSrc)
 			{
@@ -54,7 +55,28 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"blip")
+					{
+						blip  = oReader;
+						break;
+					}
+				}
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_buBlip;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				blip = node.ReadNodeNoNS(_T("blip"));

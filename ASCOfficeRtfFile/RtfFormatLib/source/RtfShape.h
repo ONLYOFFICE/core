@@ -202,6 +202,14 @@ public:
 	int				m_bGtextFShrinkFit;
 	int				m_bGtextFBestFit;
 
+	int				m_bIsSignatureLine;
+	int				m_bSigSetupAllowComments;
+	std::wstring	m_sSigSetupId;
+	std::wstring	m_sSigSetupProvId;
+	std::wstring	m_sSigSetupSuggSigner;
+	std::wstring	m_sSigSetupSuggSigner2;
+	std::wstring	m_sSigSetupSuggSignerEmail;
+
 	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 
 //pWrapPolygonVertices	Points of the text wrap polygon.

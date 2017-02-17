@@ -175,7 +175,7 @@ style_page_layout_properties *odf_layout_state::get_properties()
 {
 	style_page_layout_properties *result=NULL;
 
-	for (long i= 1; i<elements_.size(); i++)//"0" - root
+	for (size_t i= 1; i<elements_.size(); i++)//"0" - root
 	{
 		result = dynamic_cast<style_page_layout_properties *>(elements_[i].elm.get());
 		if (result) return result;
@@ -185,7 +185,7 @@ style_page_layout_properties *odf_layout_state::get_properties()
 
 style_header_footer_properties *odf_layout_state::get_header_properties()
 {
-	for (long i = 1; i < elements_.size(); i++)//"0" - root
+	for (size_t i = 1; i < elements_.size(); i++)//"0" - root
 	{
 		style_header_style *style_ = dynamic_cast<style_header_style *>(elements_[i].elm.get());
 		if (style_)
@@ -197,7 +197,7 @@ style_header_footer_properties *odf_layout_state::get_header_properties()
 }
 style_header_footer_properties *odf_layout_state::get_footer_properties()
 {
-	for (long i = 1; i < elements_.size(); i++)//"0" - root
+	for (size_t i = 1; i < elements_.size(); i++)//"0" - root
 	{
 		style_footer_style *style_ = dynamic_cast<style_footer_style *>(elements_[i].elm.get());
 		if (style_)

@@ -381,7 +381,7 @@ std::wstring draw_object::office_convert(odf_document * odfDocument, int type)
 		std::wstring temp_file = folderPath + FILE_SEPARATOR_STR + href_result;
 
 		COfficeUtils oCOfficeUtils(NULL);
-		oCOfficeUtils.CompressFileOrDirectory(objectOutPath.c_str(), temp_file.c_str(), -1);
+		oCOfficeUtils.CompressFileOrDirectory(objectOutPath.c_str(), temp_file.c_str(), true);
 	}	
     NSDirectory::DeleteDirectory(objectOutPath);
 	

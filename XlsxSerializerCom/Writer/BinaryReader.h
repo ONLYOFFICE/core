@@ -2692,7 +2692,7 @@ namespace BinXlsxRW {
                                 oClientData.m_oAnchor->append(sAnchor);
 
 								//add VmlDrawing
-                                int nIndex = sVmlXml.rfind('<');
+                                int nIndex = (int)sVmlXml.rfind('<');
                                 std::wstring strXml = oClientData.toXML();
                                 sVmlXml.insert(sVmlXml.begin() + nIndex, strXml.begin(), strXml.end());
                                 m_pCurVmlDrawing->m_aXml.push_back(sVmlXml);

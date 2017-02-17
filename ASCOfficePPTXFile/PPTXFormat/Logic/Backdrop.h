@@ -43,9 +43,60 @@ namespace PPTX
 		class Backdrop : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Backdrop)
+			WritingElement_AdditionConstructors(Backdrop)
+			PPTX_LOGIC_BASE2(Backdrop)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_backdrop;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					nullable_int x, y, z;
+
+					if (strName == L"a:anchor")
+					{
+						ReadAttributes(oReader, x, y, z);
+						anchorX = x.get_value_or(0);
+						anchorY = y.get_value_or(0);
+						anchorZ = z.get_value_or(0);
+					}
+					else if (strName == L"a:norm")
+					{
+						ReadAttributes(oReader, x, y, z);
+						normX = x.get_value_or(0);
+						normY = y.get_value_or(0);
+						normZ = z.get_value_or(0);
+					}
+					else if (strName == L"a:up")
+					{
+						ReadAttributes(oReader, x, y, z);
+						
+						upX = x.get_value_or(0);
+						upY = y.get_value_or(0);
+						upZ = z.get_value_or(0);
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_int & x, nullable_int & y, nullable_int & z )
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dx"), x)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dy"), y)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("dz"), z)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNodeA = node.ReadNode(_T("a:anchor"));

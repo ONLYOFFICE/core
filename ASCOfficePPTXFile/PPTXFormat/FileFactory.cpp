@@ -146,10 +146,11 @@ namespace PPTX
 	{
 		bool bIsDownload = false;
 		std::wstring strFile = relation.Filename().GetPath();
-		int n1 = strFile.find(_T("www"));
-		int n2 = strFile.find(_T("http"));
-		int n3 = strFile.find(_T("ftp"));
-		int n4 = strFile.find(_T("https://"));
+		
+		int n1 = (int)strFile.find(_T("www"));
+		int n2 = (int)strFile.find(_T("http"));
+		int n3 = (int)strFile.find(_T("ftp"));
+		int n4 = (int)strFile.find(_T("https://"));
 
         //если nI сранивать не с 0, то будут проблемы
         //потому что в инсталяции мы кладем файлы в /var/www...

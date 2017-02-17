@@ -42,7 +42,8 @@ namespace PPTX
 		class BuFontTx : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuFontTx)
+			WritingElement_AdditionConstructors(BuFontTx)
+			PPTX_LOGIC_BASE2(BuFontTx)
 
 			BuFontTx& operator=(const BuFontTx& oSrc)
 			{
@@ -50,8 +51,31 @@ namespace PPTX
 				parentElement	= oSrc.parentElement;
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+
+				}
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_buFontTx;
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

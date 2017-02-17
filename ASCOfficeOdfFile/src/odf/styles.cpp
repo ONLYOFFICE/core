@@ -1564,7 +1564,7 @@ void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 	if (content_.header_footer_content_.tracked_changes_)
 		content_.header_footer_content_.tracked_changes_->docx_convert(Context);
 
-    for (int i=0; i < content_.header_footer_content_.content_.size(); i++)
+    for (size_t i = 0; i < content_.header_footer_content_.content_.size(); i++)
     {
         content_.header_footer_content_.content_[i]->docx_convert(Context);
     }

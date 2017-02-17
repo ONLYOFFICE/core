@@ -99,7 +99,7 @@ void pptx_conversion_context::process_layouts()
 	get_text_context().set_process_layouts(true);
 
 	//актуальные
-	for (int layout_index =0; layout_index < layouts.content.size(); layout_index++)
+	for (size_t layout_index =0; layout_index < layouts.content.size(); layout_index++)
 	{
 		start_layout(layout_index);
 
@@ -116,7 +116,7 @@ void pptx_conversion_context::process_layouts()
 
 		if (master)
 		{
-			for (int i = 0; i < master->content_.size(); i++)			
+			for (size_t i = 0; i < master->content_.size(); i++)			
 			{
 				odf_reader::office_element_ptr elm = master->content_[i];
 				if (elm->get_type() == odf_reader::typeDrawFrame)
@@ -152,7 +152,7 @@ void pptx_conversion_context::process_master_pages()
 	get_text_context().set_process_layouts(true);
 
 	//берем только актуальные
-	for (int master_index =0; master_index < masters.content.size();master_index++)
+	for (size_t master_index =0; master_index < masters.content.size();master_index++)
 	{
 		start_master(master_index);
 		
@@ -210,7 +210,7 @@ void pptx_conversion_context::end_document()
 {
     unsigned int count = 1;
    
-	for (int i = 0; i < slideMasters_.size(); i++)
+	for (size_t i = 0; i < slideMasters_.size(); i++)
     {
 		pptx_xml_slideMaster_ptr& slideM = slideMasters_[i];
 
@@ -233,7 +233,7 @@ void pptx_conversion_context::end_document()
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	count=0;
-	for (int i = 0; i < slides_.size(); i++)
+	for (size_t i = 0; i < slides_.size(); i++)
     {
 		pptx_xml_slide_ptr& slide = slides_[i];
 
@@ -255,7 +255,7 @@ void pptx_conversion_context::end_document()
 		count++;
     }
 ///////////////////////////////////////////////////////////////////////////////////////////
-	for (int i = 0; i < slideLayouts_.size(); i++)
+	for (size_t i = 0; i < slideLayouts_.size(); i++)
     {
 		pptx_xml_slideLayout_ptr& slideL = slideLayouts_[i];
 
@@ -287,7 +287,7 @@ void pptx_conversion_context::end_document()
 	//добавляем диаграммы
 
 	count = 0;
-	for (int i = 0; i < charts_.size(); i++)
+	for (size_t i = 0; i < charts_.size(); i++)
     {
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
@@ -300,7 +300,7 @@ void pptx_conversion_context::end_document()
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//добавляем темы
-	for (int i=0; i < themes_.size();i++)
+	for (size_t i=0; i < themes_.size(); i++)
     {
 		output_document_->get_ppt_files().add_theme(themes_[i]);
 	
@@ -500,7 +500,7 @@ bool pptx_conversion_context::start_master(int master_index)
 	process_theme(masters.content[master_index].master_name);//add default theme - одинаковые но под разными именами
 	current_master().add_theme(current_theme().id(), L"tId1");	
 
-	for (long i=0;i<masters.content[master_index].layouts.size();i++)
+	for (size_t i = 0; i < masters.content[master_index].layouts.size(); i++)
 	{
 		current_master().add_layout(masters.content[master_index].layouts[i].Id, masters.content[master_index].layouts[i].rId, 0x80000000 + last_uniq_big_id++);
 	}

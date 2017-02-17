@@ -35,7 +35,7 @@
 
 namespace OOX
 {
-	int static Spt2ShapeType(SimpleTypes::Vml::SptType type) 
+	static int VmlShapeType2PrstShape(SimpleTypes::Vml::SptType type) 
 	{
 		switch(type)
 		{
@@ -209,41 +209,41 @@ namespace OOX
 		//case SimpleTypes::Vml::sptTextInflateTop : 			return SimpleTypes::shapetypeTextInflateTop ; 
 		//case SimpleTypes::Vml::sptTextDeflateTop : 			return SimpleTypes::shapetypeTextDeflateTop ;    
 		//case SimpleTypes::Vml::sptTextDeflateInflate : 		return SimpleTypes::shapetypeTextDeflateInflate ;    
-		//case SimpleTypes::Vml::sptTextDeflateInflateDeflate :return SimpleTypes::shapetypeTextDeflateInflateDeflat ;    
+		//case SimpleTypes::Vml::sptTextDeflateInflateDeflate :	return SimpleTypes::shapetypeTextDeflateInflateDeflat ;    
 		//case SimpleTypes::Vml::sptTextFadeRight : 			return SimpleTypes::shapetypeTextFadeRight  ;    
-		//case SimpleTypes::Vml::sptTextFadeLeft : 			return SimpleTypes::shapetypeTextFadeLeft ;    
+		//case SimpleTypes::Vml::sptTextFadeLeft : 				return SimpleTypes::shapetypeTextFadeLeft ;    
 		//case SimpleTypes::Vml::sptTextFadeUp : 				return SimpleTypes::shapetypeTextFadeUp ;    
-		//case SimpleTypes::Vml::sptTextFadeDown : 			return SimpleTypes::shapetypeTextFadeDown ;    
-		case SimpleTypes::Vml::sptTextSlantUp : 				return SimpleTypes::textshapetypeTextSlantUp 		+2001;   
-		case SimpleTypes::Vml::sptTextSlantDown : 			return SimpleTypes::textshapetypeTextSlantDown 		+2001;  
-		case SimpleTypes::Vml::sptTextCanUp : 				return SimpleTypes::textshapetypeTextCanUp	 		+2001; 
-		case SimpleTypes::Vml::sptTextCanDown : 				return SimpleTypes::textshapetypeTextCanDown 		+2001;  
+		//case SimpleTypes::Vml::sptTextFadeDown : 				return SimpleTypes::shapetypeTextFadeDown ;    
+		case SimpleTypes::Vml::sptTextSlantUp : 				return SimpleTypes::textshapetypeTextSlantUp 	+2001;   
+		case SimpleTypes::Vml::sptTextSlantDown : 				return SimpleTypes::textshapetypeTextSlantDown 	+2001;  
+		case SimpleTypes::Vml::sptTextCanUp : 					return SimpleTypes::textshapetypeTextCanUp	 	+2001; 
+		case SimpleTypes::Vml::sptTextCanDown : 				return SimpleTypes::textshapetypeTextCanDown 	+2001;  
 		
-		case SimpleTypes::Vml::sptFlowChartAlternateProcess :return SimpleTypes::shapetypeFlowChartAlternateProcess ;    
-		case SimpleTypes::Vml::sptFlowChartOffpageConnector :return SimpleTypes::shapetypeFlowChartOffpageConnector ;    
-		case SimpleTypes::Vml::sptCallout90 : 				return SimpleTypes::shapetypeCallout1 ;    
+		case SimpleTypes::Vml::sptFlowChartAlternateProcess :	return SimpleTypes::shapetypeFlowChartAlternateProcess ;    
+		case SimpleTypes::Vml::sptFlowChartOffpageConnector :	return SimpleTypes::shapetypeFlowChartOffpageConnector ;    
+		case SimpleTypes::Vml::sptCallout90 : 					return SimpleTypes::shapetypeCallout1 ;    
 		case SimpleTypes::Vml::sptAccentCallout90 : 			return SimpleTypes::shapetypeAccentCallout1 ;    
 		case SimpleTypes::Vml::sptBorderCallout90 : 			return SimpleTypes::shapetypeBorderCallout1;    
-		case SimpleTypes::Vml::sptAccentBorderCallout90 : 	return SimpleTypes::shapetypeAccentBorderCallout1 ;   
-		case SimpleTypes::Vml::sptLeftRightUpArrow : 		return SimpleTypes::shapetypeLeftRightUpArrow ;    
+		case SimpleTypes::Vml::sptAccentBorderCallout90 : 		return SimpleTypes::shapetypeAccentBorderCallout1 ;   
+		case SimpleTypes::Vml::sptLeftRightUpArrow : 			return SimpleTypes::shapetypeLeftRightUpArrow ;    
 		case SimpleTypes::Vml::sptSun : 						return SimpleTypes::shapetypeSun ;    
-		case SimpleTypes::Vml::sptMoon : 					return SimpleTypes::shapetypeMoon ;    
+		case SimpleTypes::Vml::sptMoon : 						return SimpleTypes::shapetypeMoon ;    
 		case SimpleTypes::Vml::sptBracketPair : 				return SimpleTypes::shapetypeBracketPair ;    
-		case SimpleTypes::Vml::sptBracePair : 				return SimpleTypes::shapetypeBracePair ;    
-		case SimpleTypes::Vml::sptSeal4 : 					return SimpleTypes::shapetypeStar4 ;    
-		case SimpleTypes::Vml::sptDoubleWave : 				return SimpleTypes::shapetypeDoubleWave ;    
-		case SimpleTypes::Vml::sptActionButtonBlank : 		return SimpleTypes::shapetypeActionButtonBlank ;    
-		case SimpleTypes::Vml::sptActionButtonHome : 		return SimpleTypes::shapetypeActionButtonHome ;    
-		case SimpleTypes::Vml::sptActionButtonHelp : 		return SimpleTypes::shapetypeActionButtonHelp ;    
+		case SimpleTypes::Vml::sptBracePair : 					return SimpleTypes::shapetypeBracePair ;    
+		case SimpleTypes::Vml::sptSeal4 : 						return SimpleTypes::shapetypeStar4 ;    
+		case SimpleTypes::Vml::sptDoubleWave : 					return SimpleTypes::shapetypeDoubleWave ;    
+		case SimpleTypes::Vml::sptActionButtonBlank : 			return SimpleTypes::shapetypeActionButtonBlank ;    
+		case SimpleTypes::Vml::sptActionButtonHome : 			return SimpleTypes::shapetypeActionButtonHome ;    
+		case SimpleTypes::Vml::sptActionButtonHelp : 			return SimpleTypes::shapetypeActionButtonHelp ;    
 		case SimpleTypes::Vml::sptActionButtonInformation : 	return SimpleTypes::shapetypeActionButtonInformation ;    
 		case SimpleTypes::Vml::sptActionButtonForwardNext : 	return SimpleTypes::shapetypeActionButtonForwardNext ;    
-		case SimpleTypes::Vml::sptActionButtonBackPrevious : return SimpleTypes::shapetypeActionButtonBackPrevious  ;   
+		case SimpleTypes::Vml::sptActionButtonBackPrevious :	return SimpleTypes::shapetypeActionButtonBackPrevious  ;   
 		case SimpleTypes::Vml::sptActionButtonEnd : 			return SimpleTypes::shapetypeActionButtonEnd ;    
-		case SimpleTypes::Vml::sptActionButtonBeginning : 	return SimpleTypes::shapetypeActionButtonBeginning ;    
-		case SimpleTypes::Vml::sptActionButtonReturn : 		return SimpleTypes::shapetypeActionButtonReturn ;    
-		case SimpleTypes::Vml::sptActionButtonDocument : 	return SimpleTypes::shapetypeActionButtonDocument ;    
-		case SimpleTypes::Vml::sptActionButtonSound : 		return SimpleTypes::shapetypeActionButtonSound ;    
-		case SimpleTypes::Vml::sptActionButtonMovie : 		return SimpleTypes::shapetypeActionButtonMovie ;   
+		case SimpleTypes::Vml::sptActionButtonBeginning : 		return SimpleTypes::shapetypeActionButtonBeginning ;    
+		case SimpleTypes::Vml::sptActionButtonReturn : 			return SimpleTypes::shapetypeActionButtonReturn ;    
+		case SimpleTypes::Vml::sptActionButtonDocument : 		return SimpleTypes::shapetypeActionButtonDocument ;    
+		case SimpleTypes::Vml::sptActionButtonSound : 			return SimpleTypes::shapetypeActionButtonSound ;    
+		case SimpleTypes::Vml::sptActionButtonMovie : 			return SimpleTypes::shapetypeActionButtonMovie ;   
 		//case SimpleTypes::Vml::sptHostControl : 				return SimpleTypes::shapetype ;    
 		case SimpleTypes::Vml::sptTextBox : 					return 2000;
 		default:

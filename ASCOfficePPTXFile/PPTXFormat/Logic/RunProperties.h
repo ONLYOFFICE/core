@@ -47,12 +47,107 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		class Rtl : public WrapperWritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(Rtl)
+			PPTX_LOGIC_BASE2(Rtl)
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_rtl;
+			}			
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+
+			}
+			virtual std::wstring toXML() const
+			{
+				XmlUtils::CAttribute oAttr;
+				return XmlUtils::CreateNode(L"a:rtl", oAttr);
+			}
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{			
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				pReader->Seek(_end_rec);
+			}
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(L"<a:rtl/>");				
+			}
+		protected:
+			virtual void FillParentPointersForChilds(){};
+		};
+
 		class RunProperties : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(RunProperties)
+			WritingElement_AdditionConstructors(RunProperties)
+			PPTX_LOGIC_BASE2(RunProperties)
+			
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_rPr;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					
+					if (L"a:blipFill"	== sName	||
+						L"a:gradFill"	== sName	||
+						L"a:grpFill"	== sName	||
+						L"a:noFill"		== sName	||
+						L"a:pattFill"	== sName	||
+						L"a:solidFill" == sName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( _T("a:ln") == sName )
+						ln = oReader;
+					else if ( _T("a:cs") == sName )
+						cs = oReader;					
+					else if ( _T("a:ea") == sName )
+						ea = oReader;				
+					else if ( _T("a:latin") == sName )
+						latin = oReader;			
+					else if ( _T("a:sym") == sName )
+						sym = oReader;		
+					else if ( _T("a:hlinkClick") == sName )
+						hlinkClick = oReader;			
+					else if ( _T("a:rtl") == sName )
+						rtl = oReader;
+					else if (	L"a:effectDag"	== sName	||
+								L"a:effectLst"	== sName	||
+								L"a:extLst"		== sName )
+					{
+						EffectList.fromXML(oReader);		
+					}
+				}			
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -102,6 +197,8 @@ namespace PPTX
 							hlinkClick = oNode;
 						else if (_T("hlinkMouseOver") == strName)
 							hlinkMouseOver = oNode;
+						else if (_T("rtl") == strName)
+							rtl = oNode;
 					}
 				}
 
@@ -111,6 +208,25 @@ namespace PPTX
 				Normalize();
 				
 				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("b"),			b)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("i"),			i)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sz"),			sz)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("u"),			u)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("baseline"),	baseline)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("spc"),			spc)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lang"),		lang)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("kumimoji"),	kumimoji)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dirty"),		dirty)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("normalizeH"),	normalizeH)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("noProof"),		noProof)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("smtClean"),	smtClean)
+				WritingElement_ReadAttributes_End	( oReader )		
+				
+				Normalize();
 			}
 			virtual std::wstring toXML() const
 			{
@@ -145,6 +261,7 @@ namespace PPTX
 				oValue.WriteNullable(sym);
 				oValue.WriteNullable(hlinkClick);
 				oValue.WriteNullable(hlinkMouseOver);
+				oValue.WriteNullable(rtl);
 
 				return XmlUtils::CreateNode(m_name, oAttr, oValue);
 			}
@@ -186,6 +303,7 @@ namespace PPTX
 				pWriter->Write(sym);
 				pWriter->Write(hlinkClick);
 				pWriter->Write(hlinkMouseOver);
+				pWriter->Write(rtl);
 
 				pWriter->EndNode(m_name);
 			}
@@ -275,6 +393,7 @@ namespace PPTX
 
 				pWriter->WriteRecord2(7, hlinkClick);
 				pWriter->WriteRecord2(8, hlinkMouseOver);
+				pWriter->WriteRecord2(9, rtl);
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -482,7 +601,7 @@ namespace PPTX
 			nullable<TextFont>					sym;
 			nullable<Hyperlink>					hlinkClick;
 			nullable<Hyperlink>					hlinkMouseOver;
-			//rtl (Right to Left Run)  §21.1.2.2.8 
+			nullable<Rtl>						rtl;
 
 			// Attributes
 			nullable_string						altLang;
@@ -504,9 +623,7 @@ namespace PPTX
 			nullable_limit<Limit::TextStrike>	strike;
 			nullable_int						sz;
 			nullable_limit<Limit::TextUnderline> u;
-		//private:
-		public:
-			std::wstring m_name;
+			std::wstring						m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

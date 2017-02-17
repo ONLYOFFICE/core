@@ -43,7 +43,8 @@ namespace PPTX
 		class AlphaBiLevel : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaBiLevel)
+			WritingElement_AdditionConstructors(AlphaBiLevel)
+			PPTX_LOGIC_BASE2(AlphaBiLevel)
 
 			AlphaBiLevel& operator=(const AlphaBiLevel& oSrc)
 			{
@@ -54,7 +55,22 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaBiLevel;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle     ( oReader, _T("thresh"), thresh)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"thresh", thresh);

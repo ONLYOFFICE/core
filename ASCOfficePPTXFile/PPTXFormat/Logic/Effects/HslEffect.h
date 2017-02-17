@@ -43,7 +43,8 @@ namespace PPTX
 		class HslEffect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(HslEffect)
+			WritingElement_AdditionConstructors(HslEffect)
+			PPTX_LOGIC_BASE2(HslEffect)
 
 			HslEffect& operator=(const HslEffect& oSrc)
 			{
@@ -55,8 +56,24 @@ namespace PPTX
 				sat = oSrc.sat;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_hsl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hue"), hue)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sat"), sat)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lum"), lum)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"hue", hue);

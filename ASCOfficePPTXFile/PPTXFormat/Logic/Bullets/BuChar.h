@@ -42,7 +42,8 @@ namespace PPTX
 		class BuChar : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuChar)
+			WritingElement_AdditionConstructors(BuChar)
+			PPTX_LOGIC_BASE2(BuChar)
 
 			BuChar& operator=(const BuChar& oSrc)
 			{
@@ -52,13 +53,27 @@ namespace PPTX
 				Char = oSrc.Char;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buAutoNum;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"char", Char)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Char = node.GetAttribute(_T("char"));
 			}
-
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;

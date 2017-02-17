@@ -42,7 +42,8 @@ namespace PPTX
 		class BuSzTx : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuSzTx)
+			WritingElement_AdditionConstructors(BuSzTx)
+			PPTX_LOGIC_BASE2(BuSzTx)
 
 			BuSzTx& operator=(const BuSzTx& oSrc)
 			{
@@ -51,8 +52,13 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buSzTx;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

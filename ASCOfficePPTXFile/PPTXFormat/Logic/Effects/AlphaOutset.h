@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(AlphaOutset)
+			WritingElement_AdditionConstructors(AlphaOutset)
+			PPTX_LOGIC_BASE2(AlphaOutset)
 
 			AlphaOutset& operator=(const AlphaOutset& oSrc)
 			{
@@ -54,8 +55,20 @@ namespace PPTX
 				rad = oSrc.rad;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaOutset;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rad"), rad)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"rad", rad);

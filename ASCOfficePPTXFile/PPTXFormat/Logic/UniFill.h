@@ -48,8 +48,50 @@ namespace PPTX
 		class UniFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniFill)
-		public:
+			WritingElement_AdditionConstructors(UniFill)
+			PPTX_LOGIC_BASE2(UniFill)
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = oReader.GetName();
+				
+				if (name == _T("a:blipFill"))
+				{
+					m_type = blipFill;
+					Fill.reset(new Logic::BlipFill(oReader));
+				}
+				else if(name == _T("a:noFill"))
+				{
+					m_type = noFill;
+					Fill.reset(new Logic::NoFill(oReader));
+				}
+				else if(name == _T("a:solidFill"))
+				{
+					m_type = solidFill;
+					Fill.reset(new Logic::SolidFill(oReader));
+				}
+				else if(name == _T("a:gradFill"))
+				{
+					m_type = gradFill;
+					Fill.reset(new Logic::GradFill(oReader));
+				}
+				else if(name == _T("a:pattFill"))
+				{
+					m_type = pattFill;
+					Fill.reset(new Logic::PattFill(oReader));
+				}
+				else if(name == _T("a:grpFill"))
+				{
+					m_type = grpFill;
+					Fill.reset(new Logic::GrpFill(oReader));
+				}
+				else
+				{
+					m_type = notInit;
+					Fill.reset();
+				}	
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());

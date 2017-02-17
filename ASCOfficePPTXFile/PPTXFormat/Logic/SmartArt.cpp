@@ -72,7 +72,7 @@ namespace PPTX
 
 				if ((pDiagramData) && (pDiagramData->m_oExtLst.IsInit()))
 				{
-					for (int i = 0; i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
+					for (size_t i = 0; i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
 					{
 						if (pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 						{
@@ -106,7 +106,7 @@ namespace PPTX
 				// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
                OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
 
-				int a1 = pathDiagramData.GetFilename().find(L".");
+				int a1 = (int)pathDiagramData.GetFilename().find(L".");
 				std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
 				
 				OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";	
@@ -201,7 +201,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
             std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstMedia();
-            int nPos = strDstChart.rfind(wchar_t('m'));
+            int nPos = (int)strDstChart.rfind(wchar_t('m'));
 			if (-1 != nPos)
                 strDstChart = strDstChart.substr(0, nPos);
 

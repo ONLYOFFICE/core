@@ -44,7 +44,8 @@ namespace PPTX
 		class SysClr : public ColorBase
 		{
 		public:
-			PPTX_LOGIC_BASE(SysClr)
+			WritingElement_AdditionConstructors(SysClr)
+			PPTX_LOGIC_BASE2(SysClr)
 
 			virtual DWORD GetRGBA(DWORD RGBA) const
 			{
@@ -146,7 +147,33 @@ namespace PPTX
 				Modifiers.clear();
 				node.LoadArray(_T("*"), Modifiers);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_sysClr;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					ColorModifier m;
+					Modifiers.push_back(m);
+					Modifiers.back().fromXML(oReader);
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
 			virtual std::wstring toXML() const
 			{

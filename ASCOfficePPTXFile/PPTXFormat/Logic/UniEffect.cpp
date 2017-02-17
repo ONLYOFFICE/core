@@ -86,7 +86,108 @@ namespace PPTX
 			fromXML(node);
 			return *this;
 		}
-
+		void UniEffect::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+            std::wstring name = oReader.GetName();
+			
+			switch ((int)name[0])
+			{
+			case 'a':
+				{
+					if (name == _T("alphaCeiling"))	{ Effect.reset(new Logic::AlphaCeiling(oReader)); break; }	//1
+					if (name == _T("alphaFloor"))	{ Effect.reset(new Logic::AlphaFloor(oReader)); break; }	//2
+					if (name == _T("alphaRepl"))	{ Effect.reset(new Logic::AlphaRepl(oReader)); break; }		//3
+					if (name == _T("alphaOutset"))	{ Effect.reset(new Logic::AlphaOutset(oReader)); break; }	//4
+					if (name == _T("alphaModFix"))	{ Effect.reset(new Logic::AlphaModFix(oReader)); break; }	//5
+					if (name == _T("alphaBiLevel"))	{ Effect.reset(new Logic::AlphaBiLevel(oReader)); break; }	//6
+					if (name == _T("alphaInv"))		{ Effect.reset(new Logic::AlphaInv(oReader)); break; }		//7
+					if (name == _T("alphaMod"))		{ Effect.reset(new Logic::AlphaMod(oReader)); break; }		//8
+					break;
+				}
+			case 'b':
+				{
+					if (name == _T("blur"))		{ Effect.reset(new Logic::Blur(oReader)); break; }				//9
+					if (name == _T("biLevel"))	{ Effect.reset(new Logic::BiLevel(oReader)); break; }			//10
+					if (name == _T("blend"))	{ Effect.reset(new Logic::Blend(oReader)); break; }				//11
+					break;
+				}
+			case 'c':
+				{
+					if (name == _T("cont"))		{ Effect.reset(new Logic::EffectDag(oReader)); break; }			//12
+					if (name == _T("clrRepl"))	{ Effect.reset(new Logic::ClrRepl(oReader)); break; }			//13
+					if (name == _T("clrChange")){ Effect.reset(new Logic::ClrChange(oReader)); break; }			//14
+					break;
+				}
+			case 'd':
+				{
+					if (name == _T("duotone"))	{ Effect.reset(new Logic::Duotone(oReader)); break; }			//15
+					break;
+				}
+			case 'e':
+				{
+					if (name == _T("effect"))	{ Effect.reset(new Logic::EffectElement(oReader)); break; }		//16
+					break;
+				}
+			case 'f':
+				{
+					if (name == _T("fillOverlay")){ Effect.reset(new Logic::FillOverlay(oReader)); break; }		//17
+					if (name == _T("fill"))		{ Effect.reset(new Logic::FillEffect(oReader)); break; }		//18
+					break;
+				}
+			case 'g':
+				{
+					if (name == _T("glow"))		{ Effect.reset(new Logic::Glow(oReader)); break; }				//19
+					if (name == _T("grayscl"))	{ Effect.reset(new Logic::Grayscl(oReader)); break; }			//20
+					break;
+				}
+			case 'h':
+				{
+					if (name == _T("hsl"))		{ Effect.reset(new Logic::HslEffect(oReader)); break; }			//21
+					break;
+				}
+			case 'i':
+				{
+					if (name == _T("innerShdw")){ Effect.reset(new Logic::InnerShdw(oReader)); break; }		//22
+					break;
+				}
+			case 'l':
+				{
+					if (name == _T("lum"))	{ Effect.reset(new Logic::LumEffect(oReader)); break; }			//23
+					break;
+				}
+			case 'o':
+				{
+					if (name == _T("outerShdw")){ Effect.reset(new Logic::OuterShdw(oReader)); break; }		//24
+					break;
+				}
+			case 'p':
+				{
+					if (name == _T("prstShdw")){ Effect.reset(new Logic::PrstShdw(oReader)); break; }			//25
+					break;
+				}
+			case 'r':
+				{
+					if (name == _T("reflection"))	{ Effect.reset(new Logic::Reflection(oReader)); break; }	//26
+					if (name == _T("relOff"))		{ Effect.reset(new Logic::RelOff(oReader)); break; }		//27
+					break;
+				}
+			case 's':
+				{
+					if (name == _T("softEdge"))		{ Effect.reset(new Logic::SoftEdge(oReader)); break; }		//28
+					break;
+				}
+			case 't':
+				{
+					if (name == _T("tint"))			{ Effect.reset(new Logic::TintEffect(oReader)); break; }	//29
+					break;
+				}
+			case 'x':
+				{
+					if (name == _T("xfrm"))			{ Effect.reset(new Logic::XfrmEffect(oReader)); break; }	//30
+					break;
+				}
+			}
+		}
 		void UniEffect::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());

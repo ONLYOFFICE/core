@@ -926,7 +926,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
                         if (vml->m_oSpt.IsInit())
 						{
                             SimpleTypes::Vml::SptType sptType = static_cast<SimpleTypes::Vml::SptType>(vml->m_oSpt->GetValue());
-                            odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+                            odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 							bSet = true;
 						}
                         else if ((vml->m_oConnectorType.IsInit()) && (vml->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
@@ -955,7 +955,7 @@ void OoxConverter::convert(OOX::Vml::CGroup *vml_group)
 					OOX::Vml::CShapeType * vml = static_cast<OOX::Vml::CShapeType*>(vml_group->m_arrItems[i]);
                     SimpleTypes::Vml::SptType sptType = vml->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(vml->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
 
-                    odf_context()->drawing_context()->start_shape(OOX::Spt2ShapeType(sptType));
+                    odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
 						OoxConverter::convert(vml);			
 					odf_context()->drawing_context()->end_shape(); 
 				}break;

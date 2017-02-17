@@ -41,11 +41,11 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class PattFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(PattFill)
+			WritingElement_AdditionConstructors(PattFill)
+			PPTX_LOGIC_BASE2(PattFill)
 
 			PattFill& operator=(const PattFill& oSrc)
 			{
@@ -59,8 +59,34 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+					if (sName == L"a:fgClr")
+						fgClr.fromXML(oReader);
+					if (sName == L"a:bgClr")
+						bgClr.fromXML(oReader);
+				}
+				FillParentPointersForChilds();	
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_pattFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prst"), prst )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());

@@ -43,7 +43,8 @@ namespace PPTX
 		class Duotone : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Duotone)
+			WritingElement_AdditionConstructors(Duotone)
+			PPTX_LOGIC_BASE2(Duotone)
 
 			Duotone& operator=(const Duotone& oSrc)
 			{
@@ -53,15 +54,32 @@ namespace PPTX
 				Colors = oSrc.Colors;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_duotone;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					UniColor col;
+					Colors.push_back(col);
+					Colors.back().fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Colors.clear();
 				node.LoadArray(_T("*"), Colors);
 				FillParentPointersForChilds();
 			}
-
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;

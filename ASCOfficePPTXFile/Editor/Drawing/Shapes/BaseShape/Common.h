@@ -563,8 +563,8 @@ private:
 public:
 	COOXToVMLGeometry()
 	{
-                m_bIsFillPart = false;
-                m_bIsStrokePart = false;
+		m_bIsFillPart = false;
+		m_bIsStrokePart = false;
 		
 		m_dScaleX = 1.0;
 		m_dScaleY = 1.0;

@@ -223,8 +223,9 @@ void styles_container::add_master_page_name(const std::wstring & StyleName, cons
 std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std::wstring & layout_name,const std::wstring & master_name)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t index =0;
+	
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].layout_name == layout_name && content[index].master_name == master_name)
 		{
@@ -250,8 +251,8 @@ std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std
 std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std::wstring & master_name)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t  index =0;
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].master_name == master_name)
 		{
@@ -276,8 +277,8 @@ std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std
 void presentation_masters_instance::add_layout_to(const std::wstring & master_name, presentation_layouts_instance::_layout & layout)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t index = 0;
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].master_name == master_name)
 		{

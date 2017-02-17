@@ -41,23 +41,23 @@ COfficeUtils::COfficeUtils(OnProgressCallback* fCallback)
 
 HRESULT COfficeUtils::ExtractToDirectory(const std::wstring& zipFile, const std::wstring& unzipDir,  wchar_t* password, SHORT extract_without_path)
 {
-  if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
-  {
-    return S_OK;
-  }
-  else
-  {
-    return S_FALSE;
-  }
+	if( ZLibZipUtils::UnzipToDir( zipFile.c_str(), unzipDir.c_str(), m_fCallback, password, ( extract_without_path > 0 ) ? (true) : (false) ) == 0 )
+	{
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
 }
 
 
-HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& name, const std::wstring& outputFile, SHORT level)
+HRESULT COfficeUtils::CompressFileOrDirectory(const std::wstring& name, const std::wstring& outputFile, bool bSorted, short level)
 {
 	HRESULT result = S_FALSE;
 	if(NSDirectory::Exists(name))
 	{
-		if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, level ) == 0 )
+		if ( ZLibZipUtils::ZipDir( name.c_str(), outputFile.c_str(), m_fCallback, bSorted, level ) == 0 )
 		{
 			result = S_OK;
 		}
@@ -92,7 +92,7 @@ HRESULT COfficeUtils::Uncompress(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf
   }
 }
 
-HRESULT COfficeUtils::Compress(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize, SHORT level)
+HRESULT COfficeUtils::Compress(BYTE* destBuf, ULONG* destSize, BYTE* sourceBuf, ULONG sourceSize, short level)
 {
   if ( ZLibZipUtils::CompressBytes( destBuf, destSize, sourceBuf, sourceSize, level ) == Z_OK )
   {

@@ -44,7 +44,8 @@ namespace PPTX
 		class SolidFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(SolidFill)
+			WritingElement_AdditionConstructors(SolidFill)
+			PPTX_LOGIC_BASE2(SolidFill)
 
 			SolidFill& operator=(const SolidFill& oSrc)
 			{
@@ -56,8 +57,27 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+				
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+					
+					Color.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_solidFill;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 m_namespace = XmlUtils::GetNamespace(node.GetName());

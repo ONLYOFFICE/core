@@ -299,8 +299,8 @@ namespace XmlUtils
                     std::map<std::string, std::string>::iterator p;
                     for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
                     {
-                        strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), p->first.length()));
-                        strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), p->second.length()));
+                        strNames.push_back  (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (long)p->first.length()));
+                        strValues.push_back (NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (long)p->second.length()));
                     }
                 }
                 template <typename T>

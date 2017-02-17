@@ -48,27 +48,17 @@
 		fromXML(node);												\
 		return *this;												\
 	}																\
-    const Class& operator =(const XmlUtils::CXmlNode& node)				\
+    const Class& operator =(const XmlUtils::CXmlNode& node)			\
     {																\
-        fromXML(const_cast<XmlUtils::CXmlNode&> (node));												\
+        fromXML(const_cast<XmlUtils::CXmlNode&> (node));			\
         return *this;												\
     }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
+
 #define PPTX_LOGIC_BASE2(Class)										\
+	Class()	{}														\
 	virtual ~Class() {}												\
-	explicit Class(XmlUtils::CXmlNode& node)	{ fromXML(node); }	\
-    explicit Class(const XmlUtils::CXmlNode& node)	{ fromXML(const_cast<XmlUtils::CXmlNode&> (node)); }	\
-    const Class& operator =(XmlUtils::CXmlNode& node)				\
-		{																\
-		fromXML(node);												\
-		return *this;												\
-		}																\
-    const Class& operator =(const XmlUtils::CXmlNode& node)				\
-	    {																\
-        fromXML(const_cast<XmlUtils::CXmlNode&> (node));												\
-        return *this;												\
-	    }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
 namespace PPTX
@@ -86,7 +76,7 @@ namespace PPTX
 		WrapperWritingElement const* parentElement;
 		WrapperFile const* parentFile;
 	protected:
-		virtual void FillParentPointersForChilds()=0;
+		virtual void FillParentPointersForChilds(){}
 	public:
 		virtual void SetParentPointer(const WrapperWritingElement* pParent)
 		{

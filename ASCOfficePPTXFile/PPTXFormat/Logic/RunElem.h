@@ -47,9 +47,32 @@ namespace PPTX
 		class RunElem : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(RunElem)
+			WritingElement_AdditionConstructors(RunElem)
 
-		public:
+			RunElem() {}
+
+			virtual OOX::EElementType getType () const
+			{
+				if (Elem.IsInit())
+					return Elem->getType();
+				return OOX::et_Unknown;
+			}		
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = oReader.GetName();
+
+				if(name == _T("r"))
+					Elem.reset(new Logic::Run(oReader));
+				else if(name == _T("fld"))
+					Elem.reset(new Logic::Fld(oReader));
+				else if(name == _T("br"))
+					Elem.reset(new Logic::Br(oReader));
+				else if(name == _T("m"))
+					Elem.reset(new Logic::MathParaWrapper(oReader));
+				else
+					Elem.reset();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -62,7 +85,8 @@ namespace PPTX
 					Elem.reset(new Logic::Br(node));
 				else if(name == _T("m"))
 					Elem.reset(new Logic::MathParaWrapper(node));
-				else Elem.reset();
+				else 
+					Elem.reset();
 			}
 			virtual std::wstring toXML() const
 			{

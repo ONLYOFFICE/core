@@ -45,7 +45,8 @@ namespace PPTX
 		class Blip : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Blip)
+			WritingElement_AdditionConstructors(Blip)
+			PPTX_LOGIC_BASE2(Blip)
 
 			Blip& operator=(const Blip& oSrc)
 			{
@@ -66,8 +67,19 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_blip;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:link"), link )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("cstate"), cstate )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 

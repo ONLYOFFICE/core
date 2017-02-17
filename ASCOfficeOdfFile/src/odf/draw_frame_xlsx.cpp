@@ -104,7 +104,7 @@ void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 ////////////////////////////////////////////////
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
 		office_element_ptr const & elm = content_[i];
         elm->xlsx_convert(Context);
@@ -196,7 +196,7 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
 
 ////////////////////////////////////////////////
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		office_element_ptr const & elm = content_[i];
         elm->xlsx_convert(Context);
@@ -215,7 +215,7 @@ void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////в принципе достаточно общая часть ...
 	Context.get_text_context().start_drawing_content();//...  если в объекте есть текст он привяжется к объекту - иначе к ячейке
 
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }
@@ -232,7 +232,7 @@ void draw_chart::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring href = common_xlink_attlist_.href_.get_value_or(L"");
     Context.get_drawing_context().set_chart(href);
 
- 	for (int i = 0 ; i < content_.size(); i++)
+ 	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }
@@ -243,7 +243,7 @@ void draw_text_box::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	Context.get_text_context().start_drawing_content();
 
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->xlsx_convert(Context);
     }

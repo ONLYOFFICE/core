@@ -640,14 +640,14 @@ const wchar_t * table_shapes::name = L"shapes";
 
 void table_shapes::docx_convert(oox::docx_conversion_context & Context)
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
         content_[i]->docx_convert(Context);
     }
 }
 void table_shapes::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
         content_[i]->pptx_convert(Context);
     }
@@ -655,7 +655,7 @@ void table_shapes::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_shapes::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
     }

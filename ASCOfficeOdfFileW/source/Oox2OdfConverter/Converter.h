@@ -380,7 +380,7 @@ public:
 		OOX::Spreadsheet::IFileContainer					*oox_current_child_document_spreadsheet;
 		OOX::IFileContainer									*oox_current_child_document;
 		
-		void convert (double oox_font_size, cpdoccore::_CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
+		void convert (double oox_font_size, _CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);	
 		bool convert (int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR);
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
@@ -418,10 +418,10 @@ public:
 		void convert(OOX::Drawing::CPath2DQuadBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DCubicBezierTo			*oox_geom_path);
 		void convert(OOX::Drawing::CPath2DClose					*oox_geom_path);
-		void convert(OOX::Drawing::CColor						*oox_color,		std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, cpdoccore::_CP_OPT(double) &opacity);
-		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::CColor						*oox_color,		std::wstring & hexColor , _CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::CSchemeColor					*oox_ShemeClr,	std::wstring & hexString, _CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::Colors::CColorTransform      *oox_ScrgbClr,	std::wstring & hexString, _CP_OPT(double) &opacity);
+		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , _CP_OPT(double) &opacity);
 
 		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
 		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
@@ -446,7 +446,7 @@ public:
 		void convert(PPTX::Logic::PathBase						*oox_path);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
 		void convert(PPTX::Logic::UniFill						*oox_fill,	PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
-		void convert(PPTX::Logic::UniColor						*color,		std::wstring & hexString, cpdoccore::_CP_OPT(double) & opacity);
+		void convert(PPTX::Logic::UniColor						*color,		std::wstring & hexString, _CP_OPT(double) & opacity);
 		void convert(PPTX::Logic::NvSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);

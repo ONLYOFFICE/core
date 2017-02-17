@@ -294,8 +294,12 @@
 						>
 					</File>
 					<Filter
-						Name="Paragraph"
+						Name="Paragraph&amp;Run"
 						>
+						<File
+							RelativePath="..\source\Reader\OOXParagraphElementReaders.cpp"
+							>
+						</File>
 						<File
 							RelativePath="..\source\Reader\OOXParagraphReader.h"
 							>
@@ -310,6 +314,14 @@
 						</File>
 						<File
 							RelativePath="..\source\Reader\OOXpPrTabReader.h"
+							>
+						</File>
+						<File
+							RelativePath="..\source\Reader\OOXrPrReader.h"
+							>
+						</File>
+						<File
+							RelativePath="..\source\Reader\OOXRunReader.h"
 							>
 						</File>
 					</Filter>
@@ -394,22 +406,6 @@
 						</File>
 						<File
 							RelativePath="..\source\Reader\OOXShapeReader.h"
-							>
-						</File>
-					</Filter>
-					<Filter
-						Name="Run"
-						>
-						<File
-							RelativePath="..\source\Reader\OOXParagraphElementReaders.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\source\Reader\OOXrPrReader.h"
-							>
-						</File>
-						<File
-							RelativePath="..\source\Reader\OOXRunReader.h"
 							>
 						</File>
 					</Filter>

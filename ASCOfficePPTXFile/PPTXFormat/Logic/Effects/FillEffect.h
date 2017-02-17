@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(FillEffect)
+			WritingElement_AdditionConstructors(FillEffect)
+			PPTX_LOGIC_BASE2(FillEffect)
 			
 			FillEffect& operator=(const FillEffect& oSrc)
 			{
@@ -54,8 +55,24 @@ namespace PPTX
 				Fill = oSrc.Fill;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_fill;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Fill.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Fill.GetFillFrom(node);

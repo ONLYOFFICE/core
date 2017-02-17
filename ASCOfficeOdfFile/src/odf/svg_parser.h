@@ -39,10 +39,7 @@
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
-#include <cpdoccore/CPOptional.h>
-
-namespace cpdoccore 
-{ 
+#include "../../include/cpdoccore/CPOptional.h"
 
 namespace svg_path
 {
@@ -60,23 +57,10 @@ namespace svg_path
 		std::vector<_point> points; //будем бить строку пути по количеству точек в буковках
 
 	};
-	//m - 1 point
-	//c - 3 point
-	//s - 2 point
-	//l - 1 point
-	//z - finish
-	//h - 0.5 point :)
-	//v - 0.5 point
-	//q - 2 point
-	//t - 1 point
-	//a - [[[[
-    void oox_serialize(std::wostream & _Wostream, _point const & val);
-    void oox_serialize(std::wostream & _Wostream, _polyline const & val);
-    void oox_serialize(std::wostream & _Wostream, std::vector<svg_path::_polyline> & path);
 
-	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ, bool closed);
+	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  path);
+	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ);
+	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  path, bool bWrongPositionAfterZ, bool closed);
+}
 
-}
-}
 

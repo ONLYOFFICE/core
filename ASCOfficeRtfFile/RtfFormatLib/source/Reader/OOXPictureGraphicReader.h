@@ -44,11 +44,12 @@ class OOXGraphicReader
 {
 private:
 	OOX::Drawing::CGraphic *m_ooxGraphic;
-
 public: 
+
 	OOXGraphicReader(OOX::Drawing::CGraphic *ooxGraphic)
 	{
-		m_ooxGraphic	= ooxGraphic;
+		m_ooxGraphic		= ooxGraphic;
 	}
+
 	int Parse( ReaderParameter oParam, RtfShapePtr & pOutput);
 };

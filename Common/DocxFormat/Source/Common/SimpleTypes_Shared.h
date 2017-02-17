@@ -314,7 +314,7 @@ namespace SimpleTypes
 			bool bResult = true;
 
 			unResult = 0;
-            for ( size_t nIndex = sValue.length() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
+            for ( int nIndex = (int)sValue.length() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
 			{
 				unResult += HexToInt( (int)sValue[nIndex], bResult ) << nMult;
 			}

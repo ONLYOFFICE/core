@@ -43,7 +43,8 @@ namespace PPTX
 		class BuAutoNum : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuAutoNum)
+			WritingElement_AdditionConstructors(BuAutoNum)
+			PPTX_LOGIC_BASE2(BuAutoNum)
 
 			BuAutoNum& operator=(const BuAutoNum& oSrc)
 			{
@@ -55,8 +56,14 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buChar;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"type", type);
@@ -64,7 +71,15 @@ namespace PPTX
 
 				Normalize();
 			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, L"startAt",	startAt)
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"type",		type)
+				WritingElement_ReadAttributes_End	( oReader )		
+				
+				Normalize();
+			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;

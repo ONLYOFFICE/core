@@ -43,7 +43,8 @@ namespace PPTX
 		class AlphaCeiling : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaCeiling)
+			WritingElement_AdditionConstructors(AlphaCeiling)
+			PPTX_LOGIC_BASE2(AlphaCeiling)
 			
 			AlphaCeiling& operator=(const AlphaCeiling& oSrc)
 			{
@@ -59,7 +60,13 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaCeiling;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

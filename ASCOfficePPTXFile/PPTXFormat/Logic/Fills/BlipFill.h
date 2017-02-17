@@ -49,7 +49,8 @@ namespace PPTX
 		class BlipFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BlipFill)
+			WritingElement_AdditionConstructors(BlipFill)
+			PPTX_LOGIC_BASE2(BlipFill)
 
 			BlipFill& operator=(const BlipFill& oSrc)
 			{
@@ -67,8 +68,50 @@ namespace PPTX
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring strName = oReader.GetName();
+					if (_T("blip") == strName)
+					{
+						if (!blip.IsInit())	
+							blip = oReader;
+					}
+					else if (_T("srcRect") == strName)
+					{
+						if (!srcRect.IsInit())	
+							srcRect = oReader;
+					}
+					else if (_T("tile") == strName)
+					{
+						if (!tile.IsInit())	
+							tile = oReader;
+					}
+					else if (_T("stretch") == strName)
+					{
+						if (!stretch.IsInit())	
+							stretch = oReader;
+					}
+				}
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_blipFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dpi"), dpi)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), rotWithShape )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());

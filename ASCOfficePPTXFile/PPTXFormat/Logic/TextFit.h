@@ -44,14 +44,14 @@ namespace PPTX
 		public:
 			enum eFit {FitEmpty = 0, FitNo = 1, FitSpAuto = 2, FitNormAuto = 3};
 
-			TextFit(){
+			WritingElement_AdditionConstructors(TextFit)
+			TextFit()
+			{
 				type = FitEmpty;
 			}
-			PPTX_LOGIC_BASE2(TextFit)
 			
 			virtual bool is_init(){return (type != FitEmpty);};
 
-		public:
 			void GetTextFitFrom(XmlUtils::CXmlNode& element)
 			{
 				type = FitEmpty;
@@ -101,6 +101,26 @@ namespace PPTX
 				}
 			}
 
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_textFit;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				type = FitEmpty;

@@ -592,7 +592,7 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
 
 	_CP_OPT(double) dVal;	
-	if (GetProperty(additional, L"svg:translate_y", dVal));
+	GetProperty(additional, L"svg:translate_y", dVal);
  	
 	const _CP_OPT(length) translation		= length(dVal ? *dVal : 0, length::pt);
     const _CP_OPT(length) pageHeight		= pageProperties.fo_page_height_;        
@@ -1111,7 +1111,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_run_state		(false);
 	Context.set_paragraph_state	(false);		
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);
     }
@@ -1393,7 +1393,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 	
 	common_draw_docx_convert(Context, common_draw_attlists_, drawing);
 	
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		content_[i]->docx_convert(Context);
     }

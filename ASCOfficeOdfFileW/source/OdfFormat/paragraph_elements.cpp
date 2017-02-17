@@ -269,7 +269,7 @@ void text_span::add_child_element( const office_element_ptr & child_element)
 void text_span::add_text(const std::wstring & Text)
 {
 	int bSpace = true;
-	for (int i = 0 ; i < Text.size() ; i++)
+	for (size_t i = 0 ; i < Text.size() ; i++)
 	{
 		if (Text[i] != 0x20)
 		{
@@ -306,7 +306,7 @@ void text_a::serialize(std::wostream & _Wostream)
 		    CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
 		    CP_XML_ATTR_OPT(L"text:visited-style-name", text_visited_style_name_);   
 			
-			for (int i = 0; i < paragraph_content_.size(); i++)
+			for (size_t i = 0; i < paragraph_content_.size(); i++)
 			{
 				paragraph_content_[i]->serialize(CP_XML_STREAM());
 			}
@@ -358,7 +358,7 @@ void text_note_citation::serialize(std::wostream & _Wostream)
         { 	
 			CP_XML_ATTR_OPT(L"text:label", text_label_);
 			
-			for (int i = 0; i < content_.size(); i++)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
@@ -386,7 +386,7 @@ void text_note_body::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			for (int i = 0; i < content_.size(); i++)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}

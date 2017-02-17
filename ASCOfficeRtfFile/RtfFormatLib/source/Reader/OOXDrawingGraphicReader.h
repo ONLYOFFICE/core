@@ -46,9 +46,18 @@ private:
 	std::wstring m_sXml;
 
 public: 
+	OOX::IFileContainer *m_ooxGraphicRels;
+
 	OOXDrawingGraphicConverter(std::wstring sXml)
 	{
-		m_sXml = sXml;
+		m_sXml				= sXml;
+		m_ooxGraphicRels	= new OOX::IFileContainer(); 
+	}
+	virtual ~OOXDrawingGraphicConverter()
+	{
+		if (m_ooxGraphicRels)
+			delete m_ooxGraphicRels;
+		m_ooxGraphicRels = NULL;
 	}
 	//OOX::Logic::CPicture* Parse( ReaderParameter oParam , RtfShapePtr pOutput);
 	OOX::Logic::CDrawing* Convert( ReaderParameter oParam, RtfShapePtr pOutput);

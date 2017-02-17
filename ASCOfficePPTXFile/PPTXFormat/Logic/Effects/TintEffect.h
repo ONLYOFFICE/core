@@ -43,7 +43,8 @@ namespace PPTX
 		class TintEffect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TintEffect)
+			WritingElement_AdditionConstructors(TintEffect)
+			PPTX_LOGIC_BASE2(TintEffect)
 
 			TintEffect& operator=(const TintEffect& oSrc)
 			{
@@ -54,8 +55,23 @@ namespace PPTX
 				hue = oSrc.hue;
 				return *this;
 			}
-			
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_tint;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("amt"), amt)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("hue"), hue)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"amt", amt);

@@ -131,9 +131,9 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nRelZOrder )
 
 //Rehydration
-	m_sMetroBlob = L"";
-	m_sMetroBlobRels = L"";
-	m_sMetroBlobData = L"";
+	m_sMetroBlob.clear();
+	m_sMetroBlobRels.clear();
+	m_sMetroBlobData.clear();
 //Connectors
 	DEFAULT_PROPERTY( m_nConnectionType )
 	DEFAULT_PROPERTY( m_nConnectorStyle )
@@ -171,6 +171,9 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_bGtextFStretch )
 	DEFAULT_PROPERTY( m_bGtextFShrinkFit )
 	DEFAULT_PROPERTY( m_bGtextFBestFit )
+
+	DEFAULT_PROPERTY( m_bIsSignatureLine);
+	DEFAULT_PROPERTY( m_bSigSetupAllowComments);
 	
 	m_aTextItems	= TextItemContainerPtr();
 	m_oPicture		= RtfPicturePtr();
@@ -233,7 +236,11 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			else
 			{
 				sResult += L"{\\*\\shppict";
+
+				m_oPicture->dump_shape_properties = RenderToRtfShapeProperty( oRenderParameter );
+
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
+				
 				sResult += L"}";
 				sResult += L"{\\nonshppict";
 				sResult +=  m_oPicture->GenerateWMF( oRenderParameter );
@@ -360,7 +367,7 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult +=  m_oPicture->RenderToRtf( oRenderParameter );
 				sResult += L"}}";
 			}
-			else if (m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 9)
+			else if (m_nFillType == 1 || m_nFillType == 2 || m_nFillType == 3 || m_nFillType == 9)
 			{
 				sResult += L"{\\sp{\\sn fillType}{\\sv 2}}";
 				sResult += L"{\\sp{\\sn fillBlip}{\\sv ";
@@ -493,7 +500,6 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
 	}
     if( !m_aPSegmentInfo.empty())
     {
-        sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv ";
         sResult += L"{\\sp{\\sn pSegmentInfo}{\\sv 2;" + std::to_wstring( m_aPSegmentInfo.size() );
         for (size_t i = 0; i < m_aPSegmentInfo.size(); i ++ )
             sResult += L";" + std::to_wstring( m_aPSegmentInfo[i] );
@@ -610,7 +616,42 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
         RENDER_RTF_SHAPE_PROP(L"gtextFShrinkFit",   sResult,	m_bGtextFShrinkFit);
         RENDER_RTF_SHAPE_PROP(L"gtextFBestFit",     sResult,	m_bGtextFBestFit);
 	}
+	if ( PROP_DEF != m_bIsSignatureLine)
+	{
+		RENDER_RTF_SHAPE_PROP(L"fIsSignatureLine",			sResult,  m_bIsSignatureLine);
+		RENDER_RTF_SHAPE_PROP(L"fSigSetupAllowComments",    sResult,  m_bSigSetupAllowComments);
 
+        if( !m_sSigSetupId.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupId}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupId, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupProvId.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupProvId}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupProvId, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSigner.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSigner2.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSigner2}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSigner2, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+        if( !m_sSigSetupSuggSignerEmail.empty() )
+		{
+			sResult += L"{\\sp{\\sn wzSigSetupSuggSignerEmail}{\\sv ";
+				sResult += RtfChar::renderRtfText(m_sSigSetupSuggSignerEmail, oRenderParameter.poDocument, 0);
+			sResult += L"}}";
+		}
+	}
 	return sResult;
 }
 std::wstring RtfShape::RenderToOOX(RenderParameter oRenderParameter)
@@ -765,14 +806,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
     if (m_sName.empty())
 	{
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-        m_sName += L"_x0000_s " + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"";
+        m_sName += L"_x0000_s" + std::to_wstring(poDocument->GetShapeId( m_nID )) + L"";
 	}
 	sResult += L" id=\"" + m_sName + L"\"";
 
 	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
 	{
-        sResult += L" type=\"#_x0000_t " + std::to_wstring(m_nShapeType) + L"\"";
-        sResult += L" o:spt=\" " + std::to_wstring(m_nShapeType) + L"\"";
+        sResult += L" type=\"#_x0000_t" + std::to_wstring(m_nShapeType) + L"\"";
+        sResult += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
 	}
 
 	if( 0 == m_bFilled) sResult += L" filled=\"f\"";
@@ -840,13 +881,14 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		int nHeight = m_nRelBottom - m_nRelTop;
 		
         sStyle += L"position:absolute;";
-        sStyle += L"left: " + std::to_wstring(m_nRelLeft) + L";";
-        sStyle += L"top: " + std::to_wstring(m_nRelTop) + L";";
-        //sStyle += L"bottom: " + std::to_wstring() + L";"			, m_nRelBottom );
-        //sStyle += L"right: " + std::to_wstring() + L";"			, m_nRelRight);
-        sStyle += L"width: " + std::to_wstring(nWidth) + L";height: " + std::to_wstring(nHeight) + L";";
+        sStyle += L"left:" + std::to_wstring(m_nRelLeft) + L";";
+        sStyle += L"top:" + std::to_wstring(m_nRelTop) + L";";
+        //sStyle += L"bottom:" + std::to_wstring() + L";"			, m_nRelBottom );
+        //sStyle += L"right:" + std::to_wstring() + L";"			, m_nRelRight);
+        sStyle += L"width:" + std::to_wstring(nWidth) + L";height:" + std::to_wstring(nHeight) + L";";
 	}
-	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal && PROP_DEF != (int)m_oPicture->m_dScaleX && PROP_DEF != (int)m_oPicture->m_dScaleY )
+	else if( 0 != m_oPicture && PROP_DEF != m_oPicture->m_nWidthGoal	&& PROP_DEF != m_oPicture->m_nHeightGoal 
+							 && PROP_DEF != (int)m_oPicture->m_dScaleX	&& PROP_DEF != (int)m_oPicture->m_dScaleY )
 	{
 		float nWidth = (int)(m_oPicture->m_nWidthGoal * m_oPicture->m_dScaleX / 100.);
 		if( PROP_DEF != m_oPicture->m_nCropL )
@@ -877,7 +919,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nPositionHPct )//todo
 	{
-        sStyle += L"mso-left-percent: " + std::to_wstring(m_nPositionHPct) + L";";
+        sStyle += L"mso-left-percent:" + std::to_wstring(m_nPositionHPct) + L";";
 	}
 	if( PROP_DEF != m_nPositionH && PROP_DEF == m_nPositionHRelative )
 		m_nPositionHRelative = 2;
@@ -915,7 +957,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         case 5: sStyle += L"mso-position-vertical:outside;";	break;
 	}
 	if( PROP_DEF != m_nPositionVPct )
-        sStyle += L"mso-top-percent: " + std::to_wstring(m_nPositionVPct) + L";";
+        sStyle += L"mso-top-percent:" + std::to_wstring(m_nPositionVPct) + L";";
 
 	if( PROP_DEF != m_nPositionV && PROP_DEF == m_nPositionVRelative )
 		m_nPositionVRelative =2;
@@ -938,12 +980,12 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		switch( m_eYAnchor )
 		{
 			case ay_page: sStyle += L"mso-position-vertical-relative:page;";			break;
-			case ay_margin: sStyle += L"mso-position-vertical-relative:margin;";		break;
+			case ay_margin: sStyle += L" mso-position-vertical-relative:margin;";		break;
             //case ay_Para: sStyle += L"mso-position-vertical-relative:text;";          break;
 		}
 	}
 	if( PROP_DEF != m_nPctWidth )
-        sStyle += L"mso-width-percent: " + std::to_wstring(m_nPctWidth) + L";";
+        sStyle += L"mso-width-percent:" + std::to_wstring(m_nPctWidth) + L";";
 	switch( m_nPctWidthRelative )
 	{
         case 0:	sStyle += L"mso-width-relative:margin;";			break;
@@ -955,7 +997,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	
 	if( PROP_DEF != m_nPctHeight )
-        sStyle += L"mso-height-percent: " + std::to_wstring(m_nPctHeight) + L";";
+        sStyle += L"mso-height-percent:" + std::to_wstring(m_nPctHeight) + L";";
 	
 	switch( m_nPctHeightRelative )
 	{
@@ -968,9 +1010,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nRotation )
-        sStyle += L"rotation: " + std::to_wstring(m_nRotation / 65536) + L";";
+        sStyle += L"rotation:" + std::to_wstring(m_nRotation / 65536) + L";";
 	else if( PROP_DEF != m_nRelRotation )
-        sStyle += L"rotation: " + std::to_wstring(m_nRelRotation / 65536) + L";";
+        sStyle += L"rotation:" + std::to_wstring(m_nRelRotation / 65536) + L";";
 
 	int nZIndex = PROP_DEF;
 	if( PROP_DEF != m_nRelZOrder )
@@ -987,7 +1029,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		else							nZIndex -= 10000;
 	}
 	if (PROP_DEF != nZIndex)
-        sStyle += L"z-index: " + std::to_wstring(nZIndex) + L";";
+        sStyle += L"z-index:" + std::to_wstring(nZIndex) + L";";
 
 	if(  PROP_DEF != m_nWrapDistLeft )
         sStyle += L"mso-wrap-distance-left:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt( m_nWrapDistLeft ), L"%.2f") + L"pt;";
@@ -1019,15 +1061,15 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sResult += L" style=\"" + sStyle + L"\"";
 	}
 //----------------------------------------------------------------------------------------------------------------------------
-	if( true == m_bIsOle )		sResult += L" o:ole=\"\"";
+	if( true == m_bIsOle ) sResult += L" o:ole=\"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop )
-        sResult += L" coordorigin=\" " + std::to_wstring(m_nGroupLeft) + L", " + std::to_wstring(m_nGroupTop) + L"\"";
+        sResult += L" coordorigin=\"" + std::to_wstring(m_nGroupLeft) + L"," + std::to_wstring(m_nGroupTop) + L"\"";
 	
 	if( PROP_DEF != m_nGroupLeft && PROP_DEF != m_nGroupTop && PROP_DEF != m_nGroupRight && PROP_DEF != m_nGroupBottom)
-        sResult += L" coordsize=\" " + std::to_wstring(m_nGroupRight - m_nGroupLeft) + L", " + std::to_wstring(m_nGroupBottom - m_nGroupTop) + L"\"";
+        sResult += L" coordsize=\"" + std::to_wstring(m_nGroupRight - m_nGroupLeft) + L"," + std::to_wstring(m_nGroupBottom - m_nGroupTop) + L"\"";
 	else if ( PROP_DEF != m_nGeoLeft && PROP_DEF != m_nGeoTop && PROP_DEF != m_nGeoRight && PROP_DEF != m_nGeoBottom)
-        sResult += L" coordsize=\" " + std::to_wstring(m_nGeoRight - m_nGeoLeft) + L", " + std::to_wstring(m_nGeoBottom - m_nGeoTop) + L"\"";
+        sResult += L" coordsize=\"" + std::to_wstring(m_nGeoRight - m_nGeoLeft) + L"," + std::to_wstring(m_nGeoBottom - m_nGeoTop) + L"\"";
 
 	if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 	{
@@ -1054,7 +1096,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		for (size_t i = 1 ; i < 10; i++)
 		{
 			if (PROP_DEF != m_nAdjustValue[i])
-                sAdjust += L", " + std::to_wstring(m_nAdjustValue[i]) + L"";
+                sAdjust += L"," + std::to_wstring(m_nAdjustValue[i]) + L"";
 			else
 				sAdjust += L",";
 		}
@@ -1093,7 +1135,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L" wrapcoords=\"";
         sResult += L" " + std::to_wstring(m_aWrapPoints[0].first) + L", " + std::to_wstring(m_aWrapPoints[0].second) + L"";
 		
-		for (size_t i = 0; i < (int)m_aWrapPoints.size(); i++ )
+		for (size_t i = 1; i < (int)m_aWrapPoints.size(); i++ )
 		{
             sResult += L", " + std::to_wstring(m_aWrapPoints[i].first) + L", " + std::to_wstring(m_aWrapPoints[i].second) + L"";
 		}
@@ -1203,9 +1245,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L"<v:textbox";
 		if (m_nTexpLeft != PROP_DEF && m_nTexpTop != PROP_DEF && m_nTexpRight != PROP_DEF && m_nTexpBottom != PROP_DEF)
 		{
-            sResult += L" inset=\" " + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpLeft)) + L"pt,  "
-                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpTop)) + L"pt,  "
-                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpRight)) + L"pt,  "
+            sResult += L" inset=\"" + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpLeft)) + L"pt,"
+                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpTop)) + L"pt,"
+                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpRight)) + L"pt,"
                                     + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpBottom)) + L"pt\">";
 		}
 		else  
@@ -1252,13 +1294,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sResult += L"<v:imagedata r:id=\"" + sPicture + L"\"";
 
 			if( PROP_DEF != nCropLeft )
-                sResult += L" cropleft=\" " + std::to_wstring(nCropLeft) + L"f\"";
+                sResult += L" cropleft=\"" + std::to_wstring(nCropLeft) + L"f\"";
 			if( PROP_DEF != nCropTop )
-                sResult += L" croptop=\" " + std::to_wstring(nCropTop) + L"f\"";
+                sResult += L" croptop=\"" + std::to_wstring(nCropTop) + L"f\"";
 			if( PROP_DEF != nCropRight )
-                sResult += L" cropright=\" " + std::to_wstring(nCropRight) + L"f\"";
+                sResult += L" cropright=\"" + std::to_wstring(nCropRight) + L"f\"";
 			if( PROP_DEF != nCropBottom )
-                sResult += L" cropbottom=\" " + std::to_wstring(nCropBottom) + L"f\"";
+                sResult += L" cropbottom=\"" + std::to_wstring(nCropBottom) + L"f\"";
 
 			sResult += L" o:title=\"\"/>";
 		}
@@ -1291,7 +1333,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		{
             std::wstring sOpacity = std::to_wstring( /*100 - */m_nFillOpacity);
 			sResult += L" opacity=\"" + sOpacity +L"%\"";
-            //sResult += L" opacity=\" " + std::to_wstring(m_nFillOpacity) + L"f\"";
+            //sResult += L" opacity=\"" + std::to_wstring(m_nFillOpacity) + L"f\"";
 		}
 		if ( PROP_DEF != m_nFillColor2)
 		{
@@ -1302,7 +1344,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		{
             std::wstring sOpacity = std::to_wstring( /*100 - */m_nFillOpacity2);
 			sResult += L" opacity2=\"" + sOpacity +L"%\"";
-            //sResult += L" opacity=\" " + std::to_wstring(m_nFillOpacity) + L"f\"";
+            //sResult += L" opacity=\"" + std::to_wstring(m_nFillOpacity) + L"f\"";
 		}
 		if ( PROP_DEF != m_nFillFocus)
 		{
@@ -1340,11 +1382,36 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sResult += L" style=\"" + sTextStyle + L"\"";
 
 		if ( PROP_DEF != m_nGtextSize )
-            sTextStyle += L"font-size: " + std::to_wstring(m_nGtextSize) + L"pt;";
+            sTextStyle += L"font-size:" + std::to_wstring(m_nGtextSize) + L"pt;";
 
 		sResult += L" string=\"" + XmlUtils::EncodeXmlString(m_sGtextUNICODE) + L"\"";
 		sResult += L"/>";
 	}
+	if ( PROP_DEF != m_bIsSignatureLine)
+	{
+		sResult += L"<o:signatureline v:ext=\"edit\"";
+		
+		if (!m_sSigSetupId.empty())
+			sResult += L" id=\"" + m_sSigSetupId + L"\"";
+		
+		if (!m_sSigSetupProvId.empty())
+			sResult += L" provid=\"" + m_sSigSetupProvId + L"\"";
+
+		if (!m_sSigSetupSuggSigner.empty())
+			sResult += L" o:suggestedsigner=\"" + m_sSigSetupSuggSigner + L"\"";
+		
+		if (!m_sSigSetupSuggSigner2.empty())
+			sResult += L" o:suggestedsigner2=\"" + m_sSigSetupSuggSigner2 + L"\"";
+
+		if (!m_sSigSetupSuggSignerEmail.empty())
+			sResult += L" o:suggestedsigneremail=\"" + m_sSigSetupSuggSignerEmail + L"\"";
+				
+		if (m_bSigSetupAllowComments == 1)
+			sResult += L" allowcomments=\"t\"";
+	 
+		sResult += L" issignatureline=\"t\"/>";
+	}
+
 	return sResult;
 }
 std::wstring RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)

@@ -46,7 +46,8 @@ namespace PPTX
 		class Sp3d : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Sp3d)
+			WritingElement_AdditionConstructors(Sp3d)
+			PPTX_LOGIC_BASE2(Sp3d)
 
 			Sp3d& operator=(const Sp3d& oSrc)
 			{
@@ -66,7 +67,33 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstClr;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("bevelT") == strName)
+						bevelT = oReader;
+					else if (_T("bevelB") == strName)
+						bevelB = oReader;
+					else if (_T("extrusionClr") == strName)
+						extrusionClr.fromXML(oReader);
+					else if (_T("contourClr") == strName)
+						contourClr.fromXML(oReader);
+				}
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"contourW", contourW);
@@ -98,7 +125,15 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("contourW"), contourW)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("extrusionH"), extrusionH)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prstMaterial"), prstMaterial)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
 			virtual std::wstring toXML() const
 			{

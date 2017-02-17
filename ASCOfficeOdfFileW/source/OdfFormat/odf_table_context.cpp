@@ -172,7 +172,7 @@ void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 void odf_table_context::end_table()
 {
 	//последние объединенные по вертикали ячейки ..
-	for (long i =0 ; i < impl_->current_table().columns.size(); i++)
+	for (size_t i =0 ; i < impl_->current_table().columns.size(); i++)
 	{
 		impl_->current_table().current_column = i+1;
 		set_cell_row_span_restart();

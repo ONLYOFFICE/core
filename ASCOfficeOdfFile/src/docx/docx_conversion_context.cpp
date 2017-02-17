@@ -569,7 +569,8 @@ mc:Ignorable=\"w14 wp14\">";
         
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);		
-        for (int i = 0; i < (std::min)( content.size(), (size_t)9); i++)
+       
+		for (size_t i = 0; i < (std::min)( content.size(), (size_t)9); i++)
         {
             start_text_list_style(inst->get_text_list_style()->get_style_name());
             content[i]->docx_convert(*this);
@@ -1296,7 +1297,7 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		
 		if (state.type	== 2)
 		{
-			for (int i = 0 ; i < state.content.size(); i++)
+			for (size_t i = 0 ; i < state.content.size(); i++)
 			{
 				output_stream() << L"<w:del" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
 

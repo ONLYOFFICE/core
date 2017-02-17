@@ -57,10 +57,12 @@ public:
 	int m_nCropR;
 	int m_nCropB;
 
-	bool m_bIsCopy; // true - надо удалять m_sPicFilename, false - не надо удалять
-    std::wstring m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
+	bool			m_bIsCopy;		// true - надо удалять m_sPicFilename, false - не надо удалять
+    std::wstring	m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
 
     std::vector<std::wstring> m_aTempFiles;
+	
+	std::wstring dump_shape_properties;
 
 	RtfPicture()
 	{

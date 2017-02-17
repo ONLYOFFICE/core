@@ -35,8 +35,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
-
 		void EffectLst::fromXML(XmlUtils::CXmlNode& node)
 		{
 			blur		= node.ReadNode(_T("a:blur"));
@@ -50,7 +48,37 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
+		void EffectLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
 
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring strName = oReader.GetName();
+			
+				if (strName == L"a:blur")
+					blur = oReader;
+				if (strName == L"a:fillOverlay")
+					fillOverlay = oReader;
+				if (strName == L"a:glow")
+					glow = oReader;
+				if (strName == L"a:innerShdw")
+					innerShdw = oReader;
+				if (strName == L"a:outerShdw")
+					outerShdw	= oReader;
+				if (strName == L"a:prstShdw")
+					prstShdw = oReader;
+				if (strName == L"a:reflection")
+					reflection	= oReader;
+				if (strName == L"a:softEdge")
+					softEdge = oReader;
+
+			}
+		}
 		std::wstring EffectLst::toXML() const
 		{
 			std::wstring str = _T("<a:effectLst>");

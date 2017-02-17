@@ -75,7 +75,7 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 			if (!byRow)
 				CP_XML_ATTR(L"columnSort", true);
 
-			for (int i = 0 ; i < bySort.size(); i++)
+			for (size_t i = 0 ; i < bySort.size(); i++)
 			{
 				bool in_range = true;
 				std::wstring ref1, ref2;

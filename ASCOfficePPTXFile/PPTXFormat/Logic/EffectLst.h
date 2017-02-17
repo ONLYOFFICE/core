@@ -47,17 +47,27 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class EffectLst : public WrapperWritingElement
 		{
-		public:
-			
-			PPTX_LOGIC_BASE(EffectLst)
+		public:			
+			WritingElement_AdditionConstructors(EffectLst)
+			PPTX_LOGIC_BASE2(EffectLst)
 
             EffectLst& operator=(const EffectLst& oSrc);
 
-		public:
-            virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_effectLst;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
             virtual std::wstring toXML() const;
 
@@ -78,14 +88,14 @@ namespace PPTX
 			}
 
 		public:
-			nullable<Blur> blur;
-			nullable<FillOverlay> fillOverlay;
-			nullable<Glow> glow;
-			nullable<InnerShdw> innerShdw;
-			nullable<OuterShdw> outerShdw;
-			nullable<PrstShdw> prstShdw;
-			nullable<Reflection> reflection;
-			nullable<SoftEdge> softEdge;
+			nullable<Blur>			blur;
+			nullable<FillOverlay>	fillOverlay;
+			nullable<Glow>			glow;
+			nullable<InnerShdw>		innerShdw;
+			nullable<OuterShdw>		outerShdw;
+			nullable<PrstShdw>		prstShdw;
+			nullable<Reflection>	reflection;
+			nullable<SoftEdge>		softEdge;
 		protected:
             virtual void FillParentPointersForChilds();
 

@@ -43,9 +43,26 @@ namespace PPTX
 		class Lin : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Lin)
+			WritingElement_AdditionConstructors(Lin)
+			PPTX_LOGIC_BASE2(Lin)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_lin;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("ang"), ang)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scaled"), scaled)
+				WritingElement_ReadAttributes_End	( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"ang", ang);

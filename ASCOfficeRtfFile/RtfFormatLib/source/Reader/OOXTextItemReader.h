@@ -53,6 +53,22 @@ public:
 	{
 		switch(ooxElement->getType())
 		{
+			case OOX::et_a_p:
+			{
+				OOX::Drawing::CParagraph * pParagraph = dynamic_cast<OOX::Drawing::CParagraph*>(ooxElement);
+				
+				OOXParagraphReader	m_oParagraphReader(pParagraph);
+				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
+				//применяем к новому параграфу default property
+				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
+				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
+				oNewParagraph->m_oProperty.m_nItap = 0;
+
+				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
+				{
+					m_oTextItems->AddItem( oNewParagraph );
+				}
+			}break;
 			case OOX::et_w_p:
 			{
 				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
@@ -67,15 +83,6 @@ public:
 				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
-					//if( true == oParam.oRtf->m_oStatusSection.start_new )
-					//{
-					//	RtfSectionPtr oCurSection;
-					//	if( true == oParam.oRtf->GetItem( oCurSection, oParam.oRtf->m_oStatusSection.number - 1) )
-					//	{
-					//		m_oTextItems = oCurSection;
-					//	}
-					//	oParam.oRtf->m_oStatusSection.start_new = false;
-					//}
 				}
 			}break;
 			case OOX::et_w_tbl:
@@ -112,7 +119,9 @@ public:
 				}
 
 			}break;
-		}
+            default:
+                break;
+        }
 		return true;
 	}
 };

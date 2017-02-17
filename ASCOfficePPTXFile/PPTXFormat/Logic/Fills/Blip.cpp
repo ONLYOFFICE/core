@@ -41,6 +41,26 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			Effects.clear();
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				UniEffect uni;
+				Effects.push_back(uni);
+				Effects.back().fromXML(oReader);
+			}
+		
+			FillParentPointersForChilds();
+		}
 		void Blip::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());

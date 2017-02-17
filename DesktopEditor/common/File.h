@@ -36,7 +36,6 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "Array.h"
 #include "errno.h"
 #include "Base64.h"
 #include <time.h>
@@ -50,6 +49,7 @@
 
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>
+#include <string.h>
 #endif
 
 #ifdef _IOS

@@ -43,7 +43,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(Blur)
+			WritingElement_AdditionConstructors(Blur)
+			PPTX_LOGIC_BASE2(Blur)
 
 			Blur& operator=(const Blur& oSrc)
 			{
@@ -55,7 +56,21 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_blur;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rad"), rad)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("grow"), grow)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"rad", rad);

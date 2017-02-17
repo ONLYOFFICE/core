@@ -1622,7 +1622,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 			m_oField.m_pResult = oNewFieldInst;
 		}
 		
-		oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt
+		//oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt
 		//{\field{\*\fldinst...}{\*\fldrslt...} ??? }
 		//{\field{\*\fldinst...}{\*\fldrslt...}}{ ??? }
 	}
@@ -1653,7 +1653,7 @@ bool RtfOleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, st
 	
     COMMAND_RTF_INT ( "objw",		m_oOle.m_nWidth,	sCommand, hasParameter, parameter )
     COMMAND_RTF_INT ( "objh",		m_oOle.m_nHeight,	sCommand, hasParameter, parameter )
-    COMMAND_RTF_INT ( "objemb",	m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_emb )
+    COMMAND_RTF_INT ( "objemb",		m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_emb )
     COMMAND_RTF_INT ( "objlink",	m_oOle.m_eOleType,	sCommand, true, RtfOle::ot_link )
 	
     else if ( "objclass" == sCommand )
@@ -1758,6 +1758,31 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"gtextFont" == m_sPropName )
 	{
 		m_oShape.m_sGtextFont = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupId" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupId = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupProvId" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupProvId = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSigner" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSigner = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSigner2" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSigner2 = sValue;
+		return;
+	}
+	else if ( L"wzSigSetupSuggSignerEmail" == m_sPropName )
+	{
+		m_oShape.m_sSigSetupSuggSignerEmail = sValue;
 		return;
 	}
 //числовые
@@ -1965,8 +1990,11 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"lineEndArrowLength"		== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
 	else if ( L"lineWidth"				== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
 	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
-	else if (L"cxstyle"					== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
-	else if (L"cxk"						== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
+	else if ( L"cxstyle"				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
+	else if ( L"cxk"					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
+//office signature
+	else if ( L"fIsSignatureLine"		== m_sPropName ) m_oShape.m_bIsSignatureLine		= nValue;
+	else if ( L"fSigSetupAllowComments"	== m_sPropName ) m_oShape.m_bSigSetupAllowComments	= nValue;
 	else
 	{
         std::wstring name	= m_sPropName;
@@ -2564,7 +2592,10 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
     else if ( "shpgrp" == sCommand )
 	{
 		RtfShapePtr oNewShape ( new RtfShape() );
-		oNewShape->m_oCharProperty = oReader.m_oState->m_oCharProp;
+		
+		oNewShape->m_bIsGroup		= true;
+		oNewShape->m_nShapeType		= 1;
+		oNewShape->m_oCharProperty	= oReader.m_oState->m_oCharProp;
 		
 		RtfShapeGroupReader oShapeGroupReader( *oNewShape );
 		oAbstrReader.StartSubReader( oShapeGroupReader, oDocument, oReader );

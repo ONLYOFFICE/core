@@ -176,11 +176,11 @@ namespace OOX
 
         std::wstring lowerFileName = XmlUtils::GetLower(m_strFilename);
 
-		CArray<std::wstring> trueArray;
+        std::vector<std::wstring> trueArray;
 
 		NSDirectory::GetFiles2(fileDirectory, trueArray);
 
-		for (int i = 0; i < trueArray.GetCount(); i++)
+        for (size_t i = 0; i < trueArray.size(); i++)
 		{
             std::wstring lowerTest = XmlUtils::GetLower(trueArray[i]);
 

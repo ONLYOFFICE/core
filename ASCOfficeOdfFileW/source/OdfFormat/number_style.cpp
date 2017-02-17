@@ -296,8 +296,10 @@ void number_currency_symbol::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"number:language", number_language_);
 			CP_XML_ATTR_OPT(L"number:country", number_country_);
 			
-			for (long i=0; i < text_.size(); i++)
+			for (size_t i = 0; i < text_.size(); i++)
+			{
 				CP_XML_STREAM() << text_[i];
+			}
 		}
 	}
 }                      

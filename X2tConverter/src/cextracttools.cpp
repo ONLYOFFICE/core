@@ -276,10 +276,12 @@ namespace NExtractTools
         if (NSDirectory::Exists(sChangesDir))
         {
             std::vector<std::wstring> aChangesFiles;
-            CArray<std::wstring> oArray;
-            NSDirectory::GetFiles2(sChangesDir, oArray, false);
+            std::vector<std::wstring> oArray;
             std::vector<std::wstring> aFiles;
-            for(int i = 0; i < oArray.GetCount(); ++i)
+
+            NSDirectory::GetFiles2(sChangesDir, oArray, false);
+
+            for(size_t i = 0; i < oArray.size(); ++i)
             {
                 aChangesFiles.push_back(oArray[i]);
             }
@@ -360,7 +362,7 @@ namespace NExtractTools
                         std::wstring sToResultDir = NSDirectory::GetFolderPath(sToResult);
                         std::wstring sTo = sToResultDir + FILE_SEPARATOR_STR + _T("changes.zip");
                         COfficeUtils oCOfficeUtils(NULL);
-                        oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo, -1);
+                        oCOfficeUtils.CompressFileOrDirectory(sChangesDir, sTo);
                     }
                     break;
                 }

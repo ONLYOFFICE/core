@@ -108,17 +108,17 @@ namespace PPTX
 				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
 				if (in_group)
 				{
-					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100.);
-					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100.);
-					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100.);
-					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100.);
+					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100);
 				}
 				else
 				{
-					oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL /  12700.);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT /  12700.);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW /  12700.);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH /  12700.);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL /  12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT /  12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW /  12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH /  12700);
 				}
 
 				if (grpSpPr.xfrm.is_init())
@@ -164,16 +164,16 @@ namespace PPTX
 			}
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dL / 100.);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dL / 100);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dT / 100.);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dT / 100);
 			pWriter->WriteAttribute(_T("coordorigin"), oStylesWriter.GetXmlString());
 
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100.);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100.);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
 			pWriter->WriteAttribute(_T("coordsize"), oStylesWriter.GetXmlString());
 
 			pWriter->EndAttributes();

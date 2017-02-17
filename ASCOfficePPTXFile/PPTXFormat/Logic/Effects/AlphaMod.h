@@ -44,7 +44,8 @@ namespace PPTX
 		class AlphaMod : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaMod)
+			WritingElement_AdditionConstructors(AlphaMod)
+			PPTX_LOGIC_BASE2(AlphaMod)
 
 			AlphaMod& operator=(const AlphaMod& oSrc)
 			{
@@ -54,8 +55,28 @@ namespace PPTX
 				cont = oSrc.cont;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaMod;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					if (strName == L"a:cont")
+					{
+						cont = oReader;
+						break;
+					}
+				}
+				FillParentPointersForChilds();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cont = node.ReadNode(_T("a:cont"));

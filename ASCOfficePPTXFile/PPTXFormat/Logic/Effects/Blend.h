@@ -45,8 +45,8 @@ namespace PPTX
 		class Blend : public WrapperWritingElement
 		{
 		public:
-			
-			PPTX_LOGIC_BASE(Blend)
+			WritingElement_AdditionConstructors(Blend)
+			PPTX_LOGIC_BASE2(Blend)
 
 			Blend& operator=(const Blend& oSrc)
 			{
@@ -57,8 +57,32 @@ namespace PPTX
 				blend = oSrc.blend;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_blend;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:cont")
+						cont = oReader;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blend"), blend)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cont	= node.ReadNode(_T("a:cont"));

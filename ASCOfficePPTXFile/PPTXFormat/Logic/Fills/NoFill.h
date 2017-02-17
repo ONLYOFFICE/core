@@ -43,7 +43,8 @@ namespace PPTX
 		class NoFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NoFill)
+			WritingElement_AdditionConstructors(NoFill)
+			PPTX_LOGIC_BASE2(NoFill)
 
 			NoFill& operator=(const NoFill& oSrc)
 			{
@@ -53,8 +54,19 @@ namespace PPTX
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_noFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -87,7 +99,8 @@ namespace PPTX
 		class GrpFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GrpFill)
+			WritingElement_AdditionConstructors(GrpFill)
+			PPTX_LOGIC_BASE2(GrpFill)
 
 			GrpFill& operator=(const GrpFill& oSrc)
 			{
@@ -97,8 +110,19 @@ namespace PPTX
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_grpFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());

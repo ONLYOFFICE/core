@@ -43,9 +43,32 @@ namespace PPTX
 		class Rot : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Rot)
+			WritingElement_AdditionConstructors(Rot)
+			PPTX_LOGIC_BASE2(Rot)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_rot;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_int lat_, lon_, rev_;
+
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("lat"), lat_)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lon"), lon_)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rev"), rev_)
+				WritingElement_ReadAttributes_End( oReader )
+			
+				lat = lat_.get_value_or(0);
+				lon = lon_.get_value_or(0);
+				rev = rev_.get_value_or(0);
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				lat = node.ReadAttributeInt(L"lat");

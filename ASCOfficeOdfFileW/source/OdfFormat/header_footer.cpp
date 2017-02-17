@@ -119,7 +119,7 @@ void header_footer_content::serialize(std::wostream & strm)
 	if (tracked_changes_)
 		tracked_changes_->serialize(strm);
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->serialize(strm);
 	}

@@ -443,29 +443,29 @@ namespace OOX
 		//        HLinks
 		//        TitlesOfParts
 
-        nullable<std::wstring> m_sApplication;
-        nullable<std::wstring> m_sAppVersion;
-		nullable<int>     m_nCharacters;
-		nullable<int>     m_nCharactersWithSpaces;
-        nullable<std::wstring> m_sCompany;
-		nullable<int>     m_nDocSecurity;
-		nullable<int>     m_nHiddenSlides;
-        nullable<std::wstring> m_sHyperlinkBase;
-		nullable<bool>    m_bHyperlinksChanged;
-		nullable<int>     m_nLines;
-		nullable<bool>    m_bLinksUpToDate;
-        nullable<std::wstring> m_sManager;
-		nullable<int>     m_nMMClips;
-		nullable<int>     m_nNotes;
-		nullable<int>     m_nPages;
-		nullable<int>     m_nParagraphs;
-        nullable<std::wstring> m_sPresentationForm;
-		nullable<bool>    m_bScaleCrop;
-		nullable<bool>    m_bSharedDoc;
-		nullable<int>     m_nSlides;
-        nullable<std::wstring> m_sTemplate;
-		nullable<int>     m_nTotalTime;
-		nullable<int>     m_nWords;
+        nullable<std::wstring>	m_sApplication;
+        nullable<std::wstring>	m_sAppVersion;
+		nullable<int>			m_nCharacters;
+		nullable<int>			m_nCharactersWithSpaces;
+        nullable<std::wstring>	m_sCompany;
+		nullable<int>			m_nDocSecurity;
+		nullable<int>			m_nHiddenSlides;
+        nullable<std::wstring>	m_sHyperlinkBase;
+		nullable<bool>			m_bHyperlinksChanged;
+		nullable<int>			m_nLines;
+		nullable<bool>			m_bLinksUpToDate;
+        nullable<std::wstring>	m_sManager;
+		nullable<int>			m_nMMClips;
+		nullable<int>			m_nNotes;
+		nullable<int>			m_nPages;
+		nullable<int>			m_nParagraphs;
+        nullable<std::wstring>	m_sPresentationForm;
+		nullable<bool>			m_bScaleCrop;
+		nullable<bool>			m_bSharedDoc;
+		nullable<int>			m_nSlides;
+        nullable<std::wstring>	m_sTemplate;
+		nullable<int>			m_nTotalTime;
+		nullable<int>			m_nWords;
 	};
 } // namespace OOX
 

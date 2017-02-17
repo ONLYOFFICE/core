@@ -44,14 +44,24 @@
 class OOXpPrReader
 {
 private:
-	OOX::Logic::CParagraphProperty *m_ooxParaProps;
+	bool ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty);
+
+	OOX::Drawing::CParagraphProperty *	m_drawingParaProps;
+	OOX::Logic::CParagraphProperty *	m_ooxParaProps;
 public: 
 	bool m_bDefStyle;
 	
 	OOXpPrReader(OOX::Logic::CParagraphProperty *ooxParaProps)
 	{
-		m_bDefStyle = true;
-		m_ooxParaProps = ooxParaProps;
+		m_bDefStyle			= true;
+		m_ooxParaProps		= ooxParaProps;
+		m_drawingParaProps	= NULL;
+	}
+	OOXpPrReader(OOX::Drawing::CParagraphProperty *ooxParaProps)
+	{
+		m_bDefStyle			= true;
+		m_ooxParaProps		= NULL;
+		m_drawingParaProps	= ooxParaProps;
 	}
 	bool Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle);
 };

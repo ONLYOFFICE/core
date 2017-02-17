@@ -82,7 +82,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_txbxContent;
@@ -117,7 +117,7 @@ namespace OOX
 		public:
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -137,7 +137,7 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("w:txbxContent") == sName )
+					if ( L"w:txbxContent" == sName )
 						m_oTxtbxContent = oReader;				
 				}
 			}
@@ -179,9 +179,9 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -202,9 +202,9 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 
 					sName = oReader.GetName();
-					if ( _T("a:spLocks") == sName )
+					if ( L"a:spLocks" == sName )
 						m_oSpLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( L"a:extLst" == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -218,12 +218,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("txBox"), m_otxBox )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"txBox", m_otxBox )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			// Attributes
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_otxBox;
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_otxBox;
 
 			// Childs
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
@@ -252,9 +252,9 @@ namespace OOX
 			}
 
 		public:
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -275,9 +275,9 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 
 					sName = oReader.GetName();
-					if ( _T("a:extLst") == sName )
+					if ( L"a:extLst" == sName )
 						m_oExtLst = oReader;
-					//else ( _T("a:grpSpLocks") == sName )
+					//else ( L"a:grpSpLocks" == sName )
 					//	m_oSpLocks = oReader;
 				}
 			}
@@ -327,7 +327,7 @@ namespace OOX
 		public:
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -348,9 +348,9 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 
 					sName = oReader.GetName();
-					if ( _T("a:picLocks") == sName )
+					if ( L"a:picLocks" == sName )
 						m_oPicLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( L"a:extLst" == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -364,7 +364,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), m_oPreferRelativeResize )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"preferRelativeResize", m_oPreferRelativeResize )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -399,7 +399,7 @@ namespace OOX
 		public:
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -419,20 +419,22 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("wps:cNvSpPr") == sName )
+					if ( L"wps:cNvSpPr" == sName )
 						m_oCNvSpPr = oReader;
-					else if ( _T("wps:cNvPr") == sName )
+					else if ( L"wps:cNvPr" == sName )
 						m_oCNvPr = oReader;
-					else if ( _T("wps:cNvCnPr") == sName )
+					else if ( L"wps:cNvCnPr" == sName )
 						m_oCNvConnSpPr = oReader;
-					else if ( _T("wps:spPr") == sName )
+					else if ( L"wps:spPr" == sName )
 						m_oSpPr = oReader;
-					else if ( _T("wps:style") == sName )
+					else if ( L"wps:style" == sName )
 						m_oShapeStyle = oReader;	
-					else if ((_T("wps:txbx") == sName) || (_T("wps:textbox") == sName))
+					else if ((L"wps:txbx" == sName) || (L"wps:textbox" == sName))
 						m_oTxBody = oReader; 		
-					else if (_T("wps:bodyPr") == sName)
+					else if (L"wps:bodyPr" == sName)
 						m_oTxBodyProperties = oReader; 
+					else if (L"wps:txBody" == sName)
+						m_oTxBodyAlt = oReader;
 				}
 			}
 
@@ -452,8 +454,12 @@ namespace OOX
 
 			nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
 			nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
+			
 			nullable<OOX::Logic::CTextBody>					m_oTxBody;	
-			nullable<OOX::Drawing::CTextBodyProperties>		m_oTxBodyProperties;	
+			nullable<OOX::Drawing::CTextBodyProperties>		m_oTxBodyProperties;
+			
+			nullable<OOX::Drawing::CTxBody>					m_oTxBodyAlt;
+			
 		};
 
 		//--------------------------------------------------------------------------------
@@ -480,7 +486,7 @@ namespace OOX
 		public:
 			virtual std::wstring      toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -500,20 +506,20 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("wpg:grpSpPr") == sName )
+					if ( L"wpg:grpSpPr" == sName )
 						m_oGroupSpPr = oReader;
-					else if ( _T("wpg:cNvPr") == sName )
+					else if ( L"wpg:cNvPr" == sName )
 						m_oCNvPr = oReader;
-					else if ( _T("wpg:cNvGrpSpPr") == sName )
+					else if ( L"wpg:cNvGrpSpPr" == sName )
 						m_oCNvGroupSpPr = oReader;
 
-					else if ( _T("wps:wsp") == sName )
+					else if ( L"wps:wsp" == sName )
 						m_arrItems.push_back( new OOX::Logic::CShape( oReader ));
-					else if ( _T("c:chart") == sName ) //??? 
+					else if ( L"c:chart" == sName ) //??? 
 						m_arrItems.push_back( new OOX::Drawing::CChart( oReader ));
-					else if ( _T("pic:pic") == sName )
+					else if ( L"pic:pic" == sName )
 						m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
-					else if ( _T("wpg:grpSp") == sName )
+					else if ( L"wpg:grpSp" == sName )
 						m_arrItems.push_back( new OOX::Logic::CGroupShape( oReader ));	
 				}
 			}
@@ -557,7 +563,7 @@ namespace OOX
 		public:
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
@@ -577,20 +583,20 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					//if ( _T("wpg:grpSpPr") == sName )
+					//if ( L"wpg:grpSpPr" == sName )
 					//	m_oGroupSpPr = oReader;
-					//else if ( _T("wpg:cNvPr") == sName )
+					//else if ( L"wpg:cNvPr" == sName )
 					//	m_oCNvPr = oReader;
-					//else if ( _T("wpg:cNvGrpSpPr") == sName )
+					//else if ( L"wpg:cNvGrpSpPr" == sName )
 					//	m_oCNvGroupSpPr = oReader;
 
-					if ( _T("wps:wsp") == sName )
+					if ( L"wps:wsp" == sName )
 						m_arrItems.push_back( new OOX::Logic::CShape( oReader ));
-					else if ( _T("c:chart") == sName ) //??? 
+					else if ( L"c:chart" == sName ) //??? 
 						m_arrItems.push_back( new OOX::Drawing::CChart( oReader ));
-					else if ( _T("pic:pic") == sName )
+					else if ( L"pic:pic" == sName )
 						m_arrItems.push_back( new OOX::Drawing::CPicture( oReader ));
-					else if ( _T("wpg:grpSp") == sName )
+					else if ( L"wpg:grpSp" == sName )
 						m_arrItems.push_back( new OOX::Logic::CGroupShape( oReader ));	
 				}
 			}

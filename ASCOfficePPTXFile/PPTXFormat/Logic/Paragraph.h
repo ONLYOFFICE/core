@@ -45,7 +45,8 @@ namespace PPTX
 		class Paragraph : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Paragraph)
+			WritingElement_AdditionConstructors(Paragraph)
+			PPTX_LOGIC_BASE2(Paragraph)
 
 			Paragraph& operator=(const Paragraph& oSrc)
 			{
@@ -56,7 +57,9 @@ namespace PPTX
 				endParaRPr	= oSrc.endParaRPr;
 
 				for (size_t i=0 ; i < oSrc.RunElems.size(); i++) 
+				{
 					RunElems.push_back(oSrc.RunElems[i]);
+				}
 
 				return *this;
 			}
@@ -109,7 +112,64 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
+			virtual void fromXML2(XmlUtils::CXmlLiteReader& oReader, bool bClear)
+			{
+				if (bClear)
+				{
+					RunElems.clear();
+				}
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					WritingElement *pItem = NULL;
+
+					if (_T("pPr") == strName)
+						pPr = oReader;
+					else if (_T("endParaRPr") == strName)
+						endParaRPr = oReader;
+					else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
+						RunElems.push_back(RunElem(oReader));
+					else if (_T("AlternateContent") == strName)
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring strName1 = oReader.GetName();
+							if (_T("mc:Choice") == strName1)
+							{//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+								fromXML2(oReader, false);
+								break;
+							}
+							else if (_T("mc:Fallback") == strName1)
+							{
+								fromXML2(oReader, false);
+							}
+
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML2(oReader, true);
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_p;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				fromXML2(node, true);
@@ -338,9 +398,10 @@ namespace PPTX
 			{
 				std::wstring result = _T("");
 				
-				size_t count = RunElems.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < RunElems.size(); ++i)
+				{
 					result += RunElems[i].GetText();
+				}
 				
 				result = result + _T("\n");
 				return result;

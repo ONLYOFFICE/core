@@ -46,7 +46,8 @@ namespace PPTX
 		class Bullet : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Bullet)
+			WritingElement_AdditionConstructors(Bullet)
+			PPTX_LOGIC_BASE2(Bullet)
 
 			Bullet& operator=(const Bullet& oSrc)
 			{
@@ -57,8 +58,27 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				if (m_Bullet.IsInit())
+					return m_Bullet->getType();
+				return OOX::et_Unknown;
+			}		
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+                std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-		public:
+				if (strName == _T("buNone"))
+					m_Bullet.reset(new Logic::BuNone(oReader));
+				else if (strName == _T("buChar"))
+					m_Bullet.reset(new Logic::BuChar(oReader));
+				else if (strName == _T("buAutoNum"))
+					m_Bullet.reset(new Logic::BuAutoNum(oReader));
+				else if (strName == _T("buBlip"))
+					m_Bullet.reset(new Logic::BuBlip(oReader));
+				else 
+					m_Bullet.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
@@ -71,7 +91,8 @@ namespace PPTX
 					m_Bullet.reset(new Logic::BuAutoNum(node));
 				else if (strName == _T("buBlip"))
 					m_Bullet.reset(new Logic::BuBlip(node));
-				else m_Bullet.reset();
+				else 
+					m_Bullet.reset();
 			}
 
 			virtual void ReadBulletFrom(XmlUtils::CXmlNode& element)
@@ -85,7 +106,8 @@ namespace PPTX
 					m_Bullet.reset(new Logic::BuAutoNum(oNode));
 				else if (element.GetNode(_T("a:buBlip"), oNode))
 					m_Bullet.reset(new Logic::BuBlip(oNode));
-				else m_Bullet.reset();
+				else
+					m_Bullet.reset();
 			}
 
 			virtual bool is_init()const{return (m_Bullet.IsInit());};

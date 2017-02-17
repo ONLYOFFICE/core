@@ -47,12 +47,12 @@ docx_content_types_file::docx_content_types_file()
     content()->add_default(L"jpg",     L"image/jpeg");
     content()->add_default(L"png",     L"image/png");
 	//
-    content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
-    content()->add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
     content()->add_override(L"/word/document.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
 	content()->add_override(L"/word/settings.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
     content()->add_override(L"/word/styles.xml",              L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
     content()->add_override(L"/word/fontTable.xml",           L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+    //content()->add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
+    //content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content()->add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
     content()->add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
 }

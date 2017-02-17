@@ -39,7 +39,7 @@
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Shape.h"
 
-bool ParseStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
+bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 
 class OOXShapeReader
 {
@@ -64,9 +64,10 @@ public:
 	bool Parse			( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVml		( ReaderParameter oParam , RtfShapePtr& oOutput);
+	
 	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 
-	static bool Parse(ReaderParameter oParam, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	RtfShapePtr& pOutput);
+	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CBlipFillProperties *oox_bitmap_fill);
 private:
 
 	bool Parse(ReaderParameter oParam, int indexSchemeColor, BYTE& ucA, BYTE& ucG, BYTE& ucB, BYTE& ucR);
@@ -75,23 +76,24 @@ private:
 	void Parse(ReaderParameter oParam, OOX::Drawing::Colors::CColorTransform	*oox_ScrgbClr,		unsigned int & nColor, _CP_OPT(double) &opacity);
 	void Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	unsigned int & nColor, _CP_OPT(double) &opacity);
 	
-	void Parse(ReaderParameter oParam, OOX::Drawing::CLineProperties *oox_line_prop , RtfShapePtr& pOutput);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CStyleMatrixReference		*style_matrix_ref);
+	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CLineProperties				*oox_line_prop,		std::wstring *change_sheme_color = NULL);
     
-    void Parse(ReaderParameter oParam, OOX::Drawing::CGradientFillProperties	*oox_grad_fill,		RtfShapePtr& pOutput);
-    void Parse(ReaderParameter oParam, OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	RtfShapePtr& pOutput);
-    void Parse(ReaderParameter oParam, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	RtfShapePtr& pOutput);
-
+    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CGradientFillProperties		*oox_grad_fill,		std::wstring *change_sheme_color = NULL);
+    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CPatternFillProperties		*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
+    void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
 //---------------------------------------------------------------------------
 	OOX::Vml::CVmlCommonElements						*m_vmlElement;
 	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement;
 
 	OOX::Logic::CShape									*m_ooxShape;
 
-	bool ParseStyles(RtfShapePtr pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	void ParseVmlPath	(RtfShapePtr& pShape, const std::wstring &custom_path);
+	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (size_t i=0; i< props.size(); i++)
 		{
-			ParseStyle( pShape, props[i].get());
+			ParseVmlStyle( pShape, props[i].get());
 		}
 		return true;
 	}
@@ -114,11 +116,11 @@ public:
 		m_vmlGroup = NULL;
 		m_ooxGroup = ooxGroup;
 	}
-	bool ParseStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
+	bool ParseVmlStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
 	{
 		for (size_t i = 0; i < props.size(); i++)
 		{
-			ParseStyle( pGroupShape, props[i].get());
+			ParseVmlStyle( pGroupShape, props[i].get());
 		}
 		return true;
 	}

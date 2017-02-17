@@ -44,7 +44,24 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
+		void EffectStyle::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring strName = oReader.GetName();
+				if (strName == L"a:scene3d")
+					scene3d = oReader;
+				else if (strName == L"a:sp3d")
+					sp3d = oReader;
+				else
+					EffectList.fromXML(oReader);
+			}
+			FillParentPointersForChilds();
+		}
 
 		std::wstring EffectStyle::toXML() const
 		{

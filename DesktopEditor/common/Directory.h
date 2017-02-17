@@ -34,7 +34,7 @@
 
 #include <stdio.h>
 #include <string>
-#include "Array.h"
+#include <vector>
 #include "File.h"
 
 #if defined(_WIN32) || defined (_WIN64)
@@ -109,9 +109,9 @@ namespace NSDirectory
 #endif
 
 #ifdef _IOS
-    void GetFiles2_ios(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion);
+	void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion);
 #endif
-	static void GetFiles2(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion = false)
+	static void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false)
     {
 #if defined(_WIN32) || defined (_WIN64)
         WIN32_FIND_DATAW oFD;
@@ -128,7 +128,7 @@ namespace NSDirectory
                 sSpec = strDirectory + L"\\" + sSpec;
                 if( !( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
                 {
-                    oArray.Add(sSpec);
+                    oArray.push_back(sSpec);
                 }
                 else if (bIsRecursion)
                 {
@@ -169,7 +169,7 @@ namespace NSDirectory
                 if (2 == nType)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    oArray.Add(strDirectory + L"/" + sName);
+                    oArray.push_back(strDirectory + L"/" + sName);
                 }
 
                 if (bIsRecursion && (1 == nType))
@@ -199,7 +199,7 @@ namespace NSDirectory
                 if(DT_REG == dirp->d_type)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    oArray.Add(strDirectory + L"/" + sName);
+                    oArray.push_back(strDirectory + L"/" + sName);
                 }
                 
                 if (bIsRecursion && DT_DIR == dirp->d_type)
@@ -218,9 +218,9 @@ namespace NSDirectory
 #endif
     }
 
-    static CArray<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
+	static std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
 	{
-		CArray<std::wstring> oArray;
+		std::vector<std::wstring> oArray;
 		
 		if (!strDirectory.empty())
 		{     
@@ -228,10 +228,9 @@ namespace NSDirectory
 		}
 		return oArray;
 	}
-
-	static CArray<std::wstring> GetDirectories(std::wstring strDirectory)
+	static std::vector<std::wstring> GetDirectories(std::wstring strDirectory)
 	{
-		CArray<std::wstring> oArray;
+		std::vector<std::wstring> oArray;
 
 #if defined(_WIN32) || defined (_WIN64)
 		WIN32_FIND_DATAW oFD; 
@@ -248,7 +247,7 @@ namespace NSDirectory
 				sSpec = strDirectory + L"\\" + sSpec;
 				if( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) 
 				{
-					oArray.Add(sSpec);
+					oArray.push_back(sSpec);
 				}
 			}
 		} while( FindNextFileW( hRes, &oFD ) );		
@@ -280,7 +279,7 @@ namespace NSDirectory
 					if(dirp->d_name[0] != '.')
 					{
 						std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-						oArray.Add(strDirectory + L"/" + sName);
+						oArray.push_back(strDirectory + L"/" + sName);
 					}
 				}
 			}
@@ -302,7 +301,7 @@ namespace NSDirectory
                     if(dirp->d_name[0] != '.')
                     {
                         std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                        oArray.Add(strDirectory + L"/" + sName);
+                        oArray.push_back(strDirectory + L"/" + sName);
                     }
                 }
             }
@@ -381,13 +380,13 @@ namespace NSDirectory
 	}
 	static void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true)
 	{
-		CArray<std::wstring> aFiles = GetFiles(strDirectory);
-		for(int i = 0; i < aFiles.GetCount(); ++i)
+		std::vector<std::wstring> aFiles = GetFiles(strDirectory);
+		for(size_t i = 0; i < aFiles.size(); ++i)
 		{
 			NSFile::CFileBinary::Remove(aFiles[i]);
 		}
-		CArray<std::wstring> aDirectories = GetDirectories(strDirectory);
-		for(int i = 0; i < aDirectories.GetCount(); ++i)
+		std::vector<std::wstring> aDirectories = GetDirectories(strDirectory);
+		for(size_t i = 0; i < aDirectories.size(); ++i)
 		{
 			DeleteDirectory(aDirectories[i]);
 		}
@@ -473,11 +472,11 @@ namespace NSDirectory
 
         static int GetFilesCount(const std::wstring& path, const bool& recursive)
         {
-            CArray<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
+			std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
 #if defined(_WIN32) || defined (_WIN64)
-            return arrFiles.GetCount();
+            return (int)arrFiles.size();
 #endif
-            return arrFiles.GetCount() + 1;
+            return (int)arrFiles.size() + 1;
             // ???
         }
 #if !defined(_WIN32) && !defined (_WIN64)

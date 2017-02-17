@@ -47,7 +47,14 @@ namespace PPTX
 			explicit UniEffect(XmlUtils::CXmlNode& node);
 			const UniEffect& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				if (Effect.is_init())
+					return Effect->getType();
+				else return OOX::et_Unknown;
+			}
+			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetEffectFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (Effect.IsInit());};

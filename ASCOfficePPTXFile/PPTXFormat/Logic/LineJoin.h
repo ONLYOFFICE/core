@@ -44,11 +44,47 @@ namespace PPTX
 		class LineJoin : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LineJoin)
+			WritingElement_AdditionConstructors(LineJoin)
+			PPTX_LOGIC_BASE2(LineJoin)
 
 			virtual bool is_init()const{return (type==JoinEmpty);};
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = oReader.GetName();
+
+				type = JoinEmpty;
+
+				if (name == _T("round"))
+					type = JoinRound;
+				else if (name == _T("bevel"))
+					type = JoinBevel;
+				else if (name == _T("miter"))
+				{
+					type = JoinMiter;
+					ReadAttributes(oReader);
+				}
+
+				Normalize();
+			}
+			virtual OOX::EElementType getType () const
+			{
+				if(type == JoinRound)
+					return OOX::et_a_round;
+				else if(type == JoinBevel)
+					return OOX::et_a_bevel;
+				else if(type == JoinMiter)
+					return OOX::et_a_miter;
+				else
+					return OOX::et_Unknown;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lim"), lim )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void GetJoinFrom(XmlUtils::CXmlNode& element)
 			{
 				type = JoinEmpty;

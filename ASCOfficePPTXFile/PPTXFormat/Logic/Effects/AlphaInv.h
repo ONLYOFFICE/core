@@ -44,7 +44,8 @@ namespace PPTX
 		class AlphaInv : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaInv)
+			WritingElement_AdditionConstructors(AlphaInv)
+			PPTX_LOGIC_BASE2(AlphaInv)
 
 			AlphaInv& operator=(const AlphaInv& oSrc)
 			{
@@ -55,7 +56,23 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaInv;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Color.fromXML(oReader);
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);

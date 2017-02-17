@@ -142,7 +142,7 @@ void odf_notes_context::end_note_content()
 
 int odf_notes_context::find_by_id(int oox_id, int type)
 {
-	for (int i=0; i < impl_->notes_.size(); i++)
+	for (size_t i=0; i < impl_->notes_.size(); i++)
 	{
 		if (impl_->notes_[i].oox_id == oox_id	&&
 			impl_->notes_[i].type	== type)
@@ -155,7 +155,7 @@ int odf_notes_context::find_by_id(int oox_id, int type)
 }
 std::wstring odf_notes_context::find_name_by_id(int oox_id, int type)
 {
-	for (int i=0; i < impl_->notes_.size(); i++)
+	for (size_t i=0; i < impl_->notes_.size(); i++)
 	{
 		if (impl_->notes_[i].oox_id == oox_id	&&
 			impl_->notes_[i].type	== type)

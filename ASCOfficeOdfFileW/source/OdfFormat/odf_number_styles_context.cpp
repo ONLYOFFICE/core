@@ -362,7 +362,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 
 void odf_number_styles_context::process_styles(office_element_ptr root )
 {
-	for (long i=0; i< number_format_array_.size(); i++)
+	for (size_t i=0; i< number_format_array_.size(); i++)
 	{
 		create_style(number_format_array_[i]);
 
@@ -432,7 +432,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 
 			boost::algorithm::split(numbers, str1, boost::algorithm::is_any_of(L".,"), boost::algorithm::token_compress_on);
 			int ind=1;//
-			for (long i=0;i<numbers.size();i++)
+			for (size_t i = 0;i < numbers.size(); i++)
 			{
 				if (numbers[i].length()<1)continue;
 				if (ind==1)min_digit= numbers[i].length();

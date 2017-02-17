@@ -64,6 +64,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdi32.lib Rpcrt4.lib"
+				ShowProgress="0"
+				Version=""
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"

@@ -153,8 +153,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<> > m_oNull;
-            nullable<std::wstring               > m_sVal;
+			nullable< SimpleTypes::COnOff<> >	m_oNull;
+            nullable< std::wstring >			m_sVal;
 		};
 
 		//--------------------------------------------------------------------------------

@@ -39,7 +39,7 @@
 // TODO: write JPG from Photoshop...
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../DesktopEditor/cximage/CxImage/ximage.h"
+#include "../../DesktopEditor/cximage/CxImage/ximage.h"
 namespace NSImageReSaver
 {
     static void CorrectImage(const wchar_t* wsFileName, BYTE*& pBuffer, int& nBufferSize, unsigned int& unWidth, unsigned int& unHeight)

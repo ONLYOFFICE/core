@@ -611,7 +611,7 @@ namespace NSDoctRenderer
 
         void CheckFonts(bool bIsCheckSystemFonts)
         {
-            CArray<std::string> strFonts;
+            std::vector<std::string> strFonts;
             std::wstring strDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
 
             std::wstring strAllFontsJSPath = strDirectory + L"/AllFonts.js";
@@ -638,7 +638,7 @@ namespace NSDoctRenderer
                             if (nEnd > nStart)
                             {
                                 std::string s(pBuffer + nStart, nEnd - nStart + 1);
-                                strFonts.Add(s);
+                                strFonts.push_back(s);
                             }
                             nStart = nCur + 1;
                         }
@@ -653,14 +653,14 @@ namespace NSDoctRenderer
             if (!bIsEqual || bIsCheckSystemFonts)
             {
                 CApplicationFonts oApplicationF;
-                CArray<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
+                std::vector<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
 
-                if (strFonts.GetCount() != strFontsW_Cur.GetCount())
+                if (strFonts.size() != strFontsW_Cur.size())
                     bIsEqual = false;
 
                 if (bIsEqual)
                 {
-                    int nCount = strFonts.GetCount();
+                    int nCount = (int)strFonts.size();
                     for (int i = 0; i < nCount; ++i)
                     {
                         if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
@@ -678,12 +678,12 @@ namespace NSDoctRenderer
                     if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
                         NSFile::CFileBinary::Remove(strFontsSelectionBin);
 
-                    if (strFonts.GetCount() != 0)
+                    if (strFonts.size() != 0)
                         NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
 
                     NSFile::CFileBinary oFile;
                     oFile.CreateFileW(strDirectory + L"/fonts.log");
-                    int nCount = strFontsW_Cur.GetCount();
+                    int nCount = (int)strFontsW_Cur.size();
                     for (int i = 0; i < nCount; ++i)
                     {
                         oFile.WriteStringUTF8(strFontsW_Cur[i]);
@@ -761,7 +761,7 @@ namespace NSDoctRenderer
 #endif
         }
 
-        bool OpenFile(const std::wstring& path, const std::wstring& params)
+        int OpenFile(const std::wstring& path, const std::wstring& params)
         {
             Init();
 
@@ -914,14 +914,15 @@ namespace NSDoctRenderer
             LOGGER_SPEED_LAP("open_convert")
 
             if (0 == nReturnCode)
-                return true;
+                return 0;
 
             NSDirectory::DeleteDirectory(m_sFileDir);
             m_sFileDir = L"";
             m_nFileType = -1;
 
-            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"open file error");
-            return false;
+            std::wstring sErrorLog = L"open file error (" + std::to_wstring(nReturnCode) + L")";
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+            return nReturnCode;
         }
 
         void CloseFile()
@@ -937,7 +938,7 @@ namespace NSDoctRenderer
             RELEASEOBJECT(m_pWorker);
         }
 
-        bool SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
+        int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
         {
             Init();
 
@@ -1114,10 +1115,11 @@ namespace NSDoctRenderer
             LOGGER_SPEED_LAP("save_convert")
 
             if (0 == nReturnCode)
-                return true;
+                return 0;
 
-            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save file error");
-            return false;
+            std::wstring sErrorLog = L"save file error (" + std::to_wstring(nReturnCode) + L")";
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+            return nReturnCode;
         }
 
         bool ExecuteCommand(const std::wstring& command)
@@ -1414,7 +1416,7 @@ namespace NSDoctRenderer
                 ParceParameters(command, _builder_params, nCountParameters);
 
                 if ("OpenFile" == sFuncNum)
-                    bIsNoError = this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str());
+                    bIsNoError = (0 == this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str()));
                 else if ("CreateFile" == sFuncNum)
                 {
                     if (L"docx" == _builder_params[0])

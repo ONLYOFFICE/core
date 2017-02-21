@@ -24,7 +24,8 @@ DEFINES +=  UNICODE \
             _USE_LIBXML2_READER_ \
             _USE_XMLLITE_READER_ \
             USE_LITE_READER \
-            LIBXML_READER_ENABLED
+            LIBXML_READER_ENABLED \
+            DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../include
 INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include

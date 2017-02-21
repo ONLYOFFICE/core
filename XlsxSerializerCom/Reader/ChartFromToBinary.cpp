@@ -916,12 +916,12 @@ namespace BinXlsxRW
 		else if(c_oserct_chartspaceSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			res = ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_chartspaceTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		//else if(c_oserct_chartspaceEXTERNALDATA == type)
 		//{
@@ -1322,7 +1322,7 @@ namespace BinXlsxRW
 		else if(c_oserct_legendentryTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_legendentryEXTLST == type)
 		{
@@ -1414,12 +1414,12 @@ namespace BinXlsxRW
 		else if(c_oserct_legendSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_legendTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_legendEXTLST == type)
 		{
@@ -1594,12 +1594,12 @@ namespace BinXlsxRW
 		else if(c_oserct_dtableSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_dtableTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_dtableEXTLST == type)
 		{
@@ -1684,12 +1684,12 @@ namespace BinXlsxRW
 		else if(c_oserct_seraxSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_seraxTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_seraxCROSSAX == type)
 		{
@@ -1820,7 +1820,7 @@ namespace BinXlsxRW
 		if(c_oserct_chartlinesSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1851,12 +1851,12 @@ namespace BinXlsxRW
 		else if(c_oserct_titleSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_titleTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_titleEXTLST == type)
 		{
@@ -2128,12 +2128,12 @@ namespace BinXlsxRW
 		else if(c_oserct_dateaxSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_dateaxTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_dateaxCROSSAX == type)
 		{
@@ -2321,12 +2321,12 @@ namespace BinXlsxRW
 		else if(c_oserct_cataxSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_cataxTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_cataxCROSSAX == type)
 		{
@@ -2411,12 +2411,12 @@ namespace BinXlsxRW
 		else if(c_oserct_dispunitslblSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_dispunitslblTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2557,12 +2557,12 @@ namespace BinXlsxRW
 		else if(c_oserct_valaxSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_valaxTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_valaxCROSSAX == type)
 		{
@@ -2670,7 +2670,7 @@ namespace BinXlsxRW
 		else if(c_oserct_bubbleserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_bubbleserINVERTIFNEGATIVE == type)
 		{
@@ -2793,7 +2793,7 @@ namespace BinXlsxRW
 		else if(c_oserct_dptSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_dptPICTUREOPTIONS == type)
 		{
@@ -2830,7 +2830,7 @@ namespace BinXlsxRW
 		else if(c_oserct_markerSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_markerEXTLST == type)
 		{
@@ -3064,7 +3064,7 @@ namespace BinXlsxRW
 			poVal->m_ItemsElementName0.push_back(eElemtype);
 
 			PPTX::Logic::SpPr * pNewElem = new PPTX::Logic::SpPr();
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, pNewElem);
+			res = ReadCT_SpPr(0, length, pNewElem);
 			poVal->m_Items.push_back(pNewElem);
 		}
 		else if(c_oserct_dlblsTXPR == type)
@@ -3203,7 +3203,7 @@ namespace BinXlsxRW
 			poVal->m_ItemsElementName0.push_back(eElemtype);
 
 			PPTX::Logic::SpPr *pNewElem = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, pNewElem);
+			res = ReadCT_SpPr(0, length, pNewElem);
 			poVal->m_Items.push_back(pNewElem);
 		}
 		else if(c_oserct_dlblTX == type)
@@ -3222,7 +3222,7 @@ namespace BinXlsxRW
 			poVal->m_ItemsElementName0.push_back(eElemtype);
 			
 			PPTX::Logic::TxBody * pNewElem = new PPTX::Logic::TxBody();
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, pNewElem);
+			res = ReadCT_SpPr(0, length, pNewElem);
 			poVal->m_Items.push_back(pNewElem);
 		}
 		else if(c_oserct_dlblEXTLST == type)
@@ -3263,7 +3263,7 @@ namespace BinXlsxRW
 		else if(c_oserct_trendlineSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_trendlineTRENDLINETYPE == type)
 		{
@@ -3397,12 +3397,12 @@ namespace BinXlsxRW
 		else if(c_oserct_trendlinelblSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_trendlinelblTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_trendlinelblEXTLST == type)
 		{
@@ -3463,7 +3463,7 @@ namespace BinXlsxRW
 		else if(c_oserct_errbarsSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_errbarsEXTLST == type)
 		{
@@ -3867,7 +3867,7 @@ namespace BinXlsxRW
 		else if(c_oserct_surfaceserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_surfaceserCAT == type)
 		{
@@ -3904,7 +3904,7 @@ namespace BinXlsxRW
 		else if(c_oserct_bandfmtSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4105,7 +4105,7 @@ namespace BinXlsxRW
 		else if(c_oserct_pieserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_pieserEXPLOSION == type)
 		{
@@ -4284,7 +4284,7 @@ namespace BinXlsxRW
 		else if(c_oserct_barserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_barserINVERTIFNEGATIVE == type)
 		{
@@ -4614,7 +4614,7 @@ namespace BinXlsxRW
 		else if(c_oserct_scatterserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_scatterserMARKER == type)
 		{
@@ -4758,7 +4758,7 @@ namespace BinXlsxRW
 		else if(c_oserct_radarserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_radarserMARKER == type)
 		{
@@ -4934,7 +4934,7 @@ namespace BinXlsxRW
 		else if(c_oserct_lineserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_lineserMARKER == type)
 		{
@@ -5033,7 +5033,7 @@ namespace BinXlsxRW
 		if(c_oserct_updownbarSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5265,7 +5265,7 @@ namespace BinXlsxRW
 		else if(c_oserct_areaserSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_areaserPICTUREOPTIONS == type)
 		{
@@ -5568,7 +5568,7 @@ namespace BinXlsxRW
 		else if(c_oserct_plotareaSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_plotareaEXTLST == type)
 		{
@@ -5607,7 +5607,7 @@ namespace BinXlsxRW
 		else if(c_oserct_surfaceSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_surfacePICTUREOPTIONS == type)
 		{
@@ -5758,12 +5758,12 @@ namespace BinXlsxRW
 		else if(c_oserct_pivotfmtSPPR == type)
 		{
 			poVal->m_oSpPr = new PPTX::Logic::SpPr;
-			res = Read1(length, &BinaryChartReader::ReadCT_SpPr, this, poVal->m_oSpPr.GetPointer());
+			ReadCT_SpPr(0, length, poVal->m_oSpPr.GetPointer());
 		}
 		else if(c_oserct_pivotfmtTXPR == type)
 		{
 			poVal->m_oTxPr = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oTxPr.GetPointer());
+			res = ReadCT_TxPr(0, length, poVal->m_oTxPr.GetPointer());
 		}
 		else if(c_oserct_pivotfmtMARKER == type)
 		{

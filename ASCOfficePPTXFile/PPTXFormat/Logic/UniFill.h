@@ -197,7 +197,7 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				if (Fill.IsInit())
-					Fill->toXML();
+					return Fill->toXML();
 				return _T("");
 			}
 

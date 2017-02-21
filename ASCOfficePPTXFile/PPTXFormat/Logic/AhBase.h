@@ -66,11 +66,11 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (sName == L"a:ahXY")
+				if (sName == L"ahXY")
 					ah.reset(new Logic::AhXY(oReader));
-				else if(sName == L"a:ahPolar")
+				else if(sName == L"ahPolar")
 					ah.reset(new Logic::AhPolar(oReader));
 				else ah.reset();
 			}

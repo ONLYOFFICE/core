@@ -64,6 +64,18 @@ namespace PPTX
 			fromXML(node);
 			return *this;
 		}
+		void UniColor::fromXMLParent(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				fromXML(oReader);
+				break;
+			}
+		}
 		void UniColor::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());

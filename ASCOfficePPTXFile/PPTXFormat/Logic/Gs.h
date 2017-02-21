@@ -71,13 +71,14 @@ namespace PPTX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					color.fromXML(oReader);
+					break;
 				}
 				FillParentPointersForChilds();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				nullable_int tmp;
-				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("pos"), tmp)
 				WritingElement_ReadAttributes_End	( oReader )
 

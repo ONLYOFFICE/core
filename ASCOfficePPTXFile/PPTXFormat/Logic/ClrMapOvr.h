@@ -43,9 +43,34 @@ namespace PPTX
 		class ClrMapOvr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ClrMapOvr)
+			WritingElement_AdditionConstructors(ClrMapOvr)
+			PPTX_LOGIC_BASE2(ClrMapOvr)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrMapOvr;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"overrideClrMapping" == sName)
+					{
+						overrideClrMapping = oReader;
+						break;
+					}
+				}
+				if (overrideClrMapping.is_init())
+					overrideClrMapping->m_name = _T("a:overrideClrMapping");
+				
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				overrideClrMapping = node.ReadNodeNoNS(_T("overrideClrMapping"));

@@ -43,6 +43,7 @@
 
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpPr.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/ClrMap.h"
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"

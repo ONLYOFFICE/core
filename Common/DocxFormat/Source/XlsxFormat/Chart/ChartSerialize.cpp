@@ -992,7 +992,6 @@ namespace OOX{
 			m_roundedCorners = NULL;
 			m_AlternateContent = NULL;
 			m_style = NULL;
-			m_clrMapOvr = NULL;
 			m_pivotSource = NULL;
 			m_protection = NULL;
 			m_chart = NULL;
@@ -1013,8 +1012,6 @@ namespace OOX{
 				delete m_AlternateContent;
 			if(NULL != m_style)
 				delete m_style;
-			if(NULL != m_clrMapOvr)
-				delete m_clrMapOvr;
 			if(NULL != m_pivotSource)
 				delete m_pivotSource;
 			if(NULL != m_protection)
@@ -1069,10 +1066,12 @@ namespace OOX{
 				}
 				else if(_T("clrMapOvr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_clrMapOvr = pNewElem;
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+					{
+						std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+						m_oClrMapOvr = oReader;
+					}
 				}
 				else if(_T("pivotSource") == sName)
 				{
@@ -1156,9 +1155,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:style");
                 m_style->toXML(sNodeName, writer);
 			}
-			if(NULL != m_clrMapOvr)
+			if(m_oClrMapOvr.IsInit())
 			{
-				writer.WriteString(*m_clrMapOvr);
+				writer.WriteString(m_oClrMapOvr->toXML());
 			}
 			if(NULL != m_pivotSource)
 			{

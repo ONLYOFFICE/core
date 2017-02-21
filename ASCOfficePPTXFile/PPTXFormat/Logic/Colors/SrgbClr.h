@@ -55,7 +55,7 @@ namespace PPTX
 			{
 				std::wstring val;
 
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
 				WritingElement_ReadAttributes_End( oReader )
                

@@ -88,7 +88,7 @@ namespace PPTX
 		}
 		void UniEffect::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-            std::wstring name = oReader.GetName();
+            std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 			
 			switch ((int)name[0])
 			{

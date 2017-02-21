@@ -59,34 +59,34 @@ namespace PPTX
 			}	
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				std::wstring name = oReader.GetName();
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 				
-				if (name == _T("a:blipFill"))
+				if (name == _T("blipFill"))
 				{
 					m_type = blipFill;
 					Fill.reset(new Logic::BlipFill(oReader));
 				}
-				else if(name == _T("a:noFill"))
+				else if(name == _T("noFill"))
 				{
 					m_type = noFill;
 					Fill.reset(new Logic::NoFill(oReader));
 				}
-				else if(name == _T("a:solidFill"))
+				else if(name == _T("solidFill"))
 				{
 					m_type = solidFill;
 					Fill.reset(new Logic::SolidFill(oReader));
 				}
-				else if(name == _T("a:gradFill"))
+				else if(name == _T("gradFill"))
 				{
 					m_type = gradFill;
 					Fill.reset(new Logic::GradFill(oReader));
 				}
-				else if(name == _T("a:pattFill"))
+				else if(name == _T("pattFill"))
 				{
 					m_type = pattFill;
 					Fill.reset(new Logic::PattFill(oReader));
 				}
-				else if(name == _T("a:grpFill"))
+				else if(name == _T("grpFill"))
 				{
 					m_type = grpFill;
 					Fill.reset(new Logic::GrpFill(oReader));
@@ -723,6 +723,7 @@ namespace PPTX
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
 			Type								m_type;
+			std::wstring						m_namespace;
 
 		protected:
 			virtual void FillParentPointersForChilds()

@@ -838,22 +838,6 @@ namespace BinXlsxRW
 	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
 
-    std::wstring* BinaryChartReader::GetRecordXml(long length, int nRecordType)
-	{
-		std::wstring* pNewElem = new std::wstring;
-		if(length > 0)
-		{
-			long nCurPos = m_oBufferedStream.GetPos();
-            std::wstring sXml;
-            HRESULT hRes = m_pOfficeDrawingConverter->GetRecordXml(nCurPos, length, nRecordType, XMLWRITER_DOC_TYPE_CHART, sXml);
-            if (S_OK == hRes)
-			{
-                *pNewElem = sXml;
-			}
-			m_oBufferedStream.Seek(nCurPos + length);
-		}
-		return pNewElem;
-	}
 	int BinaryChartReader::ReadCT_extLst(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -908,7 +892,8 @@ namespace BinXlsxRW
 		}
 		else if(c_oserct_chartspaceCLRMAPOVR == type)
 		{
-			poVal->m_clrMapOvr = GetRecordXml(length, XMLWRITER_RECORD_TYPE_CLRMAPOVR);
+			poVal->m_oClrMapOvr = new PPTX::Logic::ClrMap();
+			res = Read1(length, &BinaryChartReader::ReadCT_ClrMapOvr, this, poVal->m_oClrMapOvr.GetPointer());
 		}
 		else if(c_oserct_chartspacePIVOTSOURCE == type)
 		{
@@ -1031,6 +1016,22 @@ namespace BinXlsxRW
 		if(length > 0)
 		{
 			poVal->m_name = L"c:txPr";
+			long nCurPos = m_oBufferedStream.GetPos();
+
+			BYTE typeRec1 = m_oBufferedStream.GetUChar();
+			poVal->fromPPTY(&m_oBufferedStream);
+
+			m_oBufferedStream.Seek(nCurPos + length);
+		}
+		return res;
+	}
+	int BinaryChartReader::ReadCT_ClrMapOvr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		PPTX::Logic::ClrMap* poVal = static_cast<PPTX::Logic::ClrMap*>(poResult);
+		if(length > 0)
+		{
+			poVal->m_name = L"c:clrMapOvr";
 			long nCurPos = m_oBufferedStream.GetPos();
 
 			BYTE typeRec1 = m_oBufferedStream.GetUChar();
@@ -6048,12 +6049,7 @@ namespace BinXlsxRW
 	}
 	BinaryChartWriter::BinaryChartWriter(NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):m_oBcw(oBufferedStream),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
-	void BinaryChartWriter::GetRecordBinary(int nType, std::wstring& sXml, int nRecordType)
-	{
-		int nCurPos = m_oBcw.WriteItemStart(nType);
-		HRESULT hRes = m_pOfficeDrawingConverter->GetRecordBinary(nRecordType, sXml);
-		m_oBcw.WriteItemEnd(nCurPos);
-	}
+
  	void BinaryChartWriter::WriteCT_extLst(CT_extLst& oVal)
 	{
 		for(size_t i = 0, length = oVal.m_ext.size(); i < length; ++i)
@@ -6100,9 +6096,11 @@ namespace BinXlsxRW
 			WriteCT_Style1(*oVal.m_style);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		if(NULL != oVal.m_clrMapOvr)
+		if(oVal.m_oClrMapOvr.IsInit())
 		{
-			GetRecordBinary(c_oserct_chartspaceCLRMAPOVR, (*oVal.m_clrMapOvr), XMLWRITER_RECORD_TYPE_CLRMAPOVR);
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartspaceCLRMAPOVR);
+			m_oBcw.m_oStream.WriteRecord2(0, oVal.m_oClrMapOvr);
+			m_oBcw.WriteItemEnd(nCurPos);			
 		}
 		if(NULL != oVal.m_pivotSource)
 		{

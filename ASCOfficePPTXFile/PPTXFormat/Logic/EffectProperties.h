@@ -63,7 +63,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				std::wstring strName = oReader.GetName();
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 					
 				if (strName == _T("effectLst"))
 					List.reset(new Logic::EffectLst(oReader));

@@ -43,8 +43,13 @@ namespace PPTX
 		class ClrMap : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ClrMap)
+			WritingElement_AdditionConstructors(ClrMap)
+			PPTX_LOGIC_BASE2(ClrMap)
 
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrMap;
+			}	
 			ClrMap& operator=(const ClrMap& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -60,7 +65,57 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				ColorMap.clear();
+
+				ReadAttributes(oReader);
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				Limit::ColorSchemeIndex lColorIndex_accent1;
+				Limit::ColorSchemeIndex lColorIndex_accent2;
+				Limit::ColorSchemeIndex lColorIndex_accent3;
+				Limit::ColorSchemeIndex lColorIndex_accent4;
+				Limit::ColorSchemeIndex lColorIndex_accent5;
+				Limit::ColorSchemeIndex lColorIndex_accent6;
+				Limit::ColorSchemeIndex lColorIndex_bg1;
+				Limit::ColorSchemeIndex lColorIndex_bg2;
+				Limit::ColorSchemeIndex lColorIndex_tx1;
+				Limit::ColorSchemeIndex lColorIndex_tx2;
+				Limit::ColorSchemeIndex lColorIndex_folHlink;
+				Limit::ColorSchemeIndex lColorIndex_hlink;
+				
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("accent1"), lColorIndex_accent1)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent2"), lColorIndex_accent2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent3"), lColorIndex_accent3 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent4"), lColorIndex_accent4 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent5"), lColorIndex_accent5 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent6"), lColorIndex_accent6 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("bg1"), lColorIndex_bg1 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("bg2"), lColorIndex_bg2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx1"), lColorIndex_tx1 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx1"), lColorIndex_tx2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("folHlink"), lColorIndex_folHlink )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("hlink"), lColorIndex_hlink )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex_accent1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex_accent2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex_accent3));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex_accent4));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex_accent5));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex_accent6));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex_bg1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex_bg2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex_tx1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex_tx2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex_folHlink));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex_hlink));
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();

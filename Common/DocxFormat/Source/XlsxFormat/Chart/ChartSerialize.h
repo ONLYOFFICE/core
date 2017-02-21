@@ -474,10 +474,11 @@ namespace OOX{
 			CT_Boolean*								m_roundedCorners;
 			AlternateContent*						m_AlternateContent;
 			CT_Style1*								m_style;
-			std::wstring*							m_clrMapOvr;
 			CT_PivotSource*							m_pivotSource;
 			CT_Protection*							m_protection;
 			CT_Chart*								m_chart;
+
+			nullable<PPTX::Logic::ClrMap>			m_oClrMapOvr;
 
 			nullable<PPTX::Logic::SpPr>				m_oSpPr;
 			nullable<PPTX::Logic::TxBody>			m_oTxPr;	

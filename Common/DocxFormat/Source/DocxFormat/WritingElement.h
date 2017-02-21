@@ -174,6 +174,7 @@ namespace OOX
 		et_a_clrChange, // <a:clrChange>
 		et_a_clrFrom, // <a:clrFrom>
 		et_a_clrMap, // <a:clrMap>
+		et_a_clrMapOvr, // <a:clrMapOvr>
 		et_a_clrRepl, // <a:clrRepl>
 		et_a_clrScheme, // <a:clrScheme>
 		et_a_clrTo, // <a:clrTo>

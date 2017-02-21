@@ -51,6 +51,12 @@ namespace PPTX
 			WritingElement_AdditionConstructors(UniFill)
 			PPTX_LOGIC_BASE2(UniFill)
 
+			virtual OOX::EElementType getType() const
+			{
+				if (Fill.IsInit())
+					return Fill->getType();
+				return OOX::et_Unknown;
+			}	
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				std::wstring name = oReader.GetName();

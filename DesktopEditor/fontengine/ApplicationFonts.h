@@ -276,7 +276,7 @@ public:
 #endif
     
 #ifdef _IOS
-    CArray<std::wstring> GetSetupFontFiles_ios();
+    std::vector<std::wstring> GetSetupFontFiles_ios();
 #endif
 
 	CFontManager* GenerateFontManager();

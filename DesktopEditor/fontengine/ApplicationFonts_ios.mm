@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-CArray<std::wstring> CApplicationFonts::GetSetupFontFiles_ios()
+std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles_ios()
 {
-    CArray<std::wstring> oArray;
+    std::vector<std::wstring> oArray;
     NSDirectory::GetFiles2(L"/System/Library/Fonts", oArray, true);
     
-    if (oArray.GetCount() == 0)
+    if (oArray.size() == 0)
     {
         NSDirectory::GetFiles2(L"/Library/Fonts", oArray, true);
     }

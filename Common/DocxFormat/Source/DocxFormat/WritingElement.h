@@ -249,6 +249,7 @@ namespace OOX
 		et_a_latin, // <a:latin>
 		et_a_lightRig, // <a:lightRig>
 		et_a_lin, // <a:lin>
+		et_a_lineTo, // <a:lineTo>
 		et_a_ln, // <a:ln>
 		et_a_lnDef, // <a:lnDef>
 		et_a_lnRef, // <a:lnRef>

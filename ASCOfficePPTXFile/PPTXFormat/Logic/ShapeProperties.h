@@ -56,7 +56,7 @@ namespace PPTX
 			nullable<FontRef>			fontStyle;
 			nullable<TextParagraphPr>	levels[10];
 			nullable<TextParagraphPr>	masters[10];
-			BodyPr bodyPr;
+			nullable<BodyPr>			bodyPr;
 
 			//std::string MajorLatin;
 			//std::string MinorLatin;
@@ -80,7 +80,7 @@ namespace PPTX
 			void SetMajorLatin(const TextFont& mjltFont){MajorLatin = mjltFont;};
 			void SetMinorLatin(const TextFont& mnltFont){MinorLatin = mnltFont;};
 
-			std::wstring GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
+			std::wstring GetAnchor()const{return bodyPr.IsInit() ? bodyPr->anchor.get_value_or(L"t") : L"t";};
 
 			std::wstring GetParagraphAlgn		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			int	GetParagraphLeftMargin		(int level, const nullable<TextParagraphPr>& pParagraph)const;

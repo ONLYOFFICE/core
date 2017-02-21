@@ -65,7 +65,9 @@ namespace PPTX
 		{
 			if(Src.IsInit())
 			{
-				Src->bodyPr.Merge(bodyPr);
+				if (Src->bodyPr.IsInit())
+					Src->bodyPr->Merge(bodyPr);
+				
 				if(Src->lstStyle.IsInit())
 				{
 					for(int i = 0; i < 10; i++)
@@ -753,7 +755,9 @@ namespace PPTX
 
 		void ShapeProperties::SetParentFilePointer(const WrapperFile* pFile)
 		{
-			bodyPr.SetParentFilePointer(pFile);
+			if (bodyPr.IsInit())
+				bodyPr->SetParentFilePointer(pFile);
+			
 			for(int i = 0; i < 10; i ++)
 			{
 				levels[i]->SetParentFilePointer(pFile);
@@ -766,45 +770,53 @@ namespace PPTX
 
 		DWORD ShapeProperties::GetHyperlinkRGBA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkARGB()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkBGRA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkABGR()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
 			else return 0;
 		}
 

@@ -41,6 +41,9 @@
 #include "../DocxFormat/Drawing/DrawingTextProperties.h"
 #include "../DocxFormat/Drawing/DrawingParagraph.h"
 
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpPr.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
+
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"
 #include "WritingElement.h"

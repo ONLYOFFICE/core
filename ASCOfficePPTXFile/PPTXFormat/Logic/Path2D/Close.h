@@ -43,7 +43,8 @@ namespace PPTX
 		class Close : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Close)
+			WritingElement_AdditionConstructors(Close)
+			PPTX_LOGIC_BASE2(Close)
 
 			Close& operator=(const Close& oSrc)
 			{
@@ -52,8 +53,14 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_close;
+			}			
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}

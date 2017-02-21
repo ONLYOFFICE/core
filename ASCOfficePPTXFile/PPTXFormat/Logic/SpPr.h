@@ -57,12 +57,24 @@ namespace PPTX
 			explicit SpPr(XmlUtils::CXmlNode& node);
 			const SpPr& operator =(XmlUtils::CXmlNode& node);
 
+			explicit SpPr(XmlUtils::CXmlLiteReader& oReader);
+			const SpPr& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_p_spPr;
+				return OOX::et_a_spPr;
 			}
 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+				WritingElement_ReadAttributes_End( oReader )
+			}	
+				
 			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

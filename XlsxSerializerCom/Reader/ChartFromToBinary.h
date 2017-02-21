@@ -59,7 +59,6 @@ namespace BinXlsxRW {
 		int ReadCT_RelId				(long length, CT_RelId* poResult);
 	private: 
 		std::wstring* GetRecordXml		(long length, int nRecordType);
-		std::wstring* GetTxBodyXml		(long length);
 		
 		int ReadCT_extLst				(BYTE type, long length, void* poResult);
 		int ReadCT_ChartSpace			(BYTE type, long length, void* poResult);
@@ -201,6 +200,8 @@ namespace BinXlsxRW {
 		int ReadAlternateContent		(BYTE type, long length, void* poResult);
 		int ReadAlternateContentChoice	(BYTE type, long length, void* poResult);
 		int ReadAlternateContentFallback(BYTE type, long length, void* poResult);
+		int ReadCT_SpPr					(BYTE type, long length, void* poResult);
+		int ReadCT_TxPr					(BYTE type, long length, void* poResult);
 	};
 	class BinaryChartWriter
 	{
@@ -348,15 +349,14 @@ namespace BinXlsxRW {
 		void WriteAlternateContent(AlternateContent& oVal);
 		void WriteAlternateContentChoice(AlternateContentChoice& oVal);
 		void WriteAlternateContentFallback(AlternateContentFallback& oVal);
-	
+
 	private: 
 		void toBin(ItemsChoiceType5 eType, void* pVal);
 		void toBin(ItemsChoiceType6 eType, void* pVal);
 		void toBin(ItemsChoiceType4 eType, void* pVal);
-		void GetRecordBinary(int nType, std::wstring& sXml, int nRecordType);
-		void GetTxBodyBinary(int nType, std::wstring& sXml);
 		void toBin(ItemsChoiceType3 eType, void* pVal);
 
+		void GetRecordBinary(int nType, std::wstring& sXml, int nRecordType);
 	};
 }
 #endif	// #ifndef CHART_FROM_TO_BINARY

@@ -42,7 +42,8 @@ namespace PPTX
 		class ArcTo : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(ArcTo)
+			WritingElement_AdditionConstructors(ArcTo)
+			PPTX_LOGIC_BASE2(ArcTo)
 
 			ArcTo& operator=(const ArcTo& oSrc)
 			{
@@ -56,8 +57,23 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_arcTo;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("wR"), wR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hR"), hR)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("stAng"), stAng)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("swAng"), swAng)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				wR		= node.GetAttribute(_T("wR"));

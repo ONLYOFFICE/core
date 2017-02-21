@@ -2754,7 +2754,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					{
 						if (pShape->txBody.IsInit() == false)
                             pShape->txBody = new PPTX::Logic::TxBody();
-						pShape->txBody->bodyPr.vert = pShape->TextBoxBodyPr->vert;		
+						
+						if (!pShape->txBody->bodyPr.IsInit())
+							pShape->txBody->bodyPr = new PPTX::Logic::BodyPr();
+
+						pShape->txBody->bodyPr->vert = pShape->TextBoxBodyPr->vert;		
 					}
 
                     pPair = oCSSParser.m_mapSettings.find(L"mso-rotate");
@@ -2765,7 +2769,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
                             pShape->TextBoxBodyPr->rot = _wtoi(pPair->second.c_str()) * 60000;  //для docx, xlsx
                             if (pShape->txBody.IsInit() == false)                       //для pptx
                                 pShape->txBody = new PPTX::Logic::TxBody();
-							pShape->txBody->bodyPr.rot = pShape->TextBoxBodyPr->rot;
+
+							if (!pShape->txBody->bodyPr.IsInit())
+								pShape->txBody->bodyPr = new PPTX::Logic::BodyPr();
+
+							pShape->txBody->bodyPr->rot = pShape->TextBoxBodyPr->rot;
 						}catch(...){}
                     }
 
@@ -5210,45 +5218,45 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 	pWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
-HRESULT CDrawingConverter::GetTxBodyBinary(const std::wstring& bsXml)
-{
-	XmlUtils::CXmlNode oNode;
-	if (!oNode.FromXmlString((std::wstring)bsXml))
-		return S_FALSE;
-	
-	PPTX::Logic::TxBody oTxBody(oNode);
+//HRESULT CDrawingConverter::GetTxBodyBinary(const std::wstring& bsXml)
+//{
+//	XmlUtils::CXmlNode oNode;
+//	if (!oNode.FromXmlString((std::wstring)bsXml))
+//		return S_FALSE;
+//	
+//	PPTX::Logic::TxBody oTxBody(oNode);
+//
+//	//m_pBinaryWriter->ClearNoAttack();
+//	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
+//	m_pBinaryWriter->m_pCommon->CheckFontPicker();
+//	//m_pBinaryWriter->m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
+//
+//	m_pBinaryWriter->WriteRecord1(0, oTxBody);
+//
+//	//m_pBinaryWriter->SetPosition(lOldPos);
+//
+//	//m_pBinaryWriter->ClearNoAttack();
+//	return S_OK;
+//}
 
-	//m_pBinaryWriter->ClearNoAttack();
-	//ULONG lOldPos = m_pBinaryWriter->GetPosition();
-	m_pBinaryWriter->m_pCommon->CheckFontPicker();
-	//m_pBinaryWriter->m_pCommon->m_pNativePicker->Init(m_strFontDirectory);
-
-	m_pBinaryWriter->WriteRecord1(0, oTxBody);
-
-	//m_pBinaryWriter->SetPosition(lOldPos);
-
-	//m_pBinaryWriter->ClearNoAttack();
-	return S_OK;
-}
-
-HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, std::wstring& sXml)
-{
-	m_pReader->Seek(lStart);
-
-	BYTE type = m_pReader->GetUChar();
-    if (0 != type)
-		return S_FALSE;
-
-	PPTX::Logic::TxBody oTxBody;
-	oTxBody.fromPPTY(m_pReader);
-
-	NSBinPptxRW::CXmlWriter oWriter;
-	oTxBody.toXmlWriterExcel(&oWriter);
-
-    sXml = oWriter.GetXmlString();
-
-	return S_OK;
-}
+//HRESULT CDrawingConverter::GetTxBodyXml(LONG lStart, std::wstring& sXml)
+//{
+//	m_pReader->Seek(lStart);
+//
+//	BYTE type = m_pReader->GetUChar();
+//    if (0 != type)
+//		return S_FALSE;
+//
+//	PPTX::Logic::TxBody oTxBody;
+//	oTxBody.fromPPTY(m_pReader);
+//
+//	NSBinPptxRW::CXmlWriter oWriter;
+//	oTxBody.toXmlWriterExcel(&oWriter);
+//
+//    sXml = oWriter.GetXmlString();
+//
+//	return S_OK;
+//}
 
 HRESULT CDrawingConverter::SetFontDir(const std::wstring& bsFontDir)
 {

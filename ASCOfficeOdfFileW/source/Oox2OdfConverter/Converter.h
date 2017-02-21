@@ -270,7 +270,6 @@ namespace OOX
 		class CT_Style1;
 		class CT_Style;
 		class CT_TextLanguageID;
-		class CRichText;
 		class CTextProperties;
 	}
 	namespace Vml
@@ -495,8 +494,8 @@ public:
 		void convert(OOX::Spreadsheet::CT_LineSer				*ser);
 		void convert(OOX::Spreadsheet::CT_AxDataSource			*cat, int type);
 		void convert(OOX::Spreadsheet::CT_NumDataSource			*val);
-		void convert(OOX::Spreadsheet::CRichText				*rich);
-		void convert(OOX::Spreadsheet::CTextProperties			*txPr);
+		//void convert(OOX::Spreadsheet::CRichText				*rich);
+		//void convert(OOX::Spreadsheet::CTextProperties		*txPr);
 		void convert(OOX::Spreadsheet::CT_Tx					*ct_tx);
 		void convert(OOX::Spreadsheet::CT_Layout				*ct_layout);
 		void convert(OOX::Spreadsheet::CT_ManualLayout			*ct_layout);

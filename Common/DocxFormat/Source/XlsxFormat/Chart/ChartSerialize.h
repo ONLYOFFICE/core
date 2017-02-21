@@ -469,39 +469,27 @@ namespace OOX{
 		class CT_ChartSpace
 		{
 		public:
-			//Member
-			CT_Boolean* m_date1904;
-			//Member
-			CT_TextLanguageID* m_lang;
-			//Member
-			CT_Boolean* m_roundedCorners;
-			//Member
-			AlternateContent* m_AlternateContent;
-			//Member
-			CT_Style1* m_style;
-			//Member
-			std::wstring* m_clrMapOvr;
-			//Member
-			CT_PivotSource* m_pivotSource;
-			//Member
-			CT_Protection* m_protection;
-			//Member
-			CT_Chart* m_chart;
-			//Member
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			//Member
-			CT_ExternalData* m_externalData;
-			//Member
-			CT_PrintSettings* m_printSettings;
-			//Member
-			CT_RelId* m_userShapes;
-			//Member
-			CT_extLst* m_extLst;
+			CT_Boolean*								m_date1904;
+			CT_TextLanguageID*						m_lang;
+			CT_Boolean*								m_roundedCorners;
+			AlternateContent*						m_AlternateContent;
+			CT_Style1*								m_style;
+			std::wstring*							m_clrMapOvr;
+			CT_PivotSource*							m_pivotSource;
+			CT_Protection*							m_protection;
+			CT_Chart*								m_chart;
+
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+
+			CT_ExternalData*						m_externalData;
+			CT_PrintSettings*						m_printSettings;
+			CT_RelId*								m_userShapes;
+			CT_extLst*								m_extLst;
+
 			CT_ChartSpace();
 			~CT_ChartSpace();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -656,14 +644,11 @@ namespace OOX{
 		class CT_LegendEntry
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_Boolean* m_delete;
-			//Member
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*					m_idx;
+			CT_Boolean*						m_delete;
+			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			CT_extLst*						m_extLst;
+
 			CT_LegendEntry();
 			~CT_LegendEntry();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -712,13 +697,11 @@ namespace OOX{
 		{
 		public:
 			CT_LegendPos							*m_legendPos;
-            std::vector<CT_LegendEntry*>				 m_legendEntry;
+            std::vector<CT_LegendEntry*>			m_legendEntry;
 			CT_Layout								*m_layout;
 			CT_Boolean								*m_overlay;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
 			CT_extLst								* m_extLst;
 		/*--------------------------------------------------*/
 			CT_Legend();
@@ -808,19 +791,14 @@ namespace OOX{
 		class CT_DTable
 		{
 		public:
-			//Member
 			CT_Boolean* m_showHorzBorder;
-			//Member
 			CT_Boolean* m_showVertBorder;
-			//Member
 			CT_Boolean* m_showOutline;
-			//Member
 			CT_Boolean* m_showKeys;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			CT_extLst* m_extLst;
+			nullable<PPTX::Logic::SpPr>		m_oSpPr;
+			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			CT_extLst*						m_extLst;
+			
 			CT_DTable();
 			~CT_DTable();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -841,10 +819,8 @@ namespace OOX{
 			CT_TickMark								*m_majorTickMark;
 			CT_TickMark								*m_minorTickMark;
 			CT_TickLblPos							*m_tickLblPos;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
 			CT_UnsignedInt							*m_crossAx;
 			CT_Crosses								*m_crosses;
 			CT_Double								*m_crossesAt;
@@ -916,8 +892,7 @@ namespace OOX{
 		class CT_ChartLines
 		{
 		public:
-			std::wstring										*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>     m_oSpPr;
+			nullable<PPTX::Logic::SpPr>     m_oSpPr;
 		/*--------------------------------------------------------------*/
 			CT_ChartLines();
 			~CT_ChartLines();
@@ -928,14 +903,12 @@ namespace OOX{
 		class CT_Title
 		{
 		public:
-			CT_Tx									*m_tx;
-			CT_Layout								*m_layout;
-			CT_Boolean								*m_overlay;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			CT_extLst								*m_extLst;
+			CT_Tx								*m_tx;
+			CT_Layout							*m_layout;
+			CT_Boolean							*m_overlay;
+			nullable<PPTX::Logic::SpPr>			m_oSpPr;
+			nullable<PPTX::Logic::TxBody>		m_oTxPr;	
+			CT_extLst							*m_extLst;
 		/*--------------------------------------------------------------*/
 			CT_Title();
 			~CT_Title();
@@ -944,126 +917,13 @@ namespace OOX{
 			EElementType getType();
 		};
 		//--------------------------------------------------------------------------------
-		// 21.2.2.156	rich	(Rich Text)
-		//--------------------------------------------------------------------------------	
-		class CRichText : public WritingElementWithChilds<Drawing::CParagraph>
-		{
-		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRichText)
-			CRichText()
-			{
-			}
-			virtual ~CRichText()
-			{
-			}
-
-		public:
-			virtual std::wstring      toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("bodyPr") == sName )
-						m_oBodyPr = oReader;
-					else if ( _T("p") == sName )
-						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_ChartRichText;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-		public:
-			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
-			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle; - not supported.
-		};
-		//--------------------------------------------------------------------------------
-		// 21.2.2.216 txPr (Text Properties)
-		//--------------------------------------------------------------------------------	
-		class CTextProperties : public WritingElementWithChilds<Drawing::CParagraph>
-		{
-		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTextProperties)
-			CTextProperties()
-			{
-			}
-			virtual ~CTextProperties()
-			{
-			}
-
-		public:
-			virtual std::wstring      toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("bodyPr") == sName )
-						m_oBodyPr = oReader;
-					else if ( _T("p") == sName )
-						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_ChartTextProperties;
-			}
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-		public:
-			nullable<OOX::Drawing::CTextBodyProperties>	m_oBodyPr;
-			//nullable<OOX::Drawing::CTextListStyle>	m_oLstStyle; - not supported.
-		};
-		//--------------------------------------------------------------------------------
 		// 21.2.2.214 tx (Chart Text)
 		//--------------------------------------------------------------------------------	
 		class CT_Tx
 		{
 		public:
-			std::wstring						*m_rich;
-			nullable<CRichText>			 m_oRich;	
-			CT_StrRef					*m_strRef;
+			nullable<PPTX::Logic::TxBody>	m_oRich;	
+			CT_StrRef						*m_strRef;
 		/*--------------------------------------------------------------*/
 			CT_Tx();
 			~CT_Tx();
@@ -1190,55 +1050,31 @@ namespace OOX{
 		class CT_DateAx
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_axId;
-			//Member
-			CT_Scaling* m_scaling;
-			//Member
-			CT_Boolean* m_delete;
-			//Member
-			CT_AxPos* m_axPos;
-			//Member
-			CT_ChartLines* m_majorGridlines;
-			//Member
-			CT_ChartLines* m_minorGridlines;
-			//Member
-			CT_Title* m_title;
-			//Member
-			CT_NumFmt* m_numFmt;
-			//Member
-			CT_TickMark* m_majorTickMark;
-			//Member
-			CT_TickMark* m_minorTickMark;
-			//Member
-			CT_TickLblPos* m_tickLblPos;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;			
-			//Member
-			CT_UnsignedInt* m_crossAx;
-			//Member
-			CT_Crosses* m_crosses;
-			//Member
-			CT_Double* m_crossesAt;
-			//Member
-			CT_Boolean* m_auto;
-			//Member
-			CT_LblOffset* m_lblOffset;
-			//Member
-			CT_TimeUnit* m_baseTimeUnit;
-			//Member
-			CT_AxisUnit* m_majorUnit;
-			//Member
-			CT_TimeUnit* m_majorTimeUnit;
-			//Member
-			CT_AxisUnit* m_minorUnit;
-			//Member
-			CT_TimeUnit* m_minorTimeUnit;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*							m_axId;
+			CT_Scaling*								m_scaling;
+			CT_Boolean*								m_delete;
+			CT_AxPos*								m_axPos;
+			CT_ChartLines*							m_majorGridlines;
+			CT_ChartLines*							m_minorGridlines;
+			CT_Title*								m_title;
+			CT_NumFmt*								m_numFmt;
+			CT_TickMark*							m_majorTickMark;
+			CT_TickMark*							m_minorTickMark;
+			CT_TickLblPos*							m_tickLblPos;
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			CT_UnsignedInt*							m_crossAx;
+			CT_Crosses*								m_crosses;
+			CT_Double*								m_crossesAt;
+			CT_Boolean*								m_auto;
+			CT_LblOffset*							m_lblOffset;
+			CT_TimeUnit*							m_baseTimeUnit;
+			CT_AxisUnit*							m_majorUnit;
+			CT_TimeUnit*							m_majorTimeUnit;
+			CT_AxisUnit*							m_minorUnit;
+			CT_TimeUnit*							m_minorTimeUnit;
+			CT_extLst*								m_extLst;
+
 			CT_DateAx();
 			~CT_DateAx();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1306,12 +1142,8 @@ namespace OOX{
 			CT_TickMark* m_minorTickMark;
 			//Member
 			CT_TickLblPos* m_tickLblPos;
-			//Member
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;			
-			//Member
+			nullable<PPTX::Logic::SpPr>		m_oSpPr;
+			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
 			CT_UnsignedInt* m_crossAx;
 			//Member
 			CT_Crosses* m_crosses;
@@ -1340,17 +1172,14 @@ namespace OOX{
 		class CT_DispUnitsLbl
 		{
 		public:
-			//Member
-			CT_Layout* m_layout;
-			//Member
-			CT_Tx* m_tx;
-			//Member
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;			
+			CT_Layout*								m_layout;
+			CT_Tx*									m_tx;
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+
 			CT_DispUnitsLbl();
 			~CT_DispUnitsLbl();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1399,51 +1228,31 @@ namespace OOX{
 		class CT_ValAx
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_axId;
-			//Member
-			CT_Scaling* m_scaling;
-			//Member
-			CT_Boolean* m_delete;
-			//Member
-			CT_AxPos* m_axPos;
-			//Member
-			CT_ChartLines* m_majorGridlines;
-			//Member
-			CT_ChartLines* m_minorGridlines;
-			//Member
-			CT_Title* m_title;
-			//Member
-			CT_NumFmt* m_numFmt;
-			//Member
-			CT_TickMark* m_majorTickMark;
-			//Member
-			CT_TickMark* m_minorTickMark;
-			//Member
-			CT_TickLblPos* m_tickLblPos;
-			//Member
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;			
-			//Member
-			CT_UnsignedInt* m_crossAx;
-			//Member
-			CT_Crosses* m_crosses;
-			//Member
-			CT_Double* m_crossesAt;
-			//Member
-			CT_CrossBetween* m_crossBetween;
-			//Member
-			CT_AxisUnit* m_majorUnit;
-			//Member
-			CT_AxisUnit* m_minorUnit;
-			//Member
-			CT_DispUnits* m_dispUnits;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*							m_axId;
+			CT_Scaling*								m_scaling;
+			CT_Boolean*								m_delete;
+			CT_AxPos*								m_axPos;
+			CT_ChartLines*							m_majorGridlines;
+			CT_ChartLines*							m_minorGridlines;
+			CT_Title*								m_title;
+			CT_NumFmt*								m_numFmt;
+			CT_TickMark*							m_majorTickMark;
+			CT_TickMark*							m_minorTickMark;
+			CT_TickLblPos*							m_tickLblPos;
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			CT_UnsignedInt*							m_crossAx;
+			CT_Crosses*								m_crosses;
+			CT_Double*								m_crossesAt;
+			CT_CrossBetween*						m_crossBetween;
+			CT_AxisUnit*							m_majorUnit;
+			CT_AxisUnit*							m_minorUnit;
+			CT_DispUnits*							m_dispUnits;
+			CT_extLst*								m_extLst;
+
 			CT_ValAx();
 			~CT_ValAx();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1475,15 +1284,10 @@ namespace OOX{
 		class CT_BubbleSer
 		{
 		public:
-			//Member
 			CT_UnsignedInt* m_idx;
-			//Member
 			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CT_SerTx*		m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_Boolean* m_invertIfNegative;
 			//Member
@@ -1526,23 +1330,15 @@ namespace OOX{
 		class CT_DPt
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_Boolean* m_invertIfNegative;
-			//Member
-			CT_Marker* m_marker;
-			//Member
-			CT_Boolean* m_bubble3D;
-			//Member
-			CT_UnsignedInt* m_explosion;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_PictureOptions* m_pictureOptions;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*				m_idx;
+			CT_Boolean*					m_invertIfNegative;
+			CT_Marker*					m_marker;
+			CT_Boolean*					m_bubble3D;
+			CT_UnsignedInt*				m_explosion;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_PictureOptions*			m_pictureOptions;
+			CT_extLst*					m_extLst;
+			
 			CT_DPt();
 			~CT_DPt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1552,15 +1348,11 @@ namespace OOX{
 		class CT_Marker
 		{
 		public:
-			//Member
-			CT_MarkerStyle* m_symbol;
-			//Member
-			CT_MarkerSize* m_size;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_extLst* m_extLst;
+			CT_MarkerStyle*				m_symbol;
+			CT_MarkerSize*				m_size;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_extLst*					m_extLst;
+
 			CT_Marker();
 			~CT_Marker();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1637,14 +1429,11 @@ namespace OOX{
 		class CT_DLbls
 		{
 		public:
-			//Member
-            std::vector<CT_DLbl*> m_dLbl;
-			//Member
-            std::vector<ItemsChoiceType3*> m_ItemsElementName0;
-			//Member
-            std::vector<void*> m_Items;
-			//Member
-			CT_extLst* m_extLst;
+            std::vector<CT_DLbl*>			m_dLbl;
+            std::vector<ItemsChoiceType3*>	m_ItemsElementName0;
+            std::vector<void*>				m_Items;
+			CT_extLst*						m_extLst;
+			
 			CT_DLbls();
 			~CT_DLbls();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -1687,13 +1476,9 @@ namespace OOX{
 		class CT_Trendline
 		{
 		public:
-			//Member
-			std::wstring* m_name;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_TrendlineType* m_trendlineType;
+			std::wstring*				m_name;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_TrendlineType*			m_trendlineType;
 			//Member
 			CT_Order* m_order;
 			//Member
@@ -1757,19 +1542,16 @@ namespace OOX{
 		class CT_TrendlineLbl
 		{
 		public:
-			//Member
-			CT_Layout* m_layout;
-			//Member
-			CT_Tx* m_tx;
-			//Member
-			CT_NumFmt* m_numFmt;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			CT_extLst* m_extLst;
+			CT_Layout*								m_layout;
+			CT_Tx*									m_tx;
+			CT_NumFmt*								m_numFmt;
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			CT_extLst*								m_extLst;
+
 			CT_TrendlineLbl();
 			~CT_TrendlineLbl();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1791,11 +1573,9 @@ namespace OOX{
 			CT_NumDataSource* m_minus;
 			//Member
 			CT_Double* m_val;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_extLst* m_extLst;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_extLst*					m_extLst;
+
 			CT_ErrBars();
 			~CT_ErrBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2019,21 +1799,14 @@ namespace OOX{
 		class CT_SurfaceSer
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_AxDataSource* m_cat;
-			//Member
-			CT_NumDataSource* m_val;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*				m_idx;
+			CT_UnsignedInt*				m_order;
+			CT_SerTx*					m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_AxDataSource*			m_cat;
+			CT_NumDataSource*			m_val;
+			CT_extLst*					m_extLst;
+
 			CT_SurfaceSer();
 			~CT_SurfaceSer();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2043,11 +1816,9 @@ namespace OOX{
 		class CT_BandFmt
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CT_UnsignedInt*				m_idx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			
 			CT_BandFmt();
 			~CT_BandFmt();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2154,17 +1925,11 @@ namespace OOX{
 		class CT_PieSer
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			//Member
-			CT_UnsignedInt* m_order;
-			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_UnsignedInt* m_explosion;
+			CT_UnsignedInt*				m_idx;
+			CT_UnsignedInt*				m_order;
+			CT_SerTx*					m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_UnsignedInt*				m_explosion;
 			//Member
             std::vector<CT_DPt*> m_dPt;
 			//Member
@@ -2254,10 +2019,8 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_order;
 			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CT_SerTx*					m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_Boolean* m_invertIfNegative;
 			//Member
@@ -2427,9 +2190,7 @@ namespace OOX{
 			CT_UnsignedInt* m_order;
 			//Member
 			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2495,10 +2256,8 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_order;
 			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CT_SerTx*					m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2581,10 +2340,8 @@ namespace OOX{
 			//Member
 			CT_UnsignedInt* m_order;
 			//Member
-			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			CT_SerTx*					m_tx;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_Marker* m_marker;
 			//Member
@@ -2612,14 +2369,11 @@ namespace OOX{
 		class CT_UpDownBars
 		{
 		public:
-			//Member
-			CT_GapAmount* m_gapWidth;
-			//Member
-			CT_UpDownBar* m_upBars;
-			//Member
-			CT_UpDownBar* m_downBars;
-			//Member
-			CT_extLst* m_extLst;
+			CT_GapAmount*	m_gapWidth;
+			CT_UpDownBar*	m_upBars;
+			CT_UpDownBar*	m_downBars;
+			CT_extLst*		m_extLst;
+
 			CT_UpDownBars();
 			~CT_UpDownBars();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2629,9 +2383,8 @@ namespace OOX{
 		class CT_UpDownBar
 		{
 		public:
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+
 			CT_UpDownBar();
 			~CT_UpDownBar();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2740,9 +2493,7 @@ namespace OOX{
 			CT_UnsignedInt* m_order;
 			//Member
 			CT_SerTx* m_tx;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_PictureOptions* m_pictureOptions;
 			//Member
@@ -2803,9 +2554,7 @@ namespace OOX{
             std::vector<void*> m_Items1;
 			//Member
 			CT_DTable* m_dTable;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			//Member
 			CT_extLst* m_extLst;
 			CT_PlotArea();
@@ -2833,15 +2582,11 @@ namespace OOX{
 		class CT_Surface
 		{
 		public:
-			//Member
-			CT_Thickness* m_thickness;
-			//Member
-			std::wstring* m_spPr;
-			nullable<OOX::Drawing::CShapeProperties>    m_oSpPr;
-			//Member
-			CT_PictureOptions* m_pictureOptions;
-			//Member
-			CT_extLst* m_extLst;
+			CT_Thickness*				m_thickness;
+			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			CT_PictureOptions*			m_pictureOptions;
+			CT_extLst*					m_extLst;
+
 			CT_Surface();
 			~CT_Surface();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2934,20 +2679,16 @@ namespace OOX{
 		class CT_PivotFmt
 		{
 		public:
-			//Member
-			CT_UnsignedInt* m_idx;
-			std::wstring									*m_spPr;
-			nullable<OOX::Drawing::CShapeProperties> m_oSpPr;
-			std::wstring									*m_txPr;
-			nullable<CTextProperties>				 m_oTxPr;	
-			//Member
-			CT_Marker* m_marker;
-			//Member
-			CT_DLbl* m_dLbl;
-			//Member
-			CT_extLst* m_extLst;
+			CT_UnsignedInt*							m_idx;
+			nullable<PPTX::Logic::SpPr>				m_oSpPr;
+			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			CT_Marker*								m_marker;
+			CT_DLbl*								m_dLbl;
+			CT_extLst*								m_extLst;
+
 			CT_PivotFmt();
 			~CT_PivotFmt();
+			
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();

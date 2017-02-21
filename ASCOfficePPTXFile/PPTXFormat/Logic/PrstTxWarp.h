@@ -44,7 +44,8 @@ namespace PPTX
 		class PrstTxWarp : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(PrstTxWarp)
+			WritingElement_AdditionConstructors(PrstTxWarp)
+			PPTX_LOGIC_BASE2(PrstTxWarp)
 
 			PrstTxWarp& operator=(const PrstTxWarp& oSrc)
 			{
@@ -56,8 +57,45 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_prstTxWarp;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					
+					if (_T("a:avLst") == strName)
+					{
+						int nCurDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						{
+							std::wstring strName1 = oReader.GetName();
+							
+							if (_T("a:gd") == strName1)
+							{
+								Gd gd;
+								avLst.push_back(gd);
+								avLst.back().fromXML(oReader);
+							}
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prst"), prst )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"prst", prst);

@@ -35,53 +35,6 @@
 namespace OOX{
 	namespace Spreadsheet{
 
-		void FromString_spPr(std::wstring *spPr, nullable<OOX::Drawing::CShapeProperties> & oSpPr)
-		{
-			XmlUtils::CXmlLiteReader oReaderLocal;
-			//сформируем полноценную xml-строку
-            std::wstring xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-			xmlString += L"<c:chart ";
-				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-				xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
-				xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
-				xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
-				xmlString += L"xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" ";
-			xmlString += L">";
-			xmlString += *spPr;
-			xmlString += L"</c:chart>";
-            bool result =oReaderLocal.FromString(xmlString);
-
-			result = oReaderLocal.ReadNextNode();//root ... skiping
-			result = oReaderLocal.ReadNextNode();
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
-			
-			if (_T("spPr") == sName)
-				oSpPr = oReaderLocal;
-		}
-		void FromString_txPr(std::wstring *txPr, nullable<CTextProperties> & oTxPr)
-		{
-			XmlUtils::CXmlLiteReader oReaderLocal;
-			//сформируем полноценную xml-строку
-            std::wstring xmlString ;//= L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-			xmlString += L"<c:txPr ";
-				xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-				xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
-				xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
-				xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
-				xmlString += L"xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" ";
-			xmlString += L">";
-			xmlString += *txPr;
-			xmlString += L"</c:txPr>";
-            bool result =oReaderLocal.FromString(xmlString);
-
-			result = oReaderLocal.ReadNextNode();//root ... skiping
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
-			
-			if (_T("txPr") == sName)
-				oTxPr = oReaderLocal;
-		}
 		bool FromXml_ST_PageSetupOrientation(std::wstring& val, ST_PageSetupOrientation& eOut)
 		{
 			bool bRes = true;
@@ -1043,8 +996,6 @@ namespace OOX{
 			m_pivotSource = NULL;
 			m_protection = NULL;
 			m_chart = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_externalData = NULL;
 			m_printSettings = NULL;
 			m_userShapes = NULL;
@@ -1070,10 +1021,6 @@ namespace OOX{
 				delete m_protection;
 			if(NULL != m_chart)
 				delete m_chart;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_externalData)
 				delete m_externalData;
 			if(NULL != m_printSettings)
@@ -1147,19 +1094,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("externalData") == sName)
 				{
@@ -1236,13 +1175,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:chart");
                 m_chart->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_externalData)
 			{
@@ -2151,7 +2091,6 @@ namespace OOX{
 		{
 			m_idx = NULL;
 			m_delete = NULL;
-			m_txPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_LegendEntry::~CT_LegendEntry()
@@ -2160,8 +2099,6 @@ namespace OOX{
 				delete m_idx;
 			if(NULL != m_delete)
 				delete m_delete;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -2186,11 +2123,7 @@ namespace OOX{
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -2214,9 +2147,10 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:delete");
                 m_delete->toXML(sNodeName, writer);
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -2237,13 +2171,15 @@ namespace OOX{
 			if(NULL != m_val)
 				delete m_val;
 		}
-		void CT_UnsignedInt::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void CT_UnsignedInt::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 				ReadAttributes(oReader);
 
 				if(!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 		}
-        void CT_UnsignedInt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+        void CT_UnsignedInt::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			if(NULL != m_val)
@@ -2276,7 +2212,8 @@ namespace OOX{
 			if(NULL != m_uri)
 				delete m_uri;
 		}
-		void CT_Extension::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Extension::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 				ReadAttributes(oReader);
 
 					if ( oReader.IsEmptyNode() )
@@ -2377,8 +2314,6 @@ namespace OOX{
 			m_legendPos = NULL;
 			m_layout = NULL;
 			m_overlay = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_Legend::~CT_Legend()
@@ -2392,10 +2327,6 @@ namespace OOX{
 				delete m_layout;
 			if(NULL != m_overlay)
 				delete m_overlay;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -2432,19 +2363,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -2454,7 +2377,8 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Legend::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Legend::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -2482,13 +2406,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:overlay");
                 m_overlay->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -2512,7 +2437,8 @@ namespace OOX{
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
-		void CT_Layout::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void CT_Layout::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -2533,7 +2459,8 @@ namespace OOX{
 				}
 			}
 		}
-		void CT_Layout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_Layout::toXML(std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -2849,8 +2776,6 @@ namespace OOX{
 			m_showVertBorder = NULL;
 			m_showOutline = NULL;
 			m_showKeys = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_DTable::~CT_DTable()
@@ -2863,10 +2788,6 @@ namespace OOX{
 				delete m_showOutline;
 			if(NULL != m_showKeys)
 				delete m_showKeys;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -2903,19 +2824,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -2949,13 +2862,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:showKeys");
                 m_showKeys->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -2980,8 +2894,6 @@ namespace OOX{
 			m_majorTickMark = NULL;
 			m_minorTickMark = NULL;
 			m_tickLblPos = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_crossAx = NULL;
 			m_crosses = NULL;
 			m_crossesAt = NULL;
@@ -3013,10 +2925,6 @@ namespace OOX{
 				delete m_minorTickMark;
 			if(NULL != m_tickLblPos)
 				delete m_tickLblPos;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_crossAx)
 				delete m_crossAx;
 			if(NULL != m_crosses)
@@ -3105,19 +3013,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -3216,13 +3116,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_crossAx)
 			{
@@ -3479,12 +3380,9 @@ namespace OOX{
 		}
 		CT_ChartLines::CT_ChartLines()
 		{
-			m_spPr = NULL;
 		}
 		CT_ChartLines::~CT_ChartLines()
 		{
-			if(NULL != m_spPr)
-				delete m_spPr;
 		}
 		void CT_ChartLines::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -3495,11 +3393,7 @@ namespace OOX{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 			}
 		}
@@ -3507,9 +3401,9 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -3521,8 +3415,6 @@ namespace OOX{
 			m_tx = NULL;
 			m_layout = NULL;
 			m_overlay = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_Title::~CT_Title()
@@ -3533,10 +3425,6 @@ namespace OOX{
 				delete m_layout;
 			if(NULL != m_overlay)
 				delete m_overlay;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -3567,19 +3455,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -3608,13 +3488,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:overlay");
                 m_overlay->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -3628,13 +3509,10 @@ namespace OOX{
 		EElementType CT_Title::getType(){return et_ct_title;}
 		CT_Tx::CT_Tx()
 		{
-			m_rich = NULL;
 			m_strRef = NULL;
 		}
 		CT_Tx::~CT_Tx()
 		{
-			if(NULL != m_rich)
-				delete m_rich;
 			if(NULL != m_strRef)
 				delete m_strRef;
 		}
@@ -3647,33 +3525,7 @@ namespace OOX{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("rich") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_rich = pNewElem;
-					{
-						nullable<OOX::Drawing::CShapeProperties> oSpPr;
-						XmlUtils::CXmlLiteReader oReaderLocal;
-						//сформируем полноценную xml-строку
-                        std::wstring xmlString;// = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-						xmlString += L"<c:rich ";
-							xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
-							xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
-							xmlString += L"xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" ";
-							xmlString += L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" ";
-							xmlString += L"xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" ";
-						xmlString += L">";
-						xmlString += *m_rich;
-						xmlString += L"</c:rich>";
-                        bool result =oReaderLocal.FromString(xmlString);
-
-						result = oReaderLocal.ReadNextNode();//root ... skiping
-
-						std::wstring sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
-						
-						if (_T("rich") == sName)
-							m_oRich = oReaderLocal;
-					}
+					m_oRich = oReader;
 				}
 				else if(_T("strRef") == sName)
 				{
@@ -3687,9 +3539,10 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			if(NULL != m_rich)
+			if(m_oRich.IsInit())
 			{
-				writer.WriteString(_T("<c:rich>") + *m_rich + _T("</c:rich>"));
+				m_oRich->m_name = L"c:rich";
+				writer.WriteString(m_oRich->toXML());
 			}
 			if(NULL != m_strRef)
 			{
@@ -4190,8 +4043,6 @@ namespace OOX{
 			m_majorTickMark = NULL;
 			m_minorTickMark = NULL;
 			m_tickLblPos = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_crossAx = NULL;
 			m_crosses = NULL;
 			m_crossesAt = NULL;
@@ -4228,10 +4079,6 @@ namespace OOX{
 				delete m_minorTickMark;
 			if(NULL != m_tickLblPos)
 				delete m_tickLblPos;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_crossAx)
 				delete m_crossAx;
 			if(NULL != m_crosses)
@@ -4330,19 +4177,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -4471,13 +4310,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_crossAx)
 			{
@@ -4672,8 +4512,6 @@ namespace OOX{
 			m_majorTickMark = NULL;
 			m_minorTickMark = NULL;
 			m_tickLblPos = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_crossAx = NULL;
 			m_crosses = NULL;
 			m_crossesAt = NULL;
@@ -4709,10 +4547,6 @@ namespace OOX{
 				delete m_minorTickMark;
 			if(NULL != m_tickLblPos)
 				delete m_tickLblPos;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_crossAx)
 				delete m_crossAx;
 			if(NULL != m_crosses)
@@ -4809,19 +4643,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -4944,13 +4770,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_crossAx)
 			{
@@ -5011,8 +4838,6 @@ namespace OOX{
 		{
 			m_layout = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 		}
 		CT_DispUnitsLbl::~CT_DispUnitsLbl()
 		{
@@ -5020,10 +4845,6 @@ namespace OOX{
 				delete m_layout;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 		}
 		void CT_DispUnitsLbl::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -5046,19 +4867,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 			}
 		}
@@ -5076,13 +4889,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -5268,8 +5082,6 @@ namespace OOX{
 			m_majorTickMark = NULL;
 			m_minorTickMark = NULL;
 			m_tickLblPos = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_crossAx = NULL;
 			m_crosses = NULL;
 			m_crossesAt = NULL;
@@ -5303,10 +5115,6 @@ namespace OOX{
 				delete m_minorTickMark;
 			if(NULL != m_tickLblPos)
 				delete m_tickLblPos;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_crossAx)
 				delete m_crossAx;
 			if(NULL != m_crosses)
@@ -5399,19 +5207,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("crossAx") == sName)
 				{
@@ -5522,13 +5322,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tickLblPos");
                 m_tickLblPos->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_crossAx)
 			{
@@ -5666,7 +5467,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_invertIfNegative = NULL;
 			m_dLbls = NULL;
 			m_xVal = NULL;
@@ -5683,8 +5483,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_invertIfNegative)
 				delete m_invertIfNegative;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -5736,11 +5534,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("invertIfNegative") == sName)
 				{
@@ -5823,9 +5617,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_invertIfNegative)
 			{
@@ -5958,7 +5752,6 @@ namespace OOX{
 			m_marker = NULL;
 			m_bubble3D = NULL;
 			m_explosion = NULL;
-			m_spPr = NULL;
 			m_pictureOptions = NULL;
 			m_extLst = NULL;
 		}
@@ -5974,8 +5767,6 @@ namespace OOX{
 				delete m_bubble3D;
 			if(NULL != m_explosion)
 				delete m_explosion;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
 			if(NULL != m_extLst)
@@ -6020,11 +5811,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -6069,9 +5856,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:explosion");
                 m_explosion->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_pictureOptions)
 			{
@@ -6092,7 +5879,6 @@ namespace OOX{
 		{
 			m_symbol = NULL;
 			m_size = NULL;
-			m_spPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_Marker::~CT_Marker()
@@ -6101,8 +5887,6 @@ namespace OOX{
 				delete m_symbol;
 			if(NULL != m_size)
 				delete m_size;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -6127,11 +5911,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -6155,9 +5935,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:size");
                 m_size->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -6567,9 +6347,9 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
+					PPTX::Logic::SpPr* pNewElem = new PPTX::Logic::SpPr;
+					pNewElem->fromXML(oReader);
+
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SPPR;
                     m_Items.push_back(pNewElem);
@@ -6790,10 +6570,10 @@ namespace OOX{
 				break;
 			case itemschoicetype3SPPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::SpPr* pTypeVal = static_cast<PPTX::Logic::SpPr*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						writer.WriteString(*pTypeVal);
+						writer.WriteString(pTypeVal->toXML());
 					}
 				}
 				break;
@@ -6885,7 +6665,7 @@ namespace OOX{
 				break;
 			case itemschoicetype3SPPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::SpPr* pTypeVal = static_cast<PPTX::Logic::SpPr*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7410,7 +7190,6 @@ namespace OOX{
 		CT_Trendline::CT_Trendline()
 		{
 			m_name = NULL;
-			m_spPr = NULL;
 			m_trendlineType = NULL;
 			m_order = NULL;
 			m_period = NULL;
@@ -7426,8 +7205,6 @@ namespace OOX{
 		{
 			if(NULL != m_name)
 				delete m_name;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_trendlineType)
 				delete m_trendlineType;
 			if(NULL != m_order)
@@ -7465,11 +7242,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("trendlineType") == sName)
 				{
@@ -7546,9 +7319,9 @@ namespace OOX{
 				writer.WriteEncodeXmlString(*m_name);
 				writer.WriteString(_T("</c:name>"));
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_trendlineType)
 			{
@@ -7737,8 +7510,6 @@ namespace OOX{
 			m_layout = NULL;
 			m_tx = NULL;
 			m_numFmt = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_TrendlineLbl::~CT_TrendlineLbl()
@@ -7749,10 +7520,6 @@ namespace OOX{
 				delete m_tx;
 			if(NULL != m_numFmt)
 				delete m_numFmt;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -7783,19 +7550,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -7824,13 +7583,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:numFmt");
                 m_numFmt->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if(m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -7851,7 +7611,6 @@ namespace OOX{
 			m_plus = NULL;
 			m_minus = NULL;
 			m_val = NULL;
-			m_spPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_ErrBars::~CT_ErrBars()
@@ -7870,8 +7629,6 @@ namespace OOX{
 				delete m_minus;
 			if(NULL != m_val)
 				delete m_val;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -7926,11 +7683,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -7979,9 +7732,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:val");
                 m_val->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -8996,7 +8749,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_cat = NULL;
 			m_val = NULL;
 			m_extLst = NULL;
@@ -9009,8 +8761,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_cat)
 				delete m_cat;
 			if(NULL != m_val)
@@ -9045,11 +8795,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("cat") == sName)
 				{
@@ -9090,9 +8836,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_cat)
 			{
@@ -9117,14 +8863,11 @@ namespace OOX{
 		CT_BandFmt::CT_BandFmt()
 		{
 			m_idx = NULL;
-			m_spPr = NULL;
 		}
 		CT_BandFmt::~CT_BandFmt()
 		{
 			if(NULL != m_idx)
 				delete m_idx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 		}
 		void CT_BandFmt::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -9141,11 +8884,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 			}
 		}
@@ -9158,9 +8897,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -9631,7 +9370,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_explosion = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
@@ -9646,8 +9384,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_explosion)
 				delete m_explosion;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -9689,11 +9425,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("explosion") == sName)
 				{
@@ -9752,9 +9484,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_explosion)
 			{
@@ -10101,7 +9833,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_invertIfNegative = NULL;
 			m_pictureOptions = NULL;
 			m_dLbls = NULL;
@@ -10119,8 +9850,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_invertIfNegative)
 				delete m_invertIfNegative;
 			if(NULL != m_pictureOptions)
@@ -10171,11 +9900,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("invertIfNegative") == sName)
 				{
@@ -10258,9 +9983,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_invertIfNegative)
 			{
@@ -10967,7 +10692,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_xVal = NULL;
@@ -10983,8 +10707,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -11034,11 +10756,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("marker") == sName)
 				{
@@ -11115,9 +10833,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_marker)
 			{
@@ -11346,7 +11064,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
@@ -11361,8 +11078,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -11404,11 +11119,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("marker") == sName)
 				{
@@ -11467,9 +11178,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_marker)
 			{
@@ -11805,7 +11516,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_errBars = NULL;
@@ -11822,8 +11532,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_marker)
 				delete m_marker;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -11872,11 +11580,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("marker") == sName)
 				{
@@ -11953,9 +11657,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_marker)
 			{
@@ -12097,12 +11801,9 @@ namespace OOX{
 		EElementType CT_UpDownBars::getType(){return et_ct_updownbars;}
 		CT_UpDownBar::CT_UpDownBar()
 		{
-			m_spPr = NULL;
 		}
 		CT_UpDownBar::~CT_UpDownBar()
 		{
-			if(NULL != m_spPr)
-				delete m_spPr;
 		}
 		void CT_UpDownBar::fromXML(XmlUtils::CXmlLiteReader& oReader){
 			if ( oReader.IsEmptyNode() )
@@ -12113,11 +11814,7 @@ namespace OOX{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 			}
 		}
@@ -12125,9 +11822,9 @@ namespace OOX{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -12658,7 +12355,6 @@ namespace OOX{
 			m_idx = NULL;
 			m_order = NULL;
 			m_tx = NULL;
-			m_spPr = NULL;
 			m_pictureOptions = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
@@ -12673,8 +12369,6 @@ namespace OOX{
 				delete m_order;
 			if(NULL != m_tx)
 				delete m_tx;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
             for(size_t i = 0; i < m_dPt.size(); ++i)
@@ -12722,11 +12416,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -12797,9 +12487,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:tx");
                 m_tx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_pictureOptions)
 			{
@@ -12992,7 +12682,6 @@ namespace OOX{
 		{
 			m_layout = NULL;
 			m_dTable = NULL;
-			m_spPr = NULL;
 			m_extLst = NULL;
 		}
 		CT_PlotArea::~CT_PlotArea()
@@ -13013,8 +12702,6 @@ namespace OOX{
             m_ItemsElementName1.clear();
 			if(NULL != m_dTable)
 				delete m_dTable;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -13219,11 +12906,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("extLst") == sName)
 				{
@@ -13257,9 +12940,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:dTable");
                 m_dTable->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_extLst)
 			{
@@ -13710,7 +13393,6 @@ namespace OOX{
 		CT_Surface::CT_Surface()
 		{
 			m_thickness = NULL;
-			m_spPr = NULL;
 			m_pictureOptions = NULL;
 			m_extLst = NULL;
 		}
@@ -13718,8 +13400,6 @@ namespace OOX{
 		{
 			if(NULL != m_thickness)
 				delete m_thickness;
-			if(NULL != m_spPr)
-				delete m_spPr;
 			if(NULL != m_pictureOptions)
 				delete m_pictureOptions;
 			if(NULL != m_extLst)
@@ -13740,11 +13420,7 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("pictureOptions") == sName)
 				{
@@ -13769,9 +13445,9 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:thickness");
                 m_thickness->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
 			if(NULL != m_pictureOptions)
 			{
@@ -14118,8 +13794,6 @@ namespace OOX{
 		CT_PivotFmt::CT_PivotFmt()
 		{
 			m_idx = NULL;
-			m_spPr = NULL;
-			m_txPr = NULL;
 			m_marker = NULL;
 			m_dLbl = NULL;
 			m_extLst = NULL;
@@ -14128,10 +13802,6 @@ namespace OOX{
 		{
 			if(NULL != m_idx)
 				delete m_idx;
-			if(NULL != m_spPr)
-				delete m_spPr;
-			if(NULL != m_txPr)
-				delete m_txPr;
 			if(NULL != m_marker)
 				delete m_marker;
 			if(NULL != m_dLbl)
@@ -14154,19 +13824,11 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
-					m_spPr = pNewElem;
-					FromString_spPr(m_spPr, m_oSpPr);
+					m_oSpPr = oReader;
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
-					m_txPr = pNewElem;
-					FromString_txPr(m_txPr, m_oTxPr);
+					m_oTxPr = oReader;
 				}
 				else if(_T("marker") == sName)
 				{
@@ -14197,13 +13859,14 @@ namespace OOX{
                 std::wstring sNodeName = _T("c:idx");
                 m_idx->toXML(sNodeName, writer);
 			}
-			if(NULL != m_spPr)
+			if (m_oSpPr.IsInit())
 			{
-				writer.WriteString(*m_spPr);
+				writer.WriteString(m_oSpPr->toXML());
 			}
-			if(NULL != m_txPr)
+			if (m_oTxPr.IsInit())
 			{
-				writer.WriteString(_T("<c:txPr>") + *m_txPr + _T("</c:txPr>"));
+				m_oTxPr->m_name = L"c:txPr";
+				writer.WriteString(m_oTxPr->toXML());
 			}
 			if(NULL != m_marker)
 			{

@@ -176,7 +176,7 @@ namespace PPTX
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
 			{
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && txBody.is_init())
-					txBody->m_ns = _T("xdr");
+					txBody->m_name = _T("xdr:txBody");
 				pWriter->Write(txBody);
 			}
 
@@ -198,7 +198,7 @@ namespace PPTX
 				}
 				else if (txBody.is_init())
 				{
-					txBody->m_ns = _T("wps");
+					txBody->m_name = _T("wps:txBody");
 					pWriter->Write(txBody);
 				}
 
@@ -371,7 +371,7 @@ namespace PPTX
 					pWriter->m_pMainDocument->getBinaryContent(strContent, *pWriter, lDataSize);
 					pWriter->EndRecord();
 
-					pWriter->WriteRecord1(5, txBody->bodyPr);
+					pWriter->WriteRecord2(5, txBody->bodyPr);
 				}
 			}
 			else
@@ -597,7 +597,9 @@ namespace PPTX
 					if(!shape.txBody.is_init())
 						shape.txBody = new TxBody();
 				
-					txBody->bodyPr.Merge(shape.txBody->bodyPr);
+					if (txBody->bodyPr.IsInit())
+						txBody->bodyPr->Merge(shape.txBody->bodyPr);
+					
 					if(txBody->lstStyle.is_init())
 					{
 						for (int i = 0; i < 10; i++)
@@ -738,9 +740,9 @@ namespace PPTX
 
 			if (txBody.is_init())
 			{
-				if (txBody->bodyPr.anchor.is_init())
+				if (txBody->bodyPr.IsInit() && txBody->bodyPr->anchor.is_init())
 				{
-					std::wstring _strAnchor = txBody->bodyPr.anchor->get();
+					std::wstring _strAnchor = txBody->bodyPr->anchor->get();
 					if (_strAnchor == L"t")
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
 					else if (_strAnchor == L"b")

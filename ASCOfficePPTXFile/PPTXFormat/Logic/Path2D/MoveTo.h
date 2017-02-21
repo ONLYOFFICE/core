@@ -43,7 +43,8 @@ namespace PPTX
 		class MoveTo : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(MoveTo)
+			WritingElement_AdditionConstructors(MoveTo)
+			PPTX_LOGIC_BASE2(MoveTo)
 
 			MoveTo& operator=(const MoveTo& oSrc)
 			{
@@ -54,8 +55,34 @@ namespace PPTX
 				y = oSrc.y;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_moveTo;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
 
-		public:
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader);
+					}
+				}
+			}
+
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;

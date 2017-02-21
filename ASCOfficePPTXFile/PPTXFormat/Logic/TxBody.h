@@ -49,13 +49,25 @@ namespace PPTX
 		public:
 			TxBody()	
 			{
-				m_ns = _T("p");
+				m_name = _T("p:txBody");
 			}
 			virtual ~TxBody() {}
-			explicit TxBody(XmlUtils::CXmlNode& node)	{ fromXML(node); }
+			explicit TxBody(XmlUtils::CXmlNode& node)	
+			{
+				fromXML(node); 
+			}
 			const TxBody& operator =(XmlUtils::CXmlNode& node)
 			{
 				fromXML(node);
+				return *this;
+			}
+			explicit TxBody(XmlUtils::CXmlLiteReader& oReader)	
+			{
+				fromXML(oReader); 
+			}
+			const TxBody& operator =(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML(oReader);
 				return *this;
 			}
 			TxBody(const TxBody& oSrc) { *this = oSrc; }
@@ -65,20 +77,49 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				bodyPr			= oSrc.bodyPr;
-				lstStyle		= oSrc.lstStyle;
-				Paragrs = oSrc.Paragrs;
+				bodyPr		= oSrc.bodyPr;
+				lstStyle	= oSrc.lstStyle;
+				Paragrs		= oSrc.Paragrs;
 
-				m_ns = oSrc.m_ns;
+				m_name		= oSrc.m_name;
 
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring strName = oReader.GetName();
+					if (_T("a:bodyPr") == strName)
+					{
+						bodyPr = oReader;
+					}
+					else if (_T("a:lstStyle") == strName)
+					{
+						lstStyle = oReader;
+					}
+					else if (_T("a:p") == strName)
+					{
+						Paragraph p;
+						Paragrs.push_back(p);
+						Paragrs.back().fromXML(oReader);
+					}
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Paragrs.clear();
 
+				m_name		= node.GetName();
+				
 				bodyPr		= node.ReadNode(_T("a:bodyPr"));
 				lstStyle	= node.ReadNode(_T("a:lstStyle"));
 
@@ -89,22 +130,25 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
-				oValue.Write(bodyPr);
+				
+				oValue.WriteNullable(bodyPr);
 				oValue.WriteNullable(lstStyle);
 				oValue.WriteArray(Paragrs);
 
-				return XmlUtils::CreateNode(_T("p:txBody"), oValue);
+				return XmlUtils::CreateNode(m_name, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_ns + _T(":txBody"));
+				pWriter->StartNode(m_name);
 				pWriter->EndAttributes();
 
-				bodyPr.m_namespace = _T("a");
-				bodyPr.toXmlWriter(pWriter);
-
-				if (lstStyle.is_init())
+				if (bodyPr.IsInit())
+				{
+					bodyPr->m_namespace = _T("a");
+					bodyPr->toXmlWriter(pWriter);
+				}
+				if (lstStyle.IsInit())
 					lstStyle->m_name = _T("a:lstStyle");
 				pWriter->Write(lstStyle);
 				
@@ -112,7 +156,7 @@ namespace PPTX
 				for (size_t i = 0; i < nCount; ++i)
 					Paragrs[i].toXmlWriter(pWriter);
 				
-				pWriter->EndNode(m_ns + _T(":txBody"));
+				pWriter->EndNode(m_name);
 			}
 
 			void toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -121,9 +165,11 @@ namespace PPTX
 				pWriter->StartNode(_T("c:rich"));
 				pWriter->EndAttributes();
 				*/
-
-				bodyPr.m_namespace = _T("a");
-				bodyPr.toXmlWriter(pWriter);
+				if (bodyPr.IsInit())
+				{
+					bodyPr->m_namespace = _T("a");
+					bodyPr->toXmlWriter(pWriter);
+				}
 
 				if (lstStyle.is_init())
 					lstStyle->m_name = _T("a:lstStyle");
@@ -150,16 +196,18 @@ namespace PPTX
 
 			void Merge(nullable<TxBody>& txBody)const
 			{
-				if(!txBody.is_init())
-					txBody = new TxBody();
-				bodyPr.Merge(txBody->bodyPr);
-				if(lstStyle.is_init())
+				if(!txBody.is_init()) return;
+
+				if(bodyPr.IsInit())
+					bodyPr->Merge(txBody->bodyPr);
+
+				if(lstStyle.IsInit())
 					lstStyle->Merge(txBody->lstStyle);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				pWriter->WriteRecord1(0, bodyPr);
+				pWriter->WriteRecord2(0, bodyPr);
 				pWriter->WriteRecord2(1, lstStyle);
 				pWriter->WriteRecordArray(2, 0, Paragrs);
 			}
@@ -174,7 +222,8 @@ namespace PPTX
 					{
 						case 0:
 						{
-							bodyPr.fromPPTY(pReader);
+							bodyPr = new Logic::BodyPr();
+							bodyPr->fromPPTY(pReader);
 							break;
 						}
 						case 1:
@@ -206,15 +255,17 @@ namespace PPTX
 			}
 
 		public:
-			BodyPr					bodyPr;
+			nullable<BodyPr>		bodyPr;
 			nullable<TextListStyle> lstStyle;
 			std::vector<Paragraph>	Paragrs;
 
-			std::wstring m_ns;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				bodyPr.SetParentPointer(this);
+				if(bodyPr.is_init())
+					bodyPr->SetParentPointer(this);
+				
 				if(lstStyle.is_init())
 					lstStyle->SetParentPointer(this);
 				
@@ -226,9 +277,11 @@ namespace PPTX
 		public:
 			bool IsOneLineParagraphs() const
 			{
-				if (!bodyPr.wrap.is_init())
-					return false;
-				return (bodyPr.wrap->get() == _T("none"));
+				if (!bodyPr.is_init()) return false;
+
+				if (!bodyPr->wrap.is_init())	return false;
+
+				return (bodyPr->wrap->get() == _T("none"));
 			}
 
 			std::wstring GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<PPTX::Logic::ShapeStyle>& shape_style);

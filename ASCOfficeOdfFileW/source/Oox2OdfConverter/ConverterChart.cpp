@@ -73,32 +73,32 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 	odf_context()->chart_context()->end_plot_area();
 }
 
-void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)
-{
-	if (rich == NULL)return;
-
-	odf_context()->chart_context()->start_text();
-	OoxConverter::convert(rich->m_oBodyPr.GetPointer());
-	
-	for (size_t i = 0; i < rich->m_arrItems.size();i++)
-	{
-		OoxConverter::convert(rich->m_arrItems[i]);
-	}
-	odf_context()->chart_context()->end_text();
-}
-void OoxConverter::convert(OOX::Spreadsheet::CTextProperties* txPr)
-{
-	if (txPr == NULL)return;
-
-	odf_context()->chart_context()->start_text();
-	OoxConverter::convert(txPr->m_oBodyPr.GetPointer());
-	
-	for (size_t i = 0; i < txPr->m_arrItems.size();i++)
-	{
-		OoxConverter::convert(txPr->m_arrItems[i]);
-	}
-	odf_context()->chart_context()->end_text();
-}
+//void OoxConverter::convert(OOX::Spreadsheet::CRichText* rich)
+//{
+//	if (rich == NULL)return;
+//
+//	odf_context()->chart_context()->start_text();
+//	OoxConverter::convert(rich->m_oBodyPr.GetPointer());
+//	
+//	for (size_t i = 0; i < rich->m_arrItems.size();i++)
+//	{
+//		OoxConverter::convert(rich->m_arrItems[i]);
+//	}
+//	odf_context()->chart_context()->end_text();
+//}
+//void OoxConverter::convert(OOX::Spreadsheet::CTextProperties* txPr)
+//{
+//	if (txPr == NULL)return;
+//
+//	odf_context()->chart_context()->start_text();
+//	OoxConverter::convert(txPr->m_oBodyPr.GetPointer());
+//	
+//	for (size_t i = 0; i < txPr->m_arrItems.size();i++)
+//	{
+//		OoxConverter::convert(txPr->m_arrItems[i]);
+//	}
+//	odf_context()->chart_context()->end_text();
+//}
 void OoxConverter::convert(OOX::Spreadsheet::CT_Tx* ct_tx)
 {
 	if (ct_tx == NULL)return;

@@ -43,9 +43,9 @@ namespace PPTX
 		class AhPolar : public Ah
 		{
 		public:
-			PPTX_LOGIC_BASE(AhPolar)
+			WritingElement_AdditionConstructors(AhPolar)
+			PPTX_LOGIC_BASE2(AhPolar)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oPos = node.ReadNode(_T("a:pos"));
@@ -60,7 +60,46 @@ namespace PPTX
 				node.ReadAttributeBase(L"minAng", minAng);
 				node.ReadAttributeBase(L"minR", minR);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_ahPolar;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader);
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("gdRefR"), gdRefR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minR"), minR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxR"), maxR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("gdRefAng"), gdRefAng )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minAng"), minAng )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxAng"), maxAng )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;

@@ -45,9 +45,26 @@ namespace PPTX
 		class Geometry : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Geometry)
+			WritingElement_AdditionConstructors(Geometry)
+			PPTX_LOGIC_BASE2(Geometry)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				if (m_geometry.IsInit())
+					return m_geometry->getType();
+				return OOX::et_Unknown;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				if (strName == _T("prstGeom"))
+					m_geometry.reset(new Logic::PrstGeom(oReader));
+				else if (strName == _T("custGeom"))
+					m_geometry.reset(new Logic::CustGeom(oReader));
+				else 
+					m_geometry.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());

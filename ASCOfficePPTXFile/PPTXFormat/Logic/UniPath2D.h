@@ -49,9 +49,35 @@ namespace PPTX
 		class UniPath2D : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniPath2D)
+			WritingElement_AdditionConstructors(UniPath2D)
+			PPTX_LOGIC_BASE2(UniPath2D)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				if (Path2D.IsInit())
+					return Path2D->getType();
+				return OOX::et_Unknown;
+			}			
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				if (name == _T("moveTo"))
+					Path2D.reset(new Logic::MoveTo(oReader));
+				else if (name == _T("lnTo"))
+					Path2D.reset(new Logic::LineTo(oReader));
+				else if (name == _T("cubicBezTo"))
+					Path2D.reset(new Logic::CubicBezTo(oReader));
+				else if (name == _T("close"))
+					Path2D.reset(new Logic::Close(oReader));
+				else if (name == _T("arcTo"))
+					Path2D.reset(new Logic::ArcTo(oReader));
+				else if (name == _T("quadBezTo"))
+					Path2D.reset(new Logic::QuadBezTo(oReader));
+				else Path2D.reset();
+			}
+				
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());

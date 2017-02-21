@@ -44,26 +44,73 @@ namespace PPTX
 		{
 			Fill.m_type = UniFill::notInit;
 		}
-
-
 		SpPr::~SpPr()
 		{
 		}
-	
-
 		SpPr::SpPr(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
+		SpPr::SpPr(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
 
 		const SpPr& SpPr::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		const SpPr& SpPr::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void SpPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
+			ReadAttributes( oReader );
 
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if ( L"xfrm" == sName)
+					xfrm = oReader;
+				else if ( L"ln" == sName)
+					ln = oReader;
+				else if ( L"scene3d" == sName)
+					scene3d = oReader;
+				else if ( L"sp3d" == sName)
+					sp3d = oReader;
+				else if ( L"blipFill"	== sName	||
+						  L"gradFill"	== sName	||
+						  L"grpFill"	== sName	||
+						  L"noFill"		== sName	||
+						  L"pattFill"	== sName	||
+						  L"solidFill"	== sName )
+				{
+					Fill.fromXML(oReader);
+				}
+				else if ( L"effectDag"	== sName	||
+						  L"effectLst"	== sName	||
+						  L"extLst"		== sName )
+				{
+					EffectList.fromXML(oReader);		
+				}
+				else if ( L"prstGeom"	== sName	||
+						  L"custGeom"	== sName)
+				{
+					Geometry.fromXML(oReader);		
+				}
+			}
+			FillParentPointersForChilds();
+		}
 		void SpPr::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());

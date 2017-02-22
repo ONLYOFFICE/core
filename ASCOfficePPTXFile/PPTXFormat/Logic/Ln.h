@@ -56,7 +56,7 @@ namespace PPTX
 			{
 				//m_eDashType   = OOX::Drawing::linedashtypeUnknown;
 
-                std::wstring sName = oReader.GetName();
+				m_name = oReader.GetName();
 
 				ReadAttributes( oReader );
 
@@ -66,31 +66,31 @@ namespace PPTX
 				int nCurDepth = oReader.GetDepth();
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					sName = oReader.GetName();
-					if (_T("a:bevel") == sName	||
-						_T("a:miter") == sName  ||
-						_T("a:round") == sName )
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (_T("bevel") == sName	||
+						_T("miter") == sName  ||
+						_T("round") == sName )
 					{
 						Join.fromXML(oReader);
 					}
-					else if ( _T("a:tailEnd") == sName )
+					else if ( _T("tailEnd") == sName )
 						tailEnd = oReader;
-					else if ( _T("a:headEnd") == sName )
+					else if ( _T("headEnd") == sName )
 						headEnd = oReader;
 
-					else if (	_T("a:gradFill")	== sName ||
-								_T("a:noFill")		== sName ||
-								_T("a:pattFill")	== sName ||
-								_T("a:solidFill")	== sName )
+					else if (	_T("gradFill")	== sName ||
+								_T("noFill")	== sName ||
+								_T("pattFill")	== sName ||
+								_T("solidFill")	== sName )
 					{
 						Fill.fromXML(oReader);
 					}
-					else if ( _T("a:custDash") == sName )
+					else if ( _T("custDash") == sName )
 					{
 						//custDash = oReader;
 						//m_eDashType = OOX::Drawing::linedashtypeCustom;
 					}
-					else if ( _T("a:prstDash") == sName )
+					else if ( _T("prstDash") == sName )
 					{
 						prstDash = oReader;
 						//m_eDashType = OOX::Drawing::linedashtypePreset;
@@ -102,7 +102,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name = _T("a:ln");
+				m_name = node.GetName();
 
 				node.ReadAttributeBase(L"algn", algn);
 				node.ReadAttributeBase(L"cap", cap);
@@ -120,7 +120,7 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cmpd"), cmpd )
@@ -131,11 +131,20 @@ namespace PPTX
 			}
 			virtual std::wstring toXML() const
 			{
+				std::wstring _name = m_name;
+				if (_name.empty())
+					_name = _T("a:ln");
+
+				std::wstring sAttrNamespace;
+
+				if (_name == L"w14:textOutline")
+					sAttrNamespace = _T("w14:");
+
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("w"), w);
-				oAttr.WriteLimitNullable(_T("cap"), cap);
-				oAttr.WriteLimitNullable(_T("cmpd"), cmpd);
-				oAttr.WriteLimitNullable(_T("algn"), algn);
+				oAttr.Write				(sAttrNamespace + _T("w"),		w);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("cap"),	cap);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("cmpd"),	cmpd);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("algn"),	algn);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(Fill);
@@ -144,14 +153,15 @@ namespace PPTX
 				oValue.WriteNullable(headEnd);
 				oValue.WriteNullable(tailEnd);
 
-				return XmlUtils::CreateNode(_T("a:ln"), oAttr, oValue);
+				return XmlUtils::CreateNode(_name, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring _name = m_name;
-				if (_name == _T(""))
+				if (_name.empty())
 					_name = _T("a:ln");
+				
 				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{

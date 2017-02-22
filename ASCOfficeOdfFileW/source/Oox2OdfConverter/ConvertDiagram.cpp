@@ -85,9 +85,10 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 		if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) type = 2000;
 
-		if (type == 2000 && oox_shape->txBody->bodyPr.fromWordArt.get_value_or(false))
+		if (type == 2000 && oox_shape->txBody->bodyPr.IsInit() 
+			&& oox_shape->txBody->bodyPr->fromWordArt.get_value_or(false))
 		{
-			int wordart_type = convert(oox_shape->txBody->bodyPr.prstTxWarp.GetPointer());
+			int wordart_type = convert(oox_shape->txBody->bodyPr->prstTxWarp.GetPointer());
 
 			if (wordart_type > 0) type = wordart_type;
 		}
@@ -111,7 +112,7 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 			odf_context()->drawing_context()->set_text( odf_context()->text_context());
 			
 		//наложим внешние настройки для текста
-			convert(&oox_shape->txBody->bodyPr);			
+			convert(oox_shape->txBody->bodyPr.GetPointer());			
 			
 			if (oox_shape->style.IsInit())
 			{
@@ -281,15 +282,15 @@ void OoxConverter::convert(PPTX::Logic::PathBase *oox_path)
 	}
 	if (cubicBezTo)
 	{
-		std::wstring path_elm =	cubicBezTo->x1 + L" " + cubicBezTo->y1 + L" " +
-								cubicBezTo->x2 + L" " + cubicBezTo->y2 + L" " +
-								cubicBezTo->x3 + L" " + cubicBezTo->y3;	
+		std::wstring path_elm =	cubicBezTo->x[0] + L" " + cubicBezTo->y[0] + L" " +
+								cubicBezTo->x[1] + L" " + cubicBezTo->y[1] + L" " +
+								cubicBezTo->x[2] + L" " + cubicBezTo->y[2];	
 		odf_context()->drawing_context()->add_path_element(std::wstring(L"C"), path_elm);
 	}
 	if (quadBezTo)
 	{
-		std::wstring path_elm =	quadBezTo->x1 + L" " + quadBezTo->y1 + L" " +
-								quadBezTo->x2 + L" " + quadBezTo->y2;	
+		std::wstring path_elm =	quadBezTo->x[0] + L" " + quadBezTo->y[0] + L" " +
+								quadBezTo->x[1] + L" " + quadBezTo->y[1];	
 		odf_context()->drawing_context()->add_path_element(std::wstring(L"S"), path_elm);
 	}
 	if (arcTo)

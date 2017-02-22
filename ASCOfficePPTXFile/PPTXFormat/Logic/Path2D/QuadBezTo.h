@@ -42,21 +42,52 @@ namespace PPTX
 		class QuadBezTo : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(QuadBezTo)
+			WritingElement_AdditionConstructors(QuadBezTo)
+			PPTX_LOGIC_BASE2(QuadBezTo)
 
 			QuadBezTo& operator=(const QuadBezTo& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				x1 = oSrc.x1;
-				y1 = oSrc.y1;
-				x2 = oSrc.x2;
-				y2 = oSrc.y2;
+				x[0] = oSrc.x[0];
+				y[0] = oSrc.y[0];
+				x[1] = oSrc.x[1];
+				y[1] = oSrc.y[1];
 				return (*this);
 			}
 			
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_quadBezTo;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int count = 0;
+				
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader, x[count], y[count]);
+						count++;
+					}
+				}
+
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, std::wstring & x, std::wstring & y)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;
@@ -69,19 +100,19 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 
 						oNodes.GetAt(0, oNode);
-						x1 = oNode.GetAttribute(_T("x"));
-						y1 = oNode.GetAttribute(_T("y"));
+						x[0] = oNode.GetAttribute(_T("x"));
+						y[0] = oNode.GetAttribute(_T("y"));
 						oNodes.GetAt(1, oNode);
-						x2 = oNode.GetAttribute(_T("x"));
-						y2 = oNode.GetAttribute(_T("y"));
+						x[1] = oNode.GetAttribute(_T("x"));
+						y[1] = oNode.GetAttribute(_T("y"));
 					}
 				}
 			}
 
 			virtual std::wstring toXML() const
 			{
-				std::wstring str1 = L"<a:pt x=\"" + x1 + L"\" y=\"" + y1 + L"\" />";
-				std::wstring str2 = L"<a:pt x=\"" + x2 + L"\" y=\"" + y2 + L"\" />";
+				std::wstring str1 = L"<a:pt x=\"" + x[0] + L"\" y=\"" + y[0] + L"\" />";
+				std::wstring str2 = L"<a:pt x=\"" + x[1] + L"\" y=\"" + y[1] + L"\" />";
 
 				return _T("<a:quadBezTo>") + str1 + str2 + _T("</a:quadBezTo>");
 			}
@@ -93,15 +124,15 @@ namespace PPTX
 
 				pWriter->StartNode(_T("a:pt"));
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x1);
-				pWriter->WriteAttribute(_T("y"), y1);
+				pWriter->WriteAttribute(_T("x"), x[0]);
+				pWriter->WriteAttribute(_T("y"), y[0]);
 				pWriter->EndAttributes();
 				pWriter->EndNode(_T("a:pt"));
 
 				pWriter->StartNode(_T("a:pt"));
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x2);
-				pWriter->WriteAttribute(_T("y"), y2);
+				pWriter->WriteAttribute(_T("x"), x[1]);
+				pWriter->WriteAttribute(_T("y"), y[1]);
 				pWriter->EndAttributes();
 				pWriter->EndNode(_T("a:pt"));
 				
@@ -113,27 +144,25 @@ namespace PPTX
 				pWriter->StartRecord(GEOMETRY_TYPE_PATH_QUADBEZTO);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, x1);
-				pWriter->WriteString1(1, y1);
-				pWriter->WriteString1(2, x2);
-				pWriter->WriteString1(3, y2);
+				pWriter->WriteString1(0, x[0]);
+				pWriter->WriteString1(1, y[0]);
+				pWriter->WriteString1(2, x[1]);
+				pWriter->WriteString1(3, y[1]);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();
 			}
 		public:
-			std::wstring x1;
-			std::wstring y1;
-			std::wstring x2;
-			std::wstring y2;
+			std::wstring x[2];
+			std::wstring y[2];
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
 			virtual std::wstring GetODString()const
 			{
-				std::wstring str1 = L"<a:pt x=\"" + x1 + L"\" y=\"" + y1 + L"\" />";
-				std::wstring str2 = L"<a:pt x=\"" + x2 + L"\" y=\"" + y2 + L"\" />";
+				std::wstring str1 = L"<a:pt x=\"" + x[0] + L"\" y=\"" + y[0] + L"\" />";
+				std::wstring str2 = L"<a:pt x=\"" + x[1] + L"\" y=\"" + y[1] + L"\" />";
 
 				return _T("<quadBezTo>") + str1 + str2 + _T("</quadBezTo>");
 			}

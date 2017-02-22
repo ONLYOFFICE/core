@@ -395,7 +395,7 @@ void OoxConverter::convert(OOX::Drawing::CDiagrammParts	*oox_diagramm)
 
 	if (oFile.is_init() && OOX::FileTypes::DiagDrawing == oFile->type())
 	{
- 		_CP_OPT(double) x, y, width, height, cx = 0, cy = 0;
+ 		_CP_OPT(double) x, y, width, height, cx, cy;
 
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);

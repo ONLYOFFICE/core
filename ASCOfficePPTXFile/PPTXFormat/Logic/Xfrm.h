@@ -47,7 +47,8 @@ namespace PPTX
 				m_ns = _T("a");
 			}
 			virtual ~Xfrm() {}
-			explicit Xfrm(XmlUtils::CXmlNode& node)	{ fromXML(node); }
+			explicit Xfrm(XmlUtils::CXmlNode& node)			{ fromXML(node); }
+			explicit Xfrm(XmlUtils::CXmlLiteReader& oReader){ fromXML(oReader); }
 			const Xfrm& operator =(XmlUtils::CXmlNode& node)
 			{
 				fromXML(node);
@@ -57,9 +58,54 @@ namespace PPTX
 			
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_p_xfrm;
+				return OOX::et_a_xfrm;
 			}
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:off")
+						ReadAttributes1(oReader, offX, offY);
+					else if (sName == L"a:ext")
+						ReadAttributes2(oReader, extX, extY);
+					else if (sName == L"a:chOff")
+						ReadAttributes1(oReader, chOffX, chOffY);
+					else if (sName == L"a:chExt")
+						ReadAttributes2(oReader, chExtX, chExtY);
+				}
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("flipH"), flipH)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("flipV"), flipV )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rot"), rot )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes1(XmlUtils::CXmlLiteReader& oReader, nullable_int & x, nullable_int & y)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, nullable_int & cx, nullable_int & cy)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("cx"), cx )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cy"), cy )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_ns = XmlUtils::GetNamespace(node.GetName());

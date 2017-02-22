@@ -251,31 +251,32 @@ namespace XmlUtils
 
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr)
 	{
-		return _T("<") + strName + _T(" ") + oAttr.m_strValue + _T(" />");
+		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CNodeValue& oNode)
 	{
-		if (_T("") == oNode.m_strValue)
-			return _T("<") + strName + _T("/>");
+		if (oNode.m_strValue.empty())
+			return L"<" + strName + L"/>";
 
-		return _T("<") + strName + _T(">") + oNode.m_strValue + _T("</") + strName + _T(">");
+		return L"<" + strName + L">" + oNode.m_strValue + L"</" + strName + L">";
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const CNodeValue& oNode)
 	{
-		if (_T("") == oNode.m_strValue)
+		if ( oNode.m_strValue.empty())
 			return CreateNode(strName, oAttr);
 		
-		return _T("<") + strName + _T(" ") + oAttr.m_strValue + _T(">") + oNode.m_strValue +  _T("</") + strName + _T(">");
+		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + oNode.m_strValue +  L"</" + strName + L">";
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const std::wstring& strXml)
 	{
-		if (_T("") != strXml)
-			return _T("<") + strName + _T(" ") + oAttr.m_strValue + _T(">") + strXml + _T("</") + strName + _T(">");
-		return _T("<") + strName + _T(" ") + oAttr.m_strValue + _T("/>");
+		if (!strXml.empty())
+			return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + strXml + L"</" + strName + L">";
+		
+		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const std::wstring& strXml)
 	{
-		return _T("<") + strName + _T(">") + strXml + _T("</") + strName + _T(">");
+		return L"<" + strName + L">" + strXml + L"</" + strName + L">";
 	}
 
 	AVSINLINE void SaveToFile(const std::wstring& strFile, const std::wstring& strXml)

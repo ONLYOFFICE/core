@@ -780,28 +780,22 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 					m_oBcw.m_oStream.WriteBOOL(rPr.m_oVanish->m_oVal.ToBool());
 				}
-				if (false != rPr.m_sTextOutline.IsInit())
+				if (false != rPr.m_oTextOutline.IsInit())
 				{
-                    std::wstring sTextOutline = rPr.m_sTextOutline.get2();
-					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-                    XmlUtils::replace_all(sTextOutline, L"w14:", L"");
-
-                    m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
-					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, sTextOutline);
+					
+					m_oBcw.m_oStream.WriteRecord2(0, rPr.m_oTextOutline);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
-				if (false != rPr.m_sTextFill.IsInit())
+				if (rPr.m_oTextFill.getType() != OOX::et_Unknown)
 				{
-                    std::wstring sTextFill = rPr.m_sTextFill.get2();
-					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
-                    XmlUtils::replace_all(sTextFill, L"w14:", L"");
-
                     m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextFill);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
-					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_FILL, sTextFill);
+					
+					m_oBcw.m_oStream.WriteRecord1(0, rPr.m_oTextFill);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				if(rPr.m_oDel.IsInit())

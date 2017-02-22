@@ -174,6 +174,7 @@ namespace OOX
 		et_a_clrChange, // <a:clrChange>
 		et_a_clrFrom, // <a:clrFrom>
 		et_a_clrMap, // <a:clrMap>
+		et_a_clrMapOvr, // <a:clrMapOvr>
 		et_a_clrRepl, // <a:clrRepl>
 		et_a_clrScheme, // <a:clrScheme>
 		et_a_clrTo, // <a:clrTo>
@@ -249,6 +250,7 @@ namespace OOX
 		et_a_latin, // <a:latin>
 		et_a_lightRig, // <a:lightRig>
 		et_a_lin, // <a:lin>
+		et_a_lineTo, // <a:lineTo>
 		et_a_ln, // <a:ln>
 		et_a_lnDef, // <a:lnDef>
 		et_a_lnRef, // <a:lnRef>

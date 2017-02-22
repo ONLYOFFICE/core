@@ -48,11 +48,11 @@ namespace PPTX
 		class CFontInfo
 		{
 		public:
-			LONG	FontRef;
+			LONG			FontRef;
 			std::wstring	strFontName;
-			std::wstring strPanose;
-			std::wstring strPitchFamily;
-			BYTE	Charset;
+			std::wstring	strPanose;
+			std::wstring	strPitchFamily;
+			BYTE			Charset;
 
 		public:
 			CFontInfo()
@@ -90,7 +90,7 @@ namespace PPTX
 			LONG						m_lTextType;
 			nullable<TextParagraphPr>	m_levels[10];
 			nullable<TextParagraphPr>	m_body[10];
-			BodyPr bodyPr;
+			nullable<BodyPr>			bodyPr;
 
 			// просто указатель - он должен выставиться из темы
 			std::vector<nullable<TextParagraphPr>*>*	m_masters;
@@ -135,7 +135,7 @@ namespace PPTX
 				return -1;
 			}
 
-			std::wstring GetAnchor()const{return bodyPr.anchor.get_value_or(_T("t"));};
+			std::wstring GetAnchor()const{return bodyPr.IsInit() ? bodyPr->anchor.get_value_or(L"t") : L"t"; };
 
 			nullable_base<WORD> GetParagraphAlgn		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<LONG>	GetParagraphLeftMargin	(int level, const nullable<TextParagraphPr>& pParagraph)const;

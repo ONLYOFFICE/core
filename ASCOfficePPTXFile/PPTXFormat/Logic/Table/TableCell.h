@@ -148,7 +148,7 @@ namespace PPTX
 						{
                             txBody = new Logic::TxBody();
                             txBody->fromPPTY(pReader);
-                            txBody->m_ns = _T("a");
+							txBody->m_name = _T("a:txBody");
 							break;
 						}
 						default:

@@ -47,7 +47,8 @@ namespace PPTX
 		class CustGeom : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CustGeom)
+			WritingElement_AdditionConstructors(CustGeom)
+			PPTX_LOGIC_BASE2(CustGeom)
 
 			CustGeom& operator=(const CustGeom& oSrc)
 			{
@@ -65,7 +66,107 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_custGeom;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:avLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:gd")
+							{
+								Gd gd;
+								avLst.push_back(gd);
+								avLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:gdLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:gd")
+							{
+								Gd gd;
+								gdLst.push_back(gd);
+								gdLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:rect")
+						rect = oReader;
+					else if (sName == L"a:pathLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:path")
+							{
+								Path2D gd;
+								pathLst.push_back(gd);
+								pathLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:ahLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:ahPolar")
+							{
+								AhBase gd;
+								ahLst.push_back(gd);
+								ahLst.back().fromXML(oReader);
+							}
+							else if (sName1 == L"a:ahXY")
+							{
+								AhBase gd;
+								ahLst.push_back(gd);
+								ahLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:cxnLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:cxn")
+							{
+								Cxn gd;
+								cxnLst.push_back(gd);
+								cxnLst.back().fromXML(oReader);
+							}
+						}
+					}
+				}			
+				FillParentPointersForChilds();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;

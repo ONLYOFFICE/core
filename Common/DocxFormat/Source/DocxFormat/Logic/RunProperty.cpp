@@ -250,27 +250,14 @@ namespace OOX
 				else if ( _T("w:webHidden") == sName )
 					m_oWebHidden = oReader;
 				else if (_T("w14:textOutline") == sName)
-					m_sTextOutline = oReader.GetOuterXml();
+					m_oTextOutline = oReader;
 				else if (_T("w14:textFill") == sName)
 				{
-					m_sTextFill = oReader.GetOuterXml();
-
-					std::wstring strXml = _T("<xml xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" >");
-							strXml += m_sTextFill.get();
-							strXml += _T("</xml>");
-							
-					XmlUtils::CXmlLiteReader oSubReader;//нам нужны xml и сами объекты 
-					bool result = oSubReader.FromString(strXml);
-					
-					result = oSubReader.ReadNextNode();//root
-					result = oSubReader.ReadNextNode();//textFill
-					result = oSubReader.ReadNextNode();//...Fill
-
-					std::wstring sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
-						
-					if (_T("gradFill") == sName)
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 )  )
 					{
-						m_oGradFill = oSubReader;
+						m_oTextFill.fromXML(oReader);
+						break;
 					}
 				}
 			}

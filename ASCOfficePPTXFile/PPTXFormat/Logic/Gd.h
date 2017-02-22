@@ -42,9 +42,25 @@ namespace PPTX
 		class Gd : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Gd)
+			WritingElement_AdditionConstructors(Gd)
+			PPTX_LOGIC_BASE2(Gd)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_gd;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("name"), name )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fmla"), fmla )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"name", name);

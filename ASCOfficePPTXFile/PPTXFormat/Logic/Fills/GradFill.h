@@ -74,6 +74,8 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -95,7 +97,6 @@ namespace PPTX
 						int nCurDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
 						{
-							std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
 							Gs g; GsLst.push_back(g);
 							GsLst.back().fromXML(oReader);
 						}
@@ -104,7 +105,7 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rotWithShape"), rotWithShape )
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("flip"), flip )
 				WritingElement_ReadAttributes_End	( oReader )
@@ -164,7 +165,7 @@ namespace PPTX
 				oValue.WriteNullable(lin);
 				oValue.WriteNullable(tileRect);
 
-				std::wstring strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				std::wstring strName = m_namespace.empty() ? _T("gradFill") : (m_namespace + _T(":gradFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
 			}
 
@@ -179,7 +180,7 @@ namespace PPTX
 				}
 				else
 				{
-					strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+					strName = m_namespace.empty() ? _T("gradFill") : (m_namespace + _T(":gradFill"));
 				}
 
 				pWriter->StartNode(strName);

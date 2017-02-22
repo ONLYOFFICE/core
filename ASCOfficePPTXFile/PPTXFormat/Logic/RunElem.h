@@ -59,7 +59,7 @@ namespace PPTX
 			}		
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				std::wstring name = oReader.GetName();
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if(name == _T("r"))
 					Elem.reset(new Logic::Run(oReader));

@@ -45,9 +45,15 @@ namespace PPTX
 		class AhBase : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AhBase)
+			WritingElement_AdditionConstructors(AhBase)
+			PPTX_LOGIC_BASE2(AhBase)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				if (ah.IsInit())
+					return ah->getType();
+				return OOX::et_Unknown;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -58,7 +64,16 @@ namespace PPTX
 					ah.reset(new Logic::AhPolar(node));
 				else ah.reset();
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
+				if (sName == L"ahXY")
+					ah.reset(new Logic::AhXY(oReader));
+				else if(sName == L"ahPolar")
+					ah.reset(new Logic::AhPolar(oReader));
+				else ah.reset();
+			}
 			virtual void GetAdjustHandleFrom(XmlUtils::CXmlNode& element)
 			{
 				XmlUtils::CXmlNode oNode;

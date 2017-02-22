@@ -2074,8 +2074,9 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 
 	bool set_color = false;
-	if (oox_run_pr->m_oGradFill.IsInit())
+	if (oox_run_pr->m_oTextFill.getType() == OOX::et_a_gradFill)
 	{
+		NSCommon::smart_ptr<PPTX::Logic::GradFill> gradFill = oox_run_pr->m_oTextFill.Fill.smart_dynamic_cast<PPTX::Logic::GradFill>();
 		odf_writer::odf_drawing_context	 *drawing_context = odf_context()->drawing_context();
 		if (drawing_context)
 		{
@@ -2083,7 +2084,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			{
 				odf_context()->drawing_context()->start_area_properties();
 				{		
-					OoxConverter::convert(oox_run_pr->m_oGradFill.GetPointer(), NULL);
+					OoxConverter::convert(gradFill.operator->());
 				}
 				odf_context()->drawing_context()->end_area_properties();
 

@@ -51,6 +51,8 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
+			void fromXMLParent(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual OOX::EElementType getType () const;
 
 			virtual void GetColorFrom(XmlUtils::CXmlNode& element);

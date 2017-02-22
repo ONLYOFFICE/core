@@ -40,6 +40,7 @@
 #include "../../Common/ComplexTypes.h"
 
 #include "../Drawing/DrawingEffects.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Ln.h"
 
 namespace ComplexTypes
 {
@@ -1403,7 +1404,7 @@ namespace OOX
 
 		public:
 
-			bool                                                     m_bRPRChange; // Является ли данный w:rPr дочерним по отношению к w:rPrChange
+			bool m_bRPRChange; // Является ли данный w:rPr дочерним по отношению к w:rPrChange
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBold;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBoldCs;
@@ -1435,23 +1436,21 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtL;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oShadow;
 			nullable<ComplexTypes::Word::CShading                        > m_oShd;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oSmallCaps;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oSnapToGrid;
-			nullable<ComplexTypes::Word::CSignedTwipsMeasure             > m_oSpacing;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oSpecVanish;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oStrike;
-			nullable<ComplexTypes::Word::CHpsMeasure                     > m_oSz;
-			nullable<ComplexTypes::Word::CHpsMeasure                     > m_oSzCs;
-			nullable<ComplexTypes::Word::CUnderline                      > m_oU;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oVanish;
-			nullable<ComplexTypes::Word::CVerticalAlignRun               > m_oVertAlign;
-			nullable<ComplexTypes::Word::CTextScale                      > m_oW;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oWebHidden;
-			
-            nullable<std::wstring>									m_sTextOutline;
-            nullable<std::wstring>									m_sTextFill;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oSmallCaps;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oSnapToGrid;
+			nullable<ComplexTypes::Word::CSignedTwipsMeasure             >	m_oSpacing;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oSpecVanish;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
+			nullable<ComplexTypes::Word::CHpsMeasure                     >	m_oSz;
+			nullable<ComplexTypes::Word::CHpsMeasure                     >	m_oSzCs;
+			nullable<ComplexTypes::Word::CUnderline                      >	m_oU;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oVanish;
+			nullable<ComplexTypes::Word::CVerticalAlignRun               >	m_oVertAlign;
+			nullable<ComplexTypes::Word::CTextScale                      >	m_oW;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oWebHidden;
+			PPTX::Logic::UniFill											m_oTextFill;			
+            nullable<PPTX::Logic::Ln>										m_oTextOutline;
 
-			nullable<OOX::Drawing::CGradientFillProperties>		m_oGradFill;
 		};
 
 	} // namespace Logic

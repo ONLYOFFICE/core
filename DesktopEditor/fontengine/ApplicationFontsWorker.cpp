@@ -653,7 +653,7 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
 {
     std::vector<std::wstring> arrNames;
     
-    CArray<std::wstring> fonts;
+    std::vector<std::wstring> fonts;
     CApplicationFonts oFonts;
     
     pDataDst = NULL;
@@ -676,19 +676,19 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
         int nLenAllFonts = oReader.GetInt32();
         oReader.Skip(nLenAllFonts);
         
-        CArray<std::wstring> arrOld;
+        std::vector<std::wstring> arrOld;
         
         int nCountCache = oReader.GetInt32();
         for (int i = 0; i < nCountCache; ++i)
         {
             int nLen = oReader.GetInt32();
-            arrOld.Add(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(oReader.GetCur(), (LONG)nLen));
+            arrOld.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(oReader.GetCur(), (LONG)nLen));
             oReader.Skip(nLen);
         }
         
-        if (fonts.GetCount() == arrOld.GetCount())
+        if (fonts.size() == arrOld.size())
         {
-            int nCountFonts = fonts.GetCount();
+            int nCountFonts = (int)fonts.size();
             bool bIsBreak = false;
             for (int i = 0 ; i < nCountFonts; ++i)
             {
@@ -726,7 +726,7 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
     std::string sAllFontsJS = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(oWriterJS.GetBuffer(), (LONG)oWriterJS.GetCurSize());
     oStream.WriteStringA2(sAllFontsJS.c_str(), (int)sAllFontsJS.length());
 
-    int nCountF = fonts.GetCount();
+    int nCountF = (int)fonts.size();
     oStream.WriteLONG((LONG)nCountF);
     
     for (int i = 0; i < nCountF; ++i)

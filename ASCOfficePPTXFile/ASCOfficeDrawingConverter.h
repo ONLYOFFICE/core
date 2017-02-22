@@ -236,8 +236,6 @@ namespace NSBinPptxRW
         HRESULT WriteRels           (const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
         HRESULT LoadClrMap          (const std::wstring& sXml);
 
-        HRESULT(GetTxBodyBinary)    (const std::wstring& sXml);
-        HRESULT(GetTxBodyXml)       (long lStart, std::wstring & Xml);
         HRESULT(SetFontDir)         (const std::wstring& sFontDir);
 
         HRESULT SetFontPicker       (COfficeFontPicker* pFontPicker);

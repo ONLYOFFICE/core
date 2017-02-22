@@ -73,9 +73,9 @@ namespace PPTX
 					std::wstring strName = oReader.GetName();
 
 					if (strName == L"a:clrTo")
-						ClrTo.fromXML(oReader);
+						ClrTo.fromXMLParent(oReader);
 					else if (strName == L"a:clrFrom")
-						ClrFrom.fromXML(oReader);
+						ClrFrom.fromXMLParent(oReader);
 				}
 				FillParentPointersForChilds();
 			}

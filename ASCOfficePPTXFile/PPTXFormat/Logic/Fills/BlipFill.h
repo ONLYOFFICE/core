@@ -78,7 +78,7 @@ namespace PPTX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    std::wstring strName = oReader.GetName();
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("blip") == strName)
 					{
 						if (!blip.IsInit())	

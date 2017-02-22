@@ -104,6 +104,9 @@ namespace PPTX
 			}			
 			virtual std::wstring toXML() const
 			{
+				if (m_name.empty()) 
+					m_name = L"a:lstStyle";
+
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(/*defPPr*/  levels[9]);
 				oValue.WriteNullable(/*lvl1pPr*/ levels[0]);

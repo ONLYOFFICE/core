@@ -147,6 +147,8 @@ namespace PPTX
 
 			virtual std::wstring toXML() const
 			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rot"), rot);
 				oAttr.Write(_T("spcFirstLastPara"), spcFirstLastPara);
@@ -186,6 +188,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
 				pWriter->StartNode(m_namespace + _T(":bodyPr"));
 
 				pWriter->StartAttributes();

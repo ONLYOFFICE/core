@@ -98,14 +98,19 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(RunProperties)
-			PPTX_LOGIC_BASE2(RunProperties)
 			
+			RunProperties()
+			{
+				m_name = L"a:rPr";
+			}
 			virtual OOX::EElementType getType () const
 			{
 				return OOX::et_a_rPr;
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_name = oReader.GetName();
+
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -114,34 +119,34 @@ namespace PPTX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					std::wstring sName = oReader.GetName();
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					
-					if (L"a:blipFill"	== sName	||
-						L"a:gradFill"	== sName	||
-						L"a:grpFill"	== sName	||
-						L"a:noFill"		== sName	||
-						L"a:pattFill"	== sName	||
-						L"a:solidFill" == sName )
+					if (L"blipFill"	== sName	||
+						L"gradFill"	== sName	||
+						L"grpFill"	== sName	||
+						L"noFill"	== sName	||
+						L"pattFill"	== sName	||
+						L"solidFill" == sName )
 					{
 						Fill.fromXML(oReader);
 					}
-					else if ( _T("a:ln") == sName )
+					else if ( _T("ln") == sName )
 						ln = oReader;
-					else if ( _T("a:cs") == sName )
+					else if ( _T("cs") == sName )
 						cs = oReader;					
-					else if ( _T("a:ea") == sName )
+					else if ( _T("ea") == sName )
 						ea = oReader;				
-					else if ( _T("a:latin") == sName )
+					else if ( _T("latin") == sName )
 						latin = oReader;			
-					else if ( _T("a:sym") == sName )
+					else if ( _T("sym") == sName )
 						sym = oReader;		
-					else if ( _T("a:hlinkClick") == sName )
+					else if ( _T("hlinkClick") == sName )
 						hlinkClick = oReader;			
-					else if ( _T("a:rtl") == sName )
+					else if ( _T("rtl") == sName )
 						rtl = oReader;
-					else if (	L"a:effectDag"	== sName	||
-								L"a:effectLst"	== sName	||
-								L"a:extLst"		== sName )
+					else if (	L"effectDag"	== sName	||
+								L"effectLst"	== sName	||
+								L"extLst"		== sName )
 					{
 						EffectList.fromXML(oReader);		
 					}

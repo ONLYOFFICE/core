@@ -53,8 +53,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(TextParagraphPr)
-			PPTX_LOGIC_BASE2(TextParagraphPr)
 
+			TextParagraphPr()
+			{
+				m_name = L"a:pPr";
+			}
 			TextParagraphPr& operator=(const TextParagraphPr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -92,6 +95,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_name = oReader.GetName();
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )

@@ -45,7 +45,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(TextListStyle)
-			PPTX_LOGIC_BASE2(TextListStyle)
+
+			TextListStyle()
+			{
+				m_name = L"a:lstStyle";
+			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -104,9 +108,6 @@ namespace PPTX
 			}			
 			virtual std::wstring toXML() const
 			{
-				if (m_name.empty()) 
-					m_name = L"a:lstStyle";
-
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(/*defPPr*/  levels[9]);
 				oValue.WriteNullable(/*lvl1pPr*/ levels[0]);

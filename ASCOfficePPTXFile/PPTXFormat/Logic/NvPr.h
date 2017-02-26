@@ -44,8 +44,11 @@ namespace PPTX
 		class NvPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvPr)
-				
+			WritingElement_AdditionConstructors(NvPr)
+			
+			NvPr()
+			{
+			}
 			NvPr& operator=(const NvPr& oSrc)
 			{
 				isPhoto		=	oSrc.isPhoto;
@@ -58,14 +61,53 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+				
+				ReadAttributes(oReader);
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+						
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"ph")
+						ph = oReader;
+					else if (strName == L"extLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
+					}
+					else
+					{
+						media.fromXML(oReader);
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("isPhoto"),	isPhoto)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("userDrawn"),	userDrawn)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				node.ReadAttributeBase(L"isPhoto", isPhoto);
 				node.ReadAttributeBase(L"userDrawn", userDrawn);
 
-				ph			= node.ReadNode(_T("p:ph"));
+				ph = node.ReadNode(_T("p:ph"));
 				media.GetMediaFrom(node);
 
 				XmlUtils::CXmlNode list;
@@ -191,17 +233,16 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			std::wstring		m_namespace;
+	// Attributes
+			nullable_bool		isPhoto;
+			nullable_bool		userDrawn;
 
-		public:
-			// Attributes
-			nullable_bool			isPhoto;
-			nullable_bool			userDrawn;
-
-			//Childs
-			nullable<Ph>			ph;
-			UniMedia				media;
-			//custDataLst
-			std::vector<Ext>			extLst;
+	//Childs
+			nullable<Ph>		ph;
+			UniMedia			media;
+	//custDataLst
+			std::vector<Ext>	extLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

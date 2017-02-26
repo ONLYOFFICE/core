@@ -45,8 +45,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(PattFill)
-			PPTX_LOGIC_BASE2(PattFill)
-
+			
+			PattFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
 			PattFill& operator=(const PattFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;

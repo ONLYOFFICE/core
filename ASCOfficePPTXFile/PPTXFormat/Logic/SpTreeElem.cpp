@@ -180,7 +180,6 @@ namespace PPTX
 			}
 			*/
 		}
-
         void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
                            NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
@@ -213,30 +212,65 @@ namespace PPTX
 				strAttr += s;
 			}
 		}
-
 		SpTreeElem::SpTreeElem()
 		{
 		}
-
-
 		SpTreeElem::~SpTreeElem()
 		{
 		}
-	
-
 		SpTreeElem::SpTreeElem(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
-
 		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		SpTreeElem::SpTreeElem(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void SpTreeElem::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
-
+			if (name == _T("sp") || name == _T("wsp"))
+				m_elem.reset(new Logic::Shape(oReader));
+			else if (name == _T("pic"))
+				m_elem.reset(new Logic::Pic(oReader));
+			else if (name == _T("cxnSp"))
+				m_elem.reset(new Logic::CxnSp(oReader));
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+				m_elem.reset(new Logic::SpTree(oReader));
+			else if (name == _T("graphicFrame"))
+				m_elem.reset(new Logic::GraphicFrame(oReader));
+			else if (name == _T("AlternateContent"))
+			{
+				bool isEmpty = true;
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					if (strName == L"mc:Choice")
+					{
+						//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+						fromXML(oReader);
+						break;
+					}
+					else if (strName == L"mc:Fallback")
+					{
+						fromXML(oReader);
+					}
+				}
+			}
+			else m_elem.reset();
+		}
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());

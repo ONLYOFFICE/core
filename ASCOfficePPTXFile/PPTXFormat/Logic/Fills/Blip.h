@@ -46,8 +46,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Blip)
-			PPTX_LOGIC_BASE2(Blip)
 
+			Blip(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}	
 			Blip& operator=(const Blip& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -179,10 +182,9 @@ namespace PPTX
 			nullable_limit<Limit::BlipCompression> cstate;
 			nullable<OOX::RId> embed;
 			nullable<OOX::RId> link;
-		//private:
 		public:
 			std::wstring m_namespace;
-		//internal
+
 			std::wstring oleRid;
 			std::wstring oleFilepathBin;
 			std::wstring oleFilepathImg;

@@ -50,7 +50,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(BlipFill)
-			PPTX_LOGIC_BASE2(BlipFill)
+			
+			BlipFill(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			BlipFill& operator=(const BlipFill& oSrc)
 			{

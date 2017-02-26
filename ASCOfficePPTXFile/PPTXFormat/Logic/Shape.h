@@ -275,19 +275,31 @@ namespace PPTX
 		class Shape : public WrapperWritingElement
 		{
 		public:
-			Shape();
+			Shape(std::wstring name_ = L"p:sp");
 			virtual ~Shape();			
+			
 			explicit Shape(XmlUtils::CXmlNode& node);
 			const Shape& operator =(XmlUtils::CXmlNode& node);
 
+			explicit Shape(XmlUtils::CXmlLiteReader& oReader);
+			const Shape& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_p_Shape;
+				return OOX::et_a_Shape;
 			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("useBgFill"),	attrUseBgFill)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
 			void GetShapeFullDescription(Shape& shape, int level = 0)const;
@@ -312,6 +324,8 @@ namespace PPTX
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;			
 			virtual void fromPPTY		(NSBinPptxRW::CBinaryFileReader* pReader);
 
+			std::wstring			m_name;
+
 			NvSpPr					nvSpPr;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
@@ -324,7 +338,7 @@ namespace PPTX
 			bool								isFontRefInSlide;
 			mutable nullable<TextParagraphPr>	body[10];
  
-			// Attributes
+	// Attributes
 			nullable_bool			attrUseBgFill;
 		protected:
 			virtual void FillParentPointersForChilds();

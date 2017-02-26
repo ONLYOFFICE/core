@@ -42,7 +42,11 @@ namespace PPTX
 		class SmartArt : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(SmartArt)
+			WritingElement_AdditionConstructors(SmartArt)
+
+			SmartArt()
+			{
+			}
 
 			SmartArt& operator=(const SmartArt& oSrc)
 			{
@@ -52,15 +56,22 @@ namespace PPTX
 				m_diag = oSrc.m_diag;
 				return *this;
 			}
-
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("r:dm"), id_data )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"r:dm", id_data);
 				FillParentPointersForChilds();
 			}
-
-
 			virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -86,48 +97,37 @@ namespace PPTX
 				pReader->SkipRecord();
 			}
 
-		public:
-
-			nullable<OOX::RId> id_data;
+			nullable<OOX::RId>				id_data;
 
 			nullable<PPTX::Logic::SpTree>	m_diag;
 			smart_ptr<PPTX::CCommonRels>	m_oCommonRels;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
+				LoadDrawing();
 				if(m_diag.IsInit())
 					m_diag->SetParentPointer(this);
 			}
 
 		public:
-			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter);
+			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
 		};
 
 		class ChartRec : public WrapperWritingElement
 		{
 		public:
+			WritingElement_AdditionConstructors(ChartRec)
+			
 			ChartRec()	
 			{
 				m_bData = false;
 				m_lChartNumber = 0;
 			}
-			virtual ~ChartRec() 
-			{
-			}
-			explicit ChartRec(XmlUtils::CXmlNode& node)	
-			{ 
-				fromXML(node); 
-			}
-			const ChartRec& operator =(XmlUtils::CXmlNode& node)
-			{
-				fromXML(node);
-				return *this;
-			}
+
 			ChartRec(const ChartRec& oSrc) 
 			{ 
 				*this = oSrc; 
 			}
-
 			ChartRec& operator=(const ChartRec& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -135,8 +135,18 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("r:id"), id_data )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_bData = false;
+				ReadAttributes( oReader );
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_bData = false;
@@ -144,8 +154,6 @@ namespace PPTX
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
 			}
-
-
 			virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -156,12 +164,10 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
+			nullable<OOX::RId>	id_data;
 
-			nullable<OOX::RId> id_data;
-
-			LONG m_lChartNumber;
-			bool m_bData;
+			LONG				m_lChartNumber;
+			bool				m_bData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{				

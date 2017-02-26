@@ -47,11 +47,18 @@ namespace PPTX
 		public:
 			TableCell();
 			virtual ~TableCell();			
+			
 			explicit TableCell(XmlUtils::CXmlNode& node);
 			const TableCell& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			explicit TableCell(XmlUtils::CXmlLiteReader& oReader);
+			const TableCell& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
 
 			virtual void GetShapeProperties(ShapeProperties& props)const;

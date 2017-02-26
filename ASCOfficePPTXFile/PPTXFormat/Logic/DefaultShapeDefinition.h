@@ -127,8 +127,7 @@ namespace PPTX
 						}
 						case 1:
 						{
-							bodyPr = BodyPr();
-							bodyPr->m_namespace = _T("a");
+							bodyPr = BodyPr(L"a");
 							bodyPr->fromPPTY(pReader);
 							break;
 						}
@@ -140,8 +139,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							style = new ShapeStyle();
-							style->m_ns = _T("a");
+							style = new ShapeStyle(L"a");
 							style->fromPPTY(pReader);
 							break;
 						}

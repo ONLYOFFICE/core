@@ -52,7 +52,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(BodyPr)
-			PPTX_LOGIC_BASE2(BodyPr)
+			
+			BodyPr(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}			
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

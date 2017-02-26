@@ -42,9 +42,12 @@ namespace PPTX
 	{
 		class MediaFile : public WrapperWritingElement
 		{
-		public:
-			
-			PPTX_LOGIC_BASE(MediaFile)
+		public:			
+			WritingElement_AdditionConstructors(MediaFile)
+
+			MediaFile()
+			{
+			}
 
 			MediaFile& operator=(const MediaFile& oSrc)
 			{
@@ -57,15 +60,25 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				ReadAttributes(oReader);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name		= XmlUtils::GetNameNoNS(node.GetName());
 				link		= node.GetAttribute(_T("r:link"));
 				node.ReadAttributeBase(L"contentType", contentType);
 			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("r:link"),	link)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("contentType"),	contentType)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
@@ -75,7 +88,7 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("a:") + name, oAttr);
 			}
 		public:
-			std::wstring				name;
+			std::wstring		name;
 			OOX::RId			link;
 			nullable_string		contentType;
 		protected:

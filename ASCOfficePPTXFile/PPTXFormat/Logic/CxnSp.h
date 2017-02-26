@@ -46,13 +46,23 @@ namespace PPTX
 		class CxnSp : public WrapperWritingElement
 		{
 		public:
-			CxnSp();
+			CxnSp(std::wstring ns = L"p");
 			virtual ~CxnSp();			
+			
 			explicit CxnSp(XmlUtils::CXmlNode& node);
 			const CxnSp& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			explicit CxnSp(XmlUtils::CXmlLiteReader& oReader);
+			const CxnSp& operator =(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_CxnSp;
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
 			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 
@@ -72,12 +82,12 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    pWriter->StartNode(_T("wps:cxnSp"));
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    pWriter->StartNode(_T("xdr:cxnSp"));
-                else
-                    pWriter->StartNode(_T("p:cxnSp"));
+				std::wstring namespace_ = m_namespace;
+
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wps";
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+                    
+				pWriter->StartNode(namespace_ + L":cxnSp");
 
                 pWriter->EndAttributes();
 
@@ -87,19 +97,13 @@ namespace PPTX
                 if (style.is_init())
                 {
                     if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                        style->m_ns = _T("wps");
+                        style->m_namespace = _T("wps");
                     else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                        style->m_ns = _T("xdr");
+                        style->m_namespace = _T("xdr");
 
                     pWriter->Write(style);
                 }
-
-                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    pWriter->EndNode(_T("wps:cxnSp"));
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    pWriter->EndNode(_T("xdr:cxnSp"));
-                else
-                     pWriter->EndNode(_T("p:cxnSp"));
+				pWriter->EndNode(namespace_ + L":cxnSp");
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -123,8 +127,7 @@ namespace PPTX
 						}
 						case 2:
 						{
-							style = new ShapeStyle();
-							style->m_ns = _T("p");
+							style = new ShapeStyle(L"p");
 							style->fromPPTY(pReader);
 							break;
 						}
@@ -138,7 +141,8 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring			m_namespace;
+
 			NvCxnSpPr				nvCxnSpPr;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;

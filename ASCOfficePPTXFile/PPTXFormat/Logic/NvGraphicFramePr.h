@@ -46,8 +46,12 @@ namespace PPTX
 		class NvGraphicFramePr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvGraphicFramePr)
+			WritingElement_AdditionConstructors(NvGraphicFramePr)
 
+			NvGraphicFramePr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 			NvGraphicFramePr& operator=(const NvGraphicFramePr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -57,16 +61,40 @@ namespace PPTX
 				cNvGraphicFramePr	= oSrc.cNvGraphicFramePr;
 				nvPr				= oSrc.nvPr;
 
+				m_namespace		= oSrc.m_namespace;
+
 				return *this;
 			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace			= XmlUtils::GetNamespace(node.GetName());
+
 				cNvPr				= node.ReadNode(_T("p:cNvPr"));
 				cNvGraphicFramePr	= node.ReadNode(_T("p:cNvGraphicFramePr"));
 				nvPr				= node.ReadNode(_T("p:nvPr"));
 
+				FillParentPointersForChilds();
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (sName == L"cNvPr")
+						cNvPr.fromXML( oReader);
+					else if (sName == L"cNvGraphicFramePr")
+						cNvGraphicFramePr.fromXML( oReader);
+					else if (sName == L"nvPr")
+						nvPr.fromXML( oReader);
+				}
 				FillParentPointersForChilds();
 			}
 
@@ -77,7 +105,7 @@ namespace PPTX
 				oValue.Write(cNvGraphicFramePr);
 				oValue.Write(nvPr);
 
-				return XmlUtils::CreateNode(_T("p:nvGraphicFramePr"), oValue);
+				return XmlUtils::CreateNode(m_namespace + L":nvGraphicFramePr", oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -150,7 +178,8 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring		m_namespace;
+
 			CNvPr				cNvPr;
 			CNvGraphicFramePr	cNvGraphicFramePr;
 			NvPr				nvPr;

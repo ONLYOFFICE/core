@@ -44,15 +44,54 @@ namespace PPTX
 		class CNvPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CNvPr)
+			WritingElement_AdditionConstructors(CNvPr)
+
+			CNvPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			virtual OOX::EElementType getType () const
 			{
 				return OOX::et_p_cNvPr;
 			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_int id_;
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),	id_)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),	name)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("descr"), descr)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hidden"), hidden)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("title"), title)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				id = id_.get_value_or(0);
+				Normalize();
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (sName == L"a:hlinkClick")
+						hlinkClick = oReader;
+					else if (sName == L"a:hlinkHover")
+						hlinkHover = oReader;
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				id		= node.ReadAttributeInt(L"id");
 				name	= node.GetAttribute(L"name");
 				
@@ -79,18 +118,16 @@ namespace PPTX
 				oValue.WriteNullable(hlinkClick);
 				oValue.WriteNullable(hlinkHover);
 
-				return XmlUtils::CreateNode(_T("p:cNvPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(m_namespace + L":cNvPr", oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-                std::wstring namespace_;
+                std::wstring namespace_ = m_namespace;
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
                     namespace_= _T("pic");
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
                     namespace_= _T("xdr");
-				else
-                    namespace_= _T("p");
 
                 toXmlWriter2(namespace_, pWriter);
 
@@ -196,7 +233,8 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring		m_namespace;
+
 			int					id;
 			std::wstring		name;
 			nullable_string		descr;

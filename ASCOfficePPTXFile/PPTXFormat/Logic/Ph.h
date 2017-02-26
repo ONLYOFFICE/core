@@ -44,9 +44,26 @@ namespace PPTX
 		class Ph : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Ph)
+			WritingElement_AdditionConstructors(Ph)
 
-		public:
+			Ph()
+			{
+			}
+				
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("hasCustomPrompt"),	hasCustomPrompt)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("idx"),	idx)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("orient"),	orient)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sz"),	sz)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),	type)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"hasCustomPrompt", hasCustomPrompt);

@@ -47,8 +47,11 @@ namespace PPTX
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
 		{
 			FileContainer* pRels = NULL;
-			if (pWriter->m_pCommonRels->is_init())
-				pRels = pWriter->m_pCommonRels->operator ->();
+			if (pWriter)
+			{
+				if (pWriter->m_pCommonRels->is_init())
+					pRels = pWriter->m_pCommonRels->operator ->();
+			}
 
 			smart_ptr<OOX::File>	oFileData;
 			smart_ptr<OOX::File>	oFileDrawing;

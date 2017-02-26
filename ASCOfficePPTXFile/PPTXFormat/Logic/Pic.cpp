@@ -261,31 +261,59 @@ namespace PPTX
 			return sRes;
 		}
 
-		Pic::Pic()
+		Pic::Pic(std::wstring ns)
 		{
+			m_namespace = ns;
 		}
-
-
 		Pic::~Pic()
 		{
 		}
-	
-
 		Pic::Pic(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
-
 		const Pic& Pic::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		Pic::Pic(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const Pic& Pic::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void Pic::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			
+			if ( oReader.IsEmptyNode() )
+				return;
+					
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
+				if (_T("nvPicPr") == strName)
+					nvPicPr = oReader;
+				else if (_T("blipFill") == strName)
+					blipFill = oReader;
+				else if (_T("spPr") == strName)
+					spPr = oReader;
+				else if (_T("style") == strName)
+					style = oReader;
+			}
+			FillParentPointersForChilds();
+		}
 
 		void Pic::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
@@ -327,7 +355,6 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-
 		std::wstring Pic::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
@@ -336,7 +363,7 @@ namespace PPTX
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(_T("p:pic"), oValue);
+			return XmlUtils::CreateNode(m_namespace + L":pic", oValue);
 		}
 
 		void Pic::FillParentPointersForChilds()

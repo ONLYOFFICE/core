@@ -49,8 +49,12 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(GradFill)
-			PPTX_LOGIC_BASE2(GradFill)
-
+			
+			GradFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
+			
 			GradFill& operator=(const GradFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;

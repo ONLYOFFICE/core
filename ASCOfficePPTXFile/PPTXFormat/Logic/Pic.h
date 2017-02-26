@@ -215,13 +215,23 @@ namespace PPTX
 		class Pic : public WrapperWritingElement
 		{
 		public:
-			Pic();
+			Pic(std::wstring ns = L"p");
 			virtual ~Pic();
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_Pic;
+			}
+
 			explicit Pic(XmlUtils::CXmlNode& node);
 			const Pic& operator =(XmlUtils::CXmlNode& node);
+			
+			explicit Pic(XmlUtils::CXmlLiteReader& oReader);
+			const Pic& operator =(XmlUtils::CXmlLiteReader& oReader);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
 			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 			virtual std::wstring GetFullPicName()const;
@@ -255,16 +265,14 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				std::wstring namespace_ = m_namespace;
 				bool bOle = false;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:pic"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				{
-					pWriter->StartNode(_T("pic:pic"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
-				}
-				else
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"pic";
+
+				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
+					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
 				{
 					if(oleObject.IsInit() && oleObject->isValid())
 					{
@@ -301,19 +309,19 @@ namespace PPTX
 
 						pWriter->WriteString(L"<p:embed/>");
 					}
-					pWriter->StartNode(_T("p:pic"));
 				}
+				pWriter->StartNode(namespace_ + L":pic");
 
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				{
+					pWriter->StartAttributes();
+					pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
+				}
 				pWriter->EndAttributes();
 
 				nvPicPr.toXmlWriter(pWriter);
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					blipFill.m_namespace = _T("xdr");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					blipFill.m_namespace = _T("pic");
-				else 
-					blipFill.m_namespace = _T("p");
+				blipFill.m_namespace = namespace_;
 
 				if (blipFill.blip.is_init())
 					blipFill.blip->m_namespace = _T("a");
@@ -325,11 +333,10 @@ namespace PPTX
 				
 				pWriter->Write(style);
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:pic"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("pic:pic"));
-				else
+				pWriter->EndNode(namespace_ + L":pic");
+				
+				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
+					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
 				{
 					pWriter->EndNode(_T("p:pic"));
 					if(bOle)
@@ -337,7 +344,6 @@ namespace PPTX
 						pWriter->WriteString(L"</p:oleObj></a:graphicData></a:graphic></p:graphicFrame>");
 					}
 				}
-
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -367,8 +373,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							style = new ShapeStyle();
-							style->m_ns = _T("p");
+							style = new ShapeStyle(L"p");
 							style->fromPPTY(pReader);
 							break;
 						}
@@ -401,13 +406,13 @@ namespace PPTX
 
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
 			void fromXMLOle(XmlUtils::CXmlNode& node);
-		public:
 
 			NvPicPr					nvPicPr;
 			BlipFill				blipFill;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
-			//internal
+		//internal
+			std::wstring			m_namespace;
 			nullable<COLEObject>	oleObject;
 		protected:
 			virtual void FillParentPointersForChilds();

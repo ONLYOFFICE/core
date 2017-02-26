@@ -48,8 +48,11 @@ namespace PPTX
 		class GrpSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GrpSpPr)
+			WritingElement_AdditionConstructors(GrpSpPr)
 
+			GrpSpPr()
+			{
+			}
 			GrpSpPr& operator=(const GrpSpPr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -66,7 +69,9 @@ namespace PPTX
 			{
 				return OOX::et_p_groupSpPr;
 			}
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"bwMode", bwMode);

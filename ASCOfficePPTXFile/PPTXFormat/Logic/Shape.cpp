@@ -41,8 +41,9 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		Shape::Shape()
+		Shape::Shape(std::wstring name_)
 		{
+			m_name = name_;
 		}
 
 		Shape::~Shape()
@@ -53,15 +54,61 @@ namespace PPTX
 		{
 			fromXML(node);
 		}
-
 		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const Shape& Shape::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void Shape::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_name = oReader.GetName();
 
+			ReadAttributes( oReader );
+			
+			if ( oReader.IsEmptyNode() )
+				return;
+					
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (_T("nvSpPr") == strName)
+					nvSpPr = oReader;
+				else if (_T("spPr") == strName)
+					spPr = oReader;
+				else if (_T("style") == strName)
+					style = oReader;
+				else if (_T("txBody") == strName)
+					txBody = oReader;
+				else if (_T("txXfrm")  == strName)
+					txXfrm = oReader;
+				else if (_T("txbx") == strName || _T("textbox") == strName)
+					txBody = oReader;
+				else if (_T("cNvPr") == strName)
+					nvSpPr.cNvPr = oReader;
+				else if (_T("cNvSpPr") == strName)
+					nvSpPr.cNvSpPr = oReader;
+				else if (_T("txSp") == strName)
+					txBody = oReader;
+				else if (_T("bodyPr") == strName)
+					TextBoxBodyPr = oReader;
+			}
+			FillParentPointersForChilds();
+		}
 		void Shape::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_name = node.GetName();
+
 			node.ReadAttributeBase(L"useBgFill", attrUseBgFill);
 
 			XmlUtils::CXmlNodes oNodes;
@@ -112,7 +159,6 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
-
 		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -124,17 +170,17 @@ namespace PPTX
 			oValue.WriteNullable(style);
 			oValue.WriteNullable(txBody);
 
-			return XmlUtils::CreateNode(_T("p:sp"), oAttr, oValue);
+			return XmlUtils::CreateNode(m_name, oAttr, oValue);
 		}		
 
 		void Shape::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				pWriter->StartNode(_T("wps:wsp"));
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-				pWriter->StartNode(_T("xdr:sp"));
-			else
-				pWriter->StartNode(_T("p:sp"));
+			std::wstring name_ = m_name;
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:sp";
+				
+			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("useBgFill"), attrUseBgFill);
@@ -142,7 +188,6 @@ namespace PPTX
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{
-				//nvSpPr.cNvPr.toXmlWriter2(_T("wps"), pWriter);
 				nvSpPr.cNvSpPr.toXmlWriter2(_T("wps"), pWriter);
 			}
 			else
@@ -166,9 +211,9 @@ namespace PPTX
 			if (style.is_init())
 			{
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					style->m_ns = _T("wps");
+					style->m_namespace = _T("wps");
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					style->m_ns = _T("xdr");
+					style->m_namespace = _T("xdr");
 
                 pWriter->Write(style);
             }
@@ -208,12 +253,7 @@ namespace PPTX
 				}
 			}
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				pWriter->EndNode(_T("wps:wsp"));
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-				pWriter->EndNode(_T("xdr:sp"));
-			else
-				pWriter->EndNode(_T("p:sp"));
+			pWriter->EndNode(name_);
 		}
 		
 		void Shape::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -257,8 +297,7 @@ namespace PPTX
 					}
 					case 2:
 					{
-						style = new ShapeStyle();
-						style->m_ns = _T("p");
+						style = new ShapeStyle(L"p");
 						style->fromPPTY(pReader);
 						break;
 					}

@@ -42,7 +42,11 @@ namespace PPTX
 		class AudioCD : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AudioCD)
+			WritingElement_AdditionConstructors(AudioCD)
+
+			AudioCD()
+			{
+			}
 
 			AudioCD& operator=(const AudioCD& oSrc)
 			{
@@ -57,8 +61,10 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				//todooo
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oMem;

@@ -44,8 +44,12 @@ namespace PPTX
 		class ShapeStyle : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ShapeStyle)
+			WritingElement_AdditionConstructors(ShapeStyle)
 
+			ShapeStyle(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}	
 			ShapeStyle& operator=(const ShapeStyle& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -56,7 +60,7 @@ namespace PPTX
 				effectRef	= oSrc.effectRef;
 				fontRef		= oSrc.fontRef;
 
-				m_ns		= oSrc.m_ns;
+				m_namespace	= oSrc.m_namespace;
 
 				return *this;
 			}
@@ -64,10 +68,33 @@ namespace PPTX
 			{
 				return OOX::et_p_style;
 			}
-		public:
+			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("lnRef") == strName)
+						lnRef.fromXML(oReader);
+					else if (_T("fillRef") == strName)
+						fillRef.fromXML(oReader);
+					else if (_T("effectRef") == strName)
+						effectRef.fromXML(oReader);
+					else if (_T("fontRef") == strName)
+						fontRef.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_ns = XmlUtils::GetNamespace(node.GetName());
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -106,12 +133,12 @@ namespace PPTX
 				oValue.Write(effectRef);
 				oValue.Write(fontRef);
 
-				return XmlUtils::CreateNode(m_ns + _T(":style"), oAttr, oValue);
+				return XmlUtils::CreateNode(m_namespace + _T(":style"), oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_ns + _T(":style"));
+				pWriter->StartNode(m_namespace + _T(":style"));
 				pWriter->EndAttributes();
 
 				lnRef.toXmlWriter(pWriter);
@@ -119,7 +146,7 @@ namespace PPTX
 				effectRef.toXmlWriter(pWriter);
 				fontRef.toXmlWriter(pWriter);
 				
-				pWriter->EndNode(m_ns + _T(":style"));
+				pWriter->EndNode(m_namespace + _T(":style"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -177,7 +204,7 @@ namespace PPTX
 			StyleRef	effectRef;
 			FontRef		fontRef;
 
-			mutable std::wstring m_ns;
+			mutable std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -52,9 +52,48 @@ namespace PPTX
 		class Ext : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Ext)
+			WritingElement_AdditionConstructors(Ext)
 
-		public:
+			Ext()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+						
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"media")
+					{
+						ReadAttributes(oReader);
+						//std::wstring xmkl = media.GetXml();
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+							if (strName1 == L"trim")
+							{
+								ReadAttributes(oReader);
+							}
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("st"),	st)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("end"),	end)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("r:embed"),	link)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode media;
@@ -95,11 +134,9 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
-		public:
-
 			OOX::RId				link;
 
-			// trim
+		// trim
 			nullable_double			st;
 			nullable_double			end;
 

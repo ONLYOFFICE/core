@@ -44,7 +44,12 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(CNvPicPr)
+			WritingElement_AdditionConstructors(CNvPicPr)
+
+			CNvPicPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			CNvPicPr& operator=(const CNvPicPr& oSrc)
 			{
@@ -65,10 +70,52 @@ namespace PPTX
 				noRot					= oSrc.noRot;
 				noSelect				= oSrc.noSelect;
 
+				m_namespace				= oSrc.m_namespace;
+
 				return *this;
 			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("preferRelativeResize"), preferRelativeResize )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("a:picLocks") == strName)
+					{
+						ReadAttributesLocks(oReader);
+					}
+				}
+			}
+			void ReadAttributesLocks(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("noAdjustHandles"),	noAdjustHandles)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeArrowheads"),	noChangeArrowheads)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeAspect"), noChangeAspect)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeShapeType"), noChangeShapeType)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noCrop"), noCrop)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noEditPoints"), noEditPoints)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noGrp"), noGrp)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noMove"), noMove)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noResize"), noResize)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noRot"), noRot)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noSelect"), noSelect)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"preferRelativeResize", preferRelativeResize);
@@ -118,12 +165,12 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->StartNode(_T("pic:cNvPicPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:cNvPicPr"));
-				else
-					pWriter->StartNode(_T("p:cNvPicPr"));
+				std::wstring namespace_ = m_namespace;
+				
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"pic";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+
+				pWriter->StartNode(namespace_ + L":cNvPicPr");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("preferRelativeResize"), preferRelativeResize);
@@ -157,13 +204,7 @@ namespace PPTX
 					pWriter->EndAttributes();
 					pWriter->EndNode(_T("a:picLocks"));
 				}
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("pic:cNvPicPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:cNvPicPr"));
-				else
-					pWriter->EndNode(_T("p:cNvPicPr"));
+				pWriter->EndNode(namespace_ + L":cNvPicPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -262,8 +303,8 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			std::wstring		m_namespace;
 
-		public:
 			nullable_bool		preferRelativeResize;
 
 			nullable_bool		noAdjustHandles;

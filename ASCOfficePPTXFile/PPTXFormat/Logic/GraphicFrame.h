@@ -51,27 +51,42 @@ namespace PPTX
 		public:
 			GraphicFrame();
 			virtual ~GraphicFrame();			
+			
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_GraphicFrame;
+			}
+			explicit GraphicFrame(XmlUtils::CXmlLiteReader& oReader);
+			const GraphicFrame& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			explicit GraphicFrame(XmlUtils::CXmlNode& node);
 			const GraphicFrame& operator =(XmlUtils::CXmlNode& node);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
+					bool fromXML3(XmlUtils::CXmlLiteReader& oReader);
+
+			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
+			
 			virtual std::wstring toXML() const;
 			virtual void GetRect(Aggplus::RECT& pRect)const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 	
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			NvGraphicFramePr		nvGraphicFramePr;
 
 			nullable<Xfrm>			xfrm;
+
 			nullable_string			spid;
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;
+			nullable<SpTreeElem>	element;
 
 			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
 		protected:

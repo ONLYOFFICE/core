@@ -61,6 +61,139 @@ namespace PPTX
 			fromXML(node);
 			return *this;
 		}
+		GraphicFrame::GraphicFrame(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+
+		const GraphicFrame& GraphicFrame::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void GraphicFrame::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				fromXML2(oReader);
+			}
+			
+			FillParentPointersForChilds();
+		}
+		void GraphicFrame::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("spid"), spid )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void GraphicFrame::fromXML2(XmlUtils::CXmlLiteReader& oReader)
+		{
+            std::wstring strName		= XmlUtils::GetNameNoNS(oReader.GetName());
+			std::wstring strNamespace	= XmlUtils::GetNamespace(oReader.GetName());
+			
+			if (L"xfrm" == strName && strNamespace != L"xdr")
+				xfrm = oReader;
+			else if (L"nvGraphicFramePr" == strName)
+				nvGraphicFramePr.fromXML( oReader );
+				
+			else if (L"graphic" == strName)
+			{
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName1 = oReader.GetName();
+					if (strName1 == L"a:graphicData")
+					{
+						fromXML3(oReader);
+					}
+				}
+			}
+		}
+		bool GraphicFrame::fromXML3(XmlUtils::CXmlLiteReader& oReader)
+		{
+			bool result = false;
+			if ( oReader.IsEmptyNode() )
+				return result;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (strName == L"tbl")
+				{
+					table = oReader;
+					result = true;
+				}
+
+				else if (strName == L"oleObj")
+				{
+					ReadAttributes3(oReader);
+
+					int nCurDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+					{
+						std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (strName1 == L"pic")
+						{
+							result = true;
+							pic = oReader;
+							//pic->fromXMLOle(oNode2);
+							
+							if (xfrm.IsInit())
+								xfrm->Merge(pic->spPr.xfrm);
+						}
+					}
+				}
+				else if (strName == L"relIds")
+				{
+					smartArt = oReader;
+					result = true;
+				}
+				else if (strName == L"chart")
+				{
+					chartRec = oReader;
+					result = true;
+				}
+				else if (strName == L"legacyDrawing")
+				{
+					ReadAttributes3(oReader);
+					result = true;
+				}
+				else if (strName == L"AlternateContent")
+				{
+					int nCurDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+					{
+						std::wstring strName1 = oReader.GetName();
+
+						if (strName1 == L"mc:Choice")
+						{
+							result = fromXML3(oReader);
+							if (result)
+								break;
+						}
+						else if (strName1 == L"mc:Fallback")
+						{
+							result = fromXML3(oReader);
+							if (result)
+								break;
+						}
+					}
+				}
+				else
+				{
+					element = oReader;
+					if (element.IsInit())
+						result = true;
+				}
+			}
+			return result;
+		}
 
 		void GraphicFrame::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -228,7 +361,7 @@ namespace PPTX
 
             if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init())
 			{
-				smartArt->LoadDrawing(pWriter);
+				//smartArt->LoadDrawing(pWriter);
 				if (smartArt->m_diag.is_init())
 				{
 					smartArt->m_diag->nvGrpSpPr.cNvPr	= nvGraphicFramePr.cNvPr;

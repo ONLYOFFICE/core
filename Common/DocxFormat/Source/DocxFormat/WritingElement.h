@@ -226,6 +226,8 @@ namespace OOX
 		et_a_glow, // <a:glow>
 		et_a_gradFill, // <a:gradFill>
 		et_a_graphic, // <a:graphic>
+		et_a_graphicFrame,
+		et_a_graphicData,
 		et_a_graphicFrameLocks, // <a:graphicFrameLocks>
 		et_a_gray, // <a:gray>
 		et_a_grayscl, // <a:grayscl>
@@ -345,6 +347,9 @@ namespace OOX
 		et_dsp_groupSpPr,		// <dsp:grpSpPr>
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
+
+		et_x_pic,			// <...:pic>
+		et_x_cxnSp,			// <...:cxnSp>
 		
         et_p_cNvPicPr,        // <p:cNvPicPr>
         et_p_cNvPr,            // <p:cNvPr>
@@ -362,7 +367,6 @@ namespace OOX
         et_p_MathPara,
 
         et_a_textFit,
-
         et_a_hyperlink,
         et_a_fld,
         et_a_p,            // <a:p>

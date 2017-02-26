@@ -54,7 +54,7 @@ namespace PPTX
 			
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_a_GraphicFrame;
+				return OOX::et_a_graphicFrame;
 			}
 			explicit GraphicFrame(XmlUtils::CXmlLiteReader& oReader);
 			const GraphicFrame& operator =(XmlUtils::CXmlLiteReader& oReader);

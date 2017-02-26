@@ -57,7 +57,7 @@ namespace PPTX
 
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_a_CxnSp;
+				return OOX::et_x_cxnSp;
 			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);

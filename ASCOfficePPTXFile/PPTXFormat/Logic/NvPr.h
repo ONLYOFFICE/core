@@ -44,8 +44,12 @@ namespace PPTX
 		class NvPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvPr)
-				
+			WritingElement_AdditionConstructors(NvPr)
+			
+			NvPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 			NvPr& operator=(const NvPr& oSrc)
 			{
 				isPhoto		=	oSrc.isPhoto;
@@ -58,19 +62,58 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+				
+				ReadAttributes(oReader);
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+						
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"ph")
+						ph = oReader;
+					else if (strName == L"extLst")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back (element);
+						}
+					}
+					else
+					{
+						media.fromXML(oReader);
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("isPhoto"),	isPhoto)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("userDrawn"),	userDrawn)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				node.ReadAttributeBase(L"isPhoto", isPhoto);
 				node.ReadAttributeBase(L"userDrawn", userDrawn);
 
-				ph			= node.ReadNode(_T("p:ph"));
+				ph = node.ReadNodeNoNS(_T("ph"));
 				media.GetMediaFrom(node);
 
-				XmlUtils::CXmlNode list;
-				if (node.GetNode(_T("p:extLst"), list))
-				{
+				XmlUtils::CXmlNode list = node.ReadNodeNoNS(_T("extLst"));
+				if (list.IsValid())
+				{		
 					XmlUtils::CXmlNodes oNodes;
 					if (list.GetNodes(_T("*"), oNodes))
 					{
@@ -102,13 +145,9 @@ namespace PPTX
 			}
             virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
             {
-                std::wstring namespace_;
-                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    namespace_= _T("pic");
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    namespace_= _T("xdr");
-                else
-                    namespace_= _T("p");
+                std::wstring namespace_ = m_namespace;
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= _T("pic");
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= _T("xdr");
 
                 toXmlWriter2(namespace_, pWriter);
             }
@@ -191,17 +230,16 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			std::wstring		m_namespace;
+	// Attributes
+			nullable_bool		isPhoto;
+			nullable_bool		userDrawn;
 
-		public:
-			// Attributes
-			nullable_bool			isPhoto;
-			nullable_bool			userDrawn;
-
-			//Childs
-			nullable<Ph>			ph;
-			UniMedia				media;
-			//custDataLst
-			std::vector<Ext>			extLst;
+	//Childs
+			nullable<Ph>		ph;
+			UniMedia			media;
+	//custDataLst
+			std::vector<Ext>	extLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

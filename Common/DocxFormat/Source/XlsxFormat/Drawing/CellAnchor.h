@@ -37,9 +37,12 @@
 
 #include "FromTo.h"
 #include "Pic.h"
-#include "GraphicFrame.h"
 #include "Pos.h"
 #include "Shape.h"
+
+#include "Shape.h"
+
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 
 namespace OOX
 {
@@ -57,7 +60,7 @@ namespace OOX
 			}
 
 		public:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -105,7 +108,7 @@ namespace OOX
 					if(m_oXml.IsInit())
 						writer.WriteString(m_oXml.get());	
 					if(m_oGraphicFrame.IsInit())
-						m_oGraphicFrame->toXML(writer);
+						writer.WriteString(m_oGraphicFrame->toXML());
 					writer.WriteString(sEnd);
 
 					if(m_oAlternateContent.IsInit() && m_oAlternateContent->ToBool())
@@ -114,7 +117,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -137,11 +140,10 @@ namespace OOX
 					else if ( _T("graphicFrame") == sName )
 					{
 						m_oGraphicFrame = oReader;
-						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->m_oGraphic.IsInit()) && 
-															(m_oGraphicFrame->m_oGraphic->m_oGraphicData.IsInit()))
+						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->spid.IsInit()))
 						{
 							//вытащим выше ссылку на объект (для удобства)
-							m_sSpId = m_oGraphicFrame->m_oGraphic->m_oGraphicData->m_sSpId;
+							m_sSpId = m_oGraphicFrame->spid.get();
 						}
 					}
 	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
@@ -291,7 +293,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
 			nullable<OOX::Spreadsheet::CPos>				m_oPos;
 			nullable<OOX::Spreadsheet::CExt>				m_oExt;
-			nullable<OOX::Spreadsheet::CGraphicFrame>		m_oGraphicFrame;
+			nullable<PPTX::Logic::GraphicFrame>				m_oGraphicFrame;
 			nullable<OOX::Spreadsheet::CPic>				m_oPicture;
 			nullable<OOX::Spreadsheet::CGroupShape>			m_oGroupShape;
 			nullable<OOX::Spreadsheet::CShape>				m_oShape;

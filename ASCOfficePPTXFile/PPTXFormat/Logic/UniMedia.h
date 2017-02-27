@@ -45,9 +45,29 @@ namespace PPTX
 		class UniMedia : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniMedia)
+			WritingElement_AdditionConstructors(UniMedia)
 
-		public:
+
+			UniMedia()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (name == _T("audioCd"))
+					Media.reset(new Logic::AudioCD(oReader));
+				else if (name == _T("wavAudioFile"))
+					Media.reset(new Logic::WavAudioFile(oReader));
+				else if (name == _T("audioFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else if (name == _T("videoFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else if (name == _T("quickTimeFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else Media.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());

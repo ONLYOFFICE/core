@@ -41,28 +41,58 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
-		CxnSp::CxnSp()
+		CxnSp::CxnSp(std::wstring ns)
 		{
+			m_namespace = ns;
 		}
-
 		CxnSp::~CxnSp()
 		{
 		}
-
 		CxnSp::CxnSp(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const CxnSp& CxnSp::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		CxnSp::CxnSp(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const CxnSp& CxnSp::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void CxnSp::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+			if ( oReader.IsEmptyNode() )
+				return;
+					
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (_T("nvCxnSpPr") == strName)
+					nvCxnSpPr = oReader;
+				else if (_T("spPr") == strName)
+					spPr = oReader;
+				else if (_T("style") == strName)
+					style = oReader;
+			}
+
+			FillParentPointersForChilds();
+		}
 
 		void CxnSp::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
@@ -93,7 +123,7 @@ namespace PPTX
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(_T("<p:cxnSp>"), oValue);
+			return XmlUtils::CreateNode(m_namespace + L":cxnSp", oValue);
 		}
 
 		void CxnSp::FillParentPointersForChilds()

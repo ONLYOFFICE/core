@@ -39,9 +39,9 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
-		SpPr::SpPr()
+		SpPr::SpPr(std::wstring ns)
 		{
+			m_namespace = ns;
 			Fill.m_type = UniFill::notInit;
 		}
 		SpPr::~SpPr()

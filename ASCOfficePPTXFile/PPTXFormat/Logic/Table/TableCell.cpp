@@ -41,26 +41,62 @@ namespace PPTX
 		TableCell::TableCell()
 		{
 		}
-
 		TableCell::~TableCell()
 		{
 		}
-
 		TableCell::TableCell(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const TableCell& TableCell::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		TableCell::TableCell(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const TableCell& TableCell::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void TableCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("rowSpan"),	RowSpan)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("gridSpan"),	GridSpan)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hMerge"),	HMerge)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("vMerge"),	VMerge)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("id"),		Id)
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void TableCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
 
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (strName == L"txBody")
+					txBody = oReader;
+				else if (strName == L"tcPr")
+					CellProperties = oReader;
+			}
+
+			FillParentPointersForChilds();
+		}
 		void TableCell::fromXML(XmlUtils::CXmlNode& node)
 		{
             txBody			= node.ReadNodeNoNS(_T("txBody"));
 			CellProperties	= node.ReadNode(_T("a:tcPr"));
+
 			node.ReadAttributeBase(L"rowSpan", RowSpan);
 			node.ReadAttributeBase(L"gridSpan", GridSpan);
 			node.ReadAttributeBase(L"hMerge", HMerge);

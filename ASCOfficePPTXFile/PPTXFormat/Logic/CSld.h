@@ -45,9 +45,12 @@ namespace PPTX
 		class CSld : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CSld)
+			WritingElement_AdditionConstructors(CSld)
+			PPTX_LOGIC_BASE2(CSld)
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"name", attrName);

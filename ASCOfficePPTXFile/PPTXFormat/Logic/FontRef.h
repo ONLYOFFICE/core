@@ -44,9 +44,32 @@ namespace PPTX
 		class FontRef : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(FontRef)
+			WritingElement_AdditionConstructors(FontRef)
 
-		public:
+			FontRef()
+			{
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_Unknown;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				ReadAttributes( oReader );
+				
+				Color.fromXMLParent(oReader);
+				
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("idx"), idx )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();

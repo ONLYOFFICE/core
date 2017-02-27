@@ -33,8 +33,10 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
-#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 
+#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/PrstClr.h"
@@ -56,6 +58,106 @@ namespace Oox2Odf
 	{
 		return (1.0 * emu / (635 * 20.0));
 	}
+
+void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
+{
+	if (!oox_graphic_frame)return;
+
+////////////////////////////////////////////////////////////////////////////////
+	odf_context()->drawing_context()->start_drawing();
+	
+	convert(&oox_graphic_frame->nvGraphicFramePr);		
+	
+	if ( oox_graphic_frame->chartRec.IsInit())
+	{
+		convert(oox_graphic_frame->chartRec.GetPointer());
+	}
+	else if ( oox_graphic_frame->smartArt.IsInit())
+	{
+		OoxConverter::convert(oox_graphic_frame->smartArt.GetPointer());
+	}
+	else if ( oox_graphic_frame->pic.IsInit())
+	{
+		OoxConverter::convert(oox_graphic_frame->pic.GetPointer());
+	}
+	else if ( oox_graphic_frame->table.IsInit())
+	{
+		OoxConverter::convert(oox_graphic_frame->table.GetPointer());
+	}
+	else if ( oox_graphic_frame->element.IsInit())
+	{
+		OoxConverter::convert(oox_graphic_frame->element->GetElem().operator->());
+	}
+	odf_context()->drawing_context()->end_drawing();
+}
+void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
+{
+	if (oox_framePr == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::Table *oox_table)
+{
+	if (oox_table == NULL) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
+{
+	if (oox_smart_art == NULL) return;
+	if (oox_smart_art->id_data.IsInit() == false) return;
+
+	oox_smart_art->LoadDrawing();
+
+	if (oox_smart_art->m_diag.IsInit())
+	{
+		_CP_OPT(double) x, y, width, height, cx, cy;
+
+		odf_context()->drawing_context()->get_size (width, height);
+		odf_context()->drawing_context()->get_position (x, y);
+
+		oox_current_child_document = dynamic_cast<OOX::IFileContainer*>(oox_smart_art->m_oCommonRels.operator->());
+
+		odf_context()->drawing_context()->start_group();
+
+		odf_context()->drawing_context()->set_group_size (width, height, width, height);
+		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
+
+		convert(oox_smart_art->m_diag.GetPointer());
+
+		odf_context()->drawing_context()->end_group();
+		oox_current_child_document = NULL;
+	}
+}
+void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
+{
+	if (!oox_chart) return;
+	if( !oox_chart->id_data.IsInit()) return;
+
+	_CP_OPT(double) width, height;
+	odf_context()->drawing_context()->get_size (width, height);
+				
+	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
+	if (oFile.IsInit())
+	{
+		OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
+		
+		if (pChart)
+		{
+			oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);	
+			odf_context()->drawing_context()->start_object(odf_context()->get_next_name_object());
+			{
+				odf_context()->start_chart();
+					odf_context()->chart_context()->set_chart_size(width, height);		
+		
+					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());			
+			
+					OoxConverter::convert(&pChart->m_oChartSpace);
+				odf_context()->end_chart();
+			}
+			odf_context()->drawing_context()->end_object();	
+			oox_current_child_document_spreadsheet = NULL;
+		}
+	}
+}
 void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 {
 	if (oox_shape_tree == NULL) return;

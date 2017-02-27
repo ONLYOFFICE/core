@@ -251,10 +251,14 @@ namespace XmlUtils
 
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr)
 	{
+		if (strName.empty()) return L"";
+
 		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CNodeValue& oNode)
 	{
+		if (strName.empty()) return L"";
+
 		if (oNode.m_strValue.empty())
 			return L"<" + strName + L"/>";
 
@@ -262,6 +266,8 @@ namespace XmlUtils
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const CNodeValue& oNode)
 	{
+		if (strName.empty()) return L"";
+
 		if ( oNode.m_strValue.empty())
 			return CreateNode(strName, oAttr);
 		
@@ -269,6 +275,8 @@ namespace XmlUtils
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const std::wstring& strXml)
 	{
+		if (strName.empty()) return L"";
+
 		if (!strXml.empty())
 			return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + strXml + L"</" + strName + L">";
 		
@@ -276,6 +284,8 @@ namespace XmlUtils
 	}
 	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const std::wstring& strXml)
 	{
+		if (strName.empty()) return L"";
+
 		return L"<" + strName + L">" + strXml + L"</" + strName + L">";
 	}
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="DocxFormat"
 	ProjectGUID="{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
 	RootNamespace="DocxFormat"
@@ -1600,10 +1600,6 @@
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\FromTo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\GraphicFrame.h"
 					>
 				</File>
 				<File

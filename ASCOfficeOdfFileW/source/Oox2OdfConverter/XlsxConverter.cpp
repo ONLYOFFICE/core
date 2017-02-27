@@ -64,7 +64,7 @@ XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* 
 
     pCallBack = CallBack;
 
-    xlsx_current_drawing = NULL;
+    xlsx_current_container = NULL;
 
 	if (UpdateProgress(400000))return;
 }
@@ -98,8 +98,8 @@ smart_ptr<OOX::File> XlsxConverter::find_file_by_id(std::wstring sId)
 {
 	smart_ptr<OOX::File> oFile;
 	
-	if (xlsx_current_drawing)
-		oFile = xlsx_current_drawing->Find(sId);
+	if (xlsx_current_container)
+		oFile = xlsx_current_container->Find(sId);
 	else if (oox_current_child_document)
 		oFile = oox_current_child_document->Find(sId);
 	else if (oox_current_child_document_spreadsheet)
@@ -113,9 +113,9 @@ std::wstring XlsxConverter::find_link_by_id (std::wstring sId, int type)
 
 	if (type == 1)
 	{
-		if (ref.empty() && xlsx_current_drawing)
+		if (ref.empty() && xlsx_current_container)
 		{
-			smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(sId);
+			smart_ptr<OOX::File> oFile = xlsx_current_container->Find(sId);
 			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Image == oFile->type())
 			{
 				OOX::Spreadsheet::Image* pImage = (OOX::Spreadsheet::Image*)oFile.operator->();
@@ -1760,11 +1760,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	{
 		convert(oox_anchor->m_oConnShape.GetPointer());
 	}	
-	else if (oox_anchor->m_oGraphicFrame.IsInit())//chart
-	{
-		convert(oox_anchor->m_oGraphicFrame.GetPointer());
-	}	
-	else if (oox_anchor->m_oGroupShape.IsInit())//chart
+	else if (oox_anchor->m_oGroupShape.IsInit())
 	{
 		convert(oox_anchor->m_oGroupShape.GetPointer());
 	}	
@@ -1773,7 +1769,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 {
 	if (!oox_drawing)return;
-	xlsx_current_drawing = oox_drawing;
+	
+	xlsx_current_container = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(oox_drawing);
 
 	for (unsigned int dr = 0 ; dr < oox_drawing->m_arrItems.size(); dr++)
 	{
@@ -1782,7 +1779,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)
 		ods_context->end_drawings();
 	}
 
-	xlsx_current_drawing = NULL;
+	xlsx_current_container = NULL;
 }
 
 
@@ -1838,11 +1835,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CGroupShape* oox_group_shape)
 			case OOX::Spreadsheet::et_Pic:
 			{
 				OOX::Spreadsheet::CPic* item = static_cast<OOX::Spreadsheet::CPic*>(oox_group_shape->m_arrItems[i]);
-				convert(item);
-			}break;
-			case OOX::Spreadsheet::et_xdr_GraphicFrame:
-			{
-				OOX::Spreadsheet::CGraphicFrame* item = static_cast<OOX::Spreadsheet::CGraphicFrame*>(oox_group_shape->m_arrItems[i]);
 				convert(item);
 			}break;
 		}
@@ -1911,64 +1903,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CShape* oox_shape)
 
 	ods_context->drawing_context()->end_drawing();
 
-}
-
-void XlsxConverter::convert(OOX::Spreadsheet::CGraphicFrame* oox_graphic_frame)
-{
-	if (!oox_graphic_frame)return;
-
-	if (!oox_graphic_frame->m_oGraphic.IsInit()) return;
-	if (!oox_graphic_frame->m_oGraphic->m_oGraphicData.IsInit()) return;
-
-////////////////////////////////////////////////////////////////////////////////
-	ods_context->drawing_context()->start_drawing();
-	
-	if (oox_graphic_frame->m_oNvGraphicFramePr.IsInit())
-	{
-		OoxConverter::convert(oox_graphic_frame->m_oNvGraphicFramePr->m_oCNvPr.GetPointer());		
-	}	
-	
-	if ( OOX::Drawing::graphictypeChart == oox_graphic_frame->m_oGraphic->m_oGraphicData->m_eGraphicType)
-	{
-		convert(oox_graphic_frame->m_oGraphic->m_oGraphicData->m_oChart.GetPointer());
-	}
-	else if ( OOX::Drawing::graphictypeDiagram == oox_graphic_frame->m_oGraphic->m_oGraphicData->m_eGraphicType)
-	{
-		OoxConverter::convert(oox_graphic_frame->m_oGraphic->m_oGraphicData->m_oDiagrammParts.GetPointer());
-	}
-	ods_context->drawing_context()->end_drawing();
-}
-
-void XlsxConverter::convert(OOX::Spreadsheet::CGraphicChart *oox_chart)
-{
-	if (!oox_chart) return;
-	if( !oox_chart->m_oRId.IsInit()) return;
-
-	_CP_OPT(double) width, height;
-	odf_context()->drawing_context()->get_size (width, height);
-				
-	smart_ptr<OOX::File> oFile = xlsx_current_drawing->Find(oox_chart->m_oRId->GetValue());
-	if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Charts == oFile->type())
-	{
-		OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
-		
-		if (pChart)
-		{
-			oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);	
-			odf_context()->drawing_context()->start_object(ods_context->get_next_name_object());
-			{
-				odf_context()->start_chart();
-					odf_context()->chart_context()->set_chart_size(width, height);		
-		
-					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());			
-			
-					OoxConverter::convert(&pChart->m_oChartSpace);
-				odf_context()->end_chart();
-			}
-			odf_context()->drawing_context()->end_object();	
-			oox_current_child_document_spreadsheet = NULL;
-		}
-	}
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CConnShape* oox_shape)

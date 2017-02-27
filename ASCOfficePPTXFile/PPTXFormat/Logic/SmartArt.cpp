@@ -46,9 +46,15 @@ namespace PPTX
 	{
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
 		{
+			if (m_diag.IsInit()) 
+				return ;
+
 			FileContainer* pRels = NULL;
-			if (pWriter->m_pCommonRels->is_init())
-				pRels = pWriter->m_pCommonRels->operator ->();
+			if (pWriter)
+			{
+				if (pWriter->m_pCommonRels->is_init())
+					pRels = pWriter->m_pCommonRels->operator ->();
+			}
 
 			smart_ptr<OOX::File>	oFileData;
 			smart_ptr<OOX::File>	oFileDrawing;
@@ -101,7 +107,7 @@ namespace PPTX
                 pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 			}
 
-			if (!pDiagramDrawing)
+			if (!pDiagramDrawing && pDiagramData)
 			{
 				// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
                OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
@@ -118,7 +124,9 @@ namespace PPTX
 
 			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
 			{
-				m_diag			= pDiagramDrawing->m_oShapeTree;
+				m_diag = pDiagramDrawing->m_oShapeTree;
+				FillParentPointersForChilds();
+
 				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>( new PPTX::CCommonRels());
 				m_oCommonRels->_read(pDiagramDrawing->m_oReadPath);
 			}
@@ -169,7 +177,15 @@ namespace PPTX
 			*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
 			oDrawingConverter.m_pBinaryWriter = pOldWriter;
 		}
+		std::wstring ChartRec::toXML() const
+		{
+			if (!id_data.is_init() || NULL == m_bData)
+				return L"";
+            std::wstring strData = L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + id_data->ToString() + L"\"/>";
 
+			return strData;
+		}
 		void ChartRec::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			if (!id_data.is_init() || NULL == m_bData)

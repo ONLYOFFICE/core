@@ -42,7 +42,12 @@ namespace PPTX
 		class CNvSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CNvSpPr)
+			WritingElement_AdditionConstructors(CNvSpPr)
+
+			CNvSpPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			CNvSpPr& operator=(const CNvSpPr& oSrc)
 			{
@@ -65,9 +70,52 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+				
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:spLocks")
+					{
+						ReadAttributesLocks(oReader);
+					}
+				}
+			}
+			void ReadAttributesLocks(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("noAdjustHandles"),	noAdjustHandles)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noGrp"),	noGrp)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noMove"), noMove)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noRot"), noRot)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noResize"), noResize)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noTextEdit"), noTextEdit)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noSelect"), noSelect)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeArrowheads"), noChangeArrowheads)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeShapeType"), noChangeShapeType)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noChangeAspect"), noChangeAspect)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noEditPoints"), noEditPoints)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("txBox"),	txBox)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				node.ReadAttributeBase(L"txBox", txBox);
 				
 				XmlUtils::CXmlNode l_Locks;
@@ -105,16 +153,18 @@ namespace PPTX
 				oAttr2.Write(_T("noTextEdit"), noTextEdit);
 
 				if (_T("") == oAttr2.m_strValue)
-					return XmlUtils::CreateNode(_T("p:cNvSpPr"), oAttr1);
+					return XmlUtils::CreateNode(m_namespace + L":cNvSpPr", oAttr1);
 
-				return XmlUtils::CreateNode(_T("p:cNvSpPr"), oAttr1, XmlUtils::CreateNode(_T("a:spLocks"), oAttr2));
+				return XmlUtils::CreateNode(m_namespace + L":cNvSpPr", oAttr1, XmlUtils::CreateNode(_T("a:spLocks"), oAttr2));
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:cNvSpPr"));
-				else
-					pWriter->StartNode(_T("p:cNvSpPr"));
+				std::wstring namespace_ = m_namespace;
+
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = _T("wps");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = _T("xdr");
+
+				pWriter->StartNode(namespace_ + L":cNvSpPr");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("txBox"), txBox);
@@ -151,10 +201,7 @@ namespace PPTX
 					pWriter->EndNode(_T("a:spLocks"));
 				}
 				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:cNvSpPr"));
-				else
-					pWriter->EndNode(_T("p:cNvSpPr"));
+				pWriter->EndNode(namespace_ + L":cNvSpPr");
 			}
 
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
@@ -296,7 +343,8 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring	m_namespace;
+
 			nullable_bool txBox;
 			nullable_bool noAdjustHandles;
 			nullable_bool noChangeArrowheads;

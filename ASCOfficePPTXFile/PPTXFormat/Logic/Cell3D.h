@@ -45,15 +45,43 @@ namespace PPTX
 		class Cell3D : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Cell3D)
+			WritingElement_AdditionConstructors(Cell3D)
 
-		public:
+			Cell3D()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("bevel") == strName)
+						bevel = oReader;
+					else if (_T("lightRig") == strName)
+						lightRig = oReader;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prstMaterial"), prstMaterial )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"prstMaterial", prstMaterial);
 
 				bevel		= node.ReadNodeNoNS(_T("bevel"));
-				lightRig	= node.ReadNode(_T("a:lightRig"));
+				lightRig	= node.ReadNodeNoNS(_T("lightRig"));
 
 				FillParentPointersForChilds();
 			}

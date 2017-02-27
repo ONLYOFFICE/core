@@ -52,8 +52,9 @@ namespace PPTX
 		class SpPr : public WrapperWritingElement
 		{
 		public:
-			SpPr();
-			virtual ~SpPr();			
+			SpPr(std::wstring ns = L"a");
+			virtual ~SpPr();	
+
 			explicit SpPr(XmlUtils::CXmlNode& node);
 			const SpPr& operator =(XmlUtils::CXmlNode& node);
 

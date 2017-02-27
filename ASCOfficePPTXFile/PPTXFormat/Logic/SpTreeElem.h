@@ -51,8 +51,18 @@ namespace PPTX
 		public:
 			SpTreeElem();
 			virtual ~SpTreeElem();
+
+			virtual OOX::EElementType getType () const
+			{
+				if (m_elem.IsInit())
+					return m_elem->getType();
+				return OOX::et_Unknown;
+			}
 			explicit SpTreeElem(XmlUtils::CXmlNode& node);
 			const SpTreeElem& operator =(XmlUtils::CXmlNode& node);
+
+			explicit SpTreeElem(XmlUtils::CXmlLiteReader& oReader);
+			const SpTreeElem& operator =(XmlUtils::CXmlLiteReader& oReader);
 
 			SpTreeElem& operator=(const SpTreeElem& oSrc)
 			{
@@ -60,8 +70,9 @@ namespace PPTX
 				return *this;
 			}
 			
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
             virtual bool is_init() const {return (m_elem.IsInit());}
 

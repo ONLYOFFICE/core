@@ -46,7 +46,12 @@ namespace PPTX
 		class NvSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvSpPr)
+			WritingElement_AdditionConstructors(NvSpPr)
+
+			NvSpPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			NvSpPr& operator=(const NvSpPr& oSrc)
 			{
@@ -58,10 +63,32 @@ namespace PPTX
 				nvPr	= oSrc.nvPr;
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("cNvPr") == strName)
+						cNvPr = oReader;
+					else if (_T("cNvSpPr") == strName)
+						cNvSpPr = oReader;
+					else if (_T("nvPr") == strName)
+						nvPr = oReader;
+				}
+
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
 				{
@@ -91,15 +118,17 @@ namespace PPTX
 				oValue.Write(cNvSpPr);
 				oValue.Write(nvPr);
 
-				return XmlUtils::CreateNode(_T("p:nvSpPr"), oValue);
+				return XmlUtils::CreateNode(m_namespace + L":nvSpPr", oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:nvSpPr"));
-				else
-					pWriter->StartNode(_T("p:nvSpPr"));
+				std::wstring namespace_ = m_namespace;
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = _T("wps");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = _T("xdr");
+
+				pWriter->StartNode( namespace_ + L":nvSpPr");
 
 				pWriter->EndAttributes();
 
@@ -109,10 +138,7 @@ namespace PPTX
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)
 					nvPr.toXmlWriter(pWriter);
 				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:nvSpPr"));
-				else
-					pWriter->EndNode(_T("p:nvSpPr"));
+				pWriter->EndNode( namespace_ + L":nvSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -154,10 +180,11 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
-			CNvPr	cNvPr;
-			CNvSpPr cNvSpPr;
-			NvPr	nvPr;
+			std::wstring	m_namespace;
+
+			CNvPr			cNvPr;
+			CNvSpPr			cNvSpPr;
+			NvPr			nvPr;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

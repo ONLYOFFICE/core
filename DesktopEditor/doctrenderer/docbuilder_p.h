@@ -85,6 +85,8 @@ public:
     int m_nFileType;
     std::string m_sUtf8ArgumentJSON;
 
+    std::string m_sGlobalVariable;
+
 public:
 
     CV8RealTimeWorker()
@@ -172,6 +174,51 @@ public:
         return true;
     }
 
+    std::string GetGlobalVariable()
+    {
+        std::string commandA = "JSON.stringify(GlobalVariable);";
+
+        v8::Context::Scope context_scope(m_context);
+
+        v8::TryCatch try_catch;
+
+        v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+        v8::Local<v8::Script> script = v8::Script::Compile(source);
+
+        std::string sReturn = "{}";
+
+        if (try_catch.HasCaught())
+        {
+            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+            _LOGGING_ERROR_(L"execute_compile_code", strCode);
+            _LOGGING_ERROR_(L"execute_compile", strException);
+
+            return false;
+        }
+        else
+        {
+            v8::Local<v8::Value> _value = script->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"execute_run_code", strCode);
+                _LOGGING_ERROR_(L"execute_run", strException);
+
+                return false;
+            }
+
+            if (_value->IsString())
+                sReturn = to_cstringA(_value);
+        }
+
+        return sReturn;
+    }
+
     bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
     {
         LOGGER_SPEED_START
@@ -240,6 +287,32 @@ public:
 
                 _LOGGING_ERROR_(L"sdk_argument_code", strCode);
                 _LOGGING_ERROR_(L"sdk_argument", strException);
+
+                return false;
+            }
+        }
+
+        if (true)
+        {
+            std::string sArg = m_sGlobalVariable;
+            if (sArg.empty())
+                sArg = "{}";
+            NSCommon::string_replaceA(sArg, "\\", "\\\\");
+            NSCommon::string_replaceA(sArg, "\"", "\\\"");
+
+            std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
+
+            v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str());
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
+            _scriptArg->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"sdk_global_var_code", strCode);
+                _LOGGING_ERROR_(L"sdk_global_var", strException);
 
                 return false;
             }
@@ -473,6 +546,9 @@ namespace NSDoctRenderer
         bool m_bIsInit;
 
         bool m_bIsCacheScript;
+
+        std::string m_sGlobalVariable;
+        bool m_bIsGlobalVariableUse;
     public:
         CDocBuilder_Private()
         {
@@ -489,6 +565,9 @@ namespace NSDoctRenderer
             m_pAdditionalData = NULL;
             m_bIsInit = false;
             m_bIsCacheScript = true;
+
+            m_sGlobalVariable = "";
+            m_bIsGlobalVariableUse = false;
         }
 
         void Init()
@@ -935,6 +1014,8 @@ namespace NSDoctRenderer
             m_sFileDir = L"";
             m_nFileType = -1;
 
+            if (m_pWorker)
+                m_sGlobalVariable = m_pWorker->GetGlobalVariable();
             RELEASEOBJECT(m_pWorker);
         }
 
@@ -1137,6 +1218,7 @@ namespace NSDoctRenderer
                 m_pWorker = new CV8RealTimeWorker();
                 m_pWorker->m_nFileType = m_nFileType;
                 m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
+                m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 
                 std::wstring sCachePath = L"";
                 if (m_bIsCacheScript)
@@ -1480,6 +1562,7 @@ namespace NSDoctRenderer
             {
                 //bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
                 sJsCommands += command;
+                sJsCommands += "\n";
             }
 
             if (!bIsNoError)

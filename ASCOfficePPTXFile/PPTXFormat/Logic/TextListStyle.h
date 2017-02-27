@@ -45,7 +45,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(TextListStyle)
-			PPTX_LOGIC_BASE2(TextListStyle)
+
+			TextListStyle()
+			{
+				m_name = L"a:lstStyle";
+			}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

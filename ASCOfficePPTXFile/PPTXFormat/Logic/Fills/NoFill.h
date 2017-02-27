@@ -44,8 +44,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(NoFill)
-			PPTX_LOGIC_BASE2(NoFill)
-
+			
+			NoFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
 			NoFill& operator=(const NoFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;

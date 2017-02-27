@@ -45,8 +45,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(SolidFill)
-			PPTX_LOGIC_BASE2(SolidFill)
-
+			
+			SolidFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
 			SolidFill& operator=(const SolidFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;

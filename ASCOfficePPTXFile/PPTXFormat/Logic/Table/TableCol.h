@@ -42,7 +42,11 @@ namespace PPTX
 		class TableCol : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TableCol)
+			WritingElement_AdditionConstructors(TableCol)
+
+			TableCol()
+			{
+			}
 
 			TableCol& operator=(const TableCol& oSrc)
 			{
@@ -52,8 +56,16 @@ namespace PPTX
 				Width = oSrc.Width;
 				return *this;
 			}
-
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("w"),	Width)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Width = node.ReadAttributeInt(L"w");
@@ -61,7 +73,7 @@ namespace PPTX
 
 			virtual std::wstring toXML() const
 			{
-				return L"<a:gridCol w=\"" + std::to_wstring(Width) + L"\"/>";
+				return L"<a:gridCol w=\"" + std::to_wstring(Width.get_value_or(0)) + L"\"/>";
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -78,7 +90,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, Width);
+				pWriter->WriteInt2(0, Width);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
@@ -107,8 +119,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 			
-		public:
-			int Width;
+			nullable_int Width;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

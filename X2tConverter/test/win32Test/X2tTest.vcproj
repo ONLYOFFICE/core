@@ -666,6 +666,14 @@
 				<File
 					RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.h"

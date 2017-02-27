@@ -44,7 +44,11 @@ namespace PPTX
 		class TableProperties : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TableProperties)
+			WritingElement_AdditionConstructors(TableProperties)
+			
+			TableProperties()
+			{
+			}
 
 			TableProperties& operator=(const TableProperties& oSrc)
 			{
@@ -65,8 +69,52 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:tableStyleId")
+					{
+						TableStyleId = oReader.GetText2();
+					}
+					else if ( L"a:blipFill"	== strName	||
+							  L"a:gradFill"	== strName	||
+							  L"a:grpFill"	== strName	||
+							  L"a:noFill"	== strName	||
+							  L"a:pattFill"	== strName	||
+							  L"a:solidFill"== strName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( L"a:effectDag"	== strName	||
+							  L"a:effectLst"	== strName	||
+							  L"a:extLst"		== strName )
+					{
+						Effects.fromXML(oReader);		
+					}			
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("rtl"),	Rtl)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstRow"),	FirstRow)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("firstCol"),	FirstCol)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lastRow"),	LastRow)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lastCol"),	LastCol)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("bandRow"),	BandRow)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("bandCol"),	BandCol)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Fill.GetFillFrom(node);

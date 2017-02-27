@@ -49,7 +49,11 @@ namespace PPTX
 		class SpTree : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(SpTree)
+			WritingElement_AdditionConstructors(SpTree)
+
+			SpTree()
+			{
+			}
 
 			SpTree& operator=(const SpTree& oSrc)
 			{
@@ -70,7 +74,43 @@ namespace PPTX
 			{
 				return OOX::et_p_ShapeTree;
 			}
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+				
+				SpTreeElems.clear();
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"nvGrpSpPr")
+						nvGrpSpPr.fromXML(oReader);
+					else if (strName == L"grpSpPr")
+						grpSpPr.fromXML(oReader);
+					else if (_T("cNvPr") == strName)
+					{
+						nvGrpSpPr.cNvPr = oReader;
+					}
+					else if (_T("cNvGrpSpPr") == strName)
+					{
+						nvGrpSpPr.cNvGrpSpPr = oReader;
+					}
+					else
+					{
+						SpTreeElem elem(oReader);
+						if (elem.is_init())
+							SpTreeElems.push_back(elem);
+					}
+				}
+
+				FillParentPointersForChilds();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -256,9 +296,8 @@ namespace PPTX
 			Logic::NvGrpSpPr		nvGrpSpPr;
 			Logic::GrpSpPr			grpSpPr;
 			std::vector<SpTreeElem>	SpTreeElems;
-		//private:
-		public:
-			std::wstring m_name;
+
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

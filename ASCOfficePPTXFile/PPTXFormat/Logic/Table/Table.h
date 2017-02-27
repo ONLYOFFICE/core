@@ -45,7 +45,11 @@ namespace PPTX
 		class Table : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Table)
+			WritingElement_AdditionConstructors(Table)
+
+			Table()
+			{
+			}
 
 			Table& operator=(const Table& oSrc)
 			{
@@ -58,8 +62,6 @@ namespace PPTX
                 tableProperties = oSrc.tableProperties;
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -72,7 +74,41 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
+					if (strName == L"tblGrid")
+					{
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+							if (strName1 == L"gridCol")
+							{
+								TableCol col;
+								TableCols.push_back(col);
+								TableCols.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (strName == L"tblPr")
+						tableProperties = oReader;
+					else if (strName == L"tr")
+					{
+						TableRow tr;
+						TableRows.push_back(tr);
+						TableRows.back().fromXML(oReader);
+					}
+				}
+				FillParentPointersForChilds();
+			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
@@ -158,7 +194,6 @@ namespace PPTX
 				pWriter->EndNode(_T("a:tbl"));
 			}
 			
-		public:
 			std::vector<TableCol>			TableCols;
 			std::vector<TableRow>			TableRows;
             nullable<TableProperties>	tableProperties;

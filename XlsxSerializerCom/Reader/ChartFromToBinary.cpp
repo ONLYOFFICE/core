@@ -1874,8 +1874,10 @@ namespace BinXlsxRW
 		CT_Tx* poVal = static_cast<CT_Tx*>(poResult);
 		if(c_oserct_txRICH == type)
 		{
+			BYTE typeRec1 = m_oBufferedStream.GetUChar();
+
 			poVal->m_oRich = new PPTX::Logic::TxBody;
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, poVal->m_oRich.GetPointer());
+			poVal->m_oRich->fromPPTY(&m_oBufferedStream);
 			
 			poVal->m_oRich->m_name = L"c:rich";
 		}
@@ -3074,7 +3076,7 @@ namespace BinXlsxRW
 			poVal->m_ItemsElementName0.push_back(eElemtype);
 
 			PPTX::Logic::TxBody * pNewElem = new PPTX::Logic::TxBody();
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, pNewElem);
+			res = ReadCT_TxPr(0, length, pNewElem);
 			poVal->m_Items.push_back(pNewElem);
 		}
 		else if(c_oserct_dlblsEXTLST == type)

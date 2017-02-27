@@ -361,7 +361,8 @@ namespace PPTX
 
             if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init())
 			{
-				//smartArt->LoadDrawing(pWriter);
+				smartArt->LoadDrawing(pWriter);
+				
 				if (smartArt->m_diag.is_init())
 				{
 					smartArt->m_diag->nvGrpSpPr.cNvPr	= nvGraphicFramePr.cNvPr;

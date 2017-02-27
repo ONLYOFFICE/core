@@ -65,12 +65,12 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				FillParentPointersForChilds();
+				//FillParentPointersForChilds();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"r:dm", id_data);
-				FillParentPointersForChilds();
+				//FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
 			{
@@ -104,7 +104,6 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				LoadDrawing();
 				if(m_diag.IsInit())
 					m_diag->SetParentPointer(this);
 			}

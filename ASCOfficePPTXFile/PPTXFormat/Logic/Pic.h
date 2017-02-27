@@ -322,9 +322,6 @@ namespace PPTX
 				nvPicPr.toXmlWriter(pWriter);
 
 				blipFill.m_namespace = namespace_;
-
-				if (blipFill.blip.is_init())
-					blipFill.blip->m_namespace = _T("a");
 				blipFill.toXmlWriter(pWriter);
 
 				pWriter->m_lFlag = 1;
@@ -338,7 +335,6 @@ namespace PPTX
 				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX &&
 					pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
 				{
-					pWriter->EndNode(_T("p:pic"));
 					if(bOle)
 					{
 						pWriter->WriteString(L"</p:oleObj></a:graphicData></a:graphic></p:graphicFrame>");

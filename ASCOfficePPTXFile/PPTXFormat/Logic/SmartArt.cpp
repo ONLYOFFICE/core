@@ -46,6 +46,9 @@ namespace PPTX
 	{
 		void SmartArt::LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter)
 		{
+			if (m_diag.IsInit()) 
+				return ;
+
 			FileContainer* pRels = NULL;
 			if (pWriter)
 			{
@@ -104,7 +107,7 @@ namespace PPTX
                 pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.operator->());
 			}
 
-			if (!pDiagramDrawing)
+			if (!pDiagramDrawing && pDiagramData)
 			{
 				// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
                OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
@@ -121,7 +124,9 @@ namespace PPTX
 
 			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
 			{
-				m_diag			= pDiagramDrawing->m_oShapeTree;
+				m_diag = pDiagramDrawing->m_oShapeTree;
+				FillParentPointersForChilds();
+
 				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>( new PPTX::CCommonRels());
 				m_oCommonRels->_read(pDiagramDrawing->m_oReadPath);
 			}

@@ -347,12 +347,12 @@ namespace OOX
 					m_oCols->toXML(sXml);
 				if(m_oSheetData.IsInit())
 					m_oSheetData->toXML(sXml);
-				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
-					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oAutofilter.IsInit())
 					m_oAutofilter->toXML(sXml);
 				if(m_oMergeCells.IsInit())
 					m_oMergeCells->toXML(sXml);
+				for (size_t nIndex = 0, nLength = m_arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+					m_arrConditionalFormatting[nIndex]->toXML(sXml);
 				if(m_oHyperlinks.IsInit())
 					m_oHyperlinks->toXML(sXml);
 				if(m_oPrintOptions.IsInit())

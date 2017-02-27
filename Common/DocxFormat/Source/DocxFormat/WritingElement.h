@@ -348,8 +348,9 @@ namespace OOX
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
 
-		et_x_pic,			// <...:pic>
-		et_x_cxnSp,			// <...:cxnSp>
+		et_graphicFrame,	// <...:graphicFrame>
+		et_pic,				// <...:pic>
+		et_cxnSp,			// <...:cxnSp>
 		
         et_p_cNvPicPr,        // <p:cNvPicPr>
         et_p_cNvPr,            // <p:cNvPr>

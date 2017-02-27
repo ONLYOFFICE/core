@@ -46,8 +46,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NvPr)
 			
-			NvPr()
+			NvPr(std::wstring ns = L"p")
 			{
+				m_namespace = ns;
 			}
 			NvPr& operator=(const NvPr& oSrc)
 			{
@@ -107,12 +108,12 @@ namespace PPTX
 				node.ReadAttributeBase(L"isPhoto", isPhoto);
 				node.ReadAttributeBase(L"userDrawn", userDrawn);
 
-				ph = node.ReadNode(_T("p:ph"));
+				ph = node.ReadNodeNoNS(_T("ph"));
 				media.GetMediaFrom(node);
 
-				XmlUtils::CXmlNode list;
-				if (node.GetNode(_T("p:extLst"), list))
-				{
+				XmlUtils::CXmlNode list = node.ReadNodeNoNS(_T("extLst"));
+				if (list.IsValid())
+				{		
 					XmlUtils::CXmlNodes oNodes;
 					if (list.GetNodes(_T("*"), oNodes))
 					{
@@ -144,13 +145,9 @@ namespace PPTX
 			}
             virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
             {
-                std::wstring namespace_;
-                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    namespace_= _T("pic");
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    namespace_= _T("xdr");
-                else
-                    namespace_= _T("p");
+                std::wstring namespace_ = m_namespace;
+                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= _T("pic");
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= _T("xdr");
 
                 toXmlWriter2(namespace_, pWriter);
             }

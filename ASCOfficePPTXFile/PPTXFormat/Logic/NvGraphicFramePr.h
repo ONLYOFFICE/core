@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NvGraphicFramePr)
 
-			NvGraphicFramePr(std::wstring ns = L"p")
+			NvGraphicFramePr(std::wstring ns = L"p") : cNvPr(ns), cNvGraphicFramePr(ns), nvPr(ns)
 			{
 				m_namespace = ns;
 			}
@@ -70,9 +70,9 @@ namespace PPTX
 			{
 				m_namespace			= XmlUtils::GetNamespace(node.GetName());
 
-				cNvPr				= node.ReadNode(_T("p:cNvPr"));
-				cNvGraphicFramePr	= node.ReadNode(_T("p:cNvGraphicFramePr"));
-				nvPr				= node.ReadNode(_T("p:nvPr"));
+				cNvPr				= node.ReadNodeNoNS(_T("cNvPr"));
+				cNvGraphicFramePr	= node.ReadNodeNoNS(_T("cNvGraphicFramePr"));
+				nvPr				= node.ReadNodeNoNS(_T("nvPr"));
 
 				FillParentPointersForChilds();
 			}
@@ -178,6 +178,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
+			
 			std::wstring		m_namespace;
 
 			CNvPr				cNvPr;

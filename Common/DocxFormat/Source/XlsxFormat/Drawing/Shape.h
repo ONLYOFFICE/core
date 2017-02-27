@@ -615,8 +615,6 @@ namespace OOX
 						m_arrItems.push_back( new OOX::Spreadsheet::CShape( oReader ));
 					else if ( _T("cxnSp") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CConnShape( oReader ));
-					else if ( _T("graphicFrame") == sName )
-						m_arrItems.push_back( new OOX::Spreadsheet::CGraphicFrame( oReader ));
 					else if ( _T("pic") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CPic( oReader ));
 					else if ( _T("grpSp") == sName )

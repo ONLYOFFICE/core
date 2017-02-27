@@ -59,7 +59,10 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("r:dm"), id_data )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("r:cs"), id_color)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:dm"), id_data)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:lo"), id_layout)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:qs"), id_style)
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -70,6 +73,9 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"r:dm", id_data);
+				node.ReadAttributeBase(L"r:cs", id_color);
+				node.ReadAttributeBase(L"r:lo", id_layout);
+				node.ReadAttributeBase(L"r:qs", id_style);
 				//FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
@@ -98,6 +104,9 @@ namespace PPTX
 			}
 
 			nullable<OOX::RId>				id_data;
+			nullable<OOX::RId>				id_color;
+			nullable<OOX::RId>				id_layout;
+			nullable<OOX::RId>				id_style;
 
 			nullable<PPTX::Logic::SpTree>	m_diag;
 			smart_ptr<PPTX::CCommonRels>	m_oCommonRels;
@@ -153,14 +162,10 @@ namespace PPTX
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-
+			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable<OOX::RId>	id_data;

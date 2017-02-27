@@ -220,7 +220,7 @@ namespace PPTX
 
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_x_pic;
+				return OOX::et_pic;
 			}
 
 			explicit Pic(XmlUtils::CXmlNode& node);

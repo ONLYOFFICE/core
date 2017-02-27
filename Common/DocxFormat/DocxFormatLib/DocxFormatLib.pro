@@ -216,7 +216,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
-    ../Source/XlsxFormat/Drawing/GraphicFrame.h \
     ../Source/XlsxFormat/Drawing/Image.h \
     ../Source/XlsxFormat/Drawing/Pic.h \
     ../Source/XlsxFormat/Drawing/Pos.h \

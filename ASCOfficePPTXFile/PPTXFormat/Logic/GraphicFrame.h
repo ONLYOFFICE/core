@@ -49,12 +49,12 @@ namespace PPTX
 		class GraphicFrame : public WrapperWritingElement
 		{
 		public:
-			GraphicFrame();
+			GraphicFrame(std::wstring ns = L"p");
 			virtual ~GraphicFrame();			
 			
 			virtual OOX::EElementType getType () const
 			{
-				return OOX::et_a_graphicFrame;
+				return OOX::et_graphicFrame;
 			}
 			explicit GraphicFrame(XmlUtils::CXmlLiteReader& oReader);
 			const GraphicFrame& operator =(XmlUtils::CXmlLiteReader& oReader);
@@ -76,6 +76,8 @@ namespace PPTX
 	
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			std::wstring			m_namespace;
 
 			NvGraphicFramePr		nvGraphicFramePr;
 

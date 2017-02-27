@@ -43,8 +43,9 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		GraphicFrame::GraphicFrame()
+		GraphicFrame::GraphicFrame(std::wstring ns) : nvGraphicFramePr(ns)
 		{
+			m_namespace = ns;
 		}
 
 		GraphicFrame::~GraphicFrame()
@@ -73,6 +74,8 @@ namespace PPTX
 		}
 		void GraphicFrame::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -92,7 +95,7 @@ namespace PPTX
 		}
 		void GraphicFrame::fromXML2(XmlUtils::CXmlLiteReader& oReader)
 		{
-            std::wstring strName		= XmlUtils::GetNameNoNS(oReader.GetName());
+			std::wstring strName		= XmlUtils::GetNameNoNS(oReader.GetName());
 			std::wstring strNamespace	= XmlUtils::GetNamespace(oReader.GetName());
 			
 			if (L"xfrm" == strName && strNamespace != L"xdr")
@@ -197,6 +200,8 @@ namespace PPTX
 
 		void GraphicFrame::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -292,21 +297,12 @@ namespace PPTX
 
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring strNS = L"";
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)
-			{
-				pWriter->StartNode(L"wpg:graphicFrame");
-				strNS = L"wpg";
-			}
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)
-			{
-				pWriter->StartNode(L"xdr:graphicFrame");
-				strNS = L"xdr";
-			}
-			else
-			{
-				pWriter->StartNode(L"p:graphicFrame");
-			}
+			std::wstring namespace_ = m_namespace;
+			
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
+
+			pWriter->StartNode(namespace_ + L":graphicFrame");
 
 			pWriter->EndAttributes();
 
@@ -314,10 +310,8 @@ namespace PPTX
 			
 			if (xfrm.IsInit())
 			{
-				if (strNS.empty())
-					xfrm->toXmlWriter(pWriter);
-				else
-					xfrm->toXmlWriter2(strNS, pWriter);
+				xfrm->m_ns = namespace_;
+				xfrm->toXmlWriter(pWriter);
 			}
 
             if (table.is_init())
@@ -333,12 +327,7 @@ namespace PPTX
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)
-				pWriter->EndNode(L"wpg:graphicFrame");
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)
-				pWriter->EndNode(L"xdr:graphicFrame");
-			else
-				pWriter->EndNode(L"p:graphicFrame");
+			pWriter->EndNode(namespace_ + L":graphicFrame");
 		}
 
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -519,6 +508,9 @@ namespace PPTX
 			}				
 
 			pReader->Seek(_end_rec);
+
+			if (!xfrm.IsInit())
+				xfrm = new Logic::Xfrm();
 		}
 
 		void GraphicFrame::GetRect(Aggplus::RECT& pRect)const
@@ -537,28 +529,38 @@ namespace PPTX
 
 		std::wstring GraphicFrame::toXML() const
 		{
-			//XML::XNode node;
-			//if(dm.is_init())
-			//{
-			//	return XML::XElement(ns.p + "graphicFrame",
-			//			XML::Write(nvGraphicFramePr) +
-			//			XML::Write(xfrm) +
-			//			XML::XElement(ns.a + "graphic",
-			//				XML::XElement(ns.a + "graphicData", //Возможно, здесь надо добавить ури
-			//					XML::XElement(ns.dgm + "relIds",
-			//						XML::XNamespace(ns.dgm) +
-			//						XML::XNamespace(ns.r) +
-			//						XML::XAttribute(ns.r + "dm", dm) +
-			//						XML::XAttribute(ns.r + "lo", lo) +
-			//						XML::XAttribute(ns.r + "qs", qs) +
-			//						XML::XAttribute(ns.r + "cs", cs)
-			//					)
-			//				)
-			//			)
-			//		);
-			//}
-			//return node;
-			return L"";
+			std::wstring sXml;
+			
+			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
+
+			sXml += nvGraphicFramePr.toXML();
+
+			sXml += L"<" + m_namespace + L":xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/>";
+			sXml += L"</" + m_namespace + L":xfrm>";
+
+			if (xfrm.IsInit())
+			{
+				xfrm->m_ns = m_namespace;
+				sXml += xfrm->toXML();
+			}
+
+            if (table.IsInit())
+			{
+				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">";
+                sXml += table->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+			else if (chartRec.IsInit())
+			{
+				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">";
+				sXml += chartRec->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+
+			sXml += L"</" + m_namespace + L":graphicFrame>";			
+			sXml += L"<" + m_namespace + L":clientData/>";
+
+			return sXml;
 		}
 
 		void GraphicFrame::FillParentPointersForChilds()

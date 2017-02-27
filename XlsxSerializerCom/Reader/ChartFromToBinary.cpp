@@ -3076,7 +3076,7 @@ namespace BinXlsxRW
 			poVal->m_ItemsElementName0.push_back(eElemtype);
 
 			PPTX::Logic::TxBody * pNewElem = new PPTX::Logic::TxBody();
-			res = Read1(length, &BinaryChartReader::ReadCT_TxPr, this, pNewElem);
+			res = ReadCT_TxPr(0, length, pNewElem);
 			poVal->m_Items.push_back(pNewElem);
 		}
 		else if(c_oserct_dlblsEXTLST == type)

@@ -6348,20 +6348,20 @@ namespace OOX{
 				{
 					PPTX::Logic::SpPr* pNewElem = new PPTX::Logic::SpPr;
 					pNewElem->fromXML(oReader);
+                    m_Items.push_back(pNewElem);
 
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3SPPR;
-                    m_Items.push_back(pNewElem);
                     m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
+					PPTX::Logic::TxBody* pNewElem = new PPTX::Logic::TxBody;
+					pNewElem->fromXML(oReader);
+                    m_Items.push_back(pNewElem);
+
 					ItemsChoiceType3* eElemtype = new ItemsChoiceType3;
 					*eElemtype = itemschoicetype3TXPR;
-                    m_Items.push_back(pNewElem);
                     m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("extLst") == sName)
@@ -6578,10 +6578,11 @@ namespace OOX{
 				break;
 			case itemschoicetype3TXPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::TxBody* pTypeVal = static_cast<PPTX::Logic::TxBody*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						writer.WriteString(_T("<c:txPr>") + *pTypeVal + _T("</c:txPr>"));
+						pTypeVal->m_name = L"c:txPr";
+						writer.WriteString(pTypeVal->toXML());
 					}
 				}
 				break;
@@ -6670,7 +6671,7 @@ namespace OOX{
 				break;
 			case itemschoicetype3TXPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::TxBody* pTypeVal = static_cast<PPTX::Logic::TxBody*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -6809,31 +6810,32 @@ namespace OOX{
 				}
 				else if(_T("spPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetOuterXml();
-					*pNewElem = sVal;
+					PPTX::Logic::SpPr* pNewElem = new PPTX::Logic::SpPr;
+					pNewElem->fromXML(oReader);
+                    m_Items.push_back(pNewElem);
+
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4SPPR;
-                    m_Items.push_back(pNewElem);
                     m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("tx") == sName)
 				{
 					CT_Tx* pNewElem = new CT_Tx;
 					pNewElem->fromXML(oReader);
+					m_Items.push_back(pNewElem);
+					
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
-					*eElemtype = itemschoicetype4TX;
-                    m_Items.push_back(pNewElem);
+					*eElemtype = itemschoicetype4TX;                    
                     m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("txPr") == sName)
 				{
-					std::wstring* pNewElem = new std::wstring;
-					std::wstring sVal = oReader.GetInnerXml();
-					*pNewElem = sVal;
+					PPTX::Logic::TxBody* pNewElem = new PPTX::Logic::TxBody;
+					pNewElem->fromXML(oReader);
+                    m_Items.push_back(pNewElem);
+
 					ItemsChoiceType4* eElemtype = new ItemsChoiceType4;
 					*eElemtype = itemschoicetype4TXPR;
-                    m_Items.push_back(pNewElem);
                     m_ItemsElementName0.push_back(eElemtype);
 				}
 				else if(_T("extLst") == sName)
@@ -7024,10 +7026,10 @@ namespace OOX{
 				break;
 			case itemschoicetype4SPPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::SpPr* pTypeVal = static_cast<PPTX::Logic::SpPr*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						writer.WriteString(*pTypeVal);
+						writer.WriteString(pTypeVal->toXML());
 					}
 				}
 				break;
@@ -7046,10 +7048,11 @@ namespace OOX{
 				break;
 			case itemschoicetype4TXPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::TxBody* pTypeVal = static_cast<PPTX::Logic::TxBody*>(pVal);
 					if(NULL != pTypeVal)
 					{
-						writer.WriteString(_T("<c:txPr>") + *pTypeVal + _T("</c:txPr>"));
+						pTypeVal->m_name = L"c:txPr";
+						writer.WriteString(pTypeVal->toXML());
 					}
 				}
 				break;
@@ -7126,7 +7129,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4SPPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::SpPr* pTypeVal = static_cast<PPTX::Logic::SpPr*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;
@@ -7138,7 +7141,7 @@ namespace OOX{
 				break;
 			case itemschoicetype4TXPR:
 				{
-					std::wstring* pTypeVal = static_cast<std::wstring*>(pVal);
+					PPTX::Logic::TxBody* pTypeVal = static_cast<PPTX::Logic::TxBody*>(pVal);
 					RELEASEOBJECT(pTypeVal);
 				}
 				break;

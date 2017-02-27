@@ -144,7 +144,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Spreadsheet::IFileContainer		*xlsx_current_container; 
 		
 		odf_writer::ods_conversion_context		*ods_context;
 
@@ -199,9 +199,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPic							*oox_picture);
 		void convert(OOX::Spreadsheet::CShape						*oox_shape);
 		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
-		void convert(OOX::Spreadsheet::CGraphicFrame				*oox_graphic_frame);
 		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
-		void convert(OOX::Spreadsheet::CGraphicChart				*oox_chart);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);
 		void convert(OOX::Spreadsheet::CConditionalFormattingRule	*oox_cond_rule);

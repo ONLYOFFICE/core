@@ -311,6 +311,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		class GraphicFrame;
 		class SpTree;
 		class Shape;
 		class SpPr;
@@ -342,6 +343,10 @@ namespace PPTX
 		class Fld;
 		class Br;
 		class MathParaWrapper;
+		class NvGraphicFramePr;
+		class Table;
+		class ChartRec;
+		class SmartArt;
 	}
 }
 
@@ -427,11 +432,12 @@ public:
 		void convert(OOX::Drawing::CRun							*oox_run);
 		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf_writer::style_text_properties	* text_properties);
 		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
-//.diagram & pptx................................................................................................................................
-		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
+//drawingML & pptx................................................................................................................................
+		void convert(PPTX::Logic::GraphicFrame					*oox_graphicFrame);
 		void convert(PPTX::Logic::SpTree						*oox_shape_tree);
 		void convert(PPTX::Logic::Shape							*oox_shape);
 		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
+		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 		int	 convert(PPTX::Logic::PrstTxWarp					*oox_text_preset);
 		void convert(PPTX::Logic::PrstGeom						*oox_geom);
 		void convert(PPTX::Logic::CustGeom						*oox_geom);
@@ -457,6 +463,10 @@ public:
 		void convert(PPTX::Logic::Fld							*oox_fld);
 		void convert(PPTX::Logic::Br							*oox_br);
 		void convert(PPTX::Logic::MathParaWrapper				*oox_math);
+		void convert(PPTX::Logic::NvGraphicFramePr				*oox_framePr);
+		void convert(PPTX::Logic::ChartRec						*oox_chart);
+		void convert(PPTX::Logic::SmartArt						*oox_smart_art);
+		void convert(PPTX::Logic::Table							*oox_table);
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

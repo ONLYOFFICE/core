@@ -127,8 +127,7 @@ namespace PPTX
 			{
 				std::wstring namespace_ = m_namespace;
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					namespace_ = L"xdr";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 
 				pWriter->StartNode(namespace_ + L":cNvGraphicFramePr");
 				

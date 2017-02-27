@@ -2857,9 +2857,15 @@ namespace BinXlsxRW {
 					m_pOfficeDrawingConverter->SetRelsPath(keepRels);
 				}
 			}
-			else if(pCellAnchor.m_oGraphicFrame.IsInit() && pCellAnchor.m_oGraphicFrame->m_sXml.IsInit())
+			else if(pCellAnchor.m_oGraphicFrame.IsInit())
 			{
-				bstrXml = *pCellAnchor.m_oGraphicFrame->m_sXml;
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
+				int nCurPos = m_oBcw.WriteItemWithLengthStart();
+				//pCellAnchor.m_oGraphicFrame->toPPTY(&m_oBcw.m_oStream);
+				m_oBcw.m_oStream.StartRecord(0);
+				m_oBcw.m_oStream.WriteRecord2(1, pCellAnchor.m_oGraphicFrame);
+				m_oBcw.m_oStream.EndRecord();
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(!bstrXml.empty())
 			{

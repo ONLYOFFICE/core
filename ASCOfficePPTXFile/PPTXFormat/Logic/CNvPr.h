@@ -124,10 +124,9 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
                 std::wstring namespace_ = m_namespace;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    namespace_= _T("pic");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    namespace_= _T("xdr");
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= _T("pic");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= _T("xdr");
 
                 toXmlWriter2(namespace_, pWriter);
 

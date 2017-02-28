@@ -69,11 +69,11 @@ namespace PPTX
 	{
 		UniEffect::UniEffect()
 		{
+			Effect.reset();
 		}
 
 		UniEffect::~UniEffect()
 		{
-			//Effect.reset();
 		}
 
 		UniEffect::UniEffect(XmlUtils::CXmlNode& node)

@@ -58,7 +58,7 @@ namespace PPTX
 			{
 				nullable_int lat_, lon_, rev_;
 
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("lat"), lat_)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lon"), lon_)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rev"), rev_)

@@ -668,27 +668,27 @@ void NSPresentationEditor::CPPTXWriter::WriteColorScheme(CStringWriter& oStringW
 	
     oStringWriter.WriteString(L"<a:dk1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[14].GetLONG_RGB(), L"%06X") + L"\"/></a:dk1>");
 	
-    oStringWriter.WriteString(L"<a:lt1><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[13].GetLONG_RGB(), L"%06X") + L"\"/></a:lt1>");
+    oStringWriter.WriteString(L"<a:lt1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[13].GetLONG_RGB(), L"%06X") + L"\"/></a:lt1>");
 	
-    oStringWriter.WriteString(L"<a:dk2><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[16].GetLONG_RGB(), L"%06X") + L"\"/></a:dk2>");
+    oStringWriter.WriteString(L"<a:dk2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[16].GetLONG_RGB(), L"%06X") + L"\"/></a:dk2>");
 	
-    oStringWriter.WriteString(L"<a:lt2><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[15].GetLONG_RGB(), L"%06X") + L"\"/></a:lt2>");
+    oStringWriter.WriteString(L"<a:lt2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[15].GetLONG_RGB(), L"%06X") + L"\"/></a:lt2>");
 	
-    oStringWriter.WriteString(L"<a:accent1><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[5].GetLONG_RGB(), L"%06X") + L"\"/></a:accent1>");
+    oStringWriter.WriteString(L"<a:accent1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[5].GetLONG_RGB(), L"%06X") + L"\"/></a:accent1>");
 	
-    oStringWriter.WriteString(L"<a:accent2><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[6].GetLONG_RGB(), L"%06X") + L"\"/></a:accent2>");
+    oStringWriter.WriteString(L"<a:accent2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[6].GetLONG_RGB(), L"%06X") + L"\"/></a:accent2>");
 	
-    oStringWriter.WriteString(L"<a:accent3><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[7].GetLONG_RGB(), L"%06X") + L"\"/></a:accent3>");
+    oStringWriter.WriteString(L"<a:accent3><a:srgbClr val=\"" + XmlUtils::IntToString(colors[7].GetLONG_RGB(), L"%06X") + L"\"/></a:accent3>");
 	
-    oStringWriter.WriteString(L"<a:accent4><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[8].GetLONG_RGB(), L"%06X") + L"\"/></a:accent4>");
+    oStringWriter.WriteString(L"<a:accent4><a:srgbClr val=\"" + XmlUtils::IntToString(colors[8].GetLONG_RGB(), L"%06X") + L"\"/></a:accent4>");
 	
-    oStringWriter.WriteString(L"<a:accent5><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[9].GetLONG_RGB(), L"%06X") + L"\"/></a:accent5>");
+    oStringWriter.WriteString(L"<a:accent5><a:srgbClr val=\"" + XmlUtils::IntToString(colors[9].GetLONG_RGB(), L"%06X") + L"\"/></a:accent5>");
 	
-    oStringWriter.WriteString(L"<a:accent6><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[10].GetLONG_RGB(), L"%06X") + L"\"/></a:accent6>");
+    oStringWriter.WriteString(L"<a:accent6><a:srgbClr val=\"" + XmlUtils::IntToString(colors[10].GetLONG_RGB(), L"%06X") + L"\"/></a:accent6>");
 	
-    oStringWriter.WriteString(L"<a:hlink><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[11].GetLONG_RGB(), L"%06X") + L"\"/></a:hlink>");
+    oStringWriter.WriteString(L"<a:hlink><a:srgbClr val=\"" + XmlUtils::IntToString(colors[11].GetLONG_RGB(), L"%06X") + L"\"/></a:hlink>");
 	
-    oStringWriter.WriteString(L"<a:folHlink><a:srgbClr val=\"%" + XmlUtils::IntToString(colors[12].GetLONG_RGB(), L"%06X") + L"\"/></a:folHlink>");
+    oStringWriter.WriteString(L"<a:folHlink><a:srgbClr val=\"" + XmlUtils::IntToString(colors[12].GetLONG_RGB(), L"%06X") + L"\"/></a:folHlink>");
 
     oStringWriter.WriteString(L"</a:clrScheme>");
 	if (extra)

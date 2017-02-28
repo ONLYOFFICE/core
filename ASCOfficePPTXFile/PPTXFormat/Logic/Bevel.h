@@ -59,7 +59,7 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("w"), w)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("h"), h)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prst"), prst)

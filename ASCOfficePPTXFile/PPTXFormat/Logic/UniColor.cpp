@@ -44,6 +44,7 @@ namespace PPTX
 
 		UniColor::UniColor()
 		{
+			Color.reset();
 		}
 
 

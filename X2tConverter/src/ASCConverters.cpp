@@ -366,9 +366,9 @@ namespace NExtractTools
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-        return pptx_dir2pptt_bin(sTempUnpackedPPTX, sTo, params);
+        return pptx_dir2pptt_bin(sTempUnpackedPPTX, sTo, sTemp, params);
 	}
-    int pptx_dir2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
+    int pptx_dir2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // convert unzipped pptx to unzipped pptt
         CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
@@ -377,6 +377,7 @@ namespace NExtractTools
 
         if (pptx_file)
         {
+            pptx_file->put_TempDirectory(sTemp);
             pptx_file->SetFontDir (params.getFontPath());
             nRes = (S_OK == pptx_file->OpenFileToPPTY (sFrom, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 
@@ -2192,7 +2193,7 @@ namespace NExtractTools
        }
        else if(AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatTo)
        {
-           nRes = pptx_dir2pptt_bin(sFrom, sTo, params);
+           nRes = pptx_dir2pptt_bin(sFrom, sTo, sTemp, params);
        }
        else
        {
@@ -2200,7 +2201,7 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sPpttDir);
            std::wstring sTFile = sPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
          
-		   nRes = pptx_dir2pptt_bin(sFrom, sTFile, params);
+           nRes = pptx_dir2pptt_bin(sFrom, sTFile, sTemp, params);
            if(SUCCEEDED_X2T(nRes))
            {
                nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);

@@ -4841,6 +4841,8 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const std::ws
 }
 std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 {
+	if (lLength < 1) return L"";
+
 	m_pReader->Seek(lStart);
 
 	++m_nCurrentIndexObject;

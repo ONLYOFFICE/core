@@ -662,9 +662,6 @@ namespace OOX
 
 				sResult += CVmlCommonElements::WriteAttributes();
 								
-				ComplexTypes_WriteAttribute ( _T("o:bwmode=\""),			m_oBwMode );
-				ComplexTypes_WriteAttribute ( _T("o:bwpure=\""),			m_oBwPure );
-				ComplexTypes_WriteAttribute ( _T("o:bwnormal=\""),			m_oBwNormal );
 				ComplexTypes_WriteAttribute ( _T("o:targetscreensize=\""),	m_oTargetScreenSize );
 
 				sResult += _T(">");
@@ -684,45 +681,15 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					wchar_t wsChar = wsName[0];
-					switch ( wsChar )
-					{
-					case 'o':
-						if      ( _T("o:bwmode")   == wsName ) m_oBwMode             = oReader.GetText();
-						else if ( _T("o:bwnormal") == wsName ) m_oBwNormal           = oReader.GetText();
-						else if ( _T("o:bwpure")   == wsName ) m_oBwPure             = oReader.GetText();
-						break;
-
-					case 't':
-						if      ( _T("o:targetscreensize") == wsName ) m_oTargetScreenSize = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("o:targetscreensize"), m_oTargetScreenSize)
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 	// Attributes
-			nullable<SimpleTypes::CBWMode<>>					m_oBwMode;
-			nullable<SimpleTypes::CBWMode<>>					m_oBwNormal;
-			nullable<SimpleTypes::CBWMode<>>					m_oBwPure;
-			nullable<SimpleTypes::CScreenSize<>>				m_oTargetScreenSize;
+			nullable<SimpleTypes::CScreenSize<>> m_oTargetScreenSize;
 
 		};
 		//--------------------------------------------------------------------------------

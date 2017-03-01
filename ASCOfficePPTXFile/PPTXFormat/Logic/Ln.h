@@ -50,7 +50,9 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Ln)
-			PPTX_LOGIC_BASE2(Ln)
+			Ln()
+			{
+			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

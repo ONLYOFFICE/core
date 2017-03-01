@@ -49,7 +49,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(UniFill)
-			PPTX_LOGIC_BASE2(UniFill)
+			UniFill()
+			{
+				m_type = notInit;
+				Fill.reset();
+			}
 
 			virtual OOX::EElementType getType() const
 			{

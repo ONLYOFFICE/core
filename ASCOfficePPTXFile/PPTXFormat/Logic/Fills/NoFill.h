@@ -67,8 +67,6 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -123,8 +121,6 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{

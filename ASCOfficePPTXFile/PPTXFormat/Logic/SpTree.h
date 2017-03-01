@@ -110,7 +110,7 @@ namespace PPTX
 						{
 							if (elem.getType() == OOX::et_p_ShapeTree)
 							{
-								smart_ptr<SpTree> &e = elem.GetElem().smart_dynamic_cast<SpTree>();
+                                smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
 								e->m_lGroupIndex = m_lGroupIndex + 1;
 							}
 							SpTreeElems.push_back(elem);
@@ -156,7 +156,7 @@ namespace PPTX
 							{
 								if (elem.getType() == OOX::et_p_ShapeTree)
 								{
-									smart_ptr<SpTree> &e = elem.GetElem().smart_dynamic_cast<SpTree>();
+                                    smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
 									e->m_lGroupIndex = m_lGroupIndex + 1;
 								}
 								SpTreeElems.push_back(elem);
@@ -302,7 +302,7 @@ namespace PPTX
 									{
 										if (elm.getType() == OOX::et_p_ShapeTree)
 										{
-											smart_ptr<SpTree> &e = elm.GetElem().smart_dynamic_cast<SpTree>();
+                                            smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
 											e->m_lGroupIndex = m_lGroupIndex + 1;
 										}
 										SpTreeElems.push_back(elm);

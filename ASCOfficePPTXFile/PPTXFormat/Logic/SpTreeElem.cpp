@@ -357,7 +357,7 @@ namespace PPTX
 
 					if (getType() == OOX::et_p_ShapeTree)
 					{
-						smart_ptr<PPTX::Logic::SpTree> &parent = GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+                        smart_ptr<PPTX::Logic::SpTree> parent = GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 						p->m_lGroupIndex = parent->m_lGroupIndex + 1;
 					}
 					m_elem.reset(p);

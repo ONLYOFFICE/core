@@ -2962,12 +2962,10 @@ void CDrawingConverter::doc_LoadGroup(PPTX::Logic::SpTreeElem *result, XmlUtils:
 {
 	if (!result) return;
 
-	PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree();
+    PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree(L"wp");
 
-	if (bIsTop)
-        pTree->m_name = L"wpg:wgp";
-	else
-        pTree->m_name = L"wpg:grpSp";
+    if (bIsTop) pTree->m_lGroupIndex = 0;
+    else        pTree->m_lGroupIndex = 1;
 
 	XmlUtils::CXmlNodes oNodes;
     if (oNode.GetNodes(L"*", oNodes))

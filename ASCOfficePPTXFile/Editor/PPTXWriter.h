@@ -1066,7 +1066,7 @@ namespace NSBinPptxRW
 			xfrm->chOffY = 0;
 			xfrm->chExtX = 0;
 			xfrm->chExtY = 0;
-			m_oDefaultNote.cSld.spTree.m_name = _T("p:spTree");
+			
 			m_oDefaultNote.cSld.spTree.grpSpPr.xfrm = xfrm;
 
 			// shape comment !!! (TODO:)

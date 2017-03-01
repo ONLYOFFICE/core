@@ -46,7 +46,10 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSld)
-			PPTX_LOGIC_BASE2(CSld)
+			
+			CSld() : spTree(L"p")
+			{
+			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -149,7 +152,6 @@ namespace PPTX
 						}
 						case 1:
 						{
-							spTree.m_name = _T("p:spTree");
 							spTree.fromPPTY(pReader);
 							break;
 						}
@@ -164,7 +166,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
 			nullable_string			attrName;
 
 			nullable<Bg>			bg;

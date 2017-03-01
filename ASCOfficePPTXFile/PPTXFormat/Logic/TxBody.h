@@ -47,9 +47,9 @@ namespace PPTX
 		class TxBody : public WrapperWritingElement
 		{
 		public:
-			TxBody()	
+			TxBody(std::wstring name = L"p:txBody")	
 			{
-				m_name = _T("p:txBody");
+				m_name = name;
 			}
 			virtual ~TxBody() {}
 			explicit TxBody(XmlUtils::CXmlNode& node)	
@@ -252,9 +252,11 @@ namespace PPTX
 				}
 
 				pReader->Seek(_end_rec);
+
+				if (!bodyPr.IsInit())
+					bodyPr = new Logic::BodyPr();
 			}
 
-		public:
 			nullable<BodyPr>		bodyPr;
 			nullable<TextListStyle> lstStyle;
 			std::vector<Paragraph>	Paragrs;

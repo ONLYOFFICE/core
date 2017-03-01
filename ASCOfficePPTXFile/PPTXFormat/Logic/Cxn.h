@@ -144,7 +144,7 @@ namespace PPTX
 		public:
 			std::wstring GetODString()const
 			{
-				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></cxn>");
+				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\"/></cxn>");
 			}
 		};
 	} // namespace Logic

@@ -177,7 +177,7 @@ namespace PPTX
 		{
 			std::wstring name_ = m_name;
 
-			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			name_ = L"wps:wsp";
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	name_ = L"wps:wsp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:sp";
 				
 			pWriter->StartNode(name_);
@@ -210,10 +210,8 @@ namespace PPTX
 
 			if (style.is_init())
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					style->m_namespace = _T("wps");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					style->m_namespace = _T("xdr");
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	style->m_namespace = _T("wps");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	style->m_namespace = _T("xdr");
 
                 pWriter->Write(style);
             }

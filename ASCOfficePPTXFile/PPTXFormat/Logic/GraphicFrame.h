@@ -70,9 +70,12 @@ namespace PPTX
 			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual std::wstring toXML() const;
-			virtual void GetRect(Aggplus::RECT& pRect)const;
+					std::wstring toXML2() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+					void toXmlWriter2(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void GetRect(Aggplus::RECT& pRect)const;
 	
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);

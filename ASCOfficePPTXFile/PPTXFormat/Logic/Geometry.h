@@ -46,7 +46,9 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Geometry)
-			PPTX_LOGIC_BASE2(Geometry)
+			Geometry()
+			{
+			}
 
 			virtual OOX::EElementType getType() const
 			{

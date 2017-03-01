@@ -134,7 +134,7 @@ namespace PPTX
 			
 			virtual std::wstring GetODString()const
 			{
-				std::wstring str = L"<a:pt x=\"" + x + L"\" y=\"" + y + L"\" />";
+				std::wstring str = L"<pt x=\"" + x + L"\" y=\"" + y + L"\" />";
 				return _T("<lnTo>") + str + _T("</lnTo>");
 			}
 		};

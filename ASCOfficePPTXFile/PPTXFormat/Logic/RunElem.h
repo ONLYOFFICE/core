@@ -113,12 +113,14 @@ namespace PPTX
 
 			virtual bool is_init() const {return (Elem.IsInit());};
 			virtual std::wstring GetText() const{return Elem->GetText();}
-
+			smart_ptr<RunBase> GetElem()
+			{
+				return Elem;
+			}
 			template<class T> AVSINLINE const bool	is() const	{ return Elem.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Elem.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return Elem.as<T>(); }
 
-		//public:
 		private:
 			smart_ptr<RunBase> Elem;
 		protected:

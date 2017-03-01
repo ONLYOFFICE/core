@@ -50,8 +50,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(GrpSpPr)
 
-			GrpSpPr()
+			GrpSpPr(std::wstring ns = L"p")
 			{
+				m_namespace = ns;
 			}
 			GrpSpPr& operator=(const GrpSpPr& oSrc)
 			{
@@ -117,17 +118,16 @@ namespace PPTX
 				oValue.Write(EffectList);
 				oValue.WriteNullable(scene3d);
 
-				return XmlUtils::CreateNode(_T("p:grpSpPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(m_namespace + L":grpSpPr", oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->StartNode(_T("wpg:grpSpPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:grpSpPr"));
-				else
-					pWriter->StartNode(_T("p:grpSpPr"));
+				std::wstring namespace_ = m_namespace;
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+
+				pWriter->StartNode(namespace_ + L":grpSpPr");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("bwMode"), bwMode);
@@ -138,12 +138,7 @@ namespace PPTX
 				EffectList.toXmlWriter(pWriter);
 				pWriter->Write(scene3d);
 				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("wpg:grpSpPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:grpSpPr"));
-				else
-					pWriter->EndNode(_T("p:grpSpPr"));
+				pWriter->EndNode(namespace_ + L":grpSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -215,8 +210,9 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			
+			std::wstring				m_namespace;
 
-		public:
 			nullable<Xfrm>				xfrm;
 			UniFill						Fill;
 			EffectProperties			EffectList;
@@ -226,12 +222,11 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				if(xfrm.IsInit())
-					xfrm->SetParentPointer(this);
 				Fill.SetParentPointer(this);
 				EffectList.SetParentPointer(this);
-				if(scene3d.IsInit())
-					scene3d->SetParentPointer(this);
+				
+				if(xfrm.IsInit())		xfrm->SetParentPointer(this);
+				if(scene3d.IsInit())	scene3d->SetParentPointer(this);
 			}
 		};
 	} // namespace Logic

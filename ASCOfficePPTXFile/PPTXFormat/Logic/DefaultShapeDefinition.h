@@ -46,7 +46,11 @@ namespace PPTX
 		class DefaultShapeDefinition : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(DefaultShapeDefinition)
+			WritingElement_AdditionConstructors(DefaultShapeDefinition)
+			
+			DefaultShapeDefinition()
+			{
+			}
 
 			DefaultShapeDefinition& operator=(const DefaultShapeDefinition& oSrc)
 			{
@@ -61,11 +65,32 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("spPr") == strName)
+						spPr.fromXML(oReader);
+					else if (_T("bodyPr") == strName)
+						bodyPr = oReader;
+					else if (_T("lstStyle") == strName)
+						lstStyle.fromXML(oReader);
+					else if (_T("style") == strName)
+						style = oReader;
+				}
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name		= XmlUtils::GetNameNoNS(node.GetName());
+				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))

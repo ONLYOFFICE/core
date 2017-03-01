@@ -6526,7 +6526,9 @@ public:
 	}
     int Read_Background(BYTE type, long length, void* poResult)
     {
-        int res = c_oSerConstants::ReadOk;
+		m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:displayBackgroundShape/>");
+		
+		int res = c_oSerConstants::ReadOk;
         Background* pBackground = static_cast<Background*>(poResult);
 
         if( c_oSerBackgroundType::Color == type )

@@ -350,8 +350,10 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
     case 0: // child process
     {
         std::string sLibraryDir = sProgramm;
-        if (std::string::npos != sProgramm.find_last_of('/'))
-            sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
+        std::string::size_type posLast = sProgramm.find_last_of('/');
+        std::string sProgrammDir = sProgramm.substr(0, posLast);
+        if (std::string::npos != posLast)
+            sLibraryDir = "LD_LIBRARY_PATH=" + sProgrammDir + ":" + sProgrammDir + "/../";
 
         if (!IsLinuxXVFB())
         {

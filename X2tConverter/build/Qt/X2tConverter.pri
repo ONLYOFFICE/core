@@ -35,7 +35,11 @@ core_windows {
 
 #CONFIG += build_for_centos6
 build_for_centos6 {
+core_linux_64 {
     QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux-x86-64.so.2
+} else {
+    QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux.so.2
+}
 }
 
 DEFINES += UNICODE \

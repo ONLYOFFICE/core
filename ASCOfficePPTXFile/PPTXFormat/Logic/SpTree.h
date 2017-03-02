@@ -298,7 +298,7 @@ namespace PPTX
 									SpTreeElem elm;
 									elm.fromPPTY(pReader);
 
-									if (SpTreeElems.back().is_init())
+                                    if (elm.is_init())
 									{
 										if (elm.getType() == OOX::et_p_ShapeTree)
 										{

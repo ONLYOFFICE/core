@@ -129,6 +129,9 @@ namespace PPTX
 			}
 			virtual std::wstring toXML() const
 			{
+				if (!bodyPr.IsInit())
+					bodyPr = new Logic::BodyPr();
+
 				XmlUtils::CNodeValue oValue;
 				
 				oValue.WriteNullable(bodyPr);
@@ -140,6 +143,9 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				if (!bodyPr.IsInit())
+					bodyPr = new Logic::BodyPr();
+				
 				pWriter->StartNode(m_name);
 				pWriter->EndAttributes();
 
@@ -161,10 +167,9 @@ namespace PPTX
 
 			void toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				/*
-				pWriter->StartNode(_T("c:rich"));
-				pWriter->EndAttributes();
-				*/
+				if (!bodyPr.IsInit())
+					bodyPr = new Logic::BodyPr();
+
 				if (bodyPr.IsInit())
 				{
 					bodyPr->m_namespace = _T("a");
@@ -252,9 +257,6 @@ namespace PPTX
 				}
 
 				pReader->Seek(_end_rec);
-
-				if (!bodyPr.IsInit())
-					bodyPr = new Logic::BodyPr();
 			}
 
 			nullable<BodyPr>		bodyPr;

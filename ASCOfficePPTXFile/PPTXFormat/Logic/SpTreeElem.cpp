@@ -352,9 +352,14 @@ namespace PPTX
 			case SPTREE_TYPE_SPTREE:
 				{
 					Logic::SpTree* p = new Logic::SpTree();
-					p->m_name = _T("p:grpSp");
 					pReader->Seek(pReader->GetPos() - 5); // type back + len
 					p->fromPPTY(pReader);
+
+					if (getType() == OOX::et_p_ShapeTree)
+					{
+                        smart_ptr<PPTX::Logic::SpTree> parent = GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+						p->m_lGroupIndex = parent->m_lGroupIndex + 1;
+					}
 					m_elem.reset(p);
 					break;
 				}

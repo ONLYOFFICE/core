@@ -294,27 +294,11 @@ namespace PPTX
 			
 			FillParentPointersForChilds();
 		}
-
-		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		void GraphicFrame::toXmlWriter2(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring namespace_ = m_namespace;
-			
-			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
-
-			pWriter->StartNode(namespace_ + L":graphicFrame");
-
-			pWriter->EndAttributes();
-
 			nvGraphicFramePr.toXmlWriter(pWriter);
-			
-			if (xfrm.IsInit())
-			{
-				xfrm->m_ns = namespace_;
-				xfrm->toXmlWriter(pWriter);
-			}
-
-            if (table.is_init())
+            
+			if (table.is_init())
 			{
 				pWriter->WriteString (L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">");
                 table->toXmlWriter (pWriter);
@@ -326,6 +310,24 @@ namespace PPTX
 				chartRec->toXmlWriter(pWriter);
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+		}
+		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring namespace_ = m_namespace;
+			
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && pWriter->m_lGroupIndex >= 0)	namespace_ = L"wpg";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
+
+			pWriter->StartNode(namespace_ + L":graphicFrame");
+
+			pWriter->EndAttributes();
+			
+			if (xfrm.IsInit())
+			{
+				xfrm->m_ns = namespace_;
+				xfrm->toXmlWriter(pWriter);
+			}
+			toXmlWriter2(pWriter);
 
 			pWriter->EndNode(namespace_ + L":graphicFrame");
 		}
@@ -527,24 +529,13 @@ namespace PPTX
 				parentAs<Logic::SpTree>().NormalizeRect(pRect);
 		}
 
-		std::wstring GraphicFrame::toXML() const
+  		
+		std::wstring GraphicFrame::toXML2() const
 		{
-			std::wstring sXml;
-			
-			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
-
+ 			std::wstring sXml;
 			sXml += nvGraphicFramePr.toXML();
-
-			sXml += L"<" + m_namespace + L":xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/>";
-			sXml += L"</" + m_namespace + L":xfrm>";
-
-			if (xfrm.IsInit())
-			{
-				xfrm->m_ns = m_namespace;
-				sXml += xfrm->toXML();
-			}
-
-            if (table.IsInit())
+			
+			if (table.IsInit())
 			{
 				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">";
                 sXml += table->toXML();
@@ -556,6 +547,26 @@ namespace PPTX
 				sXml += chartRec->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
+			return sXml;
+		}
+		std::wstring GraphicFrame::toXML() const
+		{
+			std::wstring sXml;
+			
+			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
+
+			if (xfrm.IsInit())
+			{
+				xfrm->m_ns = m_namespace;
+				sXml += xfrm->toXML();
+			}
+			else
+			{
+				sXml += L"<" + m_namespace + L":xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/>";
+				sXml += L"</" + m_namespace + L":xfrm>";
+			}
+
+			sXml += toXML2();
 
 			sXml += L"</" + m_namespace + L":graphicFrame>";			
 			sXml += L"<" + m_namespace + L":clientData/>";
@@ -578,19 +589,6 @@ namespace PPTX
 			if (pic.is_init())
 				pic->SetParentPointer(this);
 		}
-
-		//OOX::CPath GraphicFrame::GetPathBySpid()const
-		//{
-  //          OOX::CPath filename;
-		//	if(parentFileIs<PPTX::Slide>())
-		//		filename = parentFileAs<PPTX::Slide>().GetPathBySpid(spid.get_value_or(_T("")));
-		//	else if(parentFileIs<PPTX::SlideLayout>())
-		//		filename = parentFileAs<PPTX::SlideLayout>().GetPathBySpid(spid.get_value_or(_T("")));
-		//	else if(parentFileIs<PPTX::SlideMaster>())
-		//		filename = parentFileAs<PPTX::SlideMaster>().GetPathBySpid(spid.get_value_or(_T("")));
-
-		//	return filename;
-		//}
 		std::wstring GraphicFrame::GetVmlXmlBySpid(std::wstring & rels)const
 		{
             std::wstring xml;

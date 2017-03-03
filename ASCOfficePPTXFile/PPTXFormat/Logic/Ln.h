@@ -37,6 +37,8 @@
 #include "./../Limit/PenAlign.h"
 #include "./../Limit/LineCap.h"
 #include "./../Limit/CompoundLine.h"
+
+#include "EffectProperties.h"
 #include "UniFill.h"
 #include "PrstDash.h"
 #include "LineEnd.h"
@@ -97,8 +99,8 @@ namespace PPTX
 						prstDash = oReader;
 						//m_eDashType = OOX::Drawing::linedashtypePreset;
 					}
-					//else if ( _T("a:extLst") == sName )
-					//	extLst = oReader;
+					else if ( _T("a:extLst") == sName )
+						Effects.fromXML(oReader);
 				}
 				FillParentPointersForChilds();
 			}
@@ -344,14 +346,14 @@ namespace PPTX
 		public:
 //			OOX::Drawing::ELineDashType	m_eDashType;   // Тип штриха
 
+			EffectProperties			Effects;
 			UniFill						Fill;
+
 			nullable<PrstDash>			prstDash;
 			//custDash (Custom Dash)  ยง20.1.8.21 
 			LineJoin					Join;
 			nullable<LineEnd>			headEnd;
 			nullable<LineEnd>			tailEnd;
-
-//			nullable<ExtLst>			extLst;
 
 			nullable_limit<Limit::PenAlign>		algn;
 			nullable_limit<Limit::LineCap>		cap;

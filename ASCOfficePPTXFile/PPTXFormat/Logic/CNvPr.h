@@ -105,20 +105,25 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual std::wstring toXML() const
+			
+			std::wstring toXML2(std::wstring node_name) const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("id"), id);
-				oAttr.Write(_T("name"), name);
-				oAttr.Write(_T("descr"), descr);
-				oAttr.Write(_T("hidden"), hidden);
-				oAttr.Write(_T("title"), title);
+									oAttr.Write(_T("id"),		id);
+									oAttr.Write(_T("name"),		XmlUtils::EncodeXmlString(name));
+				if (descr.IsInit())	oAttr.Write(_T("descr"),	XmlUtils::EncodeXmlString(descr.get()));
+									oAttr.Write(_T("hidden"),	hidden);
+				if (title.IsInit())	oAttr.Write(_T("title"),	XmlUtils::EncodeXmlString(title.get()));
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(hlinkClick);
 				oValue.WriteNullable(hlinkHover);
 
-				return XmlUtils::CreateNode(m_namespace + L":cNvPr", oAttr, oValue);
+				return XmlUtils::CreateNode(node_name.empty() ? (m_namespace + L":cNvPr") : node_name, oAttr, oValue);
+			}
+			virtual std::wstring toXML() const
+			{
+				return toXML2(L"");
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -133,9 +138,6 @@ namespace PPTX
 			}
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				//if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && id == -1)
-				//	return;
-
 				pWriter->StartNode(strNS + _T(":cNvPr"));
 
 				int _id = id;
@@ -153,11 +155,11 @@ namespace PPTX
 				}
 
 				pWriter->StartAttributes();
-                pWriter->WriteAttribute (_T("id"),      _id);
-                pWriter->WriteAttribute2(_T("name"),    name);
-                pWriter->WriteAttribute2(_T("descr"),   descr);
-                pWriter->WriteAttribute (_T("hidden"),  hidden);
-                pWriter->WriteAttribute (_T("title"),   title);
+									pWriter->WriteAttribute (_T("id"),      _id);
+									pWriter->WriteAttribute (_T("name"),    XmlUtils::EncodeXmlString(name));
+				if (descr.IsInit())	pWriter->WriteAttribute	(_T("descr"),   XmlUtils::EncodeXmlString(descr.get()));
+									pWriter->WriteAttribute (_T("hidden"),  hidden);
+				if (title.IsInit())	pWriter->WriteAttribute (_T("title"),   XmlUtils::EncodeXmlString(title.get()));
 
 				pWriter->EndAttributes();
 

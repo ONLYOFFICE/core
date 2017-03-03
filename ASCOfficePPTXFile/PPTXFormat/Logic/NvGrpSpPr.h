@@ -48,9 +48,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NvGrpSpPr)
 
-			NvGrpSpPr()
+			NvGrpSpPr(std::wstring ns = L"p")
 			{
-				m_namespace = L"p";
+				m_namespace = ns;
 			}
 
 			NvGrpSpPr& operator=(const NvGrpSpPr& oSrc)
@@ -76,7 +76,9 @@ namespace PPTX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const 
 			{
 				std::wstring namespace_ = m_namespace;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
 
 				pWriter->StartNode(namespace_ + L":nvGrpSpPr");
 				
@@ -132,7 +134,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-			std::wstring			m_namespace;
+			std::wstring m_namespace;
 
 			CNvPr		cNvPr;
 			CNvGrpSpPr	cNvGrpSpPr;

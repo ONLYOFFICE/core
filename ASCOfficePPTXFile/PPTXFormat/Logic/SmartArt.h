@@ -56,6 +56,12 @@ namespace PPTX
 				m_diag = oSrc.m_diag;
 				return *this;
 			}
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_dgm_DiagrammParts;
+			}
+			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )

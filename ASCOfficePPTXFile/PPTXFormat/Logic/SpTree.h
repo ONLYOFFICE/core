@@ -51,8 +51,10 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(SpTree)
 
-			SpTree()
+			SpTree(std::wstring ns = L"p") : nvGrpSpPr(ns), grpSpPr(ns)
 			{
+				m_namespace		= ns;
+				m_lGroupIndex	= 0;
 			}
 
 			SpTree& operator=(const SpTree& oSrc)
@@ -66,7 +68,8 @@ namespace PPTX
 				for (size_t i=0; i < oSrc.SpTreeElems.size(); i++)
 					SpTreeElems.push_back(oSrc.SpTreeElems[i]);
 
-				m_name = oSrc.m_name;
+				m_namespace		= oSrc.m_namespace;
+				m_lGroupIndex	= oSrc.m_lGroupIndex;
 
 				return *this;
 			}
@@ -76,7 +79,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				m_name = oReader.GetName();
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 				
 				SpTreeElems.clear();
 
@@ -104,7 +107,14 @@ namespace PPTX
 					{
 						SpTreeElem elem(oReader);
 						if (elem.is_init())
+						{
+							if (elem.getType() == OOX::et_p_ShapeTree)
+							{
+                                smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
+								e->m_lGroupIndex = m_lGroupIndex + 1;
+							}
 							SpTreeElems.push_back(elem);
+						}
 					}
 				}
 
@@ -113,7 +123,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name = node.GetName();
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
 				
 				nvGrpSpPr	= node.ReadNodeNoNS(_T("nvGrpSpPr"));
 				grpSpPr		= node.ReadNodeNoNS(_T("grpSpPr"));
@@ -143,7 +153,14 @@ namespace PPTX
 						{
 							SpTreeElem elem(oNode);
 							if (elem.is_init())
+							{
+								if (elem.getType() == OOX::et_p_ShapeTree)
+								{
+                                    smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
+									e->m_lGroupIndex = m_lGroupIndex + 1;
+								}
 								SpTreeElems.push_back(elem);
+							}
 						}
 					}
 				}
@@ -153,29 +170,45 @@ namespace PPTX
 
 			virtual std::wstring toXML() const
 			{
+				std::wstring name_;
+				if (m_namespace == L"wpg")
+				{
+					if (m_lGroupIndex == 0)		name_ = L"wpg:wgp";
+					else						name_ = L"wpg:grpSp";
+				}
+				else if (m_namespace == L"xdr")	name_ = L"xdr:grpSp";
+				else
+				{
+					if (m_lGroupIndex == 0)		name_ = L"p:spTree";
+					else						name_ = L"p:grpSp";
+				}
+
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(nvGrpSpPr);
 				oValue.Write(grpSpPr);
+				
 				oValue.WriteArray(SpTreeElems);
 
-				return XmlUtils::CreateNode(m_name, oValue);
+				return XmlUtils::CreateNode(name_, oValue);
 			}
 
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				std::wstring name_;
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 				{
-					if (pWriter->m_lGroupIndex == 0)
-						pWriter->StartNode(_T("wpg:wgp"));
-					else
-						pWriter->StartNode(_T("wpg:grpSp"));
+					if (pWriter->m_lGroupIndex == 0)	name_ = L"wpg:wgp";
+					else								name_ = L"wpg:grpSp";
 				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:grpSp"));
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	name_ = L"xdr:grpSp";
 				else
-					pWriter->StartNode(m_name);
+				{
+					if (pWriter->m_lGroupIndex == 0)	name_ = L"p:spTree";
+					else								name_ = L"p:grpSp";
+				}					
+				pWriter->StartNode(name_);
 
 				pWriter->EndAttributes();
 
@@ -196,18 +229,8 @@ namespace PPTX
 					SpTreeElems[i].toXmlWriter(pWriter);
 
 				pWriter->m_lGroupIndex--;
-				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-				{
-					if (pWriter->m_lGroupIndex == 0)
-						pWriter->EndNode(_T("wpg:wgp"));
-					else
-						pWriter->EndNode(_T("wpg:grpSp"));
-				}
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:grpSp"));
-				else
-					pWriter->EndNode(m_name);
+
+				pWriter->EndNode(name_);
 			}
 
             void NormalizeRect(Aggplus::RECT& rect)const
@@ -273,12 +296,16 @@ namespace PPTX
 								if(nElemLength > 0)
 								{
 									SpTreeElem elm;
-									SpTreeElems.push_back(elm);
-									SpTreeElems.back().fromPPTY(pReader);
+									elm.fromPPTY(pReader);
 
-									if (!SpTreeElems.back().is_init())
+                                    if (elm.is_init())
 									{
-										SpTreeElems.pop_back();									
+										if (elm.getType() == OOX::et_p_ShapeTree)
+										{
+                                            smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
+											e->m_lGroupIndex = m_lGroupIndex + 1;
+										}
+										SpTreeElems.push_back(elm);
 									}
 								}
 							}
@@ -297,7 +324,8 @@ namespace PPTX
 			Logic::GrpSpPr			grpSpPr;
 			std::vector<SpTreeElem>	SpTreeElems;
 
-			std::wstring			m_name;
+			std::wstring			m_namespace;
+			int						m_lGroupIndex;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

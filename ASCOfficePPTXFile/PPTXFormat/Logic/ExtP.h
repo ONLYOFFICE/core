@@ -35,16 +35,35 @@
 #include "./../WrapperWritingElement.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
-/*
 
-<p:ext uri="{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}">
-<p14:media xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" r:embed="rId2">
-<p14:trim st="93333.0816" end="96583.4816"/>
-</p14:media>
-</p:ext>
 
-*/
+//<p:ext uri="{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}">
+//<p14:media xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" r:embed="rId2">
+//<p14:trim st="93333.0816" end="96583.4816"/>
+//</p14:media>
+//</p:ext>
 
+
+  //<ext uri="{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main">
+  // <x14:sparklineGroups xmlns:xm="http://schemas.microsoft.com/office/excel/2006/main">
+  //  <x14:sparklineGroup displayEmptyCellsAs="gap">
+  //   <x14:colorSeries theme="5" tint="-0.499984740745262"/>
+  //   <x14:colorNegative theme="6"/>
+  //   <x14:colorAxis rgb="FF000000"/>
+  //   <x14:colorMarkers theme="5" tint="-0.499984740745262"/>
+  //   <x14:colorFirst theme="5" tint="0.39997558519241921"/>
+  //   <x14:colorLast theme="5" tint="0.39997558519241921"/>
+  //   <x14:colorHigh theme="5"/>
+  //   <x14:colorLow theme="5"/>
+  //   <x14:sparklines>
+  //    <x14:sparkline>
+  //     <xm:f>Лист1!D10:D12</xm:f>
+  //     <xm:sqref>H12</xm:sqref>
+  //    </x14:sparkline>
+  //   </x14:sparklines>
+  //  </x14:sparklineGroup>
+  // </x14:sparklineGroups>
+  //</ext>
 namespace PPTX
 {
 	namespace Logic

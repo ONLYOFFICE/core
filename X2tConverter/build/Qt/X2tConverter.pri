@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.3.444
+VERSION = 2.0.3.445
 DEFINES += INTVER=$$VERSION
 
 TARGET = x2t
@@ -35,7 +35,11 @@ core_windows {
 
 #CONFIG += build_for_centos6
 build_for_centos6 {
+core_linux_64 {
     QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux-x86-64.so.2
+} else {
+    QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux.so.2
+}
 }
 
 DEFINES += UNICODE \

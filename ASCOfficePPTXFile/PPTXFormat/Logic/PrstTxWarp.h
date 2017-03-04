@@ -75,6 +75,9 @@ namespace PPTX
 					
 					if (_T("a:avLst") == strName)
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nCurDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
 						{

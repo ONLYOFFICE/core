@@ -94,7 +94,7 @@ namespace PPTX
 				{
 					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if (_T("a:picLocks") == strName)
+					if (_T("picLocks") == strName)
 					{
 						ReadAttributesLocks(oReader);
 					}

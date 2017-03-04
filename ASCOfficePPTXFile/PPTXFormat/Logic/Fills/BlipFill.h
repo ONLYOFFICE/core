@@ -84,25 +84,13 @@ namespace PPTX
 				{
 					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (_T("blip") == strName)
-					{
-						if (!blip.IsInit())	
-							blip = oReader;
-					}
+						blip = oReader;
 					else if (_T("srcRect") == strName)
-					{
-						if (!srcRect.IsInit())	
-							srcRect = oReader;
-					}
+						srcRect = oReader;
 					else if (_T("tile") == strName)
-					{
-						if (!tile.IsInit())	
-							tile = oReader;
-					}
+						tile = oReader;
 					else if (_T("stretch") == strName)
-					{
-						if (!stretch.IsInit())	
-							stretch = oReader;
-					}
+						stretch = oReader;
 				}
 			}
 			virtual OOX::EElementType getType () const

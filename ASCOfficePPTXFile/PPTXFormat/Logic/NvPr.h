@@ -80,6 +80,9 @@ namespace PPTX
 						ph = oReader;
 					else if (strName == L"extLst")
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nParentDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
 						{

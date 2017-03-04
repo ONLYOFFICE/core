@@ -75,9 +75,9 @@ namespace PPTX
 				int nParentDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
-					std::wstring strName = oReader.GetName();
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if (strName == L"a:graphicFrameLocks")
+					if (strName == L"graphicFrameLocks")
 					{
 						ReadAttributesLocks(oReader);
 					}
@@ -98,29 +98,29 @@ namespace PPTX
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 
-				XmlUtils::CXmlNode oNode;			
-				if (node.GetNode(_T("a:graphicFrameLocks"), oNode))
+				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(L"graphicFrameLocks");	
+				if (oNode.IsValid())
 				{
-					oNode.ReadAttributeBase(L"noChangeAspect", noChangeAspect);
-					oNode.ReadAttributeBase(L"noDrilldown", noDrilldown);
-					oNode.ReadAttributeBase(L"noGrp", noGrp);
-					oNode.ReadAttributeBase(L"noMove", noMove);
-					oNode.ReadAttributeBase(L"noResize", noResize);
-					oNode.ReadAttributeBase(L"noSelect", noSelect);
+					oNode.ReadAttributeBase(L"noChangeAspect",	noChangeAspect);
+					oNode.ReadAttributeBase(L"noDrilldown",		noDrilldown);
+					oNode.ReadAttributeBase(L"noGrp",			noGrp);
+					oNode.ReadAttributeBase(L"noMove",			noMove);
+					oNode.ReadAttributeBase(L"noResize",		noResize);
+					oNode.ReadAttributeBase(L"noSelect",		noSelect);
 				}
 			}
 
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("noChangeAspect"), noChangeAspect);
-				oAttr.Write(_T("noDrilldown"), noDrilldown);
-				oAttr.Write(_T("noGrp"), noGrp);
-				oAttr.Write(_T("noMove"), noMove);
-				oAttr.Write(_T("noResize"), noResize);
-				oAttr.Write(_T("noSelect"), noSelect);
+				oAttr.Write(_T("noChangeAspect"),	noChangeAspect);
+				oAttr.Write(_T("noDrilldown"),		noDrilldown);
+				oAttr.Write(_T("noGrp"),			noGrp);
+				oAttr.Write(_T("noMove"),			noMove);
+				oAttr.Write(_T("noResize"),			noResize);
+				oAttr.Write(_T("noSelect"),			noSelect);
 
-				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr>", XmlUtils::CreateNode(_T("a:graphicFrameLocks"), oAttr));
+				return XmlUtils::CreateNode(m_namespace + L":cNvGraphicFramePr", oAttr.m_strValue.empty() ? L"" : XmlUtils::CreateNode(L"a:graphicFrameLocks", oAttr));
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -128,6 +128,7 @@ namespace PPTX
 				std::wstring namespace_ = m_namespace;
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wp";
 
 				pWriter->StartNode(namespace_ + L":cNvGraphicFramePr");
 				

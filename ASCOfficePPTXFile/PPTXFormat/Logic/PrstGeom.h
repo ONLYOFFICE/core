@@ -75,6 +75,9 @@ namespace PPTX
 
 					if (sName == L"a:avLst")
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nParentDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
 						{
@@ -95,7 +98,7 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("r:prst"), prst)
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), prst)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)

@@ -72,9 +72,48 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"xfrm" == sName)
+						xfrm = oReader;
+					else if ( L"blipFill"	== sName	||
+							  L"gradFill"	== sName	||
+							  L"grpFill"	== sName	||
+							  L"noFill"		== sName	||
+							  L"pattFill"	== sName	||
+							  L"solidFill"	== sName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( L"effectDag"	== sName	||
+							  L"effectLst"	== sName	||
+							  L"extLst"		== sName )
+					{
+						EffectList.fromXML(oReader);		
+					}
+				}
+				FillParentPointersForChilds();
 			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+				WritingElement_ReadAttributes_End( oReader )
+			}	
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				node.ReadAttributeBase(L"bwMode", bwMode);
 
 				XmlUtils::CXmlNodes oNodes;

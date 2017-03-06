@@ -110,6 +110,8 @@ namespace PPTX
 
 	OOX::CPath FileContainer::CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation )
 	{
+        if (relation->IsExternal()) return relation->Target();
+
 		OOX::CPath filename = path / relation->Target();
 		
 		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;

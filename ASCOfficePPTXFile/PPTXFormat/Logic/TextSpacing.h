@@ -97,7 +97,7 @@ namespace PPTX
 				
 				if (spcPct.is_init())
 				{
-                    oValue.m_strValue = L"<a:spcPct val=\"" + std::to_wstring(*spcPct) + L"\">";
+                    oValue.m_strValue = L"<a:spcPct val=\"" + std::to_wstring(*spcPct) + L"\"/>";
 				}
 				else
 				{

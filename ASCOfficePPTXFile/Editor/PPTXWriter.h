@@ -1090,6 +1090,11 @@ namespace NSBinPptxRW
 			pTxRun->SetText(_T("")); // enter simple comment here
 
 			pShape->txBody = pTxBody;
+            if (pShape->txBody.IsInit())
+            {
+                if (!pShape->txBody->bodyPr.IsInit())
+                    pShape->txBody->bodyPr = new PPTX::Logic::BodyPr;
+            }
 
 			PPTX::Logic::RunElem elm;
 			pTxBody->Paragrs[0].RunElems.push_back(elm);

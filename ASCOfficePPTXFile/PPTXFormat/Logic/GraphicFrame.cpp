@@ -298,6 +298,15 @@ namespace PPTX
 		{
 			nvGraphicFramePr.toXmlWriter(pWriter);
             
+			if (xfrm.IsInit() && pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
+			{
+				std::wstring namespace_ = m_namespace;			
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0) namespace_ = L"xdr";
+				
+				xfrm->m_ns = namespace_;
+				xfrm->toXmlWriter(pWriter);
+			}
+
 			if (table.is_init())
 			{
 				pWriter->WriteString (L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">");
@@ -322,11 +331,6 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 			
-			if (xfrm.IsInit())
-			{
-				xfrm->m_ns = namespace_;
-				xfrm->toXmlWriter(pWriter);
-			}
 			toXmlWriter2(pWriter);
 
 			pWriter->EndNode(namespace_ + L":graphicFrame");
@@ -535,6 +539,11 @@ namespace PPTX
  			std::wstring sXml;
 			sXml += nvGraphicFramePr.toXML();
 			
+			if (xfrm.IsInit() && m_namespace != L"wp")
+			{
+				sXml += xfrm->toXML();
+			}
+
 			if (table.IsInit())
 			{
 				sXml += L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">";
@@ -554,17 +563,6 @@ namespace PPTX
 			std::wstring sXml;
 			
 			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
-
-			if (xfrm.IsInit())
-			{
-				xfrm->m_ns = m_namespace;
-				sXml += xfrm->toXML();
-			}
-			else
-			{
-				sXml += L"<" + m_namespace + L":xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/>";
-				sXml += L"</" + m_namespace + L":xfrm>";
-			}
 
 			sXml += toXML2();
 

@@ -86,6 +86,9 @@ namespace PPTX
 
 					if (strName == L"tblGrid")
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nParentDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
 						{

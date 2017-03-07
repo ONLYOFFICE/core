@@ -138,6 +138,9 @@ namespace PPTX
 						RunElems.push_back(RunElem(oReader));
 					else if (_T("AlternateContent") == strName)
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nParentDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
 						{

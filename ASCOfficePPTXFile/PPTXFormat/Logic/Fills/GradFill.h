@@ -98,6 +98,9 @@ namespace PPTX
 						tileRect = oReader;
 					else if (_T("gsLst") == strName)
 					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
 						int nCurDepth1 = oReader.GetDepth();
 						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
 						{

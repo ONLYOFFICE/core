@@ -171,7 +171,7 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				std::wstring name_;
-				if (m_namespace == L"wpg")
+				if (m_namespace == L"wp")
 				{
 					if (m_lGroupIndex == 0)		name_ = L"wpg:wgp";
 					else						name_ = L"wpg:grpSp";

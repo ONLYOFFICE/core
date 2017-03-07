@@ -161,10 +161,6 @@ namespace PPTX
 
 			void toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				/*
-				pWriter->StartNode(_T("c:rich"));
-				pWriter->EndAttributes();
-				*/
 				if (bodyPr.IsInit())
 				{
 					bodyPr->m_namespace = _T("a");
@@ -194,12 +190,12 @@ namespace PPTX
 				return result;
 			}
 
-			void Merge(nullable<TxBody>& txBody)const
+            void Merge(nullable<TxBody>& txBody)
 			{
-				if(!txBody.is_init()) return;
+                if (!bodyPr.IsInit())
+                    bodyPr = new Logic::BodyPr();
 
-				if(bodyPr.IsInit())
-					bodyPr->Merge(txBody->bodyPr);
+                bodyPr->Merge(txBody->bodyPr);
 
 				if(lstStyle.IsInit())
 					lstStyle->Merge(txBody->lstStyle);
@@ -253,9 +249,9 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 
-				if (!bodyPr.IsInit())
-					bodyPr = new Logic::BodyPr();
-			}
+                if (!bodyPr.IsInit())
+                    bodyPr = new Logic::BodyPr();
+            }
 
 			nullable<BodyPr>		bodyPr;
 			nullable<TextListStyle> lstStyle;
@@ -277,14 +273,6 @@ namespace PPTX
 			}
 
 		public:
-			bool IsOneLineParagraphs() const
-			{
-				if (!bodyPr.is_init()) return false;
-
-				if (!bodyPr->wrap.is_init())	return false;
-
-				return (bodyPr->wrap->get() == _T("none"));
-			}
 
 			std::wstring GetDocxTxBoxContent(NSBinPptxRW::CBinaryFileWriter* pWriter, const nullable<PPTX::Logic::ShapeStyle>& shape_style);
 		};

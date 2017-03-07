@@ -77,7 +77,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:link"), link )
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("cstate"), cstate )

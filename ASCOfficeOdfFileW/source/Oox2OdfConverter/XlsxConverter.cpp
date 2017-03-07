@@ -1763,7 +1763,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCellAnchor *oox_anchor)
 	else if (oox_anchor->m_oGroupShape.IsInit())
 	{
 		convert(oox_anchor->m_oGroupShape.GetPointer());
-	}	
+	}
+	else if (oox_anchor->m_oGraphicFrame.IsInit())
+	{
+		OoxConverter::convert(oox_anchor->m_oGraphicFrame.GetPointer());
+	}
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing)

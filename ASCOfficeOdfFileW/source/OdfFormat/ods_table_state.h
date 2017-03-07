@@ -110,7 +110,7 @@ namespace utils {
 	{
 		if (!a_.empty())
 		{
-           return boost::lexical_cast<int>(a_.length())-1;
+           return boost::lexical_cast<int>(a_) - 1;
 		}
 		else
 			return 0;

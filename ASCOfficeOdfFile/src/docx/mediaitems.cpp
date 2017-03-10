@@ -166,8 +166,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
-    bool isMediaInternal = is_internal(href, odf_packet_);
-  
+	bool isMediaInternal = true;
 	std::wstring sub_path = L"media/";
 	
 	std::wstring inputFileName;
@@ -175,10 +174,13 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		sub_path = L"charts/";
 	}
-	if ( type == typeMsObject || type == typeOleObject)
+	else if ( type == typeMsObject || type == typeOleObject)
 	{
 		sub_path = L"embeddings/";
 	}
+	else 
+		isMediaInternal = is_internal(href, odf_packet_);
+	
 	int number=0;
 	
 		 if ( type == typeChart)		number = count_charts	+ 1;

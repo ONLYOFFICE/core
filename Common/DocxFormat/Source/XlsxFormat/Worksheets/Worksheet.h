@@ -224,7 +224,15 @@ namespace OOX
 					
 					if (pShape == NULL) continue;
 
-					for(size_t j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
+                    if (pShape->m_sId.IsInit())
+                    {//mark shape as used
+                        std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+                        if (pFind != pVmlDrawing->m_mapShapes.end())
+                        {
+                            pFind->second.bUsed = true;
+                        }
+                    }
+                    for(size_t j = 0, length2 = pShape->m_arrItems.size(); j < length2; ++j)
 					{
 						OOX::WritingElement* pElem = pShape->m_arrItems[j];
 						if( OOX::et_v_ClientData == pElem->getType())

@@ -33,6 +33,7 @@
 		6967B1C11E27B4B800A129E2 /* RtfWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B1991E27B4B800A129E2 /* RtfWriter.cpp */; };
 		6967B1C21E27B4B800A129E2 /* OOXDocumentWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B19F1E27B4B800A129E2 /* OOXDocumentWriter.cpp */; };
 		6967B1C31E27B4B800A129E2 /* OOXWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B1A81E27B4B800A129E2 /* OOXWriter.cpp */; };
+		69ACB6D31E7A983400096E94 /* svg_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69ACB6D11E7A983400096E94 /* svg_parser.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -167,6 +168,8 @@
 		6967B1C61E27B81B00A129E2 /* StringBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringBuilder.h; path = ../../../../DesktopEditor/common/StringBuilder.h; sourceTree = "<group>"; };
 		6967B1C71E27B89400A129E2 /* PPTShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PPTShape.h; path = ../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/PPTShape.h; sourceTree = "<group>"; };
 		6967B1C81E27B8F900A129E2 /* BaseShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseShape.h; path = ../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/BaseShape.h; sourceTree = "<group>"; };
+		69ACB6D11E7A983400096E94 /* svg_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = svg_parser.cpp; path = ../../../../ASCOfficeOdfFile/src/odf/svg_parser.cpp; sourceTree = "<group>"; };
+		69ACB6D21E7A983400096E94 /* svg_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = svg_parser.h; path = ../../../../ASCOfficeOdfFile/src/odf/svg_parser.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +211,7 @@
 		6967B13D1E27B4B800A129E2 /* Reader */ = {
 			isa = PBXGroup;
 			children = (
+				69ACB6D01E7A982B00096E94 /* odf */,
 				6967B13E1E27B4B800A129E2 /* OOXAbstractNumReader.h */,
 				6967B13F1E27B4B800A129E2 /* OOXAppReader.h */,
 				6967B1401E27B4B800A129E2 /* OOXBorderReader.h */,
@@ -355,6 +359,15 @@
 			name = common;
 			sourceTree = "<group>";
 		};
+		69ACB6D01E7A982B00096E94 /* odf */ = {
+			isa = PBXGroup;
+			children = (
+				69ACB6D11E7A983400096E94 /* svg_parser.cpp */,
+				69ACB6D21E7A983400096E94 /* svg_parser.h */,
+			);
+			name = odf;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -419,6 +432,7 @@
 				6967B1B61E27B4B800A129E2 /* RtfField.cpp in Sources */,
 				6967B1BB1E27B4B800A129E2 /* RtfParagraph.cpp in Sources */,
 				6967B1AC1E27B4B800A129E2 /* OOXDrawingGraphicReader.cpp in Sources */,
+				69ACB6D31E7A983400096E94 /* svg_parser.cpp in Sources */,
 				6967B1AD1E27B4B800A129E2 /* OOXHeaderReader.cpp in Sources */,
 				6967B1B31E27B4B800A129E2 /* RtfBookmark.cpp in Sources */,
 				6967B1C11E27B4B800A129E2 /* RtfWriter.cpp in Sources */,
@@ -547,6 +561,7 @@
 					PPT_DEF,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -579,6 +594,7 @@
 					PPT_DEF,
 					_IOS,
 					DONT_WRITE_EMBEDDED_FONTS,
+					AVS_USE_CONVERT_PPTX_TOCUSTOM_VML,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

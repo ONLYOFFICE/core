@@ -553,6 +553,11 @@ HRESULT CPdfRenderer::NewPage()
 	m_oFont.Reset();
 	m_oPath.Clear();
 
+    // clear font!!!
+    m_oFont.SetName(L"");
+    m_oFont.SetSize(-1);
+    m_oFont.SetStyle(1 << 5);
+
 	m_lClipDepth = 0;
 
     m_nPagesCount++;//printf("Page %d\n", m_nPagesCount++);

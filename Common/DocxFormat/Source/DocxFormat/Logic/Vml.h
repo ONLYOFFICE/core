@@ -56,7 +56,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CVmlCommonElements)
-			CVmlCommonElements(){}
+            CVmlCommonElements(){m_bComment = false;}
 			
 			virtual ~CVmlCommonElements(){}
 
@@ -137,6 +137,9 @@ namespace OOX
 
 			std::wstring WriteAttributes() const;
 			std::wstring WriteElements() const;
+
+//internal
+            bool m_bComment;
 		};
 
 		//--------------------------------------------------------------------------------

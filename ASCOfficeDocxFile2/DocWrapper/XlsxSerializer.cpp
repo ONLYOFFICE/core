@@ -85,9 +85,9 @@ namespace BinXlsxRW{
 	}
     bool CXlsxSerializer::loadFromFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedDir)
 	{
-		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
-		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
-		oOfficeDrawingConverter.SetEmbedDstPath(sEmbedDir);
+        NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
+        oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
+        oOfficeDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
 		//папка с бинарников
 		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
@@ -95,7 +95,7 @@ namespace BinXlsxRW{
         oOfficeDrawingConverter.SetSourceFileDir(strFileInDir, 2);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
-		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
+        oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
     bool CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)

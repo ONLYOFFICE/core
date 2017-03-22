@@ -102,7 +102,7 @@ namespace OOX
 				ReadAttributes( oReader );
 
 				std::wstring elementContent;
-				bool bReadyElement = false;//собираем все до нахождения собственно элемента
+                bool bReadyElement  = false;//собираем все до нахождения собственно элемента
 
 				if ( !oReader.IsEmptyNode() )
 				{
@@ -219,12 +219,15 @@ namespace OOX
 
 							OOX::Vml::CVmlCommonElements* common = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pItem);
 							std::wstring sSpid;
-							
+                            bool bComment = false;
+
 							if (common)
 							{
 								if (common->m_sSpId.IsInit())	sSpid = *common->m_sSpId;
 								else if (common->m_sId.IsInit())sSpid = *common->m_sId;
-							}
+
+                                bComment = common->m_bComment;
+                            }
 							else
 							{
 								OOX::Vml::CGroup *group = dynamic_cast<OOX::Vml::CGroup*>(pItem);
@@ -243,11 +246,13 @@ namespace OOX
 									element.nId			= (int)m_arrItems.size()-1;
 									element.sXml		= elementContent;
 									element.pElement	= pItem;
+                                    element.bUsed       = bComment;
 
 									m_mapShapes.insert(std::make_pair(sSpid, element));
 								}
 								elementContent.clear();
-								bReadyElement = false;
+                                bReadyElement   = false;
+                                bComment        = false;
 							}
 						}						
 					}

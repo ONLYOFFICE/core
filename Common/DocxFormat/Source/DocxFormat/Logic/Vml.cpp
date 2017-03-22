@@ -297,7 +297,13 @@ namespace OOX
 				case 'x':
 
 					if ( _T("x:ClientData") == sName )
+                    {
 						pItem = new OOX::Vml::CClientData( oReader );
+                        OOX::Vml::CClientData * client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
+                        if ((client_data) && (client_data->m_oObjectType.IsInit()))
+                               if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
+                                    m_bComment = true;
+                    }
 
 					break;
 

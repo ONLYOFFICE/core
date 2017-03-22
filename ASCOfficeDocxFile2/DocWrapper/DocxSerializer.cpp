@@ -263,7 +263,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 			
             if(false != Base64::Base64Decode((const char*)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 			{
-				NSBinPptxRW::CDrawingConverter oDrawingConverter;
+                NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
 				oBufferedStream.Init(pData, 0, nDataSize);
 

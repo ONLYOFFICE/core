@@ -1937,14 +1937,20 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oCol.m_oWidth->GetValue());
 			}
-			//CustomWidth
-			if(oCol.m_oCustomWidth.IsInit())
-			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::CustomWidth);
-				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oCol.m_oCustomWidth->ToBool());
-			}
-		}
+            //CustomWidth
+            if(oCol.m_oCustomWidth.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::CustomWidth);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+                m_oBcw.m_oStream.WriteBYTE(oCol.m_oCustomWidth->ToBool());
+            }
+            if(oCol.m_oOutlineLevel.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::OutLevel);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+                m_oBcw.m_oStream.WriteLONG(oCol.m_oOutlineLevel->GetValue());
+            }
+        }
 
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews)
 		{
@@ -2402,7 +2408,13 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(oRows.m_oCustomHeight->ToBool());
 			}
-			if(oRows.m_arrItems.size() > 0)
+            if(oRows.m_oOutlineLevel.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerRowTypes::OutLevel);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+                m_oBcw.m_oStream.WriteLONG(oRows.m_oOutlineLevel->GetValue());
+            }
+            if(oRows.m_arrItems.size() > 0)
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerRowTypes::Cells);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);

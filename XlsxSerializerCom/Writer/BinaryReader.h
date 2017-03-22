@@ -2118,7 +2118,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadWorksheetProp(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2140,7 +2140,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadWorksheetCols(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2153,7 +2153,7 @@ namespace BinXlsxRW {
 			else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadWorksheetCol(BYTE type, long length, void* poResult)
 		{
 			OOX::Spreadsheet::CCol* pCol = static_cast<OOX::Spreadsheet::CCol*>(poResult);
@@ -2198,10 +2198,15 @@ namespace BinXlsxRW {
 				pCol->m_oCustomWidth.Init();
 				pCol->m_oCustomWidth->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 			}
-			else
+            else if(c_oSerWorksheetColTypes::OutLevel == type)
+            {
+                pCol->m_oOutlineLevel.Init();
+                pCol->m_oOutlineLevel->SetValue(m_oBufferedStream.GetLong());
+            }
+            else
 				res = c_oSerConstants::ReadUnknown;
 			return res;
-		};
+        }
 		int ReadSheetViews(BYTE type, long length, void* poResult)
 		{
 			int res = c_oSerConstants::ReadOk;
@@ -2978,7 +2983,12 @@ namespace BinXlsxRW {
 				pRow->m_oCustomHeight.Init();
 				pRow->m_oCustomHeight->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 			}
-			else if(c_oSerRowTypes::Cells == type)
+            else if(c_oSerRowTypes::OutLevel == type)
+            {
+                pRow->m_oOutlineLevel.Init();
+                pRow->m_oOutlineLevel->SetValue(m_oBufferedStream.GetLong());
+            }
+            else if(c_oSerRowTypes::Cells == type)
 			{
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadCells, this, pRow);
 			}

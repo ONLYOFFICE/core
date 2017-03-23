@@ -6689,7 +6689,7 @@ public:
 		else if ( c_oSerImageType2::RelativeHeight == type )
 		{
 			pDrawingProperty->bRelativeHeight = true;
-			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetLong();
+			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::BSimplePos == type )
 		{

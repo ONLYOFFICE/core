@@ -176,7 +176,9 @@ namespace OOX
 			if ( m_sDescr.IsInit()  )
 			{
 				sResult += _T("descr=\"");
-                sResult += m_sDescr.get2();
+                std::wstring d = XmlUtils::EncodeXmlString(m_sDescr.get());
+                XmlUtils::replace_all(d, L"\n", L"&#xA;");
+                sResult += d;
 				sResult += _T("\" ");
 			}
 			if ( m_oHidden.IsInit() ) sResult += _T("hidden=\"") + m_oHidden->ToString() + _T("\" ");

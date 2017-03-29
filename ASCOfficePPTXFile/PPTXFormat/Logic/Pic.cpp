@@ -33,11 +33,26 @@
 
 #include "Pic.h"
 #include "SpTree.h"
+
 #include "./../SlideLayout.h"
 #include "./../SlideMaster.h"
 #include "./../Slide.h"
+
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"
+
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
+
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
+#include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
+#include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+
+#include "../../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
+#include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
+
+#include "../../../Common/OfficeFileFormatChecker.h"
 
 namespace PPTX
 {
@@ -45,15 +60,26 @@ namespace PPTX
 	{
 		void COLEObject::fromXML(XmlUtils::CXmlNode& node)
 		{
-			node.ReadAttributeBase(L"DrawAspect", m_oDrawAspect);
-			node.ReadAttributeBase(L"r:id", m_oId);
-			node.ReadAttributeBase(L"ObjectID", m_sObjectId);
-			node.ReadAttributeBase(L"ProgID", m_sProgId);
-			node.ReadAttributeBase(L"ShapeID", m_sShapeId);
-			node.ReadAttributeBase(L"Type", m_oType);
-			node.ReadAttributeBase(L"UpdateMode", m_oUpdateMode);
-			node.ReadAttributeBase(L"pathbin", m_sFilepathBin);
-			node.ReadAttributeBase(L"pathimg", m_sFilepathImg);
+			node.ReadAttributeBase(L"DrawAspect",	m_oDrawAspect);
+			node.ReadAttributeBase(L"r:id",			m_oId);
+			node.ReadAttributeBase(L"ObjectID",		m_sObjectId);
+			node.ReadAttributeBase(L"ProgID",		m_sProgId);
+			node.ReadAttributeBase(L"ShapeID",		m_sShapeId);
+			node.ReadAttributeBase(L"Type",			m_oType);
+			node.ReadAttributeBase(L"UpdateMode",	m_oUpdateMode);
+
+			std::wstring ole_bin, ole_image, mspackage;
+			
+			node.ReadAttributeBase(L"pathbin", ole_bin);
+			node.ReadAttributeBase(L"pathimg", ole_image);
+			node.ReadAttributeBase(L"mspackage", mspackage);
+
+			if (m_OleObjectFile.IsInit() == false && !ole_bin.empty())
+			{
+				m_OleObjectFile = new OOX::OleObject(!mspackage.empty());
+				m_OleObjectFile->set_filename		(ole_bin);
+				m_OleObjectFile->set_filename_cache	(ole_image);
+			}
 		}
 
 		std::wstring COLEObject::toXML() const
@@ -80,87 +106,132 @@ namespace PPTX
 
 			pWriter->EndNode(strName);
 		}
-		void COLEObject::toXmlWriterXlsx(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			std::wstring strName = L"oleObject";
-			pWriter->StartNode(strName);
-
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute2(L"progId", m_sProgId);
-			if(m_oDrawAspect.IsInit())
-			{
-				std::wstring sDrawAspect;
-				if(0 == m_oDrawAspect->GetBYTECode())
-				{
-					sDrawAspect = L"DVASPECT_CONTENT";
-				}
-				else
-				{
-					sDrawAspect = L"DVASPECT_ICON";
-				}
-				pWriter->WriteAttribute(L"dvAspect", sDrawAspect);
-			}
-			if(m_oUpdateMode.IsInit())
-			{
-				std::wstring sUpdateMode;
-				if(0 == m_oUpdateMode->GetBYTECode())
-				{
-					sUpdateMode = L"OLEUPDATE_ALWAYS";
-				}
-				else
-				{
-					sUpdateMode = L"OLEUPDATE_ONCALL";
-				}
-				pWriter->WriteAttribute(L"oleUpdate", sUpdateMode);
-			}
-			pWriter->WriteAttribute(L"shapeId", m_sShapeId);
-			if(m_oId.IsInit())
-			{
-				pWriter->WriteAttribute(L"r:id", m_oId->ToString());
-			}
-			pWriter->WriteAttribute2(L"pathbin", m_sFilepathBin);
-			pWriter->WriteAttribute2(L"pathimg", m_sFilepathImg);
-			pWriter->WriteAttribute2(L"idimg", m_oIdImg->ToString());
-			pWriter->EndAttributes();
-
-			pWriter->EndNode(strName);
-		}
 		void COLEObject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
+			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
+			
+			if(m_oId.IsInit() && ole_file.IsInit() == false) 
+			{
+				FileContainer* pRels = NULL;
+				if (pWriter->m_pCommonRels->is_init())
+					pRels = pWriter->m_pCommonRels->operator ->();
+
+				ole_file = GetOleObject(m_oId.get(), pRels);
+			}			
 			std::wstring sData;
-			if((m_oId.IsInit() || m_sFilepathBin.IsInit()) && m_sProgId.IsInit() && 0 == m_sProgId.get().find(L"asc."))
+			std::wstring sProgID = m_sProgId.get_value_or(L"");
+
+			if (ole_file.IsInit() && 0 == sProgID.find(L"asc."))
 			{
-				std::wstring sFilePath;
-				if (m_sFilepathBin.IsInit())
-				{
-					sFilePath = m_sFilepathBin.get();
-				}
-				else if (m_oId.IsInit())
-				{
-					FileContainer* pRels = NULL;
-					if (pWriter->m_pCommonRels->is_init())
-						pRels = pWriter->m_pCommonRels->operator ->();
-
-					sFilePath = this->GetFullOleName(OOX::RId(m_oId.get()), pRels);
-				}
-                if(!sFilePath.empty())
-				{
-					sData = GetOleData(sFilePath);
-				}
+				sData = GetOleData(ole_file->filename().GetPath());
 			}
-
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sProgId);
-			if(!sData.empty())
-			{
-				pWriter->WriteString1Data(1, sData.c_str(), sData.length());
-			}
-			pWriter->WriteInt2(2, m_oDxaOrig);
-			pWriter->WriteInt2(3, m_oDyaOrig);
-			pWriter->WriteLimit2(4, m_oDrawAspect);
-			pWriter->WriteLimit2(5, m_oType);
-			pWriter->WriteLimit2(6, m_oUpdateMode);
+				pWriter->WriteString2(0, m_sProgId);
+				if(!sData.empty())
+					pWriter->WriteString1Data(1, sData.c_str(), sData.length());				
+				pWriter->WriteInt2	(2, m_oDxaOrig);
+				pWriter->WriteInt2	(3, m_oDyaOrig);
+				pWriter->WriteLimit2(4, m_oDrawAspect);
+				pWriter->WriteLimit2(5, m_oType);
+				pWriter->WriteLimit2(6, m_oUpdateMode);
+				if (ole_file.IsInit() == false || ole_file->isMsPackage() == false)
+				{
+					pWriter->WriteString1(7, ole_file->filename().GetFilename()); //OleObject Binary FileName (bin, xls, doc, ... other stream file)
+				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			
+			if (ole_file.IsInit() == false) return;
+
+			if (ole_file->isMsPackage())
+			{
+				OOX::CPath oox_file		= ole_file->filename();
+				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp";
+				NSDirectory::CreateDirectoryW(oox_unpacked.GetPath());
+
+				COfficeUtils oOfficeUtils(NULL);
+				oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
+
+				COfficeFileFormatChecker office_checker;
+				office_checker.isOOXFormatFile(oox_file.GetPath());
+				//if ( std::wstring::npos != sProgID.find(L"Word.Document"))
+				if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX)
+				{
+					pWriter->StartRecord(1);
+						pWriter->WriteBYTE(1);
+					pWriter->EndRecord();
+
+					DocWrapper::FontProcessor fp;
+					NSBinPptxRW::CDrawingConverter oDrawingConverter; 
+					
+					NSBinPptxRW::CBinaryFileWriter*			old_writer	= oDrawingConverter.m_pBinaryWriter;
+					NSCommon::smart_ptr<PPTX::CCommonRels>  old_rels	= *pWriter->m_pCommonRels;
+					
+					oDrawingConverter.m_pBinaryWriter = pWriter;
+					
+					BinDocxRW::ParamsWriter		oParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
+					BinDocxRW::BinaryFileWriter oBinaryFileWriter(oParamsWriter);
+
+					pWriter->StartRecord(2);
+						oBinaryFileWriter.intoBindoc(oox_unpacked.GetPath());
+					pWriter->EndRecord();
+
+					oDrawingConverter.m_pBinaryWriter	= old_writer;
+					*pWriter->m_pCommonRels				= old_rels;
+				}
+				else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX)
+				//if ( std::wstring::npos != sProgID.find(L"Excel.Sheet")) //"ET.Xlsx.6" !!!
+				{
+					pWriter->StartRecord(1);
+						pWriter->WriteBYTE(2);
+					pWriter->EndRecord();
+
+					DocWrapper::FontProcessor fp;
+					NSBinPptxRW::CDrawingConverter oDrawingConverter;
+					
+					NSBinPptxRW::CBinaryFileWriter*			old_writer	= oDrawingConverter.m_pBinaryWriter;
+					NSCommon::smart_ptr<PPTX::CCommonRels>  old_rels	= *pWriter->m_pCommonRels;
+					
+					oDrawingConverter.m_pBinaryWriter = pWriter;
+
+					BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(fp); 
+					OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
+					
+					pWriter->StartRecord(2);
+						xlsxBinaryWriter.intoBindoc(oXlsxEmbedded, *pWriter , NULL, &oDrawingConverter);
+					pWriter->EndRecord();
+					
+					oDrawingConverter.m_pBinaryWriter	= old_writer;
+					*pWriter->m_pCommonRels				= old_rels;
+				}
+				//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
+				//{
+				//}
+				else
+				{//unknown ms package
+					pWriter->StartRecord(1);
+						pWriter->WriteBYTE(0);
+					pWriter->EndRecord();
+
+					pWriter->WriteString1(2, ole_file->filename().GetFilename());
+				}		
+				NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+			}
+			else if ( L"Equation.3" == sProgID || L"Equation.2" == sProgID )
+			{
+				pWriter->StartRecord(1);
+					pWriter->WriteBYTE(4);
+				pWriter->EndRecord();
+
+				MathEquation::CEquationReader		oReader		(ole_file->filename().GetPath().c_str());
+				MathEquation::BinaryEquationWriter	oBinEqWriter(*pWriter);
+				
+				oReader.SetOutputDev(&oBinEqWriter);
+				
+				pWriter->StartRecord(2);
+					oReader.Parse();
+				pWriter->EndRecord();
+			}
+
 		}
 
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -175,22 +246,10 @@ namespace PPTX
 				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 					break;
 
-				if (0 == _at)
-				{
-					m_sProgId = pReader->GetString2();
-				}
-				else if (1 == _at)
-				{
-					m_sData = pReader->GetString2();
-				}
-				else if (2 == _at)
-				{
-					m_oDxaOrig = pReader->GetLong();
-				}
-				else if (3 == _at)
-				{
-					m_oDyaOrig = pReader->GetLong();
-				}
+				if (0 == _at)		m_sProgId	= pReader->GetString2();
+				else if (1 == _at)	m_sData		= pReader->GetString2();
+				else if (2 == _at)	m_oDxaOrig	= pReader->GetLong();
+				else if (3 == _at)	m_oDyaOrig	= pReader->GetLong();
 				else if (4 == _at)
 				{
 					m_oDrawAspect = new Limit::OLEDrawAspectType();
@@ -206,10 +265,200 @@ namespace PPTX
 					m_oUpdateMode = new Limit::OLEUpdateMode();
 					m_oUpdateMode->SetBYTECode(pReader->GetUChar());
 				}
+				else if (7 == _at)//OleObject Binary FileName (bin, xls, doc, ... other stream file)
+				{
+					m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+					std::wstring strOlePath = pReader->GetString2();
+					m_OleObjectFile->set_filename(strOlePath); //temp !!! for ImageManager original file name
+				}
 				else
 					break;
 			}
 
+			if (m_sData.IsInit() && m_OleObjectFile.IsInit() == false)
+				m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+
+
+			BYTE embedded_type = 0;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 1:
+					{
+						pReader->GetLong(); //skip size
+						embedded_type = pReader->GetUChar();				
+					}break;
+					case 2:
+					{
+						LONG _embed_data_size	= pReader->GetLong();
+						LONG _end_embed_data	= pReader->GetPos() + _embed_data_size + 4;
+//------------------------------------------------------------------
+						std::wstring sDstEmbedded = pReader->m_pRels->m_pManager->GetDstMedia();
+						int nPos = (int)sDstEmbedded.rfind(wchar_t('m'));
+						if (-1 != nPos)
+							sDstEmbedded = sDstEmbedded.substr(0, nPos);
+
+						sDstEmbedded += L"embeddings";
+						NSDirectory::CreateDirectory(sDstEmbedded);
+//------------------------------------------------------------------
+						std::wstring sDstEmbeddedTemp = sDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
+						NSDirectory::CreateDirectory(sDstEmbeddedTemp);					
+								
+						if (embedded_type == 0) //unknown ms package
+						{
+							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+							
+							std::wstring strOlePath = pReader->GetString(_embed_data_size);
+							m_OleObjectFile->set_filename(strOlePath); //temp !!! for ImageManager original file name
+						}
+						else if (embedded_type == 1)
+						{
+							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+
+							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							
+							BinDocxRW::CDocxSerializer		oDocxSerializer;
+							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
+
+							std::wstring sThemePath, sMediaPath, sEmbedPath;
+							oDocxSerializer.CreateDocxFolders (sDstEmbeddedTemp, sThemePath, sMediaPath, sEmbedPath);
+							
+							NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
+							NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
+							
+							//m_mapEnumeratedGlobal.clear();
+
+							oDrawingConverter.m_pReader = pReader;
+							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
+
+							oDrawingConverter.SetMainDocument(&oDocxSerializer);
+							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 1);
+							oDrawingConverter.SetMediaDstPath(sMediaPath);
+							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
+
+							std::wstring sDocxFilename = L"Microsoft_Word_Document" + std::to_wstring( id ) + L".docx";
+				
+							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *oDrawingConverter.m_pReader;
+				
+							oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(sDstEmbeddedTemp, L"", false, 111, false, &oDrawingConverter, sThemePath);
+
+							BinDocxRW::BinaryFileReader oBinaryFileReader(pReader->m_strFolder, oBufferedStream, *oDocxSerializer.m_pCurFileWriter);
+							oBinaryFileReader.ReadFile();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				//themes
+							oDocxSerializer.m_pCurFileWriter->m_oTheme.Write(sThemePath);
+
+							OOX::CContentTypes *pContentTypes = oDrawingConverter.GetContentTypes();
+				//docProps
+							OOX::CPath pathDocProps = sDstEmbeddedTemp + FILE_SEPARATOR_STR + _T("docProps");
+							NSDirectory::CreateDirectory(pathDocProps.GetPath());
+				
+							OOX::CPath DocProps = std::wstring(_T("docProps"));
+
+							OOX::CApp* pApp = new OOX::CApp();
+							if (pApp)
+							{
+								pApp->SetApplication(_T("OnlyOffice"));
+								pApp->SetAppVersion(_T("4.3000"));
+								pApp->SetDocSecurity(0);
+								pApp->SetScaleCrop(false);
+								pApp->SetLinksUpToDate(false);
+								pApp->SetSharedDoc(false);
+								pApp->SetHyperlinksChanged(false);
+								
+								pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, *pContentTypes);
+								delete pApp;
+							}				
+							OOX::CCore* pCore = new OOX::CCore();
+							if (pCore)
+							{
+								pCore->SetCreator(_T(""));
+								pCore->SetLastModifiedBy(_T(""));
+								pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, *pContentTypes);
+								delete pCore;
+							} 
+							oDocxSerializer.m_pCurFileWriter->Write();
+							pContentTypes->Write(sDstEmbeddedTemp);
+
+							COfficeUtils oOfficeUtils(NULL);
+							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename, -1);
+
+							pReader->m_pRels->CloseRels();
+							delete pReader->m_pRels;
+							
+							pReader->m_pRels			= old_rels;
+							oDrawingConverter.m_pReader = old_reader;
+//------------------------------------------------------------------
+							//std::wstring sEmbWorksheetRelsName	= L"embeddings/" + sDocxFilename;
+							//std::wstring sEmbWorksheetRelType	= OOX::FileTypes::MicrosoftOfficeWordDocument.RelationType();
+							//
+							//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
+							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sDocxFilename);
+							
+							pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"docx");				
+						}
+						else if (embedded_type == 2)
+						{
+							m_OleObjectFile = new OOX::OleObject(true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+
+							int id = pReader->m_lChartNumber++; //todoooo -> countEmbeddedObjects
+							
+							OOX::Spreadsheet::CXlsx			oXlsx;
+							BinXlsxRW::BinaryFileReader		oEmbeddedReader;				
+							NSBinPptxRW::CDrawingConverter	oDrawingConverter;
+							BinXlsxRW::SaveParams			oSaveParams(pReader->m_strFolderThemes, oDrawingConverter.GetContentTypes());							
+
+							std::wstring sXmlOptions, sMediaPath, sEmbedPath;
+							BinXlsxRW::CXlsxSerializer::CreateXlsxFolders (sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
+							
+							std::map<std::wstring, size_t>	old_enum_map	= oXlsx.m_mapEnumeratedGlobal;
+							NSBinPptxRW::CBinaryFileReader*	old_reader		= oDrawingConverter.m_pReader;
+							NSBinPptxRW::CRelsGenerator*	old_rels		= pReader->m_pRels;
+							
+							oXlsx.m_mapEnumeratedGlobal.clear();
+
+							oDrawingConverter.m_pReader = pReader;
+							pReader->m_pRels = new NSBinPptxRW::CRelsGenerator();
+
+							oDrawingConverter.SetSourceFileDir(pReader->m_strFolder, 2);
+							oDrawingConverter.SetMediaDstPath(sMediaPath);
+							oDrawingConverter.SetEmbedDstPath(sEmbedPath);
+
+							std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id ) + L".xlsx";
+							oEmbeddedReader.ReadMainTable(oXlsx, *pReader, pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
+
+							oXlsx.PrepareToWrite();
+
+							oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
+
+							COfficeUtils oOfficeUtils(NULL);
+							oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, -1);
+
+							pReader->m_pRels->CloseRels();
+							delete pReader->m_pRels;
+							
+							pReader->m_pRels			= old_rels;
+							oDrawingConverter.m_pReader = old_reader;
+							oXlsx.m_mapEnumeratedGlobal = old_enum_map;
+//------------------------------------------------------------------
+							//std::wstring sEmbWorksheetRelsName	= L"embeddings/" + sXlsxFilename;
+							//std::wstring sEmbWorksheetRelType	= OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+							//
+							//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
+							m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename);
+							
+							pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+						}						
+						NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
+
+						pReader->Seek(_end_embed_data);
+					}break;
+					
+				}
+			}
 			pReader->Seek(_end_rec);
 		}
 		void COLEObject::FillParentPointersForChilds()
@@ -217,27 +466,21 @@ namespace PPTX
 		}
 		bool COLEObject::isValid()
 		{
-			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_sFilepathBin.IsInit());
+			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_OleObjectFile.IsInit());
 		}
 
-		std::wstring COLEObject::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
+		smart_ptr<OOX::OleObject> COLEObject::GetOleObject(const OOX::RId& oRId, FileContainer* pRels) const
 		{
-			if (pRels != NULL)
+			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
+			if (ole_file.IsInit() == false)
 			{
-				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
-				if (p.is_init())
-					return p->filename().m_strFilename;
+				if (pRels != NULL)						ole_file = pRels->GetOleObject(oRId);
+				else if(parentFileIs<Slide>())			ole_file = parentFileAs<Slide>().GetOleObject(oRId);
+				else if(parentFileIs<SlideLayout>())	ole_file = parentFileAs<SlideLayout>().GetOleObject(oRId);
+				else if(parentFileIs<SlideMaster>())	ole_file = parentFileAs<SlideMaster>().GetOleObject(oRId);
+				else if(parentFileIs<Theme>())			ole_file = parentFileAs<Theme>().GetOleObject(oRId);
 			}
-
-			if(parentFileIs<Slide>())
-				return parentFileAs<Slide>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideLayout>())
-				return parentFileAs<SlideLayout>().GetOleFromRId(oRId);
-			else if(parentFileIs<SlideMaster>())
-				return parentFileAs<SlideMaster>().GetOleFromRId(oRId);
-			else if(parentFileIs<Theme>())
-				return parentFileAs<Theme>().GetOleFromRId(oRId);
-			return _T("");
+			return ole_file;
 		}
 		std::wstring COLEObject::GetOleData(const std::wstring& sFilePath)const
 		{
@@ -365,6 +608,88 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":pic", oValue);
 		}
+
+		void Pic::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			nvPicPr.cNvPr.id = -1;
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						nvPicPr.fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						blipFill.fromPPTY(pReader);
+						if(oleObject.IsInit() && blipFill.blip.IsInit())
+						{
+							if (oleObject->m_OleObjectFile.IsInit() == false)
+								oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+							
+							oleObject->m_OleObjectFile->set_filename_cache (blipFill.blip->oleFilepathImage);
+
+							if (NSFile::CFileBinary::Exists(oleObject->m_OleObjectFile->filename().GetPath()) == false)
+								oleObject->m_OleObjectFile->set_filename (blipFill.blip->oleFilepathBin);
+						}
+						break;
+					}
+					case 2:
+					{
+						spPr.fromPPTY(pReader);
+						break;
+					}
+					case 3:
+					{
+						style = new ShapeStyle(L"p");
+						style->fromPPTY(pReader);
+						break;
+					}
+					case 4:
+					{
+						oleObject = new COLEObject();
+						oleObject->fromPPTY(pReader);
+						
+						if(oleObject->m_sData.IsInit())
+							blipFill.oleData = oleObject->m_sData.get();
+
+						blipFill.oleFile = oleObject->m_OleObjectFile;
+
+						//if (oleObject->m_OleObjectFile.IsInit())
+						//{
+						//	blipFill.olePath = oleObject->m_OleObjectFile->filename().GetPath();
+						//	if (NSFile::CFileBinary::Exists(blipFill.olePath))
+						//		blipFill.olePath.clear();
+						//}
+						break;
+					}
+					default:
+					{
+						break;
+					}
+				}
+			}
+			if(blipFill.blip.IsInit() && !blipFill.blip->oleRid.empty() && oleObject.IsInit())
+			{
+				oleObject->m_oId = OOX::RId(blipFill.blip->oleRid);
+
+				if (oleObject->m_OleObjectFile.IsInit() == false)
+				{
+					oleObject->m_OleObjectFile = new OOX::OleObject(false, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+					
+					oleObject->m_OleObjectFile->set_filename		(blipFill.blip->oleFilepathBin);
+					oleObject->m_OleObjectFile->set_filename_cache	(blipFill.blip->oleFilepathImage);
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+
 
 		void Pic::FillParentPointersForChilds()
 		{
@@ -559,11 +884,8 @@ namespace PPTX
 			return (long) nvPicPr.cNvPr.id;
 		}
 
-		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, bool in_group)
+		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
-			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap> oClrMap = oTheme.smart_dynamic_cast<PPTX::Logic::ClrMap>();
-
 			bool bOle = oleObject.IsInit() && oleObject->isValid();
 			std::wstring sOleNodeName;
 			
@@ -588,9 +910,11 @@ namespace PPTX
 			}
 
 			int nShapeId = pWriter->m_lObjectIdVML;
-            std::wstring strId			= L"_x0000_i" + std::to_wstring(nShapeId);
-            std::wstring strSpid		= L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
-            std::wstring strObjectid	= L"_152504" + std::to_wstring(pWriter->m_lObjectIdVML);
+           
+			std::wstring strId			= L"_x0000_i"	+ std::to_wstring(pWriter->m_lObjectIdVML);
+			std::wstring strSpid		= L"_x0000_s"	+ std::to_wstring(pWriter->m_lObjectIdVML);
+
+			std::wstring strObjectid	= L"_152504" + std::to_wstring(pWriter->m_lObjectIdVML);
 			pWriter->m_lObjectIdVML++;
 
 			int dL = 0, dT = 0, dW = 0, dH = 0;
@@ -713,7 +1037,7 @@ namespace PPTX
 				{
 					std::wstring strPenAttr = _T("");
 					nullable<ShapeStyle> pShapeStyle;
-					CalculateLine(spPr, pShapeStyle, _oTheme, _oClrMap, strPenAttr, strNodeVal, bOle);
+					CalculateLine(spPr, pShapeStyle, oTheme, oClrMap, strPenAttr, strNodeVal, bOle);
 					pWriter->WriteString(strPenAttr);
 				}
 
@@ -741,6 +1065,9 @@ namespace PPTX
 					pWriter->EndAttributes();
 					pWriter->EndNode(L"v:imagedata");
 				}
+
+				if (m_sClientDataXml.IsInit())
+					pWriter->WriteString(*m_sClientDataXml);
 
 				pWriter->EndNode(L"v:shape");
 			}
@@ -785,6 +1112,9 @@ namespace PPTX
 					pWriter->EndAttributes();
 					pWriter->EndNode(L"v:imagedata");
 				}
+				
+				if (m_sClientDataXml.IsInit())
+					pWriter->WriteString(*m_sClientDataXml);
 
 				pWriter->EndNode(L"v:rect");
 			}
@@ -796,9 +1126,6 @@ namespace PPTX
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
 					oleObject->m_sShapeId = std::to_wstring(nShapeId);
-					NSBinPptxRW::CXmlWriter oTempWriter;
-					oleObject->toXmlWriterXlsx(&oTempWriter);
-					pWriter->m_strOleXlsx = oTempWriter.GetXmlString();
 				}
 				else
 				{
@@ -814,14 +1141,17 @@ namespace PPTX
 		void Pic::fromXMLOle(XmlUtils::CXmlNode& node)
 		{
 			oleObject.Init();
-			node.ReadAttributeBase(L"progId", oleObject->m_sProgId);
-			node.ReadAttributeBase(L"r:id", oleObject->m_oId);
-			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);
+			
+			node.ReadAttributeBase(L"progId",	oleObject->m_sProgId);
+			node.ReadAttributeBase(L"r:id",		oleObject->m_oId);
+			
+			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)
 			{
 				oleObject->m_oDxaOrig = (int)Emu_To_Twips(imgW);
 			}
-			int imgH = node.GetAttributeInt(std::wstring(L"imgH"), 0);
+			
+			int imgH = node.GetAttributeInt(std::wstring(L"imgH"), 0);			
 			if(imgH > 0)
 			{
 				oleObject->m_oDyaOrig = (int)Emu_To_Twips(imgH);

@@ -64,27 +64,20 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+					WritingElement_ReadAttributes_ReadSingle ( oReader, L"val", val)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				val = node.ReadAttributeInt(_T("val"));
+				val = node.ReadAttributeInt(L"val");
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("val"), val);
-				return XmlUtils::CreateNode(_T("a:buSzPts"), oAttr);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:buSzPts"));
+				pWriter->StartNode(L"a:buSzPts");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("val"), val);
+				pWriter->WriteAttribute(L"val", val);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:buSzPts"));
+				pWriter->EndNode(L"a:buSzPts");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

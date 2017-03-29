@@ -51,7 +51,7 @@ namespace NSBinPptxRW
 		std::vector<PPTX::Theme>			m_arThemes;
 		
 		std::vector<PPTX::SlideMaster>		m_arSlideMasters;
-		std::vector<CSlideMasterInfo>		m_arSlideMasters_Theme;
+		std::vector<_slideMasterInfo>		m_arSlideMasters_Theme;
 		
 		std::vector<PPTX::SlideLayout>		m_arSlideLayouts;
 		std::vector<LONG>					m_arSlideLayouts_Master;
@@ -160,7 +160,6 @@ namespace NSBinPptxRW
 			int dstLen = dstLenTemp;
             Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
 
-			m_oReader.m_strContentTypes = _T("");
 			m_oReader.Init(pDstBuffer, 0, dstLen);
 			m_oReader.m_strFolder = srcFolder;
             m_oReader.m_strFolderExternalThemes = strThemesFolder;
@@ -218,7 +217,7 @@ namespace NSBinPptxRW
 			// теперь создадим массивы для рельсов
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-				CSlideMasterInfo elm;
+				_slideMasterInfo elm;
 				m_arSlideMasters_Theme.push_back(elm);
 			}
 			for (LONG i = 0; i < nCountLayouts; ++i)
@@ -600,14 +599,14 @@ namespace NSBinPptxRW
 			}
 			else
 			{
-				// create default
+		// create default
 				CreateDefaultApp();
 				CreateDefaultCore();
 				//CreateDefaultPresProps();
 				//CreateDefaultTableStyles();
 				CreateDefaultViewProps();
 
-				// presProps
+		// presProps
 				pPair = m_mainTables.find(NSMainTables::PresProps);
 				if (m_mainTables.end()  != pPair)
 				{
@@ -632,28 +631,28 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// app 
+	// app 
 			oXmlWriter.ClearNoAttack();
 			m_oApp.toXmlWriter(&oXmlWriter);
 			
             OOX::CPath pathApp = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml");
 			oXmlWriter.SaveToFile(pathApp.GetPath());
 
-			// core
+	// core
 			oXmlWriter.ClearNoAttack();
 			m_oCore.toXmlWriter(&oXmlWriter);
 
             OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
 
-			// presProps
+	// presProps
 			oXmlWriter.ClearNoAttack();
 			m_oPresProps.toXmlWriter(&oXmlWriter);
 		
             OOX::CPath pathPresProps = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml");
 			oXmlWriter.SaveToFile(pathPresProps.GetPath());
 
-			// viewProps
+	// viewProps
 			oXmlWriter.ClearNoAttack();
 			m_oViewProps.toXmlWriter(&oXmlWriter);
 
@@ -663,14 +662,14 @@ namespace NSBinPptxRW
 			m_oReader.m_pRels->Clear();
 			m_oReader.m_pRels->StartRels();
 
-			// tablestyles
+	// tablestyles
 			oXmlWriter.ClearNoAttack();
 			m_oTableStyles.toXmlWriter(&oXmlWriter);
 
             OOX::CPath pathTableStyles = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("tableStyles.xml");
 			oXmlWriter.SaveToFile(pathTableStyles.GetPath());
 			
-			// presentation
+	// presentation
 			bool bIsAuthors = false;
 			pPair = m_mainTables.find(NSMainTables::Presentation);
 			if (m_mainTables.end()  != pPair)
@@ -748,99 +747,67 @@ namespace NSBinPptxRW
 
 			RELEASEARRAYOBJECTS(pDstBuffer);
 
-			// content types
-			CStringWriter oContentTypes;
-			oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-				<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-				<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/>\
-				<Default Extension=\"png\" ContentType=\"image/png\" />\
-				<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
-				<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
-				<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />\
-				<Default Extension=\"xml\" ContentType=\"application/xml\" />\
-				<Default Extension=\"gif\" ContentType=\"image/gif\"/>\
-				<Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
-				<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>\
-				<Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
-				\
-				<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
-				<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
-				<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
-				<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
-				<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
+	// content types
+			OOX::CContentTypes *pContentTypes = m_oImageManager.m_pContentTypes;
+				
+			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml",	L"/ppt", L"presentation.xml");
+			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml",			L"/ppt", L"presProps.xml");
+			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml",			L"/ppt", L"viewProps.xml");
+			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml",		L"/ppt", L"tableStyles.xml");
 
-			// themes
+
+			pContentTypes->Registration(L"application/vnd.openxmlformats-package.core-properties+xml",				L"/docProps", L"core.xml");
+			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.extended-properties+xml",	L"/docProps", L"app.xml");
+
+	// themes
 			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)
 			{
-                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(i + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
-				oContentTypes.WriteString(strTheme);
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring(i + 1) + L".xml");
 			}
             if (true)
 			{
-				// notes theme
-                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring((int)m_arThemes.size() + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
-				oContentTypes.WriteString(strTheme);
-
-				oContentTypes.WriteString(_T("<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>"));
+	// notes theme
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring((int)m_arThemes.size() + 1) + L".xml");
+	// notes master
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml", L"/ppt/notesMasters", L"notesMaster1.xml");
 			}
 
-			// masters
+	// masters
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-                std::wstring strMaster = L"<Override PartName=\"/ppt/slideMasters/slideMaster" + std::to_wstring(i + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\"/>";
-				oContentTypes.WriteString(strMaster);
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml", L"/ppt/slideMasters", L"slideMaster" + std::to_wstring(i + 1) + L".xml");
 			}
 
-			// layouts
+	// layouts
 			for (LONG i = 0; i < nCountLayouts; ++i)
 			{
-                std::wstring strL = L"<Override PartName=\"/ppt/slideLayouts/slideLayout" + std::to_wstring(i + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>";
-				oContentTypes.WriteString(strL);
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml", L"/ppt/slideLayouts", L"slideLayout" + std::to_wstring(i + 1) + L".xml");
 			}
 
-			// slides
+	// slides
 			for (LONG i = 0; i < nCountSlides; ++i)
 			{
-                std::wstring strS = L"<Override PartName=\"/ppt/slides/slide" + std::to_wstring(i + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\"/>";
-				oContentTypes.WriteString(strS);
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"/ppt/slides", L"slide" + std::to_wstring(i + 1) + L".xml");
 			}
 
-			// notes
+	// notes
 			for (LONG i = 0; i < nCountSlides; ++i)
 			{
-                std::wstring strN = L"<Override PartName=\"/ppt/notesSlides/notesSlide" + std::to_wstring(i + 1) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>";
-				oContentTypes.WriteString(strN);
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring(i + 1) + L".xml");
 			}
 
-			// slideComments
+	// slideComments
 			for (int i = 1; i < nComment; ++i)
 			{
-                std::wstring strN = L"<Override PartName=\"/ppt/comments/comment" + std::to_wstring(i) +
-                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.comments+xml\"/>";
-				oContentTypes.WriteString(strN);				
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml", L"/ppt/comments", L"comment" + std::to_wstring(i) + L".xml");
 			}
-			// comment authors
+	// comment authors
 			if (bIsAuthors)
 			{
-				oContentTypes.WriteString(_T("<Override PartName=\"/ppt/commentAuthors.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml\"/>"));
+				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml", L"/ppt", L"commentAuthors.xml");
 			}
 
-			oContentTypes.WriteString(m_oReader.m_strContentTypes);
-
-			oContentTypes.WriteString(_T("</Types>"));
-
-			CFile oFile;
-            oFile.CreateFile(m_strDstFolder + _T("/[Content_Types].xml"));
-			std::wstring strContentTypes = oContentTypes.GetData();
-			oFile.WriteStringUTF8(strContentTypes);
-			oFile.CloseFile();
+			pContentTypes->Write(m_strDstFolder);
 
 
 			std::wstring strRELS = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
@@ -855,6 +822,7 @@ namespace NSBinPptxRW
 
             filePathRels = filePathRels + FILE_SEPARATOR_STR + _T(".rels");
            
+			NSFile::CFileBinary oFile;
 			oFile.CreateFile(filePathRels.GetPath());
 				oFile.WriteStringUTF8(strRELS);
 			oFile.CloseFile();
@@ -868,7 +836,7 @@ namespace NSBinPptxRW
 			LONG _rec_start = m_oReader.GetPos();
 			LONG _end_rec = _rec_start + m_oReader.GetLong() + 4;
 
-			CSlideMasterInfo& oMaster = m_arSlideMasters_Theme[nIndexMaster];			
+			_slideMasterInfo& oMaster = m_arSlideMasters_Theme[nIndexMaster];			
 			
 			m_oReader.Skip(1); // start attributes
 

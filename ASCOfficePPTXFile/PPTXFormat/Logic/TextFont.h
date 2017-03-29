@@ -239,10 +239,10 @@ namespace PPTX
 			}
 
 		public:
-			nullable_string charset;
-			nullable_string panose;
-			nullable_string pitchFamily;
-			std::wstring	typeface;
+			nullable_string		charset;
+			nullable_string		panose;
+			nullable_string		pitchFamily;
+			std::wstring		typeface;
 
 			std::wstring		m_name;
 			OOX::EElementType	m_eType;

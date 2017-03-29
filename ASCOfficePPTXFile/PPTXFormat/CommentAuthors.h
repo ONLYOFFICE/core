@@ -174,7 +174,8 @@ namespace PPTX
 			}		
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{			
+		{		
+			WrapperFile::write(filename, directory, content);
 		}
 		
 	public:

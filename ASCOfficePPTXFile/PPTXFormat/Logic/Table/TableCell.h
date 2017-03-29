@@ -59,8 +59,6 @@ namespace PPTX
 			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring toXML() const;
-
 			virtual void GetShapeProperties(ShapeProperties& props)const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

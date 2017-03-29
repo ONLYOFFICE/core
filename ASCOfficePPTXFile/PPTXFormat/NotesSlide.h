@@ -76,25 +76,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			oAttr.Write(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			oAttr.Write(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-
-			oAttr.Write(_T("showMasterPhAnim"), showMasterPhAnim);
-			oAttr.Write(_T("showMasterSp"), showMasterSp);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.Write(cSld);
-			oValue.WriteNullable(clrMapOvr);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:notes"), oAttr, oValue));
-			
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
 

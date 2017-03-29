@@ -46,7 +46,11 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Hyperlink)
-			PPTX_LOGIC_BASE2(Hyperlink)
+
+			Hyperlink(std::wstring name = L"hlinkClick")
+			{
+				m_name = name;
+			}
 
 			virtual OOX::EElementType getType () const
 			{
@@ -54,6 +58,8 @@ namespace PPTX
 			}			
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -99,23 +105,6 @@ namespace PPTX
 				node.ReadAttributeBase(L"history", history);
 				node.ReadAttributeBase(L"highlightClick", highlightClick);
 				node.ReadAttributeBase(L"endSnd", endSnd);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("r:id"), id);
-				oAttr.Write(_T("invalidUrl"), invalidUrl);
-				oAttr.Write(_T("action"), action);
-				oAttr.Write(_T("tgtFrame"), tgtFrame);
-				oAttr.Write(_T("tooltip"), tooltip);
-				oAttr.Write(_T("history"), history);
-				oAttr.Write(_T("highlightClick"), highlightClick);
-				oAttr.Write(_T("endSnd"), endSnd);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(snd);
-
-				return XmlUtils::CreateNode(_T("a:") + m_name, oAttr, oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -225,35 +214,38 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:") + m_name);
+				pWriter->StartNode(L"a:" + m_name);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("r:id"), id);
-                pWriter->WriteAttribute2(_T("invalidUrl"), invalidUrl);
-                pWriter->WriteAttribute2(_T("action"), action);
-                pWriter->WriteAttribute2(_T("tgtFrame"), tgtFrame);
-                pWriter->WriteAttribute2(_T("tooltip"), tooltip);
-				pWriter->WriteAttribute(_T("history"), history);
-				pWriter->WriteAttribute(_T("highlightClick"), highlightClick);
-				pWriter->WriteAttribute(_T("endSnd"), endSnd);
+				pWriter->WriteAttribute	(L"r:id",		id);
+                pWriter->WriteAttribute2(L"invalidUrl", invalidUrl);
+                pWriter->WriteAttribute2(L"action",		action);
+                pWriter->WriteAttribute2(L"tgtFrame",	tgtFrame);
+				
+				if (tooltip.IsInit()) 
+					pWriter->WriteAttribute(L"tooltip", XmlUtils::EncodeXmlString(*tooltip));
+				
+				pWriter->WriteAttribute(L"history",			history);
+				pWriter->WriteAttribute(L"highlightClick",	highlightClick);
+				pWriter->WriteAttribute(L"endSnd",			endSnd);
 				pWriter->EndAttributes();
 
 				pWriter->Write(snd);
 				
-				pWriter->EndNode(_T("a:") + m_name);
+				pWriter->EndNode(L"a:" + m_name);
 			}
 			
 		public:
 			nullable<WavAudioFile>	snd;
 
-			nullable_string			id;//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
-			nullable_string			invalidUrl;//default=""
-			nullable_string			action;//default=""
-			nullable_string			tgtFrame;//default=""
-			nullable_string			tooltip;//default=""
-			nullable_bool			history;//default="true"
-			nullable_bool			highlightClick;//default="false"
-			nullable_bool			endSnd;//default="false"
+			nullable_string			id;				//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
+			nullable_string			invalidUrl;		//default=""
+			nullable_string			action;			//default=""
+			nullable_string			tgtFrame;		//default=""
+			nullable_string			tooltip;		//default=""
+			nullable_bool			history;		//default="true"
+			nullable_bool			highlightClick;	//default="false"
+			nullable_bool			endSnd;			//default="false"
 		//private:
 		public:
 			std::wstring m_name;

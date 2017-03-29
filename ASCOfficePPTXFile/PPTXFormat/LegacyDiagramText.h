@@ -105,7 +105,7 @@ namespace PPTX
 	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::LegacyDiagramText;
+			return OOX::FileTypes::LegacyDiagramText;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

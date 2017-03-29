@@ -63,10 +63,12 @@ namespace PPTX
 			const GraphicFrame& operator =(XmlUtils::CXmlNode& node);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
+					bool fromXML3(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 					bool fromXML3(XmlUtils::CXmlLiteReader& oReader);
 
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual std::wstring toXML() const;
@@ -86,11 +88,12 @@ namespace PPTX
 
 			nullable<Xfrm>			xfrm;
 
-			nullable_string			spid;
+			nullable_string			oleSpid;
+			nullable<Pic>			olePic;
+
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
-			nullable<Pic>			pic;
 			nullable<SpTreeElem>	element;
 
 			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;

@@ -106,22 +106,6 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		std::wstring TableCell::toXML() const
-		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("rowSpan"), RowSpan);
-			oAttr.Write(_T("gridSpan"), GridSpan);
-			oAttr.Write(_T("hMerge"), HMerge);
-			oAttr.Write(_T("vMerge"), VMerge);
-			oAttr.Write(_T("id"), Id);
-
-			XmlUtils::CNodeValue oValue;
-            oValue.WriteNullable(txBody);
-			oValue.WriteNullable(CellProperties);
-
-			return XmlUtils::CreateNode(_T("a:tc"), oAttr, oValue);
-		}
-
 		void TableCell::FillParentPointersForChilds()
 		{
             if(txBody.IsInit())

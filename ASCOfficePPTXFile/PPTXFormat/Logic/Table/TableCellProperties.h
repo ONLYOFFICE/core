@@ -145,31 +145,6 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("marL"), MarL);
-				oAttr.Write(_T("marR"), MarR);
-				oAttr.Write(_T("marT"), MarT);
-				oAttr.Write(_T("marB"), MarB);
-				oAttr.WriteLimitNullable(_T("vert"), Vert);
-				oAttr.WriteLimitNullable(_T("anchor"), Anchor);
-				oAttr.Write(_T("anchorCtr"), AnchorCtr);
-				oAttr.WriteLimitNullable(_T("horzOverflow"), HorzOverflow);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(LnL);
-				oValue.WriteNullable(LnR);
-				oValue.WriteNullable(LnT);
-				oValue.WriteNullable(LnB);
-				oValue.WriteNullable(LnTlToBr);
-				oValue.WriteNullable(LnBlToTr);
-                oValue.WriteNullable(cell3D);
-				oValue.Write(Fill);
-
-				return XmlUtils::CreateNode(_T("a:tcPr"), oAttr, oValue);
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:tcPr"));

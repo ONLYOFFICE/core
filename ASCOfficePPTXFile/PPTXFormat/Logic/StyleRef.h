@@ -145,13 +145,9 @@ namespace PPTX
 				pWriter->WriteRecord1(0, Color);
 			}
 
-		public:
 			UniColor		Color;
-			// Attributes
 			nullable_int	idx;
-		//private:
-		public:
-			std::wstring m_name;
+			std::wstring	m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

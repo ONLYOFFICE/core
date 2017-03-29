@@ -161,13 +161,9 @@ namespace NSShapeImageGen
 		LONG								m_lNextIDImage;
 
 		CCalculatorCRC32					m_oCRC;
-
 		LONG								m_lDstFormat;
-
 		NSWMFToImageConverter::CImageExt	m_oImageExt;
-
-		CFontManager* m_pFontManager;
-	public:
+		CFontManager*						m_pFontManager;
 
 		CImageManager()
 		{
@@ -188,77 +184,6 @@ namespace NSShapeImageGen
 			m_listImages.clear();
 		}
 
-	public:
-		template <typename T>
-		void Serialize(T* pWriter)
-		{
-			pWriter->WriteINT(m_lMaxSizeImage);
-			pWriter->WriteINT(m_lNextIDImage);
-			pWriter->WriteINT(m_lDstFormat);
-			pWriter->WriteString(m_strDstMedia);
-
-			int lCount = (int)m_mapImagesFile.size();
-			pWriter->WriteINT(lCount);
-
-			for (std::map<std::wstring, CImageInfo>::iterator pPair = m_mapImagesFile.begin(); pPair != m_mapImagesFile.end(); ++pPair)
-			{
-				pWriter->WriteString(pPair->first);
-				pWriter->WriteINT((int)(pPair->second.m_eType));
-				pWriter->WriteINT((int)(pPair->second.m_lID));
-				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);
-			}
-
-			lCount = (int)m_mapImageData.size();
-			pWriter->WriteINT(lCount);
-
-			for (std::map<DWORD, CImageInfo>::iterator pPair = m_mapImageData.begin(); pPair != m_mapImageData.end(); ++pPair)
-			{
-				pWriter->WriteULONG(pPair->first);
-				pWriter->WriteINT((int)pPair->second.m_eType);
-				pWriter->WriteINT((int)pPair->second.m_lID);
-				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);
-			}
-		}
-
-		template <typename T>
-		void Deserialize(T* pReader)
-		{
-			m_lMaxSizeImage = pReader->GetLong();
-			m_lNextIDImage = pReader->GetLong();
-			m_lDstFormat = pReader->GetLong();
-			m_strDstMedia = pReader->GetString2();
-
-			m_mapImageData.clear();
-			m_mapImagesFile.clear();
-
-			LONG lCount = pReader->GetLong();
-			for (LONG i = 0; i < lCount; ++i)
-			{
-				std::wstring sKey = pReader->GetString2();
-
-				CImageInfo oInfo;
-				oInfo.m_eType = (NSShapeImageGen::ImageType)pReader->GetLong();
-				oInfo.m_lID = pReader->GetLong();
-				oInfo.m_bValid = pReader->GetBool();
-
-				m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(sKey, oInfo));
-			}
-
-			lCount = pReader->GetLong();
-			for (LONG i = 0; i < lCount; ++i)
-			{
-				DWORD dwKey = (DWORD)pReader->GetULong();
-
-				CImageInfo oInfo;
-				oInfo.m_eType = (NSShapeImageGen::ImageType)pReader->GetLong();
-				oInfo.m_lID = pReader->GetLong();
-				oInfo.m_bValid = pReader->GetBool();
-
-				m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwKey, oInfo));
-			}
-		}
-
-	public:
 		CImageInfo WriteImage(CBgraFrame& punkImage, double& x, double& y, double& width, double& height)
 		{
 			CImageInfo info;
@@ -507,10 +432,13 @@ namespace NSShapeImageGen
 				oInfo.m_lID = m_lNextIDImage;
 
 				LONG lImageType = m_oImageExt.GetImageType(strFileName);
+				
 				bool bVector = (1 == lImageType || 2 == lImageType);
 				bool bOle = !strOleFile.empty();
+				
 				if(bVector)
 					oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
+
 				oInfo.SetNameModificator(oInfo.m_eType, bOle);
 
 				std::wstring strSaveDir		= m_strDstMedia + FILE_SEPARATOR_STR;
@@ -519,7 +447,12 @@ namespace NSShapeImageGen
 				//copy ole bin
 				if(bOle)
 				{
-					std::wstring sCopyOlePath = strSaveItemWE + L".bin";
+					std::wstring strExts = _T(".bin");
+					int nIndexExt = (int)strOleFile.rfind(wchar_t('.'));
+					if (-1 != nIndexExt)
+						strExts = strOleFile.substr(nIndexExt);
+
+					std::wstring sCopyOlePath = strSaveItemWE + strExts;//L".bin";
                     CDirectory::CopyFile(strOleFile, sCopyOlePath);
 				}
 

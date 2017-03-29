@@ -129,6 +129,9 @@ namespace PPTX
 
 				m_oCommonRels	= smart_ptr<PPTX::CCommonRels>( new PPTX::CCommonRels());
 				m_oCommonRels->_read(pDiagramDrawing->m_oReadPath);
+
+				if (!m_diag->grpSpPr.xfrm.IsInit())
+					m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm;
 			}
 			else
 			{
@@ -173,7 +176,7 @@ namespace PPTX
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
 			long lDataSize = 0;
-			oXlsxSerializer.loadChart(strDataPath, *pWriter, lDataSize);
+			oXlsxSerializer.loadChart(strDataPath, pWriter, lDataSize);
 			*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
 			oDrawingConverter.m_pBinaryWriter = pOldWriter;
 		}
@@ -204,15 +207,16 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 
 			m_lChartNumber = pReader->m_lChartNumber;
 			pReader->m_lChartNumber++;
-			int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_lDocumentType);
+			int lId = pReader->m_pRels->WriteChart(m_lChartNumber, pReader->m_nDocumentType);
 
-			BinXlsxRW::CXlsxSerializer oXlsxSerializer;
-			NSBinPptxRW::CDrawingConverter oDrawingConverter;
+			BinXlsxRW::CXlsxSerializer		oXlsxSerializer;
+			NSBinPptxRW::CDrawingConverter	oDrawingConverter;
 
-			NSBinPptxRW::CImageManager2* pOldImageManager = oDrawingConverter.m_pImageManager;
+			NSBinPptxRW::CImageManager2*	pOldImageManager	= oDrawingConverter.m_pImageManager;
+			NSBinPptxRW::CBinaryFileReader* pOldReader			= oDrawingConverter.m_pReader;
+ 			
 			oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
-			NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pReader;
-            oDrawingConverter.m_pReader = pReader;
+			oDrawingConverter.m_pReader = pReader;
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
@@ -225,27 +229,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
         //на всякий случай всегда создаем, нет уверенности что 1 == m_lChartNumber для первого chart
             NSDirectory::CreateDirectory(strDstChart);
 
-            std::wstring* sContentTypes = NULL;
+			std::wstring strChart = strDstChart + FILE_SEPARATOR_STR + L"chart" + std::to_wstring(m_lChartNumber) + L".xml";
 
-            std::wstring strChart           = strDstChart + FILE_SEPARATOR_STR + L"chart" + std::to_wstring(m_lChartNumber) + L".xml";
-            std::wstring strWordChartFolder = L"/word/charts/";
-            std::wstring strXlChartFolder   = L"/xl/charts/";
-            std::wstring strPptChartFolder  = L"/ppt/charts/";
+			oXlsxSerializer.saveChart(pReader, lLen, strChart, m_lChartNumber);
 
-            if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strWordChartFolder, &sContentTypes, m_lChartNumber);
-			else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strXlChartFolder, &sContentTypes, m_lChartNumber);
-			else
-                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strPptChartFolder, &sContentTypes, m_lChartNumber);
-
-            if (sContentTypes)
-            {
-                pReader->m_strContentTypes += (*sContentTypes);
-                RELEASEOBJECT(sContentTypes);
-            }
-			oDrawingConverter.m_pReader = pOldReader;
-			oDrawingConverter.m_pImageManager = pOldImageManager;
+			oDrawingConverter.m_pReader			= pOldReader;
+			oDrawingConverter.m_pImageManager	= pOldImageManager;
 
 			id_data = new OOX::RId((size_t)lId);
 		}

@@ -112,15 +112,6 @@ namespace PPTX
 				}
 				FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-                oValue.WriteNullable(tableProperties);
-				oValue.WriteArray(TableRows);
-				oValue.WriteArray(_T("a:tblGrid"), TableCols);
-
-				return XmlUtils::CreateNode(_T("a:tbl"), oValue);
-			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

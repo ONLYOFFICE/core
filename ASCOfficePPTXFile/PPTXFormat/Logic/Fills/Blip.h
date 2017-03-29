@@ -62,11 +62,9 @@ namespace PPTX
 				embed	= oSrc.embed;
 				link	= oSrc.link;
 
-				m_namespace	= oSrc.m_namespace;
-				oleRid = oSrc.oleRid;
-				oleFilepathBin = oSrc.oleFilepathBin;
-				oleFilepathImg = oSrc.oleFilepathImg;
-				oleRidImg = oSrc.oleRidImg;
+				m_namespace		= oSrc.m_namespace;
+				oleRid			= oSrc.oleRid;
+				oleFilepathBin	= oSrc.oleFilepathBin;
 
 				return *this;
 			}
@@ -115,15 +113,6 @@ namespace PPTX
 				pWriter->WriteLimit2(0, cstate);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				/*
-				old version
-				if (embed.is_init())
-					embed->toPPTY(0, pWriter);
-				if (link.is_init())
-					link->toPPTY(1, pWriter);
-				*/
-
-				// new version
 				if (embed.is_init())
 					pWriter->WriteString1(10, embed->get());
 				if (link.is_init())
@@ -161,7 +150,17 @@ namespace PPTX
 					olePath= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				}
 
-				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), olePath, dX, dY, dW, dH);
+				std::wstring imagePath;
+				if(!oleFilepathImage.empty())
+				{
+					imagePath = oleFilepathImage;
+				}
+				else
+				{
+					imagePath = this->GetFullPicName(pRels);
+				}
+
+				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(imagePath, olePath, dX, dY, dW, dH);
 				std::wstring s = oId.GetPath2();
 
 				pWriter->StartRecord(3);
@@ -172,23 +171,20 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
-		public:
 			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
 			virtual std::wstring GetFullOleName(const OOX::RId& pRId, FileContainer* pRels = NULL)const;
 
-		public:
 			std::vector<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
-			nullable<OOX::RId> embed;
-			nullable<OOX::RId> link;
-		public:
-			std::wstring m_namespace;
+			nullable<OOX::RId>	embed;
+			nullable<OOX::RId>	link;
+			std::wstring		m_namespace;
 
-			std::wstring oleRid;
-			std::wstring oleFilepathBin;
-			std::wstring oleFilepathImg;
-			std::wstring oleRidImg;
+			std::wstring		oleRid;
+	//internal
+			std::wstring		oleFilepathBin;
+			std::wstring		oleFilepathImage;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

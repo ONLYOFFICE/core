@@ -57,6 +57,14 @@ namespace PPTX
 		{
 			isThemeOverride = false;
 		}
+		Theme(const OOX::CPath& filename)
+		{
+			FileMap map;
+			
+			isThemeOverride = false;
+			m_map = NULL;
+			read(filename, map);
+		}
 		Theme(const OOX::CPath& filename, FileMap& map)
 		{
 			isThemeOverride = false;
@@ -67,7 +75,6 @@ namespace PPTX
 		{
 		}
 
-	public:
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			isThemeOverride = false;
@@ -122,26 +129,16 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("name"), name);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.Write(themeElements);
-
-			oValue.m_strValue += _T("<a:objectDefaults>");
-			oValue.WriteNullable(spDef);
-			oValue.WriteNullable(lnDef);
-			oValue.WriteNullable(txDef);
-			oValue.m_strValue += _T("</a:objectDefaults>");
-
-			oValue.WriteArray(_T("a:extraClrSchemeLst"), extraClrSchemeLst);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("a:theme"), oAttr, oValue));
-			
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
+			
+			NSBinPptxRW::CXmlWriter oXmlWriter;
+			toXmlWriter(&oXmlWriter);
+
+			oXmlWriter.SaveToFile(filename.m_strFilename);
+
+			content.Registration(type().OverrideType(), directory, m_WrittenFileName);
+			
+			m_written = true;
 			FileContainer::write(filename, directory, content);
 		}
 
@@ -279,11 +276,9 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);			
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
-			return OOX::Presentation::FileTypes::ThemePPTX;
+			return OOX::FileTypes::Theme;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -294,7 +289,7 @@ namespace PPTX
 			return type().DefaultFileName();
 		}
 
-		//////
+	//////
 		DWORD GetRGBAFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetRGBAFromScheme(str);
@@ -312,7 +307,7 @@ namespace PPTX
 			return themeElements.clrScheme.GetABGRFromScheme(str);
 		}
 
-		//////
+	//////
 		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			return GetRGBAFromScheme(m_map->GetColorSchemeIndex(str));
@@ -378,20 +373,18 @@ namespace PPTX
 			themeElements.fmtScheme.GetFillStyle(number, fillStyle);
 		}
 
-	public:
 		nullable_string							name;
 		nsTheme::ThemeElements					themeElements;
 		nullable<Logic::DefaultShapeDefinition> spDef;
 		nullable<Logic::DefaultShapeDefinition> lnDef;
 		nullable<Logic::DefaultShapeDefinition> txDef;
 		
-		std::vector<nsTheme::ExtraClrScheme>		extraClrSchemeLst;
+		std::vector<nsTheme::ExtraClrScheme>	extraClrSchemeLst;
 
 		bool									isThemeOverride;
 
         smart_ptr<Presentation>					presentation;
 
-	public:
 		void SetColorMap(const Logic::ClrMap& map){m_map = &map;};
 	
 	private:

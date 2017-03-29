@@ -60,6 +60,7 @@ namespace PPTX
 
 		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
 		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		
 		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 

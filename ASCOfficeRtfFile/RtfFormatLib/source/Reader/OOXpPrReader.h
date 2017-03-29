@@ -46,7 +46,7 @@ class OOXpPrReader
 private:
 	bool ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty);
 
-	OOX::Drawing::CParagraphProperty *	m_drawingParaProps;
+	PPTX::Logic::TextParagraphPr *		m_drawingParaProps;
 	OOX::Logic::CParagraphProperty *	m_ooxParaProps;
 public: 
 	bool m_bDefStyle;
@@ -57,7 +57,7 @@ public:
 		m_ooxParaProps		= ooxParaProps;
 		m_drawingParaProps	= NULL;
 	}
-	OOXpPrReader(OOX::Drawing::CParagraphProperty *ooxParaProps)
+	OOXpPrReader(PPTX::Logic::TextParagraphPr *ooxParaProps)
 	{
 		m_bDefStyle			= true;
 		m_ooxParaProps		= NULL;

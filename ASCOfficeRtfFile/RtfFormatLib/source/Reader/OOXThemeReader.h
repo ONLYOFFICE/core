@@ -37,10 +37,10 @@
 class OOXThemeReader
 {
 private: 
-	OOX::CTheme* m_ooxTheme;
+	PPTX::Theme* m_ooxTheme;
 
 public: 
-	OOXThemeReader( OOX::CTheme* ooxTheme)
+	OOXThemeReader( PPTX::Theme* ooxTheme)
 	{
 		m_ooxTheme = ooxTheme;
 	}
@@ -49,11 +49,11 @@ public:
 		if (m_ooxTheme == NULL) return false;
 
 		{
-			OOXColorSchemeReader oColorSchemeReader (&m_ooxTheme->m_oThemeElements.m_oClrScheme);
+			OOXColorSchemeReader oColorSchemeReader (&m_ooxTheme->themeElements.clrScheme);
 			oColorSchemeReader.Parse( oParam );
 		}
 		{
-			OOXFontSchemeReader oFontSchemeReader (&m_ooxTheme->m_oThemeElements.m_oFontScheme );
+			OOXFontSchemeReader oFontSchemeReader (&m_ooxTheme->themeElements.fontScheme );
 			oFontSchemeReader.Parse( oParam );
 		}
 		return true;

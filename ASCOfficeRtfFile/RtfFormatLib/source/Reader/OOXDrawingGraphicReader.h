@@ -40,25 +40,16 @@
 
 #define PICTURE_BUFFER_SIZE 1024
 
-class OOXDrawingGraphicConverter
+class OOXGraphicReader
 {
 private:
-	std::wstring m_sXml;
-
+	PPTX::Logic::GraphicFrame *m_ooxGraphic;
 public: 
-	OOX::IFileContainer *m_ooxGraphicRels;
 
-	OOXDrawingGraphicConverter(std::wstring sXml)
+	OOXGraphicReader(PPTX::Logic::GraphicFrame*ooxGraphic)
 	{
-		m_sXml				= sXml;
-		m_ooxGraphicRels	= new OOX::IFileContainer(); 
+		m_ooxGraphic = ooxGraphic;
 	}
-	virtual ~OOXDrawingGraphicConverter()
-	{
-		if (m_ooxGraphicRels)
-			delete m_ooxGraphicRels;
-		m_ooxGraphicRels = NULL;
-	}
-	//OOX::Logic::CPicture* Parse( ReaderParameter oParam , RtfShapePtr pOutput);
-	OOX::Logic::CDrawing* Convert( ReaderParameter oParam, RtfShapePtr pOutput);
+
+	int Parse( ReaderParameter oParam, RtfShapePtr & pOutput);
 };

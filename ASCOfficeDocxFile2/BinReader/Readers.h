@@ -6589,6 +6589,9 @@ public:
 				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("embeddings");
 				OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
 
+                bool oldValueType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord;
+
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = false;
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 
                 std::wstring sThemeDir;
@@ -6640,6 +6643,8 @@ public:
                 m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
 
                 pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
+
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = oldValueType;
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -6689,7 +6694,7 @@ public:
 		else if ( c_oSerImageType2::RelativeHeight == type )
 		{
 			pDrawingProperty->bRelativeHeight = true;
-			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetLong();
+			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::BSimplePos == type )
 		{

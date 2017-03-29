@@ -5651,7 +5651,7 @@ namespace BinDocxRW
 					{
 						m_oBcw.m_oStream.WriteBYTE(c_oSerImageType2::RelativeHeight);
 						m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-						m_oBcw.m_oStream.WriteLONG(pAnchor.m_oRelativeHeight->GetValue());
+						m_oBcw.m_oStream.WriteULONG(pAnchor.m_oRelativeHeight->GetValue());
 					}
 					if(pAnchor.m_bSimplePos.IsInit())
 					{

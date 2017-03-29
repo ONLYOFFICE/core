@@ -242,39 +242,41 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerWorksheetColTypes{enum c_oSerWorksheetColTypes
 	{
-		BestFit = 0,
-		Hidden = 1,
-		Max = 2,
-		Min = 3,
-		Style = 4,
-		Width = 5,
-		CustomWidth = 6
+		BestFit		= 0,
+		Hidden		= 1,
+		Max			= 2,
+		Min			= 3,
+		Style		= 4,
+		Width		= 5,
+		CustomWidth = 6,
+		OutLevel	= 7
 	};}
 	namespace c_oSerHyperlinkTypes{enum c_oSerWorksheetColTypes
 	{
-		Ref = 0,
-		Hyperlink = 1,
-		Location = 2,
-		Tooltip = 3,
-		Display = 4
+		Ref			= 0,
+		Hyperlink	= 1,
+		Location	= 2,
+		Tooltip		= 3,
+		Display		= 4
 	};}
 	namespace c_oSerSheetFormatPrTypes{enum c_oSerSheetFormatPrTypes
 	{
-		DefaultColWidth = 0,
-		DefaultRowHeight = 1,
-		BaseColWidth = 2,
-		CustomHeight = 3,
-		ZeroHeight = 4
+		DefaultColWidth		= 0,
+		DefaultRowHeight	= 1,
+		BaseColWidth		= 2,
+		CustomHeight		= 3,
+		ZeroHeight			= 4
 	};}
 	namespace c_oSerRowTypes{enum c_oSerRowTypes
 	{
-		Row = 0,
-		Style = 1,
-		Height = 2,
-		Hidden = 3,
-		Cells = 4,
-		Cell = 5,
-		CustomHeight = 6
+		Row		= 0,
+		Style	= 1,
+		Height	= 2,
+		Hidden	= 3,
+		Cells	= 4,
+		Cell	= 5,
+		CustomHeight = 6,
+		OutLevel	= 7
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{

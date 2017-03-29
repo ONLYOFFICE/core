@@ -111,7 +111,13 @@ namespace PPTX
 				XmlUtils::CAttribute oAttr;
 									oAttr.Write(_T("id"),		id);
 									oAttr.Write(_T("name"),		XmlUtils::EncodeXmlString(name));
-				if (descr.IsInit())	oAttr.Write(_T("descr"),	XmlUtils::EncodeXmlString(descr.get()));
+                if (descr.IsInit())
+                {
+                    std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+                    XmlUtils::replace_all(d, L"\n", L"&#xA;");
+
+                    oAttr.Write(_T("descr"), d);
+                }
 									oAttr.Write(_T("hidden"),	hidden);
 				if (title.IsInit())	oAttr.Write(_T("title"),	XmlUtils::EncodeXmlString(title.get()));
 
@@ -157,7 +163,12 @@ namespace PPTX
 				pWriter->StartAttributes();
 									pWriter->WriteAttribute (_T("id"),      _id);
 									pWriter->WriteAttribute (_T("name"),    XmlUtils::EncodeXmlString(name));
-				if (descr.IsInit())	pWriter->WriteAttribute	(_T("descr"),   XmlUtils::EncodeXmlString(descr.get()));
+                if (descr.IsInit())
+                {
+                    std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+                    XmlUtils::replace_all(d, L"\n", L"&#xA;");
+                    pWriter->WriteAttribute	(_T("descr"),   d);
+                }
 									pWriter->WriteAttribute (_T("hidden"),  hidden);
 				if (title.IsInit())	pWriter->WriteAttribute (_T("title"),   XmlUtils::EncodeXmlString(title.get()));
 

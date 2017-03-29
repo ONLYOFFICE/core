@@ -58,8 +58,10 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CSdtContent
 		//--------------------------------------------------------------------------------	
-		void    CSdtContent::fromXML(XmlUtils::CXmlNode& oNode)
+		void CSdtContent::fromXML(XmlUtils::CXmlNode& oNode)
 		{
+			ClearItems();
+
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
 			{
@@ -156,8 +158,9 @@ namespace OOX
 		}
 
 
-		void    CSdtContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CSdtContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
+			ClearItems();
 			if ( oReader.IsEmptyNode() )
 				return;
 

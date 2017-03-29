@@ -61,20 +61,21 @@ namespace OOX
 		//<webPublishObjects>
 		//<workbookPr>
 		//<workbookProtection>
-		class CWorkbook : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CWorkbook : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CWorkbook()
 			{
+				m_bSpreadsheets = true;
 			}
 			CWorkbook(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;				
 				read(oRootPath, oPath);
 			}
 			virtual ~CWorkbook()
 			{
 			}
-		public:
 
 			virtual void read(const CPath& oPath)
 			{

@@ -40,8 +40,11 @@
 #include "Sdt.h"
 #include "Hyperlink.h"
 #include "Table.h"
+
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
+
+#include "../../XlsxFormat/Drawing/CellAnchor.h"
 
 namespace OOX
 {
@@ -1041,6 +1044,44 @@ namespace OOX
 			}
 			sResult += _T("</x:ClientData>");
 			return sResult;
+		}
+		void CClientData::toCellAnchor(OOX::Spreadsheet::CCellAnchor *& pCellAnchor) const
+		{
+			if(m_oAnchor.IsInit() == false) return;
+
+			std::vector<std::wstring> sAnchors;
+            boost::algorithm::split(sAnchors, m_oAnchor.get(), boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			
+			if (sAnchors.size() != 8) return; //???? todoooo
+
+			if (pCellAnchor == NULL)
+			{
+				SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+				eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+				
+				pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
+			}
+            
+			pCellAnchor->m_oFrom.Init();
+			pCellAnchor->m_oFrom->m_oCol.Init();
+			pCellAnchor->m_oFrom->m_oCol->SetValue(XmlUtils::GetInteger(sAnchors[0]));
+			pCellAnchor->m_oFrom->m_oColOff.Init();
+			pCellAnchor->m_oFrom->m_oColOff->FromPx(XmlUtils::GetInteger(sAnchors[1]));
+			pCellAnchor->m_oFrom->m_oRow.Init();
+			pCellAnchor->m_oFrom->m_oRow->SetValue(XmlUtils::GetInteger(sAnchors[2]));
+			pCellAnchor->m_oFrom->m_oRowOff.Init();
+			pCellAnchor->m_oFrom->m_oRowOff->FromPx(XmlUtils::GetInteger(sAnchors[3]));
+
+			pCellAnchor->m_oTo.Init();
+			pCellAnchor->m_oTo->m_oCol.Init();
+			pCellAnchor->m_oTo->m_oCol->SetValue(XmlUtils::GetInteger(sAnchors[4]));
+			pCellAnchor->m_oTo->m_oColOff.Init();
+			pCellAnchor->m_oTo->m_oColOff->FromPx(XmlUtils::GetInteger(sAnchors[5]));
+			pCellAnchor->m_oTo->m_oRow.Init();
+			pCellAnchor->m_oTo->m_oRow->SetValue(XmlUtils::GetInteger(sAnchors[6]));
+			pCellAnchor->m_oTo->m_oRowOff.Init();
+			pCellAnchor->m_oTo->m_oRowOff->FromPx(XmlUtils::GetInteger(sAnchors[7]));
+
 		}
 	} // Vml
 } // OOX

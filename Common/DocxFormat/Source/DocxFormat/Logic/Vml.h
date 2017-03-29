@@ -39,17 +39,19 @@
 #include "../../Common/SimpleTypes_Vml.h"
 
 #include "VmlWord.h"
-
-#include "../Drawing/DrawingGraphic.h"
+#include "Shape.h"
 
 #include "../WritingElement.h"
 #include "../RId.h"
 
 #include "VmlOfficeDrawing.h"
 
-
 namespace OOX
 {
+	namespace Spreadsheet
+	{
+		class CCellAnchor;
+	}
 	namespace Vml
 	{
 		class CVmlCommonElements : public WritingElementWithChilds<>
@@ -1296,20 +1298,20 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropBottom;
 			nullable<SimpleTypes::CTrueFalse<>>					m_oDetectMouseClick;
 			nullable<SimpleTypes::CColorType<>>					m_oEmbossColor;
-			SimpleTypes::CDouble                                      m_oGain;
-			SimpleTypes::CDouble                                      m_oGamma;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>        m_oGrayscale;
-			nullable<SimpleTypes::CRelationshipId>                    m_rHref;
-			nullable<std::wstring>                                         m_oHref;
-			nullable<SimpleTypes::CRelationshipId>                    m_rId;
-			nullable<std::wstring>                                         m_oId;
-			nullable<SimpleTypes::CDouble>                            m_oMovie;
-			nullable<std::wstring>                                         m_oOleId;
-			nullable<SimpleTypes::CRelationshipId>                    m_rPict;
-			nullable<SimpleTypes::CColorType<>>                       m_oRecolorTarget;
-			nullable<SimpleTypes::CRelationshipId>                    m_oRelId;
-			std::wstring                                                   m_sSrc;
-			nullable<std::wstring>                                         m_sTitle;
+			SimpleTypes::CDouble								m_oGain;
+			SimpleTypes::CDouble								m_oGamma;
+			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oGrayscale;
+			nullable<SimpleTypes::CRelationshipId>				m_rHref;
+			nullable<std::wstring>								m_oHref;
+			nullable<SimpleTypes::CRelationshipId>				m_rId;
+			nullable<std::wstring>								m_oId;
+			nullable<SimpleTypes::CDouble>						m_oMovie;
+			nullable<std::wstring>								m_oOleId;
+			nullable<SimpleTypes::CRelationshipId>				m_rPict;
+			nullable<SimpleTypes::CColorType<>>					m_oRecolorTarget;
+			nullable<SimpleTypes::CRelationshipId>				m_oRelId;
+			std::wstring										m_sSrc;
+			nullable<std::wstring>								m_sTitle;
 		};
 		//--------------------------------------------------------------------------------
 		// CLine 14.1.2.12 (Part4)
@@ -2111,7 +2113,7 @@ namespace OOX
 			{
 				return OOX::et_v_ClientData;
 			}
-			virtual void getAnchorArray(std::vector<int>& aAnchor) const
+			void getAnchorArray(std::vector<int>& aAnchor) const
 			{
 				aAnchor.clear();
 				if(m_oAnchor.IsInit())
@@ -2124,7 +2126,7 @@ namespace OOX
                     }
 				}
 			}
-
+			void toCellAnchor(OOX::Spreadsheet::CCellAnchor *& pCellAnchor) const;
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

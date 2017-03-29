@@ -4205,12 +4205,12 @@ namespace SimpleTypes
 
 			case 'p':
                 if      ( (L"parallelogram")			== sValue ) this->m_eValue = shapetypeParallelogram;
-                else if ( (L"pentagon")				== sValue ) this->m_eValue = shapetypePentagon;
+                else if ( (L"pentagon")					== sValue ) this->m_eValue = shapetypePentagon;
                 else if ( (L"pie")						== sValue ) this->m_eValue = shapetypePie;
-                else if ( (L"pieWedge")				== sValue ) this->m_eValue = shapetypePieWedge;
+                else if ( (L"pieWedge")					== sValue ) this->m_eValue = shapetypePieWedge;
                 else if ( (L"plaque")					== sValue ) this->m_eValue = shapetypePlaque;
                 else if ( (L"plaqueTabs")				== sValue ) this->m_eValue = shapetypePlaqueTabs;
-                else if ( (L"plus")					== sValue ) this->m_eValue = shapetypePlus;
+                else if ( (L"plus")						== sValue ) this->m_eValue = shapetypePlus;
 				break;
 
 			case 'q':

@@ -44,23 +44,24 @@ namespace OOX
 		class CColors : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CColors)
+			WritingElement_AdditionConstructors(CColors)
 			CColors()
 			{
 			}
 			virtual ~CColors()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -81,7 +82,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Colors;
+				return et_x_Colors;
 			}
 
 		private:

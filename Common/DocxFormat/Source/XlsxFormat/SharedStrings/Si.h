@@ -47,16 +47,17 @@ namespace OOX
 		class CSi : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSi)
+			WritingElement_AdditionConstructors(CSi)
 			CSi()
 			{
 			}
 			virtual ~CSi()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -78,7 +79,7 @@ namespace OOX
 				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					WritingElement* we = m_arrItems[i];
-					if(OOX::Spreadsheet::et_r == we->getType())
+					if(OOX::et_x_r == we->getType())
 					{
 						CRun* pRun = static_cast<CRun*>(we);
 						for(size_t j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
@@ -87,7 +88,7 @@ namespace OOX
 							sRes.append(pText->ToString());
 						}
 					}
-					else if(OOX::Spreadsheet::et_t == we->getType())
+					else if(OOX::et_x_t == we->getType())
 					{
 						CText* pText = static_cast<CText*>(we);
 						sRes.append(pText->ToString());
@@ -95,7 +96,7 @@ namespace OOX
 				}
 				return sRes;
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -124,7 +125,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Si;
+				return et_x_Si;
 			}
 
 		private:

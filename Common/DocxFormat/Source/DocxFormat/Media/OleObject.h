@@ -41,47 +41,48 @@ namespace OOX
 	class OleObject : public Media
 	{
 	public:
-		OleObject(bool bSpreadsheet_ = false)
+		OleObject(bool bMsPackage = false, bool bDocument = true) : Media (bDocument)
 		{
-			bSpreadsheet	= bSpreadsheet_;
+			m_bMsPackage = bMsPackage;
 		}
-		OleObject(const OOX::CPath& filename)
+		OleObject(const OOX::CPath& filename, bool bMsPackage = false)
 		{
+			m_bMsPackage = bMsPackage;
 			read(filename);
 		}
-		virtual ~OleObject()
-		{
-		}
-
-	public:
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 		{
-			//std::wstring newFilename = filename.filename();
-			//boost::filesystem::wpath newFilePath = filename.parent_path();
-			//boost::replace_all(newFilename, L" ", L"_");
-			//if (m_filename.extension() != L".bin")
-			//	newFilename += L".bin" ;
-			//
-			//boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
-			//content.Default->add(newFilePath/newFilename);
 		}
-
-	public:
 		virtual const FileType type() const
 		{
-			if (bSpreadsheet)	return OOX::Spreadsheet::FileTypes::OleObject;
+			if (m_bMsPackage)	return OOX::FileTypes::MicrosoftOfficeUnknown;
 			else				return OOX::FileTypes::OleObject;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{
 			return m_filename.GetFilename();
 		}
-	private:
-		bool bSpreadsheet;
+		void set_filename_cache(const std::wstring & file_path)
+		{
+			m_filenameCache = file_path;
+		}
+		void set_filename_cache(CPath & file_path)
+		{
+			m_filenameCache = file_path;
+		}
+		CPath filename_cache()
+		{
+			return m_filenameCache;
+		}
+		bool isMsPackage() {return m_bMsPackage;}
+	protected:
+		CPath	m_filenameCache; //image
+		bool	m_bMsPackage;
 	};
 } // namespace OOX
 

@@ -39,7 +39,6 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
-#include "../Drawing/DrawingEffects.h"
 #include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Ln.h"
 
 namespace ComplexTypes

@@ -44,16 +44,17 @@ namespace OOX
 		class CPatternFill : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPatternFill)
+			WritingElement_AdditionConstructors(CPatternFill)
 			CPatternFill()
 			{
 			}
 			virtual ~CPatternFill()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -106,7 +107,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_PatternFill;
+				return et_x_PatternFill;
 			}
 
 		private:
@@ -127,16 +128,17 @@ namespace OOX
 		class CGradientStop : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CGradientStop)
+			WritingElement_AdditionConstructors(CGradientStop)
 			CGradientStop()
 			{
 			}
 			virtual ~CGradientStop()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -162,7 +164,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_GradientStop;
+				return et_x_GradientStop;
 			}
 
 		private:
@@ -182,23 +184,24 @@ namespace OOX
 		class CGradientFill : public WritingElementWithChilds<CGradientStop>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CGradientFill)
+			WritingElement_AdditionConstructors(CGradientFill)
 			CGradientFill()
 			{
 			}
 			virtual ~CGradientFill()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -217,7 +220,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_GradientFill;
+				return et_x_GradientFill;
 			}
 
 		private:
@@ -246,16 +249,17 @@ namespace OOX
 		class CFill : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFill)
+			WritingElement_AdditionConstructors(CFill)
 			CFill()
 			{
 			}
 			virtual ~CFill()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -266,7 +270,7 @@ namespace OOX
 					m_oPatternFill->toXML(writer);
 				writer.WriteString(_T("</fill>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -287,7 +291,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Fill;
+				return et_x_Fill;
 			}
 
 		private:
@@ -301,16 +305,17 @@ namespace OOX
 		class CFills : public WritingElementWithChilds<CFill>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFills)
+			WritingElement_AdditionConstructors(CFills)
 			CFills()
 			{
 			}
 			virtual ~CFills()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -323,7 +328,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</fills>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -342,7 +347,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Fills;
+				return et_x_Fills;
 			}
 
 		private:

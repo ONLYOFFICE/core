@@ -42,6 +42,7 @@ namespace OOX
 	{
 		class CSparklineGroups;
 		class CAltTextTable;
+		class CConditionalFormatting;
 	}
 	namespace Drawing
 	{
@@ -194,6 +195,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
 			nullable<CDataModelExt>							m_oDataModelExt;
 			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
+			
+			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
@@ -217,11 +220,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;

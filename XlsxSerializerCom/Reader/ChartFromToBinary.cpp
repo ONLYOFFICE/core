@@ -29,19 +29,19 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//Generated code
-//#include "stdafx.h"
+
 #include "ChartFromToBinary.h"
+#include "../Common/BinReaderWriterDefines.h"
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
-#include "../Common/BinReaderWriterDefines.h"
-#include "../Common/BinReaderWriterDefines.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Theme/ThemeOverride.h"
+#include "../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
 using namespace OOX::Spreadsheet;
+
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sThemePath)
+	SaveParams::SaveParams(const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes)
 	{
+		pContentTypes		= _pContentTypes;
         sThemePath          = _sThemePath;
 		nThemeOverrideCount = 1;
 	}
@@ -835,7 +835,8 @@ namespace BinXlsxRW
 
 	BYTE c_oseralternatecontentfallbackSTYLE = 0;
 
-	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+	BinaryChartReader::BinaryChartReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+		: Binary_CommonReader(oBufferedStream), m_oSaveParams(oSaveParams), m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 	{}
 
 	int BinaryChartReader::ReadCT_extLst(BYTE type, long length, void* poResult)
@@ -954,9 +955,16 @@ namespace BinXlsxRW
 
             OOX::CPath pathThemeOverrideFile = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + sThemeOverrideName;
 
-			long nCurPos = m_oBufferedStream.GetPos();
-            m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, pathThemeOverrideFile.GetPath());
-			m_oBufferedStream.Seek(nCurPos + length);
+			smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme();
+			pTheme->isThemeOverride = true;
+
+			pTheme->fromPPTY(&m_oBufferedStream);
+			NSBinPptxRW::CXmlWriter xmlWriter;
+			pTheme->toXmlWriter(&xmlWriter);
+			
+			Writers::DefaultThemeWriter oThemeFile;
+			oThemeFile.m_sContent = xmlWriter.GetXmlString();
+			oThemeFile.Write(pathThemeOverrideFile.GetPath());
 
 			long rId;
             m_pOfficeDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride")), sThemeOverrideRelsPath, std::wstring(), &rId);
@@ -968,11 +976,7 @@ namespace BinXlsxRW
                 std::wstring sContentTypesPath = m_oSaveParams.sThemePath.substr(nIndex + 1);
                 XmlUtils::replace_all(sContentTypesPath, L"\\", L"/");
 
-                std::wstring strType = L"<Override PartName=\"/";
-                strType += sContentTypesPath + L"/" + sThemeOverrideName;
-                strType += L"\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>";
-
-                m_oSaveParams.sAdditionalContentTypes += strType;
+				m_oSaveParams.pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.themeOverride+xml", sContentTypesPath, sThemeOverrideName);
 			}
 		}
 		else
@@ -6161,13 +6165,10 @@ namespace BinXlsxRW
 		smart_ptr<OOX::File> pFile = oChartSpace.Find(OOX::FileTypes::ThemeOverride);
 		if (pFile.IsInit() && OOX::FileTypes::ThemeOverride == pFile->type())
 		{
-			OOX::CThemeOverride* pThemeOverride = static_cast<OOX::CThemeOverride*>(pFile.operator->());
-			BYTE* pThemeData = NULL;
-			long nThemeDataSize = 0;
-			m_pOfficeDrawingConverter->GetThemeBinary(&pThemeData, nThemeDataSize, pThemeOverride->m_oReadPath.GetPath());
+			PPTX::Theme* pThemeOverride = static_cast<PPTX::Theme*>(pFile.operator->());
+	
 			m_oBcw.m_oStream.WriteBYTE(c_oserct_chartspaceTHEMEOVERRIDE);
-			m_oBcw.WriteBytesArray(pThemeData, nThemeDataSize);
-			RELEASEARRAYOBJECTS(pThemeData);
+			pThemeOverride->toPPTY(&m_oBcw.m_oStream);
 		}
 	}
 	void BinaryChartWriter::WriteCT_Boolean(CT_Boolean& oVal)

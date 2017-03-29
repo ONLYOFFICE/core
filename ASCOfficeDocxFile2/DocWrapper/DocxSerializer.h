@@ -51,14 +51,16 @@ namespace BinDocxRW
 	class CDocxSerializer
 	{
 	public:
-        std::wstring m_sFontDir;
-        std::wstring m_sEmbeddedFontsDir;
-		bool m_bIsNoBase64Save;
-		bool m_bSaveChartAsImg;
-		ParamsWriter* m_pParamsWriter;
-		Writers::FileWriter* m_pCurFileWriter;
-	public:
+        std::wstring			m_sFontDir;
+        std::wstring			m_sEmbeddedFontsDir;
+		bool					m_bIsNoBase64Save;
+		bool					m_bSaveChartAsImg;
+		ParamsWriter*			m_pParamsWriter;
+		Writers::FileWriter*	m_pCurFileWriter;
+
 		CDocxSerializer();
+		virtual ~CDocxSerializer();
+
         bool ConvertDocxToDoct(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
         bool ConvertDoctToDocx(const std::wstring& sSrcFileName, const std::wstring& sDstFileName, const std::wstring& sTmpDir, const std::wstring& sXMLOptions);
 		

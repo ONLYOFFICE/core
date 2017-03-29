@@ -38,14 +38,17 @@
 #include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 
 using namespace OOX::Spreadsheet;
-namespace BinXlsxRW {
+namespace BinXlsxRW
+{
 	class SaveParams
 	{
 	public:
-		std::wstring	sThemePath;
-		std::wstring	sAdditionalContentTypes;
-		int				nThemeOverrideCount;
-		SaveParams(const std::wstring& _sThemePath);
+		SaveParams	(const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes);
+
+		smart_ptr<PPTX::Theme>			pTheme;
+		std::wstring					sThemePath;
+		OOX::CContentTypes*				pContentTypes;
+		int								nThemeOverrideCount;
 	};
 
 	class BinaryChartReader : public Binary_CommonReader<BinaryChartReader>

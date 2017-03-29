@@ -33,13 +33,11 @@
 #define BINEQUATIONWRITER_H
 
 #include "BinReaderWriterDefines.h"
+
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_OMath.h"
 #include "../../Common/DocxFormat/Source/MathEquation/OutputDev.h"
 #include <stack>
 
-/*namespace BinDocxRW
-{
-	class BinaryCommonWriter;
-}*/
 namespace MathEquation
 {
 	class EquationRun

@@ -128,6 +128,7 @@ namespace NExtractTools
 							 if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPTX2PPTT_BIN;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PPTX2PPTT;
 						else if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPSX2PPTX;
+                        else if (0 == sExt2.compare(_T(".odp")))		res = TCD_PPTX2ODP;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{

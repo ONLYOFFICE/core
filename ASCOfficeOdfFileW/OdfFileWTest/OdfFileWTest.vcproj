@@ -195,7 +195,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -447,6 +447,14 @@
 				</File>
 				<File
 					RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Common\OfficeFileFormatChecker2.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp"
 					>
 				</File>
 				<File

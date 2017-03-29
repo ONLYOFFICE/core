@@ -36,7 +36,6 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp> 
-#include <boost/timer.hpp>
 
 #include <iostream>
 #include <string>
@@ -109,6 +108,7 @@ std::wstring DetectTypeDocument(const std::wstring & pathOOX)
             (res = strContentTypes.find(ppsmFormatLine))>0 || (res = strContentTypes.find(potmFormatLine))>0 ||
 			(res = strContentTypes.find(ppsxFormatLine)) >0 )
 		{
+			sRes = L"presentation";
 		}
 
 		delete []pBuffer;
@@ -124,7 +124,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (argc < 3) return 0;
 
 	HRESULT hr = S_OK;
-    boost::timer t1;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
 	std::wstring dstPath		= argv[2];
@@ -154,7 +153,5 @@ int _tmain(int argc, _TCHAR* argv[])
 	
 	NSDirectory::DeleteDirectory(dstTempPath);
 
-////////////////////////////////////////////////////////////////////////
-    std::cout << "\n\nTime : " << t1.elapsed() << "\n";   
 	return 0;
 }

@@ -1797,9 +1797,8 @@ void odf_drawing_context::set_textarea_wrap(bool Val)
 		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
 
 }
-void odf_drawing_context::set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea)
+void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
 {
-	if (!latin && !cs && !ea)return;
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
 	if (!impl_->current_text_properties)
@@ -1813,9 +1812,9 @@ void odf_drawing_context::set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_O
 
 	if (!impl_->current_text_properties) return;
 
-	if (ea)		impl_->current_text_properties->content().fo_font_family_			= *ea;
-	if (cs)		impl_->current_text_properties->content().style_font_family_complex_= *cs;
-	if (latin)	impl_->current_text_properties->content().style_font_family_asian_	= *latin;
+	if (!ea.empty())	impl_->current_text_properties->content().fo_font_family_			= ea;
+	if (!cs.empty())	impl_->current_text_properties->content().style_font_family_complex_= cs;
+	if (!latin.empty())	impl_->current_text_properties->content().style_font_family_asian_	= latin;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)

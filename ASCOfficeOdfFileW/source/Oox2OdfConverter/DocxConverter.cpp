@@ -35,6 +35,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Pict.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -94,7 +95,7 @@ odf_writer::odf_conversion_context* DocxConverter::odf_context()
 {
 	return odt_context;
 }
-OOX::CTheme* DocxConverter::oox_theme()
+PPTX::Theme* DocxConverter::oox_theme()
 {
 	if (docx_document)
 		return docx_document->GetTheme();
@@ -109,8 +110,6 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(std::wstring sId)
 	smart_ptr<OOX::File> oFile;
 	if (oox_doc)
 	{
-		if (oox_current_child_document_spreadsheet)
-			oFile = oox_current_child_document_spreadsheet->Find(sId);
 		if (oox_current_child_document)
 			oFile = oox_current_child_document->Find(sId);
 		else
@@ -128,25 +127,6 @@ std::wstring DocxConverter::find_link_by_id (std::wstring sId, int type)
 		
     std::wstring ref;
 
-    if (ref.empty() && oox_current_child_document_spreadsheet)
-	{
-		smart_ptr<OOX::File> oFile = oox_current_child_document_spreadsheet->Find(sId);
-		if (oFile.IsInit())
-		{		
-			if (type==1 && OOX::FileTypes::Image == oFile->type())
-			{
-				OOX::Image* pImage = (OOX::Image*)oFile.operator->();
-
-				ref = pImage->filename().GetPath();
-			}
-			if (type==2 && oFile.IsInit() && OOX::FileTypes::HyperLink == oFile->type())
-			{
-				OOX::HyperLink* pHyperlink = (OOX::HyperLink*)oFile.operator->();
-
-				ref = pHyperlink->Uri().GetPath();
-			}
-		}
-	}
     if (ref.empty() && oox_current_child_document)
 	{
 		smart_ptr<OOX::File> oFile = oox_current_child_document->Find(sId);
@@ -326,41 +306,40 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 			OOX::Logic::CDrawing* pDrawing= static_cast<OOX::Logic::CDrawing*>(oox_unknown);
 			convert(pDrawing);
 		}break;
-		case OOX::et_c_chart:
-		{
-			OOX::Drawing::CChart* pChart = static_cast<OOX::Drawing::CChart*>(oox_unknown);
-			convert(pChart);
-		}break;
-		case OOX::et_w_Shape:
-		{
-			OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
-			convert(pShape);
-		}break;
-		case OOX::et_w_pict:
-		{
-			OOX::Logic::CPicture* pPic = static_cast<OOX::Logic::CPicture*>(oox_unknown);
-			convert(pPic);
-		}break;
-		case OOX::et_w_object:
-		{
-			OOX::Logic::CObject* pObj = static_cast<OOX::Logic::CObject*>(oox_unknown);
-			convert(pObj);
-		}break;
+		//case OOX::et_c_chart:
+		//{
+		//	PPTX::Logic::ChartRec* pChart = static_cast<PPTX::Logic::ChartRec*>(oox_unknown);
+		//	convert(pChart);
+		//}break;
+		//case OOX::et_w_Shape:
+		//{
+		//	OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
+		//	convert(pShape);
+		//}break;
+		//case OOX::et_w_pict:
+		//{
+		//	OOX::Logic::CPicture* pPic = static_cast<OOX::Logic::CPicture*>(oox_unknown);
+		//	convert(pPic);
+		//}break;
+		//case OOX::et_w_object:
+		//{
+		//	OOX::Logic::CObject* pObj = static_cast<OOX::Logic::CObject*>(oox_unknown);
+		//	convert(pObj);
+		//}break;
 		case OOX::et_pic_pic:
+		case OOX::et_pic:
+		case OOX::et_p_pic:
 		{
-			OOX::Drawing::CPicture* pPic = static_cast<OOX::Drawing::CPicture*>(oox_unknown);
+			PPTX::Logic::Pic* pPic = static_cast<PPTX::Logic::Pic*>(oox_unknown);
 			convert(pPic);
 		}break;
 		case OOX::et_w_GroupShape:
+		case OOX::et_p_ShapeTree:
 		{
-			OOX::Logic::CGroupShape* pGroupShape= static_cast<OOX::Logic::CGroupShape*>(oox_unknown);
+			PPTX::Logic::SpTree* pGroupShape= static_cast<PPTX::Logic::SpTree*>(oox_unknown);
 			convert(pGroupShape);
 		}break;
-		case OOX::et_w_LockedCanvas:
-		{
-			OOX::Logic::CLockedCanvas* pLockedCanvas= static_cast<OOX::Logic::CLockedCanvas*>(oox_unknown);
-			convert(pLockedCanvas);
-		}break;
+
 		case OOX::et_w_commentRangeEnd:
 		{
 			OOX::Logic::CCommentRangeEnd* pCommEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown);
@@ -1201,14 +1180,14 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 
 	if (oox_paragraph_pr->m_oTextAlignment.IsInit() && oox_paragraph_pr->m_oTextAlignment->m_oVal.IsInit())
 	{
-		switch(oox_paragraph_pr->m_oTextAlignment->m_oVal->GetValue())
-		{
-		//case SimpleTypes::textalignAuto     :
-		//case SimpleTypes::textalignBaseLine :
-		//case SimpleTypes::textalignBottom   :
-		//case SimpleTypes::textalignCenter   :
-		//case SimpleTypes::textalignTop      :
-		}
+		//switch(oox_paragraph_pr->m_oTextAlignment->m_oVal->GetValue())
+		//{
+		////case SimpleTypes::textalignAuto     :
+		////case SimpleTypes::textalignBaseLine :
+		////case SimpleTypes::textalignBottom   :
+		////case SimpleTypes::textalignCenter   :
+		////case SimpleTypes::textalignTop      :
+		//}
 	}
 
 	//if (oox_paragraph_pr->m_oWordWrap.IsInit())	odt_context->set_word_wrap(oox_paragraph_pr->m_oWordWrap->ToBool());
@@ -2256,7 +2235,7 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 {
 	if (oox_font_theme == NULL) return;
 
-	OOX::CTheme * docx_theme= docx_document->GetTheme();
+	PPTX::Theme * docx_theme= docx_document->GetTheme();
 	if (docx_theme == NULL) return;
 
 	std::wstring font;
@@ -2265,47 +2244,29 @@ void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::
 	{
 	case SimpleTypes::themeMajorAscii:
 	case SimpleTypes::themeMajorHAnsi :
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oLatin.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.majorFont.latin.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMajorBidi:
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oCs.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.majorFont.cs.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMajorEastAsia:
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMajorFont.m_oEa.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.majorFont.ea.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorAscii:
 	case SimpleTypes::themeMinorHAnsi:
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oLatin.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.minorFont.latin.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorBidi:
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oCs.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.minorFont.cs.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	case SimpleTypes::themeMinorEastAsia:
-		if (docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace.IsInit())
-		{
-			font = docx_theme->m_oThemeElements.m_oFontScheme.m_oMinorFont.m_oEa.m_oTypeFace->GetValue();
-			if (font.length() > 0) odf_font_name = font;
-		}
+		font = docx_theme->themeElements.fontScheme.minorFont.ea.typeface;
+		if (font.length() > 0) odf_font_name = font;
 		break;
 	}
 
@@ -2736,7 +2697,8 @@ void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor)
 		odf_context()->drawing_context()->set_z_order(id);
 	}
 	OoxConverter::convert(oox_anchor->m_oDocPr.GetPointer());
-	convert(oox_anchor->m_oGraphic.GetPointer());
+	
+	convert(&oox_anchor->m_oGraphic);
 
 	odf_context()->drawing_context()->check_anchor();
 }
@@ -2768,246 +2730,7 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 	odt_context->drawing_context()->set_vertical_pos(1);//middle
 
 	OoxConverter::convert(oox_inline->m_oDocPr.GetPointer());
-	convert(oox_inline->m_oGraphic.GetPointer());
-}
-
-void DocxConverter::convert(OOX::Drawing::CGraphic *oox_graphic)
-{
-	if (oox_graphic == NULL)return;
-
-	for (unsigned int i = 0 ; i < oox_graphic->m_arrItems.size(); i++)
-	{
-		convert(oox_graphic->m_arrItems[i]);
-	}
-
-}
-void DocxConverter::convert(OOX::Drawing::CPicture * oox_picture)
-{
-	if (!oox_picture)return;
-
-	odt_context->drawing_context()->start_drawing();
-
-    std::wstring pathImage;
-	double Width=0, Height = 0;
-
-	if (oox_picture->m_oBlipFill.m_oBlip.IsInit())
-	{
-        std::wstring sID = oox_picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
-		pathImage = find_link_by_id(sID,1);
-		
-        if (pathImage.empty())
-		{
-			sID = oox_picture->m_oBlipFill.m_oBlip->m_oLink.GetValue();	
-			//???
-		}
-        _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
-	}
-	odt_context->start_image(pathImage);
-	{
-		if (oox_picture->m_oBlipFill.m_oTile.IsInit()) 
-		{
-			odt_context->drawing_context()->set_image_style_repeat(2);
-		}
-		if (oox_picture->m_oBlipFill.m_oStretch.IsInit())
-		{
-			odt_context->drawing_context()->set_image_style_repeat(1);
-		}
-		if (oox_picture->m_oBlipFill.m_oSrcRect.IsInit() && Width >0 && Height >0)
-		{
-			odt_context->drawing_context()->set_image_client_rect_inch(
-					oox_picture->m_oBlipFill.m_oSrcRect->m_oL.GetValue() * Width/100. /currentSystemDPI,
-					oox_picture->m_oBlipFill.m_oSrcRect->m_oT.GetValue() * Height/100./currentSystemDPI,
-					oox_picture->m_oBlipFill.m_oSrcRect->m_oR.GetValue() * Width/100. /currentSystemDPI, 
-					oox_picture->m_oBlipFill.m_oSrcRect->m_oB.GetValue() * Height/100./currentSystemDPI);
-		}		
-
-		OoxConverter::convert(&oox_picture->m_oNvPicPr.m_oCNvPr);		
-
-		//oox_picture->m_oNvPicPr.m_oCNvPicPr
-		//oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks
-		{
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoChangeAspect)
-			//{
-			//}
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoCrop))
-			//{
-			//}
-			//if (oox_picture->m_oNvPicPr.m_oCNvPicPr.m_oPicLocks->m_oNoResize)
-			//{
-			//}
-		}	
-		//m_oExtLst
-
-
-		OoxConverter::convert(&oox_picture->m_oSpPr, NULL);
-
-	}
-	odt_context->drawing_context()->end_image();
-	odt_context->drawing_context()->end_drawing();
-}
-void DocxConverter::convert(OOX::Drawing::CChart * oox_chart)
-{
-	if (oox_chart == NULL)return;
-
-	if (oox_chart->m_oRId.IsInit())
-	{
-		smart_ptr<OOX::File> oFile;
-		
-		if (oox_current_child_document)
-			oFile = oox_current_child_document->Find(oox_chart->m_oRId->GetValue());
-		else
-			oFile = docx_document->GetDocument()->Find(oox_chart->m_oRId->GetValue());
-		
-		if (oFile.IsInit() && OOX::FileTypes::Chart == oFile->type())
-		{
-			OOX::Spreadsheet::CChartSpace* pChart = (OOX::Spreadsheet::CChartSpace*)oFile.operator->();
-			
-			if (pChart)
-			{
-				odt_context->drawing_context()->start_drawing();				
-				odt_context->drawing_context()->start_object(odf_context()->get_next_name_object());
-
-					_CP_OPT(double) width, height;
-					odt_context->drawing_context()->get_size(width, height);
-
-					OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());
-					
-					oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pChart);
-					
-					odf_context()->start_chart();
-						odf_context()->chart_context()->set_chart_size(width, height);
-						OoxConverter::convert(&pChart->m_oChartSpace);
-					odf_context()->end_chart();
-					
-					oox_current_child_document_spreadsheet = NULL; 
-
-				odt_context->drawing_context()->end_object();	
-				odt_context->drawing_context()->end_drawing();
-			}
-		}
-	}
-
-}
-
-void DocxConverter::convert(OOX::Logic::CGroupShape	 *oox_group_shape)
-{
-	if (oox_group_shape == NULL)return;
-	if (oox_group_shape->m_arrItems.size() < 1) return;
-
-	odt_context->drawing_context()->start_group();
-		if (oox_group_shape->m_oCNvPr.IsInit())
-		{	
-			if (oox_group_shape->m_oCNvPr->m_sName.IsInit())
-				odt_context->drawing_context()->set_group_name(*oox_group_shape->m_oCNvPr->m_sName);
-			if (oox_group_shape->m_oCNvPr->m_oId.IsInit())
-				odt_context->drawing_context()->set_group_z_order(oox_group_shape->m_oCNvPr->m_oId->GetValue());
-		}
-		OoxConverter::convert(oox_group_shape->m_oGroupSpPr.GetPointer());
-
-		for (unsigned int i=0; i < oox_group_shape->m_arrItems.size(); i++)
-		{
-			convert(oox_group_shape->m_arrItems[i]);
-		}
-	odt_context->drawing_context()->end_group();
-}
-
-void DocxConverter::convert(OOX::Logic::CLockedCanvas	 *oox_canvas)
-{
-	if (oox_canvas== NULL)return;
-
-	odf_context()->drawing_context()->start_group();
-	
-	_CP_OPT(double) x, y , ch_x , ch_y ;
-
-	odf_context()->drawing_context()->set_group_position(x, y, ch_x, ch_y);
-
-	for (unsigned int i=0; i < oox_canvas->m_arrItems.size(); i++)
-	{
-		convert(oox_canvas->m_arrItems[i]);
-	}
-
-	odf_context()->drawing_context()->end_group();
-}
-
-void DocxConverter::convert(OOX::Logic::CShape	 *oox_shape)
-{
-	if (oox_shape == NULL)return;
-	if (!oox_shape->m_oSpPr.IsInit()) return;
-
-	odt_context->drawing_context()->start_drawing();
-	
-		int type = -1;
-		if (oox_shape->m_oSpPr->m_oCustGeom.IsInit())
-		{
-			type = 1000;//6???
-		}
-		if (oox_shape->m_oSpPr->m_oPrstGeom.IsInit())
-		{
-			OOX::Drawing::CPresetGeometry2D * geometry = oox_shape->m_oSpPr->m_oPrstGeom.GetPointer();
-			type =(geometry->m_oPrst.GetValue());
-		}
-		
-		if (oox_shape->m_oCNvSpPr.IsInit() && oox_shape->m_oCNvSpPr->m_otxBox.GetValue() == 1) type = 2000; //textBox
-				
-		if (type == SimpleTypes::shapetypeRect && oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBodyProperties.IsInit() /*&&
-			oox_shape->m_oTxBodyProperties->m_eAutoFitType == OOX::Drawing::textautofitShape*/)
-		{	// ваще то тут обычный прямоугольник, но в него не вставишь таблицы, ...
-			//второй вариант таблицы ВСЕГДА оборачивать фреймами.
-			//надо тогда хотя бы сделать определялку где мы находимся - в drawing_context или нет - причем пофиг на уровень вложенности
-			//todoo
-		
-			type = 2000;
-		}
-		if ((type == 2000 || type == SimpleTypes::shapetypeRect )	&& oox_shape->m_oTxBodyProperties.IsInit() 
-																	&& oox_shape->m_oTxBodyProperties->m_oPrstTxWrap.IsInit())
-		{
-			if (oox_shape->m_oTxBodyProperties->m_oFromWordArt.ToBool())
-			{
-				int wordart_type = OoxConverter::convert(oox_shape->m_oTxBodyProperties->m_oPrstTxWrap.GetPointer());
-				if (wordart_type >=0)type = wordart_type;
-			}
-		}
-		if (type < 0)return;
-	/////////////////////////////////////////////////////////////////////////////////
-		odt_context->drawing_context()->start_shape(type);
-		
-		OoxConverter::convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
-	//имя, описалово, номер ...		
-		OoxConverter::convert(oox_shape->m_oCNvPr.GetPointer());	
-	//заблокированности 
-		OoxConverter::convert(oox_shape->m_oCNvSpPr.GetPointer());	
-		
-		if (oox_shape->m_oCNvConnSpPr.IsInit())
-		{
-			OoxConverter::convert(oox_shape->m_oCNvConnSpPr.GetPointer());
-			//частенько приплывает из стиля заполенение объекта .. а он то одномерный :)
-			odf_context()->drawing_context()->start_area_properties();
-				odf_context()->drawing_context()->set_no_fill();
-			odf_context()->drawing_context()->end_area_properties();
-		}
-		
-		if (oox_shape->m_oTxBody.IsInit() && oox_shape->m_oTxBody->m_oTxtbxContent.IsInit())
-		{
-			odt_context->start_text_context();
-				for (unsigned int i=0 ; i < oox_shape->m_oTxBody->m_oTxtbxContent->m_arrItems.size();i++)
-				{
-					convert(oox_shape->m_oTxBody->m_oTxtbxContent->m_arrItems[i]);
-				}
-				odt_context->drawing_context()->set_text( odt_context->text_context());
-				
-				//наложим внешние настройки для текста
-				OoxConverter::convert(oox_shape->m_oTxBodyProperties.GetPointer());
-					
-				if (oox_shape->m_oShapeStyle.IsInit() && oox_shape->m_oShapeStyle->m_oFontRef.getType() == OOX::et_a_fontRef)
-				{
-					OoxConverter::convert(&oox_shape->m_oShapeStyle->m_oFontRef);
-				}
-			odt_context->end_text_context();	
-		}
-
-	odt_context->drawing_context()->end_shape();
-	
-	odt_context->drawing_context()->end_drawing();
+	convert(&oox_inline->m_oGraphic);
 }
 
 void DocxConverter::convert(SimpleTypes::CHexColor<>		*color, 
@@ -3017,62 +2740,18 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 {
 	odf_color = boost::none;
 
-	unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
 	bool result = false;	
 
 	if(color && color->GetValue() == SimpleTypes::hexcolorRGB)//easy, faster,realy  !!
 	{
+		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
+		
 		ucR = color->Get_R(); 
 		ucB = color->Get_B(); 
 		ucG = color->Get_G(); 
 		ucA = color->Get_A(); 
-		result = true;
-	}
-	if(theme_color && result == false)
-	{
-		OOX::CTheme * docx_theme= docx_document->GetTheme();
-		int theme_ind = theme_color->GetValue();
-		switch(theme_ind)
-		{
-			case SimpleTypes::themecolorLight1:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oLt1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorLight2:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oLt2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorDark1:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oDk1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorDark2:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oDk2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent1:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent1.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent2:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent2.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent3:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent3.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent4:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent4.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent5:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent5.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorAccent6:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oAccent6.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorFollowedHyperlink:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oFolHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
-			case SimpleTypes::themecolorHyperlink:
-				result = docx_theme->m_oThemeElements.m_oClrScheme.m_oHlink.tryGetRgb(ucR, ucG, ucB, ucA); break;
-		}
-		if (result == true && theme_tint)
-		{
-			OOX::Drawing::CHslColor col;
-			col.SetRGBA(ucR, ucG, ucB);
-			double dH,  dS,  dL;
-			col.GetHSL(dH, dS,dL);
-			dL = dL * theme_tint->GetValue()/255. + (1 - theme_tint->GetValue()/255.); 
-			col.SetHSL(dH, dS,dL);
-			col.GetRGBA(ucR, ucG, ucB,ucA);
-		}
-	}
-	if (result == true)
-	{
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+
+		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
 
         if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB ))
 		{
@@ -3080,6 +2759,24 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 
 			odf_color = odf_types::color(strColor);
 			delete oRgbColor;
+
+			result = true;
+		}
+	}
+	if(theme_color && result == false)
+	{
+		PPTX::Theme * docx_theme= docx_document->GetTheme();
+		
+		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = docx_theme->themeElements.clrScheme.Scheme.find(theme_color->ToString());
+
+		if (pFind != docx_theme->themeElements.clrScheme.Scheme.end())
+		{
+			PPTX::Logic::UniColor & color = pFind->second;
+			
+			DWORD argb = color.GetARGB(); 
+
+			std::wstring strColor = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
+			odf_color = odf_types::color(strColor);
 		}
 	}
 }

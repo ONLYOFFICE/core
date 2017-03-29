@@ -263,6 +263,7 @@ namespace PPTX
 	class Theme;
 	namespace Logic
 	{
+		class ClrMap;
 		class SpTreeElem;
 		class GraphicFrame;
 		class SpTree;
@@ -340,9 +341,11 @@ public:
 		double	getSystemDPI();
 	
 //.......................................................................................................................
-		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;
-		virtual PPTX::Theme									*oox_theme() = 0;
-        virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
+		virtual cpdoccore::odf_writer::odf_conversion_context	*odf_context()	= 0;		
+		virtual PPTX::Theme										*oox_theme()	= 0;
+		virtual PPTX::Logic::ClrMap								*oox_clrMap()	{return NULL;}
+        
+		virtual std::wstring								find_link_by_id(std::wstring sId, int t) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>				find_file_by_id(std::wstring sId) = 0;
 		
 		OOX::IFileContainer									*oox_current_child_document;

@@ -142,17 +142,17 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 		{
 			case OOX::et_graphicFrame:
 			{
-				PPTX::Logic::GraphicFrame* pGraphicFrame= static_cast<PPTX::Logic::GraphicFrame*>(oox_unknown);
+				PPTX::Logic::GraphicFrame* pGraphicFrame= dynamic_cast<PPTX::Logic::GraphicFrame*>(oox_unknown);
 				convert(pGraphicFrame);
 			}break;
 			case OOX::et_pic:
 			{
-				PPTX::Logic::Pic* pPic= static_cast<PPTX::Logic::Pic*>(oox_unknown);
+				PPTX::Logic::Pic* pPic= dynamic_cast<PPTX::Logic::Pic*>(oox_unknown);
 				convert(pPic);
 			}break;
 			case OOX::et_dgm_DiagrammParts:
 			{
-				PPTX::Logic::SmartArt* pDiagrammParts = static_cast<PPTX::Logic::SmartArt*>(oox_unknown);
+				PPTX::Logic::SmartArt* pDiagrammParts = dynamic_cast<PPTX::Logic::SmartArt*>(oox_unknown);
 				convert(pDiagrammParts);
 			}break;
 			case OOX::et_a_Shape:
@@ -160,64 +160,64 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_dsp_Shape:
 			case OOX::et_w_Shape:
 			{
-				PPTX::Logic::Shape* pShape = static_cast<PPTX::Logic::Shape*>(oox_unknown);
+				PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(oox_unknown);
 				convert(pShape);
 			}break;
 			case OOX::et_p_ShapeTree:
 			case OOX::et_a_GroupShape:
 			case OOX::et_w_GroupShape:
 			{
-				PPTX::Logic::SpTree *spTree = static_cast<PPTX::Logic::SpTree *>(oox_unknown);
+				PPTX::Logic::SpTree *spTree = dynamic_cast<PPTX::Logic::SpTree *>(oox_unknown);
 				convert(spTree);				
 			}break;
 			case OOX::et_a_prstGeom:
 			{
-				PPTX::Logic::PrstGeom* pPresetGeom = static_cast<PPTX::Logic::PrstGeom*>(oox_unknown);
+				PPTX::Logic::PrstGeom* pPresetGeom = dynamic_cast<PPTX::Logic::PrstGeom*>(oox_unknown);
 				convert(pPresetGeom);
 			}break;
 			case OOX::et_a_custGeom:
 			{
-				PPTX::Logic::CustGeom* pCustomGeom = static_cast<PPTX::Logic::CustGeom*>(oox_unknown);
+				PPTX::Logic::CustGeom* pCustomGeom = dynamic_cast<PPTX::Logic::CustGeom*>(oox_unknown);
 				convert(pCustomGeom);
 			}break;
 			case OOX::et_a_lnTo:
 			{
-				PPTX::Logic::LineTo* pLineTo = static_cast<PPTX::Logic::LineTo*>(oox_unknown);
+				PPTX::Logic::LineTo* pLineTo = dynamic_cast<PPTX::Logic::LineTo*>(oox_unknown);
 				convert(pLineTo);
 			}break;
 			case OOX::et_a_moveTo:
 			{
-				PPTX::Logic::MoveTo* pMoveTo = static_cast<PPTX::Logic::MoveTo*>(oox_unknown);
+				PPTX::Logic::MoveTo* pMoveTo = dynamic_cast<PPTX::Logic::MoveTo*>(oox_unknown);
 				convert(pMoveTo);
 			}break;
 			case OOX::et_a_arcTo:
 			{
-				PPTX::Logic::ArcTo* pArcTo = static_cast<PPTX::Logic::ArcTo*>(oox_unknown);
+				PPTX::Logic::ArcTo* pArcTo = dynamic_cast<PPTX::Logic::ArcTo*>(oox_unknown);
 				convert(pArcTo);
 			}break;
 			case OOX::et_a_quadBezTo:
 			{
-				PPTX::Logic::QuadBezTo* pQuadBezierTo = static_cast<PPTX::Logic::QuadBezTo*>(oox_unknown);
+				PPTX::Logic::QuadBezTo* pQuadBezierTo = dynamic_cast<PPTX::Logic::QuadBezTo*>(oox_unknown);
 				convert(pQuadBezierTo);
 			}break;
 			case OOX::et_a_cubicBezTo:
 			{
-				PPTX::Logic::CubicBezTo* pCubicBezierT = static_cast<PPTX::Logic::CubicBezTo*>(oox_unknown);
+				PPTX::Logic::CubicBezTo* pCubicBezierT = dynamic_cast<PPTX::Logic::CubicBezTo*>(oox_unknown);
 				convert(pCubicBezierT);
 			}break;
 			case OOX::et_a_close:
 			{
-				PPTX::Logic::Close* pClose= static_cast<PPTX::Logic::Close*>(oox_unknown);
+				PPTX::Logic::Close* pClose= dynamic_cast<PPTX::Logic::Close*>(oox_unknown);
 				convert(pClose);
 			}break;
 			case OOX::et_a_r:
 			{
-				PPTX::Logic::Run* pRun= static_cast<PPTX::Logic::Run*>(oox_unknown);
+				PPTX::Logic::Run* pRun= dynamic_cast<PPTX::Logic::Run*>(oox_unknown);
 				convert(pRun);
 			}break;
 			//case OOX::et_a_alphaModFix:
 			//{
-			//	OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= static_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
+			//	OOX::Drawing::CAlphaModulateFixedEffect* pAlpha= dynamic_cast<OOX::Drawing::CAlphaModulateFixedEffect*>(oox_unknown);
 			//	if (pAlpha)
 			//	{
 			//		odf_context()->drawing_context()->set_opacity(pAlpha->m_oAmt.GetValue());
@@ -225,52 +225,52 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			//}break;
 			case OOX::et_v_imagedata:
 			{
-				OOX::Vml::CImageData *vml = static_cast<OOX::Vml::CImageData*>(oox_unknown);
+				OOX::Vml::CImageData *vml = dynamic_cast<OOX::Vml::CImageData*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_textbox:
 			{
-				OOX::Vml::CTextbox *vml = static_cast<OOX::Vml::CTextbox*>(oox_unknown);
+				OOX::Vml::CTextbox *vml = dynamic_cast<OOX::Vml::CTextbox*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_background:
 			{
-				OOX::Vml::CBackground *vml = static_cast<OOX::Vml::CBackground*>(oox_unknown);
+				OOX::Vml::CBackground *vml = dynamic_cast<OOX::Vml::CBackground*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_path:
 			{
-				OOX::Vml::CPath *vml = static_cast<OOX::Vml::CPath*>(oox_unknown);
+				OOX::Vml::CPath *vml = dynamic_cast<OOX::Vml::CPath*>(oox_unknown);
 				convert(vml);
 			}break;	
 				case OOX::et_v_textpath:
 			{
-				OOX::Vml::CTextPath *vml = static_cast<OOX::Vml::CTextPath*>(oox_unknown);
+				OOX::Vml::CTextPath *vml = dynamic_cast<OOX::Vml::CTextPath*>(oox_unknown);
 				convert(vml);
 			}break;	
 			case OOX::et_v_fill:
 			{
-				OOX::Vml::CFill *vml = static_cast<OOX::Vml::CFill*>(oox_unknown);
+				OOX::Vml::CFill *vml = dynamic_cast<OOX::Vml::CFill*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_stroke:
 			{
-				OOX::Vml::CStroke *vml = static_cast<OOX::Vml::CStroke*>(oox_unknown);
+				OOX::Vml::CStroke *vml = dynamic_cast<OOX::Vml::CStroke*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_shadow:
 			{
-				OOX::Vml::CShadow *vml = static_cast<OOX::Vml::CShadow*>(oox_unknown);
+				OOX::Vml::CShadow *vml = dynamic_cast<OOX::Vml::CShadow*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_v_image:
 			{
-				OOX::Vml::CImage *vml = static_cast<OOX::Vml::CImage*>(oox_unknown);
+				OOX::Vml::CImage *vml = dynamic_cast<OOX::Vml::CImage*>(oox_unknown);
 				convert(vml);
 			}break;
 			case OOX::et_wd_wrap:
 			{
-				OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
+				OOX::VmlWord::CWrap *vml = dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown);
 				convert(vml);
 			}break;
 			// "ненужные" элементы
@@ -282,22 +282,22 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_p_r:
 			{
-				PPTX::Logic::Run* pRun= static_cast<PPTX::Logic::Run*>(oox_unknown);
+				PPTX::Logic::Run* pRun= dynamic_cast<PPTX::Logic::Run*>(oox_unknown);
 				convert(pRun);
 			}break;
 			case OOX::et_p_fld:
 			{
-				PPTX::Logic::Fld* pFld= static_cast<PPTX::Logic::Fld*>(oox_unknown);
+				PPTX::Logic::Fld* pFld= dynamic_cast<PPTX::Logic::Fld*>(oox_unknown);
 				convert(pFld);
 			}break;
 			case OOX::et_p_br:
 			{
-				PPTX::Logic::Br* pBr= static_cast<PPTX::Logic::Br*>(oox_unknown);
+				PPTX::Logic::Br* pBr= dynamic_cast<PPTX::Logic::Br*>(oox_unknown);
 				convert(pBr);
 			}break;
 			case OOX::et_p_MathPara:
 			{
-				PPTX::Logic::MathParaWrapper* pMathPara= static_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown);
+				PPTX::Logic::MathParaWrapper* pMathPara= dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown);
 				convert(pMathPara);
 			}break;
 			default:
@@ -612,22 +612,22 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 //		{
 //		case OOX::et_a_outerShdw:
 //			{
-//				OOX::Drawing::COuterShadowEffect * shadow = static_cast<OOX::Drawing::COuterShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+//				OOX::Drawing::COuterShadowEffect * shadow = dynamic_cast<OOX::Drawing::COuterShadowEffect *>(oox_effect_list->m_arrEffects[i]);
 //				convert(shadow, change_sheme_color);
 //			}break;
 //		case OOX::et_a_innerShdw:
 //			{
-//				OOX::Drawing::CInnerShadowEffect * shadow = static_cast<OOX::Drawing::CInnerShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+//				OOX::Drawing::CInnerShadowEffect * shadow = dynamic_cast<OOX::Drawing::CInnerShadowEffect *>(oox_effect_list->m_arrEffects[i]);
 //				convert(shadow, change_sheme_color);
 //			}break;
 //		case OOX::et_a_prstShdw:
 //			{
-//				OOX::Drawing::CPresetShadowEffect * shadow = static_cast<OOX::Drawing::CPresetShadowEffect *>(oox_effect_list->m_arrEffects[i]);
+//				OOX::Drawing::CPresetShadowEffect * shadow = dynamic_cast<OOX::Drawing::CPresetShadowEffect *>(oox_effect_list->m_arrEffects[i]);
 //				//convert(shadow, change_sheme_color);
 //			}break;
 //		case OOX::et_a_reflection:
 //			{
-//				OOX::Drawing::CReflectionEffect * refelection = static_cast<OOX::Drawing::CReflectionEffect *>(oox_effect_list->m_arrEffects[i]);
+//				OOX::Drawing::CReflectionEffect * refelection = dynamic_cast<OOX::Drawing::CReflectionEffect *>(oox_effect_list->m_arrEffects[i]);
 //			}
 //			//CGlowEffect, CBlurEffect, CFillOverlayEffect, CSoftEdgesEffect
 //		}
@@ -646,7 +646,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 //		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
 //		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 //	}
-//	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
+//	convert(dynamic_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
 //    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
 //
 //	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
@@ -675,7 +675,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 //		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
 //		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
 //	}
-//	convert(static_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
+//	convert(dynamic_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
 //    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
 //
 //	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->m_oDist.ToPoints());

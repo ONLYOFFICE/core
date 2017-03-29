@@ -59,7 +59,7 @@ void odp_slide_context::start_page(office_element_ptr & elm)
 {
 	page_state_list_.push_back( odp_page_state(&context_, elm) );
 	
-	std::wstring style_name_new = L"ta" + boost::lexical_cast<std::wstring>(page_state_list_.size());
+	std::wstring style_name_new = L"dp" + boost::lexical_cast<std::wstring>(page_state_list_.size());
 
 	office_element_ptr & style = context_.styles_context()->add_or_find(style_name_new, style_family::DrawingPage, true);
 	style->create_child_element(L"style", L"drawing-page-properties");

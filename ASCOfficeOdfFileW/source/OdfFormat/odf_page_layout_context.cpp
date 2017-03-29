@@ -106,7 +106,7 @@ void odf_page_layout_context::add_master_page(std::wstring page_name)
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
 {
-	for (size_t i =0 ; i < master_state_list_.size(); i++)
+	for (size_t i = 0; i < master_state_list_.size(); i++)
 	{
 		try
 		{

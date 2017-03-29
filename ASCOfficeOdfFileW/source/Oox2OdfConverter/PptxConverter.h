@@ -85,9 +85,11 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
-		virtual odf_writer::odf_conversion_context		*odf_context();
+		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual PPTX::Theme								*oox_theme();
-        virtual std::wstring							find_link_by_id (std::wstring sId, int t);
+		virtual PPTX::Logic::ClrMap						*oox_clrMap();
+        
+		virtual std::wstring							find_link_by_id (std::wstring sId, int t);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id	(std::wstring sId);
 
 		void convert(OOX::WritingElement *oox_unknown);
@@ -99,9 +101,14 @@ namespace Oox2Odf
 		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
 		PPTX::Theme										*current_theme;
+		
 		OOX::IFileContainer								*current_slide;
+		PPTX::Logic::ClrMap								*current_clrMap;
 		
 		odf_writer::odp_conversion_context				*odp_context;
+
+		std::map<std::wstring, std::wstring>			m_mapMasters;
+		std::vector<std::wstring>						m_arLayouts;
 		
 		void convert_slides ();
 

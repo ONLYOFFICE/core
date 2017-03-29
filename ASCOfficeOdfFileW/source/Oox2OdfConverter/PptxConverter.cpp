@@ -80,14 +80,17 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 	output_document = new odf_writer::package::odf_document(L"presentation");
     odp_context     = new odf_writer::odp_conversion_context(output_document);
 	
+	current_clrMap	= NULL;
 	current_slide	= NULL;
 	current_theme	= NULL;
+
 	pCallBack		= CallBack;
 
 	if (UpdateProgress(290000))return;
 }
 PptxConverter::~PptxConverter()
 {
+	current_clrMap	= NULL;
 	current_slide	= NULL;
 	current_theme	= NULL;
 	presentation	= NULL;
@@ -111,6 +114,10 @@ odf_writer::odf_conversion_context* PptxConverter::odf_context()
 PPTX::Theme* PptxConverter::oox_theme()
 {
 	return current_theme;
+}
+PPTX::Logic::ClrMap* PptxConverter::oox_clrMap()
+{
+	return current_clrMap;
 }
 
 NSCommon::smart_ptr<OOX::File> PptxConverter::find_file_by_id(std::wstring sId)
@@ -205,20 +212,44 @@ void PptxConverter::convert_slides()
         {
             continue;// странное ... слайд 38 в FY10_September_Partner_Call.pptx
         }
-		current_slide = slide.operator->();
 		current_theme = slide->theme.operator->();
-		
-		//smart_ptr<SlideLayout>		Layout;
-		//smart_ptr<SlideMaster>		Master;		
-		odp_context->start_slide();
-		convert(slide->cSld.GetPointer());
 
+		std::wstring master_style_name;
+		std::wstring layout_style_name;
+
+		if (slide->Master.IsInit())
+		{
+			current_clrMap	= &slide->Master->clrMap;
+
+			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(slide->Master->m_sOutputFilename);
+			if (pFind == m_mapMasters.end())
+			{
+				current_slide = slide->Master.operator->();
+				master_style_name = odp_context->start_master_slide();
+					convert(&slide->Master->cSld);		
+				odp_context->end_master_slide();
+				
+				m_mapMasters.insert(std::make_pair(slide->Master->m_sOutputFilename, master_style_name));
+			}
+			else
+				master_style_name = pFind->second;
+		}
+		
+		if (slide->clrMapOvr.IsInit())
+			current_clrMap	= slide->clrMapOvr->overrideClrMapping.GetPointer();
+		
+		current_slide = slide.operator->();
+		odp_context->start_slide();
+		
+		odp_context->current_slide().set_master_page(master_style_name);
+		//odp_context->current_slide().set_layout_style(layout_style_name);
 		//nullable_bool		show;
 		//nullable_bool		showMasterPhAnim;
 		//nullable_bool		showMasterSp;
+		
+		convert(slide->cSld.GetPointer());
 
-		//nullable<Logic::ClrMapOvr>	clrMapOvr;
-		//nullable<Logic::CSld>			cSld;
+
 		//nullable<Logic::Transition>	transition;
 		//nullable<Logic::Timing>		timing;
 

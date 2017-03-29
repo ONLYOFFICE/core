@@ -77,7 +77,7 @@ public:
 	odp_page_state(odf_conversion_context * Context, office_element_ptr & elm);
 		void set_page_name(std::wstring name);
 		void set_page_style(office_element_ptr & _style);
-		void set_page_master_page(std::wstring name);
+		void set_master_page(std::wstring name);
 	
 	void add_child_element( const office_element_ptr & child_element);
 

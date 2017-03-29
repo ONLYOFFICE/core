@@ -66,18 +66,23 @@ odp_page_state::odp_page_state(odf_conversion_context * Context, office_element_
 
 void odp_page_state::set_page_name(std::wstring name)
 {
+	if (name.empty()) return;
+
 	office_page_name_ = name;
+	
 	draw_page* page = dynamic_cast<draw_page*>(draw_page_.get());
 	if (page == NULL)return;
 
 	page->draw_page_attr_.draw_name_ = name;
 }
 
-void odp_page_state::set_page_master_page(std::wstring name)
+void odp_page_state::set_master_page(std::wstring name)
 {
-	if (!office_page_style_)return;
+	if (name.empty())return;
+	draw_page* page = dynamic_cast<draw_page*>(draw_page_.get());
+	if (page == NULL)return;
 
-	office_page_style_->style_master_page_name_ = name;
+	page->draw_page_attr_.master_page_name_ = name;
 }
 
 void odp_page_state::set_page_style(office_element_ptr & elm)

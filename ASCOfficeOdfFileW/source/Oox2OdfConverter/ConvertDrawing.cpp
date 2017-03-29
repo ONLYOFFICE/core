@@ -434,12 +434,12 @@ void OoxConverter::convert(PPTX::Logic::PathBase *oox_path)
 {
 	if (!oox_path) return;
 
-	PPTX::Logic::MoveTo*		moveTo		= static_cast<PPTX::Logic::MoveTo*>		(oox_path);
-	PPTX::Logic::LineTo*		lineTo		= static_cast<PPTX::Logic::LineTo*>		(oox_path);
-	PPTX::Logic::CubicBezTo*	cubicBezTo	= static_cast<PPTX::Logic::CubicBezTo*>	(oox_path);
-	PPTX::Logic::Close*			close		= static_cast<PPTX::Logic::Close*>		(oox_path);
-	PPTX::Logic::ArcTo*			arcTo		= static_cast<PPTX::Logic::ArcTo*>		(oox_path);
-	PPTX::Logic::QuadBezTo*		quadBezTo	= static_cast<PPTX::Logic::QuadBezTo*>	(oox_path);
+	PPTX::Logic::MoveTo*		moveTo		= dynamic_cast<PPTX::Logic::MoveTo*>		(oox_path);
+	PPTX::Logic::LineTo*		lineTo		= dynamic_cast<PPTX::Logic::LineTo*>		(oox_path);
+	PPTX::Logic::CubicBezTo*	cubicBezTo	= dynamic_cast<PPTX::Logic::CubicBezTo*>	(oox_path);
+	PPTX::Logic::Close*			close		= dynamic_cast<PPTX::Logic::Close*>		(oox_path);
+	PPTX::Logic::ArcTo*			arcTo		= dynamic_cast<PPTX::Logic::ArcTo*>		(oox_path);
+	PPTX::Logic::QuadBezTo*		quadBezTo	= dynamic_cast<PPTX::Logic::QuadBezTo*>	(oox_path);
 
 	if (moveTo)
 	{
@@ -634,40 +634,16 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 
 	DWORD argb = 0;
 
-	smart_ptr<PPTX::Logic::ClrMap>	clrMap;
+	smart_ptr<PPTX::Logic::ClrMap>	clrMap(oox_clrMap()); clrMap.AddRef();
 	smart_ptr<PPTX::Theme>			theme(oox_theme()); theme.AddRef();
 	
 	argb = color->GetRGBColor(theme, clrMap);
 	
-	//switch(color->getType ())
-	//{
-	//	case OOX::et_a_schemeClr:
-	//	{
-	//		NSCommon::smart_ptr<PPTX::Logic::SchemeClr> schemeColor = color->Color.smart_dynamic_cast<PPTX::Logic::SchemeClr>();
-	//		if (schemeColor.IsInit())
-	//		{
-	//			convert(schemeColor->val.get(), argb);
-	//		}
-	//	}break;
-	//	case OOX::et_a_prstClr:
-	//	case OOX::et_a_scrgbClr:
-	//	case OOX::et_a_srgbClr:
-	//	case OOX::et_a_sysClr:
-	//	default:
-	//	{
-	//		argb = color->GetARGB();
+	hexString = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
 
-	//		result = true;
-	//	}break;
-	//}
-	//if (result)
+	if ((argb >> 24) != 0xff)
 	{
-		hexString = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
-
-		if ((argb >> 24) != 0xff)
-		{
-			opacity = ((argb >> 24) /255.) * 100.;
-		}
+		opacity = ((argb >> 24) /255.) * 100.;
 	}
 }
 

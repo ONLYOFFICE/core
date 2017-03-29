@@ -527,7 +527,7 @@ void XlsxConverter::convert_sharing_string(int number)
 
 	if (number <0 || (SharedStrings->m_oCount.IsInit() && number > SharedStrings->m_oCount->GetValue()))return;//???? m_oUniqueCount;
 
-	convert(static_cast<OOX::Spreadsheet::CSi*>(SharedStrings->m_arrItems[number]));
+	convert(dynamic_cast<OOX::Spreadsheet::CSi*>(SharedStrings->m_arrItems[number]));
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
@@ -552,27 +552,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 	{
 		case OOX::et_x_r:
 		{
-			OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(oox_unknown);
+			OOX::Spreadsheet::CRun* pRun = dynamic_cast<OOX::Spreadsheet::CRun*>(oox_unknown);
 			convert(pRun);
 		}break;
 		case OOX::et_x_t:
 		{
-			OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(oox_unknown);
+			OOX::Spreadsheet::CText* pText = dynamic_cast<OOX::Spreadsheet::CText*>(oox_unknown);
 			convert(pText);
 		}break;
 		case OOX::et_x_IconSet:
 		{
-			OOX::Spreadsheet::CIconSet *pIc = static_cast<OOX::Spreadsheet::CIconSet*>(oox_unknown);
+			OOX::Spreadsheet::CIconSet *pIc = dynamic_cast<OOX::Spreadsheet::CIconSet*>(oox_unknown);
 			convert(pIc);
 		}break;
 		case OOX::et_x_DataBar:
 		{
-			OOX::Spreadsheet::CDataBar *pB = static_cast<OOX::Spreadsheet::CDataBar*>(oox_unknown);
+			OOX::Spreadsheet::CDataBar *pB = dynamic_cast<OOX::Spreadsheet::CDataBar*>(oox_unknown);
 			convert(pB);
 		}break;
 		case OOX::et_x_FormulaCF:
 		{
-			OOX::Spreadsheet::CFormulaCF *pF = static_cast<OOX::Spreadsheet::CFormulaCF*>(oox_unknown);
+			OOX::Spreadsheet::CFormulaCF *pF = dynamic_cast<OOX::Spreadsheet::CFormulaCF*>(oox_unknown);
 			convert(pF);
 		}break;		
 		default:
@@ -1774,22 +1774,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFromTo* oox_from_to, oox_table_po
 //		{
 //			case OOX::et_x_Shape:
 //			{
-//				OOX::Spreadsheet::CShape* item = static_cast<OOX::Spreadsheet::CShape*>(oox_group_shape->m_arrItems[i]);
+//				OOX::Spreadsheet::CShape* item = dynamic_cast<OOX::Spreadsheet::CShape*>(oox_group_shape->m_arrItems[i]);
 //				convert(item);
 //			}break;
 //			case OOX::et_x_ConnShape:
 //			{
-//				OOX::Spreadsheet::CConnShape* item = static_cast<OOX::Spreadsheet::CConnShape*>(oox_group_shape->m_arrItems[i]);
+//				OOX::Spreadsheet::CConnShape* item = dynamic_cast<OOX::Spreadsheet::CConnShape*>(oox_group_shape->m_arrItems[i]);
 //				convert(item);
 //			}break;
 //			case OOX::et_x_GroupShape:
 //			{
-//				OOX::Spreadsheet::CGroupShape* item = static_cast<OOX::Spreadsheet::CGroupShape*>(oox_group_shape->m_arrItems[i]);
+//				OOX::Spreadsheet::CGroupShape* item = dynamic_cast<OOX::Spreadsheet::CGroupShape*>(oox_group_shape->m_arrItems[i]);
 //				convert(item);
 //			}break;
 //			case OOX::et_x_Pic:
 //			{
-//				OOX::Spreadsheet::CPic* item = static_cast<OOX::Spreadsheet::CPic*>(oox_group_shape->m_arrItems[i]);
+//				OOX::Spreadsheet::CPic* item = dynamic_cast<OOX::Spreadsheet::CPic*>(oox_group_shape->m_arrItems[i]);
 //				convert(item);
 //			}break;
 //		}
@@ -2045,7 +2045,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CColorScale *oox_cond_colorscale)
 		else
 		{
 			_CP_OPT(odf_types::color) color;
-			convert(static_cast<OOX::Spreadsheet::CColor*>(oox_cond_colorscale->m_arrItems[i]),color);
+			convert(dynamic_cast<OOX::Spreadsheet::CColor*>(oox_cond_colorscale->m_arrItems[i]),color);
 			ods_context->current_table().add_conditional_colorscale(color);
 		}
 	}

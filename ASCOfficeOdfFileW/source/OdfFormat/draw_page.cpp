@@ -37,8 +37,6 @@
 
 #include "office_elements_create.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
-
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -46,18 +44,18 @@ namespace cpdoccore {
 namespace odf_writer {
 
 
-void draw_page_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void draw_page_attr::serialize(CP_ATTR_NODE)
 {
-    CP_APPLY_ATTR(L"draw:id",			draw_id_);
+    CP_XML_ATTR_OPT(L"draw:id",			draw_id_);
 
-    CP_APPLY_ATTR(L"draw:name",			draw_name_);
-    CP_APPLY_ATTR(L"draw:style-name",	draw_style_name_);
+    CP_XML_ATTR_OPT(L"draw:name",		draw_name_);
+    CP_XML_ATTR_OPT(L"draw:style-name",	draw_style_name_);
     
-	CP_APPLY_ATTR(L"presentation:presentation-page-layout-name", page_layout_name_);
-    CP_APPLY_ATTR(L"draw:master-page-name",				master_page_name_);
+	CP_XML_ATTR_OPT(L"presentation:presentation-page-layout-name",	page_layout_name_);
+    CP_XML_ATTR_OPT(L"draw:master-page-name",						master_page_name_);
     
-	CP_APPLY_ATTR(L"presentation:use-date-time-name",	use_date_time_name_);
-    CP_APPLY_ATTR(L"presentation:use-footer-name",		use_footer_name_);
+	CP_XML_ATTR_OPT(L"presentation:use-date-time-name",	use_date_time_name_);
+    CP_XML_ATTR_OPT(L"presentation:use-footer-name",	use_footer_name_);
 
 }
 
@@ -81,20 +79,20 @@ void draw_page::add_child_element( const office_element_ptr & child_element)
 		content_.push_back(child_element);
 }
 
-void draw_page::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    draw_page_attr_.add_attributes(Attributes);
-}
 void draw_page::serialize(std::wostream & _Wostream)
 {
     CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			draw_page_attr_.serialize(CP_GET_XML_NODE());
 			for (int i = 0; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
+
+			if (animation_)
+				animation_->serialize(CP_XML_STREAM());
 		}
 	}
 }
@@ -104,22 +102,22 @@ void draw_page::serialize(std::wostream & _Wostream)
 const wchar_t * presentation_footer_decl::ns = L"presentation";
 const wchar_t * presentation_footer_decl::name = L"footer-decl";
 
-void presentation_footer_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	CP_APPLY_ATTR(L"presentation:name",	presentation_name_);
-}
+//void presentation_footer_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
+//{
+//	CP_XML_ATTR_OPT(L"presentation:name",	presentation_name_);
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * presentation_date_time_decl::ns = L"presentation";
 const wchar_t * presentation_date_time_decl::name = L"date-time-decl";
-
-void presentation_date_time_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-	CP_APPLY_ATTR(L"presentation:name",		presentation_name_);
-	CP_APPLY_ATTR(L"presentation:source",	presentation_source_);
-	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
-}
-
+//
+//void presentation_date_time_decl::add_attributes( const xml::attributes_wc_ptr & Attributes )
+//{
+//	CP_XML_ATTR_OPT(L"presentation:name",		presentation_name_);
+//	CP_XML_ATTR_OPT(L"presentation:source",	presentation_source_);
+//	CP_XML_ATTR_OPT(L"style:data-style-name",	style_data_style_name_);
+//}
+//
 
 }
 }

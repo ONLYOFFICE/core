@@ -73,23 +73,34 @@ void odp_conversion_context::end_document()
 void odp_conversion_context::start_slide()
 {
 	create_element(L"draw", L"page", root_presentation_->pages_, this);	
+	
 	slide_context_.start_page(root_presentation_->pages_.back());
 
-		drawing_context()->set_styles_context(styles_context());
-		page_layout_context()->set_styles_context(styles_context());
-		
-	//page_layout_context()->add_master_page(L"");
+	drawing_context()->set_styles_context(styles_context());
+	//page_layout_context()->set_styles_context(styles_context());
+}
+std::wstring odp_conversion_context::start_master_slide()
+{
+	std::wstring name;
+	page_layout_context()->add_master_page(name);
 
-    //current_table().set_table_master_page(page_layout_context()->last_master() ?
-    //                                          page_layout_context()->last_master()->get_name() : L"");
+	name = page_layout_context()->last_master()->get_name();
+	
+	slide_context_.start_page(page_layout_context()->last_master()->get_root());
+	
+	drawing_context()->set_styles_context(page_layout_context()->get_local_styles_context());
+
+	return name;
+}
+
+void odp_conversion_context::end_master_slide()
+{
+	slide_context_.end_page();
 }
 
 void odp_conversion_context::end_slide()
 {
-
 	slide_context_.end_page();
-	//
-	//styles_context()->reset_defaults();
 }
 
 void odp_conversion_context::start_text_context()

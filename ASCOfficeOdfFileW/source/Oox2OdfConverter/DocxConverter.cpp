@@ -243,141 +243,141 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 	{
 		case OOX::et_w_ptab:
 		{
-			OOX::Logic::CPTab* pT= static_cast<OOX::Logic::CPTab*>(oox_unknown);
+			OOX::Logic::CPTab* pT= dynamic_cast<OOX::Logic::CPTab*>(oox_unknown);
 			convert(pT);
 		}break;
 		case OOX::et_w_sdt:
 		{
-			OOX::Logic::CSdt* pP= static_cast<OOX::Logic::CSdt*>(oox_unknown);
+			OOX::Logic::CSdt* pP= dynamic_cast<OOX::Logic::CSdt*>(oox_unknown);
 			convert(pP);
 		}break;
 		case OOX::et_w_fldSimple:	
 		{
-			OOX::Logic::CFldSimple* pFldS= static_cast<OOX::Logic::CFldSimple*>(oox_unknown);
+			OOX::Logic::CFldSimple* pFldS= dynamic_cast<OOX::Logic::CFldSimple*>(oox_unknown);
 			convert(pFldS);
 		}break;
 		case OOX::et_w_r:
 		{
-			OOX::Logic::CRun* pRun= static_cast<OOX::Logic::CRun*>(oox_unknown);
+			OOX::Logic::CRun* pRun= dynamic_cast<OOX::Logic::CRun*>(oox_unknown);
 			convert(pRun);
 		}break;
 		case OOX::et_w_p:
 		{
-			OOX::Logic::CParagraph* pP= static_cast<OOX::Logic::CParagraph*>(oox_unknown);
+			OOX::Logic::CParagraph* pP= dynamic_cast<OOX::Logic::CParagraph*>(oox_unknown);
 			convert(pP);
 		}break;
 		case OOX::et_w_ins:
 		{
-			OOX::Logic::CIns* pIns= static_cast<OOX::Logic::CIns*>(oox_unknown);
+			OOX::Logic::CIns* pIns= dynamic_cast<OOX::Logic::CIns*>(oox_unknown);
 			convert(pIns);
 		}break;
 		case OOX::et_w_del:
 		{
-			OOX::Logic::CDel* pDel= static_cast<OOX::Logic::CDel*>(oox_unknown);
+			OOX::Logic::CDel* pDel= dynamic_cast<OOX::Logic::CDel*>(oox_unknown);
 			convert(pDel);
 		}break;
 		case OOX::et_w_smartTag:
 		{
-			OOX::Logic::CSmartTag* pTag= static_cast<OOX::Logic::CSmartTag*>(oox_unknown);
+			OOX::Logic::CSmartTag* pTag= dynamic_cast<OOX::Logic::CSmartTag*>(oox_unknown);
 			convert(pTag);
 		}break;
 		case OOX::et_w_pPr:
 		{
-			OOX::Logic::CParagraphProperty* pPProp= static_cast<OOX::Logic::CParagraphProperty*>(oox_unknown);
+			OOX::Logic::CParagraphProperty* pPProp= dynamic_cast<OOX::Logic::CParagraphProperty*>(oox_unknown);
 			convert(pPProp);
 		}break;
 		case OOX::et_w_hyperlink:
 		{
-			OOX::Logic::CHyperlink* pH= static_cast<OOX::Logic::CHyperlink*>(oox_unknown);
+			OOX::Logic::CHyperlink* pH= dynamic_cast<OOX::Logic::CHyperlink*>(oox_unknown);
 			convert(pH);
 		}break;
 		case OOX::et_w_rPr:
 		{
-			OOX::Logic::CRunProperty* pRProp= static_cast<OOX::Logic::CRunProperty*>(oox_unknown);
+			OOX::Logic::CRunProperty* pRProp= dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown);
 			convert(pRProp);
 		}break;
 		case OOX::et_mc_alternateContent:
 		{
-			OOX::Logic::CAlternateContent* pAltCont= static_cast<OOX::Logic::CAlternateContent*>(oox_unknown);
+			OOX::Logic::CAlternateContent* pAltCont= dynamic_cast<OOX::Logic::CAlternateContent*>(oox_unknown);
 			convert(pAltCont);
 		}break;
 		case OOX::et_w_drawing:
 		{
-			OOX::Logic::CDrawing* pDrawing= static_cast<OOX::Logic::CDrawing*>(oox_unknown);
+			OOX::Logic::CDrawing* pDrawing= dynamic_cast<OOX::Logic::CDrawing*>(oox_unknown);
 			convert(pDrawing);
 		}break;
 		//case OOX::et_c_chart:
 		//{
-		//	PPTX::Logic::ChartRec* pChart = static_cast<PPTX::Logic::ChartRec*>(oox_unknown);
+		//	PPTX::Logic::ChartRec* pChart = dynamic_cast<PPTX::Logic::ChartRec*>(oox_unknown);
 		//	convert(pChart);
 		//}break;
 		//case OOX::et_w_Shape:
 		//{
-		//	OOX::Logic::CShape* pShape = static_cast<OOX::Logic::CShape*>(oox_unknown);
+		//	OOX::Logic::CShape* pShape = dynamic_cast<OOX::Logic::CShape*>(oox_unknown);
 		//	convert(pShape);
 		//}break;
 		//case OOX::et_w_pict:
 		//{
-		//	OOX::Logic::CPicture* pPic = static_cast<OOX::Logic::CPicture*>(oox_unknown);
+		//	OOX::Logic::CPicture* pPic = dynamic_cast<OOX::Logic::CPicture*>(oox_unknown);
 		//	convert(pPic);
 		//}break;
 		//case OOX::et_w_object:
 		//{
-		//	OOX::Logic::CObject* pObj = static_cast<OOX::Logic::CObject*>(oox_unknown);
+		//	OOX::Logic::CObject* pObj = dynamic_cast<OOX::Logic::CObject*>(oox_unknown);
 		//	convert(pObj);
 		//}break;
 		case OOX::et_pic_pic:
 		case OOX::et_pic:
 		case OOX::et_p_pic:
 		{
-			PPTX::Logic::Pic* pPic = static_cast<PPTX::Logic::Pic*>(oox_unknown);
+			PPTX::Logic::Pic* pPic = dynamic_cast<PPTX::Logic::Pic*>(oox_unknown);
 			convert(pPic);
 		}break;
 		case OOX::et_w_GroupShape:
 		case OOX::et_p_ShapeTree:
 		{
-			PPTX::Logic::SpTree* pGroupShape= static_cast<PPTX::Logic::SpTree*>(oox_unknown);
+			PPTX::Logic::SpTree* pGroupShape= dynamic_cast<PPTX::Logic::SpTree*>(oox_unknown);
 			convert(pGroupShape);
 		}break;
 
 		case OOX::et_w_commentRangeEnd:
 		{
-			OOX::Logic::CCommentRangeEnd* pCommEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown);
+			OOX::Logic::CCommentRangeEnd* pCommEnd = dynamic_cast<OOX::Logic::CCommentRangeEnd*>(oox_unknown);
 			convert(pCommEnd);
 		}break;
 		case OOX::et_w_commentRangeStart:
 		{
-			OOX::Logic::CCommentRangeStart* pCommStart = static_cast<OOX::Logic::CCommentRangeStart*>(oox_unknown);
+			OOX::Logic::CCommentRangeStart* pCommStart = dynamic_cast<OOX::Logic::CCommentRangeStart*>(oox_unknown);
 			convert(pCommStart);
 		}break;
 		case OOX::et_w_commentReference:
 		{
-			OOX::Logic::CCommentReference* pCommRef = static_cast<OOX::Logic::CCommentReference*>(oox_unknown);
+			OOX::Logic::CCommentReference* pCommRef = dynamic_cast<OOX::Logic::CCommentReference*>(oox_unknown);
 			convert(pCommRef);		//если нет Start - означает начало с предыдущего Run
 		}break;
 		case OOX::et_w_footnoteReference:
 		{
-			OOX::Logic::CFootnoteReference* pRef= static_cast<OOX::Logic::CFootnoteReference*>(oox_unknown);
+			OOX::Logic::CFootnoteReference* pRef= dynamic_cast<OOX::Logic::CFootnoteReference*>(oox_unknown);
 			convert(pRef);
 		}break;
 		case OOX::et_w_endnoteReference:
 		{
-			OOX::Logic::CEndnoteReference* pRef= static_cast<OOX::Logic::CEndnoteReference*>(oox_unknown);
+			OOX::Logic::CEndnoteReference* pRef= dynamic_cast<OOX::Logic::CEndnoteReference*>(oox_unknown);
 			convert(pRef);
 		}break;
 		case OOX::et_w_tbl:
 		{
-			OOX::Logic::CTbl* pTable= static_cast<OOX::Logic::CTbl*>(oox_unknown);
+			OOX::Logic::CTbl* pTable= dynamic_cast<OOX::Logic::CTbl*>(oox_unknown);
 			convert(pTable);
 		}break;
 		case OOX::et_w_tr:
 		{
-			OOX::Logic::CTr* pRow= static_cast<OOX::Logic::CTr*>(oox_unknown);
+			OOX::Logic::CTr* pRow= dynamic_cast<OOX::Logic::CTr*>(oox_unknown);
 			convert(pRow);
 		}break;
 		case OOX::et_w_tc:
 		{
-			OOX::Logic::CTc* pCell= static_cast<OOX::Logic::CTc*>(oox_unknown);
+			OOX::Logic::CTc* pCell= dynamic_cast<OOX::Logic::CTc*>(oox_unknown);
 			convert(pCell);
 		}break;
 		default:
@@ -647,17 +647,17 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 		{
 			case OOX::et_w_fldChar:	
 			{
-				OOX::Logic::CFldChar* pFldChar= static_cast<OOX::Logic::CFldChar*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CFldChar* pFldChar= dynamic_cast<OOX::Logic::CFldChar*>(oox_run->m_arrItems[i]);
 				convert(pFldChar);
 			}break;
 			case OOX::et_w_instrText:
 			{
-				OOX::Logic::CInstrText* pInstrText= static_cast<OOX::Logic::CInstrText*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CInstrText* pInstrText= dynamic_cast<OOX::Logic::CInstrText*>(oox_run->m_arrItems[i]);
 				convert(pInstrText);
 			}break;
 			case OOX::et_w_delText:
 			{
-				OOX::Logic::CDelText* pDelText= static_cast<OOX::Logic::CDelText*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CDelText* pDelText= dynamic_cast<OOX::Logic::CDelText*>(oox_run->m_arrItems[i]);
 				convert(pDelText);
 			}break;
 			case OOX::et_w_rPr:	// пропускаем .. 
@@ -668,7 +668,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			}break;
 			case OOX::et_w_br:
 			{
-				OOX::Logic::CBr* pBr= static_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
 				if (pBr)
 				{
 					int type = pBr->m_oType.GetValue();
@@ -681,17 +681,17 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 			}break;
 			case OOX::et_w_t:
 			{
-				OOX::Logic::CText* pText= static_cast<OOX::Logic::CText*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CText* pText= dynamic_cast<OOX::Logic::CText*>(oox_run->m_arrItems[i]);
 				convert(pText);
 			}break;
 			case OOX::et_w_sym:
 			{
-				OOX::Logic::CSym* pSym= static_cast<OOX::Logic::CSym*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CSym* pSym= dynamic_cast<OOX::Logic::CSym*>(oox_run->m_arrItems[i]);
 				convert(pSym);
 			}break;
 			case OOX::et_w_tab:
 			{
-				OOX::Logic::CTab* pTab= static_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
+				OOX::Logic::CTab* pTab= dynamic_cast<OOX::Logic::CTab*>(oox_run->m_arrItems[i]);
 				odt_context->text_context()->add_tab();
 			}break;
 
@@ -1110,7 +1110,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 			{
 				_CP_OPT(odf_types::length) length_;
 				
-				convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
+				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
 				paragraph_properties->content().fo_line_height_ = odf_types::line_width(*length_);
 			}
 			else
@@ -1123,13 +1123,13 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		if (oox_paragraph_pr->m_oSpacing->m_oAfter.IsInit())
 		{
  			_CP_OPT(odf_types::length_or_percent) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oAfter.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oAfter.GetPointer()), length);
 			paragraph_properties->content().fo_margin_bottom_ = length;
 		}
 		if (oox_paragraph_pr->m_oSpacing->m_oBefore.IsInit())
 		{
  			_CP_OPT(odf_types::length_or_percent) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oBefore.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oBefore.GetPointer()), length);
 			paragraph_properties->content().fo_margin_top_ = length;
 		}
 			//nullable<SimpleTypes::COnOff<>            > m_oAfterAutospacing;
@@ -1145,26 +1145,26 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		if (oox_paragraph_pr->m_oInd->m_oStart.IsInit())
 		{
  			_CP_OPT(odf_types::length) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oStart.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oStart.GetPointer()), length);
 			paragraph_properties->content().fo_margin_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm), odf_types::length::cm);
 			//в случае списка тута надо выдумать indent (взять из стиля списка)
 		}
 		if (oox_paragraph_pr->m_oInd->m_oEnd.IsInit())
 		{
  			_CP_OPT(odf_types::length) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oEnd.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oEnd.GetPointer()), length);
 			paragraph_properties->content().fo_margin_right_ = odf_types::length(length->get_value_unit(odf_types::length::cm), odf_types::length::cm);
 		}
 		if (oox_paragraph_pr->m_oInd->m_oFirstLine.IsInit())
 		{
  			_CP_OPT(odf_types::length) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oFirstLine.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oFirstLine.GetPointer()), length);
 			paragraph_properties->content().fo_text_indent_ = odf_types::length(length->get_value_unit(odf_types::length::cm), odf_types::length::cm);
 		}
 		if (oox_paragraph_pr->m_oInd->m_oHanging.IsInit())
 		{//first line ignored
  			_CP_OPT(odf_types::length) length;
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oHanging.GetPointer()), length);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oInd->m_oHanging.GetPointer()), length);
 			if (length) paragraph_properties->content().fo_text_indent_ = odf_types::length(-length->get_value_unit(odf_types::length::cm), odf_types::length::cm);
 		}
 			//nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
@@ -3948,19 +3948,19 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 		{
             _CP_OPT(odf_types::length) length_, length_left, length_right;
 			
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oLeftFromText.GetPointer()), length_left);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oLeftFromText.GetPointer()), length_left);
             if (length_left)
                 table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length_left->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 				
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oRightFromText.GetPointer()), length_right);
+			convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oRightFromText.GetPointer()), length_right);
             if (length_right)
                 table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_right_= odf_types::length(length_right->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
-            convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oTopFromText.GetPointer()), length_);
+            convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oTopFromText.GetPointer()), length_);
             if (length_)
                 table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
-            convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length_);
+            convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length_);
             if (length_)
                 table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
@@ -4050,7 +4050,7 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr, o
 	if (oox_table_row_pr->m_oTblHeight.IsInit())
 	{
 		_CP_OPT(odf_types::length) length;
-		convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_row_pr->m_oTblHeight->m_oVal.GetPointer()), length);
+		convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_table_row_pr->m_oTblHeight->m_oVal.GetPointer()), length);
 
 		if (oox_table_row_pr->m_oTblHeight->m_oHRule.IsInit())
 		{

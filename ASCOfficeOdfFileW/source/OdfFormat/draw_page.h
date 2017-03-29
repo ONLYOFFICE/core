@@ -34,6 +34,7 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -48,7 +49,7 @@ namespace odf_writer {
 class draw_page_attr
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void serialize(CP_ATTR_NODE);
 
 	_CP_OPT(std::wstring)		draw_name_;
 	_CP_OPT(std::wstring)		draw_id_;
@@ -75,8 +76,6 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
     office_element_ptr_array	content_;
 	office_element_ptr			animation_;
 
@@ -99,8 +98,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream){}
-
-	void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	_CP_OPT(std::wstring)	presentation_name_;
 	std::wstring			text_;
@@ -127,8 +124,6 @@ public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
 	virtual void serialize(std::wostream & _Wostream){}
-
-	void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time_decl);

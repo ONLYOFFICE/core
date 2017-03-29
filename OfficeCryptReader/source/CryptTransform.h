@@ -68,57 +68,78 @@ class Decryptor
 };
 typedef boost::shared_ptr<Decryptor> DecryptorPtr;
 
-class ECMADecryptor : public Decryptor
+struct _ecmaCryptData
 {
-public:
-
-	struct _cryptData
-	{
 //default ms2010		
-		_cryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
-						keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
+	_ecmaCryptData() :	cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA1), spinCount(100000), 
+					keySize(0x10), hashSize(0x14), blockSize(0x10), saltSize(0x10), bAgile(true)
 //default ms2013/ms2016
-		//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
-		//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
-		{
-		}
-		CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
-		CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
+	//_cryptData(): cipherAlgorithm(CRYPT_METHOD::AES_CBC), hashAlgorithm(CRYPT_METHOD::SHA256), spinCount(100000), 
+	//				keySize(0x20), hashSize(0x40), blockSize(0x10), saltSize(0x10), bAgile(true)
+	{
+	}
+	CRYPT_METHOD::_cipherAlgorithm	cipherAlgorithm;
+	CRYPT_METHOD::_hashAlgorithm	hashAlgorithm;
 
-		int			spinCount;
-		int			keySize;
-		int			hashSize;
-		int			blockSize;
-		int			saltSize;
+	int			spinCount;
+	int			keySize;
+	int			hashSize;
+	int			blockSize;
+	int			saltSize;
 
-		std::string dataSaltValue;
-		std::string saltValue;
-		std::string encryptedKeyValue;
-		std::string encryptedVerifierInput;
-		std::string encryptedVerifierValue;
-		  
-		std::string encryptedHmacKey;
-		std::string encryptedHmacValue;
+	std::string dataSaltValue;
+	std::string saltValue;
+	std::string encryptedKeyValue;
+	std::string encryptedVerifierInput;
+	std::string encryptedVerifierValue;
+	  
+	std::string encryptedHmacKey;
+	std::string encryptedHmacValue;
 
-		bool bAgile;
+	bool bAgile;
 
 //..........
 
-	};
+};
+class ECMAEncryptor 
+{
+public:
+	ECMAEncryptor();
+	virtual ~ECMAEncryptor(){}
+
+	void SetPassword (std::wstring password);
+	
+	void SetCryptData(_ecmaCryptData &data);
+	void GetCryptData(_ecmaCryptData &data);
+
+	int Encrypt (unsigned char* data, int  size, unsigned char*& data_out);
+
+	void UpdateDataIntegrity(unsigned char* data, int  size);
+
+private:
+	std::wstring	password;
+	_ecmaCryptData	cryptData;
+};
+
+class ECMADecryptor : public Decryptor
+{
+public:
 	ECMADecryptor();
 	virtual ~ECMADecryptor(){}
 
 	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out);
 	
-	virtual void Decrypt (char* data	, const size_t size, const unsigned long stream_pos);
+	virtual void Decrypt (char* data, const size_t size, const unsigned long stream_pos);
 	virtual bool SetPassword (std::wstring password);
 	virtual bool IsVerify();
 
-	void SetCryptData(_cryptData	&data);
+	void SetCryptData(_ecmaCryptData &data);
 	
 private:
+	bool IsDataIntegrity(unsigned char* data, int  size);
+	
 	std::wstring	password;
-	_cryptData		cryptData;
+	_ecmaCryptData	cryptData;
 	bool			bVerify;
 };
 

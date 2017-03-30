@@ -2062,7 +2062,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 int nSimplePos = 0;
                 if(bBSimplePos && BSimplePos)
                     nSimplePos = 1;
-                int nRelativeHeight = 0;
+                unsigned long nRelativeHeight = 0;
                 if(bRelativeHeight)
                     nRelativeHeight = RelativeHeight;
                 int nBehindDoc = 0;

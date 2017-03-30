@@ -1066,12 +1066,7 @@ namespace OOX{
 				}
 				else if(_T("clrMapOvr") == sName)
 				{
-					int nParentDepth1 = oReader.GetDepth();
-					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-					{
-						std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
-						m_oClrMapOvr = oReader;
-					}
+                    m_oClrMapOvr = oReader;
 				}
 				else if(_T("pivotSource") == sName)
 				{

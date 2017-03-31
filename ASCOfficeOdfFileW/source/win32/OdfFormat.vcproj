@@ -322,6 +322,14 @@
 			Name="elements"
 			>
 			<File
+				RelativePath="..\OdfFormat\anim_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\anim_elements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\calcext_elements.cpp"
 				>
 			</File>
@@ -595,6 +603,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\style_paragraph_properties.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\style_presentation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\style_presentation.h"
 				>
 			</File>
 			<File

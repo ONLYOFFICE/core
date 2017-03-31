@@ -610,17 +610,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 	if (oox_run_pr->m_oBold.IsInit())
 	{
 		if (oox_run_pr->m_oBold->m_oVal.ToBool() ==true) 
-			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
+			text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
 		else
-			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
+			text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
-	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
+	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content_.fo_color_);
 
-    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
+    text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
 	if (oox_run_pr->m_oUnderline.IsInit())
 	{
-		text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
-		text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);
+		text_properties->content_.style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
+		text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);
 		
 		if (oox_run_pr->m_oUnderline->m_oUnderline.IsInit())
 		{
@@ -629,27 +629,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 			{
 			case SimpleTypes::Spreadsheet::underlineDouble				:
 			case SimpleTypes::Spreadsheet::underlineDoubleAccounting	:
-					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
+					text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
-					text_properties->content().style_text_underline_style_	= boost::none;
-                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);break;
+					text_properties->content_.style_text_underline_style_	= boost::none;
+                    text_properties->content_.style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
-					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;	
+					text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;	
 			}
 		}
-		text_properties->content().style_text_underline_color_ = odf_types::underline_color(odf_types::underline_color::FontColor);
+		text_properties->content_.style_text_underline_color_ = odf_types::underline_color(odf_types::underline_color::FontColor);
 	}
 	if (oox_run_pr->m_oItalic.IsInit())
 	{
 		if (oox_run_pr->m_oItalic->m_oVal.ToBool() ==true)
-			text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+			text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
 		else
-			text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
+			text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	}
 	if (oox_run_pr->m_oSz.IsInit())
 	{
-		OoxConverter::convert(oox_run_pr->m_oSz->m_oVal->GetValue(), text_properties->content().fo_font_size_);
+		OoxConverter::convert(oox_run_pr->m_oSz->m_oVal->GetValue(), text_properties->content_.fo_font_size_);
 	}
 	if (oox_run_pr->m_oFamily.IsInit())
 	{
@@ -657,8 +657,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 
 	if (oox_run_pr->m_oRFont.IsInit())
 	{
-		//text_properties->content().style_font_name_ = oox_run_pr->m_oRFont->m_sVal.get();
-		text_properties->content().fo_font_family_ = oox_run_pr->m_oRFont->m_sVal.get();
+		//text_properties->content_.style_font_name_ = oox_run_pr->m_oRFont->m_sVal.get();
+		text_properties->content_.fo_font_family_ = oox_run_pr->m_oRFont->m_sVal.get();
 
 	}
 	if (oox_run_pr->m_oVertAlign.IsInit() && oox_run_pr->m_oVertAlign->m_oVerticalAlign.IsInit())
@@ -666,11 +666,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 		switch(oox_run_pr->m_oVertAlign->m_oVerticalAlign->GetValue())
 		{
 		case SimpleTypes::verticalalignrunSuperscript:
-			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(+33.); break;
+			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(+33.); break;
 		case SimpleTypes::verticalalignrunSubscript:
-			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
 		}
 	}
 	if (oox_run_pr->m_oScheme.IsInit() && oox_run_pr->m_oScheme->m_oFontScheme.IsInit())
@@ -678,17 +678,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 		SimpleTypes::Spreadsheet::EFontScheme type = oox_run_pr->m_oScheme->m_oFontScheme->GetValue();
 		if (type == SimpleTypes::Spreadsheet::fontschemeMajor)
 		{
-			text_properties->content().style_text_scale_ = odf_types::percent(+30.);
+			text_properties->content_.style_text_scale_ = odf_types::percent(+30.);
 		}
-		if (type == SimpleTypes::Spreadsheet::fontschemeMinor &&  !text_properties->content().style_text_position_)
+		if (type == SimpleTypes::Spreadsheet::fontschemeMinor &&  !text_properties->content_.style_text_position_)
 		{
-			//text_properties->content().style_text_position_ = odf_types::text_position(-33.);
-			text_properties->content().style_text_scale_ = odf_types::percent(-30.);
+			//text_properties->content_.style_text_position_ = odf_types::text_position(-33.);
+			text_properties->content_.style_text_scale_ = odf_types::percent(-30.);
 		}
 	}
 	if ((oox_run_pr->m_oStrike.IsInit()) && (oox_run_pr->m_oStrike->m_oVal.ToBool()))
 	{
-		text_properties->content().style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
+		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 	}
 
 			//nullable<CCharset>													m_oCharset;
@@ -1058,7 +1058,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 		odf_writer::style* style = dynamic_cast<odf_writer::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
 		{
-			odf_writer::style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
+			odf_writer::style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
 			if (column_properties)
 			{		
 				column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
@@ -1079,7 +1079,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 		odf_writer::style* style = dynamic_cast<odf_writer::style*>(ods_context->styles_context()->last_state()->get_office_element().get());
 		if (style)
 		{		
-			odf_writer::style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
+			odf_writer::style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
 			if (row_properties)
 			{
 				if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
@@ -1153,15 +1153,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 
 	if (font->m_oBold.IsInit() && (font->m_oBold->m_oVal.ToBool() ==true) )font_bold = true;
 
-	if (font_bold)text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
-	else 		  text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);	
+	if (font_bold)text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
+	else 		  text_properties->content_.fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);	
 	
-	convert(font->m_oColor.GetPointer(),text_properties->content().fo_color_);
+	convert(font->m_oColor.GetPointer(),text_properties->content_.fo_color_);
 
 	if (font->m_oUnderline.IsInit() )
 	{
-		text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
-		text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);
+		text_properties->content_.style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
+		text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);
 		
 		if (font->m_oUnderline->m_oUnderline.IsInit())
 		{
@@ -1170,28 +1170,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 			{
 			case SimpleTypes::Spreadsheet::underlineDouble				:
 			case SimpleTypes::Spreadsheet::underlineDoubleAccounting	:
-					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
+					text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
-					text_properties->content().style_text_underline_style_ = boost::none;
-                    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
+					text_properties->content_.style_text_underline_style_ = boost::none;
+                    text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
-					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;		
+					text_properties->content_.style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;		
 			}
 		}
 	}
 	if (font->m_oItalic.IsInit() && (font->m_oItalic->m_oVal.ToBool() ==true))font_italic = true;
 
-	if (font_italic) text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
-	else			 text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
+	if (font_italic) text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
+	else			 text_properties->content_.fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	
 	if (font->m_oSz.IsInit())
 	{
 		font_size = font->m_oSz->m_oVal->GetValue();
-		OoxConverter::convert(font_size, text_properties->content().fo_font_size_);
+		OoxConverter::convert(font_size, text_properties->content_.fo_font_size_);
 
-		text_properties->content().style_font_size_asian_= text_properties->content().fo_font_size_;
-		text_properties->content().style_font_size_complex_ = text_properties->content().fo_font_size_;
+		text_properties->content_.style_font_size_asian_= text_properties->content_.fo_font_size_;
+		text_properties->content_.style_font_size_complex_ = text_properties->content_.fo_font_size_;
 	}
 	if (font->m_oFamily.IsInit())
 	{
@@ -1200,20 +1200,20 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 	if (font->m_oRFont.IsInit())
 	{
 		font_name = font->m_oRFont->m_sVal.get();
-		text_properties->content().fo_font_family_ = font_name;
-		text_properties->content().style_font_family_asian_ = font_name;
-		text_properties->content().style_font_family_complex_ = font_name;
+		text_properties->content_.fo_font_family_ = font_name;
+		text_properties->content_.style_font_family_asian_ = font_name;
+		text_properties->content_.style_font_family_complex_ = font_name;
 	}
 	if (font->m_oVertAlign.IsInit() && font->m_oVertAlign->m_oVerticalAlign.IsInit())
 	{ 
 		switch(font->m_oVertAlign->m_oVerticalAlign->GetValue())
 		{
 		case SimpleTypes::verticalalignrunSuperscript:
-			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(+33.); break;
+			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(+33.); break;
 		case SimpleTypes::verticalalignrunSubscript:
-			//text_properties->content().style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content().style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
 		}
 	}
 	if (font->m_oScheme.IsInit() && font->m_oScheme->m_oFontScheme.IsInit())
@@ -1221,15 +1221,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 		SimpleTypes::Spreadsheet::EFontScheme type = font->m_oScheme->m_oFontScheme->GetValue();
 		if (type == SimpleTypes::Spreadsheet::fontschemeMajor)
 		{
-			text_properties->content().style_text_scale_ = odf_types::percent(+30.);
+			text_properties->content_.style_text_scale_ = odf_types::percent(+30.);
 		}
-		if (type == SimpleTypes::Spreadsheet::fontschemeMinor && !text_properties->content().style_text_position_)
+		if (type == SimpleTypes::Spreadsheet::fontschemeMinor && !text_properties->content_.style_text_position_)
 		{
-			text_properties->content().style_text_scale_ = odf_types::percent(-30.);
+			text_properties->content_.style_text_scale_ = odf_types::percent(-30.);
 		}
 	}
 	if ((font->m_oStrike.IsInit()) && (font->m_oStrike->m_oVal.ToBool()))
-		text_properties->content().style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
+		text_properties->content_.style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
 	ods_context->calculate_font_metrix(font_name,font_size,font_italic,font_bold);
 }
@@ -1292,27 +1292,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	bool rtl = false;
 	if (aligment->m_oReadingOrder.IsInit() && (aligment->m_oReadingOrder->GetValue() == 1))
 	{
-		paragraph_properties->content().style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);
+		paragraph_properties->content_.style_writing_mode_= odf_types::writing_mode(odf_types::writing_mode::RlTb);
 		rtl = true;
 	}
 	if (aligment->m_oVertical.IsInit())
 	{
 		switch(aligment->m_oVertical->GetValue())
 		{
-		case SimpleTypes::Spreadsheet::verticalalignmentBottom: paragraph_properties->content().style_vertical_align_ = 
+		case SimpleTypes::Spreadsheet::verticalalignmentBottom: paragraph_properties->content_.style_vertical_align_ = 
 												odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
-		case SimpleTypes::Spreadsheet::verticalalignmentCenter: paragraph_properties->content().style_vertical_align_ = 
+		case SimpleTypes::Spreadsheet::verticalalignmentCenter: paragraph_properties->content_.style_vertical_align_ = 
 												odf_types::vertical_align(odf_types::vertical_align::Middle); break;
-		case SimpleTypes::Spreadsheet::verticalalignmentDistributed: paragraph_properties->content().style_vertical_align_ = 
+		case SimpleTypes::Spreadsheet::verticalalignmentDistributed: paragraph_properties->content_.style_vertical_align_ = 
 												odf_types::vertical_align(odf_types::vertical_align::Auto); break;
-		case SimpleTypes::Spreadsheet::verticalalignmentJustify: paragraph_properties->content().style_vertical_align_ = 
+		case SimpleTypes::Spreadsheet::verticalalignmentJustify: paragraph_properties->content_.style_vertical_align_ = 
 												odf_types::vertical_align(odf_types::vertical_align::Justify); break;
-		case SimpleTypes::Spreadsheet::verticalalignmentTop: paragraph_properties->content().style_vertical_align_ = 
+		case SimpleTypes::Spreadsheet::verticalalignmentTop: paragraph_properties->content_.style_vertical_align_ = 
 												odf_types::vertical_align(odf_types::vertical_align::Top); break;
 
 		}
-		if (paragraph_properties->content().style_vertical_align_)
-			cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = paragraph_properties->content().style_vertical_align_;
+		if (paragraph_properties->content_.style_vertical_align_)
+			cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = paragraph_properties->content_.style_vertical_align_;
 	}
 	if (aligment->m_oTextRotation.IsInit())
 	{
@@ -1331,17 +1331,17 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 		switch(aligment->m_oHorizontal->GetValue())
 		{
 		case SimpleTypes::Spreadsheet::horizontalalignmentCenter:	
-			paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
+			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentFill:	
-			paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;
+			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentJustify:	
-			paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
+			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
 		case SimpleTypes::Spreadsheet::horizontalalignmentRight:	
-			paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::End); break;
+			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::End); break;
 		
 		case SimpleTypes::Spreadsheet::horizontalalignmentLeft:	
 		default:
-			paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;		
+			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;		
 		}
 		
 		cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_types::text_align_source(odf_types::text_align_source::Fix);
@@ -1610,7 +1610,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 	if (dxFmt->m_oAlignment.IsInit())
 	{
 		odf_writer::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state()->get_paragraph_properties();
-		paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::Page);		
+		paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::Page);		
 		
 		convert(dxFmt->m_oAlignment.GetPointer(), paragraph_properties, table_cell_properties); 
 	}
@@ -1650,7 +1650,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	}
 	
 	odf_writer::style_paragraph_properties	* paragraph_properties = ods_context->styles_context()->last_state()->get_paragraph_properties();
-	paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::Page);
+	paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::Page);
 
 	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
 	{

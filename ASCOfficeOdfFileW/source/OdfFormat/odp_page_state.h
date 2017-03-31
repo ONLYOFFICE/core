@@ -85,14 +85,12 @@ public:
 	odf_drawing_context   *	drawing_context(){return  &drawing_context_;}
 
 	std::wstring		office_page_name_;
-	office_element_ptr	draw_page_;
+	office_element_ptr	page_elm_;
+	office_element_ptr	page_style_elm_;
 private:
 
     odf_conversion_context * context_;   
 	
-	style*				office_page_style_;
-	
-
 	odf_drawing_context		drawing_context_;	
 
 	friend class odp_slide_context;

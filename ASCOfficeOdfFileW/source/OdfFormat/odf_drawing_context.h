@@ -39,10 +39,9 @@
 
 #include "office_elements_create.h"
 
-#include "length.h"
-#include "anchortype.h"
 #include "stylewrap.h"
 #include "gradientstyle.h"
+#include "common_attlists.h"
 
 namespace OOX {namespace Vml { class CShapeType; }}
 
@@ -59,6 +58,8 @@ class odf_drawing_context
 public:
 	odf_drawing_context		(odf_conversion_context *odf_context);
     ~odf_drawing_context	();
+
+	void set_presentation	(bool bMaster);
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();
@@ -99,6 +100,7 @@ public:
 
 	void start_drawing();
 	void end_drawing();
+	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
@@ -138,7 +140,7 @@ public:
 
 	office_element_ptr & get_root_element();
 
-	void start_element	(office_element_ptr & elm, office_element_ptr  style_elm = office_element_ptr());
+	void start_element	(office_element_ptr elm, office_element_ptr  style_elm = office_element_ptr());
     void end_element	();
 
 	bool is_exist_content();
@@ -204,6 +206,7 @@ public:
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);
 	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
+	void set_layer					(std::wstring val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);

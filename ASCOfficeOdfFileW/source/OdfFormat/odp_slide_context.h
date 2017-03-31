@@ -48,15 +48,18 @@ class odp_slide_context
 public:
     odp_slide_context(odp_conversion_context & Context);
 
-    void start_page(office_element_ptr & elm);
-    void end_page();
+    void start_page (office_element_ptr & elm);
+    void end_page ();
+
+	void set_styles_context	(odf_style_context*  styles_context);
 
     odp_page_state & state();
 
 
 private:
 
-    odp_conversion_context &	context_;
+    odp_conversion_context&		context_;
+	odf_style_context*			styles_context_;
 	std::list<odp_page_state>	page_state_list_;
 
 	friend class odp_conversion_context;

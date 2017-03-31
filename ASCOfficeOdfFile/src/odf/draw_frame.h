@@ -164,7 +164,6 @@ public:
 	odf_types::common_presentation_attlist	common_presentation_attlist_;
 	odf_types::union_common_draw_attlists	common_draw_attlists_;
   
-	odf_types::presentation_shape_attlist	presentation_shape_attlist_;
     draw_frame_attlist						draw_frame_attlist_;
 
     // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin

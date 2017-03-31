@@ -59,6 +59,7 @@
 #include "Diagram/DiagramData.h"
 #include "VmlDrawing.h"
 
+#include "../XlsxFormat/Chart/Chart.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace OOX
@@ -133,6 +134,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
 			return smart_ptr<OOX::File>(new CVmlDrawing( oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::Chart )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}
@@ -206,6 +209,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( oFileName, true ));
+		else if ( pRelation->Type() == OOX::FileTypes::Chart )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( oRootPath, oFileName ));
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}

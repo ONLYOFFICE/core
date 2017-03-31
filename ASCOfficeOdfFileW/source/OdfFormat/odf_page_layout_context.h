@@ -60,6 +60,8 @@ public:
 
 	void set_styles_context	(odf_style_context * Context);
 
+	void create_layer_sets();
+
 	void add_master_page(std::wstring oox_name);
 	void create_layout_page();
 

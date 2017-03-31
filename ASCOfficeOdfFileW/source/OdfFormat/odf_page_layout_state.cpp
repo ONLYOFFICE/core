@@ -86,7 +86,16 @@ void odf_master_state::set_name(std::wstring & name)
 	
 	style_->style_master_page_attlist_.style_name_ = name;
 }
-void odf_master_state::set_layout_name(std::wstring name)
+void odf_master_state::set_display_name(std::wstring & name)
+{
+	style_master_page* style_ = dynamic_cast<style_master_page*>(elements_[0].elm.get());
+
+	if (!style_)return;
+	
+	style_->style_master_page_attlist_.style_display_name_ = name;
+}
+
+void odf_master_state::set_layout_style_name(std::wstring name)
 {
 	style_master_page* style_ = dynamic_cast<style_master_page*>(elements_[0].elm.get());
 

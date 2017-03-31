@@ -411,9 +411,9 @@ public:
 
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
 
-    office_element_ptr_array	style_master_page_;	// разметки тем
+    office_element_ptr_array	style_master_page_;			// разметки тем
     office_element_ptr			style_handout_master_;		// разметки для принтера - .. второстепенно
-    office_element_ptr			draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
+    office_element_ptr			draw_layer_set_;			// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
 

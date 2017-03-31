@@ -120,7 +120,7 @@ void chart_format_properties::serialize(std::wostream & _Wostream ,const wchar_t
 }
 void style_chart_properties::serialize(std::wostream & _Wostream)
 {
-	chart_format_properties_.serialize(_Wostream,ns,name);
+	content_.serialize(_Wostream,ns,name);
 }
 
 }

@@ -129,12 +129,12 @@ public:
 
 	int idx_in_owner ;
 
-  	odf_types::presentation_shape_attlist presentation_shape_attlist_;
-    draw_frame_attlist draw_frame_attlist_;
+    draw_frame_attlist						draw_frame_attlist_;
 
-    office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
-    office_element_ptr draw_glue_point_;
-    office_element_ptr draw_image_map_;
+    office_element_ptr						office_event_listeners_;
+		// в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
+    office_element_ptr						draw_glue_point_;
+    office_element_ptr						draw_image_map_;
     //office_element_ptr draw_chart_map_;
 
     office_element_ptr draw_contour_; // draw-contour-polygon or draw-contour-path

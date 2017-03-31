@@ -57,6 +57,8 @@ private:
     int value_;//in  ms
 };
 
+std::wostream & operator << (std::wostream & _Wostream, const clockvalue & _Val);
+
 }
 
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::clockvalue);

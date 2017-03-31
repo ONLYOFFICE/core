@@ -128,7 +128,7 @@ const wchar_t * style_graphic_properties::name = L"graphic-properties";
 
 void style_graphic_properties::serialize(std::wostream & strm)
 {
-	graphic_format_properties_.serialize(strm,ns,name);
+	content_.serialize(strm,ns,name);
 }
 
 

@@ -141,9 +141,9 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	odf_reader::style_instance* baseStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
-	if (baseStyleInst && ((!presentation_shape_attlist_.presentation_user_transformed_) || 
-						 ((presentation_shape_attlist_.presentation_user_transformed_) && 
-						 (presentation_shape_attlist_.presentation_user_transformed_->get()== false))))//векторная фигура презентаций 
+	if (baseStyleInst && ((!common_presentation_attlist_.presentation_user_transformed_) || 
+						 ((common_presentation_attlist_.presentation_user_transformed_) && 
+						 (common_presentation_attlist_.presentation_user_transformed_->get()== false))))//векторная фигура презентаций 
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);

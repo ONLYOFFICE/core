@@ -373,7 +373,7 @@ public:
 		void convert(PPTX::Logic::EffectLst						*oox_effect_lst);
 		void convert(PPTX::Logic::Ln							*oox_line);
 		void convert(PPTX::Logic::FontRef						*oox_fontRef);
-		void convert(PPTX::Logic::StyleRef						*oox_styleRef);
+		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
 		void convert(PPTX::Logic::PathBase						*oox_path);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);

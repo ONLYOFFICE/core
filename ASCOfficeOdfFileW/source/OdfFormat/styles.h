@@ -101,7 +101,7 @@ public:
     style_table_row_properties *	get_style_table_row_properties() ;
     style_table_column_properties * get_style_table_column_properties() ;
     style_chart_properties *		get_style_chart_properties() ;
-	//style_drawing_page_properties*	get_style_drawing_page_properties();
+	style_drawing_page_properties*	get_style_drawing_page_properties();
 
 private:
 	odf_conversion_context * Context;
@@ -131,7 +131,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
 public:
-	default_style() : style_content_(getContext()) {}
+	default_style() : content_(getContext()) {}
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -139,7 +139,7 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     odf_types::style_family style_family_;
-    style_content			style_content_;
+    style_content			content_;
 
 };
 
@@ -242,6 +242,44 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(draw_opacity)
 
 //----------------------------------------------------------------------------------------------------
+class draw_layer : public office_element_impl<draw_layer>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleDrawLayer;
+
+    CPDOCCORE_DEFINE_VISITABLE()
+
+ 	_CP_OPT(std::wstring)			draw_name_;
+	
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_layer)
+//----------------------------------------------------------------------------------------------------
+class draw_layer_set : public office_element_impl<draw_layer_set>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type		= typeStyleDrawLayerSet;
+
+    CPDOCCORE_DEFINE_VISITABLE()
+
+    office_element_ptr_array	content_;
+	
+    virtual void add_child_element( const office_element_ptr & child);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+
+};
+CP_REGISTER_OFFICE_ELEMENT2(draw_layer_set)
+
+//----------------------------------------------------------------------------------------------------
 class draw_fill_image : public office_element_impl<draw_fill_image>
 {
 public:
@@ -304,7 +342,7 @@ public:
     static const ElementType type		= typeStyleStyle;
     CPDOCCORE_DEFINE_VISITABLE()
  
-    style() : style_content_(getContext()) {} 
+    style() : content_(getContext()) {} 
     
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -326,7 +364,7 @@ public:
     _CP_OPT(std::wstring)	style_default_outline_level_; 
 
 
-    style_content				style_content_;
+    style_content				content_;
     office_element_ptr_array	style_map_;
 
 };
@@ -422,9 +460,9 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    office_element_ptr_array style_master_page_;	// разметки тем
-    office_element_ptr style_handout_master_;		// разметки для принтера - .. второстепенно
-    office_element_ptr draw_layer_set_;				// необязательно .. так как слои все равно не поддерживаются в мс.
+    office_element_ptr_array	style_master_page_;		// разметки тем
+    office_element_ptr			style_handout_master_;	// разметки для принтера - .. второстепенно
+    office_element_ptr			draw_layer_set_;		// необязательно .. так как слои все равно не поддерживаются в мс.
 													// то есть не будут объекты объеденены по признаку слоя
 													// зы. не путать с обычной группировкой
 
@@ -439,10 +477,10 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(odf_types::style_ref)		style_name_;
-    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(std::wstring)				style_display_name_;
     _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
     
-	_CP_OPT(std::wstring)	draw_style_name_;
+	_CP_OPT(std::wstring)				draw_style_name_;
     _CP_OPT(odf_types::style_ref)		style_next_style_name_;
 };
 

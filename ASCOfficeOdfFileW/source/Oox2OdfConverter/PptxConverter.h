@@ -52,6 +52,7 @@ namespace PPTX
 	namespace Logic
 	{
 		class CSld;
+		class Bg;
 		class Transition;
 		class Timing;
 	}
@@ -94,8 +95,9 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement *oox_unknown);
  		
-		void convert(PPTX::Logic::CSld		*slide);
-   private:
+		void convert(PPTX::Logic::CSld		*oox_slide, bool placeholders = true);
+		void convert(PPTX::Logic::Bg		*oox_background);
+  private:
 		PPTX::Folder									*pptx_document;
 		PPTX::Presentation								*presentation;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
@@ -110,7 +112,9 @@ namespace Oox2Odf
 		std::map<std::wstring, std::wstring>			m_mapMasters;
 		std::vector<std::wstring>						m_arLayouts;
 		
-		void convert_slides ();
+		void convert_slides			();
+		void convert_styles			();
+		void convert_settings		();
 
 		
 //--------------------------------------------------------------------------------

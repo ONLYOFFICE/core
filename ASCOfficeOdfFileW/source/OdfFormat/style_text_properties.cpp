@@ -393,13 +393,13 @@ void style_text_properties::create_child_element(const std::wstring & Ns, const 
 }
 void style_text_properties::serialize(std::wostream & strm)
 {
-	text_format_properties_content_.serialize(strm,ns,name);
+	content_.serialize(strm,ns,name);
 }
 
 void style_text_properties::apply_from(const style_text_properties * Other)
 {
 	if (Other == NULL) return;
-	text_format_properties_content_.apply_from(Other->content());
+	content_.apply_from(Other->content_);
 }
 
 }

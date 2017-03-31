@@ -210,7 +210,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
 
-		style_table_row_properties * row_properties = _style->style_content_.get_style_table_row_properties();
+		style_table_row_properties * row_properties = _style->content_.get_style_table_row_properties();
  		if (row_properties == NULL)return; //error ????
 
 		row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
@@ -430,7 +430,7 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		style* _style = dynamic_cast<style*>(style_elm.get());
 		if (!_style)return;		
 
-		style_table_column_properties * column_properties = _style->style_content_.get_style_table_column_properties();
+		style_table_column_properties * column_properties = _style->content_.get_style_table_column_properties();
  		if (column_properties == NULL)return; //error ????
 
 		column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);

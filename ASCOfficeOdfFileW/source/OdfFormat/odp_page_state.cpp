@@ -60,7 +60,7 @@ namespace odf_writer {
 odp_page_state::odp_page_state(odf_conversion_context * Context, office_element_ptr & elm) 
 		 : context_(Context), drawing_context_(Context)
 {     
-	draw_page_ = elm; 
+	page_elm_ = elm; 
 
 }
 
@@ -70,16 +70,22 @@ void odp_page_state::set_page_name(std::wstring name)
 
 	office_page_name_ = name;
 	
-	draw_page* page = dynamic_cast<draw_page*>(draw_page_.get());
-	if (page == NULL)return;
-
-	page->draw_page_attr_.draw_name_ = name;
+	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
+	if (page) 
+		page->draw_page_attr_.draw_name_ = name;
+	else
+	{
+		//style_master_page *master_page = dynamic_cast<style_master_page*>(page_elm_.get());
+		//if (master_page)
+		//	master_page->style_master_page_attlist_.style_display_name_ = name;
+	}
 }
 
 void odp_page_state::set_master_page(std::wstring name)
 {
 	if (name.empty())return;
-	draw_page* page = dynamic_cast<draw_page*>(draw_page_.get());
+	
+	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
 	if (page == NULL)return;
 
 	page->draw_page_attr_.master_page_name_ = name;
@@ -87,19 +93,25 @@ void odp_page_state::set_master_page(std::wstring name)
 
 void odp_page_state::set_page_style(office_element_ptr & elm)
 {	
-	office_page_style_ = dynamic_cast<style*>(elm.get());
+	page_style_elm_ = elm;
+
+	style* office_page_style_ = dynamic_cast<style*>(elm.get());
 
 	if (!office_page_style_)return;
 
-	draw_page* page = dynamic_cast<draw_page*>(draw_page_.get());
-	if (page == NULL)return;
-	
-	page->draw_page_attr_.draw_style_name_ = office_page_style_->style_name_;
-	//потом в принципе и по имени можно будет связать(найти)
+	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
+	if (page)
+		page->draw_page_attr_.draw_style_name_ = office_page_style_->style_name_;
+	else
+	{
+		style_master_page *master_page = dynamic_cast<style_master_page*>(page_elm_.get());
+		if (master_page)
+			master_page->style_master_page_attlist_.draw_style_name_ = office_page_style_->style_name_;
+	}
 }
 void odp_page_state::add_child_element( const office_element_ptr & child_element)
 {
-	draw_page_->add_child_element(child_element);
+	page_elm_->add_child_element(child_element);
 }
 
 }

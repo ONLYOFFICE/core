@@ -159,15 +159,12 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE()
 
-	graphic_format_properties & content(){ return graphic_format_properties_; }
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
 
 	virtual void serialize(std::wostream & strm);
  
-private:
-    graphic_format_properties graphic_format_properties_;
+    graphic_format_properties content_;
 
 };
 

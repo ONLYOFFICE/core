@@ -83,7 +83,35 @@ odf_master_state * odf_page_layout_context::last_master()
 	else
         return NULL;
 }
+void odf_page_layout_context::create_layer_sets()
+{
+	office_element_ptr sets_elm, elm;
+	draw_layer * layer = NULL;
+	
+	create_element(L"draw", L"layer-set", sets_elm, odf_context_);
+	
+	create_element(L"draw", L"layer", elm, odf_context_); 		sets_elm->add_child_element(elm);
+	layer = dynamic_cast<draw_layer*>(elm.get());
+	if (layer) layer->draw_name_ = L"layout";
 
+	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
+	layer = dynamic_cast<draw_layer*>(elm.get());
+	if (layer) layer->draw_name_ = L"background";
+	
+	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
+	layer = dynamic_cast<draw_layer*>(elm.get());
+	if (layer) layer->draw_name_ = L"backgroundobjects";
+	
+	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
+	layer = dynamic_cast<draw_layer*>(elm.get());
+	if (layer) layer->draw_name_ = L"controls";
+
+	create_element(L"draw", L"layer", elm, odf_context_);		sets_elm->add_child_element(elm);
+	layer = dynamic_cast<draw_layer*>(elm.get());
+	if (layer) layer->draw_name_ = L"measurelines";
+
+	master_state_list_.push_back( odf_master_state(sets_elm) ); 
+}
 void odf_page_layout_context::add_master_page(std::wstring page_name)
 {
 	office_element_ptr elm;
@@ -101,7 +129,7 @@ void odf_page_layout_context::add_master_page(std::wstring page_name)
 
 	//default layout
 	create_layout_page();
-	master_state_list_.back().set_layout_name(layout_state_list_.back().get_name());
+	master_state_list_.back().set_layout_style_name(layout_state_list_.back().get_name());
 }
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
@@ -162,16 +190,16 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(double) top, _CP_OPT(doubl
 	if (!props)return;
 
 	if (top)
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = 
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = 
 												length(length(*top,length::inch).get_value_unit(length::cm),length::cm);
 	if (bottom)
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
 												length(length(*bottom,length::inch).get_value_unit(length::cm),length::cm);
 	if (left)
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = 
+		props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = 
 												length(length(*left,length::inch).get_value_unit(length::cm),length::cm);
 	if (right)
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
+		props->attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
 												length(length(*right,length::inch).get_value_unit(length::cm),length::cm);
 }
 void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right)
@@ -180,16 +208,16 @@ void odf_page_layout_context::set_page_margin(_CP_OPT(length) top, _CP_OPT(lengt
 	if (!props)return;
 
 	if (top)
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = 
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = 
 												length(top->get_value_unit(length::cm),length::cm);
 	if (bottom)
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_= 
 												length(bottom->get_value_unit(length::cm),length::cm);
 	if (left)
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = 
+		props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_ = 
 												length(left->get_value_unit(length::cm),length::cm);
 	if (right)
-		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
+		props->attlist_.common_horizontal_margin_attlist_.fo_margin_right_ = 
 												length(right->get_value_unit(length::cm),length::cm);
 }
 void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
@@ -199,13 +227,13 @@ void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	//if (props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_)
+	//if (props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_)
 	//{
-	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_= 
-	//		props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
+	//	props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_= 
+	//		props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_->get_length() + length(length_->get_value_unit(length::cm),length::cm);
 	//}
 	//else
-	//	props->style_page_layout_properties_attlist_.common_horizontal_margin_attlist_.fo_margin_left_= length(length_->get_value_unit(length::cm),length::cm);
+	//	props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_= length(length_->get_value_unit(length::cm),length::cm);
 
 }
 void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собственно не footer а размер после колонтитула
@@ -234,7 +262,7 @@ void odf_page_layout_context::set_background(_CP_OPT(color) & color, int type)
 		style_page_layout_properties * props = get_properties();
 		if (!props)return;
 
-		props->style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ = color;
+		props->attlist_.common_background_color_attlist_.fo_background_color_ = color;
 	}
 	if (type == 2)
 	{
@@ -286,8 +314,8 @@ bool odf_page_layout_context::add_footer(int type)
 
 	_CP_OPT(length) bottom_;
 	
-	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
-		bottom_= props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length();
+	if (props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_)
+		bottom_= props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_->get_length();
 
 	if (bottom_)
 	{
@@ -295,7 +323,7 @@ bool odf_page_layout_context::add_footer(int type)
 	
 		if (length_cm > 0.01)
 		{
-			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
+			props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
 			footer_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
 			footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);
 		}
@@ -305,7 +333,7 @@ bool odf_page_layout_context::add_footer(int type)
 		}
 	}else
 	{
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_bottom_ = length_;
 	}
 	layout_state_list_.back().footer_size_ = boost::none;
 
@@ -345,15 +373,15 @@ bool odf_page_layout_context::add_header(int type)
 
 	_CP_OPT(length) top_;
 
-	if (props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_)
-		top_ = props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length();;
+	if (props->attlist_.common_vertical_margin_attlist_.fo_margin_top_)
+		top_ = props->attlist_.common_vertical_margin_attlist_.fo_margin_top_->get_length();;
 
 	if (top_)
 	{
 		double length_cm = top_->get_value_unit(length::cm) - length_.get_value_unit(length::cm);
 		if (length_cm > 0.01)
 		{
-			props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
+			props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
 			header_props->style_header_footer_properties_attlist_.svg_height_ = length(fabs(length_cm),length::cm);
 			header_props->style_header_footer_properties_attlist_.fo_min_height_ = length(fabs(length_cm),length::cm);//fo_min_height_
 		}
@@ -364,7 +392,7 @@ bool odf_page_layout_context::add_header(int type)
 		}	
 	}
 	else
-		props->style_page_layout_properties_attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
+		props->attlist_.common_vertical_margin_attlist_.fo_margin_top_ = length_;
 	
 	layout_state_list_.back().header_size_ = boost::none;
 	return true;
@@ -377,7 +405,7 @@ void odf_page_layout_context::set_page_border_offset (int type)
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	props->style_page_layout_properties_attlist_.offset_page_border_ = type;
+	props->attlist_.offset_page_border_ = type;
 }
 
 void odf_page_layout_context::set_page_border_padding(int border, double length_pt)
@@ -390,13 +418,13 @@ void odf_page_layout_context::set_page_border_padding(int border, double length_
 	switch (border)
 	{
 	case 1:
-		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_top_ = length_;		break;
+		props->attlist_.common_padding_attlist_.fo_padding_top_ = length_;		break;
 	case 2:
-		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;	break;
+		props->attlist_.common_padding_attlist_.fo_padding_bottom_ = length_;	break;
 	case 3:
-		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_left_ = length_;	break;
+		props->attlist_.common_padding_attlist_.fo_padding_left_ = length_;	break;
 	case 4:
-		props->style_page_layout_properties_attlist_.common_padding_attlist_.fo_padding_right_ = length_;	break;
+		props->attlist_.common_padding_attlist_.fo_padding_right_ = length_;	break;
 	}
 }
 
@@ -405,7 +433,7 @@ void odf_page_layout_context::set_page_border_shadow (bool val)
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = shadow_type::parse(L"#000000 0.159cm 0.159cm");
+	props->attlist_.common_shadow_attlist_.style_shadow_ = shadow_type::parse(L"#000000 0.159cm 0.159cm");
 }
 void odf_page_layout_context::set_page_border (std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
 {
@@ -414,21 +442,21 @@ void odf_page_layout_context::set_page_border (std::wstring top, std::wstring le
 
 	if (bottom == top && top == left && left== right && bottom.length() > 0)
 	{
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_ = left;
+		props->attlist_.common_border_attlist_.fo_border_ = left;
 	}
 	else
 	{
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_bottom_	= 
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_top_		= 
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_left_		= 
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_right_	= props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_;
+		props->attlist_.common_border_attlist_.fo_border_bottom_	= 
+		props->attlist_.common_border_attlist_.fo_border_top_		= 
+		props->attlist_.common_border_attlist_.fo_border_left_		= 
+		props->attlist_.common_border_attlist_.fo_border_right_	= props->attlist_.common_border_attlist_.fo_border_;
 
-		props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+		props->attlist_.common_border_attlist_.fo_border_ = boost::none;
 
-		if (bottom.length() >0 )props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
-		if (top.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
-		if (left.length() >0 )	props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_left_		= left;
-		if (right.length() >0 ) props->style_page_layout_properties_attlist_.common_border_attlist_.fo_border_right_	= right;
+		if (bottom.length() >0 )props->attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if (top.length() >0 )	props->attlist_.common_border_attlist_.fo_border_top_		= top;
+		if (left.length() >0 )	props->attlist_.common_border_attlist_.fo_border_left_		= left;
+		if (right.length() >0 ) props->attlist_.common_border_attlist_.fo_border_right_	= right;
 		
 	}
 }
@@ -439,13 +467,13 @@ void odf_page_layout_context::set_page_size(_CP_OPT(length) width, _CP_OPT(lengt
 
 	if (width)
 	{
-		props->style_page_layout_properties_attlist_.fo_page_width_ = 
+		props->attlist_.fo_page_width_ = 
 												length(width->get_value_unit(length::cm), length::cm);
 
 		current_page_width_ = width->get_value_unit(length::pt);
 	}
 	if (height)
-		props->style_page_layout_properties_attlist_.fo_page_height_ = 
+		props->attlist_.fo_page_height_ = 
 												length(height->get_value_unit(length::cm),length::cm);
 }
 void odf_page_layout_context::set_page_number_format(_CP_OPT(int) & type, _CP_OPT(int) & start)
@@ -596,9 +624,9 @@ void odf_page_layout_context::set_page_orientation(int type)
 	if (!props)return;
 
 	if (type == 0)
-		props->style_page_layout_properties_attlist_.style_print_orientation_ = L"landscape";
+		props->attlist_.style_print_orientation_ = L"landscape";
 	else
-		props->style_page_layout_properties_attlist_.style_print_orientation_ = L"portrait";
+		props->attlist_.style_print_orientation_ = L"portrait";
 
 }
 

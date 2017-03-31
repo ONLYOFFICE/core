@@ -174,9 +174,9 @@ void odf_text_context::set_symbol_font(const std::wstring & font)
 {
 	if (text_properties_ == NULL) return;
 
-	text_properties_->text_format_properties_content_.fo_font_family_ = font;
-	text_properties_->text_format_properties_content_.style_font_family_complex_ = font;
-	text_properties_->text_format_properties_content_.style_font_family_asian_ = font;
+	text_properties_->content_.fo_font_family_ = font;
+	text_properties_->content_.style_font_family_complex_ = font;
+	text_properties_->content_.style_font_family_asian_ = font;
 }
 void odf_text_context::set_symbol_text(int sym)
 {
@@ -238,7 +238,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		{
 			if (parent_paragraph_style_.length() >0)style_->style_parent_style_name_ = parent_paragraph_style_;
 			
-			paragraph_properties_ = style_->style_content_.get_style_paragraph_properties();
+			paragraph_properties_ = style_->content_.get_style_paragraph_properties();
 		}
 	}
 	else if (parent_paragraph_style_.length() >0)
@@ -251,7 +251,7 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 	}
 	if (paragraph_properties_ && need_break_)
 	{
-		paragraph_properties_->content().fo_break_before_ = need_break_;
+		paragraph_properties_->content_.fo_break_before_ = need_break_;
 		need_break_ = boost::none;
 	}
 	
@@ -332,7 +332,7 @@ void odf_text_context::start_span(bool styled)
 			{
 				style_->style_parent_style_name_ = parent_span_style_;
 			}
-			text_properties_ = style_->style_content_.get_style_text_properties();//для  буквиц на поле
+			text_properties_ = style_->content_.get_style_text_properties();//для  буквиц на поле
 		}
 	}
 
@@ -514,6 +514,26 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 		h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
 	}
 }
+
+void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_text)
+{
+	office_element_ptr elm;
+	create_element(L"text", L"a", elm, odf_context_);
+
+	text_a* hyperlink = dynamic_cast<text_a*>(elm.get());
+	if (!hyperlink)return;
+
+	if (!display_text.empty())
+		hyperlink->add_text(display_text);
+////////////////////////////
+
+	hyperlink->common_xlink_attlist_.href_	= ref;
+	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
+	
+	if (current_level_.size()>0)
+		current_level_.back().elm->add_child_element(elm);
+}
+
 void odf_text_context::add_tab(_CP_OPT(int) ref)
 {
  	office_element_ptr elm;
@@ -560,7 +580,7 @@ void odf_text_context::save_property_break()
 		}
 	}
 	if (paragraph_properties_ == NULL) return;
-	paragraph_properties_->content().fo_break_before_ = need_break_;
+	paragraph_properties_->content_.fo_break_before_ = need_break_;
 	need_break_ = boost::none;
 
 }

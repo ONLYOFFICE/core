@@ -59,7 +59,7 @@ void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> 
     BOOST_REVERSE_FOREACH(style_paragraph_properties* v, parProps)
     {
         if (v)
-            result->apply_from(v->content());
+            result->apply_from(v->content_);
     }
 }
 
@@ -432,7 +432,7 @@ void odf_style_context::calc_paragraph_properties(std::wstring style_name, style
 		style *style_ = NULL;
 		if (!find_odf_style(style_name, family, style_) || !style_)break;
 
-       if (style_paragraph_properties * parProp = style_->style_content_.get_style_paragraph_properties())
+       if (style_paragraph_properties * parProp = style_->content_.get_style_paragraph_properties())
 			parProps.push_back(parProp);
         		
 	   style_name = style_->style_parent_style_name_ ? *style_->style_parent_style_name_ : L"";

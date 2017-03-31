@@ -37,8 +37,6 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
-    ../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp \
-    ../Source/DocxFormat/Drawing/DrawingEffects.cpp \
     ../Source/DocxFormat/Logic/AlternateContent.cpp \
     ../Source/DocxFormat/Logic/Annotations.cpp \
     ../Source/DocxFormat/Logic/Bdo.cpp \
@@ -64,7 +62,6 @@ SOURCES += \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
-    ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
     ../Source/Common/Align.cpp \
     ../Source/Common/Color.cpp \
@@ -111,23 +108,8 @@ HEADERS += docxformatlib.h \
     ../Source/Common/Wrap.h \
     ../Source/Common/ZIndex.h \
     ../Source/DocxFormat/Drawing/Drawing.h \
-    ../Source/DocxFormat/Drawing/Drawing3D.h \
     ../Source/DocxFormat/Drawing/DrawingBody.h \
-    ../Source/DocxFormat/Drawing/DrawingColors.h \
-    ../Source/DocxFormat/Drawing/DrawingCoreInfo.h \
-    ../Source/DocxFormat/Drawing/DrawingEffects.h \
     ../Source/DocxFormat/Drawing/DrawingExt.h \
-    ../Source/DocxFormat/Drawing/DrawingGraphic.h \
-    ../Source/DocxFormat/Drawing/DrawingParagraph.h \
-    ../Source/DocxFormat/Drawing/DrawingParagraphElements.h \
-    ../Source/DocxFormat/Drawing/DrawingPicture.h \
-    ../Source/DocxFormat/Drawing/DrawingRun.h \
-    ../Source/DocxFormat/Drawing/DrawingShape.h \
-    ../Source/DocxFormat/Drawing/DrawingShared.h \
-    ../Source/DocxFormat/Drawing/DrawingStyles.h \
-    ../Source/DocxFormat/Drawing/DrawingStyles2.h \
-    ../Source/DocxFormat/Drawing/DrawingTables.h \
-    ../Source/DocxFormat/Drawing/DrawingTransform.h \
     ../Source/DocxFormat/External/External.h \
     ../Source/DocxFormat/External/ExternalAudio.h \
     ../Source/DocxFormat/External/ExternalImage.h \
@@ -167,8 +149,6 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Media/Video.h \
     ../Source/DocxFormat/Settings/Settings.h \
     ../Source/DocxFormat/Settings/WebSettings.h \
-    ../Source/DocxFormat/Theme/Theme.h \
-    ../Source/DocxFormat/Theme/ThemeOverride.h \
     ../Source/DocxFormat/App.h \
     ../Source/DocxFormat/Bibliography.h \
     ../Source/DocxFormat/Comments.h \
@@ -198,11 +178,6 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Unit.h \
     ../Source/DocxFormat/UnknowTypeFile.h \
     ../Source/DocxFormat/WritingElement.h \
-    ../Source/DocxFormat/WritingVector.h \
-    ../Source/SystemUtility/FileSystem/Directory.h \
-    ../Source/SystemUtility/FileSystem/File.h \
-    ../Source/SystemUtility/FileSystem/FileSystem.h \
-    ../Source/SystemUtility/FileSystem/Settings.h \
     ../Source/SystemUtility/SystemUtility.h \
     ../Source/Utility/codecvt.h \
     ../Source/Utility/DateTime.h \
@@ -216,10 +191,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
-    ../Source/XlsxFormat/Drawing/Image.h \
-    ../Source/XlsxFormat/Drawing/Pic.h \
     ../Source/XlsxFormat/Drawing/Pos.h \
-    ../Source/XlsxFormat/Drawing/Shape.h \
     ../Source/XlsxFormat/SharedStrings/PhoneticPr.h \
     ../Source/XlsxFormat/SharedStrings/rPr.h \
     ../Source/XlsxFormat/SharedStrings/Run.h \
@@ -256,16 +228,12 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ComplexTypes_Spreadsheet.h \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.h \
     ../Source/XlsxFormat/FileTypes_Spreadsheet.h \
-    ../Source/XlsxFormat/IFileContainer_Spreadsheet.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
-    ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
-    ../Source/DocxFormat/Drawing/DrawingText.h \
-    ../Source/DocxFormat/Drawing/DrawingTextProperties.h \
     ../Source/MathEquation/LEStream.h \
     ../Source/MathEquation/MathEquation.h \
     ../Source/MathEquation/OutputDev.h \
@@ -277,4 +245,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
     ../Source/XlsxFormat/Ole/OleObjects.h \
-    ../Source/DocxFormat/Diagram/DiagramData.h
+    ../Source/DocxFormat/Diagram/DiagramData.h \
+    ../Source/DocxFormat/Diagram/DiagramDrawing.h

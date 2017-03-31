@@ -497,7 +497,6 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
-    ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \
     ../../../../Common/FileDownloader/FileDownloader.h \
     ../../../PPTXFormat/ShowPr/Browse.h \

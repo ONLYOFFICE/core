@@ -2710,7 +2710,8 @@ namespace BinXlsxRW
 										{
 											OOX::Image* pImageFile = static_cast<OOX::Image*>(pFile.operator->());
 
-											olePic->oleObject->m_OleObjectFile->set_filename_cache(pImageFile->filename());
+                                            OOX::CPath pathImage = pImageFile->filename();
+                                            olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
 											olePic->blipFill.blip->oleFilepathImage = pImageFile->filename().GetPath();
 										}
 									}

@@ -101,7 +101,6 @@ SOURCES += \
     ../source/OdfFormat/mediaitems_utils.cpp \
     ../source/OdfFormat/anim_elements.cpp \
     ../source/OdfFormat/draw_page.cpp \
-    ../source/OdfFormat/logging.cpp \
     ../source/OdfFormat/odp_conversion_context.cpp \
     ../source/OdfFormat/odp_page_state.cpp \
     ../source/OdfFormat/odp_slide_context.cpp \
@@ -116,7 +115,9 @@ SOURCES += \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
     ../source/Oox2OdfConverter/XlsxConverter.cpp \
     ../source/Oox2OdfConverter/ConvertDrawing.cpp \
-    ../source/Oox2OdfConverter/PptxConverter.cpp
+    ../source/Oox2OdfConverter/PptxConverter.cpp \
+    ../source/OdfFormat/anim_elements.cpp \
+    ../source/OdfFormat/style_presentation.cpp
 
 HEADERS += \
     ../source/OdfFormat/abstract_xml.h \
@@ -207,4 +208,6 @@ HEADERS += \
     ../source/OdfFormat/odp_slide_context.h \
     ../source/OdfFormat/office_presentation.h \
     ../source/OdfFormat/style_presentation.h \
-    ../source/Oox2OdfConverter/PptxConverter.h
+    ../source/Oox2OdfConverter/PptxConverter.h \
+    ../source/OdfFormat/anim_elements.h \
+    ../source/OdfFormat/style_presentation.h

@@ -2226,10 +2226,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						{
 							bColors = true;
 							std::wstring strColors = sColors.get();
-							std::wstring resToken;
-							int curPos = 0;
 
-							arColors.clear();
+                            arColors.clear();
 							arPos.clear();
 
                             std::vector<std::wstring> arSplit;
@@ -2239,8 +2237,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
                             {
                                 int p = (int)arSplit[i].find(L" ");
 
-                                std::wstring strPos = resToken.substr(0, p);
-                                std::wstring strColor = resToken.substr(p + 1);
+                                std::wstring strPos = arSplit[i].substr(0, p);
+                                std::wstring strColor = arSplit[i].substr(p + 1);
 
                                 double pos;
                                 pos = _wtof(strPos.c_str());

@@ -2696,16 +2696,21 @@ namespace BinXlsxRW {
 
 								pOleObject->m_oShapeId = *oPic.oleObject->m_sShapeId;
 						//add image rels to VmlDrawing
-								NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(false));
-								pImageFileVml->set_filename(pOleObject->m_OleObjectFile->filename_cache());
+                                OOX::CPath pathImageCache = pOleObject->m_OleObjectFile->filename_cache();
+
+                                NSCommon::smart_ptr<OOX::Image> pImageFileVml(new OOX::Image(false));
+                                pImageFileVml->set_filename(pathImageCache);
 								
-								m_pCurVmlDrawing->Add(*oPic.blipFill.blip->embed, pImageFileVml.smart_dynamic_cast<OOX::File>());
+                                smart_ptr<OOX::File> pFileVml = pImageFileVml.smart_dynamic_cast<OOX::File>();
+                                m_pCurVmlDrawing->Add(*oPic.blipFill.blip->embed, pFileVml);
 
 						//add image rels to Worksheet
 								NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(false));
-								pImageFileWorksheet->set_filename(pOleObject->m_OleObjectFile->filename_cache());
+
+                                pImageFileWorksheet->set_filename(pathImageCache);
 								
-								const OOX::RId oRIdImg = m_pCurWorksheet->Add(pImageFileWorksheet.smart_dynamic_cast<OOX::File>());
+                                smart_ptr<OOX::File> pFileWorksheet = pImageFileWorksheet.smart_dynamic_cast<OOX::File>();
+                                const OOX::RId oRIdImg = m_pCurWorksheet->Add(pFileWorksheet);
 
 						//add oleObject rels
 								if(!m_pCurWorksheet->m_oOleObjects.IsInit())
@@ -2713,7 +2718,8 @@ namespace BinXlsxRW {
 									m_pCurWorksheet->m_oOleObjects.Init();
 								}
 
-								const OOX::RId oRIdBin = m_pCurWorksheet->Add(pOleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>());
+                                smart_ptr<OOX::File> pFileObject = pOleObject->m_OleObjectFile.smart_dynamic_cast<OOX::File>();
+                                const OOX::RId oRIdBin = m_pCurWorksheet->Add(pFileObject);
 
 								if(!pOleObject->m_oRid.IsInit())
 								{

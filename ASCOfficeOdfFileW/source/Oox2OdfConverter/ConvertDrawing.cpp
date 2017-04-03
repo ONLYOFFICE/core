@@ -69,7 +69,7 @@ void OoxConverter::convert(PPTX::Logic::SpTreeElem *oox_element)
 	if (!oox_element) return;
 	if (!oox_element->is_init()) return;
 
-	smart_ptr<PPTX::WrapperWritingElement> & elem = oox_element->GetElem();
+    smart_ptr<PPTX::WrapperWritingElement> elem = oox_element->GetElem();
 
 	convert (elem.operator->());
 }

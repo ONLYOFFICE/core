@@ -146,7 +146,7 @@ namespace PPTX
 			{
 				OOX::CPath oox_file		= ole_file->filename();
 				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp";
-				NSDirectory::CreateDirectoryW(oox_unpacked.GetPath());
+                NSDirectory::CreateDirectory(oox_unpacked.GetPath());
 
 				COfficeUtils oOfficeUtils(NULL);
 				oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);

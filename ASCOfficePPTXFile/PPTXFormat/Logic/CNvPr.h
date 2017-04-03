@@ -36,7 +36,7 @@
 #include "./../WrapperWritingElement.h"
 
 #include "Hyperlink.h"
-#include "extp.h"
+#include "ExtP.h"
 
 namespace PPTX
 {

@@ -823,7 +823,7 @@ namespace NSBinPptxRW
             filePathRels = filePathRels + FILE_SEPARATOR_STR + _T(".rels");
            
 			NSFile::CFileBinary oFile;
-			oFile.CreateFile(filePathRels.GetPath());
+            oFile.CreateFileW(filePathRels.GetPath());
 				oFile.WriteStringUTF8(strRELS);
 			oFile.CloseFile();
 

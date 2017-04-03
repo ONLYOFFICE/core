@@ -1558,7 +1558,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				RtfShapePtr pNewShape( new RtfShape() );
 				pNewShape->m_bIsGroup = true;
 
-				smart_ptr<PPTX::Logic::SpTree> &e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+                smart_ptr<PPTX::Logic::SpTree> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
 				
 				OOXShapeGroupReader oShapeReader(e.operator->());
 				
@@ -1570,7 +1570,7 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			{
 				RtfShapePtr pNewShape ( new RtfShape() );
 				
-				smart_ptr<OOX::WritingElement> &e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<OOX::WritingElement>();
+                smart_ptr<OOX::WritingElement> e = m_ooxGroup->SpTreeElems[i].GetElem().smart_dynamic_cast<OOX::WritingElement>();
 				OOXShapeReader oShapeReader(e.operator->());
 				
 				pNewShape->m_bInGroup = true;

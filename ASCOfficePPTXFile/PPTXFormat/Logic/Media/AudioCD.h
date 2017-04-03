@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,11 @@ namespace PPTX
 		class AudioCD : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AudioCD)
+			WritingElement_AdditionConstructors(AudioCD)
+
+			AudioCD()
+			{
+			}
 
 			AudioCD& operator=(const AudioCD& oSrc)
 			{
@@ -57,8 +61,10 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				//todooo
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oMem;
@@ -74,7 +80,7 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("track"), stTrack);

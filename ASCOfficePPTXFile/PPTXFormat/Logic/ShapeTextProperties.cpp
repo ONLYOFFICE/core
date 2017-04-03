@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "ShapeTextProperties.h"
 #include "Fills/SolidFill.h"
@@ -42,7 +42,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-        AVSINLINE WORD GetTextAnchorFromStr(const CString& str)
+        AVSINLINE WORD GetTextAnchorFromStr(const std::wstring& str)
 		{
 			if (str == _T("t"))		return 0;
 			if (str == _T("ctr"))	return 1;
@@ -50,7 +50,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE WORD GetTextAlignFromStr(const CString& str)
+        AVSINLINE WORD GetTextAlignFromStr(const std::wstring& str)
 		{
 			if (str == _T("l"))			return 0;
 			if (str == _T("ctr"))		return 1;
@@ -62,7 +62,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE WORD GetFontAlignFromStr(const CString& str)
+        AVSINLINE WORD GetFontAlignFromStr(const std::wstring& str)
 		{
 			if (str == _T("auto"))	return 0;
 			if (str == _T("base"))	return 0;
@@ -72,7 +72,7 @@ namespace PPTX
 			return 0;
 		}
 
-        AVSINLINE int GetIntegerFromHex(const CString& string)
+        AVSINLINE int GetIntegerFromHex(const std::wstring& string)
 		{
 			return XmlUtils::GetInteger(string);
 		}
@@ -101,7 +101,9 @@ namespace PPTX
 		{
 			if (Src.IsInit())
 			{
-				Src->bodyPr.Merge(bodyPr);
+				if (Src->bodyPr.IsInit())
+					Src->bodyPr->Merge(bodyPr);
+				
 				if (Src->lstStyle.IsInit())
 				{
 					for(int i = 0; i < 10; i++)
@@ -389,7 +391,7 @@ namespace PPTX
 			if (pRun.is_init())
 				if (pRun->cap.is_init())
 				{
-					CString str = pRun->cap->get();
+					std::wstring str = pRun->cap->get();
 					if (_T("all") == str)
 						prop = (WORD)1;
 					else if (_T("small") == str)
@@ -403,7 +405,7 @@ namespace PPTX
 				if(pParagraph->defRPr.is_init())
 					if(pParagraph->defRPr->cap.is_init())
 					{
-						CString str = pParagraph->defRPr->cap->get();
+						std::wstring str = pParagraph->defRPr->cap->get();
 						if (_T("all") == str)
 							prop = (WORD)1;
 						else if (_T("small") == str)
@@ -589,48 +591,57 @@ namespace PPTX
 
 		DWORD CShapeTextProperties::GetHyperlinkRGBA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+			
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
 			else return 0;
 		}
 		DWORD CShapeTextProperties::GetHyperlinkARGB()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+	
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
 			else return 0;
 		}
 		DWORD CShapeTextProperties::GetHyperlinkBGRA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
 			else return 0;
 		}
 		DWORD CShapeTextProperties::GetHyperlinkABGR()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		void CShapeTextProperties::SetParentFilePointer(const WrapperFile* pFile)
 		{
-			bodyPr.SetParentFilePointer(pFile);
+			if (bodyPr.IsInit())
+				bodyPr->SetParentFilePointer(pFile);
 
 			m_pFile = pFile;
 

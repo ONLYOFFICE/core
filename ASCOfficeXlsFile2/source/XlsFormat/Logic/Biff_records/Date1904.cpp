@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,12 +48,6 @@ Date1904::~Date1904()
 BaseObjectPtr Date1904::clone()
 {
 	return BaseObjectPtr(new Date1904(*this));
-}
-
-
-void Date1904::writeFields(CFRecord& record)
-{
-	record << f1904DateSystem;
 }
 
 

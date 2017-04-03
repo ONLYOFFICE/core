@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,6 @@ public:
 	virtual void load(CFRecord& record, const size_t num_cells);
 //-----------------------------
 	virtual void load(CFRecord& record) {};
-	virtual void store(CFRecord& record){};
 
 	static const ElementType	type = typeIXFCellMulBlankSpecial;
 //-----------------------------
@@ -67,7 +66,7 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
+	
 	void readFields(CFRecord& record);
 	
     const int GetRow()		const;

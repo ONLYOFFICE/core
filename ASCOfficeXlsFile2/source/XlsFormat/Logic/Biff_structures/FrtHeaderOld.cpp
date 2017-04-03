@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,14 +49,6 @@ FrtHeaderOld::FrtHeaderOld(const CFRecordType::TypeId type)
 BiffStructurePtr FrtHeaderOld::clone()
 {
 	return BiffStructurePtr(new FrtHeaderOld(*this));
-}
-
-
-void FrtHeaderOld::store(CFRecord& record)
-{
-	grbitFrt.fFrtRef = 0;
-	grbitFrt.fFrtAlert = 0;
-	record << rt << grbitFrt;
 }
 
 

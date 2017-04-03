@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,15 +43,15 @@ public:
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
 
-	void AddContent( CString sText )
+    void AddContent( std::wstring sText )
 	{
 		m_sFileXml += sText;
 	}
-	bool Save(  CString sFolder )
+    bool Save(  std::wstring sFolder )
 	{
-		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+        std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 
-		if( false == m_sFileXml.IsEmpty() )
+		if( false == m_sFileXml.empty() )
 		{
 			CFile file;
             if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
@@ -63,7 +63,7 @@ public:
 
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-            file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+            file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 
 			file.CloseFile();
 			return true;
@@ -76,10 +76,10 @@ public:
 	}
 	bool IsEmpty()
 	{
-		return m_sFileXml.IsEmpty();
+		return m_sFileXml.empty();
 	}
 private: 
-	CString m_sFileXml;
+    std::wstring m_sFileXml;
 
     OOXWriter& m_oWriter;
 
@@ -88,7 +88,7 @@ private:
         std::wstring sResult;
         sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
         sResult.append( _T("<w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">") );
-        sResult.append( m_sFileXml.GetBuffer() );
+        sResult.append( m_sFileXml);
         sResult.append( _T("</w:fonts>") );
 		return  sResult;
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,26 +51,6 @@ BaseObjectPtr Setup::clone()
 {
 	return BaseObjectPtr(new Setup(*this));
 }
-
-
-void Setup::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fLeftToRight);
-	SETBIT(flags, 1, fPortrait);
-	SETBIT(flags, 2, fNoPls);
-	SETBIT(flags, 3, fNoColor);
-	SETBIT(flags, 4, fDraft);
-	SETBIT(flags, 5, fNotes);
-	SETBIT(flags, 6, fNoOrient);
-	SETBIT(flags, 7, fUsePage);
-	SETBIT(flags, 9, fEndNotes);
-	SETBITS(flags, 10, 11, iErrors);
-
-	record << iPaperSize << iScale << iPageStart << iFitWidth << iFitHeight << flags;
-	record << iRes << iVRes << numHdr << numFtr << iCopies;
-}
-
 
 void Setup::readFields(CFRecord& record)
 {

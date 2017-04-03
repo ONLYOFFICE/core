@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,12 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <cpdoccore/xml/utils.h>
-
-#include "mediaitems_utils.h"
 
 #include "xlsx_drawing.h"
 #include "xlsx_drawings.h"
@@ -46,6 +45,8 @@
 #include "../formulasconvert/formulasconvert.h"
 
 #include "drawing_object_description.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -111,7 +112,8 @@ class xlsx_drawing_context::Impl
 public:    
     Impl(xlsx_drawing_context_handle & handle) : xlsx_drawings_(xlsx_drawings::create(false)), handle_(handle)
     {
-		current_level_ = &objects_;
+		current_level_			= &objects_;
+		use_image_replacement_	= false;
 	} 
 
     xlsx_drawing_context_handle&				handle_;
@@ -121,13 +123,14 @@ public:
 	std::vector<drawing_object_description*>	groups_;
 
 	std::vector<drawing_object_description>	*	current_level_;
+	bool										use_image_replacement_;
 //-----------------------------------------------------------------------------------
 
 	mediaitems & get_mediaitems() { return handle_.impl_->get_mediaitems(); }
 
     void serialize(std::wostream & strm)
     {
-        xlsx_serialize(strm, *xlsx_drawings_);
+        xlsx_drawings_->serialize(strm);
     }
 
     bool empty() const
@@ -167,12 +170,12 @@ void xlsx_drawing_context::clear()
 	impl_->object_description_.anchor_y_			= 0;
 	impl_->object_description_.clipping_string_		= L"";
  	impl_->object_description_.svg_rect_			= boost::none;
-	impl_->object_description_.use_image_replace_	= false;
  
 	impl_->object_description_.additional_.clear();
 	impl_->object_description_.hlinks_.clear();
 	impl_->object_description_.additional_.clear();
 
+	impl_->use_image_replacement_					= false;
 }
 
 xlsx_drawing_context::~xlsx_drawing_context()
@@ -204,7 +207,7 @@ void xlsx_drawing_context::end_group()
 	group_rect.cy -= group_rect.y;
 	group_rect.cx -= group_rect.x;
 
-	for (int i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
+	for (size_t i = 0; i < impl_->groups_.back()->child_objects_.size(); i++)
 	{
 		_rect & r = impl_->groups_.back()->child_objects_[i].svg_rect_.get();
 		
@@ -272,37 +275,62 @@ void xlsx_drawing_context::end_shape()
 	impl_->current_level_->push_back(impl_->object_description_);
 }
 
-void xlsx_drawing_context::start_object_ole()
+void xlsx_drawing_context::set_use_image_replacement()
 {
+	impl_->use_image_replacement_ = true;
+}
+void xlsx_drawing_context::set_text_box()
+{
+	impl_->object_description_.type_		= typeShape;
+	impl_->object_description_.shape_type_	= 2; //2,3... 
 }
 
-void xlsx_drawing_context::end_object_ole()
+void xlsx_drawing_context::set_ole_object(const std::wstring & path, const std::wstring & progId)
 {
-}
-
-void xlsx_drawing_context::start_image(std::wstring const & path)
-{
-	impl_->object_description_.type_		= typeImage;
+	impl_->object_description_.type_		= typeOleObject;
 	impl_->object_description_.xlink_href_	= path; 
+	impl_->object_description_.descriptor_	= progId;
 }
-void xlsx_drawing_context::end_image()
+void xlsx_drawing_context::set_ms_object(const std::wstring & path, const std::wstring & progId)
+{
+	impl_->object_description_.type_		= typeMsObject;
+	impl_->object_description_.xlink_href_	= path; 
+	impl_->object_description_.descriptor_	= progId;
+}
+void xlsx_drawing_context::set_image(const std::wstring & path)
+{
+	if (impl_->object_description_.type_ == typeUnknown)
+	{
+		impl_->object_description_.type_		= typeImage;	
+		impl_->object_description_.xlink_href_	= path; 
+	}
+	else if (impl_->use_image_replacement_)
+	{
+		impl_->object_description_.fill_.type	= 2;
+		impl_->object_description_.fill_.bitmap = oox::oox_bitmap_fill::create();
+		impl_->object_description_.fill_.bitmap->xlink_href_ = path;
+	}
+}
+void xlsx_drawing_context::start_frame()
+{
+	impl_->object_description_.type_ = typeUnknown;
+}
+void xlsx_drawing_context::end_frame()
 {
     impl_->current_level_->push_back(impl_->object_description_);
 }
-void xlsx_drawing_context::start_chart(std::wstring const & path)
+
+void xlsx_drawing_context::set_chart(const std::wstring & path)
 {
 	impl_->object_description_.type_		= typeChart;
 	impl_->object_description_.xlink_href_	= path; 
-}
-void xlsx_drawing_context::end_chart()
-{
-    impl_->current_level_->push_back(impl_->object_description_);
 }
 
 void xlsx_drawing_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
 {
 	impl_->object_description_.svg_rect_ = _rect(width_pt, height_pt, x_pt, y_pt);
 }
+
 void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 {
 	if (impl_->object_description_.svg_rect_)
@@ -313,6 +341,7 @@ void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 		r.y += y_pt;
 	}
 }
+
 void xlsx_drawing_context::set_rotate(double angle)
 {
 	set_property(odf_reader::_property(L"svg:rotate", angle));
@@ -369,24 +398,20 @@ void xlsx_drawing_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
 }
+
 std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href,bool object)
 {
 	++hlinks_size_;
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
-    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+    XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
 	_hlink_desc desc = {hId, href_correct, object}; //корректность написания ссылки важна для ms office и не важна для open office ->
 	//todooo 
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;
-}
-
-void xlsx_drawing_context::set_use_image_replacement()
-{
-	impl_->object_description_.use_image_replace_ = true;
 }
 
 bool xlsx_drawing_context::empty() const
@@ -535,13 +560,26 @@ void xlsx_drawing_context::process_chart(drawing_object_description & obj,_xlsx_
 	std::wstring ref;
     bool isMediaInternal = true;
 	
-	drawing.chartId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
-    xlsx_drawings_->add(drawing, isMediaInternal, drawing.chartId, ref, obj.type_);
+	drawing.objectId = impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+    xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_);
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.chartId, ref, obj.type_); // не объект
+		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
 }
 
+void xlsx_drawing_context::process_object(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
+{
+	std::wstring ref;
+    bool isMediaInternal = true;
+	
+	drawing.objectId		= impl_->get_mediaitems().add_or_find(obj.xlink_href_, obj.type_, isMediaInternal, ref);
+	drawing.objectProgId	= obj.descriptor_;
+
+    xlsx_drawings_->add(drawing, isMediaInternal, drawing.objectId, ref, obj.type_, true);
+	
+	if (drawing.inGroup)
+		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_); // не объект
+}
 void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	std::wstring ref;
@@ -559,7 +597,7 @@ void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_
 	
 	std::wstringstream strm;
 
-	xlsx_serialize(strm, *xlsx_drawings_child);
+	xlsx_drawings_child->serialize(strm);
 
 	drawing.content_group_ = strm.str();
 
@@ -577,12 +615,9 @@ void xlsx_drawing_context::process_objects(xlsx_table_metrics & table_metrics)
 }
 void xlsx_drawing_context::process_objects(std::vector<drawing_object_description> objects, xlsx_table_metrics & table_metrics, xlsx_drawings_ptr xlsx_drawings_)
 {
-	for (int i = 0 ; i < objects.size(); i++)
+	for (size_t i = 0 ; i < objects.size(); i++)
 	{
 		drawing_object_description & obj = objects[i];
-
-		int pos_replaicement = obj.xlink_href_.find(L"ObjectReplacements");	
-		if (pos_replaicement >= 0 && !obj.use_image_replace_)continue;	//объект
 
 		_xlsx_drawing drawing	=_xlsx_drawing();
 
@@ -600,7 +635,11 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 			bool isMediaInternal = true;
 			
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref);
-			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);//собственно это не объект, а доп рел и ref объекта
+			
+			bool in_sheet = (obj.type_== typeOleObject || obj.type_== typeMsObject) ? true : false;
+			impl_->get_drawings()->add(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage, in_sheet);//собственно это не объект, а доп рел и ref объекта
+
+			//object dumps in sheet rels !!
 		}
 	   
 		process_common_properties(obj, drawing, table_metrics);
@@ -611,6 +650,9 @@ void xlsx_drawing_context::process_objects(std::vector<drawing_object_descriptio
 			case typeImage:			process_image	( obj, drawing, xlsx_drawings_);				break;
 			case typeShape:			process_shape	( obj, drawing, xlsx_drawings_);				break;
 			case typeGroupShape:	process_group	( obj, table_metrics, drawing, xlsx_drawings_);	break;
+			case typeMsObject:	
+			case typeOleObject:	
+									process_object	( obj, drawing, xlsx_drawings_);				break;
 		}
 	}
 }

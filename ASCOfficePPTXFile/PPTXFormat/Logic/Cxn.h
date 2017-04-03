@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class Cxn : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Cxn)
+			WritingElement_AdditionConstructors(Cxn)
+			PPTX_LOGIC_BASE2(Cxn)
 			
 			Cxn& operator=(const Cxn& oSrc)
 			{
@@ -55,8 +56,41 @@ namespace PPTX
 				ang	= oSrc.ang;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_cxn;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader);
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("ang"), ang )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				ang = node.GetAttribute(_T("ang"));
@@ -69,7 +103,7 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:cxn ang=\"") + ang + _T("\"><a:pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></a:cxn>");
 			}
@@ -102,15 +136,15 @@ namespace PPTX
 			}
 
 		public:
-			CString x;
-			CString y;
-			CString ang;
+			std::wstring x;
+			std::wstring y;
+			std::wstring ang;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
-				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\" /></cxn>");
+				return _T("<cxn ang=\"") + ang + _T("\"><pos x=\"") + x + _T("\" y=\"") + y + _T("\"/></cxn>");
 			}
 		};
 	} // namespace Logic

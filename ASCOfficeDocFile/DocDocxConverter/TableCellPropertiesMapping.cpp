@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,9 +49,9 @@ namespace DocFileFormat
 		_brcRight	=	NULL;
 		_brcBottom	=	NULL;
 
-        _tcPr		=	new XMLTools::XMLElement<wchar_t>(L"w:tcPr");
-        _tcMar		=	new XMLTools::XMLElement<wchar_t>(L"w:tcMar");
-        _tcBorders	=	new XMLTools::XMLElement<wchar_t>(L"w:tcBorders");
+        _tcPr		=	new XMLTools::XMLElement(L"w:tcPr");
+        _tcMar		=	new XMLTools::XMLElement(L"w:tcMar");
+        _tcBorders	=	new XMLTools::XMLElement(L"w:tcBorders");
 
 		_ftsWidth	=	Global::nil;
 	}
@@ -89,7 +89,7 @@ namespace DocFileFormat
 					_tGrid = tdef.rgdxaCenter;
                     _tcDef = tdef.rgTc80[(std::min)(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
 
-                    appendValueElement( _tcPr, L"textDirection", FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ).c_str(), false );
+                    appendValueElement( _tcPr, L"textDirection", FormatUtils::MapValueToWideString( _tcDef.textFlow, &Global::TextFlowMap[0][0], 6, 6 ), false );
 
 					if ( _tcDef.vertMerge == Global::fvmMerge )
 					{
@@ -100,7 +100,7 @@ namespace DocFileFormat
                         appendValueElement( _tcPr, L"vMerge", L"restart", false );
 					}
 
-                    appendValueElement( _tcPr, L"vAlign", FormatUtils::MapValueToWideString( _tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ).c_str(), false );
+                    appendValueElement( _tcPr, L"vAlign", FormatUtils::MapValueToWideString( _tcDef.vertAlign, &Global::VerticalAlignMap[0][0], 3, 7 ), false );
 
 					if ( _tcDef.fFitText )
 					{
@@ -145,22 +145,22 @@ namespace DocFileFormat
 					{
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 0 ) == true )
 						{
-                            appendDxaElement( _tcMar, L"top", FormatUtils::IntToWideString( wMargin ).c_str(), true );
+                            appendDxaElement( _tcMar, L"top", FormatUtils::IntToWideString( wMargin ), true );
 						}
 
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 1 ) == true )
 						{
-                            appendDxaElement( _tcMar, L"left", FormatUtils::IntToWideString( wMargin ).c_str(), true );
+                            appendDxaElement( _tcMar, L"left", FormatUtils::IntToWideString( wMargin ), true );
 						}
 
 						if (  FormatUtils::GetBitFromInt( iter->Arguments[2], 2 ) == true )
 						{
-                            appendDxaElement( _tcMar, L"bottom", FormatUtils::IntToWideString( wMargin ).c_str(), true );
+                            appendDxaElement( _tcMar, L"bottom", FormatUtils::IntToWideString( wMargin ), true );
 						}
 
 						if ( FormatUtils::GetBitFromInt( iter->Arguments[2], 3 ) == true )
 						{
-                            appendDxaElement( _tcMar, L"right", FormatUtils::IntToWideString( wMargin ).c_str(), true );
+                            appendDxaElement( _tcMar, L"right", FormatUtils::IntToWideString( wMargin ), true );
 						}
 					}
 				}
@@ -210,7 +210,7 @@ namespace DocFileFormat
 
 					if ((_cellIndex >= first) && (_cellIndex < lim))
 					{
-                        appendValueElement(_tcPr, L"vAlign", FormatUtils::MapValueToWideString( (VerticalCellAlignment)iter->Arguments[2], &VerticalCellAlignmentMap[0][0], 3, 7 ).c_str(), true );
+                        appendValueElement(_tcPr, L"vAlign", FormatUtils::MapValueToWideString( (VerticalCellAlignment)iter->Arguments[2], &VerticalCellAlignmentMap[0][0], 3, 7 ), true );
 					}
 				}
 				break;
@@ -222,7 +222,7 @@ namespace DocFileFormat
 
 					if ( ( _cellIndex >= first ) && ( _cellIndex < lim ) )
 					{
-                        appendValueElement( _tcPr, L"tcFitText", FormatUtils::IntToWideString( iter->Arguments[2] ).c_str(), true );
+                        appendValueElement( _tcPr, L"tcFitText", FormatUtils::IntToWideString( iter->Arguments[2] ), true );
 					}
 				}
 				break;
@@ -271,10 +271,11 @@ namespace DocFileFormat
 		}
 
 		//width
-        XMLTools::XMLElement<wchar_t> tcW( L"w:tcW" );
-        XMLTools::XMLAttribute<wchar_t> tcWType( L"w:type", FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ).c_str() );
-        XMLTools::XMLAttribute<wchar_t> tcWVal( L"w:w", FormatUtils::IntToWideString( _width ).c_str() );
-		tcW.AppendAttribute( tcWType );
+        XMLTools::XMLElement    tcW     ( L"w:tcW" );
+        XMLTools::XMLAttribute  tcWType ( L"w:type", FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) );
+        XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width ) );
+
+        tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );
 		_tcPr->AppendChild( tcW );
 
@@ -298,7 +299,7 @@ namespace DocFileFormat
 				}
 			}
 
-            appendValueElement( _tcPr, L"gridSpan", FormatUtils::IntToWideString( _gridSpan ).c_str(), true );
+            appendValueElement( _tcPr, L"gridSpan", FormatUtils::IntToWideString( _gridSpan ), true );
 		}
 
 		//append margins
@@ -310,28 +311,28 @@ namespace DocFileFormat
 		//append borders
 		if (_brcTop)
 		{
-            XMLTools::XMLElement<wchar_t> topBorder( L"w:top" );
+            XMLTools::XMLElement topBorder( L"w:top" );
 			appendBorderAttributes(_brcTop, &topBorder);
 			addOrSetBorder(_tcBorders, &topBorder );
 		}
 
 		if (_brcLeft )
 		{
-            XMLTools::XMLElement<wchar_t> leftBorder( L"w:left" );
+            XMLTools::XMLElement leftBorder( L"w:left" );
 			appendBorderAttributes(_brcLeft, &leftBorder);
 			addOrSetBorder(_tcBorders, &leftBorder);
 		}
 
 		if (_brcBottom)
 		{
-            XMLTools::XMLElement<wchar_t> bottomBorder( L"w:bottom" );
+            XMLTools::XMLElement bottomBorder( L"w:bottom" );
 			appendBorderAttributes(_brcBottom, &bottomBorder);
 			addOrSetBorder(_tcBorders, &bottomBorder);
 		}
 
 		if (_brcRight)
 		{
-            XMLTools::XMLElement<wchar_t> rightBorder( L"w:right" );
+            XMLTools::XMLElement rightBorder( L"w:right" );
 			appendBorderAttributes( _brcRight, &rightBorder );
 			addOrSetBorder( _tcBorders, &rightBorder );
 		}
@@ -343,7 +344,7 @@ namespace DocFileFormat
 
 		//write Properties
 		if ((_tcPr->GetChildCount() > 0) || (_tcPr->GetAttributeCount() > 0))
-			m_pXmlWriter->WriteString(_tcPr->GetXMLString().c_str());
+			m_pXmlWriter->WriteString(_tcPr->GetXMLString());
 	}
 
 	void TableCellPropertiesMapping::apppendCellShading (unsigned char* sprmArg, int size, int cellIndex)

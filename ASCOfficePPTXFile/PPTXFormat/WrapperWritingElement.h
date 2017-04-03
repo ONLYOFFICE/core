@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,7 @@
 #ifndef PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 #define PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 
-#include "DocxFormat/WritingElement.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "WrapperFile.h"
 
 #include "../Editor/BinWriters.h"
@@ -48,32 +48,22 @@
 		fromXML(node);												\
 		return *this;												\
 	}																\
-    const Class& operator =(const XmlUtils::CXmlNode& node)				\
+    const Class& operator =(const XmlUtils::CXmlNode& node)			\
     {																\
-        fromXML(const_cast<XmlUtils::CXmlNode&> (node));												\
+        fromXML(const_cast<XmlUtils::CXmlNode&> (node));			\
         return *this;												\
     }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
+
 #define PPTX_LOGIC_BASE2(Class)										\
+	Class()	{}														\
 	virtual ~Class() {}												\
-	explicit Class(XmlUtils::CXmlNode& node)	{ fromXML(node); }	\
-    explicit Class(const XmlUtils::CXmlNode& node)	{ fromXML(const_cast<XmlUtils::CXmlNode&> (node)); }	\
-    const Class& operator =(XmlUtils::CXmlNode& node)				\
-		{																\
-		fromXML(node);												\
-		return *this;												\
-		}																\
-    const Class& operator =(const XmlUtils::CXmlNode& node)				\
-	    {																\
-        fromXML(const_cast<XmlUtils::CXmlNode&> (node));												\
-        return *this;												\
-	    }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
 namespace PPTX
 {
-	class WrapperWritingElement : public PPTX::WritingElement
+	class WrapperWritingElement : public OOX::WritingElement
 	{
 	public:
 		WrapperWritingElement() : parentElement(NULL), parentFile(NULL)
@@ -86,7 +76,7 @@ namespace PPTX
 		WrapperWritingElement const* parentElement;
 		WrapperFile const* parentFile;
 	protected:
-		virtual void FillParentPointersForChilds()=0;
+		virtual void FillParentPointersForChilds(){}
 	public:
 		virtual void SetParentPointer(const WrapperWritingElement* pParent)
 		{
@@ -103,16 +93,16 @@ namespace PPTX
 		virtual WrapperWritingElement const* const	GetParentPointer()const		{return parentElement;}
 		virtual WrapperFile const* const			GetParentFilePointer()const {return parentFile;}
 
-		virtual void fromXMLString(CString strXml)
+		virtual void fromXMLString(std::wstring strXml)
 		{
 			XmlUtils::CXmlNode oNode;
 			oNode.FromXmlString(strXml);
 			fromXML(oNode);
 		}
 
-		virtual PPTX::EElementType getType() const
+		virtual OOX::EElementType getType() const
 		{
-			return PPTX::et_Unknown;
+			return OOX::et_Unknown;
 		}
 
 
@@ -137,7 +127,7 @@ namespace PPTX
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			return (NULL != pResult);
 		}
-		template<class T> const T& parentFileAs()const
+		template<class T> T& parentFileAs()const
 		{
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			return *pResult;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,14 +51,6 @@ PtgExtraMem::PtgExtraMem(CFRecord& record)
 BiffStructurePtr PtgExtraMem::clone()
 {
 	return BiffStructurePtr(new PtgExtraMem(*this));
-}
-
-
-void PtgExtraMem::store(CFRecord& record)
-{
-#pragma message("####################### PtgExtraMem record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgExtraMem record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 

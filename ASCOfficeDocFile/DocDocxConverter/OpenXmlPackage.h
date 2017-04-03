@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ namespace DocFileFormat
 		{
 		}
 
-		Relationship( const std::wstring& id,  const std::wstring& type, const std::wstring& target, const std::wstring& targetMode = _T( "" ) ):
+        Relationship( const std::wstring& id,  const std::wstring& type, const std::wstring& target, const std::wstring& targetMode = L""):
 		Id( id ), Type( type ), Target( target ), TargetMode( targetMode )
 		{
 		}
@@ -139,18 +139,18 @@ namespace DocFileFormat
 
 		const WordDocument* docFile;
 
-		int AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddFootnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddEndnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddCommentsPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddNumberingPart( const std::wstring& fileName, const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+        int AddHeaderPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddFooterPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddFootnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddEndnotesPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddCommentsPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddNumberingPart( const std::wstring& fileName, const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
 
 		void WriteRelsFile( const RelationshipsFile& relationshipsFile );
 		void WriteContentTypesFile( const ContentTypesFile& contentTypesFile );
 
-		int AddPart( const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = _T( "" ), const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
-		int AddPart( const IMapping* mapping, const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = _T( "" ), const std::wstring& relationshipType = _T( "" ), const std::wstring& targetMode = _T( "" ) );
+        int AddPart( const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = L"", const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
+        int AddPart( const IMapping* mapping, const std::wstring& packageDir, const std::wstring& fileName, const std::wstring& contentType = L"", const std::wstring& relationshipType = L"", const std::wstring& targetMode = L"" );
 
 	protected:	  
 

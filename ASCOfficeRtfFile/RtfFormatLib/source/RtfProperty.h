@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,13 +61,13 @@
 		{\
 			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( L" w:val=\"false\"/>" );\
+            sResult += L" w:val=\"false\"/>";\
 		}\
 		else if (  PROP_DEF != prop  )\
 		{\
 			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( L" w:val=\"true\"/>" );\
+            sResult += L" w:val=\"true\"/>";\
 		}
 
 #define RENDER_OOX_INT( prop, sResult, sName)\
@@ -75,14 +75,14 @@
 		{\
 			sResult += L"<";\
 			sResult += sName;\
-			sResult.AppendFormat( L" w:val=\"%d\"/>", prop  );\
+            sResult += L" w:val=\"" + std::to_wstring(prop) + L"\"/>";\
 		}
 #define RENDER_OOX_INT_ATTRIBUTE( prop, sResult, sName)\
 		if ( PROP_DEF != prop )\
 		{\
 			sResult += L" ";\
 			sResult += sName;\
-			sResult.AppendFormat( L"=\"%d\"", prop  );\
+            sResult += L"=\"" + std::to_wstring(prop) + L"\"";\
 		}
 #define RENDER_OOX_BOOL_ATTRIBUTE( prop, sResult, sName)\
 		if ( 0 == prop )\
@@ -116,8 +116,11 @@
 		{\
 			sResult += L"\\";\
 			sResult += sName;\
-			sResult.AppendFormat( L"%d", prop  );\
+            sResult += std::to_wstring( prop  );\
 		}
+#define RENDER_RTF_SHAPE_PROP( sName, sResult, prop)\
+        if ( PROP_DEF != prop )\
+            sResult += L"{\\sp{\\sn " + std::wstring(sName) + L"}{\\sv " + std::to_wstring( prop ) + L"}}";
 
 class RtfSection;
 typedef boost::shared_ptr<RtfSection> RtfSectionPtr;
@@ -129,15 +132,15 @@ public:
 		
 	typedef enum {ff_none, ff_fnil ,ff_froman ,ff_fswiss ,ff_fmodern ,ff_fscript ,ff_fdecor ,ff_ftech ,ff_fbidi} FontFamily;
 	
-	FontTheme	m_eFontTheme;
-	FontFamily	m_eFontFamily;
-	CString		m_sPanose;
-	int			m_nID;
-	CString		m_sName;
-	CString		m_sAltName;
-	int			m_nCharset;
-	int			m_nCodePage;
-	int			m_nPitch;
+    FontTheme       m_eFontTheme;
+    FontFamily      m_eFontFamily;
+    std::wstring    m_sPanose;
+    int             m_nID;
+    std::wstring	m_sName;
+    std::wstring	m_sAltName;
+    int             m_nCharset;
+    int             m_nCodePage;
+    int             m_nPitch;
 
 	RtfFont()
 	{
@@ -180,8 +183,8 @@ public:
 		DEFAULT_PROPERTY	( m_nCodePage )
 		DEFAULT_PROPERTY_DEF( m_nPitch, 2 )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfColor : public IRenderableProperty
@@ -190,21 +193,22 @@ public:
 	enum _ThemeColor {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo};
 	
 	bool		m_bAuto;
-	_ThemeColor	m_eTheme;
 
     BYTE		m_byteRed;
     BYTE		m_byteGreen;
     BYTE		m_byteBlue;
+//for rtf read only
+	BYTE		m_byteShade;
+	BYTE		m_byteTint;
+	_ThemeColor	m_eTheme;
 
-    BYTE		m_byteTint;
-    BYTE		m_byteShade;
+	int			m_index;
 
 //--------------------------------------------------------
 	RtfColor()
 	{
 		SetDefault();
-	}
-	
+	}	
 	RtfColor(int nHex)
 	{
 		SetHEX( nHex );
@@ -232,34 +236,43 @@ public:
 		m_byteRed	= 0;
 		m_byteGreen = 0;
 		m_byteBlue	= 0;
+
+		m_byteShade	= 0;
 		m_byteTint	= 255;
-		m_byteShade = 0;
-		m_eTheme	= TC_NONE;
+		m_eTheme	= RtfColor::TC_NONE;
+		m_index		= -1;
 	}
     BYTE GetR()
 	{
-        BYTE	byteRed = SetShade( m_byteRed );
-				byteRed = SetTint( byteRed );
-		return byteRed;
+		return m_byteRed;
 	}
     BYTE GetG()
 	{
-        BYTE	byteGreen = SetShade( m_byteGreen );
-				byteGreen = SetTint( byteGreen );
-		return byteGreen;
+		return m_byteGreen;
 	}
     BYTE GetB()
 	{
-        BYTE	byteBlue = SetShade( m_byteBlue );
-				byteBlue = SetTint( byteBlue );
-		return byteBlue;
+ 		return m_byteBlue;
 	}
 	
 	bool operator==(const RtfColor& oColor)
 	{
 		return  m_byteRed == oColor.m_byteRed && m_byteGreen == oColor.m_byteGreen && m_byteBlue == oColor.m_byteBlue &&
-				m_byteTint == oColor.m_byteTint && m_byteShade == oColor.m_byteShade && m_eTheme == oColor.m_eTheme;
+				m_eTheme == oColor.m_eTheme && m_byteTint	== oColor.m_byteTint && m_byteShade == oColor.m_byteShade;
 	}
+	const RtfColor& operator=( const RtfColor& oColor )
+	{
+		m_byteRed	= oColor.m_byteRed;
+		m_byteGreen	= oColor.m_byteGreen;
+		m_byteBlue	= oColor.m_byteBlue;
+
+		m_eTheme	= oColor.m_eTheme;
+		m_byteShade	= oColor.m_byteShade;
+		m_byteTint	= oColor.m_byteTint;
+
+		return (*this);
+	}
+
 	void SetHEX(int color)
 	{
 		SetDefault();
@@ -267,6 +280,18 @@ public:
 		m_byteRed	= (color&0xFF0000) >> 16;
 		m_byteGreen = (color&0xFF00) >> 8;
 		m_byteBlue	= (color&0xFF);
+	}
+	int GetRGB()const
+	{
+		return (m_byteRed << 16) | (m_byteGreen << 8) | m_byteBlue;
+	}	
+	void SetRGB(unsigned int color)
+	{
+		SetDefault();
+
+		m_byteRed	= (color & 0xFF);
+		m_byteGreen = (color & 0xFF00)		>> 8;
+		m_byteBlue	= (color & 0xFF0000)	>> 16;
 	}
 	void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
@@ -276,148 +301,62 @@ public:
 		m_byteGreen = green;
 		m_byteBlue	= blue;
 	}
-	void SetHSL(double nHue, double nSat, double nLum)
-	{													// Given H,S,L in range of 0-1
-        double v;
-        double r,g,b;
-        r = nLum;   // default to gray
-        g = nLum;
-        b = nLum;
-        v = (nLum <= 0.5) ? (nLum * (1.0 + nSat)) : (nLum + nSat - nLum * nSat);
-
-        if (v > 0)
-		{
-              double m;
-              double sv;
-              int sextant;
-              double fract, vsf, mid1, mid2;
-
-              m = nLum + nLum - v;
-              sv = (v - m ) / v;
-              nHue *= 6.0;
-              sextant = (int)nHue;
-              fract = nHue - sextant;
-              vsf = v * sv * fract;
-              mid1 = m + vsf;
-              mid2 = v - vsf;
-              switch (sextant)
-              {
-                    case 0:
-                          r = v;
-                          g = mid1;
-                          b = m;
-                          break;
-                    case 1:
-                          r = mid2;
-                          g = v;
-                          b = m;
-                          break;
-                    case 2:
-                          r = m;
-                          g = v;
-                          b = mid1;
-                          break;
-                    case 3:
-                          r = m;
-                          g = mid2;
-                          b = v;
-                          break;
-                    case 4:
-                          r = mid1;
-                          g = m;
-                          b = v;
-                          break;
-                    case 5:
-                          r = v;
-                          g = m;
-                          b = mid2;
-                          break;
-              }
-        }
-        m_byteRed	= (BYTE)(r * 255.0f);
-        m_byteGreen = (BYTE)(g * 255.0f);
-        m_byteBlue	= (BYTE)(b * 255.0f);
-        m_byteRed	= (BYTE)(r * 255);
-        m_byteGreen = (BYTE)(g * 255);
-        m_byteBlue	= (BYTE)(b * 255);
+	void GetHSL(double &dH, double &dS,double &dL)
+	{
+		RGB2HSL(m_byteRed, m_byteGreen, m_byteBlue, dH, dS, dL);
+	}
+	void SetHSL(double dH, double dS,double dL)
+	{
+		HSL2RGB(dH, dS, dL, m_byteRed, m_byteGreen, m_byteBlue);
 	}
 	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
 	{
-		m_byteRed	= (BYTE)(nRedPer * 255 / 100);
-		m_byteGreen = (BYTE)(nGreenPer * 255/ 100);
-		m_byteBlue	= (BYTE)(nBluePer * 255 / 100);
+		m_byteRed	= (BYTE)(nRedPer	* 255 / 100);
+		m_byteGreen = (BYTE)(nGreenPer	* 255 / 100);
+		m_byteBlue	= (BYTE)(nBluePer	* 255 / 100);
 	}
-	void SetHEXString(CString hex)
+    void SetHEXString(std::wstring hex)
 	{
 		if ( L"auto" != hex )
 		{
-			SetDefault();
 			int color	= Strings::ToColor(hex);
-			m_byteRed	= (color&0xFF);
-			m_byteGreen = (color&0xFF00)	>> 8;
-			m_byteBlue	= (color&0xFF0000)	>> 16;
+		
+			SetRGB(color);
 		}
 		else
 			SetDefault();
 	}
-	CString ToHexColor(bool bBGR = false)
+    std::wstring ToHexColor(bool bBGR = false)
 	{
 		if (m_bAuto) return L"auto";
 
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
-		CString sRed;
-		if ( byteRed < 0x10 )
-			sRed.AppendFormat( L"0%x", byteRed );
-		else
-			sRed.AppendFormat( L"%x", byteRed );
-        BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
-		CString sGreen;
-		if ( byteGreen < 0x10 )
-			sGreen.AppendFormat( L"0%x", byteGreen );
-		else
-			sGreen.AppendFormat( L"%x", byteGreen );
-        BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
-		CString sBlue;
-		if ( byteBlue < 0x10 )
-			sBlue.AppendFormat( L"0%x", byteBlue );
-		else
-			sBlue.AppendFormat( L"%x", byteBlue );
+        std::wstring sRed	= XmlUtils::IntToString(m_byteRed,		L"%02X");
+        std::wstring sGreen = XmlUtils::IntToString(m_byteGreen,	L"%02X");;
+        std::wstring sBlue	= XmlUtils::IntToString(m_byteBlue,		L"%02X");
 
 		if (bBGR)	return sBlue + sGreen + sRed ;
 		else		return sRed + sGreen + sBlue ;
 	}
 	
-	int ToInt()const
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+    BYTE SetShade(BYTE bShade)
 	{
-		CString sResult;
-        BYTE byteRed = SetShade( m_byteRed );
-		byteRed = SetTint( byteRed );
-        
-		BYTE byteGreen = SetShade( m_byteGreen );
-		byteGreen = SetTint( byteGreen );
-       
-		BYTE byteBlue = SetShade( m_byteBlue );
-		byteBlue = SetTint( byteBlue );
-
-		int nColor = (byteRed << 16) | (byteGreen << 8) | byteBlue;
-		return nColor;
-	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
-    BYTE SetShade(BYTE bColor)const
-	{
+		m_byteShade = bShade;
         //return (BYTE)( ( 1.0 - m_byteShade / 255 ) * bColor );
-		return bColor;
+		return bShade;
 	}
-    BYTE SetTint(BYTE bColor)const
-	 {
-        //return (BYTE)( ( 1.0 - m_byteTint / 255 ) * ( 255 - bColor ) + bColor );
-		return bColor;
+	BYTE SetTint(BYTE bTint)
+	{
+		m_byteTint = bTint;
+
+		double dH,  dS,  dL;
+		GetHSL(dH, dS,dL);
+		dL = dL * bTint / 255. + (1 - bTint / 255.); 
+		SetHSL(dH, dS, dL);
+		return bTint;
 	 }
-	static bool GetHighlightByColor( RtfColor oOutputColor,CString& oStr ) //todo
+    static bool GetHighlightByColor( RtfColor oOutputColor,std::wstring& oStr ) //todo
 	{
 		if		( oOutputColor ==  RtfColor(0x000000) ) {oStr = L"black";		return true;}
 		else if ( oOutputColor ==  RtfColor(0x0000FF) ) {oStr = L"blue";		return true;}
@@ -437,7 +376,7 @@ public:
 		else if ( oOutputColor ==  RtfColor(0xFFFF00) ) {oStr = L"yellow";		return true;}
 		return false;
 	}
-	static RtfColor GetColorByPreset( CString oStr )
+    static RtfColor GetColorByPreset( std::wstring oStr )
 	{
 		if		( oStr == L"aliceBlue" )	return RtfColor(240,248,255);
 		else if ( oStr == L"aniqueWhite" )	return RtfColor(250,235,215);
@@ -461,7 +400,7 @@ public:
 
 		return RtfColor(0,0,0);
 	}
-	static CString GetPresetByColor( RtfColor oCol ) //стр. 3320
+    static std::wstring GetPresetByColor( RtfColor oCol ) //стр. 3320
 	{
 		if		( oCol == RtfColor(240,248,255))	return L"aliceBlue";
 		else if ( oCol == RtfColor(250,235,215))	return L"aniqueWhite";
@@ -485,7 +424,7 @@ public:
 
 		return L"black";
 	}
-	static bool GetThemeByString( CString sTheme, _ThemeColor & oOutTheme )
+    static bool GetThemeByString( std::wstring sTheme, _ThemeColor & oOutTheme )
 	{
 		if		( sTheme == L"accent1" )	{oOutTheme = caccentone;		return true;}
 		else if ( sTheme == L"accent2" )	{oOutTheme = caccenttwo;		return true;}
@@ -502,8 +441,8 @@ public:
 		else if ( sTheme == L"lt1" )		{oOutTheme = cmainlightone;		return true;}
 		else if ( sTheme == L"lt2" )		{oOutTheme = cmainlighttwo;		return true;}
 		else if ( sTheme == L"phClr" )		{oOutTheme = cmainlighttwo;		return true;}
-		else if ( sTheme ==  L"tx1" )		{oOutTheme = ctextone;			return true;}
-		else if ( sTheme =  L"tx2" )		{oOutTheme = ctexttwo;			return true;}
+        else if ( sTheme == L"tx1" )		{oOutTheme = ctextone;			return true;}
+        else if ( sTheme == L"tx2" )		{oOutTheme = ctexttwo;			return true;}
 		return false;
 	}
 	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val, _ThemeColor & oOutTheme )
@@ -532,7 +471,7 @@ public:
 		
 		return false;
 	}
-	static bool GetStringByTheme( CString sTheme , _ThemeColor& oOutTheme )
+    static bool GetStringByTheme( std::wstring sTheme , _ThemeColor& oOutTheme )
 	{
 		if		( L"accent1"	== sTheme )	{oOutTheme = caccentone;		return true;}
 		else if ( L"accent2"	== sTheme )	{oOutTheme = caccenttwo;		return true;}
@@ -554,7 +493,7 @@ public:
 		return false;
 	}
 
-	CString GetHighLight()
+    std::wstring GetHighLight()
 	{
 		if (m_bAuto) return L"auto";
 
@@ -579,7 +518,7 @@ public:
 
         long nMinDelta = 0x7FFFFFFF; //MAXLONG;
 		int nIndex = -1;
-		for( int i = 0; i < (int)sColors.size(); i++ )
+		for (int i = 0; i < (int)sColors.size(); i++ )
 		{
 			int nCurDelta = ( sColors[i].GetR() - GetR() ) * ( sColors[i].GetR() - GetR() ) + 
 							( sColors[i].GetG() - GetG() ) * ( sColors[i].GetG() - GetG() ) + 
@@ -608,13 +547,83 @@ public:
 			case 13: return L"red";
 			case 14: return L"white";
 			case 15: return L"yellow";
-		}
+            default: break;
+        }
 		return L"none";
 	}
 private:
-	CString WriteOOXAttribute( CString sParam )
+	inline void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL)
+	{
+        int nmin   = (std::min)( unR, (std::min)( unG, unB ) );
+        int nmax   = (std::max)( unR, (std::max)( unG, unB ) );
+        int nDelta = nmax - nmin;
+        double dmax   = ( nmax + nmin ) / 255.0;
+		double dDelta = nDelta / 255.0;
+
+        dL = dmax / 2.0;
+
+		if ( 0 == nDelta ) //This is a gray, no chroma...
+		{
+			dH = 0.0;
+			dS = 0.0;
+		}
+		else //Chromatic data...
+		{
+            if ( dL < 0.5 ) dS = dDelta / dmax;
+            else            dS = dDelta / ( 2.0 - dmax );
+
+			dDelta = dDelta * 1530.0;
+
+            double dR = ( nmax - unR ) / dDelta;
+            double dG = ( nmax - unG ) / dDelta;
+            double dB = ( nmax - unB ) / dDelta;
+
+            if      ( unR == nmax ) dH = dB - dG;
+            else if ( unG == nmax ) dH = c_d_1_3 + dR - dB;
+            else if ( unB == nmax ) dH = c_d_2_3 + dG - dR;
+
+			if ( dH < 0.0 ) dH += 1.0;
+			if ( dH > 1.0 ) dH -= 1.0;
+		}
+	}
+
+	inline void HSL2RGB(double dH, double dS, double dL, unsigned char &unR, unsigned char& unG, unsigned char& unB)
+	{
+		if ( 0 == dS )
+		{
+			unR = static_cast<unsigned char>(255 * dL);
+			unG = static_cast<unsigned char>(255 * dL);
+			unB = static_cast<unsigned char>(255 * dL);
+		}
+		else
+		{
+			double dV2;
+			if ( dL < 0.5 ) dV2 = dL * ( 1.0 + dS );
+			else            dV2 = dL + dS - dS * dL;
+
+			double dV1 = 2.0 * dL - dV2;
+
+			unR	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH + c_d_1_3 ) );
+			unG	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH ) );
+			unB = static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH - c_d_1_3 ) );
+		} 
+	}
+	inline double Hue2RGB(double dV1, double dV2, double dH)
+	{
+		if ( dH < 0.0 ) dH += 1.0;
+		if ( dH > 1.0 ) dH -= 1.0;
+		if ( dH < c_d_1_6 ) return dV1 + ( dV2 - dV1 ) * 6.0 * dH;
+		if ( dH < 0.5     ) return dV2;
+		if ( dH < c_d_2_3 ) return dV1 + ( dV2 - dV1 ) * ( c_d_2_3 - dH ) * 6.0;
+		return dV1;
+	}
+	const double c_d_1_6 = 1.0 / 6.0;
+	const double c_d_1_3 = 1.0 / 3.0;
+	const double c_d_2_3 = 2.0 / 3.0;
+				
+	std::wstring WriteOOXAttribute( std::wstring sParam )
 	 {
-		 CString sResult;
+         std::wstring sResult;
          if ( m_eTheme == TC_NONE )
          {
              if ( L"" == sParam )
@@ -632,17 +641,12 @@ private:
          }
          else
          {
-             CString sTheme;
+             std::wstring sTheme;
              if ( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-				sResult += L"theme" + sParam + L"Color";
-				sResult += L"=\"" + sTheme +L"\"";
-				
-				sResult += L" theme" + sParam + L"Shade";
-				sResult.AppendFormat(L"=\"%d\"", m_byteShade);
-				
-				sResult += L" theme" + sParam + L"Tint"; 
-				sResult.AppendFormat(L"=\"%d\"", m_byteTint);   
+                sResult += L"theme"		+ sParam + L"Color=\""	+ sTheme + L"\"";
+                sResult += L" theme"	+ sParam + L"Shade=\""	+ std::to_wstring(m_byteShade) + L"\"";
+                sResult += L" theme"	+ sParam + L"Tint=\""	+ std::to_wstring(m_byteTint) + L"\"";
 			 }
          }
          return sResult;
@@ -715,7 +719,7 @@ public:
 			m_nBackColor	= oParPr.m_nBackColor;
 		}
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfShadingPar : public RtfShading
@@ -725,7 +729,7 @@ public:
 	{
 		return TYPE_RTF_PROPERTY_SHADING_PARAGRAPH;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 class RtfShadingChar : public RtfShading
 {
@@ -734,7 +738,7 @@ public:
 	{
 		return TYPE_RTF_PROPERTY_SHADING_CHAR;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingCell : public RtfShading
@@ -744,7 +748,7 @@ public:
 	{
 		return TYPE_RTF_PROPERTY_SHADING_CELL;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingRow : public RtfShading
@@ -754,7 +758,7 @@ public:
 	{
 		return TYPE_RTF_PROPERTY_SHADING_CELL;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingTableStyle : public RtfShading
@@ -764,7 +768,7 @@ public:
 	{
 		return TYPE_RTF_PROPERTY_SHADING_TABLESTYLE;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfBorder
@@ -857,10 +861,10 @@ public:
 			m_nColor	= oBorPr.m_nColor;
 		}
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
-	static bool GetStringRtfByType( _BorderType nValue, CString& sValue )
+    static bool GetStringRtfByType( _BorderType nValue, std::wstring& sValue )
 	{
 		sValue = L"\\brdrs";
 		//switch( nValue )
@@ -869,9 +873,9 @@ public:
 		////}
 		return false;
 	}
-	static CString GetStringOOXByType( _BorderType nValue, CString& sValue )
+    static std::wstring GetStringOOXByType( _BorderType nValue, std::wstring& sValue )
 	{
-		CString sResult;
+        std::wstring sResult;
 		sResult = L"single";
 		//switch( nValue )
 		//{
@@ -921,8 +925,8 @@ public:
 		DEFAULT_PROPERTY_DEF( m_eLeader,	tl_none );
 		DEFAULT_PROPERTY_DEF( m_eKind,		tk_tql );
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfTabs: public IRenderableProperty
@@ -951,25 +955,25 @@ public:
 	{
 		m_aTabs.clear();
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
-		for( int i = 0; i < (int)m_aTabs.size(); i++ )
+        std::wstring sResult;
+		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
 		{
 			sResult += m_aTabs[i].RenderToRtf( oRenderParameter );
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sTabs;		
-		for( int i = 0; i < (int)m_aTabs.size(); i++ )
+        std::wstring sTabs;
+		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
 		{
 			sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
 		}
 
-		CString sResult;
-		if ( !sTabs.IsEmpty() )
+        std::wstring sResult;
+        if ( !sTabs.empty() )
             sResult += L"<w:tabs>" + sTabs + L"</w:tabs>";
 
 		return sResult;
@@ -1183,8 +1187,8 @@ public:
 		m_poBorder.Merge( oCharPr.m_poBorder );
 		m_poShading.Merge( oCharPr.m_poShading );
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfListLevelProperty : IRenderableProperty
@@ -1196,8 +1200,8 @@ public:
 	int		m_nJustification;	//leveljcN \leveljcnN	0	Left justified 1	Center justified 2	Right justified
 	int		m_nFollow;			//levelfollowN
 	int		m_nStart;			//levelstartatN	N specifies the start-at value for the level.
-	CString m_sText;			//как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
-	CString m_sNumber;
+    std::wstring m_sText;			//как в rtf текст, но сдвинут от нуля на 1 // \'03\'00.\'01 -> ("%d%d%d",4,1,2)
+    std::wstring m_sNumber;
 	int		m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
 	int		m_nLegal;			//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
 	int		m_nPictureIndex;	//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
@@ -1216,12 +1220,12 @@ public:
 	bool IsValid()
 	{
 		//return -1 != m_nFollow && -1 != m_nStart && -1 != m_nNumberType && -1 != m_nJustification &&
-		//	false == m_sText.IsEmpty() && false == m_sNumber.IsEmpty();
-		return  PROP_DEF != m_nNumberType && false == m_sText.IsEmpty();
+        //	false == m_sText.empty() && false == m_sNumber.empty();
+        return  PROP_DEF != m_nNumberType && false == m_sText.empty();
 	}
-	CString GenerateListText()
+    std::wstring GenerateListText()
 	 {//заменяем на булеты
-		CString sResult;
+        std::wstring sResult;
 
         char cBullet[1];  cBullet[0] = (char)149;
 
@@ -1229,9 +1233,9 @@ public:
         std::wstring swBullet(sBullet.begin(), sBullet.end());
 
 		sResult += swBullet.c_str();
-		//CString sOOXNumber = GetLevelTextOOX();
-		//for( int i = 0; i < sOOXNumber.GetLength(); i++ )
-		//	if ( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )
+        //std::wstring sOOXNumber = GetLevelTextOOX();
+        //for (size_t i = 0; i < sOOXNumber.length(); i++ )
+        //	if ( sOOXNumber[i] == '%' && i != sOOXNumber.length() - 1 )
 		//	{
 		//		sResult += swBullet;
 		//		i++;
@@ -1260,13 +1264,13 @@ public:
 		m_oTabs.SetDefault();
 		m_oCharProp.SetDefault();
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
-	CString RenderToOOX2(RenderParameter oRenderParameter, int lvl = PROP_DEF);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX2(RenderParameter oRenderParameter, int lvl = PROP_DEF);
 
-	static CString GetFormat( int nNumFormat)
+    static std::wstring GetFormat( int nNumFormat)
 	{
-		CString sResult;
+        std::wstring sResult;
 		switch(nNumFormat)
 		{
 			case 0: sResult = L"decimal";			break;
@@ -1337,7 +1341,7 @@ public:
 		}
 		return sResult;
 	}
-	static int GetFormat( CString sFormat)
+    static int GetFormat( std::wstring sFormat)
 	{
 		if		( L"aiueo" == sFormat )							return 12;
 		else if ( L"aiueoFullWidth" == sFormat )				return 20;
@@ -1407,18 +1411,19 @@ public:
 		
 		return 0; //decimal
 	}
-	CString GetLevelTextOOX()
+    std::wstring GetLevelTextOOX()
 	{
-		CString sResult = m_sText;
-		if ( sResult.GetLength() > 0 )
+        std::wstring sResult = m_sText;
+        if ( sResult.length() > 0 )
 		{
-			int nLevelTextLength = sResult[0];
+			size_t nLevelTextLength = sResult[0];
 			nLevelTextLength--;
-			for( int i = m_sNumber.GetLength() - 1; i >= 0; i-- )
+           
+			for (int i = (int)m_sNumber.length() - 1; i >= 0; i-- )
 			{
 				int nReplaceNumber = m_sNumber[i];
 				nReplaceNumber--;
-				if ( nReplaceNumber >= 0 && nReplaceNumber < sResult.GetLength() )
+                if ( nReplaceNumber >= 0 && nReplaceNumber < (int)sResult.length() )
 				{
 					int nLevel = sResult[ nReplaceNumber ];
 
@@ -1427,41 +1432,44 @@ public:
 						nReplaceNumber++;
 						nLevel = sResult[ nReplaceNumber];
 					}
-					CString sExt;
-					sExt.AppendFormat( L"%%%d", nLevel );
-					sResult.Delete( nReplaceNumber );
-					sResult.Insert(nReplaceNumber, sExt);
-					nLevelTextLength += sExt.GetLength() - 1;
+                    std::wstring sExt = L"%" + std::to_wstring(nLevel);
+
+                    sResult.erase( nReplaceNumber, 1 );
+                    sResult.insert(sResult.begin() + nReplaceNumber, sExt.begin(), sExt.end());
+                    nLevelTextLength += sExt.length() - 1;
 				}
 			}
-			sResult = sResult.Right( sResult.GetLength() - 1 );
-			if ( nLevelTextLength < sResult.GetLength() )
-				sResult = sResult.Left( nLevelTextLength );
+            sResult = sResult.substr(1);
+            if ( nLevelTextLength < sResult.length() )
+                sResult = sResult.substr(0,  nLevelTextLength );
 
 		}
-		return Utils::PrepareToXML( sResult );
+        return XmlUtils::EncodeXmlString( sResult );
 	}
-	void SetLevelTextOOX(CString sText)
+    void SetLevelTextOOX(std::wstring sText)
 	{
 		m_sText		= L"";
 		m_sNumber	= L"";
 
 		 int nNumberIndex = 0; //индекс символа который отвечает за уровень символа
-		 for( int i = 0; i < sText.GetLength() ; i++ )
+         for (size_t i = 0; i < sText.length() ; i++ )
 		 {
-			 if ( sText[i] == '%' && i + 1 < sText.GetLength() && isdigit( sText[ i + 1 ] ))
+             if ( sText[i] == '%' && i + 1 < sText.length() && isdigit( sText[ i + 1 ] ))
 			 {
 				 int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
-				 m_sText.AppendChar( nLevel );
-				 m_sNumber.AppendChar( nNumberIndex + 2 );
+
+                 wchar_t ch1 = nLevel;
+                 m_sNumber += ch1;
+                 wchar_t ch2 = nNumberIndex + 2;
+                 m_sNumber += ch2;
 				 i++; //т.к. следующий симовл уже учли
 			 }
 			 else
-				 m_sText.AppendChar( sText[i] );
+                 m_sText += sText[i];
 			 nNumberIndex++;
 		 }
-		 CString sLength;sLength.AppendChar( nNumberIndex + 1 ); // 1 - учитывает то что мы сдвигаем на на единицу вниз при записи
-		 m_sText.Insert(0, sLength );
+         wchar_t ch = nNumberIndex + 1; // 1 - учитывает то что мы сдвигаем на на единицу вниз при записи
+         m_sText.insert(m_sText.begin() + 0, ch );
 	}
 };
 
@@ -1472,7 +1480,7 @@ public:
 	int		m_nTemplateId;		//listtemplateidN	Each list should have a unique template ID as well, which also should be randomly generated. The template ID –1 means the template ID is undefined. N is a long integer. 
 	int		m_nListSimple;		//listsimpleN	1 if the list has one level; 0 (default) if the list has nine levels.
 	int		m_bListHybrid;		//listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
-	CString m_sName;		//listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
+    std::wstring m_sName;		//listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
 
 	RtfListProperty()
 	{
@@ -1492,8 +1500,8 @@ public:
 	{
 		return (PROP_DEF != m_nID) ;		//&& (L"" != m_sName);
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfListOverrideProperty : IRenderableProperty
 {
@@ -1531,24 +1539,24 @@ public:
 		{
 			m_aOverrideLevels.clear();
 		}
-		CString RenderToRtf(RenderParameter oRenderParameter)
+        std::wstring RenderToRtf(RenderParameter oRenderParameter)
 		{
-			CString sResult;
+            std::wstring sResult;
 			int nOverrideCount = (int)m_aOverrideLevels.size();
-			for( int i = 0; i < nOverrideCount; i++ )
+			for (int i = 0; i < nOverrideCount; i++ )
 				if ( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
-					nOverrideCount--;
-			sResult.AppendFormat( L"\\listoverridecount%d", nOverrideCount );
-			for( int i = 0; i < nOverrideCount; i++ )
+                    nOverrideCount--;
+            sResult += L"\\listoverridecount" + std::to_wstring( nOverrideCount );
+			for (int i = 0; i < nOverrideCount; i++ )
 			{
 				if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
 				{
 					sResult += L"{\\lfolevel";
 					
 					if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
-						sResult.AppendFormat( L"\\listoverrideformat%d", m_aOverrideLevels[i].m_nLevelIndex );
+                        sResult += L"\\listoverrideformat" + std::to_wstring( m_aOverrideLevels[i].m_nLevelIndex );
 					if ( PROP_DEF != m_aOverrideLevels[i].m_nStart )
-						sResult.AppendFormat( L"\\listoverridestartat%d", m_aOverrideLevels[i].m_nStart );
+                        sResult += L"\\listoverridestartat" + std::to_wstring( m_aOverrideLevels[i].m_nStart );
 					
 					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
 					sResult += L"}";
@@ -1556,17 +1564,17 @@ public:
 			}
 			return sResult;
 		}
-		CString RenderToOOX(RenderParameter oRenderParameter)
+        std::wstring RenderToOOX(RenderParameter oRenderParameter)
 		{
-			CString sResult;
-			for( int i = 0; i < (int)m_aOverrideLevels.size(); i++ )
+            std::wstring sResult;
+			for (size_t i = 0; i < (int)m_aOverrideLevels.size(); i++ )
 			{
 				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
 				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
 				{
-					sResult.AppendFormat( L"<w:lvlOverride w:ilvl=\"%d\">", OverrideLevel.m_nLevelIndex );
+                    sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(OverrideLevel.m_nLevelIndex) + L"\">";
 					if ( PROP_DEF != OverrideLevel.m_nStart )
-						sResult.AppendFormat( L"<w:startOverride w:val=\"%d\"/>", OverrideLevel.m_nStart );
+                        sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
 					sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
 					sResult += L"</w:lvlOverride>";
 				}
@@ -1593,8 +1601,8 @@ public:
 		DEFAULT_PROPERTY( m_nIndex )
 		m_oOverrideLevels.SetDefault();
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 
@@ -1607,9 +1615,9 @@ public:
 	enum _StyleType { st_none, stParagraph, stCharacter, stSection, stTable, stNumbering} ;
 
 	_StyleType	m_eType;
-	CString		m_sName;
+    std::wstring		m_sName;
 	int			m_nID;
-	CString		m_sID;
+    std::wstring		m_sID;
 
 	int m_bAdditive;
 	int m_nBasedOn;
@@ -1700,29 +1708,30 @@ public:
 			m_bReply == oProperty.m_bReply && m_nSemiHidden == oProperty.m_nSemiHidden && m_bQFormat == oProperty.m_bQFormat && 
 			m_nPriority == oProperty.m_nPriority && m_bUnhiddenWhenUse == oProperty.m_bUnhiddenWhenUse;
 	}
-	CString RenderToRtfBegin( RenderParameter oRenderParameter )
+    std::wstring RenderToRtfBegin( RenderParameter oRenderParameter )
 	{
 		if ( false == IsValid() )
 			return L"";
 
-		CString sResult;
+        std::wstring sResult;
 		switch( m_eType )
 		{
-			case stParagraph :	sResult.AppendFormat(L"{\\s%d", m_nID);break;
-			case stCharacter :	sResult.AppendFormat(L"{\\*\\cs%d", m_nID);break;
-			case stSection :	sResult.AppendFormat(L"{\\*\\ds%d", m_nID);break;
-			case stTable :		sResult.AppendFormat(L"{\\*\\ts%d\\tsrowd", m_nID);break;
-		}
+            case stParagraph :	sResult += L"{\\s"      + std::to_wstring( m_nID);                  break;
+            case stCharacter :	sResult += L"{\\*\\cs"  + std::to_wstring( m_nID);                  break;
+            case stSection :	sResult += L"{\\*\\ds"  + std::to_wstring( m_nID);                  break;
+            case stTable :		sResult += L"{\\*\\ts"  + std::to_wstring( m_nID) + L"\\tsrowd";    break;
+            default: break;
+        }
 		return sResult;
 	}
-	CString RenderToRtfEnd( RenderParameter oRenderParameter );
-	CString RenderToOOXBegin(RenderParameter oRenderParameter);
-	CString RenderToOOXEnd(RenderParameter oRenderParameter);
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtfEnd( RenderParameter oRenderParameter );
+    std::wstring RenderToOOXBegin(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXEnd(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
 		return L"";
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return L"";
 	}
@@ -1999,8 +2008,8 @@ public:
 		MERGE_PROPERTY( m_nRowBandSize, oTablePr )
 		MERGE_PROPERTY( m_nColBandSize, oTablePr )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfFrame : public IRenderableProperty
@@ -2111,8 +2120,8 @@ public:
 		MERGE_PROPERTY		( m_nVerSpace, oFramePr )
 		MERGE_PROPERTY		( m_nAllSpace, oFramePr )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
 	void ApplyParagraphProp( RtfTableProperty& oProp )
 	{
@@ -2122,14 +2131,16 @@ public:
 		{
 			case RtfTableProperty::hr_phmrg: m_eHRef = hr_phmrg;break;
 			case RtfTableProperty::hr_phpg: m_eHRef = hr_phpg;break;
-			case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
-		}
+            case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
+            default: break;
+        }
 		switch ( oProp.m_eVRef )
 		{
 			case RtfTableProperty::vr_pvmrg: m_eVRef = vr_pvmrg;break;
 			case RtfTableProperty::vr_pvpg: m_eVRef = vr_pvpg;break;
 			case RtfTableProperty::vr_pvpara: m_eVRef = vr_pvpara;break;
-		}
+            default: break;
+        }
 		switch ( oProp.m_eHPos )
 		{
 			case RtfTableProperty::hp_posxc: m_eHPos = hp_posxc;break;
@@ -2137,7 +2148,8 @@ public:
 			case RtfTableProperty::hp_posxo: m_eHPos = hp_posxo;break;
 			case RtfTableProperty::hp_posxl: m_eHPos = hp_posxl;break;
 			case RtfTableProperty::hp_posxr: m_eHPos = hp_posxr;break;
-		}
+            default: break;
+        }
 		switch ( oProp.m_eVPos )
 		{
 			case RtfTableProperty::vp_posyc: m_eVPos = vp_posyc;break;
@@ -2145,7 +2157,8 @@ public:
 			case RtfTableProperty::vp_posyout: m_eVPos = vp_posyout;break;
 			case RtfTableProperty::vp_posyt: m_eVPos = vp_posyt;break;
 			case RtfTableProperty::vp_posyb: m_eVPos = vp_posyb;break;
-		}
+            default: break;
+        }
 	}
 };
 
@@ -2373,16 +2386,16 @@ public:
 		MERGE_PROPERTY( m_bStyleSWCell, oCellPr )
 		MERGE_PROPERTY( m_bStyleSECell, oCellPr )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
-	bool GetAlignFromStringRtf(  CString & oAlign, CellAlign& oOutput )
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+    bool GetAlignFromStringRtf(  std::wstring & oAlign, CellAlign& oOutput )
 	{
 		if ( L"clvertalt" == oAlign ) { oOutput = ca_Top; return true;}
 		else if ( L"clvertalc" == oAlign ){ oOutput = ca_Center; return true;}
 		else if ( L"clvertalb" == oAlign ){ oOutput = ca_Bottom; return true;}
 		return false;
 	}
-	bool GetAlignFromStringOOX(  CString & oAlign, CellAlign& oOutput )
+    bool GetAlignFromStringOOX(  std::wstring & oAlign, CellAlign& oOutput )
 	{
 		if ( L"top" == oAlign ) { oOutput = ca_Top; return true;}
 		else if ( L"center" == oAlign ){ oOutput = ca_Center; return true;}
@@ -2536,8 +2549,8 @@ public:
 		MERGE_PROPERTY( m_nTrDate,				oRowPr )
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -2829,8 +2842,8 @@ public:
 
 		//m_oCharProperty.Merge( oParPr.m_oCharProperty );
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 //class RtfParagraphPropertyWithTable: public RtfParagraphProperty
 //{
@@ -2854,9 +2867,9 @@ public:
 //			RtfParagraphProperty::SetDefault();
 //			m_oRowProperty.SetDefault();
 //		}
-//public: CString RenderToRtf(RenderParameter oRenderParameter)
+//public: std::wstring RenderToRtf(RenderParameter oRenderParameter)
 //		{
-//			CString sResult;
+//			std::wstring sResult;
 //			sResult += m_oRowProperty.RenderToRtf(  oRenderParameter  );
 //			sResult += L" {" + RtfParagraphProperty::RenderToRtf(  oRenderParameter  ) + L" }";
 //			return sResult;
@@ -2896,23 +2909,23 @@ public:
 		DEFAULT_PROPERTY( m_nMin )
 		DEFAULT_PROPERTY( m_nSecond )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfInformation: public IRenderableProperty
 {
 public:
-	CString m_sTitle;
-	CString m_sSubject;
-	CString m_sAuthor;
-	CString m_sManager;
-	CString m_sCompany;
-	CString m_sOperator;
-	CString m_sCategory;
-	CString m_sKeywords;
-	CString m_sComment;
-	CString m_sDocCom;
-	CString m_sLinkBase;
+    std::wstring m_sTitle;
+    std::wstring m_sSubject;
+    std::wstring m_sAuthor;
+    std::wstring m_sManager;
+    std::wstring m_sCompany;
+    std::wstring m_sOperator;
+    std::wstring m_sCategory;
+    std::wstring m_sKeywords;
+    std::wstring m_sComment;
+    std::wstring m_sDocCom;
+    std::wstring m_sLinkBase;
 	RtfTime m_oCreateTime;
 	RtfTime m_oRevTime;
 	RtfTime m_oPrintTime;
@@ -2971,8 +2984,8 @@ public:
 		DEFAULT_PROPERTY( m_nNumberOfCharactersWithoutSpace )
 		DEFAULT_PROPERTY( m_nInternalId )
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfCharStyle: public RtfStyle
@@ -2990,8 +3003,8 @@ public:
 		return TYPE_RTF_PROPERTY_STYLE_CHAR;
 	}
 	void Merge( RtfStylePtr oStyle );
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class RtfParagraphStyle: public RtfCharStyle
 {
@@ -3009,8 +3022,8 @@ public:
 	}
 	void Merge( RtfStylePtr oStyle );
 	
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 //---------------------------------------------------------------------------------------
 class RtfTableStyle;
@@ -3063,8 +3076,8 @@ public:
 	}
 	void Merge( RtfStylePtr oStyle );
 	
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 

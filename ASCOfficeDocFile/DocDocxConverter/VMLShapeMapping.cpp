@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,21 +69,21 @@ namespace DocFileFormat
 		m_pCaller			=	pCaller;
 		m_pBlipStore		=	NULL;
 
-		m_ctx				=	pConv;
+		m_context			=	pConv;
 		m_pict				=	pPicture;
 		m_nImageId			=	0;
 
-		m_imagedata			=	XMLTools::XMLElement<wchar_t>(_T("v:imagedata"));
-		m_fill				=	XMLTools::XMLElement<wchar_t>(_T("v:fill"));
-		m_stroke			=	XMLTools::XMLElement<wchar_t>(_T("v:stroke"));
-		m_shadow			=	XMLTools::XMLElement<wchar_t>(_T("v:shadow"));
-		m_3dstyle			=	XMLTools::XMLElement<wchar_t>(_T("o:extrusion"));
-		m_textpath			=	XMLTools::XMLElement<wchar_t>(_T("v:textpath"));
+        m_imagedata			=	XMLTools::XMLElement(L"v:imagedata");
+        m_fill				=	XMLTools::XMLElement(L"v:fill");
+        m_stroke			=	XMLTools::XMLElement(L"v:stroke");
+        m_shadow			=	XMLTools::XMLElement(L"v:shadow");
+        m_3dstyle			=	XMLTools::XMLElement(L"o:extrusion");
+        m_textpath			=	XMLTools::XMLElement(L"v:textpath");
 
 		Record* recBs		=	NULL;
-		if ((m_ctx) && (m_ctx->_doc))
+		if ((m_context) && (m_context->_doc))
 		{
-			OfficeArtContent* officeArt = m_ctx->_doc->GetOfficeArt();
+			OfficeArtContent* officeArt = m_context->_doc->GetOfficeArt();
 			if (officeArt)
 			{
 				const DrawingGroup* group = officeArt->GetDrawingGroup();
@@ -146,11 +146,13 @@ namespace DocFileFormat
 			std::list<OptionEntry> options	=	groupShape->ExtractOptions();
 			ChildAnchor* anchor				=	groupShape->FirstChildWithType<ChildAnchor>();
 
-			m_pXmlWriter->WriteNodeBegin( _T( "v:group" ), TRUE );
-			m_pXmlWriter->WriteAttribute( _T( "id" ), GetShapeID(shape).c_str());
-			m_pXmlWriter->WriteAttribute( _T( "style" ), FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "coordorigin" ), ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + _T( "," ) + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)).c_str() );
-			m_pXmlWriter->WriteAttribute( _T( "coordsize" ), ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + _T( "," ) + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)).c_str() );
+			m_shapeId = GetShapeID(shape);
+
+			m_pXmlWriter->WriteNodeBegin( L"v:group", true );
+			m_pXmlWriter->WriteAttribute( L"id", m_shapeId);
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(shape, anchor, options, container->Index)));
+			m_pXmlWriter->WriteAttribute( L"coordorigin", ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + L"," + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)));
+			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + L"," + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)));
 
 			// Write wrap coords			
 			std::list<OptionEntry>::const_iterator end = options.end();
@@ -162,13 +164,13 @@ namespace DocFileFormat
 					{
 						std::wstring wrapCoords	= getWrapCoords(*iter);
 						if (wrapCoords.length())
-							m_pXmlWriter->WriteAttribute(_T( "wrapcoords" ), wrapCoords.c_str());
+							m_pXmlWriter->WriteAttribute(L"wrapcoords", wrapCoords);
 					}
 					break;
 				}
 			}
 
-			m_pXmlWriter->WriteNodeEnd(_T( "" ), TRUE, FALSE);
+			m_pXmlWriter->WriteNodeEnd(L"", true, false);
 
 			// Convert the shapes/groups in the group
 			
@@ -182,7 +184,7 @@ namespace DocFileFormat
 						ShapeContainer* pChildShape	= static_cast<ShapeContainer*>(container->Children[i]);
 						if (pChildShape)
 						{
-							VMLShapeMapping vmlShapeMapping(m_ctx, m_pXmlWriter, m_pSpa, NULL,  m_pCaller);
+							VMLShapeMapping vmlShapeMapping(m_context, m_pXmlWriter, m_pSpa, NULL,  m_pCaller);
 							pChildShape->Convert(&vmlShapeMapping);
 						}
 					}
@@ -200,820 +202,853 @@ namespace DocFileFormat
 			if (m_pSpa)
 			{
 				std::wstring wrap = getWrapType(m_pSpa);
-				if (wrap != _T( "through" ))
+				if (wrap != L"through")
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
-					m_pXmlWriter->WriteNodeEnd	( _T( "w10:wrap" ), TRUE );
+					m_pXmlWriter->WriteNodeBegin( L"w10:wrap",	true );
+					m_pXmlWriter->WriteAttribute( L"type",		wrap);
+					m_pXmlWriter->WriteNodeEnd	( L"w10:wrap",	true );
 				}
 			}
 
-			m_pXmlWriter->WriteNodeEnd( _T( "v:group" ) );
+			m_pXmlWriter->WriteNodeEnd( L"v:group" );
 		}
 	}
 
 	/// Converts a single shape
 	void VMLShapeMapping::WriteShape(const ShapeContainer* pContainer)
 	{
-		if ((NULL != pContainer) && (!pContainer->Children.empty()))
+		if ((NULL == pContainer) || (pContainer->Children.empty())) return;
+
+		Shape* pShape =	static_cast<Shape*>(pContainer->Children[0]);
+		if (!pShape) return;
+		
+		int				indexOLE = -1;
+		bool			freeform =	true;
+		std::wstring	sShapeId;
+
+		std::list<OptionEntry> options	=	pContainer->ExtractOptions();
+		ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
+		ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
+
+		WriteBeginShapeNode (pShape);
+
+		m_shapeId = GetShapeID(pShape);
+
+		count_vml_objects++;
+
+		if (m_shapeId.empty())
+			m_shapeId =	std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		
+		m_pXmlWriter->WriteAttribute ( L"id", m_shapeId );
+
+		if ( !pShape->fBackground )
 		{
-			Shape* pShape						=	static_cast<Shape*>(pContainer->Children[0]);
-			if (pShape)
+			if (pShape->GetShapeType())
 			{
-				bool freeform					=	true;
+				freeform =	false;
+				m_pXmlWriter->WriteAttribute( L"type", (std::wstring(L"#") + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())));
 
-				std::list<OptionEntry> options	=	pContainer->ExtractOptions();
-				ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
-				ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
+			m_pXmlWriter->WriteAttribute( L"style", FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)));
+			}
 
-				WriteBeginShapeNode (pShape);
+			if (pShape->is<LineType>())
+			{
+				//append "from" and  "to" attributes
+				m_pXmlWriter->WriteAttribute(L"from", GetLineFrom(pAnchor));
+				m_pXmlWriter->WriteAttribute(L"to",	GetLineTo(pAnchor));
+			}
 
-				m_pXmlWriter->WriteAttribute ( _T( "id"), GetShapeID(pShape).c_str());
+			if (m_isBullete)
+			{
+				 m_pXmlWriter->WriteAttribute(L"o:bullet", L"t");
+			}
+		}
 
-				if (pShape->GetShapeType())
+		EmuValue ShadowOffsetX;
+		EmuValue ShadowOffsetY;
+		EmuValue SecondShadowOffsetX;
+		EmuValue SecondShadowOffsetY;
+		EmuValue ViewPointX;
+		EmuValue ViewPointY;
+		EmuValue ViewPointZ;
+
+		double viewPointOriginX	=	0;
+		double viewPointOriginY	=	0;
+		double ShadowOriginX	=	0;
+		double ShadowOriginY	=	0;
+		unsigned int xCoord		=	0;
+		unsigned int yCoord		=	0;
+		bool stroked			=	true;
+		bool filled				=	true;
+		bool hasTextbox			=	false;
+		bool layoutInCell		=	true; //anmeldebogenfos.doc
+		
+		int ndxTextLeft			=	-1;
+		int ndyTextTop			=	-1;
+		int ndxTextRight		=	-1;
+		int ndyTextBottom		=	-1;
+
+		bool bHavePath			=	false;
+		int	nAdjValues			=	0;
+		int	nLTxID				=	-1;
+
+		std::wstring					sTextboxStyle;
+		
+		std::wstring					adjValues[8];
+		ShadowStyleBooleanProperties	shadowBoolean(0);
+		std::vector<std::wstring>		arrInscribe;
+
+		std::list<OptionEntry>::const_iterator end = options.end();
+		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
+		{
+			switch (iter->pid)
+			{
+	//BOOLEANS
+			case geometryBooleans:
 				{
-					freeform =	false;
-					m_pXmlWriter->WriteAttribute( _T("type"), (std::wstring(_T("#")) + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())).c_str());
-				}
-
-				m_pXmlWriter->WriteAttribute( _T("style"), FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)).c_str());
-
-				if (pShape->is<LineType>())
-				{
-					//append "from" and  "to" attributes
-					m_pXmlWriter->WriteAttribute(_T("from"), GetLineFrom(pAnchor).c_str());
-					m_pXmlWriter->WriteAttribute(_T("to"),	GetLineTo(pAnchor).c_str());
-				}
-
-				if (m_isBullete)
-				{
-                     m_pXmlWriter->WriteAttribute(_T("o:bullet"), _T("t"));
-				}
-
-				
-				EmuValue ShadowOffsetX;
-				EmuValue ShadowOffsetY;
-				EmuValue SecondShadowOffsetX;
-				EmuValue SecondShadowOffsetY;
-				EmuValue ViewPointX;
-				EmuValue ViewPointY;
-				EmuValue ViewPointZ;
-
-				double viewPointOriginX	=	0;
-				double viewPointOriginY	=	0;
-				double ShadowOriginX	=	0;
-				double ShadowOriginY	=	0;
-				unsigned int xCoord		=	0;
-				unsigned int yCoord		=	0;
-				bool stroked			=	true;
-				bool filled				=	true;
-				bool hasTextbox			=	false;
-				bool layoutInCell		=	true; //anmeldebogenfos.doc
-				
-				int ndxTextLeft			=	-1;
-				int ndyTextTop			=	-1;
-				int ndxTextRight		=	-1;
-				int ndyTextBottom		=	-1;
-
-				bool bHavePath			=	false;
-				int	nAdjValues			=	0;
-				int	nLTxID				=	-1;
-
-				std::wstring sTextboxStyle;
-				
-				std::wstring					adjValues[8];
-				ShadowStyleBooleanProperties	shadowBoolean(0);
-				std::vector<std::wstring>		arrInscribe;
-
-				std::list<OptionEntry>::const_iterator end = options.end();
-				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
-				{
-					switch (iter->pid)
+					GeometryBooleanProperties booleans(iter->op);
+					if (booleans.fUsefLineOK && !booleans.fLineOK)
 					{
-			//BOOLEANS
-					case geometryBooleans:
-						{
-							GeometryBooleanProperties booleans(iter->op);
-							if (booleans.fUsefLineOK && !booleans.fLineOK)
-							{
-								stroked	=	false;
-							}
+						stroked	=	false;
+					}
 
-							if (booleans.fUsefFillOK && !booleans.fFillOK)
-							{
-								filled	=	false;
-							}
-						}
-						break;
-					case fillStyleBooleanProperties:
-						{
-							FillStyleBooleanProperties booleans(iter->op);
-							if (booleans.fUsefFilled && !booleans.fFilled)
-							{
-								filled = false;
-							}
-						}break;
-					case lineStyleBooleans:
-						{
-							LineStyleBooleanProperties booleans(iter->op);
-							if (booleans.fUsefLine && !booleans.fLine)
-							{
-								stroked = false;
-							}
-						}
-						break;
-
-					case protectionBooleans:
-						{
-							ProtectionBooleanProperties booleans(iter->op);
-						}
-						break;
-
-					case diagramBooleans:
-						{
-							DiagramBooleanProperties booleans(iter->op);
-						}
-						break;
-
-					case groupShapeBooleans:
-						{
-							GroupShapeBooleanProperties booleans(iter->op);
-							if (booleans.fUsefLayoutInCell)
-							{
-								layoutInCell = booleans.fLayoutInCell;
-							}
-						}
-						break;
-
-						// GEOMETRY
-
-					case adjustValue:
-						{
-							adjValues[0]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,1);
-						}
-						break;
-
-					case adjust2Value:
-						{
-							adjValues[1]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,2);
-						}
-						break;
-
-					case adjust3Value:
-						{
-							adjValues[2]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,3);
-						}break;
-					case adjust4Value:
-						{
-							adjValues[3]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,4);
-						}break;
-					case adjust5Value:
-						{
-							adjValues[4]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,5);
-						}break;
-					case adjust6Value:
-						{
-							adjValues[5]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,6);
-						}break;
-					case adjust7Value:
-						{
-							adjValues[6]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,7);
-						}break;
-					case adjust8Value:
-						{
-							adjValues[7]	=	FormatUtils::IntToWideString( (int)iter->op );
-                            nAdjValues		=	(std::max)(nAdjValues,8);
-						}break;
-					case pWrapPolygonVertices:
-						{
-							std::wstring wrapCoords = getWrapCoords(*iter);
-
-							if (!wrapCoords.empty())
-							{
-								m_pXmlWriter->WriteAttribute( _T( "wrapcoords" ), wrapCoords.c_str() );
-							}
-						}break;
-					case geoRight:
-						{
-							xCoord = iter->op;
-						}break;
-					case geoBottom:
-						{
-							yCoord = iter->op;
-						}break;
-					case pGuides:
-						{
-						}break;
-					case pInscribe:
-						{
-							arrInscribe = GetTextRectangles(*iter);
-						}break;
-		// OUTLINE
-					case lineColor:
-						{
-							RGBColor lineColor((int)iter->op, RedFirst);
-							m_pXmlWriter->WriteAttribute( _T("strokecolor"), (std::wstring(_T("#")) + lineColor.SixDigitHexCode).c_str());
-						}break;
-					case lineWidth:
-						{
-							if (iter->op > 0)
-							{
-								EmuValue eLineWidth ((int)iter->op );
-								m_pXmlWriter->WriteAttribute(_T("strokeweight"), FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + _T("pt"));
-							}
-						}break;
-					case lineDashing:
-						{
-							appendValueAttribute(&m_stroke, _T( "dashstyle" ), FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ).c_str() );
-						}break;
-					case lineStyle:
-						{
-							appendValueAttribute(&m_stroke, _T( "linestyle" ), getLineStyle( iter->op ).c_str());
-						}break;
-					case lineEndArrowhead:
-						{
-							appendValueAttribute(&m_stroke, _T( "endarrow" ), getArrowStyle( iter->op ).c_str());
-						}break;
-					case lineEndArrowLength:
-						{
-							appendValueAttribute(&m_stroke, _T( "endarrowlength" ), getArrowLength( iter->op ).c_str());
-						}break;
-					case lineEndArrowWidth:
-						{
-							appendValueAttribute(&m_stroke, _T( "endarrowwidth" ), getArrowWidth( iter->op ).c_str());
-						}break;
-					case lineStartArrowhead:
-						{
-							appendValueAttribute(&m_stroke, _T( "startarrow" ), getArrowStyle( iter->op ).c_str());
-						}break;
-					case lineStartArrowLength:
-						{
-							appendValueAttribute(&m_stroke, _T( "startarrowlength" ), getArrowLength( iter->op ).c_str());
-						}break;
-					case lineStartArrowWidth:
-						{
-							appendValueAttribute(&m_stroke, _T( "startarrowwidth" ), getArrowWidth( iter->op ).c_str());
-						}break;
-		// FILL
-					case fillColor:
-						{
-							RGBColor fillColor((int)iter->op, RedFirst);
-							m_pXmlWriter->WriteAttribute(_T( "fillcolor" ), ( std::wstring( _T( "#" ) ) + fillColor.SixDigitHexCode ).c_str());
-						}break;
-					case fillBackColor:
-						{
-							RGBColor fillBackColor( (int)iter->op, RedFirst );
-							appendValueAttribute(&m_fill, _T( "color2" ), ( std::wstring( _T( "#" ) ) + fillBackColor.SixDigitHexCode ).c_str());
-						}break;
-					case fillAngle:
-						{
-							FixedPointNumber fllAngl( iter->op );
-							appendValueAttribute(&m_fill, _T( "angle" ), FormatUtils::DoubleToWideString( fllAngl.ToAngle() ).c_str());
-						}break;
-					case fillShadeType:
-						{
-							appendValueAttribute(&m_fill, _T( "method" ), getFillMethod( iter->op ).c_str());
-						}break;
-					case fillShadeColors:
-						{
-							appendValueAttribute(&m_fill, _T( "colors" ), getFillColorString( iter->opComplex, iter->op ).c_str());
-						}break;
-					case fillFocus:
-						{
-							appendValueAttribute(&m_fill, _T( "focus" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "%" ) ).c_str());
-						}break;
-					case fillType:
-						{
-							appendValueAttribute(&m_fill, _T( "type" ), getFillType( iter->op ).c_str());
-						}break;
-					case fillBlip:
-						{
-							BlipStoreEntry* pFillBlip = NULL;
-
-							if ((m_pict != NULL ) && (m_pict->blipStoreEntry != NULL ))
-							{
-								// Word Art Texture
-								//fillBlip = this->_pict->BlipStoreEntry;
-							}
-							else if ( (m_pBlipStore != NULL) && ( (iter->op - 1) < m_pBlipStore->Children.size() ) )
-							{
-								pFillBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[iter->op - 1]);
-							}
-
-							if ( (pFillBlip != NULL) && copyPicture(pFillBlip) )
-							{
-								appendValueAttribute(&m_fill, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
-								appendValueAttribute(&m_imagedata, _T( "o:title" ), _T( "" ));
-							}
-						}break;
-					case fillOpacity:
-						{
-							appendValueAttribute(&m_fill, _T( "opacity" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "f" ) ).c_str());
-						}
-						break;
-					case fillBackOpacity:
-						{
-							appendValueAttribute(&m_fill, _T("opacity2"), (FormatUtils::IntToWideString(iter->op) + _T("f")).c_str());
-						}break;
-		// SHADOW
-					case shadowType:
-						{
-							appendValueAttribute(&m_shadow, _T("type"), getShadowType(iter->op).c_str());
-						}break;
-
-					case shadowColor:
-						{
-							RGBColor shadowColor((int)iter->op, RedFirst);
-							appendValueAttribute(&m_shadow, _T( "color" ), ( std::wstring( _T( "#" ) ) + shadowColor.SixDigitHexCode ).c_str());
-						}break;
-					case shadowOffsetX:
-						{
-							ShadowOffsetX = EmuValue( (int)iter->op );
-						}break;
-					case shadowSecondOffsetX:
-						{
-							SecondShadowOffsetX = EmuValue( (int)iter->op );
-						}break;
-					case shadowOffsetY:
-						{
-							ShadowOffsetY = EmuValue( (int)iter->op );
-						}break;
-					case shadowSecondOffsetY:
-						{
-							SecondShadowOffsetY = EmuValue( (int)iter->op );
-						}break;
-					case shadowOriginX:
-						{
-							ShadowOriginX = ( iter->op / pow( (double)2, (double)16 ) );
-						}break;
-					case shadowOriginY:
-						{
-							ShadowOriginY = (iter->op / pow( (double)2, (double)16));
-						}break;
-					case shadowOpacity:
-						{
-							double shadowOpa = (iter->op / pow( (double)2, (double)16));
-
-							appendValueAttribute(&m_shadow, _T( "opacity" ), FormatUtils::DoubleToFormattedWideString( shadowOpa, _T( "%.2f" ) ).c_str());
-						}break;
-					case shadowStyleBooleanProperties:
-						{
-							shadowBoolean	=	ShadowStyleBooleanProperties(iter->op);
-						}break;
-		// PICTURE
-					case Pib:
-						{
-							int index = (int)( iter->op - 1 );
-
-							if ((m_pBlipStore != NULL) && (index < (int)m_pBlipStore->Children.size()))
-							{
-								BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
-								if (copyPicture(oBlip))
-								{
-									appendValueAttribute(&m_imagedata, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
-								}
-							}
-						}break;
-					case pibName:
-						{
-							std::wstring name;
-							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
-							appendValueAttribute(&m_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str());
-						}break;
-		// 3D STYLE
-					case f3D:
-					case threeDStyleBooleanProperties:
-					case threeDObjectBooleanProperties:
-						break;
-
-					case c3DExtrudeBackward:
-						{
-							EmuValue backwardValue( (int)iter->op );
-							std::wstring depth = FormatUtils::DoubleToWideString( backwardValue.ToPoints() ) + L"pt";
-							appendValueAttribute(&m_3dstyle, _T( "backdepth" ), depth.c_str());
-						}break; 
-					case c3DAmbientIntensity:
-						{
-							std::wstring intens = FormatUtils::IntToWideString((int)iter->op) + L"f";
-							appendValueAttribute(&m_3dstyle, _T( "brightness" ), intens.c_str());
-						}break; 
-					case c3DSpecularAmt:
-						{
-							std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
-							appendValueAttribute(&m_3dstyle, _T( "specularity" ), amt.c_str());
-						}break; 
-					case c3DDiffuseAmt:
-						{
-							std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
-							appendValueAttribute(&m_3dstyle, _T( "diffusity" ), amt.c_str());
-						}break; 
-					case c3DKeyIntensity:
-						{
-							std::wstring amt = FormatUtils::IntToWideString((int)iter->op);
-							appendValueAttribute(&m_3dstyle, _T( "lightlevel" ), amt.c_str());
-						}break; 	
-					case c3DExtrusionColor:
-						{
-							std::wstring color = FormatUtils::IntToFormattedWideString(iter->op, L"#%06x");
-							appendValueAttribute(&m_3dstyle, _T( "color" ), color.c_str());
-						}break;
-					case c3DSkewAngle:
-						{
-							FixedPointNumber skewAngle( iter->op );
-							appendValueAttribute(&m_3dstyle, _T( "skewangle" ), FormatUtils::DoubleToWideString( skewAngle.ToAngle() ).c_str());
-						}break;
-					case c3DXViewpoint:
-						{
-							ViewPointX = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}break;
-					case c3DYViewpoint:
-						{
-							ViewPointY = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}break;
-					case c3DZViewpoint:
-						{
-							ViewPointZ = EmuValue( FixedPointNumber( iter->op ).Integral );
-						}break;
-					case c3DOriginX:
-						{
-							FixedPointNumber dOriginX( iter->op );
-							viewPointOriginX = ( dOriginX.Integral / 65536.0 );
-						}break;
-					case c3DOriginY:
-						{
-							FixedPointNumber dOriginY( iter->op );
-							viewPointOriginY = (dOriginY.Integral / 65536.0 );
-						}break;
-		// TEXTBOX
-					case lTxid:
-						{
-							hasTextbox	=	true;
-							nLTxID		=	(((iter->op) >> 16) & 0xFFFF);
-						}break;
-					case dxTextLeft:	{ndxTextLeft	= (int)iter->op;break;}
-					case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
-					case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
-					case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
-					case txflTextFlow:
-						{
-							switch(iter->op)
-							{
-							case 0:
-							case 4://обычный 							
-								break;
-							case 1:
-							case 5://верт (склони голову направо)						
-								appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-								break;
-							case 2://верт (склони голову налево)	
-								appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
-								appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
-								break;
-							}
-						}break;	
-	// Word Art
-					case gtextUNICODE:
-						{
-							std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
-
-							text = FormatUtils::XmlEncode(text);
-
-							if (0 <= text.find(_T("\n")))
-							{
-								m_textpath.AppendText(text.c_str());
-							}
-							text = ReplaceString(text, _T("\n")	, _T("&#xA;"));						
-							appendValueAttribute(&m_textpath, L"string", text.c_str());
-						}break;
-					case gtextFont:
-						{
-							std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
-							int i = font.size();
-							while (i > 0)
-							{
-								if (font[i-1] != 0) break;
-								i--;
-							}
-							if (i < font.size()) font.erase(font.begin() + i, font.end());
-
-							font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
-							appendStyleProperty(&m_textPathStyle, L"font-family", font);
-						}break;
-					case gtextSize:
-						{
-							std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
-							appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
-						}break;
-					case gtextSpacing:
-						{
-							std::wstring spacing = FormatUtils::IntToWideString(iter->op);
-							appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
-						}break;
-					case geometryTextBooleanProperties:
-						{
-							GeometryTextBooleanProperties props(iter->op);
-							if (props.fUsegtextFBestFit && props.gtextFBestFit)
-							{
-								appendValueAttribute(&m_textpath, L"fitshape", _T("t"));
-							}
-							if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
-							{
-								appendValueAttribute(&m_textpath, L"trim", _T("t"));
-							}
-							if (props.fUsegtextFVertical && props.gtextFVertical)
-							{
-								appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
-								//_twistDimension = true;
-							}
-							if (props.fUsegtextFKern && props.gtextFKern)
-							{
-								appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
-							}
-							if (props.fUsegtextFItalic && props.gtextFItalic)
-							{
-								appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
-							}
-							if (props.fUsegtextFBold && props.gtextFBold)
-							{
-								appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
-							}
-						}break;
-		  // PATH
-						case shapePath :
-						{
-							bHavePath			=	true;
-
-							std::wstring path	=	ParsePath(options);
-
-							if (false == path.empty())
-								m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
-						}break;
-						default:
-						{
-							int val = iter->op;
-						}break;
+					if (booleans.fUsefFillOK && !booleans.fFillOK)
+					{
+						filled	=	false;
 					}
 				}
-
-				if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
+				break;
+			case fillStyleBooleanProperties:
 				{
+					FillStyleBooleanProperties booleans(iter->op);
+					if (booleans.fUsefFilled && !booleans.fFilled)
+					{
+						filled = false;
+					}
+				}break;
+			case lineStyleBooleans:
+				{
+					LineStyleBooleanProperties booleans(iter->op);
+					if (booleans.fUsefLine && !booleans.fLine)
+					{
+						stroked = false;
+					}
+				}
+				break;
+
+			case protectionBooleans:
+				{
+					ProtectionBooleanProperties booleans(iter->op);
+				}
+				break;
+
+			case diagramBooleans:
+				{
+					DiagramBooleanProperties booleans(iter->op);
+				}
+				break;
+
+			case groupShapeBooleans:
+				{
+					GroupShapeBooleanProperties booleans(iter->op);
+					if (booleans.fUsefLayoutInCell)
+					{
+						layoutInCell = booleans.fLayoutInCell;
+					}
+				}
+				break;
+
+				// GEOMETRY
+
+			case adjustValue:
+				{
+					adjValues[0]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,1);
+				}
+				break;
+
+			case adjust2Value:
+				{
+					adjValues[1]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,2);
+				}
+				break;
+
+			case adjust3Value:
+				{
+					adjValues[2]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,3);
+				}break;
+			case adjust4Value:
+				{
+					adjValues[3]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,4);
+				}break;
+			case adjust5Value:
+				{
+					adjValues[4]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,5);
+				}break;
+			case adjust6Value:
+				{
+					adjValues[5]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,6);
+				}break;
+			case adjust7Value:
+				{
+					adjValues[6]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,7);
+				}break;
+			case adjust8Value:
+				{
+					adjValues[7]	=	FormatUtils::IntToWideString( (int)iter->op );
+                    nAdjValues		=	(std::max)(nAdjValues,8);
+				}break;
+			case pWrapPolygonVertices:
+				{
+					std::wstring wrapCoords = getWrapCoords(*iter);
+
+					if (!wrapCoords.empty())
+					{
+						m_pXmlWriter->WriteAttribute( L"wrapcoords", wrapCoords);
+					}
+				}break;
+			case geoRight:
+				{
+					xCoord = iter->op;
+				}break;
+			case geoBottom:
+				{
+					yCoord = iter->op;
+				}break;
+			case pGuides:
+				{
+				}break;
+			case pInscribe:
+				{
+					arrInscribe = GetTextRectangles(*iter);
+				}break;
+// OUTLINE
+			case lineColor:
+				{
+					RGBColor lineColor((int)iter->op, RedFirst);
+					if ( !pShape->fBackground )
+						m_pXmlWriter->WriteAttribute( L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode));
+				}break;
+			case lineWidth:
+				{
+					if (iter->op > 0)
+					{
+						EmuValue eLineWidth ((int)iter->op );
+						m_pXmlWriter->WriteAttribute(L"strokeweight", FormatUtils::DoubleToWideString(eLineWidth.ToPoints()) + L"pt");
+					}
+				}break;
+			case lineDashing:
+				{
+					appendValueAttribute(&m_stroke, L"dashstyle", FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ) );
+				}break;
+			case lineStyle:
+				{
+					appendValueAttribute(&m_stroke, L"linestyle", getLineStyle( iter->op ));
+				}break;
+			case lineEndArrowhead:
+				{
+					appendValueAttribute(&m_stroke, L"endarrow", getArrowStyle( iter->op ));
+				}break;
+			case lineEndArrowLength:
+				{
+					appendValueAttribute(&m_stroke, L"endarrowlength", getArrowLength( iter->op ));
+				}break;
+			case lineEndArrowWidth:
+				{
+					appendValueAttribute(&m_stroke, L"endarrowwidth", getArrowWidth( iter->op ));
+				}break;
+			case lineStartArrowhead:
+				{
+					appendValueAttribute(&m_stroke, L"startarrow", getArrowStyle( iter->op ));
+				}break;
+			case lineStartArrowLength:
+				{
+					appendValueAttribute(&m_stroke, L"startarrowlength", getArrowLength( iter->op ));
+				}break;
+			case lineStartArrowWidth:
+				{
+					appendValueAttribute(&m_stroke, L"startarrowwidth", getArrowWidth( iter->op ));
+				}break;
+// FILL
+			case fillColor:
+				{
+					RGBColor fillColor((int)iter->op, RedFirst);
+					m_pXmlWriter->WriteAttribute(L"fillcolor", ( std::wstring( L"#" )  + fillColor.SixDigitHexCode ));
+				}break;
+			case fillBackColor:
+				{
+					RGBColor fillBackColor( (int)iter->op, RedFirst );
+					appendValueAttribute(&m_fill, L"color2", ( std::wstring( L"#" )  + fillBackColor.SixDigitHexCode ));
+				}break;
+			case fillAngle:
+				{
+					FixedPointNumber fllAngl( iter->op );
+					appendValueAttribute(&m_fill, L"angle", FormatUtils::DoubleToWideString( fllAngl.ToAngle() ));
+				}break;
+			case fillShadeType:
+				{
+					appendValueAttribute(&m_fill, L"method", getFillMethod( iter->op ));
+				}break;
+			case fillShadeColors:
+				{
+					appendValueAttribute(&m_fill, L"colors", getFillColorString( iter->opComplex, iter->op ));
+				}break;
+			case fillFocus:
+				{
+					appendValueAttribute(&m_fill, L"focus", ( FormatUtils::IntToWideString( iter->op ) + L"%"  ));
+				}break;
+			case fillType:
+				{
+					appendValueAttribute(&m_fill, L"type", getFillType( iter->op ));
+				}break;
+			case fillBlip:
+				{
+					BlipStoreEntry* pFillBlip = NULL;
+
+					if ((m_pict != NULL ) && (m_pict->blipStoreEntry != NULL ))
+					{
+						// Word Art Texture
+						//fillBlip = this->_pict->BlipStoreEntry;
+					}
+					else if ( (m_pBlipStore != NULL) && ( (iter->op - 1) < m_pBlipStore->Children.size() ) )
+					{
+						pFillBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[iter->op - 1]);
+					}
+
+					if ( (pFillBlip != NULL) && copyPicture(pFillBlip) )
+					{
+						appendValueAttribute(&m_fill, L"r:id", std::wstring(( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
+					}
+				}break;
+			case fillOpacity:
+				{
+					appendValueAttribute(&m_fill, L"opacity", ( FormatUtils::IntToWideString( iter->op ) + L"f" ));
+				}
+				break;
+			case fillBackOpacity:
+				{
+					appendValueAttribute(&m_fill, L"opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
+				}break;
+// SHADOW
+			case shadowType:
+				{
+					appendValueAttribute(&m_shadow, L"type", getShadowType(iter->op));
+				}break;
+
+			case shadowColor:
+				{
+					RGBColor shadowColor((int)iter->op, RedFirst);
+					appendValueAttribute(&m_shadow, L"color", ( std::wstring( L"#" ) + shadowColor.SixDigitHexCode ));
+				}break;
+			case shadowOffsetX:
+				{
+					ShadowOffsetX = EmuValue( (int)iter->op );
+				}break;
+			case shadowSecondOffsetX:
+				{
+					SecondShadowOffsetX = EmuValue( (int)iter->op );
+				}break;
+			case shadowOffsetY:
+				{
+					ShadowOffsetY = EmuValue( (int)iter->op );
+				}break;
+			case shadowSecondOffsetY:
+				{
+					SecondShadowOffsetY = EmuValue( (int)iter->op );
+				}break;
+			case shadowOriginX:
+				{
+					ShadowOriginX = ( iter->op / pow( (double)2, (double)16 ) );
+				}break;
+			case shadowOriginY:
+				{
+					ShadowOriginY = (iter->op / pow( (double)2, (double)16));
+				}break;
+			case shadowOpacity:
+				{
+					double shadowOpa = (iter->op / pow( (double)2, (double)16));
+
+					appendValueAttribute(&m_shadow, L"opacity", FormatUtils::DoubleToFormattedWideString( shadowOpa, L"%.2f" ));
+				}break;
+			case shadowStyleBooleanProperties:
+				{
+					shadowBoolean	=	ShadowStyleBooleanProperties(iter->op);
+				}break;
+// OLE
+			case pictureId:
+				{
+					indexOLE = iter->op;
+				}break;
+// PICTURE
+			case Pib:
+				{
+					int index = (int)( iter->op - 1 );
+
+					if ((m_pBlipStore != NULL) && (index < (int)m_pBlipStore->Children.size()))
+					{
+						BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
+						if (copyPicture(oBlip))
+						{
+							appendValueAttribute(&m_imagedata, L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString(m_nImageId) ));
+						}
+					}
+				}break;
+			case pibName:
+				{
+					std::wstring name;
+					FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UTF16);
+					if (!name.empty())
+						appendValueAttribute(&m_imagedata, L"o:title", FormatUtils::XmlEncode(name));
+				}break;
+// 3D STYLE
+			case f3D:
+			case threeDStyleBooleanProperties:
+			case threeDObjectBooleanProperties:
+				break;
+
+			case c3DExtrudeBackward:
+				{
+					EmuValue backwardValue( (int)iter->op );
+					std::wstring depth = FormatUtils::DoubleToWideString( backwardValue.ToPoints() ) + L"pt";
+					appendValueAttribute(&m_3dstyle, L"backdepth", depth);
+				}break; 
+			case c3DAmbientIntensity:
+				{
+					std::wstring intens = FormatUtils::IntToWideString((int)iter->op) + L"f";
+					appendValueAttribute(&m_3dstyle, L"brightness", intens);
+				}break; 
+			case c3DSpecularAmt:
+				{
+					std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
+					appendValueAttribute(&m_3dstyle, L"specularity", amt);
+				}break; 
+			case c3DDiffuseAmt:
+				{
+					std::wstring amt = FormatUtils::IntToWideString((int)iter->op) + L"f";
+					appendValueAttribute(&m_3dstyle, L"diffusity", amt);
+				}break; 
+			case c3DKeyIntensity:
+				{
+					std::wstring amt = FormatUtils::IntToWideString((int)iter->op);
+					appendValueAttribute(&m_3dstyle, L"lightlevel", amt);
+				}break; 	
+			case c3DExtrusionColor:
+				{
+					std::wstring color = FormatUtils::IntToFormattedWideString(iter->op, L"#%06x");
+					appendValueAttribute(&m_3dstyle, L"color", color);
+				}break;
+			case c3DSkewAngle:
+				{
+					FixedPointNumber skewAngle( iter->op );
+					appendValueAttribute(&m_3dstyle, L"skewangle", FormatUtils::DoubleToWideString( skewAngle.ToAngle() ));
+				}break;
+			case c3DXViewpoint:
+				{
+					ViewPointX = EmuValue( FixedPointNumber( iter->op ).Integral );
+				}break;
+			case c3DYViewpoint:
+				{
+					ViewPointY = EmuValue( FixedPointNumber( iter->op ).Integral );
+				}break;
+			case c3DZViewpoint:
+				{
+					ViewPointZ = EmuValue( FixedPointNumber( iter->op ).Integral );
+				}break;
+			case c3DOriginX:
+				{
+					FixedPointNumber dOriginX( iter->op );
+					viewPointOriginX = ( dOriginX.Integral / 65536.0 );
+				}break;
+			case c3DOriginY:
+				{
+					FixedPointNumber dOriginY( iter->op );
+					viewPointOriginY = (dOriginY.Integral / 65536.0 );
+				}break;
+// TEXTBOX
+			case lTxid:
+				{
+					hasTextbox	=	true;
+					nLTxID		=	(((iter->op) >> 16) & 0xFFFF);
+				}break;
+			case dxTextLeft:	{ndxTextLeft	= (int)iter->op;break;}
+			case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
+			case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
+			case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
+			case txflTextFlow:
+				{
+					switch(iter->op)
+					{
+					case 0:
+					case 4://обычный 							
+						break;
+					case 1:
+					case 5://верт (склони голову направо)						
+						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+						break;
+					case 2://верт (склони голову налево)	
+						appendStyleProperty(&sTextboxStyle, L"layout-flow", L"vertical");
+						appendStyleProperty(&sTextboxStyle, L"mso-layout-flow-alt", L"bottom-to-top");
+						break;
+					}
+				}break;	
+// Word Art
+			case gtextUNICODE:
+				{
+					std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+
+					text = FormatUtils::XmlEncode(text);
+
+					if (0 <= text.find(L"\n"))
+					{
+						m_textpath.AppendText(text);
+					}
+					text = ReplaceString(text, L"\n", L"&#xA;");						
+					appendValueAttribute(&m_textpath, L"string", text);
+				}break;
+			case gtextFont:
+				{
+					std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
+					int i = font.size();
+					while (i > 0)
+					{
+						if (font[i-1] != 0) break;
+						i--;
+					}
+					if (i < font.size()) font.erase(font.begin() + i, font.end());
+
+					font = std::wstring(L"\"") + font + std::wstring(L"\"");
+					appendStyleProperty(&m_textPathStyle, L"font-family", font);
+				}break;
+			case gtextSize:
+				{
+					std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
+					appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+				}break;
+			case gtextSpacing:
+				{
+					std::wstring spacing = FormatUtils::IntToWideString(iter->op);
+					appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
+				}break;
+			case geometryTextBooleanProperties:
+				{
+					GeometryTextBooleanProperties props(iter->op);
+					if (props.fUsegtextFBestFit && props.gtextFBestFit)
+					{
+						appendValueAttribute(&m_textpath, L"fitshape", L"t");
+					}
+					if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
+					{
+						appendValueAttribute(&m_textpath, L"trim", L"t");
+					}
+					if (props.fUsegtextFVertical && props.gtextFVertical)
+					{
+						appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
+						//_twistDimension = true;
+					}
+					if (props.fUsegtextFKern && props.gtextFKern)
+					{
+						appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
+					}
+					if (props.fUsegtextFItalic && props.gtextFItalic)
+					{
+						appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
+					}
+					if (props.fUsegtextFBold && props.gtextFBold)
+					{
+						appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
+					}
+				}break;
+  // PATH
+				case shapePath :
+				{
+					bHavePath			=	true;
+
 					std::wstring path	=	ParsePath(options);
 
 					if (false == path.empty())
-						m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
-				}
-
-				if ( !filled )
+						m_pXmlWriter->WriteAttribute (L"path", path);
+				}break;
+				default:
 				{
-					m_pXmlWriter->WriteAttribute( _T( "filled" ), _T( "f" ) );
-				}
-
-				if ( !stroked )
-				{
-					m_pXmlWriter->WriteAttribute( _T( "stroked" ), _T( "f" ) );
-				}
-
-				if (!layoutInCell) 
-				{
-					m_pXmlWriter->WriteAttribute(_T("o:allowincell"), _T("f"));
-				}
-
-				if ( ( xCoord > 0 ) && ( yCoord > 0 ) )
-				{
-					m_pXmlWriter->WriteAttribute( _T( "coordsize" ), ( FormatUtils::IntToWideString( xCoord ) + _T( "," ) + FormatUtils::IntToWideString( yCoord ) ).c_str() );
-				}
-
-				int nCode	=	0;
-				if (pShape->GetShapeType())
-				{
-					nCode	=	pShape->GetShapeType()->GetTypeCode();
-				}
-
-				if (DocFileFormat::msosptRoundRectangle == nCode)
-				{
-					if (nAdjValues)												
-					{
-						m_pXmlWriter->WriteAttribute(L"arcsize", adjValues[0].c_str());
-					}
-				}
-				else
-				{
-					if (nAdjValues)												
-					{
-						std::wstring adjTag	= adjValues[0];
-
-						for (int i = 1; i < nAdjValues; ++i)
-							adjTag += std::wstring(L",") + adjValues[i];
-
-						m_pXmlWriter->WriteAttribute(L"adj", adjTag.c_str());
-					}
-				}
-
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-		//build shadow offsets
-				std::wstring offset;
-
-				if ( ShadowOffsetX != 0 )
-				{
-					offset += FormatUtils::DoubleToWideString( ShadowOffsetX.ToPoints() );
-					offset += _T( "pt" );
-				}
-				if ( ShadowOffsetY != 0 )
-				{
-					offset += _T( "," );
-					offset += FormatUtils::DoubleToWideString( ShadowOffsetY.ToPoints() );
-					offset += _T( "pt" );
-				}
-				if ( !offset.empty() )
-				{
-					appendValueAttribute(&m_shadow, _T( "offset" ), offset.c_str());
-				}
-
-				std::wstring offset2;
-
-				if ( SecondShadowOffsetX != 0 )
-				{
-					offset2 += FormatUtils::DoubleToWideString( SecondShadowOffsetX.ToPoints() );
-					offset2 += _T( "pt" );
-				}
-
-				if ( SecondShadowOffsetY != 0 )
-				{
-					offset2 += _T( "," );
-					offset2 += FormatUtils::DoubleToWideString(SecondShadowOffsetY.ToPoints());
-					offset2 += _T( "pt" );
-				}
-
-				if (!offset2.empty())
-				{
-					appendValueAttribute(&m_shadow, _T("offset2"), offset2.c_str());
-				}
-
-		//build shadow origin
-				if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
-				{
-					appendValueAttribute(&m_shadow, _T("origin"), (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(_T( "," )) + FormatUtils::DoubleToWideString(shadowOriginY)).c_str());
-				}
-
-		// write shadow
-				if (m_shadow.GetAttributeCount() > 0)
-				{
-					if (shadowBoolean.fShadow)
-					{
-						appendValueAttribute(&m_shadow, _T( "on" ), _T( "t" ));
-					}
-
-					m_pXmlWriter->WriteString(m_shadow.GetXMLString().c_str());
-				}
-		//write 3d style 
-				if (m_3dstyle.GetAttributeCount() > 0)
-				{
-					appendValueAttribute(&m_3dstyle, _T( "v:ext" ), _T( "view" ));
-					appendValueAttribute(&m_3dstyle, _T( "on" ), _T( "t" ));
-
-		//write the viewpoint
-					if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
-					{
-						std::wstring viewPoint;
-
-						if ( ViewPointX != 0 )
-						{
-							viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
-						}
-						viewPoint += _T( "," );
-						if ( ViewPointY != 0 )
-						{
-							viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
-						}
-						viewPoint += _T( "," );
-						if ( ViewPointZ != 0 )
-						{
-							viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
-						}
-
-						appendValueAttribute(&m_3dstyle, _T( "viewpoint" ), viewPoint.c_str());
-					}
-		// write the viewpointorigin
-					if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
-					{
-						std::wstring viewPointOrigin;
-
-						if ( viewPointOriginX != 0 )
-						{
-							viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginX, _T( "%.2f" ) );
-						}
-
-						if ( viewPointOriginY != 0 )
-						{
-							viewPointOrigin += _T( "," );
-							viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, _T( "%.2f" ) );
-						}
-
-						appendValueAttribute(&m_3dstyle, _T( "viewpointorigin" ), viewPointOrigin.c_str());
-					}
-
-					m_pXmlWriter->WriteString(m_3dstyle.GetXMLString().c_str());
-				}
-		// write wrap
-				if (m_pSpa)
-				{
-					std::wstring wrap = getWrapType(m_pSpa);
-
-					if (wrap != _T("through"))
-					{
-						m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
-						m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
-						m_pXmlWriter->WriteNodeEnd	( _T( "w10:wrap" ), TRUE );
-					}
-				}
-		// write stroke
-				if (m_stroke.GetAttributeCount())
-				{
-					m_pXmlWriter->WriteString(m_stroke.GetXMLString().c_str());
-				}
-		// write fill
-				if (m_fill.GetAttributeCount())
-				{
-					m_pXmlWriter->WriteString(m_fill.GetXMLString().c_str());
-				}
-		// text path
-				if (m_textpath.GetAttributeCount())
-				{
-					appendValueAttribute(&m_textpath, _T( "style" ), FormatUtils::XmlEncode(m_textPathStyle).c_str());
-					m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
-				}
-		// write imagedata
-				if (m_imagedata.GetAttributeCount())
-				{
-					m_pXmlWriter->WriteString(m_imagedata.GetXMLString().c_str());
-				}
-
-				if (freeform)
-				{
-					if (arrInscribe.size())
-					{
-						m_pXmlWriter->WriteNodeBegin(L"v:path", true);
-						m_pXmlWriter->WriteAttribute(L"textboxrect", arrInscribe[0]);
-						m_pXmlWriter->WriteNodeEnd(L"", true);
-					}
-				}
-		// TEXTBOX
-				OfficeArtClientTextbox* pTextBox = pContainer->FirstChildWithType<OfficeArtClientTextbox>();
-				if (pTextBox)
-				{
-					// Word text box
-
-					//Word appends a OfficeArtClientTextbox record to the container. 
-					//This record stores the index of the textbox.
-
-					int nIndex = pTextBox->GetIndex();
-					if (nIndex)
-					{
-						TextboxMapping textboxMapping(m_ctx, nIndex - 1, m_pXmlWriter, m_pCaller);
-						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						textboxMapping.SetTextboxStyle(sTextboxStyle);
-
-						m_ctx->_doc->Convert(&textboxMapping);
-					}
-				}
-				else if( hasTextbox )
-				{
-					//Open Office textbox
-
-					//Open Office doesn't append a OfficeArtClientTextbox record to the container.
-					//We don't know how Word gets the relation to the text, but we assume that the first textbox in the document
-					//get the index 0, the second textbox gets the index 1 (and so on).
-
-					if (-1 != nLTxID)
-					{
-						TextboxMapping textboxMapping(m_ctx, nLTxID - 1, m_pXmlWriter, m_pCaller);
-						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						m_ctx->_doc->Convert(&textboxMapping);
-					}
-					else
-					{
-						TextboxMapping textboxMapping(m_ctx, m_pXmlWriter, m_pCaller);
-						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						m_ctx->_doc->Convert(&textboxMapping);
-					}
-				}
-
-				WriteEndShapeNode(pShape);
-		//ShapeType 
-				if (NULL != pShape->GetShapeType()/* && !m_isInlineShape*/) //bullete only???
-				{
-					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
-					pShape->GetShapeType()->Convert(&oXmlMapper);
-				}
+					int val = iter->op;
+				}break;
 			}
+		}
+
+		if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
+		{
+			std::wstring path	=	ParsePath(options);
+
+			if (false == path.empty())
+				m_pXmlWriter->WriteAttribute (L"path", path);
+		}
+
+		if ( !filled )
+		{
+			m_pXmlWriter->WriteAttribute( L"filled", L"f" );
+		}
+
+		if ( !stroked )
+		{
+			m_pXmlWriter->WriteAttribute( L"stroked", L"f" );
+		}
+
+		if (!layoutInCell) 
+		{
+			m_pXmlWriter->WriteAttribute(L"o:allowincell", L"f");
+		}
+
+		if ( ( xCoord > 0 ) && ( yCoord > 0 ) )
+		{
+			m_pXmlWriter->WriteAttribute( L"coordsize", ( FormatUtils::IntToWideString( xCoord ) + L"," + FormatUtils::IntToWideString( yCoord ) ));
+		}
+
+		int nCode	=	0;
+		if (pShape->GetShapeType())
+		{
+			nCode	=	pShape->GetShapeType()->GetTypeCode();
+		}
+
+		if (DocFileFormat::msosptRoundRectangle == nCode)
+		{
+			if (nAdjValues)												
+			{
+				m_pXmlWriter->WriteAttribute(L"arcsize", adjValues[0]);
+			}
+		}
+		else
+		{
+			if (nAdjValues)												
+			{
+				std::wstring adjTag	= adjValues[0];
+
+				for (int i = 1; i < nAdjValues; ++i)
+					adjTag += std::wstring(L",") + adjValues[i];
+
+				m_pXmlWriter->WriteAttribute(L"adj", adjTag);
+			}
+		}
+
+		m_pXmlWriter->WriteNodeEnd( L"", true, false );
+
+//build shadow offsets
+		std::wstring offset;
+
+		if ( ShadowOffsetX != 0 )
+		{
+			offset += FormatUtils::DoubleToWideString( ShadowOffsetX.ToPoints() );
+			offset += L"pt";
+		}
+		if ( ShadowOffsetY != 0 )
+		{
+			offset += L",";
+			offset += FormatUtils::DoubleToWideString( ShadowOffsetY.ToPoints() );
+			offset += L"pt";
+		}
+		if ( !offset.empty() )
+		{
+			appendValueAttribute(&m_shadow, L"offset", offset);
+		}
+
+		std::wstring offset2;
+
+		if ( SecondShadowOffsetX != 0 )
+		{
+			offset2 += FormatUtils::DoubleToWideString( SecondShadowOffsetX.ToPoints() );
+			offset2 += L"pt";
+		}
+
+		if ( SecondShadowOffsetY != 0 )
+		{
+			offset2 += L",";
+			offset2 += FormatUtils::DoubleToWideString(SecondShadowOffsetY.ToPoints());
+			offset2 += L"pt";
+		}
+
+		if (!offset2.empty())
+		{
+			appendValueAttribute(&m_shadow, L"offset2", offset2);
+		}
+
+//build shadow origin
+		if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
+		{
+			appendValueAttribute(&m_shadow, L"origin", (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(shadowOriginY)));
+		}
+
+// write shadow
+		if (m_shadow.GetAttributeCount() > 0)
+		{
+			if (shadowBoolean.fShadow)
+			{
+				appendValueAttribute(&m_shadow, L"on", L"t" );
+			}
+
+			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
+		}
+//write 3d style 
+		if (m_3dstyle.GetAttributeCount() > 0)
+		{
+			appendValueAttribute(&m_3dstyle, L"v:ext", L"view" );
+			appendValueAttribute(&m_3dstyle, L"on", L"t" );
+
+//write the viewpoint
+			if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
+			{
+				std::wstring viewPoint;
+
+				if ( ViewPointX != 0 )
+				{
+					viewPoint += FormatUtils::IntToWideString( ViewPointX ) + L"pt";
+				}
+				viewPoint += L",";
+				if ( ViewPointY != 0 )
+				{
+					viewPoint += FormatUtils::IntToWideString( ViewPointY ) + L"pt";
+				}
+				viewPoint += L",";
+				if ( ViewPointZ != 0 )
+				{
+					viewPoint += FormatUtils::IntToWideString( ViewPointZ ) + L"pt";
+				}
+
+				appendValueAttribute(&m_3dstyle, L"viewpoint", viewPoint);
+			}
+// write the viewpointorigin
+			if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
+			{
+				std::wstring viewPointOrigin;
+
+				if ( viewPointOriginX != 0 )
+				{
+					viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginX, L"%.2f" );
+				}
+
+				if ( viewPointOriginY != 0 )
+				{
+					viewPointOrigin += L",";
+					viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, L"%.2f" );
+				}
+
+				appendValueAttribute(&m_3dstyle, L"viewpointorigin", viewPointOrigin);
+			}
+
+			m_pXmlWriter->WriteString(m_3dstyle.GetXMLString());
+		}
+// write wrap
+		if (m_pSpa)
+		{
+			std::wstring wrap = getWrapType(m_pSpa);
+
+			if (wrap != L"through")
+			{
+				m_pXmlWriter->WriteNodeBegin( L"w10:wrap", true );
+				m_pXmlWriter->WriteAttribute( L"type", wrap );
+				m_pXmlWriter->WriteNodeEnd	( L"w10:wrap", true );
+			}
+		}
+// write fill
+		if (m_fill.GetAttributeCount())
+		{
+			m_pXmlWriter->WriteString(m_fill.GetXMLString());
+		}		
+// write imagedata
+		if (m_imagedata.GetAttributeCount())
+		{
+			m_pXmlWriter->WriteString(m_imagedata.GetXMLString());
+		}		
+		
+		if ( pShape->fBackground )	
+		{
+			WriteEndShapeNode(pShape);
+			return;
+		}
+// write stroke
+		if (m_stroke.GetAttributeCount())
+		{
+			m_pXmlWriter->WriteString(m_stroke.GetXMLString());
+		}
+// text path
+		if (m_textpath.GetAttributeCount())
+		{
+			appendValueAttribute(&m_textpath, L"style", FormatUtils::XmlEncode(m_textPathStyle));
+			m_pXmlWriter->WriteString(m_textpath.GetXMLString());
+		}
+		if (freeform)
+		{
+			if (arrInscribe.size())
+			{
+				m_pXmlWriter->WriteNodeBegin(L"v:path", true);
+				m_pXmlWriter->WriteAttribute(L"textboxrect", arrInscribe[0]);
+				m_pXmlWriter->WriteNodeEnd(L"", true);
+			}
+		}
+// TEXTBOX
+		OfficeArtClientTextbox* pTextBox = pContainer->FirstChildWithType<OfficeArtClientTextbox>();
+		if (pTextBox)
+		{
+			// Word text box
+
+			//Word appends a OfficeArtClientTextbox record to the container. 
+			//This record stores the index of the textbox.
+
+			int nIndex = pTextBox->GetIndex();
+			if (nIndex)
+			{
+				TextboxMapping textboxMapping(m_context, nIndex - 1, m_pXmlWriter, m_pCaller);
+				textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
+				textboxMapping.SetTextboxStyle(sTextboxStyle);
+
+				m_context->_doc->Convert(&textboxMapping);
+			}
+		}
+		else if( hasTextbox )
+		{
+			//Open Office textbox
+
+			//Open Office doesn't append a OfficeArtClientTextbox record to the container.
+			//We don't know how Word gets the relation to the text, but we assume that the first textbox in the document
+			//get the index 0, the second textbox gets the index 1 (and so on).
+
+			if (-1 != nLTxID)
+			{
+				TextboxMapping textboxMapping(m_context, nLTxID - 1, m_pXmlWriter, m_pCaller);
+				textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
+				m_context->_doc->Convert(&textboxMapping);
+			}
+			else
+			{
+				TextboxMapping textboxMapping(m_context, m_pXmlWriter, m_pCaller);
+				textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
+				m_context->_doc->Convert(&textboxMapping);
+			}
+		}
+		WriteEndShapeNode(pShape);
+// OLE
+		if (indexOLE >= 0 && pShape->fOleShape) //4571833.doc
+		{
+			XMLTools::CStringXmlWriter txtBoxWrapper;
+			
+			TextboxMapping textboxMapping(m_context, (indexOLE >> 16) - 1, &txtBoxWrapper, m_pCaller);
+
+			textboxMapping.m_shapeIdOwner = m_shapeId;
+
+			m_context->_doc->Convert(&textboxMapping);
+
+			m_pXmlWriter->WriteString(textboxMapping.getOLEObject());
+		}
+
+//ShapeType 
+		if (NULL != pShape->GetShapeType() /* && !m_isInlineShape*/) //bullete only???
+		{
+			VMLShapeTypeMapping oXmlMapper(m_pXmlWriter, m_isInlineShape);
+			pShape->GetShapeType()->Convert(&oXmlMapper);
 		}
 	}
 
@@ -1022,29 +1057,29 @@ namespace DocFileFormat
 	{
 		if (NULL != pShape)
 		{
-			if (pShape->is<OvalType>())
+			if (pShape->fBackground)
 			{
-				//OVAL
-				m_pXmlWriter->WriteNodeBegin( _T( "v:oval" ), TRUE );
+				m_pXmlWriter->WriteNodeBegin( L"v:background", true );
+			}
+			else if (pShape->is<OvalType>())
+			{
+				m_pXmlWriter->WriteNodeBegin( L"v:oval", true );
 			}
 			else if (pShape->is<RoundedRectangleType>())
 			{
-				//ROUNDED RECT
-				m_pXmlWriter->WriteNodeBegin( _T( "v:roundrect" ), TRUE );
+				m_pXmlWriter->WriteNodeBegin( L"v:roundrect", true );
 			}
 			else if (pShape->is<RectangleType>())
 			{
-				//RECT
-				m_pXmlWriter->WriteNodeBegin( _T( "v:rect" ), TRUE );
+				m_pXmlWriter->WriteNodeBegin( L"v:rect", true );
 			}
 			else if (pShape->is<LineType>())
 			{
-				//LINE
-				m_pXmlWriter->WriteNodeBegin(_T( "v:line" ), TRUE);
+				m_pXmlWriter->WriteNodeBegin(L"v:line", true);
 			}
 			else
 			{
-				m_pXmlWriter->WriteNodeBegin(_T( "v:shape" ), TRUE);
+				m_pXmlWriter->WriteNodeBegin(L"v:shape", true);
 			}
 		}
 	}
@@ -1053,25 +1088,29 @@ namespace DocFileFormat
 	{
 		if (NULL != pShape)
 		{
-			if (pShape->is<OvalType>())
+			if (pShape->fBackground)
 			{
-				m_pXmlWriter->WriteNodeEnd( _T( "v:oval" ) );
+				m_pXmlWriter->WriteNodeEnd( L"v:background" );
+			}
+			else if (pShape->is<OvalType>())
+			{
+				m_pXmlWriter->WriteNodeEnd( L"v:oval" );
 			}
 			else if (pShape->is<RoundedRectangleType>())
 			{
-				m_pXmlWriter->WriteNodeEnd( _T( "v:roundrect" ) );
+				m_pXmlWriter->WriteNodeEnd( L"v:roundrect" );
 			}
 			else if (pShape->is<RectangleType>())
 			{
-				m_pXmlWriter->WriteNodeEnd( _T( "v:rect" ) );
+				m_pXmlWriter->WriteNodeEnd( L"v:rect" );
 			}
 			else if (pShape->is<LineType>())
 			{
-				m_pXmlWriter->WriteNodeEnd( _T( "v:line" ) );
+				m_pXmlWriter->WriteNodeEnd( L"v:line" );
 			}
 			else
 			{
-				m_pXmlWriter->WriteNodeEnd( _T( "v:shape" ) );
+				m_pXmlWriter->WriteNodeEnd( L"v:shape" );
 			}
 		}
 	}
@@ -1082,7 +1121,7 @@ namespace DocFileFormat
 
 		if (NULL != pShape)
 		{
-			strXmlAttr += std::wstring(_T("_x0000_s" ));
+			strXmlAttr += std::wstring(L"_x0000_s");
 			strXmlAttr += FormatUtils::IntToWideString(pShape->GetShapeID());
 		}
 
@@ -1099,7 +1138,7 @@ namespace DocFileFormat
 		if (NULL != pAnchor)
 		{
 			strXmlFrom += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.x);
-			strXmlFrom += _T( "," );
+			strXmlFrom += L",";
 			strXmlFrom += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.y);
 		}
 		else if (m_pSpa)
@@ -1108,9 +1147,9 @@ namespace DocFileFormat
 			TwipsValue oTop(m_pSpa->yaTop);
 
 			strXmlFrom += FormatUtils::DoubleToWideString(oLeft.ToPoints());
-			strXmlFrom += _T( "pt," );
+			strXmlFrom += L"pt,";
 			strXmlFrom += FormatUtils::DoubleToWideString(oTop.ToPoints());
-			strXmlFrom += _T( "pt" );
+			strXmlFrom += L"pt";
 		}
 
 		return strXmlFrom;
@@ -1118,7 +1157,6 @@ namespace DocFileFormat
 
 	std::wstring VMLShapeMapping::GetLineTo(const ChildAnchor* pAnchor) const
 	{
-		//Если линия находится в группе, то координаты должны быть в Twips
 		//Если линия находится в группе, то координаты должны быть в других единицах измерения (например в twips)
 
 		std::wstring strXmlTo;
@@ -1126,7 +1164,7 @@ namespace DocFileFormat
 		if (NULL != pAnchor)
 		{
 			strXmlTo += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.x + pAnchor->rcgBounds.size.cx);
-			strXmlTo += _T( "," );
+			strXmlTo += L",";
 			strXmlTo += FormatUtils::IntToWideString(pAnchor->rcgBounds.topLeftAngle.y + pAnchor->rcgBounds.size.cy);
 		}
 		else if (m_pSpa)
@@ -1135,9 +1173,9 @@ namespace DocFileFormat
 			TwipsValue oBottom (m_pSpa->yaBottom);
 
 			strXmlTo += FormatUtils::DoubleToWideString(oRight.ToPoints());
-			strXmlTo += _T( "pt," );
+			strXmlTo += L"pt,";
 			strXmlTo += FormatUtils::DoubleToWideString(oBottom.ToPoints());
-			strXmlTo += _T( "pt" );
+			strXmlTo += L"pt";
 		}
 
 		return strXmlTo;
@@ -1167,7 +1205,7 @@ namespace DocFileFormat
 			for (std::list<int>::const_iterator iter = arrVertices.begin(); iter != end; ++iter)
 			{
 				coords += FormatUtils::IntToWideString(*iter);
-				coords += _T( "," );
+				coords += L",";
 			}
 
 			coords.erase(coords.size() - 1);
@@ -1185,7 +1223,7 @@ namespace DocFileFormat
 		//write the blip
 		if (oBlip)
 		{
-			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay, m_ctx->_doc->FIB->m_bOlderVersion);
+			VirtualStreamReader reader(m_context->_doc->WordDocumentStream, oBlip->foDelay, m_context->_doc->FIB->m_bOlderVersion);
 
 			switch (oBlip->btWin32)
 			{
@@ -1203,7 +1241,7 @@ namespace DocFileFormat
 						decompressedSize = metaBlip->Decompress(&decompressed);
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
+							m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), std::vector<unsigned char>(decompressed, (decompressed + decompressedSize))));
 							RELEASEARRAYOBJECTS(decompressed);
 						}
 
@@ -1222,7 +1260,7 @@ namespace DocFileFormat
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
 					if ((bitBlip) && (bitBlip->m_pvBits))
 					{
-						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
+						m_context->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 							std::vector<unsigned char>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
@@ -1237,7 +1275,7 @@ namespace DocFileFormat
 				break;
 			}
 
-			m_nImageId	=	m_ctx->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
+			m_nImageId	=	m_context->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
 
 			result		=	true;
 		}
@@ -1250,35 +1288,35 @@ namespace DocFileFormat
 		switch ( _type )
 		{
 			case Global::msoblipDIB:
-			  return std::wstring( _T( ".bmp" ) );
+			  return std::wstring( L".bmp" );
 
 			case Global::msoblipEMF:
-				return std::wstring( _T( ".emf" ) );
+				return std::wstring( L".emf" );
 
 				//case msoblipGIF:
-				//  return std::wstring( _T( ".gif" ) );
+				//  return std::wstring( L".gif" );
 
 				//case msoblipICON:
-				//  return std::wstring( _T( ".ico" ) );
+				//  return std::wstring( L".ico" );
 
 			case Global::msoblipJPEG:
 			case Global::msoblipCMYKJPEG:
-				return std::wstring( _T( ".jpg" ) );
+				return std::wstring( L".jpg" );
 
 				//case msoblipPCX:
-				//  return std::wstring( _T( ".pcx" ) );
+				//  return std::wstring( L".pcx" );
 
 			case Global::msoblipPNG:
-				return std::wstring( _T( ".png" ) );
+				return std::wstring( L".png" );
 
 			case Global::msoblipTIFF:
-				return std::wstring( _T( ".tif" ) );
+				return std::wstring( L".tif" );
 
 			case Global::msoblipWMF:
-				return std::wstring( _T( ".wmf" ) );
+				return std::wstring( L".wmf" );
 
 			default:
-				return std::wstring( _T( ".png" ) );
+				return std::wstring( L".png" );
 		}
 	}
 
@@ -1301,8 +1339,8 @@ namespace DocFileFormat
 			std::wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
 			std::wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
-			style->operator += ( std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) );
-			style->operator += ( std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) ) );
+			style->operator += ( std::wstring( L"width:" ) + widthString + std::wstring( L"pt;" ) );
+			style->operator += ( std::wstring( L"height:" ) + heightString + std::wstring( L"pt;" ) );
 		}
 	}
 
@@ -1315,11 +1353,11 @@ namespace DocFileFormat
 			//if (pSpa->fAnchorLock )
 			//if (pSpa->bx == TEXT && pSpa->by == TEXT)
 			//{
-			//	appendStyleProperty( style, _T( "position" ), _T( "static" ) );
+			//	appendStyleProperty( style, L"position", L"static" );
 			//}
 			//else
 			//{
-				appendStyleProperty( style, _T( "position" ), _T( "absolute" ) );
+				appendStyleProperty( style, L"position", L"absolute" );
 			//}
 
 			TwipsValue left	 (pSpa->xaLeft);
@@ -1336,10 +1374,10 @@ namespace DocFileFormat
 				top		=	TwipsValue((pSpa->yaBottom	+	pSpa->yaTop)  * 0.5 - (pSpa->xaRight	-	pSpa->xaLeft) * 0.5);
 			}
 
-			appendStyleProperty (style, _T( "margin-left" ), ( FormatUtils::DoubleToWideString(left.ToPoints())		+ std::wstring( _T( "pt" ) ) ));
-			appendStyleProperty (style, _T( "margin-top" ),	 ( FormatUtils::DoubleToWideString(top.ToPoints())		+ std::wstring( _T( "pt" ) ) ));
-			appendStyleProperty (style, _T( "width" ),		 ( FormatUtils::DoubleToWideString(width.ToPoints())	+ std::wstring( _T( "pt" ) ) ));
-			appendStyleProperty (style, _T( "height" ),		 ( FormatUtils::DoubleToWideString(height.ToPoints())	+ std::wstring( _T( "pt" ) ) ));
+			appendStyleProperty (style, L"margin-left", ( FormatUtils::DoubleToWideString(left.ToPoints())		+ std::wstring( L"pt" )  ));
+			appendStyleProperty (style, L"margin-top",	 ( FormatUtils::DoubleToWideString(top.ToPoints())		+ std::wstring( L"pt" )  ));
+			appendStyleProperty (style, L"width",		 ( FormatUtils::DoubleToWideString(width.ToPoints())	+ std::wstring( L"pt" )  ));
+			appendStyleProperty (style, L"height",		 ( FormatUtils::DoubleToWideString(height.ToPoints())	+ std::wstring( L"pt" )  ));
 		}
 	}
 
@@ -1355,19 +1393,19 @@ namespace DocFileFormat
 				bounds.topLeftAngle.y	=	static_cast<LONG>(((anchor->Bottom	+	anchor->Top)  * 0.5 - (anchor->Right	-	anchor->Left) * 0.5));
 			}
 
-			appendStyleProperty(style, _T("position"), _T("absolute"));
-			appendStyleProperty(style, _T("left"),	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
-			appendStyleProperty(style, _T("top"),	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
+			appendStyleProperty(style, L"position", L"absolute");
+			appendStyleProperty(style, L"left",	FormatUtils::IntToWideString(bounds.topLeftAngle.x));
+			appendStyleProperty(style, L"top",	FormatUtils::IntToWideString(bounds.topLeftAngle.y));
 
 			if (twistDimensions)
 			{
-				appendStyleProperty(style, _T("width"),	 FormatUtils::IntToWideString(bounds.size.cy));
-				appendStyleProperty(style, _T("height"), FormatUtils::IntToWideString(bounds.size.cx));
+				appendStyleProperty(style, L"width",	 FormatUtils::IntToWideString(bounds.size.cy));
+				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cx));
 			}
 			else
 			{
-				appendStyleProperty(style, _T("width"),  FormatUtils::IntToWideString(bounds.size.cx));
-				appendStyleProperty(style, _T("height"), FormatUtils::IntToWideString(bounds.size.cy));
+				appendStyleProperty(style, L"width",  FormatUtils::IntToWideString(bounds.size.cx));
+				appendStyleProperty(style, L"height", FormatUtils::IntToWideString(bounds.size.cy));
 			}
 		}
 	}
@@ -1377,9 +1415,9 @@ namespace DocFileFormat
 		if ( b != NULL )
 		{
 			b->operator += ( propName );
-			b->operator += ( _T( ":" ) );
+			b->operator += ( L":" );
 			b->operator += ( propValue );
-			b->operator +=( _T( ";" ) );
+			b->operator +=( L";" );
 		}
 	}
 
@@ -1387,18 +1425,18 @@ namespace DocFileFormat
 	{
 		switch ( anchor )
 		{
-			case 0:	return _T("top");
-			case 1:	return _T("middle");
-			case 2:	return _T("bottom");
-			case 3:	return _T("top-center");
-			case 4:	return _T("middle-center");
-			case 5:	return _T("bottom-center");
-			case 6:	return _T("top-baseline");
-			case 7:	return _T("bottom-baseline");
-			case 8:	return _T("top-center-baseline");
-			case 9:	return _T("bottom-center-baseline");
+			case 0:	return L"top";
+			case 1:	return L"middle";
+			case 2:	return L"bottom";
+			case 3:	return L"top-center";
+			case 4:	return L"middle-center";
+			case 5:	return L"bottom-center";
+			case 6:	return L"top-baseline";
+			case 7:	return L"bottom-baseline";
+			case 8:	return L"top-center-baseline";
+			case 9:	return L"bottom-center-baseline";
 			default:
-				return _T("top");
+				return L"top";
 		}
 	}
 
@@ -1406,14 +1444,14 @@ namespace DocFileFormat
 	{
 		switch ( vPos )
 		{
-			/*case msopvAbs:	return _T( "absolute" );*/
-			case msopvTop:		return _T( "top" );
-			case msopvCenter:	return _T( "center" );
-			case msopvBottom:	return _T( "bottom" );
-			case msopvInside:	return _T( "inside" );
-			case msopvOutside:	return _T( "outside" );
+			/*case msopvAbs:	return L"absolute" );*/
+			case msopvTop:		return L"top";
+			case msopvCenter:	return L"center";
+			case msopvBottom:	return L"bottom";
+			case msopvInside:	return L"inside";
+			case msopvOutside:	return L"outside";
 			default:
-				return _T( "absolute" );
+				return L"absolute";
 		}
 	}
 
@@ -1422,12 +1460,12 @@ namespace DocFileFormat
 		PositionVerticalRelative vRel = (PositionVerticalRelative)vRel_;
 		switch ( vRel )
 		{
-			case msoprvMargin:	return _T( "margin" );
-			case msoprvPage:	return _T( "page" );
-			case msoprvText:	return _T( "text" );
-			case msoprvLine:	return _T( "line" );
+			case msoprvMargin:	return L"margin";
+			case msoprvPage:	return L"page";
+			case msoprvText:	return L"text";
+			case msoprvLine:	return L"line";
 			default:
-				return _T( "margin" );
+				return L"margin";
 		}
 	}
 
@@ -1435,14 +1473,14 @@ namespace DocFileFormat
 	{
 		switch ( hPos )
 		{
-			/*case msophAbs:	return _T( "absolute" );*/
-			case msophLeft:		return _T( "left" );
-			case msophCenter:	return _T( "center" );
-			case msophRight:	return _T( "right" );
-			case msophInside:	return _T( "inside" );
-			case msophOutside:	return _T( "outside" );
+			/*case msophAbs:	return L"absolute";*/
+			case msophLeft:		return L"left";
+			case msophCenter:	return L"center";
+			case msophRight:	return L"right";
+			case msophInside:	return L"inside";
+			case msophOutside:	return L"outside";
 			default:
-				return _T( "absolute" );
+				return L"absolute";
 		}
 	}
 
@@ -1451,12 +1489,12 @@ namespace DocFileFormat
 		PositionHorizontalRelative hRel = (PositionHorizontalRelative )hRel_;
 		switch ( hRel ) 
 		{
-			case msoprhMargin:	return _T( "margin" );
-			case msoprhPage:	return _T( "page" );
-			case msoprhText:	return _T( "text" );
-			case msoprhChar:	return _T( "char" );
+			case msoprhMargin:	return L"margin";
+			case msoprhPage:	return L"page";
+			case msoprhText:	return L"text";
+			case msoprhChar:	return L"char";
 			default:
-				return _T( "margin" );
+				return L"margin";
 		}
 	}
 
@@ -1478,22 +1516,22 @@ namespace DocFileFormat
 //	POSITIONING
 			case posh:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-horizontal"), mapHorizontalPosition((PositionHorizontal)iter->op));
+					appendStyleProperty(oStyle, L"mso-position-horizontal", mapHorizontalPosition((PositionHorizontal)iter->op));
 					bPosH = true;
 				}break;
 			case posrelh:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 					bRelH = true;
 				}break;
 			case posv:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-vertical"), mapVerticalPosition((PositionVertical)iter->op));
+					appendStyleProperty(oStyle, L"mso-position-vertical", mapVerticalPosition((PositionVertical)iter->op));
 					bPosV = true;
 				}break;
 			case posrelv:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 					bRelV = true;
 				}break;
 //	BOOLEANS
@@ -1504,18 +1542,18 @@ namespace DocFileFormat
 					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument && !bZIndex)
 					{
 						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(oStyle, _T( "z-index" ), _T( "-1" ) );
+						appendStyleProperty(oStyle, L"z-index", L"-1" );
 						bZIndex = true;
 					}
 					else if (!m_isInlineShape && !bZIndex)
 					{
-						appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+						appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 						bZIndex = true;
 					}
 
 					if (groupShapeBooleans.fHidden && groupShapeBooleans.fUsefHidden)
 					{
-						appendStyleProperty(oStyle, _T( "visibility" ), _T( "hidden" ));
+						appendStyleProperty(oStyle, L"visibility", L"hidden" );
 					}
 				}break;
 // GEOMETRY
@@ -1526,54 +1564,54 @@ namespace DocFileFormat
 					if (dAngle < -360.0)
 						dAngle += 360.0;
 
-					appendStyleProperty(oStyle, _T( "rotation" ), FormatUtils::DoubleToWideString(dAngle));
+					appendStyleProperty(oStyle, L"rotation", FormatUtils::DoubleToWideString(dAngle));
 				}break;
 // TEXTBOX	
 			case anchorText:
 				{
-					appendStyleProperty(oStyle, _T("v-text-anchor"), getTextboxAnchor(iter->op));
+					appendStyleProperty(oStyle, L"v-text-anchor", getTextboxAnchor(iter->op));
 				}break;
 // WRAP DISTANCE
 			case dxWrapDistLeft:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-left"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, L"mso-wrap-distance-left", (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(L"pt")));
 				}break;
 			case dxWrapDistRight:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-right"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, L"mso-wrap-distance-right", (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(L"pt")));
 				}break;
 			case dyWrapDistBottom:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-bottom"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, L"mso-wrap-distance-bottom", (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(L"pt")));
 				}break;
 			case dyWrapDistTop:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-top"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, L"mso-wrap-distance-top", (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(L"pt")));
 				}break;
 			}
 		}
 		
 		if (!bRelH && m_pSpa)
 		{
-			appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative(m_pSpa->bx));
+			appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(m_pSpa->bx));
 		}
 		if (!bRelV && m_pSpa)
 		{
-			appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative(m_pSpa->bx));
+			appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative(m_pSpa->bx));
 		}
 		if (!m_isInlineShape && !bZIndex)
 		{
-			appendStyleProperty( oStyle, _T( "z-index" ), FormatUtils::IntToWideString(zIndex + 0x7ffff));
+			appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 			bZIndex = true;
 		}
 
 		//if (!bPosH)
 		//{
-		//	appendStyleProperty(oStyle, _T("mso-position-horizontal"), _T( "absolute" ));
+		//	appendStyleProperty(oStyle, L"mso-position-horizontal", L"absolute" );
 		//}
 		//if (!bPosV)
 		//{
-		//	appendStyleProperty(oStyle, _T("mso-position-vertical"), _T( "absolute" ));
+		//	appendStyleProperty(oStyle, L"mso-position-vertical", L"absolute" );
 		//}
 	}
 
@@ -1636,7 +1674,7 @@ namespace DocFileFormat
 			//если не написать тип позиции, то будет inline
 			if ( anchor != NULL )
 			{
-				appendStyleProperty( &style, _T( "position" ), _T( "absolute" ) );
+				appendStyleProperty( &style, L"position", L"absolute" );
 			}
 			else if (m_pSpa)
 			{
@@ -1645,23 +1683,23 @@ namespace DocFileFormat
 
 				//if (m_pSpa->bx == TEXT && m_pSpa->by == TEXT)
 				//{
-				//	appendStyleProperty( &style, _T( "position" ), _T( "static" ) );
+				//	appendStyleProperty( &style, L"position", L"static" );
 				//}
 				//else
 				{
-					appendStyleProperty( &style, _T( "position" ), _T( "absolute" ) );
+					appendStyleProperty( &style, L"position", L"absolute" );
 				}
 			}
 		}
 
 		if ( shape->fFlipH )
 		{
-			appendStyleProperty( &style, _T( "flip" ), _T( "x" ) );
+			appendStyleProperty( &style, L"flip", L"x" );
 		}
 
 		if ( shape->fFlipV )
 		{
-			appendStyleProperty( &style, _T( "flip" ), _T( "y" ) );
+			appendStyleProperty( &style, L"flip", L"y" );
 		}
 
 		AppendOptionsToStyle( &style, options, zIndex );
@@ -1673,12 +1711,12 @@ namespace DocFileFormat
 	{
 		switch (p)
 		{
-			case 0:		return _T( "single" );
-			case 1:		return _T( "thinThin" );
-			case 2:		return _T( "thinThick" );
-			case 3:		return _T( "thickThin" );
-			case 4:		return _T( "thickBetweenThin" );
-			default:	return _T( "single" );
+			case 0:		return L"single";
+			case 1:		return L"thinThin";
+			case 2:		return L"thinThick";
+			case 3:		return L"thickThin";
+			case 4:		return L"thickBetweenThin";
+			default:	return L"single";
 		}
 	}
 
@@ -1686,12 +1724,12 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return _T( "none" );
-			case 1:		return _T( "block" );
-			case 2:		return _T( "classic" );
-			case 3:		return _T( "diamond" );
-			case 4:		return _T( "oval" );
-			case 5:		return _T( "open" );
+			default:	return L"none";
+			case 1:		return L"block";
+			case 2:		return L"classic";
+			case 3:		return L"diamond";
+			case 4:		return L"oval";
+			case 5:		return L"open";
 		}
 	}
 
@@ -1699,9 +1737,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return _T( "short" );
-			case 1:		return _T( "medium" );
-			case 2:		return _T( "long" );
+			default:	return L"short";
+			case 1:		return L"medium";
+			case 2:		return L"long";
 		}
 	}
 
@@ -1709,9 +1747,9 @@ namespace DocFileFormat
 	{
 		switch ( op )
 		{
-			default:	return _T( "narrow" );
-			case 1:		return _T( "medium" );
-			case 2:		return _T( "wide" );
+			default:	return L"narrow";
+			case 1:		return L"medium";
+			case 2:		return L"wide";
 		}
 	}
 
@@ -1721,35 +1759,12 @@ namespace DocFileFormat
 
 		switch ( val )
 		{
-		case 0:
-			{
-				return _T( "none" );
-			}
-			break;
-
-		case 1:
-			{
-				return _T( "any" );
-			}
-			break;
-
-		case 2:
-			{
-				return _T( "linear" );
-			}
-			break;
-
-		case 4:
-			{
-				return _T( "linear sigma" );
-			}
-			break;
-
+		case 0:	return L"none";
+		case 1:	return L"any";
+		case 2:	return L"linear";
+		case 4:	return L"linear sigma";
 		default:
-			{
-				return _T( "any" );
-			}
-			break;
+			return L"any";
 		}
 	}
 
@@ -1772,9 +1787,9 @@ namespace DocFileFormat
 				int colorPos = FormatUtils::BytesToInt32(p, ( pos + 4 ), size);
 
 				result += FormatUtils::IntToWideString(colorPos);
-				result += _T( "f #" );
+				result += L"f #";
 				result += color.SixDigitHexCode;
-				result += _T( ";" );
+				result += L";";
 			}
 		}
 
@@ -1786,58 +1801,17 @@ namespace DocFileFormat
 	{
 		switch ( p )
 		{
-		case 0:
-			{
-				return _T( "solid" );
-			}
-			break;
-
-		case 1:
-			{
-				return _T( "pattern" );
-			}
-			break;
-		case 2:
-			{
-				return _T( "tile" );
-			}
-			break;
-		case 3:
-			{
-				return _T( "frame" );
-			}
-			break;
-		case 4:
-			{
-				return _T( "gradient" );
-			}
-			break;
-		case 5:
-			{
-				return _T( "gradientRadial" );
-			}
-			break;
-		case 6:
-			{
-				return _T( "gradientRadial" );
-			}
-			break;
-
-		case 7:
-			{
-				return _T( "gradient" );
-			}
-			break;
+		case 0:	return L"solid";
+		case 1:	return L"pattern";
+		case 2:	return L"tile";
+		case 3:	return L"frame";
+		case 4:	return L"gradient";
+		case 5:	return L"gradientRadial";
+		case 6:	return L"gradientRadial";
+		case 7:	return L"gradient";
 		case 9:
-			{
-				return _T( "solid" );
-			}
-			break;
 		default:
-			{
-				return _T( "solid" );
-			}
-			break;
+				return L"solid";
 		}
 	}
 
@@ -1845,47 +1819,14 @@ namespace DocFileFormat
 	{
 		switch ( p )
 		{
-		case 0:
-			{
-				return _T( "single" );
-			}
-			break;
-
-		case 1:
-			{
-				return _T( "double" );
-			}
-			break;
-
-		case 2:
-			{
-				return _T( "perspective" );
-			}
-			break;
-
-		case 3:
-			{
-				return _T( "shaperelative" );
-			}
-			break;
-
-		case 4:
-			{
-				return _T( "drawingrelative" );
-			}
-			break;
-
-		case 5:
-			{
-				return _T( "emboss" );
-			}
-			break;
-
+		case 0:	return L"single";
+		case 1:	return L"double";
+		case 2:	return L"perspective";
+		case 3:	return L"shaperelative";
+		case 4:	return L"drawingrelative";
+		case 5:	return L"emboss";
 		default:
-			{
-				return _T( "single" );
-			}
-			break;
+			return L"single";
 		}
 	}
 
@@ -1900,43 +1841,20 @@ namespace DocFileFormat
 		// 4 = wrap tightly areound object
 		// 5 = wrap tightly but allow holes
 
-		std::wstring wrapType = _T("none");
+		std::wstring wrapType = L"none";
 
 		if (pSpa != NULL)
 		{
 			switch (pSpa->wr)
 			{
-			case 0:
-			case 2:
-				{
-					wrapType = _T( "square" );
-				}
-				break;
-
-			case 1:
-				{
-					wrapType = _T( "topAndBottom" );
-				}
-				break;
-
-			case 3:
-				{
-					wrapType = _T( "through" );
-				}
-				break;
-
-			case 4:
-			case 5:
-				{
-					wrapType = _T( "tight" );
-				}
-				break;
-
-			default:
-				{
-					wrapType = _T( "none" );
-				}
-				break;
+				case 0:
+				case 2:	wrapType = L"square";
+				case 1:	wrapType = L"topAndBottom";
+				case 3:	wrapType = L"through";
+				case 4:
+				case 5:	wrapType = L"tight";
+				default:
+						wrapType = L"none";
 			}
 		}
 
@@ -2002,7 +1920,6 @@ namespace DocFileFormat
 		return rectangles;
 	}
 //------------------------------------------------------------------------------------------------------
-	static int count_vml_objects = 0;
 	
 	void VMLShapeMapping::ApplyPrimitives(DrawingPrimitives * primitives)
 	{
@@ -2025,7 +1942,7 @@ namespace DocFileFormat
 
 		DrawingPrimitive *primitive = dynamic_cast<DrawingPrimitive *>(primitives->at(index));
 		
-		m_pXmlWriter->WriteNodeBegin(primitive->strVmlType.c_str(), TRUE );
+		m_pXmlWriter->WriteNodeBegin(primitive->strVmlType, true );
 	
 		if (primitive->type == 0x0007)
 		{
@@ -2070,13 +1987,13 @@ namespace DocFileFormat
 
 			if (-1 != nLTxID)
 			{
-				TextboxMapping textboxMapping(m_ctx, nLTxID - 1, m_pXmlWriter, m_pCaller);
+				TextboxMapping textboxMapping(m_context, nLTxID - 1, m_pXmlWriter, m_pCaller);
 				//textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-				m_ctx->_doc->Convert(&textboxMapping);
+				m_context->_doc->Convert(&textboxMapping);
 			}
 		}
 		
-		m_pXmlWriter->WriteNodeEnd( primitive->strVmlType.c_str() );
+		m_pXmlWriter->WriteNodeEnd( primitive->strVmlType );
 	
 		index++;
 		return index;
@@ -2089,11 +2006,13 @@ namespace DocFileFormat
 		TwipsValue w( primitive->dxa );
 		TwipsValue h( primitive->dya );
 
-		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + (count_vml_objects++));
-		//m_pXmlWriter->WriteAttribute ( _T( "id")	, strId.c_str());
-		m_pXmlWriter->WriteAttribute ( _T( "o:spid"), strId.c_str());
+		std::wstring strId = std::wstring(L"_x0000_s") + FormatUtils::IntToWideString(1024 + count_vml_objects);
+		
+		count_vml_objects++;
+		//m_pXmlWriter->WriteAttribute ( L"id")	, strId);
+		m_pXmlWriter->WriteAttribute ( L"o:spid", strId);
 
-		std::wstring strStyle = _T("position:absolute;visibility:visible;mso-wrap-style:square;");
+		std::wstring strStyle = L"position:absolute;visibility:visible;mso-wrap-style:square;";
 
 		DrawingPrimitiveLine * line = dynamic_cast<DrawingPrimitiveLine *>(primitive);
 		if (line)
@@ -2103,83 +2022,83 @@ namespace DocFileFormat
 			TwipsValue x2( line->xaEnd );
 			TwipsValue y2( line->yaEnd );
 						
-			std::wstring strStart	=  FormatUtils::IntToWideString(line->xaStart + primitive->xa) + _T(",") + FormatUtils::IntToWideString(line->yaStart + primitive->ya); 
-			std::wstring strEnd		=  FormatUtils::IntToWideString(line->xaEnd + primitive->xa) + _T(",") + FormatUtils::IntToWideString(line->yaEnd + primitive->ya);
+			std::wstring strStart	=  FormatUtils::IntToWideString(line->xaStart + primitive->xa) + L"," + FormatUtils::IntToWideString(line->yaStart + primitive->ya); 
+			std::wstring strEnd		=  FormatUtils::IntToWideString(line->xaEnd + primitive->xa) + L"," + FormatUtils::IntToWideString(line->yaEnd + primitive->ya);
 
-			m_pXmlWriter->WriteAttribute(_T("from"),  strStart.c_str() );
-			m_pXmlWriter->WriteAttribute(_T("to"),	strEnd.c_str());
+			m_pXmlWriter->WriteAttribute(L"from",  strStart);
+			m_pXmlWriter->WriteAttribute(L"to",	strEnd);
 		}
 		else
 		{
 			if (root)
 			{
-				//strStyle += _T("left:")		+ FormatUtils::IntToWideString( x.ToPoints()) + _T("pt;");
-				//strStyle += _T("top:")		+ FormatUtils::IntToWideString( y.ToPoints()) + _T("pt;");
-				strStyle +=	_T("width:")		+ FormatUtils::IntToWideString( w.ToPoints()) + _T("pt;");
-				strStyle +=	_T("height:")		+ FormatUtils::IntToWideString( h.ToPoints()) + _T("pt;");
+				//strStyle += L"left:"		+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
+				//strStyle += L"top:"		+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
+				strStyle +=	L"width:"		+ FormatUtils::IntToWideString( w.ToPoints()) + L"pt;";
+				strStyle +=	L"height:"		+ FormatUtils::IntToWideString( h.ToPoints()) + L"pt;";
 
-				strStyle += _T("margin-left:")	+ FormatUtils::IntToWideString( x.ToPoints()) + _T("pt;");
-				strStyle +=	_T("margin-top:")	+ FormatUtils::IntToWideString( y.ToPoints()) + _T("pt;");
+				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( x.ToPoints()) + L"pt;";
+				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( y.ToPoints()) + L"pt;";
 
 				std::wstring xMargin;
 				std::wstring yMargin;
-				if (m_pSpa->bx == PAGE) xMargin = _T("page;");
-				if (m_pSpa->by == PAGE) yMargin = _T("page;");
+				if (m_pSpa->bx == PAGE) xMargin = L"page;";
+				if (m_pSpa->by == PAGE) yMargin = L"page;";
 				
-				if (m_pSpa->bx == MARGIN) xMargin = _T("margin;");
-				if (m_pSpa->by == MARGIN) yMargin = _T("margin;");
+				if (m_pSpa->bx == MARGIN) xMargin = L"margin;";
+				if (m_pSpa->by == MARGIN) yMargin = L"margin;";
 
-				if (!xMargin.empty()) strStyle += _T("mso-position-horizontal-relative:") + xMargin;
-				if (!yMargin.empty()) strStyle += _T("mso-position-vertical-relative:") + yMargin;
+				if (!xMargin.empty()) strStyle += L"mso-position-horizontal-relative:" + xMargin;
+				if (!yMargin.empty()) strStyle += L"mso-position-vertical-relative:" + yMargin;
 
-				std::wstring strSize = FormatUtils::IntToWideString(primitive->dxa) + _T(",") + FormatUtils::IntToWideString(primitive->dya);
-				std::wstring strOrigin = FormatUtils::IntToWideString(primitive->xa) + _T(",") + FormatUtils::IntToWideString(primitive->ya);
+				std::wstring strSize = FormatUtils::IntToWideString(primitive->dxa) + L"," + FormatUtils::IntToWideString(primitive->dya);
+				std::wstring strOrigin = FormatUtils::IntToWideString(primitive->xa) + L"," + FormatUtils::IntToWideString(primitive->ya);
 				
-				m_pXmlWriter->WriteAttribute( _T("coordsize"), strSize.c_str());
-				//m_pXmlWriter->WriteAttribute( _T("coordorigin"), strOrigin.c_str());
+				m_pXmlWriter->WriteAttribute( L"coordsize", strSize);
+				//m_pXmlWriter->WriteAttribute( L"coordorigin"), strOrigin);
 			}
 			else
 			{
-				strStyle += _T("left:")		+ FormatUtils::IntToWideString( primitive->xa)	+ _T(";");
-				strStyle += _T("top:")		+ FormatUtils::IntToWideString( primitive->ya)	+ _T(";");
-				strStyle += _T("width:")	+ FormatUtils::IntToWideString( primitive->dxa) + _T(";");
-				strStyle += _T("height:")	+ FormatUtils::IntToWideString( primitive->dya) + _T(";");
+				strStyle += L"left:"	+ FormatUtils::IntToWideString( primitive->xa)	+ L";";
+				strStyle += L"top:"		+ FormatUtils::IntToWideString( primitive->ya)	+ L";";
+				strStyle += L"width:"	+ FormatUtils::IntToWideString( primitive->dxa) + L";";
+				strStyle += L"height:"	+ FormatUtils::IntToWideString( primitive->dya) + L";";
 			}
 		}
 		if (primitive->fillPattern == 0)
-			m_pXmlWriter->WriteAttribute( _T("filled"), _T("f"));
+			m_pXmlWriter->WriteAttribute( L"filled", L"f");
 		
 		if (primitive->type > 1)
 		{
-			m_pXmlWriter->WriteAttribute( _T("fillColor"), FormatUtils::IntToFormattedWideString(primitive->fillFore, L"#%06x").c_str());
+			m_pXmlWriter->WriteAttribute( L"fillColor", FormatUtils::IntToFormattedWideString(primitive->fillFore, L"#%06x"));
 		}
-		m_pXmlWriter->WriteAttribute( _T("style"), strStyle.c_str());
+		m_pXmlWriter->WriteAttribute( L"style", strStyle);
 
-		std::wstring strStrokeWeight = FormatUtils::IntToWideString(primitive->lineWeight / 20) + _T("pt");
+		std::wstring strStrokeWeight = FormatUtils::IntToWideString(primitive->lineWeight / 20) + L"pt";
 		if (primitive->lineWeight > 20)
-			m_pXmlWriter->WriteAttribute( _T("strokeweight"), strStrokeWeight.c_str());
+			m_pXmlWriter->WriteAttribute( L"strokeweight", strStrokeWeight);
 
 		if (primitive->type > 0)
-			m_pXmlWriter->WriteAttribute( _T("strokecolor"), FormatUtils::IntToFormattedWideString(primitive->lineColor, L"#%06x").c_str());
+			m_pXmlWriter->WriteAttribute( L"strokecolor", FormatUtils::IntToFormattedWideString(primitive->lineColor, L"#%06x"));
 
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+		m_pXmlWriter->WriteNodeEnd( L"", true, false );
 		
 		if (primitive->type > 1 && primitive->fillPattern > 1)
 		{
-			m_pXmlWriter->WriteNodeBegin(_T("v:fill"), TRUE );
-				m_pXmlWriter->WriteAttribute( _T("color2"), FormatUtils::IntToFormattedWideString(primitive->fillBack, L"#%06x").c_str());
-				m_pXmlWriter->WriteAttribute( _T("type"), _T("pattern"));
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T("v:fill") );
+			m_pXmlWriter->WriteNodeBegin(L"v:fill", true );
+				m_pXmlWriter->WriteAttribute( L"color2", FormatUtils::IntToFormattedWideString(primitive->fillBack, L"#%06x"));
+				m_pXmlWriter->WriteAttribute( L"type", L"pattern");
+			m_pXmlWriter->WriteNodeEnd( L"", true, false );
+			m_pXmlWriter->WriteNodeEnd( L"v:fill" );
 		}
 
 		if (primitive->lineStyle > 1)
 		{
-			m_pXmlWriter->WriteNodeBegin(_T("v:stroke"), TRUE );
-				std::wstring strDashStyle = FormatUtils::IntToWideString(primitive->lineStyle) + _T(" 1");
-				m_pXmlWriter->WriteAttribute( _T("dashstyle"), strDashStyle.c_str());
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-			m_pXmlWriter->WriteNodeEnd( _T("v:stroke") );
+			m_pXmlWriter->WriteNodeBegin(L"v:stroke", true );
+				std::wstring strDashStyle = FormatUtils::IntToWideString(primitive->lineStyle) + L" 1";
+				m_pXmlWriter->WriteAttribute( L"dashstyle", strDashStyle);
+			m_pXmlWriter->WriteNodeEnd( L"", true, false );
+			m_pXmlWriter->WriteNodeEnd( L"v:stroke" );
 		}
 	}
 

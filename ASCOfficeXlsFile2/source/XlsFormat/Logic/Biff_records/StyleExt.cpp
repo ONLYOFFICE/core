@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,14 +47,6 @@ StyleExt::~StyleExt()
 BaseObjectPtr StyleExt::clone()
 {
 	return BaseObjectPtr(new StyleExt(*this));
-}
-
-
-void StyleExt::writeFields(CFRecord& record)
-{
-#pragma message("####################### StyleExt record is not implemented")
-	Log::error("StyleExt record is not implemented.");
-	//record << some_value;
 }
 
 

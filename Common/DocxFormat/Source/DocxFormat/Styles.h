@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,16 +75,16 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				ComplexTypes_WriteAttribute( _T("w:locked=\""),         m_oLocked );
 
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-					sResult += m_sName->GetString();
+                    sResult += m_sName.get2();
 					sResult += _T("\" ");
 				}
 
@@ -113,7 +113,7 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::COnOff<>           > m_oLocked;
-			nullable<CString                         > m_sName;
+			nullable<std::wstring                         > m_sName;
 			nullable<SimpleTypes::COnOff<>           > m_oQFormat;
 			nullable<SimpleTypes::COnOff<>           > m_oSemiHidden;
 			nullable<SimpleTypes::CDecimalNumber<>   > m_oUiPriority;
@@ -191,9 +191,9 @@ namespace OOX
 					else if ( _T("w:trPr")  == sName ) m_oTrPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oType.IsInit() )
 				{
@@ -353,9 +353,9 @@ namespace OOX
 				}
 			}
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("<w:docDefaults>");
+			std::wstring sResult = _T("<w:docDefaults>");
 
 			if ( m_oParPr.IsInit() )
 			{
@@ -469,16 +469,16 @@ namespace OOX
 				}
 			}
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult;
-			sResult.AppendFormat( _T("<w:latentStyles w:count=\"%d\""), m_oCount.GetValue());
-			sResult += _T(" w:defLockedState=\"")	+ m_oDefLockedState.ToString() + _T("\"");
-			sResult += _T(" w:defQFormat=\"")		+ m_oDefQFormat.ToString() + _T("\"");
-			sResult += _T(" w:defSemiHidden=\"")	+ m_oDefSemiHidden.ToString() + _T("\"");
-			sResult.AppendFormat(_T(" w:defUIPriority=\"%d\""), m_oDefUiPriority.GetValue());
-			sResult += _T(" w:defUnhideWhenUsed=\"")+ m_oDefUnhideWhenUsed.ToString();
-			sResult += _T("\">");
+			std::wstring sResult;
+            sResult += L"<w:latentStyles w:count=\"" + std::to_wstring(m_oCount.GetValue())	+ L"\"";
+			sResult += L" w:defLockedState=\""		+ m_oDefLockedState.ToString()	+ L"\"";
+			sResult += L" w:defQFormat=\""			+ m_oDefQFormat.ToString()		+ L"\"";
+			sResult += L" w:defSemiHidden=\""		+ m_oDefSemiHidden.ToString()	+ L"\"";
+            sResult += L" w:defUIPriority=\""		+ std::to_wstring(m_oDefUiPriority.GetValue()) + L"\"";
+			sResult += L" w:defUnhideWhenUsed=\""	+ m_oDefUnhideWhenUsed.ToString();
+			sResult += L"\">";
 
 			for (unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
 			{
@@ -663,16 +663,16 @@ namespace OOX
 				else if ( _T("w:unhideWhenUsed") == sName ) m_oUnhideWhenUsed = oReader;
 			}
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("<w:style ");
+			std::wstring sResult = _T("<w:style ");
 
 			ComplexTypes_WriteAttribute( _T("w:customStyle=\""), m_oCustomStyle );
 			ComplexTypes_WriteAttribute( _T("w:default=\""),     m_oDefault );
 			if ( m_sStyleId.IsInit() )
 			{
 				sResult += _T("w:styleId=\"");
-				sResult += m_sStyleId->GetString();
+                sResult += m_sStyleId.get2();
 				sResult += _T("\" ");
 			}
 			ComplexTypes_WriteAttribute( _T("w:type=\""),        m_oType );
@@ -734,20 +734,20 @@ namespace OOX
 
 		// Attributes
 
-		nullable<SimpleTypes::COnOff<>     > m_oCustomStyle;
-		nullable<SimpleTypes::COnOff<>     > m_oDefault;
-		nullable<CString                   > m_sStyleId;
-		nullable<SimpleTypes::CStyleType<> > m_oType;
+		nullable<SimpleTypes::COnOff<>		> m_oCustomStyle;
+		nullable<SimpleTypes::COnOff<>		> m_oDefault;
+		nullable<std::wstring				> m_sStyleId;
+		nullable<SimpleTypes::CStyleType<>	> m_oType;
 
 		// Childs
-		nullable<ComplexTypes::Word::CString_                       > m_oAliases;
+		nullable<ComplexTypes::Word::String                       > m_oAliases;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oAutoRedefine;
-		nullable<ComplexTypes::Word::CString_                       > m_oBasedOn;
+		nullable<ComplexTypes::Word::String                       > m_oBasedOn;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oHidden;
-		nullable<ComplexTypes::Word::CString_                       > m_oLink;
+		nullable<ComplexTypes::Word::String                       > m_oLink;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oLocked;
-		nullable<ComplexTypes::Word::CString_                       > m_oName;
-		nullable<ComplexTypes::Word::CString_                       > m_oNext;
+		nullable<ComplexTypes::Word::String                       > m_oName;
+		nullable<ComplexTypes::Word::String                       > m_oNext;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonal;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalCompose;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oPersonalReply;
@@ -819,7 +819,7 @@ namespace OOX
 						{
 							if (oStyle->m_oName.IsInit())
 							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString2()] = m_arrStyle.size();
+								m_arrStyleNamesMap[oStyle->m_oName->ToString()] = (int)m_arrStyle.size();
 							}
 							m_arrStyle.push_back( oStyle );
 						}
@@ -857,7 +857,7 @@ namespace OOX
 						{
 							if (oStyle->m_oName.IsInit())
 							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString2()] = m_arrStyle.size();
+								m_arrStyleNamesMap[oStyle->m_oName->ToString()] = m_arrStyle.size();
 							}        
 							m_arrStyle.push_back( oStyle );
 						}
@@ -868,7 +868,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+			std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
 
 			if ( m_oDocDefaults.IsInit() )
@@ -906,7 +906,7 @@ namespace OOX
 		nullable<OOX::CDocDefaults  >	m_oDocDefaults;
 		nullable<OOX::CLatentStyles >	m_oLatentStyles;
 		std::vector<OOX::CStyle    *>	m_arrStyle;
-		std::map<CString, int>			m_arrStyleNamesMap;
+		std::map<std::wstring, int>			m_arrStyleNamesMap;
 
 	};
 } // namespace OOX

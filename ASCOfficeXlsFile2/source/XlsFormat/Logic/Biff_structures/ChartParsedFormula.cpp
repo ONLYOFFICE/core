@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BiffStructurePtr ChartParsedFormula::clone()
 {
 	return BiffStructurePtr(new ChartParsedFormula(*this));
 }
-
-
-void ChartParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Formula);
-}
-
 
 void ChartParsedFormula::load(CFRecord& record)
 {

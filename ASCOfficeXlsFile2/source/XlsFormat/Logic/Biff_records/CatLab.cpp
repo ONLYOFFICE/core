@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,17 +50,6 @@ BaseObjectPtr CatLab::clone()
 {
 	return BaseObjectPtr(new CatLab(*this));
 }
-
-
-void CatLab::writeFields(CFRecord& record)
-{
-	FrtHeaderOld frtHeaderOld(rt_CatLab);
-	unsigned short flags = 0;
-	SETBIT(flags, 0, cAutoCatLabelReal);
-	record << frtHeaderOld << wOffset << at << flags;
-	record.reserveNunBytes(2); // reserved
-}
-
 
 void CatLab::readFields(CFRecord& record)
 {

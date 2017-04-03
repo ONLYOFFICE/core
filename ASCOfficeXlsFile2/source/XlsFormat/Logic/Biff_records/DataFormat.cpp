@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr DataFormat::clone()
 {
 	return BaseObjectPtr(new DataFormat(*this));
 }
-
-
-void DataFormat::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fUnknown);
-	record << xi << yi << iss << flags;
-}
-
 
 void DataFormat::readFields(CFRecord& record)
 {

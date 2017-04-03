@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class LumEffect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LumEffect)
+			WritingElement_AdditionConstructors(LumEffect)
+			PPTX_LOGIC_BASE2(LumEffect)
 
 			LumEffect& operator=(const LumEffect& oSrc)
 			{
@@ -54,15 +55,28 @@ namespace PPTX
 				contrast = oSrc.contrast;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_lum;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bright"), bright)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("contrast"), contrast)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"bright", bright);
 				node.ReadAttributeBase(L"contrast", contrast);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("bright"), bright);

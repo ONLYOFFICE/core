@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,12 +49,38 @@ namespace PPTX
 		class UniPath2D : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniPath2D)
+			WritingElement_AdditionConstructors(UniPath2D)
+			PPTX_LOGIC_BASE2(UniPath2D)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				if (Path2D.IsInit())
+					return Path2D->getType();
+				return OOX::et_Unknown;
+			}			
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				if (name == _T("moveTo"))
+					Path2D.reset(new Logic::MoveTo(oReader));
+				else if (name == _T("lnTo"))
+					Path2D.reset(new Logic::LineTo(oReader));
+				else if (name == _T("cubicBezTo"))
+					Path2D.reset(new Logic::CubicBezTo(oReader));
+				else if (name == _T("close"))
+					Path2D.reset(new Logic::Close(oReader));
+				else if (name == _T("arcTo"))
+					Path2D.reset(new Logic::ArcTo(oReader));
+				else if (name == _T("quadBezTo"))
+					Path2D.reset(new Logic::QuadBezTo(oReader));
+				else Path2D.reset();
+			}
+				
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("moveTo"))
 					Path2D.reset(new Logic::MoveTo(node));
@@ -90,7 +116,7 @@ namespace PPTX
 				else Path2D.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (Path2D.IsInit())
 					return Path2D->toXML();
@@ -125,7 +151,7 @@ namespace PPTX
 					Path2D->SetParentPointer(pParent);
 			};
 
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				return Path2D->GetODString();
 			}

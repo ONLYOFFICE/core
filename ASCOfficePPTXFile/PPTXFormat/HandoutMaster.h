@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,12 +35,12 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
 #include "Logic/Hf.h"
 
-#include "DocxFormat/FileTypes.h"
 
 namespace PPTX
 {
@@ -63,7 +63,7 @@ namespace PPTX
 		{
 			//FileContainer::read(filename, map);
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			cSld = oNode.ReadNode(_T("p:cSld"));
 			cSld.SetParentFilePointer(this);
@@ -76,7 +76,7 @@ namespace PPTX
 			if (hf.is_init())
 				hf->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
@@ -91,16 +91,16 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:handoutMaster"), oAttr, oValue));
 			
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::HandoutMaster;
+			return OOX::Presentation::FileTypes::HandoutMaster;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

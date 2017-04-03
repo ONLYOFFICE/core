@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -133,7 +133,7 @@ namespace MetaFile
 		}
 
 		// IFont
-		int          GetHeight()
+		int GetHeight()
 		{
 			return LogFontEx.LogFont.Height;
 		}
@@ -141,31 +141,31 @@ namespace MetaFile
 		{
 			return std::wstring(NSFile::CUtf8Converter::GetWStringFromUTF16(LogFontEx.LogFont.FaceName, 32).c_str());
 		}
-		int          GetWeight()
+		int GetWeight()
 		{
 			return LogFontEx.LogFont.Weight;
 		}
-		bool         IsItalic()
+		bool IsItalic()
 		{
 			return (0x01 == LogFontEx.LogFont.Italic ? true : false);
 		}
-		bool         IsStrikeOut()
+		bool IsStrikeOut()
 		{
 			return (0x01 == LogFontEx.LogFont.StrikeOut ? true : false);
 		}
-		bool         IsUnderline()
+		bool IsUnderline()
 		{
 			return (0x01 == LogFontEx.LogFont.Underline ? true : false);
 		}
-		int          GetEscapement()
+		int GetEscapement()
 		{
 			return LogFontEx.LogFont.Escapement;
 		}
-		int          GetCharSet()
+		int GetCharSet()
 		{
 			return LogFontEx.LogFont.CharSet;
 		}
-		bool         IsFixedLength()
+		bool IsFixedLength()
 		{
 		    return m_bFixedLength;
 		}
@@ -177,7 +177,7 @@ namespace MetaFile
 
 	private:
 
-		bool             m_bFixedLength;
+		bool m_bFixedLength;
 	};
 
 	class CEmfLogPen : public CEmfObjectBase, public IPen

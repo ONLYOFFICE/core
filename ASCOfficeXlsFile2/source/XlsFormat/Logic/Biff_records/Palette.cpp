@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,15 +53,6 @@ BaseObjectPtr Palette::clone()
 	return BaseObjectPtr(new Palette(*this));
 }
 
-
-void Palette::writeFields(CFRecord& record)
-{
-	record << ccv;
-	for(BiffStructurePtrVector::const_iterator it = rgColor.begin(), itEnd = rgColor.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
 
 const std::wstring standart_color[8] = {
 										L"00000000",

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,8 +52,12 @@ namespace PPTX
 		class TextParagraphPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TextParagraphPr)
+			WritingElement_AdditionConstructors(TextParagraphPr)
 
+			TextParagraphPr()
+			{
+				m_name = L"a:pPr";
+			}
 			TextParagraphPr& operator=(const TextParagraphPr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -88,7 +92,46 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+						if ( _T("a:lnSpc") == sName )
+						lnSpc = oReader;
+					else if ( _T("a:defRPr") == sName )
+						defRPr = oReader;
+					else if ( _T("a:spcAft") == sName )
+						spcAft = oReader;
+					else if ( _T("a:spcBef") == sName )
+						spcBef = oReader;
+					//else if ( _T("a:extLst") == sName )
+					//	extLst = oReader;
+
+					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("buNone"))
+						ParagraphBullet.fromXML(oReader);
+					else if ( _T("a:buClr") == sName || sName == _T("a:buClrTx"))
+						buColor.fromXML(oReader);
+					else if ( _T("a:buFont") == sName ||  _T("a:buFontTx") == sName )
+						buTypeface.fromXML( oReader);
+					else if ( _T("a:buSzTx") == sName || sName == _T("a:buSzPct")  || sName == _T("a:buSzPts"))
+						buSize.fromXML(oReader);				
+				}
+			}
+
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_pPr;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -114,7 +157,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("lnSpc") == strName)
 							lnSpc = oNode;
@@ -139,7 +182,20 @@ namespace PPTX
 							
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("rtl"),		rtl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lvl"),		lvl)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"),	algn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fontAlgn"),fontAlgn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marL"),	marR)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("marR"),	marL)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("indent"),	indent)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("defTabSz"),defTabSz)					
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("marL"), marL);
@@ -466,7 +522,7 @@ namespace PPTX
 			BulletTypeface			buTypeface;
 			Bullet					ParagraphBullet;
 
-			std::vector<Tab>			tabLst;// (Tab List)
+			std::vector<Tab>		tabLst;// (Tab List)
 			nullable<RunProperties> defRPr;
 
 			// Attribs
@@ -483,7 +539,7 @@ namespace PPTX
 			nullable_bool						rtl;			// (Right To Left)
 		//private:
 		public:
-			mutable CString m_name;
+			mutable std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

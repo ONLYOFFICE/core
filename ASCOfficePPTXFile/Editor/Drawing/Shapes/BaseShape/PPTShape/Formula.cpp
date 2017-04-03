@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 
 LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 {
-	if ((0 > m_lIndex) || (m_lIndex >= pManager->m_arResults.size()))
+	if ((0 > m_lIndex) || (m_lIndex >= (int)pManager->m_arResults.size()))
 		return 0;
 	if (0xFFFFFFFF != pManager->m_arResults[m_lIndex])
 	{
@@ -44,8 +44,8 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 	
 	LONG lResult = 0;
 
-	LONG lGuidesCount	= pManager->m_arFormulas.size();
-	LONG lAdjCount		= pManager->m_pAdjustments->size();
+	LONG lGuidesCount	= (LONG)pManager->m_arFormulas.size();
+	LONG lAdjCount		= (LONG)pManager->m_pAdjustments->size();
 	
 	LONG a1 = m_lParam1;
 	if (ptFormula == m_eType1)

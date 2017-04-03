@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_HYPERLINK_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "../DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 #include "Media/WavAudioFile.h"
 
 namespace PPTX
@@ -45,14 +45,50 @@ namespace PPTX
 		class Hyperlink : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Hyperlink)
+			WritingElement_AdditionConstructors(Hyperlink)
+			PPTX_LOGIC_BASE2(Hyperlink)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_hyperlink;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (sName == L"snd")
+					{
+						snd	= oReader;
+						break;
+					}
+
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), id )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("invalidUrl"), invalidUrl )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("action"), action )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tgtFrame"), tgtFrame )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tooltip"), tooltip )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("history"), history)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("highlightClick"), highlightClick )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("endSnd"), endSnd )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
-                CString sSndNodeName = _T("snd");
+                std::wstring sSndNodeName = _T("snd");
                 snd	= node.ReadNodeNoNS(sSndNodeName);
 
 				node.ReadAttributeBase(L"r:id", id);
@@ -64,7 +100,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"highlightClick", highlightClick);
 				node.ReadAttributeBase(L"endSnd", endSnd);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:id"), id);
@@ -92,7 +128,7 @@ namespace PPTX
 					if (pWriter->m_pCommonRels->is_init())
 						pRels = pWriter->m_pCommonRels->operator ->();
 
-					CString str = GetFullHyperlinkName(pRels);
+					std::wstring str = GetFullHyperlinkName(pRels);
 					pWriter->WriteString1(0, str);
 				}
 
@@ -116,7 +152,7 @@ namespace PPTX
 				pReader->Skip(1); // start attributes
 
 				bool bIsPresentUrl = false;
-				CString strUrl = _T("");
+				std::wstring strUrl = _T("");
 
 				while (true)
 				{
@@ -180,9 +216,7 @@ namespace PPTX
 					{
 						LONG lId = pReader->m_pRels->WriteHyperlink(strUrl, action.is_init());
 
-						CString strRid = _T("");
-						strRid.Format(_T("rId%d"), lId);
-						id = strRid;
+						id = L"rId" + std::to_wstring(lId);
 					}
 				}
 
@@ -212,7 +246,7 @@ namespace PPTX
 		public:
 			nullable<WavAudioFile>	snd;
 
-			nullable_string			id;//<PPTX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
+			nullable_string			id;//<OOX::RId> id;//  <xsd:attribute ref="r:id" use="optional"/>
 			nullable_string			invalidUrl;//default=""
 			nullable_string			action;//default=""
 			nullable_string			tgtFrame;//default=""
@@ -222,7 +256,7 @@ namespace PPTX
 			nullable_bool			endSnd;//default="false"
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -230,7 +264,7 @@ namespace PPTX
 					snd->SetParentPointer(this);
 			}
 
-			virtual CString GetFullHyperlinkName(FileContainer* pRels)const;
+			virtual std::wstring GetFullHyperlinkName(FileContainer* pRels)const;
 		};
 	} // namespace Logic
 } // namespace PPTX

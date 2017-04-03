@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -117,7 +117,7 @@ _mediaitems* odf_conversion_context::mediaitems()
 void odf_conversion_context::end_document()
 {
 	rels	rels_;
-	for (long i=0; i< objects_.size(); i++)
+	for (size_t i = 0; i < objects_.size(); i++)
 	{
 		_object & object = objects_[i];
 		bool isRoot = (i == 0 ? true : false);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,28 +41,6 @@ BiffStructurePtr DXFFntD::clone()
 {
 	return BiffStructurePtr(new DXFFntD(*this));
 }
-
-void DXFFntD::store(CFRecord& record)
-{
-	unsigned char cchFont = stFontName.getSize();
-	record << cchFont;
-	if(cchFont)
-	{
-		stFontName.setSize(cchFont);
-		record << stFontName;
-		record.reserveNunBytes(63 - stFontName.getStructSize()); // unused1
-	}
-	else
-	{
-		record.reserveNunBytes(63); // unused1
-	}
-	record << stxp << icvFore;
-	record.reserveNunBytes(4); // reserved
-	record << tsNinch << fSssNinch << fUlsNinch << fBlsNinch;
-	record.reserveNunBytes(4); // unused1
-	record << ich << cch << iFnt;
-}
-
 
 void DXFFntD::load(CFRecord& record)
 {

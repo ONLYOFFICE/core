@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,7 +66,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				if (pIns->m_oDate.IsInit())
                 {
-                    std::wstring sVal = string2std_string(pIns->m_oDate->GetValue());
+                    std::wstring sVal = pIns->m_oDate->GetValue();
                     m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
                 }
 
@@ -81,7 +81,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				if (pDel->m_oDate.IsInit())
                 {
-                    std::wstring sVal = string2std_string(pDel->m_oDate->GetValue());
+                    std::wstring sVal = pDel->m_oDate->GetValue();
 
                     m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
                 }
@@ -456,8 +456,8 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				{
 					rtfMath->m_bIsVal = true;
 					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-					CString s; s.AppendFormat( L"%d", oFont.m_nID );
-					oChar->setText( s );
+
+                    oChar->setText( std::to_wstring(oFont.m_nID) );
 					rtfMath->m_oVal.AddItem( oChar );
 				}
 			}
@@ -904,7 +904,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
 	//----------------------------------
-			nullable<CString>	sVal;
+			nullable<std::wstring>	sVal;
 			
 			if		((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
 			else if ((ooxElemChar)		&& (ooxElemChar->m_val.IsInit()))			sVal = ooxElemChar->m_val->GetValue();
@@ -937,7 +937,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				rtfMath->m_bIsVal = true;
 				
 				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-				if (!sVal->IsEmpty())
+                if (!sVal->empty())
 					oChar->setText( L" " + *sVal );
 				
 				rtfMath->m_oVal.AddItem( oChar );

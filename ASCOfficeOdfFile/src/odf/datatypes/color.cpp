@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -104,8 +104,6 @@ const std::wstring color::get_hex_value() const
         }
         
     }
-
-    //_CP_LOG << "[warning] convert color error (" << color_ << L")\n";
     return L"000000";
 }
 

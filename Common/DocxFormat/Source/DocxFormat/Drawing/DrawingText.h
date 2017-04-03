@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,18 +59,18 @@ namespace OOX
 			virtual ~CTxBody()
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -119,19 +119,19 @@ namespace OOX
 			virtual ~CTxSp()
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать fromXML(XmlUtils::CXmlNode& oNode)
 			}
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

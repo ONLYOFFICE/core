@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,18 +34,15 @@
 #include <boost/optional/optional_io.hpp>
 #include <boost/optional.hpp>
 
-namespace cpdoccore
+/// внешнее объявление для Optional, используем boost::optional
+
+template <class T>
+struct optional
 {
-    /// внешнее объявление для Optional, используем boost::optional
-
-    template <class T>
-    struct optional
-    {
-        typedef T Base;
-        typedef boost::optional<T> Type;
-    };
+    typedef T Base;
+    typedef boost::optional<T> Type;
+};
 
 
-    #define _CP_OPT(V) optional<V>::Type
+#define _CP_OPT(V) optional<V>::Type
 
-}

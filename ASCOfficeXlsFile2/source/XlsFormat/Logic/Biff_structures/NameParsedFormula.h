@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,7 @@ public:
 	NameParsedFormula(const bool is_part_of_a_revision);
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record, const size_t cce);
-	virtual void store(CFRecord& record);
+
 
 	virtual void load(CFRecord& record) {};
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,8 +46,12 @@ namespace PPTX
 		class NvPicPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvPicPr)
+			WritingElement_AdditionConstructors(NvPicPr)
 
+			NvPicPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 			NvPicPr& operator=(const NvPicPr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -57,12 +61,35 @@ namespace PPTX
 				cNvPicPr	= oSrc.cNvPicPr;
 				nvPr		= oSrc.nvPr;
 
+				m_namespace	= oSrc.m_namespace;
+
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("cNvPr") == strName)
+						cNvPr.fromXML( oReader);
+					else if (_T("cNvPicPr") == strName)
+						cNvPicPr.fromXML( oReader);
+					else if (_T("nvPr") == strName)
+						nvPr.fromXML( oReader);
+				}
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
 				{
@@ -72,7 +99,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("cNvPr") == strName)
 							cNvPr = oNode;
@@ -86,24 +113,24 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cNvPr);
 				oValue.Write(cNvPicPr);
 				oValue.Write(nvPr);
 
-				return XmlUtils::CreateNode(_T("p:nvPicPr"), oValue);
+				return XmlUtils::CreateNode(m_namespace + L":nvPicPr", oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->StartNode(_T("pic:nvPicPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:nvPicPr"));
-				else
-					pWriter->StartNode(_T("p:nvPicPr"));
+				std::wstring namespace_ = m_namespace;
+
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_ = L"pic";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+
+				pWriter->StartNode(namespace_ + L":nvPicPr");
 
 				pWriter->EndAttributes();
 
@@ -113,12 +140,7 @@ namespace PPTX
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)
 					nvPr.toXmlWriter(pWriter);
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("pic:nvPicPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:nvPicPr"));
-				else
-					pWriter->EndNode(_T("p:nvPicPr"));
+				pWriter->EndNode(namespace_ + L":nvPicPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -159,11 +181,11 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			std::wstring	m_namespace;
 
-		public:
-			CNvPr		cNvPr;
-			CNvPicPr	cNvPicPr;
-			NvPr		nvPr;
+			CNvPr			cNvPr;
+			CNvPicPr		cNvPicPr;
+			NvPr			nvPr;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

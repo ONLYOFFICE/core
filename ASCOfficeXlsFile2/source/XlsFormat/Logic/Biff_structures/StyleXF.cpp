@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,45 +51,6 @@ BiffStructurePtr StyleXF::clone()
 {
 	return BiffStructurePtr(new StyleXF(*this));
 }
-
-void StyleXF::store(CFRecord& record)
-{
-	_UINT32 flags = 0;
-	
-	SETBITS(flags, 0, 2, alc);
-	SETBIT(flags, 3, fWrap);
-	SETBITS(flags, 4, 6, alcV);
-	SETBIT(flags, 7, fJustLast);
-	SETBITS(flags, 8, 15, trot);
-	SETBITS(flags, 16, 19, cIndent);
-	SETBIT(flags, 20, fShrinkToFit);
-	SETBITS(flags, 22, 23, iReadOrder);
-	record << flags;
-
-	flags = 0;
-	SETBITS(flags, 0, 3, border.dgLeft);
-	SETBITS(flags, 4, 7, border.dgRight);
-	SETBITS(flags, 8, 11, border.dgTop);
-	SETBITS(flags, 12, 15, border.dgBottom);
-	SETBITS(flags, 16, 22, border.icvLeft);
-	SETBITS(flags, 23, 29, border.icvRight);
-	SETBITS(flags, 30, 31, border.grbitDiag);
-	record << flags;
-
-	flags = 0;
-	SETBITS(flags, 0, 6, border.icvTop);
-	SETBITS(flags, 7, 13, border.icvBottom);
-	SETBITS(flags, 14, 20, border.icvDiag);
-	SETBITS(flags, 21, 24, border.dgDiag);
-	SETBITS(flags, 26, 31, fill.fls);
-	record << flags;
-
-	_UINT16 flags2 = 0;
-	SETBITS(flags2, 0, 6, fill.icvFore);
-	SETBITS(flags2, 7, 13, fill.icvBack);
-	record << flags2;
-}
-
 
 void StyleXF::load(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,6 +64,7 @@ public:
 	std::wstringstream  customViews_;
 	std::wstringstream  conditionalFormatting_;
 	std::wstringstream  picture_background_;
+	std::wstringstream  dataValidations_;
 
 	rels rels_;
 
@@ -164,7 +165,10 @@ std::wostream & xlsx_xml_worksheet::picture_background()
 {
     return impl_->picture_background_;
 }
-
+std::wostream & xlsx_xml_worksheet::dataValidations()
+{
+    return impl_->dataValidations_;
+}
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -203,6 +207,8 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			CP_XML_STREAM() << impl_->mergeCells_.str();
 			
 			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
+
+			CP_XML_STREAM() << impl_->dataValidations_.str();
 
 			CP_XML_STREAM() << impl_->hyperlinks_.str();
   	

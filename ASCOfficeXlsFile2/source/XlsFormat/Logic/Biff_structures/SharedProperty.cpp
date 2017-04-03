@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,14 +49,6 @@ SharedProperty::SharedProperty(XLS::CFRecord& record)
 XLS::BiffStructurePtr SharedProperty::clone()
 {
     return XLS::BiffStructurePtr(new SharedProperty(*this));
-}
-
-
-void SharedProperty::store(XLS::CFRecord& record)
-{
-#pragma message("####################### Property record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! Property record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 

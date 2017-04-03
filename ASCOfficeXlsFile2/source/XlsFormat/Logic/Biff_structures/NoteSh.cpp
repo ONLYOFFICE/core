@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,15 +59,6 @@ BiffStructurePtr NoteSh::clone()
 {
 	return BiffStructurePtr(new NoteSh(*this));
 }
-
-
-void NoteSh::store(CFRecord& record)
-{
-#pragma message("####################### NoteSh record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! NoteSh record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void NoteSh::load(CFRecord& record)
 {

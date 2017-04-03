@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,24 +44,9 @@ ShtProps::~ShtProps()
 {
 }
 
-
 BaseObjectPtr ShtProps::clone()
 {
 	return BaseObjectPtr(new ShtProps(*this));
-}
-
-
-void ShtProps::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fManSerAlloc);
-	SETBIT(flags, 1, fPlotVisOnly);
-	SETBIT(flags, 2, fNotSizeWith);
-	bool fManPlotArea = fAlwaysAutoPlotArea;
-	SETBIT(flags, 3, fManPlotArea);
-	SETBIT(flags, 4, fAlwaysAutoPlotArea);
-	record << flags << mdBlank;
-	record.reserveNunBytes(1); // reserved2
 }
 
 

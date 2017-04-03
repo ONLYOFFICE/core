@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,12 +47,19 @@ namespace PPTX
 		public:
 			TableCell();
 			virtual ~TableCell();			
+			
 			explicit TableCell(XmlUtils::CXmlNode& node);
 			const TableCell& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			explicit TableCell(XmlUtils::CXmlLiteReader& oReader);
+			const TableCell& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
 
 			virtual void GetShapeProperties(ShapeProperties& props)const;
 
@@ -148,7 +155,7 @@ namespace PPTX
 						{
                             txBody = new Logic::TxBody();
                             txBody->fromPPTY(pReader);
-                            txBody->m_ns = _T("a");
+							txBody->m_name = _T("a:txBody");
 							break;
 						}
 						default:

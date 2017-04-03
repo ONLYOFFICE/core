@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -177,6 +177,10 @@ namespace DocFileFormat
 		StringTable<FontFamilyName>			*FontTable;		// A list of all font names, used in the doucument
 		StringTable<WideString>				*BookmarkNames;
 		StringTable<WideString>				*AutoTextNames;
+		StringTable<WideString>				*AssocNames;
+		StringTable<WideString>				*BookmarkAnnotNames;
+		StringTable<WideString>				*Captions;
+		StringTable<WideString>				*AutoCaptions;
 
 		Plex<EmptyStructure>				*IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
 		Plex<FootnoteDescriptor>			*FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
@@ -187,7 +191,7 @@ namespace DocFileFormat
 		Plex<EmptyStructure>				*HeaderStoriesPlex;					//A plex of the header document
 		Plex<EmptyStructure>				*IndividualCommentsPlex;			// A plex with all ATRDPre10 structs
 		
-		Plex<EmptyStructure>				*TextboxIndividualPlex;	
+		Plex<FTXBXS>						*TextboxIndividualPlex;	
 		Plex<Tbkd>							*TextboxBreakPlex;					// Describes the breaks inside the textbox subdocument
 		Plex<Tbkd>							*TextboxBreakPlexHeader;			// Describes the breaks inside the header textbox subdocument
 		
@@ -200,13 +204,14 @@ namespace DocFileFormat
 		Plex<BookmarkFirst>					*BookmarkStartPlex;
 		Plex<EmptyStructure>				*BookmarkEndPlex;		
 
+		Plex<ListNumCache>					*ListPlex;
 		Plex<FieldCharacter>				*FieldsPlex;
 		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*EndnoteDocumentFieldsPlex;
 		Plex<FieldCharacter>				*HeadersAndFootersDocumentFieldsPlex;
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
-		Plex<EmptyStructure>				*AutoTextPlex;		// Each character position specifies the beginning of\
-															a range of text that constitutes the contents of an AutoText item
+		Plex<EmptyStructure>				*AutoTextPlex;		
+		// Each character position specifies the beginning of a range of text that constitutes the contents of an AutoText item
 		
 	};
 }

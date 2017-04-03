@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,18 +50,6 @@ BaseObjectPtr StartObject::clone()
 {
 	return BaseObjectPtr(new StartObject(*this));
 }
-
-
-void StartObject::writeFields(CFRecord& record)
-{
-	FrtHeaderOld rt(rt_StartObject);
-	record << rt;
-
-	iObjectContext = 0;
-	iObjectInstance2 = 0;
-	record << iObjectKind << iObjectContext << iObjectInstance1 << iObjectInstance2;
-}
-
 
 void StartObject::readFields(CFRecord& record)
 {

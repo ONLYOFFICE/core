@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,8 +55,7 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
-
-
+#include "style_page_layout_properties.h"
 
 namespace cpdoccore 
 {
@@ -175,8 +174,11 @@ struct odf_drawing_state
 		svg_y_				= boost::none;
 		svg_height_			= boost::none;
 		svg_width_			= boost::none;
+		fill_color_			= boost::none;
 
 		name_				= L"";
+		description_		= L"";
+		hidden_				= false;
 		z_order_			= -1;
 		
 		rotateAngle			= boost::none;
@@ -201,11 +203,13 @@ struct odf_drawing_state
 	_CP_OPT(length) svg_height_;
 	_CP_OPT(length) svg_width_;	
 
+	std::wstring	name_;
+	std::wstring	description_;
+	int				z_order_;
+	bool			hidden_;
 
-	std::wstring name_;
-	int z_order_;
-
-	_CP_OPT(double) rotateAngle;
+	_CP_OPT(double)			rotateAngle;
+	_CP_OPT(unsigned int)	fill_color_;
 
 	bool flipH;
 	bool flipV;
@@ -235,8 +239,9 @@ public:
 
 		width = height = x = y = 0;
 		
-		is_header_ = false;
-		is_footer_ = false;
+		is_header_		= false;
+		is_footer_		= false;
+		is_background_	= false;
 	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Liber && OpenOffice.net
 									//в MS Office и в нашем - проблем таких нет.
 	} 
@@ -251,6 +256,7 @@ public:
 
 	bool is_footer_;
 	bool is_header_;
+	bool is_background_;
 
 	void				create_draw_base(int type);
 	office_element_ptr	create_draw_element(int type);
@@ -306,10 +312,18 @@ void odf_drawing_context::set_header_state(bool Val)
 {
 	impl_->is_header_ = Val;
 }
+
+void odf_drawing_context::set_background_state(bool Val)
+{
+	impl_->is_background_ = Val;
+
+	impl_->current_graphic_properties = new style_graphic_properties();
+}
+
 void odf_drawing_context::check_anchor()
 {
 	return;
-	if ((impl_->is_footer_ || impl_->is_header_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
+	if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && (impl_->anchor_settings_.run_through_) && (impl_->anchor_settings_.run_through_->get_type() == run_through::Background))
 	{
 		set_anchor(anchor_type::Char);
 		//подозрительно на подложку страницы
@@ -342,10 +356,12 @@ void odf_drawing_context::start_group()
 	if (group== NULL)return;
 
 	//если группа топовая - то данные если не записать - сотруться
-	if (impl_->current_drawing_state_.name_.length() > 0)
+	if (!impl_->current_drawing_state_.name_.empty())
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 	if (impl_->current_drawing_state_.z_order_ >= 0)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_z_index_attlist_.draw_z_index_ = impl_->current_drawing_state_.z_order_;
+	if (!impl_->current_drawing_state_.name_.empty())
+		group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 
 	impl_->current_drawing_state_.name_		= L"";
 	impl_->current_drawing_state_.z_order_	= -1;
@@ -439,7 +455,18 @@ void odf_drawing_context::start_drawing()
 }
 void odf_drawing_context::end_drawing()
 {
-	if (impl_->current_drawing_state_.elements_.empty()) return;
+	if (impl_->current_drawing_state_.elements_.empty())
+	{
+		if (impl_->is_background_ && impl_->current_graphic_properties)
+		{
+			style_page_layout_properties * current_layout_properties = impl_->odf_context_->page_layout_context()->last_layout()->get_properties();
+			current_layout_properties->style_page_layout_properties_attlist_.common_draw_fill_attlist_.apply_from(impl_->current_graphic_properties->content().common_draw_fill_attlist_);
+			delete impl_->current_graphic_properties;
+			impl_->current_graphic_properties	= NULL;
+			impl_->current_drawing_state_.clear();
+		}
+		return;
+	}
 
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
 
@@ -565,12 +592,13 @@ void odf_drawing_context::end_drawing()
 	{
 		impl_->tops_elements_.push_back(impl_->current_drawing_state_.elements_[0].elm);
 	}
+
 ///////////////
 	impl_->current_drawing_state_.clear();
+	
 	impl_->current_graphic_properties	= NULL;
 	impl_->current_paragraph_properties = NULL;
 	impl_->current_text_properties		= NULL;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -624,7 +652,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)return;
 //////////	
-	styles_context_->create_style(L"",style_family::Graphic, true, false, -1);		
+	styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
 	
 	office_element_ptr & style_shape_elm = styles_context_->last_state()->get_office_element();
 	std::wstring style_name;
@@ -880,7 +908,7 @@ void odf_drawing_context::end_shape()
 
 					enhanced->draw_enhanced_geometry_attlist_.draw_enhanced_path_ = shape_define->enhanced_path;
 
-					for (long i=0; i < shape_define->equations.size();i++)
+					for (size_t i = 0; i < shape_define->equations.size();i++)
 					{
 						office_element_ptr elm_eq;
 						create_element(L"draw", L"equation", elm_eq, impl_->odf_context_);					
@@ -894,7 +922,7 @@ void odf_drawing_context::end_shape()
 						end_element();
 					}
 				//-----------------------------
-					for (long i=0; i < shape_define->handles.size();i++)
+					for (size_t i = 0; i < shape_define->handles.size();i++)
 					{
 						office_element_ptr elm_h;
 						create_element(L"draw", L"handle", elm_h, impl_->odf_context_);					
@@ -956,9 +984,9 @@ void odf_drawing_context::end_frame()
 /////////////////////
 void odf_drawing_context::start_element(office_element_ptr & elm, office_element_ptr  style_elm)
 {
-	int level = impl_->current_level_.size();
+	int level = (int)impl_->current_level_.size();
 	
-	if (impl_->current_level_.size()>0)
+	if (impl_->current_level_.size() > 0)
 		impl_->current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
@@ -968,13 +996,13 @@ void odf_drawing_context::start_element(office_element_ptr & elm, office_element
 		style_name = style_->style_name_;
 		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
 
-		if (impl_->current_drawing_state_.name_.length() < 1)
+		if (impl_->current_drawing_state_.name_.empty())
 		{
 			impl_->current_drawing_state_.name_ = std::wstring(L"Object_") + style_name;
 		}
 	}
 
-	odf_element_state state={elm, style_name, style_elm, level};
+	odf_element_state state = {elm, style_name, style_elm, level};
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
@@ -1009,9 +1037,17 @@ void odf_drawing_context::end_line_properties()
 //	impl_->current_drawing_part_ = Unknown;
 //}
 ////////////////////////////////////////////////////////////////////
-void odf_drawing_context::set_name(std::wstring  name)
+void odf_drawing_context::set_name(const std::wstring & name)
 {
 	impl_->current_drawing_state_.name_ = name;
+}
+void odf_drawing_context::set_description (const std::wstring & description)
+{
+	impl_->current_drawing_state_.description_ = description;
+}
+void odf_drawing_context::set_hidden (bool bVal)
+{
+	impl_->current_drawing_state_.hidden_ = bVal;
 }
 void odf_drawing_context::set_opacity(double percent_)
 {
@@ -1055,7 +1091,7 @@ void odf_drawing_context::set_no_fill()
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		if ((impl_->is_footer_ || impl_->is_header_) && 
+		if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
 			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
 			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
 		{
@@ -1075,6 +1111,17 @@ void odf_drawing_context::set_type_fill(int type)
 
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = (draw_fill::type)type;
 }
+
+void odf_drawing_context::set_fill_color(unsigned int Color)
+{
+	impl_->current_drawing_state_.fill_color_ = Color;
+}
+
+_CP_OPT(unsigned int) odf_drawing_context::get_fill_color()
+{
+	return impl_->current_drawing_state_.fill_color_;
+}
+
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
@@ -1084,28 +1131,29 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 
 	switch(impl_->current_drawing_part_)
 	{
-	case Area:
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
-		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
-		//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
-		
-		if ((impl_->is_footer_ || impl_->is_header_) && 
-			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
-			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
-		{
-		}
-		else
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
-		break;
-	case Line:
-		impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
-		if (!impl_->current_graphic_properties->content().draw_stroke_)
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
-		if (!impl_->current_graphic_properties->content().svg_stroke_width_)
-			impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1,length::pt).get_value_unit(length::cm),length::cm);//default
-		break;
+		case Area:
+			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
+			impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
+			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
+			
+			if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
+				(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
+				(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
+			{
+			}
+			else
+				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
+			break;
+		case Line:
+			impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
+			if (!impl_->current_graphic_properties->content().draw_stroke_)
+				impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
+			if (!impl_->current_graphic_properties->content().svg_stroke_width_)
+				impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1,length::pt).get_value_unit(length::cm),length::cm);//default
+			break;
 	}
 }
+	
 void odf_drawing_context::set_z_order(int id)
 {
 	if (id < 0)
@@ -1125,7 +1173,7 @@ void odf_drawing_context::set_path(std::wstring path_string)
 	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
 	//impl_->current_drawing_state_.path_ = path_string;
 }
-void odf_drawing_context::add_path_element(std::wstring command, std::wstring & strE)
+void odf_drawing_context::add_path_element(std::wstring command, const std::wstring & strE)
 {
 	if (command != impl_->current_drawing_state_.path_last_command_)
 	{
@@ -1230,7 +1278,7 @@ void odf_drawing_context::set_object_foreground(bool Val)
 {
 	if (Val)
 	{
-		if (impl_->is_footer_|| impl_->is_header_)
+		if (impl_->is_footer_|| impl_->is_header_ || impl_->is_background_)
 		{
 			impl_->anchor_settings_.run_through_ = run_through(run_through::Background);
 		}
@@ -1260,7 +1308,7 @@ void odf_drawing_context::set_margin_bottom	(double valPt)
 }
 void odf_drawing_context::set_anchor(int  type)
 {
-	if ((impl_->is_footer_|| impl_->is_header_) && type == anchor_type::Page)
+	if ((impl_->is_footer_|| impl_->is_header_ || impl_->is_background_) && type == anchor_type::Page)
 	{
 		type = anchor_type::Paragraph;
 	}
@@ -1356,7 +1404,7 @@ void odf_drawing_context::set_horizontal_pos(double offset_pt)
 }
 void odf_drawing_context::set_default_wrap_style()
 {
-	if (impl_->is_header_ || impl_->is_footer_ )
+	if (impl_->is_header_ || impl_->is_footer_ || impl_->is_background_)
 	{
 		impl_->anchor_settings_.style_wrap_ = style_wrap::RunThrough;
 	}
@@ -1500,7 +1548,19 @@ void odf_drawing_context::set_position_line(_CP_OPT(double) & x_pt, _CP_OPT(doub
 	if (y2_pt && !line->draw_line_attlist_.svg_y2_) line->draw_line_attlist_.svg_y2_ = length(length(*y2_pt,length::pt).get_value_unit(length::cm),length::cm);
 
 }
-
+void odf_drawing_context::get_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
+{
+	if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
+	{
+		x_pt	= impl_->current_drawing_state_.svg_x_->get_value_unit(length::pt);
+		y_pt	= impl_->current_drawing_state_.svg_y_->get_value_unit(length::pt);
+	}
+	else if (impl_->anchor_settings_.svg_x_ && impl_->anchor_settings_.svg_y_)
+	{
+		x_pt	= impl_->anchor_settings_.svg_x_->get_value_unit(length::pt);
+		y_pt	= impl_->anchor_settings_.svg_y_->get_value_unit(length::pt);
+	}
+}
 void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt)
 {
 	if (x_pt)
@@ -1516,7 +1576,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		}
 		if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group)
 		{
-			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
 		}	
 	}
 	
@@ -1538,7 +1598,7 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 		}
 	}
 }
-void odf_drawing_context::get_size( double & width_pt, double & height_pt)
+void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
 	if (impl_->current_drawing_state_.svg_width_ && impl_->current_drawing_state_.svg_height_)
 	{
@@ -1550,7 +1610,6 @@ void odf_drawing_context::get_size( double & width_pt, double & height_pt)
 		width_pt	= impl_->anchor_settings_.svg_width_->get_value_unit(length::pt);
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
-
 }
 void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
@@ -1840,14 +1899,14 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 
 }
 
-void odf_drawing_context::set_textarea_padding(double left,double top, double right,double bottom)//in cm
+void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in cm
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(left,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(top,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(right,	length::cm);
-	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(bottom,length::cm);
+	if (left)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(*left,	length::cm);
+	if (top)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(*top,	length::cm);
+	if (right)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(*right,length::cm);
+	if (bottom)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::cm);
 }
 
 
@@ -1855,7 +1914,7 @@ void odf_drawing_context::set_textarea_padding(double left,double top, double ri
 //вложенные элементы
 void odf_drawing_context::start_image(std::wstring odf_path)
 {	
-	if (impl_->is_footer_ || impl_->is_header_)
+	if (impl_->is_footer_ || impl_->is_header_ || impl_->is_background_)
 	{
 		start_shape(142/*SimpleTypes::shapetypeRect*/);
 		start_bitmap_style();
@@ -1987,7 +2046,7 @@ void odf_drawing_context::set_text_box_parent_style(std::wstring style_name)
 
 void odf_drawing_context::end_image()
 {
-	if (impl_->is_footer_ || impl_->is_header_)
+	if (impl_->is_footer_ || impl_->is_header_ || impl_->is_background_)
 	{
 		end_bitmap_style();
 		end_shape();
@@ -2069,7 +2128,7 @@ bool odf_drawing_context::is_exist_content()
 
 void odf_drawing_context::finalize(office_element_ptr & root_elm)//для привязки 
 {
-	for (int i=0; i< impl_->tops_elements_.size(); i++)
+	for (size_t i=0; i< impl_->tops_elements_.size(); i++)
 	{
 		root_elm->add_child_element(impl_->tops_elements_[i]);
 	}	
@@ -2085,7 +2144,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() <1 )return;
 
-	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
 		if (text_context->text_elements_list_[i].level ==0)
 		{
@@ -2155,8 +2214,10 @@ void odf_drawing_context::start_gradient_style()
 	gradient->draw_start_color_ = impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_;
 	if (gradient->draw_start_color_) gradient->draw_start_intensity_ = 100.;
 	
+	gradient->draw_border_ = 0;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
 	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
+
 
 }
 void odf_drawing_context::set_gradient_type(gradient_style::type style)
@@ -2174,7 +2235,7 @@ void odf_drawing_context::set_gradient_start(std::wstring hexColor, _CP_OPT(doub
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 	
-	gradient->draw_start_color_ = hexColor;
+	gradient->draw_start_color_		= hexColor;
 	gradient->draw_start_intensity_ = 100.;
 }
 void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv)
@@ -2185,15 +2246,15 @@ void odf_drawing_context::set_gradient_end  (std::wstring hexColor, _CP_OPT(doub
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 
-	gradient->draw_end_color_ = hexColor;
-	gradient->draw_end_intensity_ = 100.;
+	gradient->draw_end_color_		= hexColor;
+	gradient->draw_end_intensity_	= 100.;
 }
 void odf_drawing_context::set_gradient_angle(double angle)
 {
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (270-angle)*10;//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = (270-  angle) * 10;//(int)((360 - angle)/180. * 3.14159265358979323846);
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r,double b)
 {
@@ -2697,7 +2758,7 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 void odf_drawing_context::set_bitmap_link(std::wstring file_path)
 {
 	std::wstring odf_ref_name ;	
-	impl_->odf_context_->mediaitems()->add_or_find(file_path,_mediaitems::typeImage,odf_ref_name);
+	impl_->odf_context_->mediaitems()->add_or_find(file_path, _mediaitems::typeImage, odf_ref_name);
 	
 	if (impl_->current_drawing_state_.oox_shape_preset == 3000)
 	{

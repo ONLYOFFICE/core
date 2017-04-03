@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,12 +49,6 @@ BaseObjectPtr Feature11::clone()
 {
 	return BaseObjectPtr(new Feature11(*this));
 }
-
-
-void Feature11::writeFields(CFRecord& record)
-{
-}
-
 
 void Feature11::readFields(CFRecord& record)
 {

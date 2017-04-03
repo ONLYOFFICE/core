@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class Grayscl : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Grayscl)
+			WritingElement_AdditionConstructors(Grayscl)
+			PPTX_LOGIC_BASE2(Grayscl)
 
 			Grayscl& operator=(const Grayscl& oSrc)
 			{
@@ -52,13 +53,18 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_grayscl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:grayscl/>");
 			}

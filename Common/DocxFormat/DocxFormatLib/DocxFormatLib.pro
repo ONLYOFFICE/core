@@ -16,17 +16,26 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_x2t
 include(../../../Common/base.pri)
 
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED
+DEFINES +=  UNICODE _UNICODE \
+            _USE_LIBXML2_READER_ \
+            _USE_XMLLITE_READER_ \
+            USE_LITE_READER \
+            LIBXML_READER_ENABLED \
+            DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \
     ../../../DesktopEditor/xml/libxml2/include
 
-build_fast {
+#BOOST
+include($$PWD/../../3dParty/boost/boost.pri)
+
+core_release {
 SOURCES += \
-    docxformatlib_logic.cpp \
-    docxformatlib_file.cpp
-} else {
+    docxformatlib_logic.cpp
+}
+
+core_debug {
 SOURCES += \
     ../Source/DocxFormat/Drawing/DrawingCoreInfo.cpp \
     ../Source/DocxFormat/Drawing/DrawingEffects.cpp \
@@ -51,28 +60,12 @@ SOURCES += \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
-    \
     ../Source/XlsxFormat/Common.cpp \
-    ../Source/XML/libxml2/libxml2.cpp \
-    ../Source/XML/stringcommon.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
-    ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/XlsxFormat/IFileContainer_Spreadsheet.cpp \
-
-core_windows {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/Directory.cpp \
-        ../Source/SystemUtility/FileSystem/File.cpp \
-} else {
-    SOURCES += \
-        ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-        ../Source/SystemUtility/FileSystem/FilePosix.cpp \
-}
-}
-
-SOURCES += docxformatlib.cpp \
+    ../Source/DocxFormat/Drawing/DrawingExt.cpp \
     ../Source/Common/Align.cpp \
     ../Source/Common/Color.cpp \
     ../Source/Common/Index.cpp \
@@ -82,12 +75,16 @@ SOURCES += docxformatlib.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
+    ../Source/SystemUtility/SystemUtility.cpp
+}
+
+
+SOURCES += docxformatlib.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp \
-    ../Source/DocxFormat/Drawing/DrawingExt.cpp
+    ../../3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
@@ -98,7 +95,6 @@ HEADERS += docxformatlib.h \
     ../Source/Common/Color.h \
     ../Source/Common/Common.h \
     ../Source/Common/ComplexTypes.h \
-    ../Source/Common/Encoding.h \
     ../Source/Common/Index.h \
     ../Source/Common/NumFormat.h \
     ../Source/Common/Point.h \
@@ -220,7 +216,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
-    ../Source/XlsxFormat/Drawing/GraphicFrame.h \
     ../Source/XlsxFormat/Drawing/Image.h \
     ../Source/XlsxFormat/Drawing/Pic.h \
     ../Source/XlsxFormat/Drawing/Pos.h \
@@ -266,16 +261,11 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/XlsxFormat/Xlsx.h \
-    ../Source/XML/libxml2/libxml2.h \
-    ../Source/XML/StringWriter.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
-    ../Source/XML/xmlutils.h \
-    ../Source/Base/ASCString.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
     ../Source/DocxFormat/Drawing/DrawingText.h \
     ../Source/DocxFormat/Drawing/DrawingTextProperties.h \
-    ../Source/XML/stringcommon.h \
     ../Source/MathEquation/LEStream.h \
     ../Source/MathEquation/MathEquation.h \
     ../Source/MathEquation/OutputDev.h \
@@ -286,4 +276,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
-    ../Source/XlsxFormat/Ole/OleObjects.h
+    ../Source/XlsxFormat/Ole/OleObjects.h \
+    ../Source/DocxFormat/Diagram/DiagramData.h

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,19 +68,6 @@ void Rgce::load(CFRecord& record, const size_t cce_val)
 		sequence.push_back(ptg);
 	}
 }
-
-
-void Rgce::store(CFRecord& record)
-{
-	size_t rgce_start_offset = record.getDataSize();
-
-	for(PtgVector::const_iterator it = sequence.begin(), itEnd = sequence.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-	cce = record.getDataSize() - rgce_start_offset;
-}
-
 
 void Rgce::load(CFRecord& record)
 {

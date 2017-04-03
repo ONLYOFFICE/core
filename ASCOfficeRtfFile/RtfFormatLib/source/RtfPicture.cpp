@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,9 +34,9 @@
 #include "RtfWriter.h"
 #include "Utils.h"
 
-CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
+std::wstring RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"{\\pict";
 
 	RENDER_RTF_INT( 100,			sResult, L"picscalex" )
@@ -63,7 +63,7 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//todooo ??? переписать
 	//if( true == LoadPicture( &piTempPict, m_sPicFilename ) )
 	//{
-	//	CString sTempFile = Utils::CreateTempFile( poWriter->m_sTempFolder );
+    //	std::wstring sTempFile = Utils::CreateTempFile( poWriter->m_sTempFolder );
 	//	if( true == SavePicture( piTempPict, sTempFile, IMAGEFORMAT_WMF ) )
 	//	{
 	//		m_aTempFiles.push_back( sTempFile );
@@ -75,19 +75,15 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)		
+std::wstring RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if( !IsValid() )return L"";
 
-	CString sResult = L"{\\pict";
+    std::wstring sResult = L"{\\pict";
 
-	//if(-1 != m_nShapeId)
-	//{
-	//	sResult.AppendFormat(L"{\\*\\picprop\\shplid%d", m_nShapeId);
-	//	sResult += m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
-	//}
-	//else
-	//	sResult.AppendFormat(L"{\\*\\picprop" + m_oShapeProp.RenderToRtf( oRenderParameter ) + L"}";
+	if (!dump_shape_properties.empty())
+		sResult += L"{\\*\\picprop" + dump_shape_properties + L"}";
+
 	RENDER_RTF_INT( (int)m_dScaleX, sResult, L"picscalex" )
 	RENDER_RTF_INT( (int)m_dScaleY, sResult, L"picscaley" )
 	RENDER_RTF_INT( m_nCropL,		sResult, L"piccropl" )
@@ -115,7 +111,7 @@ CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( false == IsValid() )	return L"";
 	
@@ -123,8 +119,8 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
 	RtfDocument		* poRtfDocument	= static_cast<RtfDocument*>		(oRenderParameter.poDocument);
 	
-	CString sExtension;	
-	CString sMime;
+    std::wstring sExtension;
+    std::wstring sMime;
 	switch( eDataType )
 	{
 		case dt_png:	sExtension = L"png"; sMime = L"image/png";		break;
@@ -134,13 +130,12 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
 	}
 
-	CString sFilenameRels;
-    sFilenameRels.AppendFormat( L"Image%d.", poRtfDocument->m_oIdGenerator.Generate_ImageIndex());
+    std::wstring sFilenameRels = L"Image" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_ImageIndex()) + L".";
 	sFilenameRels += sExtension;
 	
-	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";
+    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR +L"media";
 	
-	FileSystem::Directory::CreateDirectory( sFilenameFull );
+    NSDirectory::CreateDirectory( sFilenameFull );
 	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 	sFilenameRels = L"media/" + sFilenameRels;
@@ -152,7 +147,7 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
 
-	CString srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);
+    std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", sFilenameRels);
 
 	return srId;
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,26 @@ namespace PPTX
 		class Ph : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Ph)
+			WritingElement_AdditionConstructors(Ph)
 
-		public:
+			Ph()
+			{
+			}
+				
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("hasCustomPrompt"),	hasCustomPrompt)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("idx"),	idx)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("orient"),	orient)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("sz"),	sz)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("type"),	type)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"hasCustomPrompt", hasCustomPrompt);
@@ -55,7 +72,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"sz", sz);
 				node.ReadAttributeBase(L"type", type);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("type"), type);

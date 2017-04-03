@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,7 +73,7 @@ public:
 	}
 	void set_3D_chart(bool val)
 	{
-		for (int i = 0 ; i < plot_area_.charts_.size(); i++)
+		for (size_t i = 0 ; i < plot_area_.charts_.size(); i++)
 		{
 			plot_area_.charts_[i]->is3D_ = val;
 		}

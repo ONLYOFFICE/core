@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 #include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
 
-#include "../SystemUtility/FileSystem/Directory.h"
 #include "../DocxFormat/Theme/Theme.h"
 #include "../DocxFormat/App.h"
 #include "../DocxFormat/Core.h"
@@ -48,6 +47,9 @@
 #include "CalcChain/CalcChain.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
+
+#include "../../../DesktopEditor/common/Directory.h"
+
 #include <map>
 
 namespace OOX
@@ -142,19 +144,19 @@ namespace OOX
                                     m_pCalcChain = NULL;
 
 
-                                std::map<CString, smart_ptr<OOX::File>> aWorksheetsFiles;
+                                std::map<std::wstring, smart_ptr<OOX::File>> aWorksheetsFiles;
                                 pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Worksheet, aWorksheetsFiles);
                                 pDocumentContainer->FindAllByType(OOX::Spreadsheet::FileTypes::Chartsheets, aWorksheetsFiles);
 
-                                for (std::map<CString, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
+                                for (std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator it = aWorksheetsFiles.begin(); it != aWorksheetsFiles.end(); ++it)
                                 {
-                                    m_aWorksheets [string2std_string(it->first)] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
+                                    m_aWorksheets [it->first] = (OOX::Spreadsheet::CWorksheet*) it->second.operator->();
                                 }
                             }
 
                             return true;
 			}
-                        bool Write(const CPath& oDirPath, CString& sAdditionalContentTypes)
+                        bool Write(const CPath& oDirPath, std::wstring& sAdditionalContentTypes)
 			{
                             if(NULL == m_pWorkbook || 0 == m_aWorksheets.size ())
                                 return false;
@@ -186,18 +188,19 @@ namespace OOX
                             CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
                             WriteWorkbook(oXlPath);
 
-                            IFileContainer::Write(oDirPath / FILE_SEPARATOR_STR , OOX::CPath(_T("")), oContentTypes);
-                            if(!sAdditionalContentTypes.IsEmpty())
+							IFileContainer::Write(oDirPath / L"" , OOX::CPath(_T("")), oContentTypes);
+                            if(!sAdditionalContentTypes.empty())
                             {
-                                CString sAdditionalContentTypesWrapped;
-                                sAdditionalContentTypesWrapped.Append(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">"));
-                                sAdditionalContentTypesWrapped.Append(sAdditionalContentTypes);
-                                sAdditionalContentTypesWrapped.Append(_T("</Types>"));
+                                std::wstring sAdditionalContentTypesWrapped;
+
+                                sAdditionalContentTypesWrapped += L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+                                sAdditionalContentTypesWrapped += sAdditionalContentTypes;
+                                sAdditionalContentTypesWrapped += L"</Types>";
                                 OOX::CContentTypes oTempContentTypes;
 
                                 oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);
 
-                                for (std::map<CString, ContentTypes::COverride>::const_iterator it = oTempContentTypes.m_arrOverride.begin(); it != oTempContentTypes.m_arrOverride.end(); ++it)
+                                for (std::map<std::wstring, ContentTypes::COverride>::const_iterator it = oTempContentTypes.m_arrOverride.begin(); it != oTempContentTypes.m_arrOverride.end(); ++it)
                                 {
                                     const ContentTypes::COverride& oOverride = it->second;
                                     const OOX::CPath& oPath = oOverride.filename();
@@ -350,7 +353,7 @@ namespace OOX
 					pWorksheet->m_oPageMargins->m_oFooter->FromInches(0.3);
 					smart_ptr<OOX::File> pWorksheetFile(pWorksheet);
 					OOX::RId oRId = this->Add(pWorksheetFile);
-					m_aWorksheets [string2std_string(oRId.ToString())] = pWorksheet;
+					m_aWorksheets [oRId.ToString()] = pWorksheet;
 					m_pWorkbook->m_oSheets.Init();
 					OOX::Spreadsheet::CSheet* pSheet = new OOX::Spreadsheet::CSheet();
 					pSheet->m_oName.Init();
@@ -447,11 +450,11 @@ namespace OOX
 				if(pWorksheet->m_oSheetData.IsInit())
 				{
 					std::vector<OOX::Spreadsheet::CRow*>& aRows = pWorksheet->m_oSheetData->m_arrItems;
-					for(unsigned int i = 0, length = aRows.size(); i < length; ++i)
+					for(size_t i = 0, length = aRows.size(); i < length; ++i)
 					{
 						OOX::Spreadsheet::CRow* pRow = aRows[i];
 						std::vector<OOX::Spreadsheet::CCell*> & aCells = pRow->m_arrItems;
-						for(unsigned int j = 0, length2 = aCells.size(); j < length2; ++j)
+						for(size_t j = 0, length2 = aCells.size(); j < length2; ++j)
 						{
 							OOX::Spreadsheet::CCell* pCell = aCells[j];
 							if(pCell->m_oType.IsInit())
@@ -467,7 +470,7 @@ namespace OOX
 										int nIndex = pSharedStrings->AddSi(pSi);
 										//меняем значение ячейки
 										pCell->m_oValue.Init();
-										pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+                                        pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 										//меняем тип ячейки
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -489,7 +492,7 @@ namespace OOX
 									int nIndex = pSharedStrings->AddSi(pSi);
 									//меняем значение ячейки
 									pCell->m_oValue.Init();
-									pCell->m_oValue->m_sText = std::to_wstring(nIndex);
+                                    pCell->m_oValue->m_sText = std::to_wstring(nIndex);
 									//меняем тип ячейки
 									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{

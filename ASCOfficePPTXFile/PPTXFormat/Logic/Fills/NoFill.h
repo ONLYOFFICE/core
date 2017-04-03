@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,8 +43,12 @@ namespace PPTX
 		class NoFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NoFill)
-
+			WritingElement_AdditionConstructors(NoFill)
+			
+			NoFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
 			NoFill& operator=(const NoFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -53,13 +57,22 @@ namespace PPTX
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_noFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (_T("") == m_namespace)
 					return _T("<noFill/>");
@@ -79,7 +92,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};
@@ -87,7 +100,8 @@ namespace PPTX
 		class GrpFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GrpFill)
+			WritingElement_AdditionConstructors(GrpFill)
+			PPTX_LOGIC_BASE2(GrpFill)
 
 			GrpFill& operator=(const GrpFill& oSrc)
 			{
@@ -97,13 +111,22 @@ namespace PPTX
 				m_namespace = oSrc.m_namespace;
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_grpFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (_T("") == m_namespace)
 					return _T("<grpFill/>");
@@ -123,7 +146,7 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -106,7 +106,7 @@ void odf_page_layout_context::add_master_page(std::wstring page_name)
 
 void odf_page_layout_context::process_master_styles(office_element_ptr root )
 {
-	for (long i =0; i < master_state_list_.size(); i++)
+	for (size_t i =0 ; i < master_state_list_.size(); i++)
 	{
 		try
 		{
@@ -532,7 +532,7 @@ void odf_page_layout_context::set_pages_mirrored(bool val)
 {
 	//for all
 
-	for (long i=0; i < layout_state_list_.size(); i++)
+	for (size_t i = 0; i < layout_state_list_.size(); i++)
 	{
 		layout_state_list_[i].set_pages_mirrored(val);
 	}	

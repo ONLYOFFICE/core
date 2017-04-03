@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr SerAuxErrBar::clone()
 {
 	return BaseObjectPtr(new SerAuxErrBar(*this));
 }
-
-
-void SerAuxErrBar::writeFields(CFRecord& record)
-{
-	record << sertm << ebsrc << fTeeTop;
-	record.reserveNunBytes(1); // reserved
-	record << numValue << cnum;
-}
-
 
 void SerAuxErrBar::readFields(CFRecord& record)
 {

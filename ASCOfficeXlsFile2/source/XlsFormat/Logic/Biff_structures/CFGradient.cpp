@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,11 +41,6 @@ BiffStructurePtr CFGradientInterpItem::clone()
 	return BiffStructurePtr(new CFGradientInterpItem(*this));
 }
 
-
-void CFGradientInterpItem::store(CFRecord& record)
-{
-}
-
 void CFGradientInterpItem::load(CFRecord& record)
 {
 	cfvo.load(record);
@@ -61,9 +56,6 @@ BiffStructurePtr CFGradientItem::clone()
 	return BiffStructurePtr(new CFGradientItem(*this));
 }
 
-void CFGradientItem::store(CFRecord& record)
-{
-}
 void CFGradientItem::load(CFRecord& record)
 {
 	//int val;
@@ -79,10 +71,6 @@ void CFGradientItem::load(CFRecord& record)
 BiffStructurePtr CFGradient::clone()
 {
 	return BiffStructurePtr(new CFGradient(*this));
-}
-
-void CFGradient::store(CFRecord& record)
-{
 }
 
 void CFGradient::load(CFRecord& record)

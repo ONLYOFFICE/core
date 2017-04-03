@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -78,6 +78,7 @@ namespace OOX
 		class CGroupShape;
 		class CCommentItem;
 		class CGraphicFrame;
+		class CGraphicChart;
 		class CDefinedName;
 		class CConditionalFormatting;
 		class CConditionalFormattingRule;
@@ -137,12 +138,13 @@ namespace Oox2Odf
 		
 		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual OOX::CTheme								*oox_theme();
-		virtual CString									find_link_by_id (CString sId, int t);
+        virtual std::wstring							find_link_by_id (std::wstring sId, int t);
+		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id(std::wstring sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
 		OOX::Spreadsheet::CXlsx					*xlsx_document;
-		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Spreadsheet::IFileContainer		*xlsx_current_container; 
 		
 		odf_writer::ods_conversion_context		*ods_context;
 
@@ -197,7 +199,6 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPic							*oox_picture);
 		void convert(OOX::Spreadsheet::CShape						*oox_shape);
 		void convert(OOX::Spreadsheet::CConnShape					*oox_conn_shape);
-		void convert(OOX::Spreadsheet::CGraphicFrame				*oox_graphic_frame);
 		void convert(OOX::Spreadsheet::CGroupShape					*oox_group_shape);
 	
 		void convert(OOX::Spreadsheet::CConditionalFormatting		*oox_cond_fmt);

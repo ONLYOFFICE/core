@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,15 +47,65 @@ namespace PPTX
 				m_ns = _T("a");
 			}
 			virtual ~Xfrm() {}
-			explicit Xfrm(XmlUtils::CXmlNode& node)	{ fromXML(node); }
+			explicit Xfrm(XmlUtils::CXmlNode& node)			{ fromXML(node); }
+			explicit Xfrm(XmlUtils::CXmlLiteReader& oReader){ fromXML(oReader); }
 			const Xfrm& operator =(XmlUtils::CXmlNode& node)
 			{
 				fromXML(node);
 				return *this;
 			}
 			Xfrm(const Xfrm& oSrc) { *this = oSrc; }
+			
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_xfrm;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:off")
+						ReadAttributes1(oReader, offX, offY);
+					else if (sName == L"a:ext")
+						ReadAttributes2(oReader, extX, extY);
+					else if (sName == L"a:chOff")
+						ReadAttributes1(oReader, chOffX, chOffY);
+					else if (sName == L"a:chExt")
+						ReadAttributes2(oReader, chExtX, chExtY);
+				}
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("flipH"), flipH)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("flipV"), flipV )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("rot"), rot )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes1(XmlUtils::CXmlLiteReader& oReader, nullable_int & x, nullable_int & y)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader, nullable_int & cx, nullable_int & cy)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("cx"), cx )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("cy"), cy )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_ns = XmlUtils::GetNamespace(node.GetName());
@@ -91,7 +141,7 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rot"), rot);
@@ -116,7 +166,7 @@ namespace PPTX
 				oAttr4.Write(_T("cx"), chExtX);
 				oAttr4.Write(_T("cy"), chExtY);
 
-				CString strValue = _T("");
+				std::wstring strValue = _T("");
 				
 				if (_T("") != oAttr1.m_strValue)
 					strValue += XmlUtils::CreateNode(_T("a:off"), oAttr1);
@@ -183,7 +233,7 @@ namespace PPTX
 				pWriter->EndNode(m_ns + _T(":xfrm"));
 			}
 
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(strNS + _T(":xfrm"));
 
@@ -372,7 +422,7 @@ namespace PPTX
 			nullable_bool		flipV;
 			nullable_int		rot;
 		public:
-			CString m_ns;
+			std::wstring m_ns;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

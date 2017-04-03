@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -75,7 +75,7 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 			if (!byRow)
 				CP_XML_ATTR(L"columnSort", true);
 
-			for (int i = 0 ; i < bySort.size(); i++)
+			for (size_t i = 0 ; i < bySort.size(); i++)
 			{
 				bool in_range = true;
 				std::wstring ref1, ref2;
@@ -344,6 +344,7 @@ double charsToSize(unsigned int charsCount, double maxDigitSize)
 void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 {
 	odf_reader::odf_read_context & odfContext = context_->root()->odf_context();
+
 	CP_XML_WRITER(_Wostream)
 	{
 		odf_reader::style_table_properties	* table_prop = NULL;
@@ -367,13 +368,64 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 				//<pageSetUpPr fitToPage="true"/>
 			}
 		}
-		//<dimension ref="B1:T65536"/>
-		CP_XML_NODE(L"sheetView")
+		int columns = (std::max)(current_table_column_, (int)columns_count_);
+		int rows	= (std::max)(current_table_row_,	1);
+
+		if (columns	< 1024 && columns	> 1 &&
+			rows	< 1024 && rows		> 1)
 		{
-			//	-showGridLines
+			CP_XML_NODE(L"dimension")
+			{
+				std::wstring ref2 = getCellAddress( current_table_column_, current_table_row_);
+				CP_XML_ATTR(L"ref", L"A1:" + ref2);
+			}
+		}
+		if (odfContext.Settings().get_views_count() > 0)
+		{
+			CP_XML_NODE(L"sheetViews")
+			{
+				CP_XML_NODE(L"sheetView")
+				{
+					CP_XML_ATTR(L"workbookViewId", 0);
+
+					std::wstring s_col, s_row;
+					for (int i = 0; i < odfContext.Settings().get_table_view_count(0, tableName_); i++)
+					{
+						std::pair<std::wstring, std::wstring> value = odfContext.Settings().get_table_view(0, tableName_, i);
+
+						if (value.first == L"ZoomValue")
+						{
+							CP_XML_ATTR(L"zoomScale",		value.second);
+							CP_XML_ATTR(L"zoomScaleNormal", value.second);
+						}
+						if (value.first == L"ShowGrid")			CP_XML_ATTR(L"showGridLines",	value.second);
+						if (value.first == L"CursorPositionX")	s_col = value.second;
+						if (value.first == L"CursorPositionY")	s_row = value.second;
+					}
+
+					int col = -1, row = -1;
+					try
+					{
+						col =  boost::lexical_cast<int>(s_col);
+						row =  boost::lexical_cast<int>(s_row);
+					}
+					catch(...){}
+
+					if (col >= 0 && row >= 0)
+					{
+						CP_XML_NODE(L"selection")
+						{	
+							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCellId",	0);			
+							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
+							CP_XML_ATTR(L"pane",			L"topLeft");			
+						}
+						
+					}
+				}
+			}
 			//	-showRowColHeaders
 			//	-rightToLeft
-			//	-zoomScale
 		} 
 
 		double default_height = (2 * context_->getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
@@ -403,7 +455,10 @@ void xlsx_table_state::serialize_merge_cells(std::wostream & _Wostream)
 {
     return xlsx_merge_cells_.xlsx_serialize(_Wostream);
 }
-
+void xlsx_table_state::serialize_ole_objects(std::wostream & _Wostream)
+{
+    return xlsx_drawing_context_.get_drawings()->serialize_objects(_Wostream);
+}
 void xlsx_table_state::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return xlsx_hyperlinks_.xlsx_serialize(_Wostream);
@@ -415,6 +470,10 @@ void xlsx_table_state::serialize_conditionalFormatting(std::wostream & _Wostream
 void xlsx_table_state::dump_rels_hyperlinks(rels & Rels)
 {
     return xlsx_hyperlinks_.dump_rels(Rels);
+}
+void xlsx_table_state::dump_rels_ole_objects(rels & Rels)
+{
+    return get_drawing_context().get_drawings()->dump_rels_sheet(Rels);
 }
 
 void xlsx_table_state::start_hyperlink()

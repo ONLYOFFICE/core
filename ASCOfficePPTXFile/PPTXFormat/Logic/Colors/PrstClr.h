@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,9 +43,36 @@ namespace PPTX
 		class PrstClr : public ColorBase
 		{
 		public:
-			PPTX_LOGIC_BASE(PrstClr)
+			WritingElement_AdditionConstructors(PrstClr)
+			PPTX_LOGIC_BASE2(PrstClr)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstClr;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					ColorModifier m;
+					Modifiers.push_back(m);
+					Modifiers.back().fromXML(oReader);
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				val = node.GetAttribute(_T("val"));
@@ -53,7 +80,7 @@ namespace PPTX
 				node.LoadArray(_T("*"), Modifiers);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), val.get());
@@ -66,8 +93,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");
@@ -144,7 +171,7 @@ namespace PPTX
 			void FillRGBFromVal()
 			{
 				DWORD RGB = 0;
-				CString str = val.get();
+				std::wstring str = val.get();
 				if(str != _T(""))
 				{
 					switch(str[0])

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,13 +55,6 @@ BiffStructurePtr Cell::clone()
 {
 	return BiffStructurePtr(new Cell(*this));
 }
-
-
-void Cell::store(CFRecord& record)
-{
-	record << rw << col << ixfe;
-}
-
 
 void Cell::load(CFRecord& record)
 {

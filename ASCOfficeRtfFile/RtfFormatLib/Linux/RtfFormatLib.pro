@@ -19,7 +19,15 @@ include(../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
-DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER LIBXML_READER_ENABLED PPT_DEF
+DEFINES += UNICODE _UNICODE \
+         _USE_LIBXML2_READER_ \
+        _USE_XMLLITE_READER_ \
+        USE_LITE_READER \
+        LIBXML_READER_ENABLED \
+        PPTX_DEF \
+        PPT_DEF \
+        DONT_WRITE_EMBEDDED_FONTS \
+        AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
 
 INCLUDEPATH += \
@@ -27,19 +35,15 @@ INCLUDEPATH += \
     ../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
-    DEFINES += \
-        _ASC_USE_UNICODE_CONVERTER_ \
-        UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-
 LIBS += $$DESTDIR -lUnicodeConverter
 }
 
-build_fast {
+core_release {
 SOURCES += \
     rtfformatlib_source.cpp
-} else {
+}
+core_debug {
 SOURCES += \
-    ../source/DestinationCommand.cpp \
     ../source/RtfBookmark.cpp \
     ../source/RtfChar.cpp \
     ../source/RtfDocument.cpp \
@@ -63,9 +67,12 @@ SOURCES += \
     ../source/Reader/OOXShapeReader.cpp \
     ../source/Reader/OOXTableReader.cpp \
     ../source/Writer/OOXDocumentWriter.cpp \
-    ../source/Writer/OOXWriter.cpp \
-    ../source/ConvertationManager.cpp
+    ../source/Writer/OOXWriter.cpp
 }
+
+SOURCES += \
+    ../source/DestinationCommand.cpp \
+    ../source/ConvertationManager.cpp
 
 HEADERS += \
     ../source/Basic.h \

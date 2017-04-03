@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,42 +51,6 @@ BaseObjectPtr SST::clone()
 {
 	return BaseObjectPtr(new SST(*this));
 }
-
-
-void SST::writeFields(CFRecord& record)
-{
-	record << cstTotal << cstUnique;
-
-	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
-	for (BiffStructurePtrVector::iterator it = rgb.begin(), itEnd = rgb.end(); it != itEnd ; ++it)
-	{
-		XLUnicodeRichExtendedStringPtr element = boost::dynamic_pointer_cast<XLUnicodeRichExtendedString>(*it);
-		if(!element)
-		{
-			// EXCEPT::LE::WrongAPIUsage("boost::shared_dynamic_cast failed to cast to XLUnicodeRichExtendedStringPtr", __FUNCTION__);
-			return;
-		}
-		CFRecord& current_record = recs.size() ? *recs.back() : record; // Points to the original 'record' or the last created 'Continue'
-
-		_UINT32 ssss;
-		if(!current_record.checkFitWriteSafe(ssss = element->getNonVariablePartSize())) // If we cannot write non-variable part into the current record
-		{
-			current_record.commitData();
-			CFRecordPtr cont_record(new CFRecord(rt_Continue, record.getGlobalWorkbookInfo()));
-			recs.push_back(cont_record);
-			*cont_record << *element;
-		}
-		else
-		{
-			current_record << *element;
-		}
-	}
-	if(recs.size())
-	{
-		recs.back()->commitData();
-	}
-}
-
 
 void SST::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,18 +31,19 @@
  */
 #pragma once
 
-//#include "NamespaceOwn.h"
-#include "../XML/xmlutils.h"
-//#include "atlstr.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
-#include <vector>
 
 namespace OOX
 {
 #define WritingElement_AdditionConstructors(Class) \
-	Class(XmlUtils::CXmlNode& oNode)\
+	explicit Class(XmlUtils::CXmlNode& oNode)\
 	{\
 		fromXML( oNode );\
+	}\
+    explicit Class(const XmlUtils::CXmlNode& node)\
+	{\
+		fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
 	}\
 	Class(XmlUtils::CXmlLiteReader& oReader)\
 	{\
@@ -57,7 +58,12 @@ namespace OOX
 	{\
 		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
-	}
+	}\
+    const Class& operator =(XmlUtils::CXmlNode& node)				\
+	{																\
+		fromXML(node);												\
+		return *this;												\
+	}																\
 
 #define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
 	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\
@@ -168,6 +174,7 @@ namespace OOX
 		et_a_clrChange, // <a:clrChange>
 		et_a_clrFrom, // <a:clrFrom>
 		et_a_clrMap, // <a:clrMap>
+		et_a_clrMapOvr, // <a:clrMapOvr>
 		et_a_clrRepl, // <a:clrRepl>
 		et_a_clrScheme, // <a:clrScheme>
 		et_a_clrTo, // <a:clrTo>
@@ -219,6 +226,8 @@ namespace OOX
 		et_a_glow, // <a:glow>
 		et_a_gradFill, // <a:gradFill>
 		et_a_graphic, // <a:graphic>
+		et_a_graphicFrame,
+		et_a_graphicData,
 		et_a_graphicFrameLocks, // <a:graphicFrameLocks>
 		et_a_gray, // <a:gray>
 		et_a_grayscl, // <a:grayscl>
@@ -243,6 +252,7 @@ namespace OOX
 		et_a_latin, // <a:latin>
 		et_a_lightRig, // <a:lightRig>
 		et_a_lin, // <a:lin>
+		et_a_lineTo, // <a:lineTo>
 		et_a_ln, // <a:ln>
 		et_a_lnDef, // <a:lnDef>
 		et_a_lnRef, // <a:lnRef>
@@ -325,6 +335,11 @@ namespace OOX
 		et_a_ShapeNonVisual,
 		
 		et_dgm_DiagrammParts,	// <dgm:relIds> 
+		et_dgm_ptLst,			// <dgm:ptLst> 
+		et_dgm_pt,				// <dgm:pt> 
+		et_dgm_prSet,			// <dgm:prSet> 
+		et_dgm_spPr,			// <dgm:spPr> 
+		et_dgm_t,				// <dgm:t> 
 		et_dsp_Shape,			// <dsp:sp>
 		et_dsp_ShapeTree,		// <dsp:spTree>
 		et_dsp_spPr,			// <dsp:spPr>
@@ -332,21 +347,55 @@ namespace OOX
 		et_dsp_groupSpPr,		// <dsp:grpSpPr>
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
-		
-		et_a_p, // <a:p>
-		et_a_pPr, // <a:pPr>
-		et_a_r, // <a:p>
-		et_a_rPr, // <a:pPr>
-		et_a_t, // <a:t>
-		et_a_br, // <a:br>
-		et_a_spcPts, // <a:spcPts>
-		et_a_spcPct, // <a:spcPct>
-		et_a_spcAft, // <a:spcAft>
-		et_a_spcBef, // <a:spcBef>
-		et_a_lnSpc, // <a:lnSpc>	
 
-		et_ds_schemaRef, // <ds:shemeRef>
-		et_ds_schemaRefs, // <ds:schemaRefs>		
+		et_graphicFrame,	// <...:graphicFrame>
+		et_pic,				// <...:pic>
+		et_cxnSp,			// <...:cxnSp>
+		
+        et_p_cNvPicPr,        // <p:cNvPicPr>
+        et_p_cNvPr,            // <p:cNvPr>
+        et_p_pic,            // <p:pic>
+        et_p_Shape,            // <p:sp>
+        et_p_ShapeTree,        // <p:spTree>
+        et_p_spPr,            // <p:spPr>
+        et_p_style,            // <p:style>
+        et_p_groupSpPr,        // <p:grpSpPr>
+        et_p_NvGrpSpPr,
+        et_p_xfrm,
+        et_p_r,
+        et_p_fld,
+        et_p_br,
+        et_p_MathPara,
+
+        et_a_textFit,
+        et_a_hyperlink,
+        et_a_fld,
+        et_a_p,            // <a:p>
+        et_a_pPr,        // <a:pPr>
+        et_a_r,            // <a:p>
+        et_a_rPr,        // <a:pPr>
+        et_a_t,            // <a:t>
+        et_a_br,        // <a:br>
+        et_a_spcPts,    // <a:spcPts>
+        et_a_spcPct,    // <a:spcPct>
+        et_a_spcAft,    // <a:spcAft>
+        et_a_spcBef,    // <a:spcBef>
+        et_a_lnSpc,        // <a:lnSpc>    
+        et_a_tab,
+        et_a_rtl,
+
+        et_a_buNone,
+        et_a_buChar,
+        et_a_buAutoNum,
+        et_a_buClr,
+        et_a_buClrTx,
+        et_a_buFontTx,
+        et_a_buBlip,
+        et_a_buSzPct,
+        et_a_buSzPts,
+        et_a_buSzTx,
+
+        et_ds_schemaRef, // <ds:shemeRef>	
 		
 		et_m_acc, //m:acc
 		et_m_accPr, //m:accPr
@@ -507,10 +556,6 @@ namespace OOX
 		et_o_signatureline, // <o:signatureline>
 		et_o_skew, // <o:skew>
 		et_o_top, // <o:top>
-
-		et_p_cNvPicPr, // <p:cNvPicPr>
-		et_p_cNvPr, // <p:cNvPr>
-		et_p_pic, // <p:pic>
 
 		et_pic_blipFill, // <pic:blipFill>
 		et_pic_cNvPicPr, // <pic:cNvPicPr>
@@ -755,9 +800,9 @@ namespace OOX
 		WritingElement(){}
 		virtual ~WritingElement() {}
 
-		virtual void         fromXML(XmlUtils::CXmlNode& node)          = 0;
-        virtual CString      toXML() const                              = 0;
-		virtual EElementType getType() const
+		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
+        virtual std::wstring	toXML()     const					= 0;
+        virtual EElementType    getType()   const
 		{
 			return OOX::et_Unknown;
 		}

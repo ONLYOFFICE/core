@@ -24,31 +24,27 @@ DEFINES +=  UNICODE \
             _USE_LIBXML2_READER_ \
             _USE_XMLLITE_READER_ \
             USE_LITE_READER \
-            LIBXML_READER_ENABLED
+            LIBXML_READER_ENABLED \
+            DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../include
 INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../DesktopEditor/xml/libxml2/include
+INCLUDEPATH += ../../DesktopEditor/xml/build/qt
 
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
-build_fast {
+core_release {
 SOURCES += \
+    odffilereaderlib_odf_datatypes.cpp \
     odffilereaderlib_odf.cpp \
-    odffilereaderlib_docx.cpp \
-    odffilereaderlib_pptx.cpp \
-    odffilereaderlib_xlsx.cpp \
-    odffilereaderlib_converter.cpp
-} else {
+    odffilereaderlib_oox.cpp
+}
+
+core_debug {
 SOURCES += \    
-    ../src/conversionelement.cpp \
-    ../src/xml/attributes.cpp \
-    ../src/xml/sax.cpp \
-    ../src/xml/sax_xmllite.cpp \
-    ../src/xml/utils.cpp \
-    ../src/xml/xmlchar.cpp \
     ../src/odf/abstract_xml.cpp \
     ../src/odf/anim_elements.cpp \
     ../src/odf/calcs_styles.cpp \
@@ -114,6 +110,15 @@ SOURCES += \
     ../src/odf/templates.cpp \
     ../src/odf/text_content.cpp \
     ../src/odf/text_elements.cpp \
+    ../src/odf/math_elementaries.cpp \
+    ../src/odf/math_layout_elements.cpp \
+    ../src/odf/math_limit_elements.cpp \
+    ../src/odf/math_table_elements.cpp \
+    ../src/odf/math_token_elements.cpp \
+    ../src/odf/datatypes/mathvariant.cpp \
+    ../src/odf/calcext_elements.cpp \
+    ../src/odf/table_database_ranges.cpp \
+    ../src/odf/math_elements.cpp \
     ../src/odf/datatypes/anchortype.cpp \
     ../src/odf/datatypes/backgroundcolor.cpp \
     ../src/odf/datatypes/bool.cpp \
@@ -204,6 +209,8 @@ SOURCES += \
     ../src/odf/datatypes/wrapoption.cpp \
     ../src/odf/datatypes/writingmode.cpp \
     ../src/odf/datatypes/xlink.cpp \
+    ../src/docx/xlsx_conditionalFormatting.cpp \
+    ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
     ../src/docx/docx_conversion_context.cpp \
     ../src/docx/docx_drawing.cpp \
@@ -213,7 +220,6 @@ SOURCES += \
     ../src/docx/hyperlinks.cpp \
     ../src/docx/measuredigits.cpp \
     ../src/docx/mediaitems.cpp \
-    ../src/docx/mediaitems_utils.cpp \
     ../src/docx/namespaces.cpp \
     ../src/docx/oox_chart_axis.cpp \
     ../src/docx/oox_chart_context.cpp \
@@ -273,27 +279,22 @@ SOURCES += \
     ../src/docx/xlsx_table_state.cpp \
     ../src/docx/xlsx_textcontext.cpp \
     ../src/docx/xlsx_utils.cpp \
-    ../src/docx/xlsx_xf.cpp \
-    ../src/common/CPColorUtils.cpp \
-    ../src/common/CPString.cpp \
-    ../src/common/readdocelement.cpp \
-    ../src/ConvertOO2OOX.cpp \
-    ../src/odf/math_elements.cpp
+    ../src/docx/xlsx_xf.cpp
 }
 
 SOURCES += \
     ../formulasconvert/formulasconvert_oox.cpp \
-    ../src/odf/math_elementaries.cpp \
-    ../src/odf/math_layout_elements.cpp \
-    ../src/odf/math_limit_elements.cpp \
-    ../src/odf/math_table_elements.cpp \
-    ../src/odf/math_token_elements.cpp \
-    ../src/odf/datatypes/mathvariant.cpp \
     ../formulasconvert/formulasconvert_odf.cpp \
-    ../src/odf/calcext_elements.cpp \
-    ../src/odf/table_database_ranges.cpp \
-    ../src/docx/xlsx_conditionalFormatting.cpp \
-    ../src/docx/xlsx_dxfs.cpp
+    ../src/conversionelement.cpp \
+    ../src/xml/attributes.cpp \
+    ../src/xml/sax.cpp \
+    ../src/xml/sax_xmllite.cpp \
+    ../src/xml/utils.cpp \
+    ../src/xml/xmlchar.cpp \
+    ../src/common/CPColorUtils.cpp \
+    ../src/common/CPString.cpp \
+    ../src/common/readdocelement.cpp \
+    ../src/ConvertOO2OOX.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -358,6 +359,16 @@ HEADERS += \
     ../src/odf/text_content.h \
     ../src/odf/text_elements.h \
     ../src/odf/visitor.h \
+    ../src/ConvertOO2OOX.h \
+    ../src/odf/math_elements.h \
+    ../src/odf/math_elementaries.h \
+    ../src/odf/math_layout_elements.h \
+    ../src/odf/math_limit_elements.h \
+    ../src/odf/math_table_elements.h \
+    ../src/odf/math_token_elements.h \
+    ../src/odf/datatypes/mathvariant.h \
+    ../src/odf/calcext_elements.h \
+    ../src/odf/table_database_ranges.h \
     ../src/odf/datatypes/anchortype.h \
     ../src/odf/datatypes/backgroundcolor.h \
     ../src/odf/datatypes/bool.h \
@@ -457,12 +468,13 @@ HEADERS += \
     ../src/docx/docx_drawing.h \
     ../src/docx/docx_package.h \
     ../src/docx/docx_table_context.h \
+    ../src/docx/xlsx_conditionalFormatting.h \
+    ../src/docx/xlsx_dxfs.h \
     ../src/docx/drawing_object_description.h \
     ../src/docx/headers_footers.h \
     ../src/docx/hyperlinks.h \
     ../src/docx/measuredigits.h \
     ../src/docx/mediaitems.h \
-    ../src/docx/mediaitems_utils.h \
     ../src/docx/namespaces.h \
     ../src/docx/oox_chart_axis.h \
     ../src/docx/oox_chart_context.h \
@@ -553,16 +565,5 @@ HEADERS += \
     ../include/cpdoccore/xml/simple_xml_writer.h \
     ../include/cpdoccore/xml/utils.h \
     ../include/cpdoccore/xml/xmlchar.h \
-    ../include/cpdoccore/xml/xmlelement.h \
-    ../src/ConvertOO2OOX.h \
-    ../src/odf/math_elements.h \
-    ../src/odf/math_elementaries.h \
-    ../src/odf/math_layout_elements.h \
-    ../src/odf/math_limit_elements.h \
-    ../src/odf/math_table_elements.h \
-    ../src/odf/math_token_elements.h \
-    ../src/odf/datatypes/mathvariant.h \
-    ../src/odf/calcext_elements.h \
-    ../src/odf/table_database_ranges.h \
-    ../src/docx/xlsx_conditionalFormatting.h \
-    ../src/docx/xlsx_dxfs.h
+    ../include/cpdoccore/xml/xmlelement.h
+

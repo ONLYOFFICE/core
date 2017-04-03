@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,22 +30,20 @@
  *
  */
 #include "BinaryFileReaderWriter.h"
+#include "BinReaderWriterDefines.h"
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "BinReaderWriterDefines.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
 #include "../../Common/Base64.h"
 
 #include "./imagemanager.h"
-
 #include "./XmlWriter.h"
-#include "BinaryFileReaderWriter.h"
-#include "../PPTXFormat/FileContainer.h"
-#include "../PPTXFormat/DocxFormat/WritingElement.h"
+#include "./FontPicker.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
-#include "FontPicker.h"
 
 #include "../../DesktopEditor/common/File.h"
+#include "../PPTXFormat/FileContainer.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define UINT16_SIZEOF	sizeof(_UINT16)
@@ -67,19 +65,6 @@ namespace NSBinPptxRW
 {
 	template <typename T,unsigned S>
 	inline unsigned arraysize(const T (&v)[S]) { return S; }
-
-	inline _INT32 __strlen(const char* str)
-	{
-		const char* s = str;
-		for (; *s != 0; ++s);
-		return (_INT32)(s - str);
-	}
-	inline _INT32 __wstrlen(const wchar_t* str)
-	{
-		const wchar_t* s = str;
-		for (; *s != 0; ++s);
-		return (_INT32)(s - str);
-	}
 
 	CMasterSlideInfo::CMasterSlideInfo() : m_arLayoutIndexes(), m_arLayoutImagesBase64()
 	{
@@ -138,37 +123,37 @@ namespace NSBinPptxRW
 		m_lIndexNextImage = 1;
 		m_lIndexNextOle = 1;
 	}
-	void CImageManager2::SetDstMedia(const CString& strDst)
+	void CImageManager2::SetDstMedia(const std::wstring& strDst)
 	{
 		m_strDstMedia = strDst;
 	}
-	CString CImageManager2::GetDstMedia()
+	std::wstring CImageManager2::GetDstMedia()
 	{
 		return m_strDstMedia;
 	}
-	void CImageManager2::SetDstEmbed(const CString& strDst)
+	void CImageManager2::SetDstEmbed(const std::wstring& strDst)
 	{
 		m_strDstEmbed = strDst;
 	}
-	CString CImageManager2::GetDstEmbed()
+	std::wstring CImageManager2::GetDstEmbed()
 	{
 		return m_strDstEmbed;
 	}
-	int CImageManager2::IsDisplayedImage(const CString& strInput)
+	int CImageManager2::IsDisplayedImage(const std::wstring& strInput)
 	{
 		int nRes = 0;
 		//шаблон display[N]image.ext
-		CString sFind1 = _T("display");
-		int nIndex1 = strInput.Find(sFind1);
+		std::wstring sFind1 = _T("display");
+		int nIndex1 = (int)strInput.find(sFind1);
 		if(-1 != nIndex1)
 		{
-			if(nIndex1 + sFind1.GetLength() < strInput.GetLength())
+			if(nIndex1 + sFind1.length() < strInput.length())
 			{
-				TCHAR cRes = strInput[nIndex1 + sFind1.GetLength()];
+                wchar_t cRes = strInput[nIndex1 + sFind1.length()];
 				if('1' <= cRes && cRes <= '6')
 				{
-					int nImageIndex = nIndex1 + sFind1.GetLength() + 1;
-					if(nImageIndex == strInput.Find(_T("image"), nImageIndex))
+					int nImageIndex = nIndex1 + (int)sFind1.length() + 1;
+					if(nImageIndex == (int)strInput.find(_T("image"), nImageIndex))
 						nRes = cRes - '0';
 				}
 
@@ -176,35 +161,35 @@ namespace NSBinPptxRW
 		}
 		return nRes;
 	}
-	CImageManager2Info CImageManager2::GenerateImage(const CString& strInput, const CString& oleData, CString strBase64Image)
+	CImageManager2Info CImageManager2::GenerateImage(const std::wstring& strInput, const std::wstring& oleData, std::wstring strBase64Image)
 	{
 		if (IsNeedDownload(strInput))
 			return DownloadImage(strInput);
 
-		std::map<CString, CImageManager2Info>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
+		std::map<std::wstring, CImageManager2Info>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
 
 		if (pPair != m_mapImages.end())
 			return pPair->second;
 
-		CString strExts = _T(".jpg");
-		int nIndexExt = strInput.ReverseFind(TCHAR('.'));
+		std::wstring strExts = _T(".jpg");
+        int nIndexExt = (int)strInput.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
-			strExts = strInput.Mid(nIndexExt);
+			strExts = strInput.substr(nIndexExt);
 
-		CString strOleImage = _T("");
-		CString strImage = strInput;
+		std::wstring strOleImage = _T("");
+		std::wstring strImage = strInput;
 		int nDisplayType = IsDisplayedImage(strInput);
 		if (0 != nDisplayType)
 		{
 			OOX::CPath oPath = strInput;
-			CString strFolder = oPath.GetDirectory();
-			CString strFileName = oPath.GetFilename();
+			std::wstring strFolder = oPath.GetDirectory();
+			std::wstring strFileName = oPath.GetFilename();
 
-			strFileName.Delete(strFileName.GetLength() - 4, 4);
+			strFileName.erase(strFileName.length() - 4, 4);
 
 			if(0 != (nDisplayType & 1))
 			{
-				CString strVector = strFolder + strFileName + _T(".wmf");
+				std::wstring strVector = strFolder + strFileName + _T(".wmf");
 				if (OOX::CSystemUtility::IsFileExist(strVector))
 				{
 					strImage = strVector;
@@ -213,7 +198,7 @@ namespace NSBinPptxRW
 			}
 			if(0 != (nDisplayType & 2))
 			{
-				CString strVector = strFolder + strFileName + _T(".emf");
+				std::wstring strVector = strFolder + strFileName + _T(".emf");
 				if (OOX::CSystemUtility::IsFileExist(strVector))
 				{
 					strImage = strVector;
@@ -222,7 +207,7 @@ namespace NSBinPptxRW
 			}
 			if(0 != (nDisplayType & 4))
 			{
-				CString strOle = strFolder + strFileName + _T(".bin");
+				std::wstring strOle = strFolder + strFileName + _T(".bin");
 				if (OOX::CSystemUtility::IsFileExist(strOle))
 					strOleImage = strOle;
 			}
@@ -256,9 +241,12 @@ namespace NSBinPptxRW
 			std::string sDataUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sData.c_str(), sData.size());
 			BYTE head[] = {0x00,0x00,0x00,0x00};
 			//LittleEndian
-			unsigned char* aData = (unsigned char*)sDataUtf8.c_str();
-			_UINT32 nDataSize = sDataUtf8.size();
+			
+			unsigned char*	aData		= (unsigned char*)sDataUtf8.c_str();			
+			_UINT32			nDataSize	= (_UINT32)sDataUtf8.size();
+
 			memcpy(head, &nDataSize, sizeof(_UINT32));
+
 			POLE::Stream oStream(&oStorage, "\001Ole10Native", true, arraysize(head) + nDataSize);
 			oStream.write(head, arraysize(head));
 			oStream.write(aData, nDataSize);
@@ -269,19 +257,18 @@ namespace NSBinPptxRW
 		}
 		return bRes;
 	}
-	CImageManager2Info CImageManager2::GenerateImageExec(const CString& strInput, const CString& sExts, const CString& strOleImage, const CString& oleData)
+	CImageManager2Info CImageManager2::GenerateImageExec(const std::wstring& strInput, const std::wstring& sExts, const std::wstring& strOleImage, const std::wstring& oleData)
 	{
 		CImageManager2Info oImageManagerInfo;
-		CString strExts = sExts;
-		CString strImage;
-		strImage.Format(_T("image%d"), m_lIndexNextImage++);
+		std::wstring strExts = sExts;
+        std::wstring strImage = L"image" + std::to_wstring(m_lIndexNextImage++);
 		OOX::CPath pathOutput;
 		if ((_T(".jpg") == strExts) || (_T(".jpeg") == strExts) || (_T(".png") == strExts) || (_T(".emf") == strExts) || (_T(".wmf") == strExts))
 		{
 			pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 			// теперь нужно скопировать картинку
             if (pathOutput.GetPath() != strInput)
-                CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
+                CDirectory::CopyFile(strInput, pathOutput.GetPath());
 		}
 		else
 		{
@@ -296,19 +283,19 @@ namespace NSBinPptxRW
 		else
 			strImage  = _T("media/") + strImage + strExts;
 
-		if (!strOleImage.IsEmpty() || !oleData.IsEmpty() )
+		if (!strOleImage.empty() || !oleData.empty() )
 		{
-			CString strImageOle;
-			strImageOle.Format(_T("oleObject%d.bin"), m_lIndexNextOle++);
+            std::wstring strImageOle = L"oleObject" + std::to_wstring(m_lIndexNextOle++) + L".bin";
 			OOX::CPath pathOutputOle = m_strDstEmbed + FILE_SEPARATOR_STR + strImageOle;
-			CString strOleImageOut = pathOutputOle.GetPath();
-			if(!oleData.IsEmpty())
+			std::wstring strOleImageOut = pathOutputOle.GetPath();
+			
+			if(!oleData.empty())
 			{
-				WriteOleData(string2std_string(strOleImageOut), string2std_string(oleData));
+				WriteOleData(strOleImageOut, oleData);
 			}
 			else
 			{
-				CDirectory::CopyFile(strOleImage, strOleImageOut, NULL, NULL);
+                CDirectory::CopyFile(strOleImage, strOleImageOut);
 			}
 
 			if (!m_bIsWord)
@@ -322,26 +309,26 @@ namespace NSBinPptxRW
 		oImageManagerInfo.m_sImagePath = strImage;
 		return oImageManagerInfo;
 	}
-	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
+	void CImageManager2::SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
-			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_PNG);
+		if(oBgraFrame.OpenFile(strFileSrc))
+			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_PNG);
 	}
 
-	void CImageManager2::SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
+	void CImageManager2::SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
-		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
-			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_JPG);
+		if(oBgraFrame.OpenFile(strFileSrc))
+			oBgraFrame.SaveFile(strFileDst, _CXIMAGE_FORMAT_JPG);
 	}
 
-	bool CImageManager2::IsNeedDownload(const CString& strFile)
+	bool CImageManager2::IsNeedDownload(const std::wstring& strFile)
 	{
-		int n1 = strFile.Find(_T("www"));
-		int n2 = strFile.Find(_T("http"));
-		int n3 = strFile.Find(_T("ftp"));
-		int n4 = strFile.Find(_T("https://"));
+		size_t n1 = strFile.find(_T("www"));
+		size_t n2 = strFile.find(_T("http"));
+		size_t n3 = strFile.find(_T("ftp"));
+		size_t n4 = strFile.find(_T("https://"));
 
         //если nI сранивать не с 0, то будут проблемы
         //потому что в инсталяции мы кладем файлы в /var/www...
@@ -349,25 +336,25 @@ namespace NSBinPptxRW
 			return true;
 		return false;
 	}
-	CImageManager2Info CImageManager2::DownloadImage(const CString& strUrl)
+	CImageManager2Info CImageManager2::DownloadImage(const std::wstring& strUrl)
 	{
-		std::map<CString, CImageManager2Info>::const_iterator pPair = m_mapImages.find (strUrl);
+		std::map<std::wstring, CImageManager2Info>::const_iterator pPair = m_mapImages.find (strUrl);
 
 		if (pPair != m_mapImages.end())
 			return pPair->second;
 
-		CString strExts = _T(".jpg");
-		int nIndexExt = strUrl.ReverseFind(TCHAR('.'));
+		std::wstring strExts = _T(".jpg");
+        int nIndexExt = (int)strUrl.rfind(wchar_t('.'));
 		if (-1 != nIndexExt)
-			strExts = strUrl.Mid(nIndexExt);
+			strExts = strUrl.substr(nIndexExt);
 
-		CString strImage;
-		CString strOleImage;
+		std::wstring strImage;
+		std::wstring strOleImage;
 		int nDisplayType = IsDisplayedImage(strUrl);
 		if(0 != nDisplayType)
 		{
-			CString strInputMetafile = strUrl.Left(strUrl.GetLength() - strExts.GetLength());
-			CString sDownloadRes;
+			std::wstring strInputMetafile = strUrl.substr(0, strUrl.length() - strExts.length());
+			std::wstring sDownloadRes;
 			//todo
 			if(0 != (nDisplayType & 4))
 			{
@@ -390,25 +377,25 @@ namespace NSBinPptxRW
 		else
 			strImage = DownloadImageExec(strUrl);
 		CImageManager2Info oImageManagerInfo;
-		if (!strImage.IsEmpty())
+		if (!strImage.empty())
 		{
 			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, L"");
 			CDirectory::DeleteFile(strImage);
 		}
-		if (!strOleImage.IsEmpty())
+		if (!strOleImage.empty())
 			CDirectory::DeleteFile(strOleImage);
 
 		m_mapImages[strUrl] = oImageManagerInfo;
 		return oImageManagerInfo;
 	}
-	CString CImageManager2::DownloadImageExec(const CString& strFile)
+	std::wstring CImageManager2::DownloadImageExec(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(string2std_string(strFile), false);
+        CFileDownloader oDownloader(strFile, false);
 
 		if ( oDownloader.DownloadSync() )
 		{
-			return std_string2string(oDownloader.GetFilePath());
+			return oDownloader.GetFilePath();
 		}
 #endif
 		return _T("");
@@ -439,22 +426,33 @@ namespace NSBinPptxRW
 		m_lPosition += lSize;
 		m_pStreamCur = m_pStreamData + m_lPosition;
 	}
-	double CBinaryFileWriter::GetWidthMM()
+	double CBinaryFileWriter::GetShapeHeight()
 	{
-		if (m_lWidthCurShape == 0)
+		if (m_lCyCurShape == 0)
 			return -1;
-		return (double)m_lWidthCurShape / 36000;
+		return (double)m_lCyCurShape / 36000; //mm
 	}
-	double CBinaryFileWriter::GetHeightMM()
+	double CBinaryFileWriter::GetShapeWidth()
 	{
-		if (m_lHeightCurShape == 0)
+		if (m_lCyCurShape == 0)
 			return -1;
-		return (double)m_lHeightCurShape / 36000;
+		return (double)m_lCxCurShape / 36000;
 	}
-	void CBinaryFileWriter::ClearShapeCurSizes()
+	double CBinaryFileWriter::GetShapeY()
 	{
-		m_lWidthCurShape = 0;
-		m_lHeightCurShape = 0;
+		return (double)m_lYCurShape / 36000;
+	}
+	double CBinaryFileWriter::GetShapeX()
+	{
+		return (double)m_lXCurShape / 36000; //mm
+	}
+	void CBinaryFileWriter::ClearCurShapePositionAndSizes()
+	{
+		m_lXCurShape	= 0;
+		m_lYCurShape	= 0;
+		
+		m_lCxCurShape = 0;
+		m_lCyCurShape = 0;
 	}
 	void CBinaryFileWriter::Clear()
 	{
@@ -467,8 +465,11 @@ namespace NSBinPptxRW
 		m_lStackPosition = 0;
 		memset(m_arStack, 0, MAX_STACK_SIZE * sizeof(_UINT32));
 
-		m_lWidthCurShape = 0;
-		m_lHeightCurShape = 0;
+		m_lCxCurShape = 0;
+		m_lCyCurShape = 0;
+
+		m_lXCurShape = 0;
+		m_lYCurShape = 0;
 	}
 
 	void CBinaryFileWriter::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
@@ -632,25 +633,17 @@ namespace NSBinPptxRW
 		m_lPosition += DOUBLE_SIZEOF;
 		m_pStreamCur += DOUBLE_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteStringW(const WCHAR* sBuffer)
-	{
-		_WriteStringWithLength(sBuffer, __wstrlen(sBuffer), true);
-    }
-	void CBinaryFileWriter::WriteStringWStd(const std::wstring& sBuffer)
-	{
-		WriteStringW(sBuffer.c_str());
-	}
 	void CBinaryFileWriter::WriteBYTEArray(const BYTE* pBuffer, size_t len)
 	{
-		CheckBufferSize(len);
+		CheckBufferSize((_UINT32)len);
 		memcpy(m_pStreamCur, pBuffer, len);
 		m_lPosition += (_UINT32)len;
 		m_pStreamCur += len;
 	}
-	void CBinaryFileWriter::WriteStringA(const char* sBuffer)
+	void CBinaryFileWriter::WriteStringA(std::string& sBuffer)
 	{
-		_INT32 lSize = __strlen(sBuffer);
-		_INT32 lSizeMem = lSize * sizeof(char);
+		_UINT32 lSize		= (_UINT32)sBuffer.length();
+		_UINT32 lSizeMem	= lSize * sizeof(char);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
 #ifdef _IOS
@@ -661,58 +654,52 @@ namespace NSBinPptxRW
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;
 
-		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+		memcpy(m_pStreamCur, sBuffer.c_str(), lSizeMem);
+		
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
-	void CBinaryFileWriter::WriteStringA(CStringA& sBuffer)
+	void CBinaryFileWriter::WriteStringW(std::wstring& sBuffer)
 	{
-		char* pChars = sBuffer.GetBuffer();
-		WriteStringA(pChars);
+		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
-	void CBinaryFileWriter::WriteStringW(CString& sBuffer)
+	void CBinaryFileWriter::WriteStringW(const std::wstring& sBuffer)
 	{
-		WCHAR* pChars = sBuffer.GetBuffer();
-		WriteStringW(pChars);
+		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
-    void CBinaryFileWriter::WriteStringW2(const WCHAR* sBuffer)
-    {
-		_WriteStringWithLength(sBuffer, __wstrlen(sBuffer), false);
-    }
-	void CBinaryFileWriter::WriteStringW2(CString& sBuffer)
+	void CBinaryFileWriter::WriteStringW2(std::wstring& sBuffer)
 	{
-		WriteStringW2(sBuffer.GetBuffer());
+        _WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), false);
 	}
-	void CBinaryFileWriter::WriteStringW3(const WCHAR* sBuffer)
-	{   
-		_WriteString(sBuffer, __wstrlen(sBuffer));
-	}
-    void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
+    void CBinaryFileWriter::WriteStringW3(std::wstring& sBuffer)
 	{
-		WriteStringW3(sBuffer.GetBuffer());
+		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
+	}
+    void CBinaryFileWriter::WriteStringW3(const std::wstring& sBuffer)
+	{
+		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
 	void CBinaryFileWriter::WriteStringW4(const std::wstring& sBuffer)
 	{
-		WriteStringW3(sBuffer.c_str());
+        _WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
 	CBinaryFileWriter::CBinaryFileWriter()
 	{
-		m_strMainFolder = _T("");
 		m_pMainDocument = NULL;
-		m_pCommon = new CCommonWriter();
-		m_pCommonRels = new NSCommon::smart_ptr<PPTX::CCommonRels>();
-		ThemeDoc = new NSCommon::smart_ptr<PPTX::FileContainer>();
-		ClrMapDoc = new NSCommon::smart_ptr<PPTX::WritingElement>();
+		m_pCommon		= new CCommonWriter();
+		m_pCommonRels	= new NSCommon::smart_ptr<PPTX::CCommonRels>();
+		ThemeDoc		= new NSCommon::smart_ptr<PPTX::FileContainer>();
+		ClrMapDoc		= new NSCommon::smart_ptr<OOX::WritingElement>();
+		
 		Clear();
 	}
 	CBinaryFileWriter::~CBinaryFileWriter()
 	{
-		RELEASEARRAYOBJECTS(m_pStreamData);
-		//RELEASEINTERFACE(m_pMainDocument);
-		RELEASEOBJECT(m_pCommon);
-		RELEASEOBJECT(m_pCommonRels);
-		RELEASEOBJECT(ThemeDoc);
-		RELEASEOBJECT(ClrMapDoc);
+		RELEASEARRAYOBJECTS	(m_pStreamData);
+		RELEASEOBJECT		(m_pCommon);
+		RELEASEOBJECT		(m_pCommonRels);
+		RELEASEOBJECT		(ThemeDoc);
+		RELEASEOBJECT		(ClrMapDoc);
 	}
 
 	void CBinaryFileWriter::StartRecord(_INT32 lType)
@@ -741,7 +728,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileWriter::WriteReserved(size_t lCount)
 	{
-		CheckBufferSize(lCount);
+		CheckBufferSize((_UINT32)lCount);
 		memset(m_pStreamCur, 0, lCount);
 		m_pStreamCur += lCount;
 		m_lPosition += (_UINT32)lCount;
@@ -765,23 +752,23 @@ namespace NSBinPptxRW
 		}
 	}
 
-	void CBinaryFileWriter::WriteString1(int type, const CString& val)
+	void CBinaryFileWriter::WriteString1(int type, const std::wstring& val)
 	{
 		BYTE bType = (BYTE)type;
 		WriteBYTE(bType);
 
-		CString* s = const_cast<CString*>(&val);
-		_WriteStringWithLength(s->GetBuffer(), s->GetLength(), false);
+		std::wstring* s = const_cast<std::wstring*>(&val);
+		_WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
 	void CBinaryFileWriter::WriteString2(int type, const NSCommon::nullable_string& val)
 	{
 		if (val.is_init())
 			WriteString1(type, *val);
 	}
-	void CBinaryFileWriter::WriteString(const CString& val)
+	void CBinaryFileWriter::WriteString(const std::wstring& val)
 	{
-		CString* s = const_cast<CString*>(&val);
-		_WriteStringWithLength(s->GetBuffer(), s->GetLength(), false);
+		std::wstring* s = const_cast<std::wstring*>(&val);
+        _WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
 
 	void CBinaryFileWriter::WriteString1Data(int type, const WCHAR* pData, _UINT32 len)
@@ -840,7 +827,7 @@ namespace NSBinPptxRW
 			WriteSize_t1(type, *val);
 	}
 
-	void CBinaryFileWriter::GetBase64File(const CString& sFile, CStringA& strDst64)
+	void CBinaryFileWriter::GetBase64File(const std::wstring& sFile, std::string& strDst64)
 	{
 		CFile oFile;
 		HRESULT hr = oFile.OpenFile(sFile);
@@ -874,17 +861,17 @@ namespace NSBinPptxRW
 		//DeleteFile(sFile);
 	}
 
-	void CBinaryFileWriter::WriteTheme64(_INT32 lIndex, const CString& sFile)
+	void CBinaryFileWriter::WriteTheme64(_INT32 lIndex, const std::wstring& sFile)
 	{
 		GetBase64File(sFile, m_pCommon->m_oRels[lIndex].m_strImageBase64);
 	}
 
-	void CBinaryFileWriter::WriteLayoutTheme64(_INT32 lIndexTheme, _INT32 lIndexLayout, const CString& sFile)
+	void CBinaryFileWriter::WriteLayoutTheme64(_INT32 lIndexTheme, _INT32 lIndexLayout, const std::wstring& sFile)
 	{
 		GetBase64File(sFile, m_pCommon->m_oRels[lIndexTheme].m_arLayoutImagesBase64[lIndexLayout]);
 	}
 
-	CString CBinaryFileWriter::GetFolderForGenerateImages()
+	std::wstring CBinaryFileWriter::GetFolderForGenerateImages()
 	{
 		return m_strMainFolder + _T("\\extract_themes");
 	}
@@ -985,22 +972,6 @@ namespace NSBinPptxRW
 		m_pStreamCur += lSizeMem;
 	}
 
-    /*
-	LPSAFEARRAY CBinaryFileWriter::GetSafearray()
-	{			
-		_UINT32 lBinarySize = this->GetPosition();
-		if (0 == lBinarySize)
-			return NULL;
-
-		SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, lBinarySize);
-
-		BYTE* pDataD = (BYTE*)pArray->pvData;
-		BYTE* pDataS = this->GetBuffer();
-		memcpy(pDataD, pDataS, lBinarySize);
-
-		return pArray;
-	}
-    */
 	CSlideMasterInfo::CSlideMasterInfo() : m_arLayouts()
 	{
 		m_lThemeIndex = -1;				
@@ -1048,15 +1019,17 @@ namespace NSBinPptxRW
 		int nCountLayouts = (int)oInfo.m_arLayouts.size();
 		for (int i = 0; i < nCountLayouts; ++i)
 		{
-			CString str = _T("");
-			str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout%d.xml\"/>"), 
-				m_lNextRelsID++, oInfo.m_arLayouts[i] + 1);
+            std::wstring str = L"<Relationship Id=\"rId" +
+                    std::to_wstring(m_lNextRelsID++) +
+                    L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout" +
+                    std::to_wstring(oInfo.m_arLayouts[i] + 1) +
+                    L".xml\"/>";
 			m_pWriter->WriteString(str);
 		}
 
-		CString s = _T("");
-		s.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme%d.xml\"/>" ),
-			m_lNextRelsID++, nIndexTheme + 1);
+        std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme" +
+                std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(s);
 	}
 	void CRelsGenerator::StartLayout(int nIndexTheme)
@@ -1064,9 +1037,9 @@ namespace NSBinPptxRW
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
 
-		CString str = _T("");
-		str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster%d.xml\"/>"), 
-			m_lNextRelsID++, nIndexTheme + 1);
+        std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster" +
+                std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
 		m_pWriter->WriteString(str);
 	}
 	void CRelsGenerator::StartSlide(int nIndexSlide, int nIndexLayout)
@@ -1074,26 +1047,26 @@ namespace NSBinPptxRW
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
 
-		CString str = _T("");
-		str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout%d.xml\"/>"), 
-			m_lNextRelsID++, nIndexLayout + 1);
+        std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout" +
+                std::to_wstring(nIndexLayout + 1) + L".xml\"/>";
 		m_pWriter->WriteString(str);
 
-		str = _T("");
-		str.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide%d.xml\"/>"), m_lNextRelsID++, nIndexSlide + 1);
+        str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide" +
+                std::to_wstring(nIndexSlide + 1) + L".xml\"/>";
 		m_pWriter->WriteString(str);
 	}
 	void CRelsGenerator::StartNote(int nIndexSlide)
 	{
-		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>"));
-		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
+		m_pWriter->WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+		m_pWriter->WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
-		CString sNum = _T("");
-		sNum.Format(_T("%d"), nIndexSlide + 1);
-		CString strNoteSlideRels = _T("<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide") + sNum + _T(".xml\"/>");
+		std::wstring sNum = std::to_wstring(nIndexSlide + 1);
+		std::wstring strNoteSlideRels = L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide" + sNum + L".xml\"/>";
 
 		m_pWriter->WriteString(strNoteSlideRels);
-		m_pWriter->WriteString(_T("<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>"));
+		m_pWriter->WriteString(L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>");
 
 		m_lNextRelsID = 3;
 	}
@@ -1101,8 +1074,9 @@ namespace NSBinPptxRW
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
-			CString strRels = _T("");
-			strRels.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster%d.xml\" />"), m_lNextRelsID++, i + 1);
+			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" + 
+                std::to_wstring(i + 1) + L".xml\"/>";
 			m_pWriter->WriteString(strRels);
 		}
 	}
@@ -1110,8 +1084,9 @@ namespace NSBinPptxRW
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
-			CString strRels = _T("");
-			strRels.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme%d.xml\" />"), m_lNextRelsID++, i + 1);
+			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme" +
+				std::to_wstring(i + 1) + L".xml\"/>";
 			m_pWriter->WriteString(strRels);
 		}
 	}
@@ -1119,27 +1094,30 @@ namespace NSBinPptxRW
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
-			CString strRels = _T("");
-			strRels.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide%d.xml\" />"), m_lNextRelsID++, i + 1);
+			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" + 
+				std::to_wstring(i + 1) + L".xml\"/>";
 			m_pWriter->WriteString(strRels);
 		}
 	}
 	void CRelsGenerator::WriteSlideComments(int nComment)
 	{
-		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"../comments/comment%d.xml\"/>"), m_lNextRelsID++, nComment);
+		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"../comments/comment" + 
+			std::to_wstring(nComment) + L".xml\"/>";
+
 		m_pWriter->WriteString(strRels);
 	}
 	void CRelsGenerator::EndPresentationRels(const bool& bIsCommentsAuthors = false)
 	{
-		CString strRels0 = _T("");
-		strRels0.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>"), m_lNextRelsID++);
-		CString strRels1 = _T("");
-		strRels1.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />"), m_lNextRelsID++);
-		CString strRels2 = _T("");
-		strRels2.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\" />"), m_lNextRelsID++);
-		CString strRels3 = _T("");
-		strRels3.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\" />"), m_lNextRelsID++);
+        std::wstring strRels0 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
+        std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps\" Target=\"presProps.xml\" />";
+        std::wstring strRels2 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles\" Target=\"tableStyles.xml\" />";
+        std::wstring strRels3 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps\" Target=\"viewProps.xml\" />";
 
 		m_pWriter->WriteString(strRels0);			
 		m_pWriter->WriteString(strRels1);
@@ -1148,8 +1126,8 @@ namespace NSBinPptxRW
 
 		if (bIsCommentsAuthors)
 		{
-			CString strRels4 = _T("");
-			strRels4.Format(_T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors\" Target=\"commentAuthors.xml\"/>"), m_lNextRelsID++);
+            std::wstring strRels4 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+                    L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors\" Target=\"commentAuthors.xml\"/>";
 			m_pWriter->WriteString(strRels4);
 		}
 	}
@@ -1161,24 +1139,24 @@ namespace NSBinPptxRW
 	{
 		m_pWriter->WriteString(_T("</Relationships>"));
 	}
-	void CRelsGenerator::AddRels(const CString& strRels)
+	void CRelsGenerator::AddRels(const std::wstring& strRels)
 	{
 		m_pWriter->WriteString(strRels);			
 	}
-	void CRelsGenerator::SaveRels(const CString& strFile)
+	void CRelsGenerator::SaveRels(const std::wstring& strFile)
 	{
 		CFile oFile;
 		oFile.CreateFile(strFile);
-		CString strMem = m_pWriter->GetData();
+		std::wstring strMem = m_pWriter->GetData();
 		oFile.WriteStringUTF8(strMem);
 		oFile.CloseFile();
 	}
 
-	CRelsGeneratorInfo CRelsGenerator::WriteImage(const CString& strImagePath, const CString& oleData, CString strBase64Image = _T(""))
+	CRelsGeneratorInfo CRelsGenerator::WriteImage(const std::wstring& strImagePath, const std::wstring& oleData, std::wstring strBase64Image = _T(""))
 	{
 		CImageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImagePath, oleData, strBase64Image);
-		CString strImage = oImageManagerInfo.m_sImagePath;
-		std::map<CString, CRelsGeneratorInfo>::iterator pPair = m_mapImages.find(strImage);
+		std::wstring strImage = oImageManagerInfo.m_sImagePath;
+		std::map<std::wstring, CRelsGeneratorInfo>::iterator pPair = m_mapImages.find(strImage);
 
 		if (m_mapImages.end() != pPair)
 		{
@@ -1187,104 +1165,94 @@ namespace NSBinPptxRW
 		CRelsGeneratorInfo oRelsGeneratorInfo;
 		oRelsGeneratorInfo.m_sFilepathImg = oImageManagerInfo.m_sFilepathImg;
 		oRelsGeneratorInfo.m_nImageRId = m_lNextRelsID++;
-		CString strRid = _T("");
-		strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nImageRId);
+		
+		std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.m_nImageRId);
 
-		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%ls\"/>"),
-			strRid, strImage);
+		std::wstring strRels = L"<Relationship Id=\"" + strRid + 
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"" + strImage +
+			L"\"/>";
 		m_pWriter->WriteString(strRels);
 
-		if(!oImageManagerInfo.m_sOlePath.IsEmpty())
+		if(!oImageManagerInfo.m_sOlePath.empty())
 		{
 			oRelsGeneratorInfo.m_nOleRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.m_sFilepathBin = oImageManagerInfo.m_sFilepathBin;
 
-			CString strRid = _T("");
-			strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nOleRId);
+			std::wstring strRid = L"rId" + std::to_wstring(oRelsGeneratorInfo.m_nOleRId);
 
-			CString strRels = _T("");
-			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject\" Target=\"%ls\"/>"),
-				strRid, oImageManagerInfo.m_sOlePath);
+			std::wstring strRels = L"<Relationship Id=\"" + strRid
+				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject\" Target=\"" +
+				oImageManagerInfo.m_sOlePath + L"\"/>";
+
 			m_pWriter->WriteString(strRels);
 		}
 
-		m_mapImages.insert(std::pair<CString, CRelsGeneratorInfo>(strImage, oRelsGeneratorInfo));
+		m_mapImages.insert(std::pair<std::wstring, CRelsGeneratorInfo>(strImage, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
 	int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
 	{
-		CString strChart = _T("");
+		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
 
-		if (lDocType == XMLWRITER_DOC_TYPE_DOCX)
+		if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
 		{
-			strChart.Format(_T("charts/chart%d.xml"), nChartNumber);
-		}
-		else
-		{
-			strChart.Format(_T("../charts/chart%d.xml"), nChartNumber);
+			strChart = L"../" + strChart;
 		}
 
-		CString strRid = _T("");
-		strRid.Format(_T("rId%d"), m_lNextRelsID++);
+		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
-		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"%ls\"/>"),
-			strRid, strChart);
+        std::wstring strRels = L"<Relationship Id=\"" + strRid +
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"" +
+                strChart + L"\"/>";
 		m_pWriter->WriteString(strRels);
 
 		return m_lNextRelsID - 1;
 	}	
 
-	int CRelsGenerator::WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode)
+	int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
-		CString strRid = _T("");
-		strRid.Format(_T("rId%d"), m_lNextRelsID++);
+		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
-		CString strType = _T("Type=\"") + bsType + _T("\" ");
-		CString strTarget = _T("Target=\"") + bsTarget + _T("\" ");
-		CString strTargetMode = bsTargetMode.IsEmpty() ? _T("") : (_T("TargetMode=\"") + (CString)bsTargetMode + _T("\""));
+		std::wstring strType = _T("Type=\"") + bsType + _T("\" ");
+		std::wstring strTarget = _T("Target=\"") + bsTarget + _T("\" ");
+		std::wstring strTargetMode = bsTargetMode.empty() ? _T("") : (_T("TargetMode=\"") + bsTargetMode + _T("\""));
 
-		CString strRels = _T("<Relationship Id=\"") + strRid + _T("\" ") + strType + strTarget + strTargetMode + _T("/>");
+		std::wstring strRels = _T("<Relationship Id=\"") + strRid + _T("\" ") + strType + strTarget + strTargetMode + _T("/>");
 		m_pWriter->WriteString(strRels);
 		return m_lNextRelsID - 1;
 	}
 
-	int CRelsGenerator::WriteHyperlink(const CString& strLink, const bool& bIsActionInit)
+	int CRelsGenerator::WriteHyperlink(const std::wstring& strLink, const bool& bIsActionInit)
 	{
-		std::map<CString, int>::iterator pPair = m_mapLinks.find(strLink);
+		std::map<std::wstring, int>::iterator pPair = m_mapLinks.find(strLink);
 
 		if (m_mapLinks.end() != pPair)
 		{
 			return pPair->second;				
 		}
 
-		m_mapLinks.insert(std::pair<CString, int>(strLink, m_lNextRelsID));
-		CString strRid = _T("");
-		strRid.Format(_T("rId%d"), m_lNextRelsID++);
+		m_mapLinks.insert(std::pair<std::wstring, int>(strLink, m_lNextRelsID));
+		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
 
-		CString sLink = strLink;
-		sLink.Replace(L"&",	L"&amp;");
-		sLink.Replace(L"'",	L"&apos;");
-		sLink.Replace(L"<",	L"&lt;");
-		sLink.Replace(L">",	L"&gt;");
-		sLink.Replace(L"\"",L"&quot;");
+		std::wstring sLink = XmlUtils::EncodeXmlString(strLink);
 
-		bool bIsSlide = (0 == sLink.Find(_T("slide")));
+		bool bIsSlide = (0 == sLink.find(_T("slide")));
 		if (!bIsActionInit)
 			bIsSlide = false;
 
-		CString strRels = _T("");
+		std::wstring strRels;
 
 		if (!bIsSlide)
 		{
-			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"%ls\" TargetMode=\"External\"/>"),
-				strRid, sLink);
+			strRels = L"<Relationship Id=\"" + strRid
+				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"" + sLink
+				+ L"\" TargetMode=\"External\"/>";
 		}
 		else
 		{
-			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"%ls\"/>"), 
-				strRid ,sLink);
+			strRels = L"<Relationship Id=\"" + strRid
+				+ L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"" + sLink 
+				+ L"\"/>"; 
 		}
 
 		m_pWriter->WriteString(strRels);
@@ -1340,7 +1308,7 @@ namespace NSBinPptxRW
 		return m_lNextId;
 	}
 
-	int CBinaryFileReader::Seek(_INT32 _pos)
+	int CBinaryFileReader::Seek(LONG _pos)
 	{
 		if (_pos > m_lSize)
 			return 1;
@@ -1348,13 +1316,13 @@ namespace NSBinPptxRW
 		m_pDataCur = m_pData + m_lPos;
 		return 0;
 	}
-	int CBinaryFileReader::Skip(_INT32 _skip)
+	int CBinaryFileReader::Skip(LONG _skip)
 	{
 		if (_skip < 0)
 			return 1;
 		return Seek(m_lPos + _skip);
 	}
-	bool CBinaryFileReader::Peek(int nSizeToRead = 0)
+	bool CBinaryFileReader::Peek(LONG nSizeToRead = 0)
 	{
 		return !(m_lPos + nSizeToRead > m_lSize);
 	}
@@ -1460,7 +1428,7 @@ namespace NSBinPptxRW
 	}	// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
-        if (m_lPos + DOUBLE_SIZEOF > m_lSize)
+        if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
             return 0;
 #ifdef _IOS
         double res = 0.0;
@@ -1474,29 +1442,29 @@ namespace NSBinPptxRW
 	}
 
 	//String
-	CString CBinaryFileReader::GetString(_INT32 len)
+	std::wstring CBinaryFileReader::GetString(_INT32 len)
 	{
         len *= 2;
 		return GetString3(len);		
 	}
-	CStringA CBinaryFileReader::GetString1(_INT32 len)
+	std::string CBinaryFileReader::GetString1(_INT32 len)
 	{
         if (len < 1 )
             return "";
         if (m_lPos + len > m_lSize)
 			return "";
 
-		CStringA res((CHAR*)m_pDataCur, len);
+		std::string res((CHAR*)m_pDataCur, len);
 		m_lPos += len;
 		m_pDataCur += len;
 		return res;
 	}
-	CString CBinaryFileReader::GetString2()
+	std::wstring CBinaryFileReader::GetString2()
     {
         _INT32 len = GetLong();
 		return GetString(len);
 	}
-    CString CBinaryFileReader::GetString3(_INT32 len)//len in byte for utf16
+    std::wstring CBinaryFileReader::GetString3(_INT32 len)//len in byte for utf16
 	{
         if (len < 1 )
             return _T("");
@@ -1508,7 +1476,7 @@ namespace NSBinPptxRW
         if (sizeof(wchar_t) == 4)
         {
             std::wstring val = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)m_pDataCur, lSize);
-            CString res(val.c_str(), val.length());
+            std::wstring res(val.c_str(), val.length());
 
             m_lPos += len;
             m_pDataCur += len;
@@ -1517,7 +1485,7 @@ namespace NSBinPptxRW
         }
         else
         {
-            CString res((WCHAR*)m_pDataCur, lSize);
+            std::wstring res((WCHAR*)m_pDataCur, lSize);
 
             m_lPos += len;
             m_pDataCur += len;
@@ -1576,7 +1544,7 @@ namespace NSBinPptxRW
     }
     */
 
-	CStringA CBinaryFileReader::GetString2A()
+	std::string CBinaryFileReader::GetString2A()
 	{
 		_INT32 len = GetULong();
 		return GetString1(len);
@@ -1588,12 +1556,12 @@ namespace NSBinPptxRW
 		Skip(_len);
 	}
 
-	_INT32 CBinaryFileReader::GetPos()
+	LONG CBinaryFileReader::GetPos()
 	{
 		return m_lPos;
 	}
 
-	_INT32 CBinaryFileReader::GetSize()
+	LONG CBinaryFileReader::GetSize()
 	{
 		return m_lSize;
 	}

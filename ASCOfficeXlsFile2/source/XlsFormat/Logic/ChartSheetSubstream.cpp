@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -385,6 +385,7 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;
+	if (charts->m_arAXISPARENT.empty()) return;
 
 	int ind_AXIS = 0;
 	AXISPARENT* parent0 = dynamic_cast<AXISPARENT*>(charts->m_arAXISPARENT[ind_AXIS].get());
@@ -527,7 +528,7 @@ int ChartSheetSubstream::serialize_3D (std::wostream & _stream)
 		AXISPARENT* parent		= dynamic_cast<AXISPARENT*>	(chart_formats->m_arAXISPARENT[i].get());
 		AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
 
-		if ((bool)ax_parent->iax == false) //primary axes
+		if (ax_parent->iax == 0) //primary axes
 		{
 			for (int i = 0 ; i < parent->m_arCRT.size() ; i++)
 			{
@@ -710,12 +711,22 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 	AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent0->m_AxisParent.get());
 	AXES*		axes		= dynamic_cast<AXES*>		(parent0->m_AXES.get());
 
-	if (((bool)ax_parent->iax == false) && axes) //primary axes
+	if ((ax_parent->iax == 0) && axes) //primary axes
 	{
 		PlotAreaFRAME	= dynamic_cast<FRAME*>	(axes->m_PlotArea_FRAME.get());
 		PlotAreaPos		= dynamic_cast<Pos*>	(parent0->m_Pos.get());
+
+		if (PlotAreaPos && !parent0->m_arCRT.empty())
+		{
+			CRT * crt = dynamic_cast<CRT*>(parent0->m_arCRT[0].get());
+			if ((crt) && (	crt->m_iChartType == CHART_TYPE_Radar || 
+							crt->m_iChartType == CHART_TYPE_RadarArea))//еще?
+			{
+				PlotAreaPos->m_iLayoutTarget = 2; //inner
+			}
+		}
 		
-		if (PlotAreaFRAME && PlotAreaPos)
+		if (PlotAreaPos && PlotAreaFRAME)
 		{
 			PlotAreaPos->m_Frame = PlotAreaFRAME->m_Frame;
 		}
@@ -749,7 +760,6 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 
 			if (PlotAreaPos && (sht_props) && (sht_props->fAlwaysAutoPlotArea != false))
 			{
-
 				PlotAreaPos->serialize(CP_XML_STREAM());
 			}
 
@@ -890,10 +900,9 @@ int ChartSheetSubstream::serialize_plot_area (std::wostream & _stream)
 				AxisParent* ax_parent	= dynamic_cast<AxisParent*>	(parent->m_AxisParent.get());
 				AXES*		axes		= dynamic_cast<AXES*>		(parent->m_AXES.get());
 
-				bool secondary = ax_parent->iax;
 				if (axes)
 				{
-					axes->serialize(CP_XML_STREAM(), secondary);
+					axes->serialize(CP_XML_STREAM(), (ax_parent->iax!=0) ); //secondary
 				}
 				//else error complex_29s.xls
 			}

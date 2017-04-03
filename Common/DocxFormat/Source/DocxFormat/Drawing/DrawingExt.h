@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,6 +41,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CSparklineGroups;
+		class CAltTextTable;
 	}
 	namespace Drawing
 	{
@@ -68,7 +69,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -90,10 +91,62 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString> m_sSpId;
+            nullable<std::wstring> m_sSpId;
 
 			// Childs
 		};
+		class CDataModelExt : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CDataModelExt)
+			CDataModelExt()
+			{
+			}
+			virtual ~CDataModelExt()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+                //todo
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+            virtual std::wstring      toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return OOX::et_a_compatExt;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		public:
+
+			// Attributes
+            nullable<std::wstring> m_oRelId;
+
+			// Childs
+		};
+
+
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
 		//--------------------------------------------------------------------------------	
@@ -104,19 +157,17 @@ namespace OOX
 			COfficeArtExtension()
 			{
 			}
-			virtual ~COfficeArtExtension()
-			{
-			}
+			virtual ~COfficeArtExtension();
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				oNode.ReadAttributeBase( _T("uri"), m_oUri );
+                oNode.ReadAttributeBase( _T("uri"), m_sUri );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
-            CString toXMLWithNS(const CString& sNamespace) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring toXML() const;
+            std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_ext;
@@ -128,19 +179,21 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_oUri )
+                WritingElement_ReadAttributes_Read_if( oReader, _T("uri"), m_sUri )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
 			// Attributes
-			nullable<CString> m_oUri;
-            CString m_sAdditionalNamespace;
+            nullable<std::wstring>  m_sUri;
+            std::wstring            m_sAdditionalNamespace;
 
 			// Childs
-			nullable<CCompatExt> m_oCompatExt;
-			nullable<OOX::Spreadsheet::CSparklineGroups> m_oSparklineGroups;
+			nullable<CCompatExt>							m_oCompatExt;
+			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
+			nullable<CDataModelExt>							m_oDataModelExt;
+			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
 		};
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
@@ -184,13 +237,13 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
             {
                 return toXMLWithNS(_T("a:"));
             }
-            CString toXMLWithNS(const CString& sNamespace) const
+            std::wstring toXMLWithNS(const std::wstring& sNamespace) const
 			{
-                CString sResult = _T("<");
+                std::wstring sResult = _T("<");
                 sResult += sNamespace;
                 sResult += _T("extLst>");
 				

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,11 +50,11 @@
 #include "NotesSlide.h"
 #include "TableStyles.h"
 
-#include "DocxFormat/Media/Image.h"
-#include "DocxFormat/Media/OleObject.h"
-#include "DocxFormat/External/External.h"
-#include "DocxFormat/External/HyperLink.h"
-#include "DocxFormat/Drawing/VmlDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/External.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
 #include "Comments.h"
 
@@ -80,7 +80,7 @@ namespace PPTX
 			//FileContainer::read(filename, map);
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			oNode.ReadAttributeBase(L"show", show);
 			oNode.ReadAttributeBase(L"showMasterPhAnim", showMasterPhAnim);
@@ -129,7 +129,7 @@ namespace PPTX
 			if (timing.IsInit())
 				timing->SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
@@ -149,16 +149,14 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:sld"), oAttr, oValue));
 
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
 		}
-		
-	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::Slide;
+			return OOX::Presentation::FileTypes::Slide;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -168,14 +166,13 @@ namespace PPTX
 		{
 			return type().DefaultFileName();
 		}
-
-	public:
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
+//-------------------------------------------------
+		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
 		{
 			if (Layout.IsInit())
 				Layout->FillShapeProperties(props, type);
 		}
-		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const CString& type)const
+		virtual void FillShapeTextProperties(Logic::CShapeTextProperties& props, const std::wstring& type)const
 		{
 			if (Layout.IsInit())
 				Layout->FillShapeTextProperties(props, type);
@@ -201,42 +198,42 @@ namespace PPTX
 			}
 			return false;
 		}
-		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
+		
+		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::Image> p = image(rid);
+			smart_ptr<OOX::Image> p = GetImage(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
+			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual CString GetLinkFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetLinkFromRId(const OOX::RId& rid)const
 		{
 			//return relsTable.Links.GetTargetById(rid);
-			smart_ptr<PPTX::External> pExt = find(rid).smart_dynamic_cast<PPTX::External>();
+			smart_ptr<OOX::External> pExt = Find(rid).smart_dynamic_cast<OOX::External>();
 			if (pExt.IsInit())
 				return pExt->Uri().m_strFilename;
 
-			smart_ptr<PPTX::Media> pMedia = find(rid).smart_dynamic_cast<PPTX::Media>();
+			smart_ptr<OOX::Media> pMedia = Find(rid).smart_dynamic_cast<OOX::Media>();
 			if (pMedia.IsInit())
 				return pMedia->filename().m_strFilename;
 
 			return _T("");
 		}
-		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetOleFromRId		(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::OleObject> p = oleObject(rid);
+			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-
-		virtual DWORD GetRGBAFromMap(const CString& str)const
+		virtual DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Layout->GetRGBAFromMap(str);
@@ -244,7 +241,7 @@ namespace PPTX
 				return Layout->GetRGBAFromMap(str);
 			return Master->GetRGBAFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
-		virtual DWORD GetARGBFromMap(const CString& str)const
+		virtual DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Layout->GetARGBFromMap(str);
@@ -252,7 +249,7 @@ namespace PPTX
 				return Layout->GetARGBFromMap(str);
 			return Master->GetARGBFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
-		virtual DWORD GetBGRAFromMap(const CString& str)const
+		virtual DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Layout->GetBGRAFromMap(str);
@@ -260,7 +257,7 @@ namespace PPTX
 				return Layout->GetBGRAFromMap(str);
 			return Master->GetBGRAFromScheme(clrMapOvr->overrideClrMapping->GetColorSchemeIndex(str));
 		}
-		virtual DWORD GetABGRFromMap(const CString& str)const
+		virtual DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			if(!(clrMapOvr.is_init()))
 				return Layout->GetABGRFromMap(str);
@@ -395,42 +392,50 @@ namespace PPTX
 		nullable<Logic::Transition> transition;
 		nullable<Logic::Timing>		timing;
 
-		smart_ptr<SlideLayout>	Layout;
-		smart_ptr<SlideMaster>	Master;
-		smart_ptr<NotesSlide>	Note;
-		smart_ptr<Theme>		theme;
-		smart_ptr<VmlDrawing>	Vml;
-        smart_ptr<TableStyles>	tableStyles_;
+		smart_ptr<SlideLayout>		Layout;
+		smart_ptr<SlideMaster>		Master;
+		smart_ptr<NotesSlide>		Note;
+		smart_ptr<Theme>			theme;
+		smart_ptr<OOX::CVmlDrawing>	Vml;
+        smart_ptr<TableStyles>		tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
 
 	public:
 		void ApplyRels()
 		{
-			Layout	= FileContainer::get(PPTX::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(PPTX::FileTypes::SlideLayout));
-			Note	= FileContainer::get(PPTX::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
-			comments = FileContainer::get(PPTX::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
-			Master	= Layout->Master;
-			theme	= Layout->theme;
+			Layout	= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));
+			Note	= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
+			comments = FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 			
-            tableStyles_= theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
-
-			if (exist(PPTX::FileTypes::VmlDrawing))
+			if (Layout.IsInit())
 			{
-				Vml = FileContainer::get(PPTX::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(PPTX::FileTypes::VmlDrawing));
+				Master	= Layout->Master;
+				theme	= Layout->theme;
+				
+				if (theme.IsInit())
+				{
+					tableStyles_= theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(OOX::Presentation::FileTypes::TableStyles));
+				}
+				if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
+				{
+					Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+				}
 			}
 		}
 
-		const CString GetVmlXmlBySpid(const CString& spid)const
+		std::wstring GetVmlXmlBySpid(const std::wstring& spid)
 		{
-            CString xml;
-			if((Vml.is_init()) && (spid != _T("")))
+			if(Vml.is_init() && !spid.empty())
 			{
-				std::map<CString, CString>::const_iterator pPair = Vml->m_mapShapesXml.find(spid);
-				if (Vml->m_mapShapesXml.end() != pPair)
-					xml = pPair->second;
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pPair = Vml->m_mapShapes.find(spid);
+				if (Vml->m_mapShapes.end() != pPair)
+				{
+					pPair->second.bUsed = true;
+					return pPair->second.sXml;
+				}
 			}
-			return xml;
+			return L"";
 		}
 	};
 } // namespace PPTX

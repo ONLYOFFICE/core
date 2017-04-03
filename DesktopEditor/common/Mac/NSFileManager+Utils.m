@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  NSFileManager+Utils.m
-//  UTILS
-//
-//  Created by alexey.musinov on 21.09.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #import "NSFileManager+Utils.h"
 
@@ -68,13 +61,20 @@
     NSError *error = nil;
     NSString* path = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), [NSUUID UUID].UUIDString];
     
-    if(![[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
+    if(![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error])
     {
         NSLog(@"Could not creat temp path %@. error %@", path, error);
         return @"";
     }
     
     return path;
+}
+
+- (void)createDirectory:(NSString*)directory {
+    NSError *error = nil;
+    if(![self createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error]) {
+        NSLog(@"Failed to create directory \"%@\". Error: %@", directory, error);
+    }
 }
 
 @end

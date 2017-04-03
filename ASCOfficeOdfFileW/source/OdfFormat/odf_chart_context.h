@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,19 +58,19 @@ public:
 	odf_drawing_context *drawing_context();
 	odf_text_context	*text_context();
 
-	void start_chart(office_element_ptr & root);
-		void set_chart_type(std::wstring type);
-		void set_chart_3D(bool Val);
-		void set_chart_size(double width_pt, double height_pt);		
-		void set_chart_colored(bool val);
-		void set_chart_grouping(int type);
-		void set_chart_scatter_type(int type);
-		void set_chart_bar_grouping(int type);
+	void start_chart (office_element_ptr & root);
+		void set_chart_type			(std::wstring type);
+		void set_chart_3D			(bool Val);
+		void set_chart_size			(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt);		
+		void set_chart_colored		(bool val);
+		void set_chart_grouping		(int type);
+		void set_chart_scatter_type	(int type);
+		void set_chart_bar_grouping	(int type);
 		void set_chart_bar_direction(int type);
-		void set_chart_bar_type(int type);
+		void set_chart_bar_type		(int type);
 		void set_chart_bar_gap_width(std::wstring val);
-		void set_chart_bar_overlap(std::wstring val);
-		void set_chart_radar_type(int type);
+		void set_chart_bar_overlap	(std::wstring val);
+		void set_chart_radar_type	(int type);
 		void set_chart_stock_candle_stick(bool val);
 
 		void set_marker_size(int size);
@@ -81,26 +81,26 @@ public:
 
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
-				void start_series(std::wstring type);
-					void set_series_value_formula(std::wstring oox_formula);
-					void set_series_label_formula(std::wstring oox_formula);
-					void set_category_axis_formula(std::wstring oox_formula,int type);
-					void start_data_point_series(int count);
+				void start_series (std::wstring type);
+					void set_series_value_formula	(std::wstring oox_formula);
+					void set_series_label_formula	(std::wstring oox_formula);
+					void set_category_axis_formula	(std::wstring oox_formula,int type);
+					void start_data_point_series	(int count);
 					long get_count_data_points_series();
 
 					void set_series_pie_explosion(int val);
 				void end_series();
 		void end_group_series();
 		
-		void set_label_name(std::wstring name);
-		void set_label_delete(bool val);	
-		void set_label_show_bubble_size(bool val);	
-		void set_label_show_cat_name(bool val);
-		void set_label_show_leader_line(bool val);
-		void set_label_show_legend_key(bool val);
-		void set_label_show_percent(bool val);
-		void set_label_show_ser_name(bool val);
-		void set_label_show_values(bool val);		
+		void set_label_name (std::wstring name);
+		void set_label_delete (bool val);	
+		void set_label_show_bubble_size (bool val);	
+		void set_label_show_cat_name (bool val);
+		void set_label_show_leader_line (bool val);
+		void set_label_show_legend_key (bool val);
+		void set_label_show_percent (bool val);
+		void set_label_show_ser_name( bool val);
+		void set_label_show_values (bool val);		
 		
 		void start_axis();
 			void set_axis_id(unsigned int id);

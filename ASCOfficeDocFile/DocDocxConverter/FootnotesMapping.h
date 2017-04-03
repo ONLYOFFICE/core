@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,24 +54,24 @@ namespace DocFileFormat
 
 				int id = 0;
 
-				m_pXmlWriter->WriteNodeBegin( _T( "?xml version=\"1.0\" encoding=\"UTF-8\"?" ) );
-				m_pXmlWriter->WriteNodeBegin( _T( "w:footnotes" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
+                m_pXmlWriter->WriteNodeBegin( L"w:footnotes", TRUE );
 
 				//write namespaces
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:w" ), OpenXmlNamespaces::WordprocessingML );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:v" ), OpenXmlNamespaces::VectorML );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:o" ), OpenXmlNamespaces::Office );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:w10" ), OpenXmlNamespaces::OfficeWord );
-				m_pXmlWriter->WriteAttribute( _T( "xmlns:r" ), OpenXmlNamespaces::Relationships );
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
+                m_pXmlWriter->WriteAttribute( L"xmlns:v", OpenXmlNamespaces::VectorML );
+                m_pXmlWriter->WriteAttribute( L"xmlns:o", OpenXmlNamespaces::Office );
+                m_pXmlWriter->WriteAttribute( L"xmlns:w10", OpenXmlNamespaces::OfficeWord );
+                m_pXmlWriter->WriteAttribute( L"xmlns:r", OpenXmlNamespaces::Relationships );
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 				int cp = m_document->FIB->m_RgLw97.ccpText;
 
 				while ( cp <= ( m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn - 2 ) )
 				{
-					m_pXmlWriter->WriteNodeBegin( _T( "w:footnote" ), TRUE );
-					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( id ).c_str() );
-					m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:footnote", TRUE );
+                    m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString( id ));
+                    m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
 					while ( ( cp - m_document->FIB->m_RgLw97.ccpText ) < (*m_document->IndividualFootnotesPlex)[id + 1] )
 					{
@@ -95,11 +95,11 @@ namespace DocFileFormat
 						}
 					}
 
-					m_pXmlWriter->WriteNodeEnd( _T( "w:footnote" ) );
+                    m_pXmlWriter->WriteNodeEnd( L"w:footnote");
 					id++;
 				}
 
-				m_pXmlWriter->WriteNodeEnd( _T( "w:footnotes" ) );
+                m_pXmlWriter->WriteNodeEnd( L"w:footnotes");
 
 				m_context->_docx->FootnotesXML = std::wstring(m_pXmlWriter->GetXmlString());
 			}

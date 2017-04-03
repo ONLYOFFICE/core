@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	CFVO	cfvo;
 	double	numDomain;
@@ -66,7 +66,7 @@ public:
 	static const ElementType	type = typeAnyObject;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	double	numGrange;
 	CFColor	color;
@@ -82,7 +82,7 @@ public:
 	static const ElementType	type = typeCFGradient;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+
 
 	unsigned char						cInterpCurve;		//MUST be 0x2 or 0x3.
 	unsigned char						cGradientCurve;		// == cInterpCurve

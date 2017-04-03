@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,11 +42,11 @@ namespace DocFileFormat
 		SectionPropertyExceptions( unsigned char* bytes, int size, bool oldVersion ):
 				PropertyExceptions( bytes, size, oldVersion ), isBidi(false)
 		{
-			for ( std::list<SinglePropertyModifier>::iterator iter = this->grpprl->begin(); iter != this->grpprl->end(); iter++ )
+			for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
 			{
 				SinglePropertyModifier sprm( *iter );
 				  
-				if( sprm.OpCode == sprmSFBiDi ) 
+				if( sprm.OpCode == sprmSFBiDi && sprm.Arguments[0] != 0) 
 				{
 					isBidi = true;
 				}

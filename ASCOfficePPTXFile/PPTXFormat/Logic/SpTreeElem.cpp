@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "SpTreeElem.h"
 #include "Shape.h"
@@ -43,18 +43,20 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString GetHexColor(const DWORD& ARGB)
+		std::wstring GetHexColor(const DWORD& ARGB)
 		{
 			BYTE r = (BYTE)((ARGB >> 16) & 0xFF);
 			BYTE g = (BYTE)((ARGB >> 8) & 0xFF);
 			BYTE b = (BYTE)((ARGB & 0xFF));
 
-			CString sC = _T("");
-			sC.Format(_T("#%02X%02X%02X"), r, g, b);
-			return sC;
+            std::wstringstream sstream;
+            sstream << boost::wformat( L"%02X%02X%02X" ) % r % g % b;
+
+            return L"#" + sstream.str();
 		}
 
-		void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
+        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
+                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -84,7 +86,7 @@ namespace PPTX
 
 				if (oBlip.blip.is_init() && oBlip.blip->embed.is_init())
 				{
-					CString fopacity = _T("");
+					std::wstring fopacity = _T("");
 					size_t eff_count = oBlip.blip->Effects.size();
 					for (size_t eff = 0; eff < eff_count; ++eff)
 					{
@@ -103,13 +105,13 @@ namespace PPTX
 								if (nA > 65536)
 									nA = 65536;
 
-								fopacity = _T(" opacity=\"") + XmlUtils::IntToString(nA) + _T("f\"");
+                                fopacity = _T(" opacity=\"") + std::to_wstring(nA) + _T("f\"");
 							}
 							break;
 						}
 					}
 
-					CString strId = oBlip.blip->embed->ToString();
+					std::wstring strId = oBlip.blip->embed->ToString();
 
 					if(bOle)
 					{
@@ -133,8 +135,8 @@ namespace PPTX
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 				if (A != 255)
 				{
-					int fopacity = (int)(((double)A / 255.0) * 65536);
-					strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
+                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 				}
 			}
 			else if (fill.is<GradFill>())
@@ -148,8 +150,8 @@ namespace PPTX
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
 					if (A != 255)
 					{
-						int fopacity = (int)(((double)A / 255.0) * 65536);
-						strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
+                        strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 					}
 				}
 			}
@@ -165,7 +167,7 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-					strNode = _T("<v:fill opacity=\"") + XmlUtils::IntToString(fopacity) + _T("f\" />");
+                    strNode = _T("<v:fill opacity=\"") + std::to_wstring(fopacity) + _T("f\" />");
 				}
 			}
 
@@ -173,14 +175,13 @@ namespace PPTX
 			BYTE alpha = (BYTE)((ARGB >> 24) & 0xFF);
 			if (alpha < 255)
 			{
-				CString strA = _T("");
-				strA.Format(_T("%d"), alpha);
+                std::wstring strA =  = std::to_string( alpha);
 				strAttr += _T(" opacity=\"") + strA + _T("\"");
 			}
 			*/
 		}
-
-		void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
+        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
+                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -207,38 +208,72 @@ namespace PPTX
 			if (line.w.is_init())
 			{
 				double dW = 72.0 * (*line.w) / (25.4 * 36000);
-				CString s = _T(""); 
-				s.Format(_T(" strokeweight=\"%.2lfpt\""), dW);
+                std::wstring s = L" strokeweight=\"" + XmlUtils::DoubleToString(dW, L"%.2lf") + L"pt\"";
 				strAttr += s;
 			}
 		}
-
 		SpTreeElem::SpTreeElem()
 		{
 		}
-
-
 		SpTreeElem::~SpTreeElem()
 		{
 		}
-	
-
 		SpTreeElem::SpTreeElem(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
-
 		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		SpTreeElem::SpTreeElem(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void SpTreeElem::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
-
+			if (name == _T("sp") || name == _T("wsp"))
+				m_elem.reset(new Logic::Shape(oReader));
+			else if (name == _T("pic"))
+				m_elem.reset(new Logic::Pic(oReader));
+			else if (name == _T("cxnSp"))
+				m_elem.reset(new Logic::CxnSp(oReader));
+			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
+				m_elem.reset(new Logic::SpTree(oReader));
+			else if (name == _T("graphicFrame"))
+				m_elem.reset(new Logic::GraphicFrame(oReader));
+			else if (name == _T("AlternateContent"))
+			{
+				bool isEmpty = true;
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					if (strName == L"mc:Choice")
+					{
+						//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+						fromXML(oReader);
+						break;
+					}
+					else if (strName == L"mc:Fallback")
+					{
+						fromXML(oReader);
+					}
+				}
+			}
+			else m_elem.reset();
+		}
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("sp") || name == _T("wsp"))
 				m_elem.reset(new Logic::Shape(node));
@@ -258,7 +293,7 @@ namespace PPTX
 				{
 					XmlUtils::CXmlNode oNodeFall;
 					XmlUtils::CXmlNodes oNodesC;
-					CString sRequires;
+					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
 					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 					{
@@ -317,9 +352,14 @@ namespace PPTX
 			case SPTREE_TYPE_SPTREE:
 				{
 					Logic::SpTree* p = new Logic::SpTree();
-					p->m_name = _T("p:grpSp");
 					pReader->Seek(pReader->GetPos() - 5); // type back + len
 					p->fromPPTY(pReader);
+
+					if (getType() == OOX::et_p_ShapeTree)
+					{
+                        smart_ptr<PPTX::Logic::SpTree> parent = GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
+						p->m_lGroupIndex = parent->m_lGroupIndex + 1;
+					}
 					m_elem.reset(p);
 					break;
 				}
@@ -340,7 +380,7 @@ namespace PPTX
 			}
 		}
 
-		CString SpTreeElem::toXML() const
+		std::wstring SpTreeElem::toXML() const
 		{
 			if (m_elem.IsInit())
 				return m_elem->toXML();

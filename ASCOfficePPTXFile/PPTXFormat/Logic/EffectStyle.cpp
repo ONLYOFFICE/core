@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,26 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
+		void EffectStyle::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring strName = oReader.GetName();
+				if (strName == L"a:scene3d")
+					scene3d = oReader;
+				else if (strName == L"a:sp3d")
+					sp3d = oReader;
+				else
+					EffectList.fromXML(oReader);
+			}
+			FillParentPointersForChilds();
+		}
 
-		CString EffectStyle::toXML() const
+		std::wstring EffectStyle::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(EffectList);

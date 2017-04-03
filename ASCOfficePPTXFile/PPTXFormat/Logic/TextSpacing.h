@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,9 +43,45 @@ namespace PPTX
 		class TextSpacing : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TextSpacing)
+			WritingElement_AdditionConstructors(TextSpacing)
+			PPTX_LOGIC_BASE2(TextSpacing)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_Unknown;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+				
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+					nullable_int val;
+					if (sName == L"a:spcPct")
+					{
+						ReadAttributes(oReader, val);
+						spcPct = val;
+					}
+					if (sName == L"a:spcPts")
+					{
+						ReadAttributes(oReader, val);
+						spcPts = val;
+					}
+				}
+				Normalize();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_int & val)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -55,17 +91,17 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				
 				if (spcPct.is_init())
 				{
-					oValue.m_strValue.Format(_T("<a:spcPct val=\"%d\" />"), *spcPct);
+                    oValue.m_strValue = L"<a:spcPct val=\"" + std::to_wstring(*spcPct) + L"\"/>";
 				}
 				else
 				{
-					oValue.m_strValue.Format(_T("<a:spcPct val=\"%d\" />"), spcPts.get_value_or(0));
+                    oValue.m_strValue = L"<a:spcPts val=\"" + std::to_wstring(spcPts.get_value_or(0)) + L"\"/>";
 				}
 
 				return XmlUtils::CreateNode(m_name, oValue);
@@ -148,7 +184,7 @@ namespace PPTX
 			}
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

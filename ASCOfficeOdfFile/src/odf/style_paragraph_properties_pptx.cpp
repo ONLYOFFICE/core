@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,7 +71,7 @@ std::wstring process_border(border_style	& borderStyle,
 		if (szInt <= 0) szInt = 1;
 
         w_sz	= boost::lexical_cast<std::wstring>( szInt );
-        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+        w_color = borderStyle.get_color().get_hex_value();
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt)) );
@@ -106,7 +106,7 @@ std::wstring process_border(border_style	& borderStyle,
     return res;
 }
 
-std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, length::unit unit, double Mul)
+std::wstring pptx_process_margin(const _CP_OPT(length_or_percent) & margin, length::unit unit, double Mul)
 {
     if (margin)
     {
@@ -156,9 +156,9 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				// TODO auto indent
 				std::wstring w_left, w_right, w_firstLine;
 
-				w_left = process_margin(fo_margin_left_, length::emu, 1.);
-				w_right = process_margin(fo_margin_right_, length::emu, 1.);
-				w_firstLine = process_margin(fo_text_indent_,length::emu, 1.);
+                w_left = pptx_process_margin(fo_margin_left_, length::emu, 1.);
+                w_right = pptx_process_margin(fo_margin_right_, length::emu, 1.);
+                w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1.);
 
 				//if (w_left.empty())		w_left = L"0";
 				//if (w_right.empty())		w_right = L"0";
@@ -227,7 +227,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				{
 					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 					{
-						std::wstring w_before = process_margin(fo_margin_top_, length::pt, 100.0);
+                        std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 						CP_XML_NODE(L"a:spcPts")
 						{
 							CP_XML_ATTR(L"val",w_before);
@@ -250,7 +250,7 @@ void paragraph_format_properties::xlsx_convert(std::wostream & strm, bool in_dra
 				{
 					if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 					{
-						std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 100.0);
+                        std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
 						CP_XML_NODE(L"a:spcPts")
 						{
 							CP_XML_ATTR(L"val",w_after);
@@ -281,9 +281,9 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 		// TODO auto indent
 		std::wstring w_left, w_right, w_firstLine;
 
-		w_left = process_margin(fo_margin_left_, length::emu, 1.);
-		w_right = process_margin(fo_margin_right_, length::emu, 1.);
-		w_firstLine = process_margin(fo_text_indent_,length::emu, 1.);
+        w_left = pptx_process_margin(fo_margin_left_, length::emu, 1.);
+        w_right = pptx_process_margin(fo_margin_right_, length::emu, 1.);
+        w_firstLine = pptx_process_margin(fo_text_indent_,length::emu, 1.);
 
 		//if (w_left.empty())			w_left = L"0";
 		//if (w_right.empty())		w_right = L"0";
@@ -460,7 +460,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 			{
 				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-					std::wstring w_before = process_margin(fo_margin_top_, length::pt, 100.0);
+                    std::wstring w_before = pptx_process_margin(fo_margin_top_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
 						CP_XML_ATTR(L"val",w_before);
@@ -483,7 +483,7 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 			{
 				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-					std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 100.0);
+                    std::wstring w_after = pptx_process_margin(fo_margin_bottom_, length::pt, 100.0);
 					CP_XML_NODE(L"a:spcPts")
 					{
 						CP_XML_ATTR(L"val",w_after);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,13 +31,7 @@
  */
 #pragma once
 
-#if defined(_WIN32) || defined (_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../../../DesktopEditor/common/ASCVariant.h"
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
 
@@ -60,7 +54,7 @@ private:
 
 	void* m_pReader;
 
-	std::vector<CString> m_arUserSources;
+    std::vector<std::wstring> m_arUserSources;
 
     std::wstring m_strTempDirectory;
 	
@@ -79,13 +73,11 @@ public:
 
     HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath);
 
-
-	HRESULT GetAdditionalParam (CString sParamName, VARIANT* ParamValue);
 private:
     bool OpenFile(std::wstring sFileName);
 
     bool CloseFile();
 
-	CString GetDirectory(CString strFileName);
+    std::wstring GetDirectory(std::wstring strFileName);
 };
 

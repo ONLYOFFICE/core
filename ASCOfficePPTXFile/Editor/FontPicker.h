@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,6 @@
 #include "FontCutter.h"
 
 
-//#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontCutter
@@ -45,11 +44,11 @@ namespace NSFontCutter
 	class CFontDstManager
 	{
 	public:		
-		std::map<CString, CString> m_mapPicks;
+		std::map<std::wstring, std::wstring> m_mapPicks;
 		CApplicationFonts m_oApplicationFonts;
 		CFontManager* m_pFontManager;
 
-		CString m_strFontsDir;
+		std::wstring m_strFontsDir;
 
         bool					m_bIsEmbeddedFonts;
 
@@ -68,12 +67,12 @@ namespace NSFontCutter
 			RELEASEOBJECT(m_pFontManager);
 		}
 
-		void Init(const CString& strDir)
+		void Init(const std::wstring& strDir)
 		{
-			if(strDir.IsEmpty())
+			if(strDir.empty())
 				m_oApplicationFonts.Initialize();
 			else
-				m_oApplicationFonts.InitializeFromFolder(string2std_string(strDir));
+				m_oApplicationFonts.InitializeFromFolder(strDir);
 			CFontList* pFontList = m_oApplicationFonts.GetList();
 			if(NULL != pFontList)
 			{
@@ -83,14 +82,14 @@ namespace NSFontCutter
 			m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 		}
 
-		CString GetTypefacePickByName(const CString& strTypeface)
+		std::wstring GetTypefacePickByName(const std::wstring& strTypeface)
 		{
-			CString sFind = strTypeface;
+			std::wstring sFind = strTypeface;
 
-			int nFindTh = sFind.Find(_T("+mj"));
+			int nFindTh = (int)sFind.find(_T("+mj"));
 			if (0 == nFindTh)
 				return sFind;
-			nFindTh = sFind.Find(_T("+mn"));
+			nFindTh = (int)sFind.find(_T("+mn"));
 			if (0 == nFindTh)
 				return sFind;
 
@@ -99,38 +98,38 @@ namespace NSFontCutter
 				sFind = _T("Arial");
 			}
 			
-			std::map<CString, CString>::iterator pPair = m_mapPicks.find(sFind);
+			std::map<std::wstring, std::wstring>::iterator pPair = m_mapPicks.find(sFind);
 			if (pPair != m_mapPicks.end())
 				return pPair->second;
 
 			//подбор перенесен в js
-			m_mapPicks.insert(std::pair<CString,CString>(sFind, sFind));
+			m_mapPicks.insert(std::pair<std::wstring,std::wstring>(sFind, sFind));
 			return sFind;
 
-			CString sInputSave = sFind;
+			std::wstring sInputSave = sFind;
 
 			CFontSelectFormat oFontSelectFormat;
-			oFontSelectFormat.wsName = new std::wstring;
-			*oFontSelectFormat.wsName = std::wstring(sFind.GetString());
+			oFontSelectFormat.wsName = new std::wstring(sFind);
+
 			//oFontSelectFormat.
 			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
-			CString sRes = _T("Arial");
+			std::wstring sRes = _T("Arial");
 			if(NULL != pFontInfo)
 			{
-				sRes = CString(pFontInfo->m_wsFontName.c_str());
+				sRes = std::wstring(pFontInfo->m_wsFontName.c_str());
 
 
                 if (m_bIsEmbeddedFonts)
 					m_oEmbeddedFonts.CheckFont(sRes, m_pFontManager);
 
-                m_mapPicks.insert(std::pair<CString,CString>(sInputSave, sRes));
+                m_mapPicks.insert(std::pair<std::wstring,std::wstring>(sInputSave, sRes));
 				
 			}
 			return sRes;
 		}
 
         template<typename TTextFont>
-		CString GetTypefacePick(TTextFont& textFont)
+		std::wstring GetTypefacePick(TTextFont& textFont)
 		{
             return GetTypefacePickByName(textFont.typeface);
 		}
@@ -145,7 +144,7 @@ private:
 
 public:
 	
-	HRESULT Init(const CString& bsFontsDirectory)
+	HRESULT Init(const std::wstring& bsFontsDirectory)
 	{
 		m_oPicker.Init(bsFontsDirectory);
 		return S_OK;
@@ -156,9 +155,9 @@ public:
 		return m_oPicker.m_pFontManager;
 	}
 
-	HRESULT SetEmbeddedFontsDirectory(const CString& bsFontsDirectory)
+	HRESULT SetEmbeddedFontsDirectory(const std::wstring& bsFontsDirectory)
 	{
-        m_oPicker.m_oEmbeddedFonts.m_strEmbeddedFontsFolder = (CString)bsFontsDirectory;
+        m_oPicker.m_oEmbeddedFonts.m_strEmbeddedFontsFolder = (std::wstring)bsFontsDirectory;
 		return S_OK;
 	}
 	HRESULT SetEmbeddedFontsParam(LONG lParam)
@@ -177,29 +176,29 @@ public:
 		return S_OK;
 	}
 
-	HRESULT CheckString(const CString& bsText)
+	HRESULT CheckString(const std::wstring& bsText)
 	{
 
-        m_oPicker.m_oEmbeddedFonts.CheckString((CString)bsText);
+        m_oPicker.m_oEmbeddedFonts.CheckString((std::wstring)bsText);
 
 		return S_OK;
 	}
-	HRESULT CheckFont(const CString& bsFontName)
+	HRESULT CheckFont(const std::wstring& bsFontName)
 	{
 
-        m_oPicker.m_oEmbeddedFonts.CheckFont((CString)bsFontName, m_oPicker.m_pFontManager);
+        m_oPicker.m_oEmbeddedFonts.CheckFont((std::wstring)bsFontName, m_oPicker.m_pFontManager);
 
 		return S_OK;
 	}
 
-	HRESULT PickFont(LONG lParamType, const CString& bsParams, CString* pDstName)
+	HRESULT PickFont(LONG lParamType, const std::wstring& bsParams, std::wstring* pDstName)
 	{
 		if (NULL == pDstName)
 			return S_FALSE;
 
 		if (0 == lParamType)
 		{
-			CString strResult = m_oPicker.GetTypefacePickByName((CString)bsParams);
+			std::wstring strResult = m_oPicker.GetTypefacePickByName((std::wstring)bsParams);
             *pDstName = strResult;//strResult.AllocSysString();
 			return S_OK;
 		}
@@ -207,7 +206,6 @@ public:
 		return S_OK;
 	}
 
-	//HRESULT GetBinaryData(LONG lType, SAFEARRAY** ppBinaryArray);
 	HRESULT GetBinaryData(LONG lType, BYTE** ppyArray, size_t& szCount);
 
 	NSFontCutter::CFontDstManager* GetNativePicker()

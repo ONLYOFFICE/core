@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,6 @@
 #include "BiffRecord.h"
 #include <Binary/CFStream.h>
 #include "Binary/CFStreamCacheReader.h"
-#include "Binary/CFStreamCacheWriter.h"
 
 
 namespace XLS

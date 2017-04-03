@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -109,11 +109,11 @@ void common_draw_fill_attlist::add_attributes( const xml::attributes_wc_ptr & At
 }
 void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"draw:fill-color",		draw_fill_color_); 
-	CP_XML_ATTR_OPT(L"draw:fill",			draw_fill_); 
+	CP_XML_ATTR_OPT(L"draw:fill-color",			draw_fill_color_); 
+	CP_XML_ATTR_OPT(L"draw:fill",				draw_fill_); 
 	
-	CP_XML_ATTR_OPT(L"draw:opacity",		draw_opacity_); 
-	CP_XML_ATTR_OPT(L"draw:image-opacity",	draw_image_opacity_); 
+	CP_XML_ATTR_OPT(L"draw:opacity",			draw_opacity_); 
+	CP_XML_ATTR_OPT(L"draw:image-opacity",		draw_image_opacity_); 
 	
  	CP_XML_ATTR_OPT(L"draw:fill-image-name",	draw_fill_image_name_);
 	CP_XML_ATTR_OPT(L"draw:fill-gradient-name",	draw_fill_gradient_name_);

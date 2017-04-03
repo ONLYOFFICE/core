@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,24 +48,15 @@ PtgFunc::PtgFunc(const unsigned short func_index, const unsigned char data_type)
 {
 }
 
-
 BiffStructurePtr PtgFunc::clone()
 {
 	return BiffStructurePtr(new PtgFunc(*this));
 }
 
-
-void PtgFunc::storeFields(CFRecord& record)
-{
-	record << iftab;
-}
-
-
 void PtgFunc::loadFields(CFRecord& record)
 {
 	record >> iftab;
 }
-
 
 void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

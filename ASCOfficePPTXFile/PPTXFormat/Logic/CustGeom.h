@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,7 +47,8 @@ namespace PPTX
 		class CustGeom : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CustGeom)
+			WritingElement_AdditionConstructors(CustGeom)
+			PPTX_LOGIC_BASE2(CustGeom)
 
 			CustGeom& operator=(const CustGeom& oSrc)
 			{
@@ -65,7 +66,122 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_custGeom;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:avLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:gd")
+							{
+								Gd gd;
+								avLst.push_back(gd);
+								avLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:gdLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:gd")
+							{
+								Gd gd;
+								gdLst.push_back(gd);
+								gdLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:rect")
+						rect = oReader;
+					else if (sName == L"a:pathLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:path")
+							{
+								Path2D gd;
+								pathLst.push_back(gd);
+								pathLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:ahLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:ahPolar")
+							{
+								AhBase gd;
+								ahLst.push_back(gd);
+								ahLst.back().fromXML(oReader);
+							}
+							else if (sName1 == L"a:ahXY")
+							{
+								AhBase gd;
+								ahLst.push_back(gd);
+								ahLst.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (sName == L"a:cxnLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:cxn")
+							{
+								Cxn gd;
+								cxnLst.push_back(gd);
+								cxnLst.back().fromXML(oReader);
+							}
+						}
+					}
+				}			
+				FillParentPointersForChilds();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -91,7 +207,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(_T("a:avLst"), avLst);
@@ -191,9 +307,9 @@ namespace PPTX
 					rect->SetParentPointer(this);
 			}
 		public:
-			virtual CString GetODString() const
+			virtual std::wstring GetODString() const
 			{
-				CString strXml = _T("");
+				std::wstring strXml = _T("");
 
 				size_t nCount  = 0;
 				

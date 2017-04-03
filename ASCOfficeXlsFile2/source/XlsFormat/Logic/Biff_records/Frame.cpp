@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,16 +48,6 @@ Frame::~Frame()
 BaseObjectPtr Frame::clone()
 {
 	return BaseObjectPtr(new Frame(*this));
-}
-
-
-void Frame::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAutoSize);
-	SETBIT(flags, 1, fAutoPosition);
-	
-	record << frt << flags;
 }
 
 

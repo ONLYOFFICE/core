@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ public:
 		if (m_ooxNum->m_oAbstractNumId.IsInit() && m_ooxNum->m_oAbstractNumId->m_oVal.IsInit())
 			oNewOverride.m_nListID = m_ooxNum->m_oAbstractNumId->m_oVal->GetValue();
 
-		for (long i=0 ;i < m_ooxNum->m_arrLvlOverride.size(); i++)
+		for (size_t i = 0 ; i < m_ooxNum->m_arrLvlOverride.size(); i++)
 		{
 			if (m_ooxNum->m_arrLvlOverride[i] == NULL) continue;
 

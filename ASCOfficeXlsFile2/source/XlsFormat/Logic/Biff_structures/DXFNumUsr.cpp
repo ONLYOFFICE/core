@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,15 +45,6 @@ DXFNumUsr::DXFNumUsr()
 BiffStructurePtr DXFNumUsr::clone()
 {
 	return BiffStructurePtr(new DXFNumUsr(*this));
-}
-
-void DXFNumUsr::store(CFRecord& record)
-{
-	size_t start_ptr = record.getDataSize();
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cb*/, rt_STRUCT_DXFNumUsr);
-	record << fmt;
-	record.registerDelayedDataSource(record.getDataSize() - start_ptr, rt_STRUCT_DXFNumUsr);
-
 }
 
 

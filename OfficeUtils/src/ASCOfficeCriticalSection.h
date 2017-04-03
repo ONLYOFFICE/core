@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,18 +31,18 @@
  */
 #pragma once
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
-class AVSOfficeCriticalSection
+class OfficeCriticalSection
 {
   private:
     NSCriticalSection::CRITICAL_SECTION CriticalSection;
 
   public:
-	AVSOfficeCriticalSection()
+	OfficeCriticalSection()
     {
 		CriticalSection.InitializeCriticalSection();
     }
 
-	~AVSOfficeCriticalSection()
+	~OfficeCriticalSection()
 	{
 		CriticalSection.DeleteCriticalSection();
 	}

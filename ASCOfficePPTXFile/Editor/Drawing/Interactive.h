@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,9 +32,7 @@
 #pragma once
 #include "Attributes.h"
 
-#if !defined(_WIN32) && !defined(_WIN64)
-    #include "../../../DesktopEditor/common/ASCVariant.h"
-#endif
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 namespace NSPresentationEditor
 {
@@ -66,8 +64,8 @@ namespace NSPresentationEditor
 	class CInteractiveInfo
 	{
 	private:
-		long	m_lType;
-        VARIANT m_varParameter;
+        long        m_lType;
+        ASC_VARIANT m_varParameter;
 		
 	public:
 		bool	m_bPresent;

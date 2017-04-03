@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,6 +70,7 @@ public:
 	BaseObjectPtr					m_CodeName;
 	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_DxGCol;
+	BaseObjectPtr					m_DVAL;
 	
 	std::vector<BaseObjectPtr>		m_arMergeCells;
 	std::vector<BaseObjectPtr>		m_arWINDOW;

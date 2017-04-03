@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,11 +44,47 @@ namespace PPTX
 		class LineJoin : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LineJoin)
+			WritingElement_AdditionConstructors(LineJoin)
+			PPTX_LOGIC_BASE2(LineJoin)
 
 			virtual bool is_init()const{return (type==JoinEmpty);};
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				type = JoinEmpty;
+
+				if (name == _T("round"))
+					type = JoinRound;
+				else if (name == _T("bevel"))
+					type = JoinBevel;
+				else if (name == _T("miter"))
+				{
+					type = JoinMiter;
+					ReadAttributes(oReader);
+				}
+
+				Normalize();
+			}
+			virtual OOX::EElementType getType () const
+			{
+				if(type == JoinRound)
+					return OOX::et_a_round;
+				else if(type == JoinBevel)
+					return OOX::et_a_bevel;
+				else if(type == JoinMiter)
+					return OOX::et_a_miter;
+				else
+					return OOX::et_Unknown;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("lim"), lim )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void GetJoinFrom(XmlUtils::CXmlNode& element)
 			{
 				type = JoinEmpty;
@@ -75,7 +111,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 				
 				type = JoinEmpty;
 
@@ -91,7 +127,7 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if(type == JoinRound)
 					return _T("<a:round/>");
@@ -109,8 +145,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");

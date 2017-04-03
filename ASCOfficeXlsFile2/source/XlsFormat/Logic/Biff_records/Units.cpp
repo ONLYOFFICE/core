@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,14 +49,6 @@ BaseObjectPtr Units::clone()
 {
 	return BaseObjectPtr(new Units(*this));
 }
-
-
-void Units::writeFields(CFRecord& record)
-{
-	unsigned short reserved = 0;
-	record << reserved;
-}
-
 
 void Units::readFields(CFRecord& record)
 {

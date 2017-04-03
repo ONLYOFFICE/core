@@ -25,7 +25,6 @@
 		17C1FCBD1ACC429D006B99B3 /* TxBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A45091AC57B83005A27F7 /* TxBody.cpp */; };
 		17C1FCBE1ACC429D006B99B3 /* EffectProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A443D1AC57B83005A27F7 /* EffectProperties.cpp */; };
 		17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A443B1AC57B83005A27F7 /* EffectLst.cpp */; };
-		17C1FCC01ACC429D006B99B3 /* IFileContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A438B1AC57B83005A27F7 /* IFileContainer.cpp */; };
 		17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A43A31AC57B83005A27F7 /* FileMap.cpp */; };
 		17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A44AC1AC57B83005A27F7 /* ShapeTextProperties.cpp */; };
 		17C1FCC31ACC429D006B99B3 /* TransitionBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A45051AC57B83005A27F7 /* TransitionBase.cpp */; };
@@ -285,7 +284,6 @@
 		17C1FDCF1ACC429D006B99B3 /* OnOff.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43CD1AC57B83005A27F7 /* OnOff.h */; };
 		17C1FDD01ACC429D006B99B3 /* ThemeElements.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A45321AC57B83005A27F7 /* ThemeElements.h */; };
 		17C1FDD11ACC429D006B99B3 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A441E1AC57B83005A27F7 /* Camera.h */; };
-		17C1FDD21ACC429D006B99B3 /* IFileContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A438C1AC57B83005A27F7 /* IFileContainer.h */; };
 		17C1FDD31ACC429D006B99B3 /* CommentAuthors.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A436F1AC57B83005A27F7 /* CommentAuthors.h */; };
 		17C1FDD41ACC429D006B99B3 /* CornerDirectionVal.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A43BA1AC57B83005A27F7 /* CornerDirectionVal.h */; };
 		17C1FDD51ACC429D006B99B3 /* CustGeom.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A44341AC57B83005A27F7 /* CustGeom.h */; };
@@ -467,13 +465,11 @@
 		695BBFE81C06FF7300817D7E /* Elements.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE41C06FF7300817D7E /* Elements.h */; };
 		695BBFEB1C06FF8600817D7E /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFE91C06FF8600817D7E /* Theme.h */; };
 		695BBFEE1C06FF9100817D7E /* Metric.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFEC1C06FF9100817D7E /* Metric.h */; };
-		695BBFF21C06FF9800817D7E /* Layout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFEF1C06FF9800817D7E /* Layout.cpp */; };
 		695BBFF41C06FF9800817D7E /* Layout.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF01C06FF9800817D7E /* Layout.h */; };
 		695BBFF81C06FFA100817D7E /* TextAttributesEx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */; };
 		695BBFFA1C06FFA200817D7E /* TextAttributesEx.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFF61C06FFA100817D7E /* TextAttributesEx.h */; };
 		695BBFFD1C06FFA800817D7E /* TextStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BBFFB1C06FFA800817D7E /* TextStructures.h */; };
 		695BC0011C06FFB300817D7E /* Elements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BBFFE1C06FFB300817D7E /* Elements.cpp */; };
-		695BC0061C06FFC400817D7E /* Enums.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0041C06FFC400817D7E /* Enums.h */; };
 		695BC0371C070DE900817D7E /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 695BC0351C070DE900817D7E /* ASCSVGWriter.h */; };
 		695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */; };
 		696791821D9E8B81002CA4BA /* MathParaWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */; };
@@ -505,8 +501,6 @@
 		179A43881AC57B83005A27F7 /* FileType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileType.h; sourceTree = "<group>"; };
 		179A43891AC57B83005A27F7 /* FileTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileTypes.h; sourceTree = "<group>"; };
 		179A438A1AC57B83005A27F7 /* IFileBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFileBuilder.h; sourceTree = "<group>"; };
-		179A438B1AC57B83005A27F7 /* IFileContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IFileContainer.cpp; sourceTree = "<group>"; };
-		179A438C1AC57B83005A27F7 /* IFileContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IFileContainer.h; sourceTree = "<group>"; };
 		179A438E1AC57B83005A27F7 /* Audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Audio.h; sourceTree = "<group>"; };
 		179A438F1AC57B83005A27F7 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
 		179A43901AC57B83005A27F7 /* Media.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
@@ -890,9 +884,6 @@
 		179A451F1AC57B83005A27F7 /* SldSz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SldSz.h; sourceTree = "<group>"; };
 		179A45201AC57B83005A27F7 /* Presentation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Presentation.h; sourceTree = "<group>"; };
 		179A45211AC57B83005A27F7 /* PresProps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PresProps.h; sourceTree = "<group>"; };
-		179A45241AC57B83005A27F7 /* PPTXFormat.sln */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PPTXFormat.sln; sourceTree = "<group>"; };
-		179A45251AC57B83005A27F7 /* PPTXFormat.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PPTXFormat.vcproj; sourceTree = "<group>"; };
-		179A45261AC57B83005A27F7 /* PPTXFormat_vs2008.vcproj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PPTXFormat_vs2008.vcproj; sourceTree = "<group>"; };
 		179A45271AC57B83005A27F7 /* Slide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slide.h; sourceTree = "<group>"; };
 		179A45281AC57B83005A27F7 /* SlideLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideLayout.h; sourceTree = "<group>"; };
 		179A45291AC57B83005A27F7 /* SlideMaster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideMaster.h; sourceTree = "<group>"; };
@@ -946,14 +937,12 @@
 		695BBFE41C06FF7300817D7E /* Elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elements.h; path = ../../Editor/Drawing/Elements.h; sourceTree = "<group>"; };
 		695BBFE91C06FF8600817D7E /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = ../../Editor/Drawing/Theme.h; sourceTree = "<group>"; };
 		695BBFEC1C06FF9100817D7E /* Metric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Metric.h; path = ../../Editor/Drawing/Metric.h; sourceTree = "<group>"; };
-		695BBFEF1C06FF9800817D7E /* Layout.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Layout.cpp; path = ../../Editor/Drawing/Layout.cpp; sourceTree = "<group>"; };
 		695BBFF01C06FF9800817D7E /* Layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Layout.h; path = ../../Editor/Drawing/Layout.h; sourceTree = "<group>"; };
 		695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextAttributesEx.cpp; path = ../../Editor/Drawing/TextAttributesEx.cpp; sourceTree = "<group>"; };
 		695BBFF61C06FFA100817D7E /* TextAttributesEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextAttributesEx.h; path = ../../Editor/Drawing/TextAttributesEx.h; sourceTree = "<group>"; };
 		695BBFFB1C06FFA800817D7E /* TextStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextStructures.h; path = ../../Editor/Drawing/TextStructures.h; sourceTree = "<group>"; };
 		695BBFFE1C06FFB300817D7E /* Elements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Elements.cpp; path = ../../Editor/Drawing/Elements.cpp; sourceTree = "<group>"; };
 		695BBFFF1C06FFB300817D7E /* Elements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Elements.h; path = ../../Editor/Drawing/Elements.h; sourceTree = "<group>"; };
-		695BC0041C06FFC400817D7E /* Enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Enums.h; path = ../../Editor/Drawing/Enums.h; sourceTree = "<group>"; };
 		695BC0351C070DE900817D7E /* ASCSVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCSVGWriter.h; path = ../../../HtmlRenderer/include/ASCSVGWriter.h; sourceTree = "<group>"; };
 		695BC0381C070DEF00817D7E /* ASCSVGWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCSVGWriter.cpp; path = ../../../HtmlRenderer/src/ASCSVGWriter.cpp; sourceTree = "<group>"; };
 		696791801D9E8B81002CA4BA /* MathParaWrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MathParaWrapper.cpp; sourceTree = "<group>"; };
@@ -1006,13 +995,11 @@
 		175CC2441AC96AA0007D7DEC /* OfficeDrawing */ = {
 			isa = PBXGroup;
 			children = (
-				695BC0041C06FFC400817D7E /* Enums.h */,
 				695BBFFE1C06FFB300817D7E /* Elements.cpp */,
 				695BBFFF1C06FFB300817D7E /* Elements.h */,
 				695BBFFB1C06FFA800817D7E /* TextStructures.h */,
 				695BBFF51C06FFA100817D7E /* TextAttributesEx.cpp */,
 				695BBFF61C06FFA100817D7E /* TextAttributesEx.h */,
-				695BBFEF1C06FF9800817D7E /* Layout.cpp */,
 				695BBFF01C06FF9800817D7E /* Layout.h */,
 				695BBFEC1C06FF9100817D7E /* Metric.h */,
 				695BBFE91C06FF8600817D7E /* Theme.h */,
@@ -1048,8 +1035,6 @@
 				179A45191AC57B83005A27F7 /* Presentation */,
 				179A45201AC57B83005A27F7 /* Presentation.h */,
 				179A45211AC57B83005A27F7 /* PresProps.h */,
-				179A45221AC57B83005A27F7 /* PrinterSettings_ */,
-				179A45231AC57B83005A27F7 /* Project */,
 				179A45271AC57B83005A27F7 /* Slide.h */,
 				179A45281AC57B83005A27F7 /* SlideLayout.h */,
 				179A45291AC57B83005A27F7 /* SlideMaster.h */,
@@ -1076,8 +1061,6 @@
 				179A43881AC57B83005A27F7 /* FileType.h */,
 				179A43891AC57B83005A27F7 /* FileTypes.h */,
 				179A438A1AC57B83005A27F7 /* IFileBuilder.h */,
-				179A438B1AC57B83005A27F7 /* IFileContainer.cpp */,
-				179A438C1AC57B83005A27F7 /* IFileContainer.h */,
 				179A438D1AC57B83005A27F7 /* Media */,
 				179A43931AC57B83005A27F7 /* NamespaceOwn.h */,
 				179A43941AC57B83005A27F7 /* Namespaces.h */,
@@ -1605,23 +1588,6 @@
 			path = Presentation;
 			sourceTree = "<group>";
 		};
-		179A45221AC57B83005A27F7 /* PrinterSettings_ */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = PrinterSettings_;
-			sourceTree = "<group>";
-		};
-		179A45231AC57B83005A27F7 /* Project */ = {
-			isa = PBXGroup;
-			children = (
-				179A45241AC57B83005A27F7 /* PPTXFormat.sln */,
-				179A45251AC57B83005A27F7 /* PPTXFormat.vcproj */,
-				179A45261AC57B83005A27F7 /* PPTXFormat_vs2008.vcproj */,
-			);
-			path = Project;
-			sourceTree = "<group>";
-		};
 		179A452D1AC57B83005A27F7 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -1821,7 +1787,6 @@
 				17C1FD5D1ACC429D006B99B3 /* Sp3d.h in Headers */,
 				17C1FD5E1ACC429D006B99B3 /* ContentStatus.h in Headers */,
 				17C1FD5F1ACC429D006B99B3 /* External.h in Headers */,
-				695BC0061C06FFC400817D7E /* Enums.h in Headers */,
 				17C1FD601ACC429D006B99B3 /* Gd.h in Headers */,
 				17C1FD611ACC429D006B99B3 /* TLSyncBehavior.h in Headers */,
 				17C1FD621ACC429D006B99B3 /* AhXY.h in Headers */,
@@ -1939,7 +1904,6 @@
 				17C1FDCF1ACC429D006B99B3 /* OnOff.h in Headers */,
 				17C1FDD01ACC429D006B99B3 /* ThemeElements.h in Headers */,
 				17C1FDD11ACC429D006B99B3 /* Camera.h in Headers */,
-				17C1FDD21ACC429D006B99B3 /* IFileContainer.h in Headers */,
 				17C1FDD31ACC429D006B99B3 /* CommentAuthors.h in Headers */,
 				17C1FDD41ACC429D006B99B3 /* CornerDirectionVal.h in Headers */,
 				17C1FDD51ACC429D006B99B3 /* CustGeom.h in Headers */,
@@ -2181,7 +2145,6 @@
 				17C1FCB51ACC429D006B99B3 /* SpTree.cpp in Sources */,
 				17C1FCB61ACC429D006B99B3 /* SmartArt.cpp in Sources */,
 				17C1FCB71ACC429D006B99B3 /* CxnSp.cpp in Sources */,
-				695BBFF21C06FF9800817D7E /* Layout.cpp in Sources */,
 				17C1FCB81ACC429D006B99B3 /* Hyperlink.cpp in Sources */,
 				17C1FCB91ACC429D006B99B3 /* SpPr.cpp in Sources */,
 				695BBFF81C06FFA100817D7E /* TextAttributesEx.cpp in Sources */,
@@ -2192,7 +2155,6 @@
 				17C1FCBD1ACC429D006B99B3 /* TxBody.cpp in Sources */,
 				17C1FCBE1ACC429D006B99B3 /* EffectProperties.cpp in Sources */,
 				17C1FCBF1ACC429D006B99B3 /* EffectLst.cpp in Sources */,
-				17C1FCC01ACC429D006B99B3 /* IFileContainer.cpp in Sources */,
 				695BC03A1C070DEF00817D7E /* ASCSVGWriter.cpp in Sources */,
 				17C1FCC11ACC429D006B99B3 /* FileMap.cpp in Sources */,
 				17C1FCC21ACC429D006B99B3 /* ShapeTextProperties.cpp in Sources */,
@@ -2260,6 +2222,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2295,6 +2258,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -2324,6 +2288,7 @@
 					DONT_WRITE_EMBEDDED_FONTS,
 					CXIMAGE_DONT_DECLARE_TCHAR,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -2334,8 +2299,9 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/Utility",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/XML",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
+					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -2364,6 +2330,7 @@
 					DONT_WRITE_EMBEDDED_FONTS,
 					CXIMAGE_DONT_DECLARE_TCHAR,
 					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -2374,8 +2341,9 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/Utility",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/XML",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
+					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};

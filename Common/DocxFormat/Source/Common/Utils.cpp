@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,10 @@
  */
 #include "Utils.h"
 
-#include "../XML/xmlutils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 
-void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aShapetypes)
+void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<std::wstring>& aShapetypes)
 {
 	XmlUtils::CXmlLiteReader oReader;
 
@@ -46,8 +46,8 @@ void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aS
 		std::wstring sName = oReader.GetName();
 		if(_T("v:shapetype") == sName)
 		{
-			CString sXml = oReader.GetOuterXml();
-			if(false == sXml.IsEmpty())
+			std::wstring sXml = oReader.GetOuterXml();
+			if(false == sXml.empty())
                 aShapetypes.push_back(sXml);
 		}
 	}

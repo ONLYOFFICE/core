@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,15 +39,27 @@
 
 #include <cpdoccore/xml/utils.h>
 
-#include "mediaitems_utils.h"
-
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+
+#include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace cpdoccore { 
 namespace oox {
 
+bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
+{
+	if (uri.empty())return false;
+
+    std::wstring mediaPath = boost::regex_search(uri.begin(), uri.end(), boost::wregex(L"^/[A-Za-z]:")) 
+        ? std::wstring(uri.begin() + 1, uri.end()) 
+        : uri;
+
+	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
+
+	return NSFile::CFileBinary::Exists(resultPath) || NSDirectory::Exists(mediaPath);
+}
 
 mediaitems::item::item(	std::wstring const & _href,
                        RelsType _type,
@@ -55,12 +67,12 @@ mediaitems::item::item(	std::wstring const & _href,
 						bool _mediaInternal,
 						std::wstring const & _Id
 					   )
-                       : href(_href),
-                       type(_type),
-                       outputName(_outputName),
-                       mediaInternal(_mediaInternal),
-					   Id(_Id),
-                       valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
+           : href(_href),
+           type(_type),
+           outputName(_outputName),
+           mediaInternal(_mediaInternal),
+		   Id(_Id),
+           valid(true) //вообще говоря даже если файл покоцанный то мы все равно обязаны перенести "объект"
 {    
 	count_add = 1;
 	count_used = 0;
@@ -82,6 +94,10 @@ std::wstring static get_default_file_name(RelsType type)
         return L"chart";
     case typeMedia:
         return L"media";
+    case typeMsObject:
+       return L"msObject";
+	case typeOleObject:
+       return L"oleObject";
 	default:
         return L"";
     }
@@ -120,8 +136,11 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, RelsType typ
 				sExt = uri.substr(n);
 		}
 	}
+
+	if (type == typeOleObject && sExt.empty())
+		sExt = L".bin";
    
-	return get_default_file_name(type) + std::to_wstring(Num) + sExt;
+	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }
 
 std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
@@ -129,7 +148,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 	CFile file;
 
 	std::wstring sExt;
-	if (file.OpenFile(std_string2string(fileName)) == S_OK)
+	if (file.OpenFile(fileName) == S_OK)
 	{
 		BYTE buffer[128];
 		int buffer_size = 128;
@@ -147,8 +166,7 @@ std::wstring mediaitems::detectImageFileExtension(std::wstring &fileName)
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref)
 {
-    bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
-  
+	bool isMediaInternal = true;
 	std::wstring sub_path = L"media/";
 	
 	std::wstring inputFileName;
@@ -156,21 +174,30 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		sub_path = L"charts/";
 	}
+	else if ( type == typeMsObject || type == typeOleObject)
+	{
+		sub_path = L"embeddings/";
+	}
+	else 
+		isMediaInternal = is_internal(href, odf_packet_);
+	
 	int number=0;
 	
-		 if ( type == typeChart)	number = count_charts	+ 1;
-	else if ( type == typeImage)	number = count_image	+ 1;
-	else if ( type == typeShape)	number = count_shape	+ 1;
-	else if ( type == typeMedia)	number = count_media	+ 1;
+		 if ( type == typeChart)		number = count_charts	+ 1;
+	else if ( type == typeImage)		number = count_image	+ 1;
+	else if ( type == typeShape)		number = count_shape	+ 1;
+	else if ( type == typeMedia)		number = count_media	+ 1;
+	else if ( type == typeMsObject ||
+			  type == typeOleObject)	number = count_object	+ 1;
 	else
-		number = items_.size()+1;
+		number = items_.size() + 1;
 	
 	inputFileName = create_file_name(href, type, isMediaInternal, number);
 	
     std::wstring inputPath	= isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath	= isMediaInternal ? ( sub_path + inputFileName)		 : href;
 	
-	if ( type == typeChart) outputPath= outputPath + L".xml";
+	if ( type == typeChart) outputPath = outputPath + L".xml";
 
 	std::wstring id;
     for (int i = 0 ; i < items_.size(); i++)
@@ -192,7 +219,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 	{
 		if ( type == typeChart)
 		{
-			id = std::wstring(L"chId") + std::to_wstring(count_charts+1);
+			id = std::wstring(L"chId") + boost::lexical_cast<std::wstring>(count_charts + 1);
 			count_charts++;
 		}
 		else if ( type == typeImage)
@@ -205,12 +232,17 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 //------------------------------------------------
 			if (inputFileName.empty()) return L"";
 
-			id = std::wstring(L"picId") + std::to_wstring(count_image+1);
+			id = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image + 1);
 			count_image++;
+		}
+		else if ( type == typeMsObject || type == typeOleObject)
+		{
+			id = std::wstring(L"objId") + boost::lexical_cast<std::wstring>(count_object + 1);
+			count_object++;
 		}
 		else
 		{
-			id = std::wstring(L"rId") + std::to_wstring(count_shape+1);
+			id = std::wstring(L"rId") + boost::lexical_cast<std::wstring>(count_shape + 1);	
 			count_shape++;
 		}
 		
@@ -225,16 +257,17 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, RelsType type, b
 void mediaitems::dump_rels(rels & Rels)
 {
     size_t i = 0;
-    BOOST_FOREACH(item & elm, items_)
+    for (int i = 0; i < items_.size(); i++)
     {
-		if (elm.count_used > elm.count_add)continue; // уже использовали этот релс выше(колонтитул ....)
-        Rels.add( relationship(
-                elm.Id, 
-                utils::media::get_rel_type(elm.type), 
-                elm.valid ? elm.outputName : L"NULL", 
-                elm.mediaInternal ? L"" : L"External" )
+		if (items_[i].count_used > items_[i].count_add) continue; // уже использовали этот релс выше(колонтитул ....)
+        
+		Rels.add( relationship(
+                items_[i].Id, 
+                get_rel_type (items_[i].type), 
+                items_[i].valid			? items_[i].outputName	: L"NULL", 
+                items_[i].mediaInternal	? L""					: L"External" )
                 );
-		elm.count_used++;
+		items_[i].count_used++;
     }        
 }
 

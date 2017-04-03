@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,8 @@ namespace PPTX
 		class Paragraph : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Paragraph)
+			WritingElement_AdditionConstructors(Paragraph)
+			PPTX_LOGIC_BASE2(Paragraph)
 
 			Paragraph& operator=(const Paragraph& oSrc)
 			{
@@ -55,16 +56,20 @@ namespace PPTX
 				pPr			= oSrc.pPr;
 				endParaRPr	= oSrc.endParaRPr;
 
-				for (int i=0 ; i < oSrc.RunElems.size(); i++) 
+				for (size_t i=0 ; i < oSrc.RunElems.size(); i++) 
+				{
 					RunElems.push_back(oSrc.RunElems[i]);
+				}
 
 				return *this;
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
+		private:
+			virtual void fromXML2(XmlUtils::CXmlNode& node, bool bClear)
 			{
-				RunElems.clear();
+				if (bClear)
+				{
+					RunElems.clear();
+				}
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -75,7 +80,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("pPr") == strName)
 							pPr = oNode;
@@ -90,24 +95,89 @@ namespace PPTX
 							if (oNode.GetNode(_T("mc:Choice"), oNodeChoice))
 							{
 								XmlUtils::CXmlNode oNodeFall;
-								CString sRequires;
+								std::wstring sRequires;
 								//todo better check (a14 can be math, slicer)
 								if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 								{
-									fromXML(oNodeChoice);
+									fromXML2(oNodeChoice, false);
 								}
 								else if (oNode.GetNode(_T("mc:Fallback"), oNodeFall))
 								{
-									fromXML(oNodeFall);
+									fromXML2(oNodeFall, false);
 								}
 							}
 						}
 					}
 				}
-				
+
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual void fromXML2(XmlUtils::CXmlLiteReader& oReader, bool bClear)
+			{
+				if (bClear)
+				{
+					RunElems.clear();
+				}
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					WritingElement *pItem = NULL;
+
+					if (_T("pPr") == strName)
+						pPr = oReader;
+					else if (_T("endParaRPr") == strName)
+						endParaRPr = oReader;
+					else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
+						RunElems.push_back(RunElem(oReader));
+					else if (_T("AlternateContent") == strName)
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring strName1 = oReader.GetName();
+							if (_T("mc:Choice") == strName1)
+							{//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+								fromXML2(oReader, false);
+								break;
+							}
+							else if (_T("mc:Fallback") == strName1)
+							{
+								fromXML2(oReader, false);
+							}
+
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				fromXML2(oReader, true);
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_p;
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+				fromXML2(node, true);
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(pPr);
@@ -327,13 +397,14 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-			CString GetText()const
+			std::wstring GetText()const
 			{
-				CString result = _T("");
+				std::wstring result = _T("");
 				
-				size_t count = RunElems.size();
-				for (size_t i = 0; i < count; ++i)
+				for (size_t i = 0; i < RunElems.size(); ++i)
+				{
 					result += RunElems[i].GetText();
+				}
 				
 				result = result + _T("\n");
 				return result;
@@ -341,7 +412,7 @@ namespace PPTX
 
 		public:
 			nullable<TextParagraphPr>	pPr;
-			std::vector<RunElem>			RunElems;
+			std::vector<RunElem>		RunElems;
 			nullable<RunProperties>		endParaRPr;
 		protected:
 			virtual void FillParentPointersForChilds()

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,10 @@
  */
 #include "FileDownloader.h"
 
-#include <atlbase.h>
-#include <atlstr.h>
+
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
+#pragma comment(lib, "Ole32.lib")
 
 //------------------------------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@
 
 
 // Константа для получения размера файла
-#define CONTENT_RANGE		_T("bytes 0-0/")
+#define CONTENT_RANGE		L"bytes 0-0/"
 // Константа для колличества символов у CONTENT_RANGE
 #define CONTENT_RANGE_SIZE	( 11/*sizeof ( CONTENT_RANGE )*/ - 1 )
 
@@ -94,28 +94,28 @@ protected:
         if ( FALSE == InternetGetConnectedState ( 0, 0 ) )
             return S_FALSE;
 
-        char sTempPath[MAX_PATH], sTempFile[MAX_PATH];
-        if ( 0 == GetTempPathA( MAX_PATH, sTempPath ) )
+        wchar_t sTempPath[MAX_PATH], sTempFile[MAX_PATH];
+        if ( 0 == GetTempPathW( MAX_PATH, sTempPath ) )
             return S_FALSE;
 
-        if ( 0 == GetTempFileNameA( sTempPath, "CSS", 0, sTempFile ) )
+        if ( 0 == GetTempFileNameW( sTempPath, L"CSS", 0, sTempFile ) )
             return S_FALSE;
 
-        m_pFile = ::fopen( sTempFile, "wb" );
+        m_pFile = ::_wfopen( sTempFile, L"wb" );
         if ( !m_pFile )
             return S_FALSE;
 
-        m_sFilePath = CString( sTempFile );
+        m_sFilePath = std::wstring( sTempFile );
 
         // Открываем сессию
-        HINTERNET hInternetSession = InternetOpen ( _T ("Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );
+        HINTERNET hInternetSession = InternetOpen ( L"Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );
         if ( NULL == hInternetSession )
             return S_FALSE;
 
         // Заголовок запроса ( пока содержит 0 байт ( необходимо для проверки ) )
-        CString sHTTPHdr = _T ("Range: bytes=0-0");
+        std::wstring sHTTPHdr = L"Range: bytes=0-0";
         // Открываем ссылку для проверки на ее существование, а также на возможность чтения частями
-        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl.c_str(), sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
         if ( NULL != hInternetOpenURL )
         {
             // Открытие произошло, проверяем ответ
@@ -209,9 +209,9 @@ protected:
             return -1;
 
         // Заголовок запроса ( содержит nEndByte - nStartByte байт )
-        CString sHTTPHdr = _T (""); sHTTPHdr.Format ( _T ("Range: bytes=%lld-%lld"), nStartByte, nEndByte );
+        std::wstring sHTTPHdr = L"Range: bytes=" + std::to_wstring(nStartByte) + L"-" + std::to_wstring(nEndByte);
         // Открываем ссылку для закачки
-        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternet, sFileURL.c_str(), sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+        HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternet, sFileURL.c_str(), sHTTPHdr.c_str(), -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
         if ( NULL == hInternetOpenURL )
             return -1;
         // Открытие произошло, проверяем ответ
@@ -276,12 +276,12 @@ protected:
             return -1;
 
         // Результат ответа
-        char arrResult [ MAX_SIZE ] = { 0 };
+        wchar_t arrResult [ MAX_SIZE ] = { 0 };
         // Размер данных ответа
         DWORD dwLengthDataSize = sizeof ( arrResult );
 
         // Делаем запрос, если не проходит - то возвращаем FALSE
-        if ( FALSE == HttpQueryInfoA ( hInternet, HTTP_QUERY_CONTENT_RANGE, &arrResult, &dwLengthDataSize, NULL ) )
+        if ( FALSE == HttpQueryInfoW ( hInternet, HTTP_QUERY_CONTENT_RANGE, &arrResult, &dwLengthDataSize, NULL ) )
         {
             // Получаем последнюю ошибку
             DWORD dwLastError = GetLastError ();
@@ -299,8 +299,8 @@ protected:
         if ( 0 >= dwLengthDataSize )
             return -1;
 
-        // Приведем к CString
-        CString strResult ( arrResult );
+        // Приведем к std::wstring
+        std::wstring strResult ( arrResult );
 
         // Содержит размер данных
         LONGLONG nFileSize = 0;
@@ -308,14 +308,14 @@ protected:
         try
         {
             // Ищем индекс размера данных в строке
-            INT nStartIndex = strResult.Find ( CONTENT_RANGE );
+            INT nStartIndex = strResult.find ( CONTENT_RANGE );
             if ( -1 == nStartIndex )
                 return -1;
 
             // Оставляем в строке только размер данных
-            strResult = strResult.Mid ( nStartIndex + CONTENT_RANGE_SIZE );
+            strResult = strResult.substr( nStartIndex + CONTENT_RANGE_SIZE );
             // Теперь получим размер данных, переводя стринг в LONGLONG
-            nFileSize = _wtoi64 ( strResult.GetBuffer () );
+            nFileSize = _wtoi64 ( strResult.c_str() );
             // Т.к. реально нумерация с 0 ( поэтому добавляем еще 1 байт )
             if ( 0 < nFileSize )
                 nFileSize += 1;

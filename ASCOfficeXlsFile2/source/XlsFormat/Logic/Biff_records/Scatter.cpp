@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,17 +49,6 @@ BaseObjectPtr Scatter::clone()
 {
 	return BaseObjectPtr(new Scatter(*this));
 }
-
-
-void Scatter::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fBubbles);
-	SETBIT(flags, 1, fShowNegBubbles);
-	SETBIT(flags, 2, fHasShadow);
-	record >> pcBubbleSizeRatio >> wBubbleSize >> flags;
-}
-
 
 void Scatter::readFields(CFRecord& record)
 {

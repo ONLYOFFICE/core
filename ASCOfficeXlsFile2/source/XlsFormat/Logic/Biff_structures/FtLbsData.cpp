@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,44 +46,6 @@ BiffStructurePtr FtLbsData::clone()
 {
 	return BiffStructurePtr(new FtLbsData(*this));
 }
-
-void FtLbsData::store(CFRecord& record, const unsigned short ot)
-{
-	unsigned short ft = 0x0013; // reserved
-	record << ft;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
-	size_t start_ptr = record.getDataSize();
-
-	fmla.store(record);
-
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fUseCB);
-	SETBIT(flags, 1, fValidPlex);
-	SETBIT(flags, 2, fValidIds);
-	SETBIT(flags, 3, fNo3d);
-	SETBITS(flags, 4, 5, wListSelType);
-	SETBITS(flags, 8, 15, lct);
-
-	record << cLines << iSel << flags << idEdit;
-	if(dropData)
-	{
-		dropData->store(record);
-	}
-
-	if(fValidPlex)
-	{
-		record << rgLines;
-	}
-
-	if (0 != wListSelType)
-	{
-		record << bsels;
-	}
-
-	size_t data_size = record.getDataSize() - start_ptr;
-	record.registerDelayedDataSource(data_size, rt_Obj);
-}
-
 
 void FtLbsData::load(CFRecord& record, const unsigned short ot)
 {

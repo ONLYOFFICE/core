@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,26 +50,6 @@ BaseObjectPtr Formula::clone()
 {
 	return BaseObjectPtr(new Formula(*this));
 }
-
-
-void Formula::writeFields(CFRecord& record)
-{
-	record << cell << val;
-	
-	_UINT16 flags = 0;
-	SETBIT(flags, 0, fAlwaysCalc);
-	SETBIT(flags, 2, fFill);
-	SETBIT(flags, 3, fShrFmla);
-	SETBIT(flags, 5, fClearErrors);
-	
-	record << flags;
-
-	_UINT32 chn = 0;
-	record << chn;
-	formula.store(record);
-	//formula.store(record, cell.getLocation());
-}
-
 
 void Formula::readFields(CFRecord& record)
 {

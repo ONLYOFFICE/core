@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -249,10 +249,6 @@ public:
 		if (NULL != m_pMetaHeader)
 		{
 			pFile->WriteFile((BYTE*)m_pMetaHeader, m_lMetaHeaderSize);
-		}
-		if (NULL != m_pMetaFile)
-		{
-			pFile->WriteFile((BYTE*)m_pMetaFile, m_lMetaFileSize);
 		}
 	}
 };

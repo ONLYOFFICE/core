@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,7 +51,7 @@ const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8without
 	std::list<std::string> result;
 	CFile file_binary;
 
-	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
 	long file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -118,7 +118,7 @@ const std::list<std::wstring> TxtFile::readUnicode()
     std::list<std::wstring> result;
 	CFile file_binary;
 
-	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
 	long file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -135,7 +135,7 @@ const std::list<std::wstring> TxtFile::readBigEndian()
     std::list<std::wstring> result;
 	CFile file_binary;
 
-	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
 	long file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -160,7 +160,7 @@ const std::list<std::string> TxtFile::readUtf8()
 	std::list<std::string> result;
 	CFile file_binary;
 
-	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
+	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
 	long file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
@@ -198,7 +198,7 @@ const std::list<std::string> TxtFile::readUtf8()
 void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref также
 {
 	CFile file;
-    if (file.CreateFile(std_string2string(m_path)) == S_OK)
+    if (file.CreateFile(m_path) == S_OK)
 	{
 		BYTE endLine[2] = {0x0d, 0x0a};
 		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
@@ -214,7 +214,7 @@ void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === 
 void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 {
 	CFile file;
-    if (file.CreateFile(std_string2string(m_path)) == S_OK)
+    if (file.CreateFile(m_path) == S_OK)
 	{
 		BYTE Header[2]	= {0xff, 0xfe};
 		BYTE EndLine[4] = {0x0d, 0x00, 0x0a, 0x00};
@@ -244,7 +244,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 {
 	CFile file;
-    if (file.CreateFile(std_string2string(m_path)) == S_OK)
+    if (file.CreateFile(m_path) == S_OK)
 	{
 		BYTE Header[2]	= {0xfe,	0xff};
 		BYTE EndLine[4] = {0x00, 0x0d, 0x00, 0x0a};
@@ -280,7 +280,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 void TxtFile::writeUtf8(const std::list<std::string>& content)
 {
 	CFile file;
-    if (file.CreateFile(std_string2string(m_path)) == S_OK)
+    if (file.CreateFile(m_path) == S_OK)
 	{
 		BYTE Header[3]	= {0xef ,0xbb , 0xbf};
 		BYTE EndLine[2]	= {0x0d ,0x0a};
@@ -301,7 +301,7 @@ const bool TxtFile::isUnicode()
 {
 	CFile file;
 
-	if (file.OpenFile(std_string2string(m_path)) != S_OK) return false;
+	if (file.OpenFile(m_path) != S_OK) return false;
 
 	BYTE data [2];
 	file.ReadFile(data,2);
@@ -316,7 +316,7 @@ const bool TxtFile::isBigEndian()
 {
 	CFile file;
 
-	if (file.OpenFile(std_string2string(m_path)) != S_OK) return false;
+	if (file.OpenFile(m_path) != S_OK) return false;
 
 	BYTE data [2];
 	file.ReadFile(data,2);
@@ -331,7 +331,7 @@ const bool TxtFile::isUtf8()
 {
 	CFile file;
 
-	if (file.OpenFile(std_string2string(m_path)) != S_OK) return false;
+	if (file.OpenFile(m_path) != S_OK) return false;
 
 	BYTE data [3];
 	file.ReadFile(data,3);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,11 +40,11 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Glow : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Glow)
+			WritingElement_AdditionConstructors(Glow)
+			PPTX_LOGIC_BASE2(Glow)
 
 			Glow& operator=(const Glow& oSrc)
 			{
@@ -55,18 +55,44 @@ namespace PPTX
 				rad = oSrc.rad;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrRepl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Color.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rad"), rad)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);
 				node.ReadAttributeBase(L"rad", rad);
+				
 				FillParentPointersForChilds();
-
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rad"), rad);

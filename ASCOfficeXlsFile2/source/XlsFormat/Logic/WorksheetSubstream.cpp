@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -354,7 +354,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;				
-			case rt_DVal:			proc.optional<DVAL>();			break;
+			case rt_DVal:	
+			{
+				if (proc.optional<DVAL>())
+				{
+					m_DVAL = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CodeName:
 			{					
 				if (proc.optional<CodeName>	())

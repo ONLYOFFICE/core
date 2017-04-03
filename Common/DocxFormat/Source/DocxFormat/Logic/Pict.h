@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,14 +59,14 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode &oNode)
+            virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
 				oNode.ReadAttributeBase( _T("r:id"),      m_rId  );
 				oNode.ReadAttributeBase( _T("w:name"),    m_sName );
 				oNode.ReadAttributeBase( _T("w:shapeid"), m_sShapeId );
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -74,9 +74,9 @@ namespace OOX
 					oReader.ReadTillEnd( oReader.GetDepth() );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<w:control ");
+                std::wstring sResult = _T("<w:control ");
 
 				ComplexTypes_WriteAttribute ( _T("r:id=\""),      m_rId );
 				ComplexTypes_WriteAttribute2( _T("w:name=\""),    m_sName );
@@ -123,9 +123,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CRelationshipId> m_rId;
-			nullable<CString>                      m_sName;
-			nullable<CString>                      m_sShapeId;
+            nullable<SimpleTypes::CRelationshipId>      m_rId;
+            nullable<std::wstring>                      m_sName;
+            nullable<std::wstring>                      m_sShapeId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -152,16 +152,12 @@ namespace OOX
 					return;
                 
                 m_sXml.Init();
-                m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
+                *m_sXml = oReader.GetOuterXml();	//для pptx dll
                 
-                //альтернатива pptx
-                //				CString sXml;
-                //				sXml.Format(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%ls</root>"), m_sXml.get());
+                std::wstring sBegin(L"<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
                 
-                CString sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
-                
-                CString sEnd(_T("</root>"));
-                CString sXml = sBegin + m_sXml.get() + sEnd;
+                std::wstring sEnd(L"</root>");
+                std::wstring sXml = sBegin + m_sXml.get() + sEnd;
                                 
 				XmlUtils::CXmlLiteReader oSubReader;
 				
@@ -384,9 +380,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:pict>");
+                std::wstring sResult = _T("<w:pict>");
 
 				for (unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -409,7 +405,7 @@ namespace OOX
 
 		public:
 
-			nullable<CString> m_sXml;
+            nullable<std::wstring>          m_sXml;
 
 			// Childs
 			nullable<OOX::Logic::CControl>	m_oControl;
@@ -453,10 +449,10 @@ namespace OOX
 					return;
 
 				m_sXml.Init();
-				m_sXml->Append(oReader.GetOuterXml());	//для pptx dll
+                *m_sXml = oReader.GetOuterXml();	//для pptx dll
 
 				//альтернатива pptx
-				CString sXml; //??? + ole наверно что то (лень ...) 
+                std::wstring sXml; //??? + ole наверно что то (лень ...)
 				sXml += _T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 				sXml += m_sXml.get();
 				sXml += _T("</root>");
@@ -627,7 +623,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<w:object />");
 			}
@@ -636,7 +632,7 @@ namespace OOX
 			{
 				return et_w_object;
 			}
-			nullable<CString> m_sXml;
+            nullable<std::wstring> m_sXml;
 
 			// Childs
 			nullable<OOX::Logic::CControl>			m_oControl;

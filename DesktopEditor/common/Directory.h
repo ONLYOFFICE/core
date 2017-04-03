@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+/*
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,13 +34,14 @@
 
 #include <stdio.h>
 #include <string>
-#include "Array.h"
+#include <vector>
 #include "File.h"
 
 #if defined(_WIN32) || defined (_WIN64)
     #include "windows.h"
     #include "windef.h"
     #include <shlobj.h>
+    #include <Rpc.h>
 #elif __linux__
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -108,9 +109,9 @@ namespace NSDirectory
 #endif
 
 #ifdef _IOS
-    void GetFiles2_ios(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion);
+	void GetFiles2_ios(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion);
 #endif
-	static void GetFiles2(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion = false)
+	static void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false)
     {
 #if defined(_WIN32) || defined (_WIN64)
         WIN32_FIND_DATAW oFD;
@@ -127,7 +128,7 @@ namespace NSDirectory
                 sSpec = strDirectory + L"\\" + sSpec;
                 if( !( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
                 {
-                    oArray.Add(sSpec);
+                    oArray.push_back(sSpec);
                 }
                 else if (bIsRecursion)
                 {
@@ -168,7 +169,7 @@ namespace NSDirectory
                 if (2 == nType)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    oArray.Add(strDirectory + L"/" + sName);
+                    oArray.push_back(strDirectory + L"/" + sName);
                 }
 
                 if (bIsRecursion && (1 == nType))
@@ -198,7 +199,7 @@ namespace NSDirectory
                 if(DT_REG == dirp->d_type)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                    oArray.Add(strDirectory + L"/" + sName);
+                    oArray.push_back(strDirectory + L"/" + sName);
                 }
                 
                 if (bIsRecursion && DT_DIR == dirp->d_type)
@@ -217,9 +218,9 @@ namespace NSDirectory
 #endif
     }
 
-    static CArray<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
+	static std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)
 	{
-		CArray<std::wstring> oArray;
+		std::vector<std::wstring> oArray;
 		
 		if (!strDirectory.empty())
 		{     
@@ -227,10 +228,9 @@ namespace NSDirectory
 		}
 		return oArray;
 	}
-
-	static CArray<std::wstring> GetDirectories(std::wstring strDirectory)
+	static std::vector<std::wstring> GetDirectories(std::wstring strDirectory)
 	{
-		CArray<std::wstring> oArray;
+		std::vector<std::wstring> oArray;
 
 #if defined(_WIN32) || defined (_WIN64)
 		WIN32_FIND_DATAW oFD; 
@@ -247,7 +247,7 @@ namespace NSDirectory
 				sSpec = strDirectory + L"\\" + sSpec;
 				if( oFD.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) 
 				{
-					oArray.Add(sSpec);
+					oArray.push_back(sSpec);
 				}
 			}
 		} while( FindNextFileW( hRes, &oFD ) );		
@@ -279,7 +279,7 @@ namespace NSDirectory
 					if(dirp->d_name[0] != '.')
 					{
 						std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-						oArray.Add(strDirectory + L"/" + sName);
+						oArray.push_back(strDirectory + L"/" + sName);
 					}
 				}
 			}
@@ -301,7 +301,7 @@ namespace NSDirectory
                     if(dirp->d_name[0] != '.')
                     {
                         std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
-                        oArray.Add(strDirectory + L"/" + sName);
+                        oArray.push_back(strDirectory + L"/" + sName);
                     }
                 }
             }
@@ -340,30 +340,18 @@ namespace NSDirectory
 
 #if defined(_WIN32) || defined (_WIN64)
 		return FALSE != ::CreateDirectoryW(strDirectory.c_str(), NULL);
-#elif __linux__
+#else
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
 		struct stat st;
 		int nRes = 0;
 		if (stat((char*)pUtf8, &st) == -1) {
-			nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IRWXO);
+			nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 		}
 		delete [] pUtf8;
 		return 0 == nRes;
-#elif MAC
-        BYTE* pUtf8 = NULL;
-        LONG lLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
-        struct stat st;
-        int nRes = 0;
-        if (stat((char*)pUtf8, &st) == -1) {
-            nRes = mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IRWXO);
-        }
-        delete [] pUtf8;
-        return 0 == nRes;
 #endif
-        return false;
 	}
 	static bool CreateDirectories(const std::wstring& strDirectory)
 	{
@@ -392,13 +380,13 @@ namespace NSDirectory
 	}
 	static void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot = true)
 	{
-		CArray<std::wstring> aFiles = GetFiles(strDirectory);
-		for(int i = 0; i < aFiles.GetCount(); ++i)
+		std::vector<std::wstring> aFiles = GetFiles(strDirectory);
+		for(size_t i = 0; i < aFiles.size(); ++i)
 		{
 			NSFile::CFileBinary::Remove(aFiles[i]);
 		}
-		CArray<std::wstring> aDirectories = GetDirectories(strDirectory);
-		for(int i = 0; i < aDirectories.GetCount(); ++i)
+		std::vector<std::wstring> aDirectories = GetDirectories(strDirectory);
+		for(size_t i = 0; i < aDirectories.size(); ++i)
 		{
 			DeleteDirectory(aDirectories[i]);
 		}
@@ -424,10 +412,10 @@ namespace NSDirectory
 	}
 	static std::wstring GetFolderPath(const std::wstring& wsFolderPath)
 	{
-		int n1 = wsFolderPath.rfind('\\');
+		int n1 = (int)wsFolderPath.rfind('\\');
 		if (n1 < 0)
 		{
-			n1 = wsFolderPath.rfind('/');
+			n1 = (int)wsFolderPath.rfind('/');
 			if (n1 < 0)
 			{
 				return L"";
@@ -436,6 +424,67 @@ namespace NSDirectory
 		}
 		return wsFolderPath.substr(0, n1);
 	}
+        static std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
+        {
+            return NSFile::CFileBinary::CreateTempFileWithUniqueName(strFolderPathRoot, Prefix);
+        }
+        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot)
+        {
+#if defined(_WIN32) || defined (_WIN64)
+            UUID uuid;
+            RPC_WSTR str_uuid;
+            UuidCreate (&uuid);
+            UuidToStringW (&uuid, &str_uuid);
+                    std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+            pcTemplate += (wchar_t *) str_uuid;
+            RpcStringFreeW (&str_uuid);
+
+            int attemps = 10;
+            while (!CreateDirectory(pcTemplate))
+            {
+                UuidCreate (&uuid);
+                UuidToStringW (&uuid, &str_uuid);
+                pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+                pcTemplate += (wchar_t *) str_uuid;
+                RpcStringFreeW (&str_uuid);
+                attemps--;
+
+                if (0 == attemps)
+                {
+                    pcTemplate = L"";
+                }
+            }
+            return pcTemplate;
+#else
+            std::string pcTemplate = U_TO_UTF8(strFolderPathRoot) + "/ascXXXXXX";
+            char *pcRes = mkdtemp(const_cast <char *> (pcTemplate.c_str()));
+            if (NULL == pcRes)
+                return L"";
+
+            std::string sRes = pcRes;
+            return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), (LONG)sRes.length());
+#endif
+        }
+        static std::wstring GetTempPath()
+        {
+            return NSFile::CFileBinary::GetTempPath();
+        }
+
+        static int GetFilesCount(const std::wstring& path, const bool& recursive)
+        {
+			std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(path, recursive);
+#if defined(_WIN32) || defined (_WIN64)
+            return (int)arrFiles.size();
+#endif
+            return (int)arrFiles.size() + 1;
+            // ???
+        }
+#if !defined(_WIN32) && !defined (_WIN64)
+        static bool PathIsDirectory(const std::wstring& pathName)
+        {
+            return Exists(pathName);
+        }
+#endif
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

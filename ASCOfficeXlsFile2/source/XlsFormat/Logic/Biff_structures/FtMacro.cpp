@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,14 +47,6 @@ BiffStructurePtr FtMacro::clone()
 	return BiffStructurePtr(new FtMacro(*this));
 }
 
-
-void FtMacro::store(CFRecord& record)
-{
-	unsigned short ft = 0x0004; // reserved
-	record << ft;
-
-	fmla.store(record);
-}
 
 
 void FtMacro::load(CFRecord& record)

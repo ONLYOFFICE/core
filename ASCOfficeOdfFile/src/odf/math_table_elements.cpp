@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,7 +64,7 @@ void math_mtable::oox_convert(oox::math_context & Context)
 	std::wostream & strm = Context.output_stream();
 	
 	strm << L"<m:m>";		
-		for (int i = 0; i < content_.size(); i++)
+		for (size_t i = 0; i < content_.size(); i++)
 		{
 			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 			math_element->oox_convert(Context);
@@ -92,10 +92,12 @@ void math_mtr::oox_convert(oox::math_context & Context)
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:mr>";		
-		for (int i = 0; i < content_.size(); i++)
+		for (size_t i = 0; i < content_.size(); i++)
 		{
+		//strm << L"<m:e>"; // EqArray записался в числитель вместо знаменателя.docx - дублирование
 			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 			math_element->oox_convert(Context);
+		//strm << L"</m:e>";
 		}
 	strm << L"</m:mr>";
 }
@@ -140,7 +142,7 @@ void math_mtd::oox_convert(oox::math_context & Context)
 	std::wostream & strm = Context.output_stream();
 
 	strm << L"<m:e>";		
-		for (int i = 0; i < content_.size(); i++)
+		for (size_t i = 0; i < content_.size(); i++)
 		{
 			office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
 			math_element->oox_convert(Context);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,15 +41,6 @@ XLS::BiffStructurePtr RC4CryptoAPIEncryptionHeader::clone()
 {
 	return XLS::BiffStructurePtr(new RC4CryptoAPIEncryptionHeader(*this));
 }
-
-
-void RC4CryptoAPIEncryptionHeader::store(XLS::CFRecord& record)
-{
-#pragma message("####################### RC4CryptoAPIEncryptionHeader record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RC4CryptoAPIEncryptionHeader record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void RC4CryptoAPIEncryptionHeader::load(XLS::CFRecord& record)
 {

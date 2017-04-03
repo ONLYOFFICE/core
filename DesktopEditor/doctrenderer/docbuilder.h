@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,10 +44,10 @@ namespace NSDoctRenderer
         ~CDocBuilder();
 
     public:
-        bool OpenFile(const wchar_t* path, const wchar_t* params);
+        int OpenFile(const wchar_t* path, const wchar_t* params);
         bool CreateFile(const int& type);
         void SetTmpFolder(const wchar_t* folder);
-        bool SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
+        int SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
         void CloseFile();
         bool ExecuteCommand(const wchar_t* command);
 

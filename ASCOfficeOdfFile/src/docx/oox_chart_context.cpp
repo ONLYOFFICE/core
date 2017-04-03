@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,13 +31,12 @@
  */
 
 
-#include <boost/foreach.hpp>
 #include <vector>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "mediaitems_utils.h"
-#include "oox_rels.h"
 
+#include "oox_rels.h"
 #include "oox_chart_context.h"
+#include "mediaitems.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -87,7 +86,7 @@ void oox_chart_context::dump_rels(rels & Rels)
 		{
 			Rels.add(relationship(
 						r.rid,
-						utils::media::get_rel_type(r.type),
+						L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
 						r.is_internal ? std::wstring(L"../") + r.ref : r.ref,
 						(r.is_internal ? L"" : L"External")
 						) 

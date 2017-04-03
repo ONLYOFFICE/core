@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,32 @@ namespace PPTX
 		class FontRef : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(FontRef)
+			WritingElement_AdditionConstructors(FontRef)
 
-		public:
+			FontRef()
+			{
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_Unknown;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				ReadAttributes( oReader );
+				
+				Color.fromXMLParent(oReader);
+				
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("idx"), idx )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -56,7 +79,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("idx"), idx);
@@ -131,7 +154,7 @@ namespace PPTX
 			nullable_limit<Limit::FontStyleIndex> idx;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

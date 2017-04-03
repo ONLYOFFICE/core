@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,22 +32,24 @@
 #pragma once
 
 #if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
 #else
-	#include "../../Common/DocxFormat/Source/Base/ASCString.h"
-	#include "../../DesktopEditor/common/Types.h"
 #endif
 
+#include "../../DesktopEditor/common/Types.h"
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <vector>
 #include <map>
+#include <string>
 
 #define MAX_STACK_SIZE 1024
 
 class COfficeFontPicker;
 
+namespace OOX
+{
+	class WritingElement;
+}
 namespace NSCommon
 {
 	template<typename Type> class smart_ptr;
@@ -59,7 +61,6 @@ namespace NSCommon
 }
 namespace PPTX
 {
-	class WritingElement;
 	class FileContainer;
 	class CCommonRels;
 }
@@ -84,18 +85,18 @@ namespace NSBinPptxRW
 	class CImageManager2Info
 	{
 	public:
-		CString m_sImagePath;
-		CString m_sOlePath;
-		CString m_sFilepathBin;
-		CString m_sFilepathImg;
+		std::wstring m_sImagePath;
+		std::wstring m_sOlePath;
+		std::wstring m_sFilepathBin;
+		std::wstring m_sFilepathImg;
 	};
 	class CRelsGeneratorInfo
 	{
 	public:
 		int m_nImageRId;
 		int m_nOleRId;
-		CString m_sFilepathBin;
-		CString m_sFilepathImg;
+		std::wstring m_sFilepathBin;
+		std::wstring m_sFilepathImg;
 		CRelsGeneratorInfo()
 		{
 			m_nImageRId = -1;
@@ -109,10 +110,10 @@ namespace NSBinPptxRW
 
 	public:
 		_INT32 m_lThemeIndex;
-		CStringA m_strImageBase64;
+		std::string m_strImageBase64;
 
         std::vector<LONG>       m_arLayoutIndexes;
-        std::vector<CStringA>   m_arLayoutImagesBase64;
+        std::vector<std::string>   m_arLayoutImagesBase64;
 	};
 
 	class CCommonWriter
@@ -148,11 +149,11 @@ namespace NSBinPptxRW
 	class CImageManager2
 	{
 	private:
-        std::map<CString, CImageManager2Info>	m_mapImages;
+        std::map<std::wstring, CImageManager2Info>	m_mapImages;
 		_INT32						m_lIndexNextImage;
 		_INT32						m_lIndexNextOle;
-		CString						m_strDstMedia;
-		CString						m_strDstEmbed;
+		std::wstring						m_strDstMedia;
+		std::wstring						m_strDstEmbed;
 	public:
         bool						m_bIsWord;
 
@@ -160,11 +161,11 @@ namespace NSBinPptxRW
 		CImageManager2();
 		~CImageManager2();
 		void Clear();
-		void SetDstMedia(const CString& strDst);
-		CString GetDstMedia();
-		void SetDstEmbed(const CString& strDst);
-		CString GetDstEmbed();
-		int IsDisplayedImage(const CString& strInput);
+		void SetDstMedia(const std::wstring& strDst);
+		std::wstring GetDstMedia();
+		void SetDstEmbed(const std::wstring& strDst);
+		std::wstring GetDstEmbed();
+		int IsDisplayedImage(const std::wstring& strInput);
 
 	public:
 		template <typename T>
@@ -178,7 +179,7 @@ namespace NSBinPptxRW
             int lCount = (int)m_mapImages.size();
 			pWriter->WriteINT(lCount);
 
-            //for (std::map<CString, CString>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
+            //for (std::map<std::wstring, std::wstring>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
             //{
             //    pWriter->WriteString(pPair->first);
             //    pWriter->WriteString(pPair->second);
@@ -198,24 +199,24 @@ namespace NSBinPptxRW
 
 			//for (_INT32 i = 0; i < lCount; ++i)
 			//{
-			//	CString s1 = pReader->GetString2();
-			//	CString s2 = pReader->GetString2();
+			//	std::wstring s1 = pReader->GetString2();
+			//	std::wstring s2 = pReader->GetString2();
 
 			//	m_mapImages [s1] = s2;
 			//}
 		}
 
 	public:
-		CImageManager2Info GenerateImage(const CString& strInput, const CString& oleData, CString strBase64Image);
-		CImageManager2Info GenerateImageExec(const CString& strInput, const CString& strExts, const CString& strOleImage, const CString& oleData);
+		CImageManager2Info GenerateImage(const std::wstring& strInput, const std::wstring& oleData, std::wstring strBase64Image);
+		CImageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strOleImage, const std::wstring& oleData);
 
-		void SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst);
+		void SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 
-		void SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst);
+		void SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 
-		bool IsNeedDownload(const CString& strFile);
-		CImageManager2Info DownloadImage(const CString& strFile);
-		CString DownloadImageExec(const CString& strFile);
+		bool IsNeedDownload(const std::wstring& strFile);
+		CImageManager2Info DownloadImage(const std::wstring& strFile);
+		std::wstring DownloadImageExec(const std::wstring& strFile);
 		bool WriteOleData(const std::wstring& sFilePath, const std::wstring& sData);
 	};
 
@@ -232,14 +233,14 @@ namespace NSBinPptxRW
 			CSeekTableEntry();
 		};
 
-		CCommonWriter* m_pCommon;
-		CString m_strMainFolder;
+		CCommonWriter*	m_pCommon;
+		std::wstring	m_strMainFolder;
 
 		NSCommon::smart_ptr<PPTX::CCommonRels>	*	m_pCommonRels;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
 
 		NSCommon::smart_ptr<PPTX::FileContainer>* ThemeDoc;
-		NSCommon::smart_ptr<PPTX::WritingElement>* ClrMapDoc;
+		NSCommon::smart_ptr<OOX::WritingElement>* ClrMapDoc;
 	private:
 		BYTE*		m_pStreamData;
 		BYTE*		m_pStreamCur;
@@ -252,22 +253,25 @@ namespace NSBinPptxRW
 		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
-		_INT32 m_lWidthCurShape;
-		_INT32 m_lHeightCurShape;
+		_INT32	m_lCxCurShape;	//emu
+		_INT32	m_lCyCurShape;
 
-	public:
-		BYTE*				GetBuffer();
+		_INT32	m_lXCurShape;
+		_INT32	m_lYCurShape;
+
+		BYTE*	GetBuffer();
 		_UINT32	GetPosition();
-		void				SetPosition(const _UINT32& lPosition);
-		void				Skip(const _UINT32& lSize);
+		void	SetPosition(const _UINT32& lPosition);
+		void	Skip(const _UINT32& lSize);
 
-		double GetWidthMM();
-		double GetHeightMM();
-		void ClearShapeCurSizes();
+		double	GetShapeWidth();
+		double	GetShapeHeight();
+		double	GetShapeX();
+		double	GetShapeY();
 
-		// -------------------- stream simple types -----------------------
-	public:
-		void Clear();
+		void	ClearCurShapePositionAndSizes();
+
+		void	Clear();
 
 		void SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc);
 
@@ -275,35 +279,35 @@ namespace NSBinPptxRW
 
 		void CheckBufferSize(_UINT32 lPlus);
 		
-		void WriteBYTE(const BYTE& lValue);
-		void WriteSBYTE(const signed char& lValue);
-		void WriteBOOL(const bool& bValue);
+		void WriteBYTE	(const BYTE& lValue);
+		void WriteSBYTE	(const signed char& lValue);
+		void WriteBOOL	(const bool& bValue);
 		void WriteUSHORT(const _UINT16& lValue);
 		
-		void WriteULONG(const _UINT32& lValue);
-		void WriteLONG(const _INT32& lValue);
-		void WriteINT(const _INT32& lValue);
+		void WriteULONG	(const _UINT32& lValue);
+		void WriteLONG	(const _INT32& lValue);
+		void WriteINT	(const _INT32& lValue);
 		
-		void WriteDouble(const double& dValue);
+		void WriteDouble	(const double& dValue);
 		void WriteDoubleReal(const double& dValue);
 		
-		void WriteStringW(const WCHAR* sBuffer);
-		void WriteStringWStd(const std::wstring& sBuffer);
-		void WriteBYTEArray(const BYTE* pBuffer, size_t len);
-		void WriteStringA(const char* sBuffer);
-		void WriteStringA(CStringA& sBuffer);
-		void WriteStringW(CString& sBuffer);
-		void WriteStringW2(const WCHAR* sBuffer);
-		void WriteStringW2(CString& sBuffer);
-		void WriteStringW3(const WCHAR* sBuffer);
-		void WriteStringW3(CString& sBuffer);
-		void WriteStringW4(const std::wstring& sBuffer);
+		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
+		void WriteStringA	(std::string& sBuffer);
+		
+		void WriteStringW	(std::wstring& sBuffer);
+		void WriteStringW	(const std::wstring& sBuffer);
+		
+		void WriteStringW2	(std::wstring& sBuffer);
+		
+		void WriteStringW3	(std::wstring& sBuffer);
+		void WriteStringW3	(const std::wstring& sBuffer);
+		
+		void WriteStringW4	(const std::wstring& sBuffer);
 		// --------------------------------------------------------
-		void WriteLONG64(const _INT64& lValue);
-		void WriteDouble64(const double& dValue);
+		void WriteLONG64	(const _INT64& lValue);
+		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
-	public: 
 		CBinaryFileWriter();
 		~CBinaryFileWriter();
 
@@ -314,12 +318,10 @@ namespace NSBinPptxRW
 		void WriteReserved(size_t lCount);
 
 		void WriteMainPart();
-
-	public:
 		
-		void WriteString1(int type, const CString& val);
-		void WriteString2(int type, const NSCommon::nullable_string& val);
-		void WriteString(const CString& val);
+		void WriteString1	(int type, const std::wstring& val);
+		void WriteString2	(int type, const NSCommon::nullable_string& val);
+		void WriteString	(const std::wstring& val);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
@@ -381,13 +383,13 @@ namespace NSBinPptxRW
 			EndRecord();
 		}
 
-		void GetBase64File(const CString& sFile, CStringA& strDst64);
+		void GetBase64File(const std::wstring& sFile, std::string& strDst64);
 
-		void WriteTheme64(_INT32 lIndex, const CString& sFile);
+		void WriteTheme64(_INT32 lIndex, const std::wstring& sFile);
 
-		void WriteLayoutTheme64(_INT32 lIndexTheme, _INT32 lIndexLayout, const CString& sFile);
+		void WriteLayoutTheme64(_INT32 lIndexTheme, _INT32 lIndexLayout, const std::wstring& sFile);
 
-		CString GetFolderForGenerateImages();
+		std::wstring GetFolderForGenerateImages();
 
 		// embedded fonts
 		void WriteEmbeddedFonts();
@@ -398,14 +400,14 @@ namespace NSBinPptxRW
 
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
-		_INT32 _WriteString(const WCHAR* sBuffer, _UINT32 lCount);
-		void _WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
 	class CSlideMasterInfo
 	{
 	public:
-		_INT32			m_lThemeIndex;
-		std::vector<LONG> m_arLayouts;
+		_INT32				m_lThemeIndex;
+		std::vector<LONG>	m_arLayouts;
 
 	public:
 		CSlideMasterInfo();
@@ -417,9 +419,9 @@ namespace NSBinPptxRW
 	private:
 		CStringWriter* m_pWriter;
 		int									m_lNextRelsID;
-		std::map<CString, CRelsGeneratorInfo>				m_mapImages;
+		std::map<std::wstring, CRelsGeneratorInfo>				m_mapImages;
 
-		std::map<CString, int>				m_mapLinks;
+		std::map<std::wstring, int>				m_mapLinks;
 
 	public:
 		CImageManager2*						m_pManager;
@@ -444,42 +446,41 @@ namespace NSBinPptxRW
 		void EndPresentationRels(const bool& bIsCommentsAuthors);
 		int GetNextId();
 		void CloseRels();
-		void AddRels(const CString& strRels);
-		void SaveRels(const CString& strFile);
+		void AddRels(const std::wstring& strRels);
+		void SaveRels(const std::wstring& strFile);
 
-		CRelsGeneratorInfo WriteImage(const CString& strImagePath, const CString& oleData, CString strBase64Image);
+		CRelsGeneratorInfo WriteImage(const std::wstring& strImagePath, const std::wstring& oleData, std::wstring strBase64Image);
 		int WriteChart(int nChartNumber, _INT32 lDocType);
 
-		int WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode);
+		int WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 
-		int WriteHyperlink(const CString& strLink, const bool& bIsActionInit);	
+		int WriteHyperlink(const std::wstring& strLink, const bool& bIsActionInit);	
 	};
 
 	class CBinaryFileReader
 	{
 	private:
-		BYTE* m_pData;
-		_INT32 m_lSize;
-		_INT32 m_lPos;
-		BYTE* m_pDataCur;
+		BYTE*	m_pData;
+		LONG	m_lSize;
+		LONG	m_lPos;
+		BYTE*	m_pDataCur;
 
 		_INT32 m_lNextId;
 
 	public:
 		//CRelsGenerator m_oRels;
-		CString m_strFolder;
-		CString m_strFolderThemes;
-		CString m_strFolderExternalThemes;
+		std::wstring	m_strFolder;
+		std::wstring	m_strFolderThemes;
+		std::wstring	m_strFolderExternalThemes;
 
-		_INT32 m_lChartNumber;
-		CString m_strContentTypes;
+		_INT32			m_lChartNumber;
+		std::wstring	m_strContentTypes;
 
 		BinDocxRW::CDocxSerializer* m_pMainDocument;
+		_INT32						m_lDocumentType;
 
-		_INT32		m_lDocumentType;
-
-		CRelsGenerator* m_pRels;
-		std::vector<CRelsGenerator*> m_stackRels;
+		CRelsGenerator*					m_pRels;
+		std::vector<CRelsGenerator*>	m_stackRels;
 		int m_nCurrentRelsStack;
 	
 	public:
@@ -494,9 +495,9 @@ namespace NSBinPptxRW
 
 	public:
 
-		int Seek(_INT32 _pos);
-		int Skip(_INT32 _skip);
-		bool Peek(int nSizeToRead);
+		int Seek	(LONG _pos);
+		int Skip	(LONG _skip);
+		bool Peek	(LONG nSizeToRead);
 		
 		// 1 bytes
 		BYTE GetUChar();
@@ -517,21 +518,21 @@ namespace NSBinPptxRW
 		double GetDouble64();
 		double GetDoubleReal();
 		//String
-		CString GetString(_INT32 len);
-		CStringA GetString1(_INT32 len);
-		CString GetString2();
-		CString GetString3(_INT32 len);
+		std::wstring GetString(_INT32 len);
+		std::string GetString1(_INT32 len);
+		std::wstring GetString2();
+		std::wstring GetString3(_INT32 len);
 		std::wstring GetString4(_INT32 len);
 
         //LPSAFEARRAY GetArray(_INT32 len);
         bool GetArray(BYTE **pBuffer, _INT32 len);
 
-		CStringA GetString2A();
+		std::string GetString2A();
 		void SkipRecord();
 
-		_INT32 GetPos();
+		LONG GetPos();
 
-		_INT32 GetSize();
+		LONG  GetSize();
 
 		BYTE* GetData();
 		BYTE* GetPointer(int nSize);

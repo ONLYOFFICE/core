@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,10 +37,9 @@
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
-	#include <atlstr.h>
-#else
-    #include "../../../DesktopEditor/common/ASCVariant.h"
 #endif
+
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 namespace Writers
 {
@@ -55,12 +54,9 @@ public:
     HRESULT txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
     HRESULT txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
 
-	//HRESULT xml_LoadFromFile(CString sSrcFileName, CString sDstPath, CString sXMLOptions);
-	//HRESULT xml_SaveToFile	(CString sDstFileName, CString sSrcPath, CString sXMLOptions);
-	
 	CTxtXmlFile();
 
 private:
-	void CreateDocxEmpty(CString path, Writers::FileWriter * DocxWriter) ;
+    void CreateDocxEmpty(const std::wstring & path, Writers::FileWriter * DocxWriter) ;
 
 };

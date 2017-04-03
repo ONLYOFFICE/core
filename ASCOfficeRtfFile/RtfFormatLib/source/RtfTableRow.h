@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,14 +45,13 @@ public:
 	RtfTableRow()
 	{
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		sResult += L"\n";
 		if( RENDER_TO_RTF_PARAM_NESTED == oRenderParameter.nType )
 		{
-
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < (int)m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
@@ -63,7 +62,7 @@ public:
 		else
 		{
 			sResult += m_oProperty.RenderToRtf( oRenderParameter );
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 			}
@@ -71,7 +70,7 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		XmlUtils::CXmlWriter oXmlWriter;
 		oXmlWriter.WriteNodeBegin(L"w:tr",0);
@@ -79,13 +78,13 @@ public:
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-		CString sRowProp = m_oProperty.RenderToOOX(oNewParam);
-		if( false == sRowProp.IsEmpty() )
+        std::wstring sRowProp = m_oProperty.RenderToOOX(oNewParam);
+		if( false == sRowProp.empty() )
 		{
-			CString sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
+            std::wstring sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
 			oXmlWriter.WriteString(sXml);
 		}
-		for(int i = 0 ; i < (int)m_aArray.size(); i++)
+		for (size_t i = 0 ; i < (int)m_aArray.size(); i++)
 		{
 			oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );
 		}

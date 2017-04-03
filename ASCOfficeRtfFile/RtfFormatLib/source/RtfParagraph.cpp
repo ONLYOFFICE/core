@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,12 +51,12 @@ int RtfParagraph::AddItem( IDocumentElementPtr piRend )
 	return (int)m_aArray.size() - 1;
 }
 
-CString RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult ;
+    std::wstring sResult ;
 	if( RENDER_TO_RTF_PARAM_CHAR == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -69,7 +69,7 @@ CString RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 		if( NULL != m_oOldList )
 			sResult += m_oOldList->RenderToRtf( oRenderParameter ) ;
 
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 		}
@@ -83,19 +83,19 @@ CString RtfParagraph::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult ;
+    std::wstring sResult ;
 	if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
 	else if( RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
@@ -110,7 +110,7 @@ CString RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		else
 		{
-			for( int i = 0; i < (int)m_aArray.size(); i++ )
+			for (size_t i = 0; i < m_aArray.size(); i++ )
 			{
 				sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 			}
@@ -166,13 +166,13 @@ CString RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 
 		oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 		
-		CString ParagraphContent;
-		for( int i = 0; i < m_aArray.size(); i++)
+        std::wstring ParagraphContent;
+		for (size_t i = 0; i < m_aArray.size(); i++)
 		{
 			ParagraphContent += m_aArray[i]->RenderToOOX(oNewParam);
 		}
 
-		if (!ParagraphContent.IsEmpty())
+        if (!ParagraphContent.empty())
 			sResult += ParagraphContent;
 
 		sResult += L"</w:p>";

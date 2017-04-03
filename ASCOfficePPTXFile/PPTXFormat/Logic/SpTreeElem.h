@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,16 +41,28 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, CString& strAttr, CString& strNode, bool bOle = false);
-		void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, CString& strAttr, CString& strNode, bool bOle = false);
+        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::WrapperFile>& oTheme,
+                           smart_ptr<PPTX::WrapperWritingElement>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
+        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle,
+                           smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
 
 		class SpTreeElem : public WrapperWritingElement
 		{
 		public:
 			SpTreeElem();
 			virtual ~SpTreeElem();
+
+			virtual OOX::EElementType getType () const
+			{
+				if (m_elem.IsInit())
+					return m_elem->getType();
+				return OOX::et_Unknown;
+			}
 			explicit SpTreeElem(XmlUtils::CXmlNode& node);
 			const SpTreeElem& operator =(XmlUtils::CXmlNode& node);
+
+			explicit SpTreeElem(XmlUtils::CXmlLiteReader& oReader);
+			const SpTreeElem& operator =(XmlUtils::CXmlLiteReader& oReader);
 
 			SpTreeElem& operator=(const SpTreeElem& oSrc)
 			{
@@ -58,9 +70,10 @@ namespace PPTX
 				return *this;
 			}
 			
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
             virtual bool is_init() const {return (m_elem.IsInit());}
 
 			template<class T> AVSINLINE const bool	is() const	{ return m_elem.is<T>(); }

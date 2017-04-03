@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,27 +37,27 @@
 
 namespace Writers
 {
-	static CString g_string_ft_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
-	static CString g_string_ft_End = _T("</w:fonts>");
+    static std::wstring g_string_ft_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" mc:Ignorable=\"w14\">");
+    static std::wstring g_string_ft_End = _T("</w:fonts>");
 
 	class FontTableWriter
 	{
-		XmlUtils::CStringWriter	m_oWriter;
-		CString	m_sDir;
-		CApplicationFonts m_oApplicationFonts;
-		CFontManager* m_pFontManager;
+        XmlUtils::CStringWriter	m_oWriter;
+        std::wstring            m_sDir;
+        CApplicationFonts       m_oApplicationFonts;
+        CFontManager*           m_pFontManager;
 	public:
-		std::map<CString, int> m_mapFonts;
+        std::map<std::wstring, int> m_mapFonts;
 	public:
-		FontTableWriter(CString sDir, CString sFontDir, bool bNoFontDir):m_sDir(sDir)
+        FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
 		{
 			m_pFontManager = NULL;
 			if(!bNoFontDir)
 			{
-				if(sFontDir.IsEmpty())
+                if(sFontDir.empty())
 					m_oApplicationFonts.Initialize();
 				else
-					m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
+					m_oApplicationFonts.InitializeFromFolder(sFontDir);
 				CFontList* pFontList = m_oApplicationFonts.GetList();
 				if(NULL != pFontList)
 				{
@@ -80,9 +80,9 @@ namespace Writers
 			bool bCalibri = false;
 			bool bTimes = false;
 			bool bCambria = false;
-			for (std::map<CString, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
+            for (std::map<std::wstring, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
 			{
-				const CString& sFontName = it->first;
+                const std::wstring& sFontName = it->first;
 				if(_T("Calibri") == sFontName)
 					bCalibri = true;
 				else if(_T("Times New Roman") == sFontName)
@@ -108,27 +108,25 @@ namespace Writers
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}
-		void WriteFont(CString sFontName)
+        void WriteFont(std::wstring sFontName)
 		{
-			CString sPanose;
+            std::wstring sPanose;
 			bool bUsePanose = false;
 			if(NULL != m_pFontManager)
 			{
 				CFontSelectFormat oFontSelectFormat;
 				oFontSelectFormat.wsName = new std::wstring;
-				*oFontSelectFormat.wsName = std::wstring(sFontName.GetString());
+                *oFontSelectFormat.wsName = sFontName;
+
 				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 				if(NULL != pFontInfo)
 				{
-					for(int i = 0; i < 10; ++i)
+					for (size_t i = 0; i < 10; ++i)
 					{
 						BYTE cElem = pFontInfo->m_aPanose[i];
 						if(0 != cElem)
 							bUsePanose = true;
-						if(cElem > 0xF)
-							sPanose.AppendFormat(_T("%X"), cElem);
-						else
-							sPanose.AppendFormat(_T("0%X"), cElem);
+                        sPanose += XmlUtils::IntToString(cElem, L"%02X");
 					}
 					
 				}
@@ -136,9 +134,9 @@ namespace Writers
 
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
 			m_oWriter.WriteString(_T("<w:font w:name=\"") + sFontName + _T("\">"));
-			if(bUsePanose && !sPanose.IsEmpty())
+            if(bUsePanose && !sPanose.empty())
 				m_oWriter.WriteString(_T("<w:panose1 w:val=\"")+sPanose+_T("\"/>"));
-			m_oWriter.WriteString(CString(_T("</w:font>")));
+            m_oWriter.WriteString(std::wstring(_T("</w:font>")));
 		}
 	};
 }

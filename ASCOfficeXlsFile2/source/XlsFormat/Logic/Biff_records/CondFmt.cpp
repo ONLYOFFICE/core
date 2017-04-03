@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,21 +49,6 @@ BaseObjectPtr CondFmt::clone()
 {
 	return BaseObjectPtr(new CondFmt(*this));
 }
-
-
-void CondFmt::writeFields(CFRecord& record)
-{
-	unsigned short flags;
-	record << ccf;
-	SETBIT(flags, 0, fToughRecalc);
-	SETBITS(flags, 1, 15, nID);
-	record << flags;
-
-	Ref8U refBound_ref(refBound);
-	record << refBound_ref << sqref;
-
-}
-
 
 void CondFmt::readFields(CFRecord& record)
 {

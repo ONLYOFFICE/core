@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,12 +47,12 @@ docx_content_types_file::docx_content_types_file()
     content()->add_default(L"jpg",     L"image/jpeg");
     content()->add_default(L"png",     L"image/png");
 	//
-    content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
-    content()->add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
     content()->add_override(L"/word/document.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
 	content()->add_override(L"/word/settings.xml",            L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
     content()->add_override(L"/word/styles.xml",              L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
     content()->add_override(L"/word/fontTable.xml",           L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+    //content()->add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
+    //content()->add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content()->add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
     content()->add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
 }
@@ -69,7 +69,7 @@ word_files::word_files()
 void word_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"word";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     if (document_)
         document_->write( path );
@@ -96,8 +96,13 @@ void word_files::write(const std::wstring & RootPath)
     {
         media_->write( path );
     }
+   
+	if (embeddings_)
+    {
+        embeddings_->write( path );
+    }
 
-    if (headers_footers_)
+	if (headers_footers_)
     {
         headers_footers_->write( path );
     }
@@ -136,7 +141,15 @@ void word_files::update_rels(docx_conversion_context & Context)
 
 void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	{
+		media_		= element_ptr( new media(_Mediaitems, pAppFonts) );
+	}
+	if (_Mediaitems.count_object > 0)
+	{
+		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+		embeddings_->set_main_document( get_main_document() );
+	}
 }
 
 void word_files::set_styles(element_ptr Element) 
@@ -197,10 +210,11 @@ void docx_charts_files::add_chart(chart_content_ptr chart)
 {
     charts_.push_back(chart);
 }
+
 void docx_charts_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR +  L"charts";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 

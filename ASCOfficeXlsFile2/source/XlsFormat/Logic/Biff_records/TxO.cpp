@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,11 +51,6 @@ TxO::~TxO()
 BaseObjectPtr TxO::clone()
 {
 	return BaseObjectPtr(new TxO(*this));
-}
-
-
-void TxO::writeFields(CFRecord& record)
-{
 }
 
 
@@ -224,7 +219,7 @@ int TxO::serialize_rPr	(std::wostream & _stream, int iFmt, std::wstring namespac
 	if (!pGlobalWorkbookInfoPtr->m_arFonts) return 0;
 
 	int sz = pGlobalWorkbookInfoPtr->m_arFonts->size();
-	if (iFmt - 1 > sz || iFmt < 1) return 0;
+	if (iFmt - 1 >= sz || iFmt < 1) return 0;
 
 	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts->at(iFmt-1).get());
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,7 +47,14 @@ namespace PPTX
 			explicit UniEffect(XmlUtils::CXmlNode& node);
 			const UniEffect& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				if (Effect.is_init())
+					return Effect->getType();
+				else return OOX::et_Unknown;
+			}
+			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetEffectFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (Effect.IsInit());};
@@ -56,7 +63,7 @@ namespace PPTX
 			template<class T> T& as() {return Effect.as<T>();}
 			template<class T> const T& as() const {return static_cast<const T&>(*Effect);}
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

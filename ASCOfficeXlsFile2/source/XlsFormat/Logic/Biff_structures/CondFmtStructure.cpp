@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,17 +40,6 @@ namespace XLS
 BiffStructurePtr CondFmtStructure::clone()
 {
 	return BiffStructurePtr(new CondFmtStructure(*this));
-}
-
-
-void CondFmtStructure::store(CFRecord& record)
-{
-	record << ccf;
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fToughRecalc);
-	SETBITS(flags, 1, 15, nID);
-	record << flags;
-	record << refBound << sqref;
 }
 
 

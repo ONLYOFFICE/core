@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,12 +34,13 @@
 #include "xlsx_utils.h"
 
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 
@@ -53,8 +54,8 @@ std::wstring getColAddress(size_t col)
 
     if (r0 > 0)
     {
-        const std::wstring rest = getColAddress(col - r*r0);
-        const std::wstring res = getColAddress(r0-1) + rest;
+        const std::wstring rest = getColAddress(col - r * r0);
+        const std::wstring res	= getColAddress(r0-1) + rest;
         return res;
     }
     else
@@ -65,12 +66,12 @@ std::wstring getColAddress(size_t col)
 
 std::wstring getRowAddress(size_t row)
 {
-    return boost::lexical_cast<std::wstring>(row+1);
+    return boost::lexical_cast<std::wstring>(row + 1);
 }
 
 std::wstring getCellAddress(size_t col, size_t row)
 {
-    return getColAddress(col) + getRowAddress(row);
+	return getColAddress(col) + getRowAddress(row);
 }
 
 //_ASSERTE(getColAddressInv(L"A") == 0);
@@ -118,9 +119,10 @@ void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring 
 	std::wstring a = a_;
 
 	std::reverse(a.begin(), a.end());
-    ::boost::algorithm::replace_all(a, L"$", L"");
-    //::boost::algorithm::replace_all(a, L"'", L"");
-	::boost::algorithm::to_upper(a);
+    XmlUtils::replace_all( a, L"$", L"");
+    //XmlUtils::replace_all( a, L"'", L"");
+	
+	boost::algorithm::to_upper(a);
 	
 
 	BOOST_FOREACH(wchar_t c, a)
@@ -148,11 +150,11 @@ void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring 
 //_ASSERTE(rowS == 999);
 void getCellAddressInv(const std::wstring & a_, size_t & col, size_t & row)
 {
-    std::wstring colStr=L"", rowStr=L"";
+    std::wstring colStr = L"", rowStr = L"";
     splitCellAddress(a_, colStr, rowStr);
     
-    col = getColAddressInv(colStr);
-    row = getRowAdderssInv(rowStr);
+    col = getColAddressInv( colStr );
+    row = getRowAdderssInv( rowStr );
 }
 
 bool parseBoolVal(const std::wstring & str)
@@ -188,9 +190,7 @@ std::wstring cellType2Str(XlsxCellType::type type)
 
 boost::int64_t convertDate(int Year, int Month, int Day)
 {
-    using namespace boost::gregorian;
-
-    boost::int64_t daysFrom1900  =  date_duration(date(Year, Month, Day) - date(1900, 1, 1)).days() + 1;
+    boost::int64_t daysFrom1900  =  boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
 
     if (Year <= 1900 && 
         Month <= 2 &&
@@ -225,9 +225,9 @@ bool parseDate(const std::wstring & Date, int & Year, int & Month, int & Day)
         boost::match_results<std::wstring::const_iterator> res;
         if (boost::regex_match(Date, res, r))
         {
-            Year = boost::lexical_cast<int>(res[1].str());
-            Month = boost::lexical_cast<int>(res[2].str());
-            Day = boost::lexical_cast<int>(res[3].str());
+            Year    = boost::lexical_cast<int>(res[1].str());
+            Month   = boost::lexical_cast<int>(res[2].str());
+            Day     = boost::lexical_cast<int>(res[3].str());
 
             int Hours, Minutes, Sec, FSec;
             if (res[4].matched)
@@ -259,7 +259,7 @@ bool parseTime(const std::wstring & Time, int & Hours, int & Minutes, double & s
         boost::match_results<std::wstring::const_iterator> res;
         if (boost::regex_match(Time, res, r))
         {
-            Hours = boost::lexical_cast<int>(res[1].str());
+            Hours   = boost::lexical_cast<int>(res[1].str());
             Minutes = boost::lexical_cast<int>(res[2].str());
             seconds = boost::lexical_cast<int>(res[3].str());
 

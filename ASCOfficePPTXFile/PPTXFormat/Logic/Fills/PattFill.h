@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,12 +41,15 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class PattFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(PattFill)
-
+			WritingElement_AdditionConstructors(PattFill)
+			
+			PattFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
 			PattFill& operator=(const PattFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -59,8 +62,34 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+					if (sName == L"a:fgClr")
+						fgClr.fromXMLParent(oReader);
+					if (sName == L"a:bgClr")
+						bgClr.fromXMLParent(oReader);
+				}
+				FillParentPointersForChilds();	
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_pattFill;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prst"), prst )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -76,7 +105,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("prst"), prst);
@@ -85,13 +114,13 @@ namespace PPTX
 				oValue.Write(_T("a:fgClr"), fgClr);
 				oValue.Write(_T("a:bgClr"), bgClr);
 
-				CString strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
 				pWriter->StartNode(strName);
 
 				pWriter->StartAttributes();
@@ -131,7 +160,7 @@ namespace PPTX
 			UniColor fgClr;
 			UniColor bgClr;
 
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

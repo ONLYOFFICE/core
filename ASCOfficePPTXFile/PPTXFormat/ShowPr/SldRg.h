@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,7 +50,7 @@ namespace PPTX
 				node.ReadAttributeBase(_T("st"), st);
 				node.ReadAttributeBase(_T("end"), end);
 			}
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("st"), st);
@@ -105,7 +105,7 @@ namespace PPTX
 			nullable_int			st;
 			nullable_int			end;
 		protected:
-			virtual void FillParentPointersForChilds(){};
+            virtual void FillParentPointersForChilds(){}
 		};
 	} // namespace nsShowPr
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,9 +38,10 @@
 #include <math.h>
 #include "ShapeUtils.h"
 
-#include "../../../../Common/DocxFormat/Source/XML/xmlutils.h"
-
+#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/graphics/aggplustypes.h"
+
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace NSCustomShapesConvert
 {
@@ -68,7 +69,7 @@ namespace NSCustomShapesConvert
 	};	
 
 	#define VML_GUIDE_COUNT 18
-	const LPSTR VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
+    static const char* VML_GUIDE_TYPE[VML_GUIDE_COUNT] = {
 		"sum",
 		"prod",
 		"mid",

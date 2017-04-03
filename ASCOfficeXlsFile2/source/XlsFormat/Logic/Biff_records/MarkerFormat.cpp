@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,15 +50,6 @@ BaseObjectPtr MarkerFormat::clone()
 	return BaseObjectPtr(new MarkerFormat(*this));
 }
 
-
-void MarkerFormat::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAuto);
-	SETBIT(flags, 4, fNotShowInt);
-	SETBIT(flags, 5, fNotShowBrd);
-	record << rgbFore << rgbBack << imk << flags << icvFore << icvBack << miSize;
-}
 
 void MarkerFormat::readFields(CFRecord& record)
 {

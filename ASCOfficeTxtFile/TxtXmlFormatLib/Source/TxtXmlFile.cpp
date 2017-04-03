@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -92,8 +92,8 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
                     std::wstring sName1 = xmlReader.GetName();
 					if (sName1 == _T("Encoding"))
 					{
-						CString strValue = xmlReader.GetText2();
-						encoding = StlUtils::ToInteger(string2std_string(strValue));
+                        std::wstring strValue = xmlReader.GetText2();
+						encoding = StlUtils::ToInteger(strValue);
 					}
 				}
 			}
@@ -112,10 +112,10 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 	//As Text
 
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(std_string2string(sDstPath), _T(""), true, 1, false, NULL, _T(""));
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, false, NULL, L"");
 	if (pDocxWriter == NULL) return S_FALSE;
 
-    CreateDocxEmpty(std_string2string(sDstPath), pDocxWriter);
+    CreateDocxEmpty(sDstPath, pDocxWriter);
 
 	try
 	{
@@ -181,30 +181,31 @@ HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 }
 
 
-void CTxtXmlFile::CreateDocxEmpty(CString strDirectory, Writers::FileWriter * pDocxWriter) 
+void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::FileWriter * pDocxWriter)
 {
+    std::wstring strDirectory = _strDirectory;
 	// rels
-    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathRels.GetPath());
+    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR +L"_rels";
+    NSDirectory::CreateDirectory(pathRels.GetPath());
 
 	// word
-    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
-    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
+    NSDirectory::CreateDirectory(pathWord.GetPath());
 
 	// documentRels
     OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathWordRels.GetPath());
+    NSDirectory::CreateDirectory(pathWordRels.GetPath());
 
 	//media
     OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
-	CString sMediaPath = pathMedia.GetPath();
+    std::wstring sMediaPath = pathMedia.GetPath();
 
 	// theme
     OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath());
+    NSDirectory::CreateDirectory(pathTheme.GetPath());
 
     OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
-    FileSystem::Directory::CreateDirectory(pathThemeRels.GetPath());
+    NSDirectory::CreateDirectory(pathThemeRels.GetPath());
 	
     pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 
@@ -215,9 +216,9 @@ void CTxtXmlFile::CreateDocxEmpty(CString strDirectory, Writers::FileWriter * pD
 	OOX::CContentTypes oContentTypes;
 	//docProps
     OOX::CPath pathDocProps = strDirectory + FILE_SEPARATOR_STR + _T("docProps");
-    FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+    NSDirectory::CreateDirectory(pathDocProps.GetPath());
 	
-    OOX::CPath DocProps = CString(_T("docProps"));
+    OOX::CPath DocProps = std::wstring(_T("docProps"));
 
 	OOX::CApp* pApp = new OOX::CApp();
 	if (pApp)

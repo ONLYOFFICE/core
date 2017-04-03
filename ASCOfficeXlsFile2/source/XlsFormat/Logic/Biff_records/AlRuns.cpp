@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,17 +48,6 @@ AlRuns::~AlRuns()
 BaseObjectPtr AlRuns::clone()
 {
 	return BaseObjectPtr(new AlRuns(*this));
-}
-
-
-void AlRuns::writeFields(CFRecord& record)
-{
-	unsigned short cRuns = rgRuns.size();
-	record << cRuns;
-	for(BiffStructurePtrVector::iterator it = rgRuns.begin(), itEnd = rgRuns.end(); it != itEnd; ++it)
-	{
-		(*it)->store(record);
-	}
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -410,6 +410,7 @@
 #include "../../../raster/Metafile/Emf/EmfObjects.cpp"
 #include "../../../raster/Metafile/Emf/EmfPath.cpp"
 #include "../../../raster/Metafile/Emf/EmfPlayer.cpp"
+#include "../../../raster/Metafile/Emf/EmfFile.cpp"
 #include "../../../raster/Metafile/Wmf/WmfClip.cpp"
 #include "../../../raster/Metafile/Wmf/WmfObjects.cpp"
 #include "../../../raster/Metafile/Wmf/WmfPlayer.cpp"

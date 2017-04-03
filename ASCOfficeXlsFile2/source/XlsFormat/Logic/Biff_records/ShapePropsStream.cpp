@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,14 +49,6 @@ BaseObjectPtr ShapePropsStream::clone()
 {
 	return BaseObjectPtr(new ShapePropsStream(*this));
 }
-
-
-void ShapePropsStream::writeFields(CFRecord& record)
-{
-#pragma message("####################### ShapePropsStream record is not implemented")
-	Log::error("ShapePropsStream record is not implemented.");
-}
-
 
 void ShapePropsStream::readFields(CFRecord& record)
 {

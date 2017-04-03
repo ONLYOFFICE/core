@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,21 +41,6 @@ namespace XLS
 BiffStructurePtr FtNts::clone()
 {
 	return BiffStructurePtr(new FtNts(*this));
-}
-
-
-void FtNts::store(CFRecord& record)
-{
-	unsigned short ft = 0x0D; // reserved
-	unsigned short cb = 0x16; // reserved
-	record << ft << cb;
-
-	_GUID_ guid_num;
-	if(!STR::bstr2guid(guid, guid_num))
-	{
-		// EXCEPT::LE::AttributeDataWrong(L"guid", L"FtNts", guid);
-	}
-	record << guid_num << fSharedNote;
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,7 +83,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_smartTag;
@@ -103,8 +103,8 @@ namespace OOX
 				std::wstring wsName = oReader.GetName();
 				while( !wsName.empty() )
 				{					
-					if      ( _T("w:element")         == wsName ) m_sElement         = oReader.GetText();
-					else if ( _T("w:uri")          == wsName ) m_sUri          = oReader.GetText();
+					if      ( _T("w:element")	== wsName )	m_sElement	= oReader.GetText();
+					else if ( _T("w:uri")		== wsName )	m_sUri		= oReader.GetText();
 
 					if ( !oReader.MoveToNextAttribute() )
 						break;
@@ -117,8 +117,8 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString> m_sElement;
-			nullable<CString> m_sUri;
+			nullable<std::wstring> m_sElement;
+			nullable<std::wstring> m_sUri;
 
 			// Childs
 		};

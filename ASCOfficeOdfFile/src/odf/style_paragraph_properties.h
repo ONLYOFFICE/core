@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -98,17 +98,17 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    odf_types::length style_position_;
-    _CP_OPT(odf_types::style_type) style_type_;
-    _CP_OPT(wchar_t) style_char_;
+    odf_types::length						style_position_;
+    _CP_OPT(odf_types::style_type)			style_type_;
+    _CP_OPT(wchar_t)						style_char_;
 
-	_CP_OPT(odf_types::line_type) style_leader_type_;
-    _CP_OPT(odf_types::line_style) style_leader_style_;
-    _CP_OPT(odf_types::line_width) style_leader_width_;
-    _CP_OPT(odf_types::style_leader_color) style_leader_color_;
+	_CP_OPT(odf_types::line_type)			style_leader_type_;
+    _CP_OPT(odf_types::line_style)			style_leader_style_;
+    _CP_OPT(odf_types::line_width)			style_leader_width_;
+    _CP_OPT(odf_types::style_leader_color)	style_leader_color_;
 
-    _CP_OPT( std::wstring ) style_leader_text_;
-    _CP_OPT( odf_types::style_ref ) style_leader_text_style_;            
+    _CP_OPT( std::wstring )					style_leader_text_;
+    _CP_OPT( odf_types::style_ref )			style_leader_text_style_;            
 
 };
 

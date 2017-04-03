@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -151,37 +151,6 @@ BaseObjectPtr GlobalsSubstream::clone()
 	return BaseObjectPtr(new GlobalsSubstream(*this));
 }
 
-
-// class Parenthesis_Window1_Backup_HideObj_Date1904 : public ABNFParenthesis
-// {
-// public:
-// 	BaseObjectPtr clone()
-// 	{
-// 		return BaseObjectPtr(new Parenthesis_OO_order_workaround_1(*this));
-// 	}
-// 
-// 	const bool loadContent(BinProcessor& proc)
-// 	{
-// 		if(!proc.mandatory<SXAddl_SXCCacheField_SXDCaption>())
-// 		{
-// 			return false;
-// 		}
-// 		proc.repeated<Continue_SxaddlSxString>(0, 0);
-// 		return true;
-// 	};
-// };
-// 
-
-/*
-WORKBOOKCONTENT = [WriteProtect] [FilePass] [Template] INTERFACE WriteAccess [FileSharing] CodePage 
-					*2047Lel DSF [Excel9File] RRTabId [ObProj] [ObNoMacros] [CodeName [FNGROUPS] *Lbl 
-					[OleObjectSize] PROTECTION 1*Window1 Backup HideObj Date1904 CalcPrecision RefreshAll 
-					BookBool FORMATTING *(PIVOTCACHEDEFINITION) [DOCROUTE] *UserBView UsesELFs 1*BUNDLESHEET 
-					METADATA [MTRSettings] [ForceFullCalculation] Country *SUPBOOK *LBL *RTD [RecalcId] 
-					*HFPicture *MSODRAWINGGROUP [SHAREDSTRINGS] ExtSST *WebPub [WOpt] [CrErr] [BookExt] 
-					*FeatHdr *DConn [THEME] [CompressPictures] [Compat12] [GUIDTypeLib] EOF
-WORKBOOK = BOF WORKBOOKCONTENT
-*/
 const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 {
 	int	count = 0;
@@ -229,7 +198,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					if (( proc.getGlobalWorkbookInfo()->decryptor)  &&
 						( proc.getGlobalWorkbookInfo()->decryptor->IsVerify() == false))
 					{
-						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop", 2))
+						if (!proc.getGlobalWorkbookInfo()->decryptor->SetPassword(L"VelvetSweatshop"))
 							return false;
 					}
 				}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -125,7 +125,7 @@ namespace DocFormatUtils
 			
 			if(bDeleteNoUnicode)
 			{
-				for(size_t pos = 0; pos != data.size(); ++pos)
+				for(size_t pos = 0; pos < data.size(); ++pos)
 				{
 					switch(data[pos])
 					{
@@ -157,7 +157,7 @@ namespace DocFormatUtils
 			}
 			else
 			{
-				for(size_t pos = 0; pos != data.size(); ++pos)
+				for(size_t pos = 0; pos < data.size(); ++pos)
 				{
 					switch(data[pos])
 					{
@@ -166,6 +166,8 @@ namespace DocFormatUtils
                         case '\'': buffer.append(L"&apos;");     break;
                         case '<':  buffer.append(L"&lt;");       break;
                         case '>':  buffer.append(L"&gt;");       break;
+						case '\0':  
+							return buffer;
 						default:   buffer.append(&data[pos], 1);	break;
 					}
 				}
@@ -503,6 +505,7 @@ namespace DocFormatUtils
 			{
 				STLCollection->push_back(result[i]);
 			}
+            return true;
 		}
 
 		template<class T> static bool GetSTLCollectionFromUtf8( T *STLCollection, unsigned char *bytes, int size)
@@ -766,18 +769,12 @@ namespace DocFormatUtils
 
         static inline std::wstring IntToWideString(int value)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            wchar_t buff[33] ={};
-            _itow(value, buff, 10);
-            return std::wstring(buff);
-#else
             return (std::to_wstring(value));
-#endif
 		}
+
 		static inline std::wstring DoubleToWideString(double value)
 		{
-			std::wstringstream src;
-			
+			std::wstringstream src;			
 			src << value;
 			
 			return std::wstring(src.str());
@@ -785,8 +782,7 @@ namespace DocFormatUtils
 
 		static inline std::string DoubleToString(double value)
 		{
-			std::stringstream src;
-			
+			std::stringstream src;			
 			src << value;
 			
 			return std::string(src.str());
@@ -813,36 +809,16 @@ namespace DocFormatUtils
 
 		static inline std::wstring IntToFormattedWideString( int value, const wchar_t* format )
 		{
-//			const int size = 33;
-
-//			wchar_t strValue[size] = L"\0";
-
 			if ( format == NULL ) return L"";
-//				swprintf_s( strValue, size, format, value );
-////			}
-//            CString format_str;
-//            format_str.Format(format , value);
-
 			std::wstringstream sstream;
 			sstream << boost::wformat(format) % value;
 			return sstream.str();
-            //return string2std_string( format_str );
 		}
 
 		static inline std::wstring DoubleToFormattedWideString( double value, wchar_t* format )
 		{
 			if ( format == NULL ) return L"";
-			//std::wstring wstr;
 
-			//if ( format != NULL )
-			//{
-   //             CString strValue;
-   //             strValue.Format(format, value);
-
-   //             wstr = string2std_string( strValue );
-			//}
-
-			//return wstr;
 			std::wstringstream sstream;
 			sstream << boost::wformat(format) % value;
 			return sstream.str();

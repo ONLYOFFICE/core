@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,9 +41,9 @@
 #include "../../logging.h"
 
 #include <boost/variant.hpp>
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore 
 {
@@ -66,7 +66,7 @@ namespace cpdoccore
             typedef typename T::value_type T_value_type;
 
 			Val.reset();
-			for (int i = 0 ; i < Heap.size(); i++)
+			for (size_t i = 0 ; i < Heap.size(); i++)
 			{
 				if (Heap[i].name_ == Name )
 				{
@@ -128,7 +128,7 @@ namespace cpdoccore
 			{
 				try 
 				{
-                      return optional_V_type (::boost::lexical_cast<V>( *val ) );
+                      return optional_V_type (boost::lexical_cast<V>( *val ) );
 					//return common::read_string<V>( *val );
 				}
 				catch(...)
@@ -154,7 +154,7 @@ namespace cpdoccore
 			if (val)
 			{
                 std::wstring tmp = *val;
-                ::boost::algorithm::to_lower(tmp);
+				XmlUtils::GetLower(tmp);
                 return  optional<bool>::Type((tmp == xml_char_value_type::trueVal));
 			}
 			else

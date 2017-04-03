@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -117,14 +117,14 @@ void odt_conversion_context::start_document()
 void odt_conversion_context::end_document()
 {
 	//add sections to root
-	for (long i=0; i< sections_.size(); i++)
+	for (size_t i = 0; i< sections_.size(); i++)
 	{
 		root_document_->add_child_element(sections_[i].elm);
 	}
 	sections_.clear();
 	
 	//add last elements to root 
-	for (long i=0; i< current_root_elements_.size(); i++)
+	for (size_t i = 0; i< current_root_elements_.size(); i++)
 	{
 		root_document_->add_child_element(current_root_elements_[i].elm);
 	}
@@ -246,7 +246,7 @@ void odt_conversion_context::end_drawings()
 		bool bSet = false;
 		if (( anchor == anchor_type::Page || anchor == anchor_type::Paragraph) || (is_header_ || is_footer_))
 		{
-			for (long i = text_context()->current_level_.size()-1; i>=0; i--)
+			for (long i = (long)text_context()->current_level_.size() - 1 ; i>=0; i--)
 			{
 				text_p *p = dynamic_cast<text_p*>(text_context()->current_level_[i].elm.get());
 				text_h *h = dynamic_cast<text_h*>(text_context()->current_level_[i].elm.get());
@@ -448,7 +448,7 @@ void odt_conversion_context::set_master_page_name(std::wstring master_name)
 int odt_conversion_context::get_current_section_columns()
 {
 	if (sections_.size() > 0)
-		sections_.back().count_columns;
+		return sections_.back().count_columns;
 	else return 1;
 }
 void odt_conversion_context::add_section(bool continuous)
@@ -513,7 +513,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 	if (!columns)return;
 	
 	double width_all = 0;
-	for (int i = 0; i < width_space.size() ; i++)
+	for (size_t i = 0; i < width_space.size() ; i++)
 	{
 		if (width_space[i].first >= 0) 
 		
@@ -527,7 +527,7 @@ void odt_conversion_context::add_section_column(std::vector<std::pair<double,dou
 
 	section_properties->style_editable_ = false;
 
-	for (int i = 0; i < width_space.size() && width_all > 0 ; i++)
+	for (size_t i = 0; i < width_space.size() && width_all > 0 ; i++)
 	{
 		office_element_ptr col_elm;
 		
@@ -634,7 +634,7 @@ void odt_conversion_context::flush_section()
 {
 	if (sections_.size() > 0 && sections_.back().empty)
 	{
-		for (long i=0; i< current_root_elements_.size(); i++)
+		for (size_t i=0; i< current_root_elements_.size(); i++)
 		{
 			if ((sections_.back().continuous && i < 2) || !sections_.back().continuous)
 				// при вставлении параграфа возможен искусственный разрыв в параграфах - см add_page_break
@@ -808,7 +808,7 @@ bool odt_conversion_context::start_change (int id, int type, std::wstring &autho
 	
 	text_changes_state_.current_types.push_back(type);
 
-	std::wstring strId = L"ct" + std::to_wstring(id);
+	std::wstring strId = L"ct" + boost::lexical_cast<std::wstring>(id);
 //---------------------------------------------------------------------------------
 	office_element_ptr start_elm;
 
@@ -886,7 +886,7 @@ void odt_conversion_context::end_change (int id, int type)
 {
 	//if (!text_changes_state_.main_text_context) return;
 	
-	std::wstring strId = L"ct" + std::to_wstring(id);
+	std::wstring strId = L"ct" + boost::lexical_cast<std::wstring>(id);
 
 	if (type == 2)//delete
 	{

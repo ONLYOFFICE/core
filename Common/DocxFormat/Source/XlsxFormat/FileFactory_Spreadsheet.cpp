@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,6 +49,8 @@
 #include "Table/Table.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
+#include "../DocxFormat/Diagram/DiagramDrawing.h"
+#include "../DocxFormat/Diagram/DiagramData.h"
 
 namespace OOX
 {
@@ -58,7 +60,7 @@ namespace OOX
 		{
 			OOX::CPath oRelationFilename = oRelation.Filename();
 			CPath oFileName;
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
 				oFileName = oRootPath / oRelationFilename;
 			else
 				oFileName = oPath / oRelationFilename;
@@ -97,6 +99,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelation.Target()));
 			else if (  oRelation.Type() == FileTypes::OleObject)
 				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
+			else if (	oRelation.Type() == OOX::FileTypes::Data)			
+				return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
+			else if (	oRelation.Type() == OOX::FileTypes::DiagDrawing)
+				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}
@@ -106,7 +112,7 @@ namespace OOX
 			
 			OOX::CPath oRelationFilename = pRelation->Filename();
 			CPath oFileName;
-			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
 				oFileName = oRootPath / oRelationFilename;
 			else
 				oFileName = oPath / oRelationFilename;
@@ -145,6 +151,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new ExternalLinkPath( oRelationFilename ));
 			else if (  pRelation->Type() == FileTypes::OleObject)
 				return smart_ptr<OOX::File>(new OOX::OleObject( oFileName ));
+			else if (	pRelation->Type() == OOX::FileTypes::Data)
+				return smart_ptr<OOX::File>(new OOX::CDiagramData( oRootPath, oFileName ));
+			else if (	pRelation->Type() == OOX::FileTypes::DiagDrawing)
+				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( oRootPath, oFileName )); 
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile() );
 		}

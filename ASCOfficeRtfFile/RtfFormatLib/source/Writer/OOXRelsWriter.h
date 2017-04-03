@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,39 +36,41 @@
 class OOXRelsWriter
 {
 private: 
-	std::vector< CString >	m_aTargets;
-	std::vector< CString >	m_aTypes;
-	std::vector< CString >	m_aIDs;
-	std::vector< bool >		m_aModes;
-	CString					m_sFileName;
-	RtfDocument&			m_oDocument;
+    std::vector< std::wstring >	m_aTargets;
+    std::vector< std::wstring >	m_aTypes;
+    std::vector< std::wstring >	m_aIDs;
+    std::vector< bool >         m_aModes;
+    std::wstring				m_sFileName;
+    RtfDocument&                m_oDocument;
 
 public:		
-	OOXRelsWriter( CString sFileName, RtfDocument& oDocument ):m_oDocument(oDocument)
+    OOXRelsWriter( std::wstring sFileName, RtfDocument& oDocument ):m_oDocument(oDocument)
 	{
 		m_sFileName = sFileName;
 	}
 
-	CString AddRelationship( CString sType, CString sTarget, bool bTargetModeInternal = true )
+    std::wstring AddRelationship( std::wstring sType, std::wstring sTarget, bool bTargetModeInternal = true )
 	{
-		for( int i = 0 ;i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0 ;i < m_aTargets.size(); i++ )
+		{
 			if( sTarget == m_aTargets[i] )
 				return m_aIDs[i];
+		}
 		m_aTargets.push_back( sTarget );
 		m_aTypes.push_back( sType );
-		CString sId = m_oDocument.m_oIdGenerator.Generate_rId();
+        std::wstring sId = m_oDocument.m_oIdGenerator.Generate_rId();
 		m_aIDs.push_back( sId );
 		m_aModes.push_back( bTargetModeInternal );
 		return sId;
 	}
-	CString CreateXml()
+    std::wstring CreateXml()
 	{
-		CString sResult;
-		sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-		sResult.AppendChar('\n');
+        std::wstring sResult;
+        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+
 		sResult += _T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 		
-		for( int i = 0; i < (int)m_aTargets.size(); i++ )
+		for (size_t i = 0; i < m_aTargets.size(); i++ )
 		{
             sResult += _T("<Relationship Id=\"");
 			sResult += m_aIDs[i];
@@ -85,22 +87,24 @@ public:
 		return sResult;
 	}
 
-	bool Save( CString sFolder )
+    bool Save( std::wstring sFolder )
 	{
 		if( m_aTargets.size() < 1 )return false;
 		
-		CString pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
-        FileSystem::Directory::CreateDirectory(pathRels) ;
+        std::wstring pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
+        NSDirectory::CreateDirectory(pathRels) ;
 
 		CFile file;
         if (file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
 
-		CString sXml = CreateXml();
+        std::wstring sXml = CreateXml();
 
-        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-        file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+        file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();
+        
+        return true;
 	}
 };
 typedef boost::shared_ptr<OOXRelsWriter> OOXRelsWriterPtr;

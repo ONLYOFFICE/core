@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,12 +51,6 @@ URLMoniker::URLMoniker(XLS::CFRecord& record)
 XLS::BiffStructurePtr URLMoniker::clone()
 {
 	return XLS::BiffStructurePtr(new URLMoniker(*this));
-}
-
-void URLMoniker::store(XLS::CFRecord& record)
-{
-	_UINT32 length = (url.length() + 1) * 2;
-	record << length << url;
 }
 
 

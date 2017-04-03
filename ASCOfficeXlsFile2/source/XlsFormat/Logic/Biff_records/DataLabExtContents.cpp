@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,23 +51,6 @@ BaseObjectPtr DataLabExtContents::clone()
 {
 	return BaseObjectPtr(new DataLabExtContents(*this));
 }
-
-
-void DataLabExtContents::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_DataLabExtContents);
-	record << frtHeader;
-
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fSerName);
-	SETBIT(flags, 1, fCatName);
-	SETBIT(flags, 2, fValue);
-	SETBIT(flags, 3, fPercent);
-	SETBIT(flags, 4, fBubSizes);
-
-	record << flags << rgchSep;
-}
-
 
 void DataLabExtContents::readFields(CFRecord& record)
 {

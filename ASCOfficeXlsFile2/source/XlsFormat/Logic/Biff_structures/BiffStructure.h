@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,7 +48,6 @@ class BiffStructure_NoVtbl
 {
 public:
 	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
-	void store(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 
 };
 
@@ -63,7 +62,6 @@ public:
 	virtual BiffStructurePtr clone() = 0;
 
 	virtual void load(CFRecord& record) = 0;
-	virtual void store(CFRecord& record) = 0;
 	
 	virtual ElementType get_type() = 0;
 
@@ -103,22 +101,6 @@ CFRecord& operator>>(CFRecord& record, T& val)
 	}
 	return record;
 }
-
-
-template<class T>
-CFRecord& operator<<(CFRecord& record, T& val)
-{
-	if(DiffBiff(val))
-	{
-		record.storeAnyData(val);
-	}
-	else
-	{
-		val.store(record);
-	}
-	return record;
-}
-
 
 
 } // namespace XLS

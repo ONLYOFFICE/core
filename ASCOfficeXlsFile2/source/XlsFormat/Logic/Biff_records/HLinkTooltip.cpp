@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,17 +50,6 @@ HLinkTooltip::~HLinkTooltip()
 BaseObjectPtr HLinkTooltip::clone()
 {
 	return BaseObjectPtr(new HLinkTooltip(*this));
-}
-
-
-void HLinkTooltip::writeFields(CFRecord& record)
-{
-	Ref8U ref8(ref_);
-	FrtRefHeaderNoGrbit frtRefHeaderNoGrbit(rt_HLinkTooltip, ref8);
-	record << frtRefHeaderNoGrbit;
-
-	std::wstring wzTooltip_prep = wzTooltip;//(static_cast<wchar_t*>(static_cast<std::wstring >(wzTooltip)));
-	record << wzTooltip_prep;
 }
 
 

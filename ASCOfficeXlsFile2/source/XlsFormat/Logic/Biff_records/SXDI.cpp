@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr SXDI::clone()
 {
 	return BaseObjectPtr(new SXDI(*this));
 }
-
-
-void SXDI::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXDI record is not implemented")
-	Log::error("SXDI record is not implemented.");
-	//record << some_value;
-}
-
 
 void SXDI::readFields(CFRecord& record)
 {

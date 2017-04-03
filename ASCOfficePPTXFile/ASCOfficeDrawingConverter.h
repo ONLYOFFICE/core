@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,12 +32,7 @@
 #ifndef ASC_OFFICE_DRAWING_CONVERTER
 #define ASC_OFFICE_DRAWING_CONVERTER
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-	#include "../DesktopEditor/common/ASCVariant.h"
-#endif
+#include "../DesktopEditor/common/ASCVariant.h"
 
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../Common/DocxFormat/Source/Base/Nullable.h"
@@ -88,15 +83,15 @@ namespace PPTX
 	class CStringTrimmer
 	{
 	public:
-		std::vector<CString>	m_arParams;
-		TCHAR				m_Separator;
+		std::vector<std::wstring>	m_arParams;
+        wchar_t                     m_Separator;
 
 	public:
 		CStringTrimmer();
 		~CStringTrimmer();
 
 	public:
-		void LoadFromString(CString& strParams);
+		void LoadFromString(std::wstring& strParams);
 
 		double GetParameter(int nIndex, double dDefault);
 	};
@@ -104,8 +99,8 @@ namespace PPTX
 	class CCSS
 	{
 	public:
-		std::map<CString, CString> m_mapSettings;
-		CString m_strClassName;
+        std::map<std::wstring, std::wstring>    m_mapSettings;
+        std::wstring                            m_strClassName;
 
 	public:
 		CCSS();
@@ -113,8 +108,8 @@ namespace PPTX
 		AVSINLINE void Clear();
 
 	public:
-		void LoadFromString(CString& strParams);
-		void LoadFromString2(CString& strParams);
+		void LoadFromString(std::wstring& strParams);
+		void LoadFromString2(std::wstring& strParams);
 	};
 
 	class CStylesCSS
@@ -128,16 +123,16 @@ namespace PPTX
 		AVSINLINE void Clear();
 
 	public:
-		void LoadStyles(CString& strParams);
+		void LoadStyles(std::wstring& strParams);
 	};
 }
 class CSpTreeElemProps
 {
 public:
-	LONG X;
-	LONG Y;
-	LONG Width;
-	LONG Height;
+    long X;
+    long Y;
+    long Width;
+    long Height;
 
 	bool IsTop;
 
@@ -148,7 +143,7 @@ public:
 class CElementProps
 {
 public:
-	std::map<LONG, VARIANT> m_Properties;
+    std::map<long, ASC_VARIANT> m_Properties;
 
 public:
 	CElementProps();
@@ -158,11 +153,11 @@ public:
 	void FinalRelease();
 
 public:
-    HRESULT(GetProperty)(LONG lId, VARIANT* pProp);
-    HRESULT(SetProperty)(LONG lId, VARIANT prop);
+    HRESULT(GetProperty)(long lId, ASC_VARIANT* pProp);
+    HRESULT(SetProperty)(long lId, ASC_VARIANT prop);
 
 public:
-    static bool CopyProperty(VARIANT& oDst, const VARIANT& oSrc);
+    static bool CopyProperty(ASC_VARIANT& oDst, const ASC_VARIANT& oSrc);
 
 };
 
@@ -177,7 +172,6 @@ namespace NSBinPptxRW
 			PPTX::WrapperWritingElement*	m_pElement;
 			CElementProps*					m_pProps;
 
-		public:
 			CElement();
 			~CElement();
 
@@ -186,91 +180,109 @@ namespace NSBinPptxRW
 		};
 
 
-		std::map<CString, CShape*>								m_mapShapeTypes;
-		std::map<CString, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
-		CString									m_strCurrentRelsPath;
+        std::map<std::wstring, CShape*>                                 m_mapShapeTypes;
+		std::map<std::wstring, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
+        std::wstring                                                    m_strCurrentRelsPath;
 
-		NSBinPptxRW::CBinaryFileWriter*			m_pBinaryWriter;
-		int										m_lNextId;
+        NSBinPptxRW::CBinaryFileWriter*                     m_pBinaryWriter;
+        int                                                 m_lNextId;
 
-		int										m_lCurrentObjectTop;
+        int                                                 m_lCurrentObjectTop;
 
-		NSBinPptxRW::CBinaryFileReader*			m_pReader;
-		NSBinPptxRW::CImageManager2*			m_pImageManager;
-		NSBinPptxRW::CXmlWriter*				m_pXmlWriter;
-		int										m_nCurrentIndexObject;
-		IRenderer*								m_pOOXToVMLRenderer;
-        bool									m_bIsUseConvertion2007;
+        NSBinPptxRW::CBinaryFileReader*                     m_pReader;
+        NSBinPptxRW::CImageManager2*                        m_pImageManager;
+        NSBinPptxRW::CXmlWriter*                            m_pXmlWriter;
+        int                                                 m_nCurrentIndexObject;
+        IRenderer*                                          m_pOOXToVMLRenderer;
+        bool                                                m_bIsUseConvertion2007;
 
 		NSCommon::smart_ptr<PPTX::WrapperFile>*				m_pTheme;
 		NSCommon::smart_ptr<PPTX::WrapperWritingElement>*	m_pClrMap;
 
-		CString									m_strFontDirectory;
-	public:
+        std::wstring                                        m_strFontDirectory;
 
 		CDrawingConverter();
 
 		~CDrawingConverter();
-	public:
-        HRESULT SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
-        HRESULT SetRelsPath (const CString& bsRelsPath);
-		CString GetRelsPath();
-        HRESULT SetMediaDstPath (const CString& bsMediaPath);
-        HRESULT SetEmbedDstPath (const CString& bsEmbedPath);
 
-        HRESULT AddShapeType(const CString& bsXml);
-        HRESULT AddObject(const CString& bsXml, CString** pMainProps);
-        HRESULT GetThemeBinary(BYTE** ppBinary, long& lBinarySize, const CString& bsThemeFilePath);
+        HRESULT SetMainDocument     (BinDocxRW::CDocxSerializer* pDocument);
+        HRESULT SetRelsPath         (const std::wstring& sRelsPath);
+        std::wstring GetRelsPath    ();
+        HRESULT SetMediaDstPath     (const std::wstring& sMediaPath);
+        HRESULT SetEmbedDstPath     (const std::wstring& sEmbedPath);
 
-        HRESULT SaveThemeXml(LONG lStart, LONG lLength, const CString& bsThemePath);
-        HRESULT SaveObject(LONG lStart, LONG lLength, const CString& bsMainProps, CString** bsXml);
-        HRESULT SaveObjectEx(LONG lStart, LONG lLength, const CString& bsMainProps, LONG lDocType, CString** bsXml);
+        HRESULT AddShapeType        (const std::wstring& sXml);
+        HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
+        HRESULT GetThemeBinary      (BYTE** ppBinary, long& lBinarySize, const std::wstring& sThemeFilePath);
 
-        HRESULT GetRecordBinary(LONG lRecordType, const CString& bsXml);
-        HRESULT GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, CString** bsXml);
+        HRESULT SaveThemeXml        (long lStart, long lLength, const std::wstring& sThemePath);
+        HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
+        HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, long lDocType, std::wstring & sXml);
 
-        HRESULT SetDstContentRels();
-        HRESULT SaveDstContentRels(const CString& bsRelsPath);
-        HRESULT WriteRels (const CString& bsType, const CString& bsTarget, const CString& bsTargetMode, LONG* lId);
-        HRESULT LoadClrMap (const CString& bsXml);
+        void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, LONG lDocType);
+        void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
 
-        HRESULT(GetTxBodyBinary)(const CString& bsXml);
-        HRESULT(GetTxBodyXml)(LONG lStart, LONG lLength, CString** pbstrXml);
-        HRESULT(SetFontDir)(const CString& bsFontDir);
+		PPTX::Logic::SpTreeElem ObjectFromXml(const std::wstring& sXml, std::wstring** pMainProps);
+		std::wstring ObjectToVML		(const std::wstring& sXml);
+		std::wstring ObjectToDrawingML	(const std::wstring& sXml, LONG lDocType);
 
-		HRESULT SetFontPicker(COfficeFontPicker* pFontPicker);
-        HRESULT(SetAdditionalParam)(const CString& ParamName, BYTE *pArray, size_t szCount);
-        HRESULT(SetAdditionalParam)(const CString& ParamName, VARIANT ParamValue);
-        HRESULT(GetAdditionalParam)(const CString& ParamName, BYTE **pArray, size_t& szCount);
-        HRESULT(GetAdditionalParam)(const CString& ParamName, VARIANT* ParamValue);
-	public:
-		void SetFontManager(CFontManager* pFontManager);
+        std::wstring SaveObjectBackground(LONG lStart, LONG lLength);
+
+        HRESULT GetRecordBinary     (long lRecordType, const std::wstring& sXml);
+        HRESULT GetRecordXml        (long lStart, long lLength, long lRecType, long lDocType, std::wstring & sXml);
+
+        HRESULT SetDstContentRels   ();
+        HRESULT SaveDstContentRels  (const std::wstring& sRelsPath);
+        HRESULT WriteRels           (const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
+        HRESULT LoadClrMap          (const std::wstring& sXml);
+
+        HRESULT(SetFontDir)         (const std::wstring& sFontDir);
+
+        HRESULT SetFontPicker       (COfficeFontPicker* pFontPicker);
+
+        HRESULT SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount);
+        HRESULT GetAdditionalParam(const std::wstring& ParamName, BYTE **pArray, size_t& szCount);
+
+        void SetFontManager         (CFontManager* pFontManager);
+
+        void SetDocumentChartsCount (int val);
+        int  GetDocumentChartsCount ();
+
+        void SetObjectIdVML         (int val);
+        int  GetObjectIdVML         ();
+
+        void SetSourceFileDir       (std::wstring path, int type = 1);
+
+        std::wstring GetContentTypes();
+        std::wstring GetOleXlsx();
+		std::wstring GetOleDrawing();
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 
-		bool ParceObject(const CString& strXml, CString** pMainProps);
-		void SendMainProps(const CString& strMainProps, CString**& pMainProps);
+        bool ParceObject        (const std::wstring& strXml, std::wstring** pMainProps);
+        void SendMainProps      (const std::wstring& strMainProps, std::wstring**& pMainProps);
 
-		PPTX::Logic::SpTreeElem doc_LoadShape(XmlUtils::CXmlNode& oNodeShape, CString**& pMainProps, bool bIsTop = true);
-		PPTX::Logic::SpTreeElem doc_LoadGroup(XmlUtils::CXmlNode& oNode, CString**& pMainProps, bool bIsTop = true);
+		void doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadShape	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
+		void doc_LoadGroup	(PPTX::Logic::SpTreeElem *result, XmlUtils::CXmlNode& oNode, std::wstring**& pMainProps, bool bIsTop = true);
 
-		CString GetVMLShapeXml(CPPTShape* pPPTShape);
-		CString GetVMLShapeXml(PPTX::Logic::SpTreeElem& oElem);
+        std::wstring GetVMLShapeXml      (CPPTShape* pPPTShape);
+        std::wstring GetVMLShapeXml      (PPTX::Logic::SpTreeElem& oElem);
 
-		void CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
-		void CheckPenShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
+        void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
+        void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, PPTShapes::ShapeType eType, CPPTShape* pPPTShape);
 
-		void LoadCoordSize(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
-		CString GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
+        void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShape* pShape);
+        std::wstring GetDrawingMainProps (XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps);
 
-		void ConvertMainPropsToVML(const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter, PPTX::Logic::SpTreeElem& oElem);
-		void ConvertPicVML(PPTX::Logic::SpTreeElem& oElem, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter);
-		void ConvertShapeVML(PPTX::Logic::SpTreeElem& oShape, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter);
-		void ConvertGroupVML(PPTX::Logic::SpTreeElem& oGroup, const CString& bsMainProps, NSBinPptxRW::CXmlWriter& oWriter);
+        void ConvertMainPropsToVML  (const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter, PPTX::Logic::SpTreeElem& oElem);
+        void ConvertPicVML          (PPTX::Logic::SpTreeElem& oElem, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
+        void ConvertShapeVML        (PPTX::Logic::SpTreeElem& oShape, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
+        void ConvertGroupVML        (PPTX::Logic::SpTreeElem& oGroup, const std::wstring& sMainProps, NSBinPptxRW::CXmlWriter& oWriter);
 
-		void ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
+        void ConvertTextVML         (XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape);
 
-		void Clear();
+        void    Clear();
 		HRESULT SetCurrentRelsPath();
 	};
 }

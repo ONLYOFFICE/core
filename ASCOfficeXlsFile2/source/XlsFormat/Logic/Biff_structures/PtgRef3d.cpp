@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,12 +59,6 @@ PtgRef3d::PtgRef3d(const unsigned short ixti_init, const std::wstring& ref_str, 
 BiffStructurePtr PtgRef3d::clone()
 {
 	return BiffStructurePtr(new PtgRef3d(*this));
-}
-
-void PtgRef3d::storeFields(CFRecord& record)
-{
-	rgce_loc_rel = rgce_loc;
-	record << ixti << rgce_loc;
 }
 
 

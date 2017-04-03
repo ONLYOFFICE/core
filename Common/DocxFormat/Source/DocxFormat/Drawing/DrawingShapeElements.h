@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,8 +32,8 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Drawing.h"
 #include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Drawing.h"
 
 #include "../WritingElement.h"
 
@@ -74,9 +74,9 @@ namespace OOX
 				m_eType = et_Unknown;
                 std::wstring sName = oReader.GetName();
 
-				if ( _T("a:pos") == sName )
+				if ( (L"a:pos") == sName )
 					m_eType = et_a_pos;
-				else if ( _T("a:pt") == sName )
+				else if ( (L"a:pt") == sName )
 					m_eType = et_a_pt;
 				else
 					return;
@@ -86,13 +86,13 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				if ( et_a_pos == m_eType )
-					sResult = _T("<a:pos x=\"") + m_oX.ToString() + _T("\" y=\"") + m_oY.ToString() + _T("\"/>");
+					sResult = (L"<a:pos x=\"") + m_oX.ToString() + (L"\" y=\"") + m_oY.ToString() + (L"\"/>");
 				if ( et_a_pt == m_eType )
-					sResult = _T("<a:pt x=\"") + m_oX.ToString() + _T("\" y=\"") + m_oY.ToString() + _T("\"/>");
+					sResult = (L"<a:pt x=\"") + m_oX.ToString() + (L"\" y=\"") + m_oY.ToString() + (L"\"/>");
 
 				return sResult;
 			}
@@ -106,8 +106,8 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"), m_oX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("y"), m_oY )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"x"), m_oX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"y"), m_oY )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -151,61 +151,61 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
-					if ( _T("a:pos") == sName )
+					if ( (L"a:pos") == sName )
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:ahPolar ");
+                std::wstring sResult = (L"<a:ahPolar ");
 
                 if ( m_oGdRefR.IsInit() )
 				{
-					sResult += _T("gdRefR=\"");
+					sResult += (L"gdRefR=\"");
 					sResult += m_oGdRefR->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMinR.IsInit() )
 				{
-					sResult += _T("minR=\"");
+					sResult += (L"minR=\"");
 					sResult += m_oMinR->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMaxR.IsInit() )
 				{
-					sResult += _T("maxR=\"");
+					sResult += (L"maxR=\"");
 					sResult += m_oMaxR->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oGdRefAng.IsInit() )
 				{
-					sResult += _T("gdRefAng=\"");
+					sResult += (L"gdRefAng=\"");
 					sResult += m_oGdRefAng->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMinAng.IsInit() )
 				{
-					sResult += _T("minAng=\"");
+					sResult += (L"minAng=\"");
 					sResult += m_oMinAng->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMaxAng.IsInit() )
 				{
-					sResult += _T("maxAng=\"");
+					sResult += (L"maxAng=\"");
 					sResult += m_oMaxAng->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
-				sResult += _T(">");
+				sResult += (L">");
 
 				sResult += m_oPos.toXML();
 
-				sResult += _T("</a:ahPolar>");
+				sResult += (L"</a:ahPolar>");
 
 				return sResult;
 			}
@@ -219,12 +219,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("gdRefAng"), m_oGdRefAng )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("gdRefR"),   m_oGdRefR )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("maxAng"),   m_oMaxAng )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("maxR"),     m_oMaxR )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minAng"),   m_oMinAng )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minR"),     m_oMinR )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"gdRefAng"), m_oGdRefAng )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"gdRefR"),   m_oGdRefR )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"maxAng"),   m_oMaxAng )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"maxR"),     m_oMaxR )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"minAng"),   m_oMinAng )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"minR"),     m_oMinR )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -273,61 +273,61 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring sName = oReader.GetName();
-					if ( _T("a:pos") == sName )
+					if ( (L"a:pos") == sName )
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:ahXY ");
+                std::wstring sResult = (L"<a:ahXY ");
 
 				if ( m_oGdRefX.IsInit() )
 				{
-					sResult += _T("gdRefX=\"");
+					sResult += (L"gdRefX=\"");
 					sResult += m_oGdRefX->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMinX.IsInit() )
 				{
-					sResult += _T("minX=\"");
+					sResult += (L"minX=\"");
 					sResult += m_oMinX->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMaxX.IsInit() )
 				{
-					sResult += _T("maxX=\"");
+					sResult += (L"maxX=\"");
 					sResult += m_oMaxX->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oGdRefY.IsInit() )
 				{
-					sResult += _T("gdRefY=\"");
+					sResult += (L"gdRefY=\"");
 					sResult += m_oGdRefY->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMinY.IsInit() )
 				{
-					sResult += _T("minY=\"");
+					sResult += (L"minY=\"");
 					sResult += m_oMinY->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
 				if ( m_oMaxY.IsInit() )
 				{
-					sResult += _T("maxY=\"");
+					sResult += (L"maxY=\"");
 					sResult += m_oMaxY->ToString();
-					sResult += _T("\" ");
+					sResult += (L"\" ");
 				}
 
-				sResult += _T(">");
+				sResult += (L">");
 
 				sResult += m_oPos.toXML();
 
-				sResult += _T("</a:ahXY>");
+				sResult += (L"</a:ahXY>");
 
 				return sResult;
 			}
@@ -341,12 +341,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("gdRefX"), m_oGdRefX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("gdRefY"), m_oGdRefY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("maxX"),   m_oMaxX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("maxY"),   m_oMaxY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minX"),   m_oMinX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minY"),   m_oMinY )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"gdRefX"), m_oGdRefX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"gdRefY"), m_oGdRefY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"maxX"),   m_oMaxX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"maxY"),   m_oMaxY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"minX"),   m_oMinX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"minY"),   m_oMinY )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -391,13 +391,13 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:arcTo wR=\"")    + m_oWr.ToString()
-					                  + _T("\" hR=\"")    + m_oHr.ToString()
-					                  + _T("\" stAng=\"") + m_oStAng.ToString() 
-						              + _T("\" swAng=\"") + m_oSwAng.ToString()
-						              + _T("\"/>");
+                std::wstring sResult = (L"<a:arcTo wR=\"")    + m_oWr.ToString()
+					                  + (L"\" hR=\"")    + m_oHr.ToString()
+					                  + (L"\" stAng=\"") + m_oStAng.ToString() 
+						              + (L"\" swAng=\"") + m_oSwAng.ToString()
+						              + (L"\"/>");
 
 				return sResult;
 			}
@@ -411,10 +411,10 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hR"),    m_oHr )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("stAng"), m_oStAng )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("swAng"), m_oSwAng )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("wR"),    m_oWr )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"hR"),    m_oHr )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"stAng"), m_oStAng )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"swAng"), m_oSwAng )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"wR"),    m_oWr )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -451,9 +451,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				return _T("<a:close/>");;
+				return (L"<a:close/>");;
 			}
 			virtual EElementType getType() const
 			{
@@ -492,32 +492,32 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( 0 == nPtCount && _T("a:pt") == sName )
+					if ( 0 == nPtCount && (L"a:pt") == sName )
 					{
 						m_oCtrl1 = oReader;
 						nPtCount++;
 					}
-					else if ( 1 == nPtCount && _T("a:pt") == sName )
+					else if ( 1 == nPtCount && (L"a:pt") == sName )
 					{
 						m_oCtrl2 = oReader;
 						nPtCount++;
 					}
-					else if ( 2 == nPtCount && _T("a:pt") == sName )
+					else if ( 2 == nPtCount && (L"a:pt") == sName )
 					{
 						m_oEnd = oReader;
 						nPtCount++;
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:cubicBezTo>");
+                std::wstring sResult = (L"<a:cubicBezTo>");
 
 				sResult += m_oCtrl1.toXML();
 				sResult += m_oCtrl2.toXML();
 				sResult += m_oEnd.toXML();
 
-				sResult += _T("</a:cubicBezTo>");
+				sResult += (L"</a:cubicBezTo>");
 
 				return sResult;
 			}
@@ -565,15 +565,15 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:pos") == sName )
+					if ( (L"a:pos") == sName )
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:cxn ang=\"") + m_oAng.ToString() + _T("\">");
+                std::wstring sResult = (L"<a:cxn ang=\"") + m_oAng.ToString() + (L"\">");
 				sResult += m_oPos.toXML();
-				sResult += _T("</a:cxn>");
+				sResult += (L"</a:cxn>");
 
 				return sResult;
 			}
@@ -588,7 +588,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("ang"), m_oAng )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"ang"), m_oAng )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -635,16 +635,16 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:cxn") == sName )
+					if ( (L"a:cxn") == sName )
 					{
 						OOX::Drawing::CConnectionSite *oCxn = new OOX::Drawing::CConnectionSite(oReader);
                         if (oCxn) m_arrCxn.push_back( oCxn );
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:cxnLst>");
+                std::wstring sResult = (L"<a:cxnLst>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrCxn.size(); nIndex++ )
 				{
@@ -652,7 +652,7 @@ namespace OOX
 						sResult += m_arrCxn[nIndex]->toXML();
 				}
 
-				sResult += _T("</a:cxnLst>");
+				sResult += (L"</a:cxnLst>");
 
 				return sResult;
 			}
@@ -693,9 +693,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:gd name=\"") + m_oName.ToString() + _T("\" fmla=\"") + m_oFmla.ToString() + _T("\"/>");
+                std::wstring sResult = (L"<a:gd name=\"") + m_oName.ToString() + (L"\" fmla=\"") + m_oFmla.ToString() + (L"\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -708,8 +708,8 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("fmla"), m_oFmla )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), m_oName )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"fmla"), m_oFmla )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"), m_oName )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -753,9 +753,9 @@ namespace OOX
 				m_eType = et_Unknown;
                 std::wstring sName = oReader.GetName();
 
-				if ( _T("a:avLst") == sName )
+				if ( (L"a:avLst") == sName )
 					m_eType = et_a_avLst;
-				else if ( _T("a:gdLst") == sName )
+				else if ( (L"a:gdLst") == sName )
 					m_eType = et_a_gdLst;
 				else
 					return;
@@ -768,23 +768,23 @@ namespace OOX
 				{
 					sName = oReader.GetName();
 
-					if ( _T("a:gd") == sName )
+					if ( (L"a:gd") == sName )
 					{
 						OOX::Drawing::CGeomGuide *oGd = new OOX::Drawing::CGeomGuide(oReader);
                         if (oGd) m_arrGd.push_back( oGd );
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( et_a_avLst == m_eType )
-					sResult = _T("<a:avLst>");
+					sResult = (L"<a:avLst>");
 				else if ( et_a_gdLst == m_eType )
-					sResult = _T("<a:gdLst>");
+					sResult = (L"<a:gdLst>");
 				else 
-					return _T("");
+					return (L"");
 									
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrGd.size(); nIndex++ )
@@ -794,9 +794,9 @@ namespace OOX
 				}
 
 				if ( et_a_avLst == m_eType )
-					sResult += _T("</a:avLst>");
+					sResult += (L"</a:avLst>");
 				else if ( et_a_gdLst == m_eType )
-					sResult += _T("</a:gdLst>");
+					sResult += (L"</a:gdLst>");
 
 				return sResult;
 			}
@@ -842,15 +842,15 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:pt") == sName )
+					if ( (L"a:pt") == sName )
 						m_oPt = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:lnTo>");
+                std::wstring sResult = (L"<a:lnTo>");
 				sResult += m_oPt.toXML();
-				sResult += _T("</a:lnTo>");
+				sResult += (L"</a:lnTo>");
 
 				return sResult;
 			}
@@ -894,15 +894,15 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:pt") == sName )
+					if ( (L"a:pt") == sName )
 						m_oPt = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:moveTo>");
+                std::wstring sResult = (L"<a:moveTo>");
 				sResult += m_oPt.toXML();
-				sResult += _T("</a:moveTo>");
+				sResult += (L"</a:moveTo>");
 
 				return sResult;
 			}
@@ -948,26 +948,26 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( 0 == nPtCount && _T("a:pt") == sName )
+					if ( 0 == nPtCount && (L"a:pt") == sName )
 					{
 						m_oCtrl = oReader;
 						nPtCount++;
 					}
-					else if ( 1 == nPtCount && _T("a:pt") == sName )
+					else if ( 1 == nPtCount && (L"a:pt") == sName )
 					{
 						m_oEnd = oReader;
 						nPtCount++;
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:quadBezTo>");
+                std::wstring sResult = (L"<a:quadBezTo>");
 
 				sResult += m_oCtrl.toXML();
 				sResult += m_oEnd.toXML();
 
-				sResult += _T("</a:quadBezTo>");
+				sResult += (L"</a:quadBezTo>");
 
 				return sResult;
 			}
@@ -1013,7 +1013,9 @@ namespace OOX
 					case et_a_lnTo:       pItem = new CPath2DLineTo       ( (const CPath2DLineTo&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_moveTo:     pItem = new CPath2DMoveTo       ( (const CPath2DMoveTo&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_quadBezTo:  pItem = new CPath2DQuadBezierTo ( (const CPath2DQuadBezierTo&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
                         m_arrItems.push_back ( pItem );
@@ -1043,31 +1045,31 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
-					if ( _T("a:arcTo") == sName )
+					if ( (L"a:arcTo") == sName )
 						pItem = new CPath2DArcTo( oReader );
-					else if ( _T("a:close") == sName )
+					else if ( (L"a:close") == sName )
 						pItem = new CPath2DClose( oReader );
-					else if ( _T("a:cubicBezTo") == sName )
+					else if ( (L"a:cubicBezTo") == sName )
 						pItem = new CPath2DCubicBezierTo( oReader );
-					else if ( _T("a:lnTo") == sName )
+					else if ( (L"a:lnTo") == sName )
 						pItem = new CPath2DLineTo( oReader );
-					else if ( _T("a:moveTo") == sName )
+					else if ( (L"a:moveTo") == sName )
 						pItem = new CPath2DMoveTo( oReader );
-					else if ( _T("a:quadBezTo") == sName )
+					else if ( (L"a:quadBezTo") == sName )
 						pItem = new CPath2DQuadBezierTo( oReader );
 
 					if ( pItem )
                         m_arrItems.push_back( pItem );
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:path w=\"") + m_oW.ToString() 
-					                 + _T("\" h=\"") + m_oH.ToString()
-									 + _T("\" fill=\"") + m_oFill.ToString() 
-									 + _T("\" stroke=\"") + m_oStroke.ToString() 
-									 + _T("\" extrusionOk=\"") + m_oExtrusionOk.ToString() 
-									 + _T("\">");
+                std::wstring sResult = (L"<a:path w=\"") + m_oW.ToString()
+					                 + (L"\" h=\"") + m_oH.ToString()
+									 + (L"\" fill=\"") + m_oFill.ToString() 
+									 + (L"\" stroke=\"") + m_oStroke.ToString() 
+									 + (L"\" extrusionOk=\"") + m_oExtrusionOk.ToString() 
+									 + (L"\">");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -1075,7 +1077,7 @@ namespace OOX
 						sResult += m_arrItems[nIndex]->toXML();
 				}
 
-				sResult += _T("</a:path>");
+				sResult += (L"</a:path>");
 
 				return sResult;
 			}
@@ -1089,11 +1091,11 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("extrusionOk"), m_oExtrusionOk )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("fill"),        m_oFill )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("h"),           m_oH )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("stroke"),      m_oStroke )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"),           m_oW )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"extrusionOk"), m_oExtrusionOk )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"fill"),        m_oFill )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"h"),           m_oH )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"stroke"),      m_oStroke )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w"),           m_oW )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1162,16 +1164,16 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:path") == sName )
+					if ( (L"a:path") == sName )
 					{
 						OOX::Drawing::CPath2D *oPath = new OOX::Drawing::CPath2D(oReader);
 						if (oPath) m_arrPath.push_back( oPath );
 					}
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:pathLst>");
+                std::wstring sResult = (L"<a:pathLst>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrPath.size(); nIndex++ )
 				{
@@ -1179,7 +1181,7 @@ namespace OOX
 						sResult += m_arrPath[nIndex]->toXML();
 				}
 
-				sResult += _T("</a:pathLst>");
+				sResult += (L"</a:pathLst>");
 
 				return sResult;
 			}
@@ -1214,7 +1216,9 @@ namespace OOX
 					{
 					case et_a_ahPolar: pItem = new CPolarAdjustHandle( (const CPolarAdjustHandle&) *oOther.m_arrItems[nIndex] ); break;
 					case et_a_ahXY:    pItem = new CXYAdjustHandle   ( (const CXYAdjustHandle&) *oOther.m_arrItems[nIndex] ); break;
-					}
+                    default:
+                        break;
+                    }
 
 					if ( NULL != pItem )
                         m_arrItems.push_back( pItem );
@@ -1244,18 +1248,18 @@ namespace OOX
 
 					WritingElement* pElement = NULL;
 
-					if ( _T("a:ahPolar") == sName )
+					if ( (L"a:ahPolar") == sName )
 						pElement = new CPolarAdjustHandle( oReader );
-					else if ( _T("a:ahXY") == sName )  
+					else if ( (L"a:ahXY") == sName )  
 						pElement = new CXYAdjustHandle( oReader );
 
 					if ( pElement )
                         m_arrItems.push_back( pElement );
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:ahLst>");
+                std::wstring sResult = (L"<a:ahLst>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrItems.size (); nIndex++ )
 				{
@@ -1263,7 +1267,7 @@ namespace OOX
 						sResult += m_arrItems[nIndex]->toXML();
 				}
 
-				sResult += _T("</a:ahLst>");
+				sResult += (L"</a:ahLst>");
 
 				return sResult;
 			}
@@ -1309,11 +1313,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPresetGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
@@ -1326,18 +1330,18 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
-					if ( _T("a:avLst") == sName )
+					if ( (L"a:avLst") == sName )
 						m_oAvLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:prstGeom prst=\"") + m_oPrst.ToString() + _T("\">");
+                std::wstring sResult = (L"<a:prstGeom prst=\"") + m_oPrst.ToString() + (L"\">");
 
 				if ( m_oAvLst.IsInit() )
 					sResult += m_oAvLst->toXML();
 
-				sResult += _T("</a:prstGeom>");
+				sResult += (L"</a:prstGeom>");
 
 				return sResult;
 			}
@@ -1351,7 +1355,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), m_oPrst )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"prst"), m_oPrst )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1380,11 +1384,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CPresetTextShape::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
@@ -1397,18 +1401,18 @@ namespace OOX
                     std::wstring sName = oReader.GetName();
 					WritingElement* pItem = NULL;
 
-					if ( _T("a:avLst") == sName )
+					if ( (L"a:avLst") == sName )
 						m_oAvLst = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:prstTxWarp prst=\"") + m_oPrst.ToString() + _T("\">");
+                std::wstring sResult = (L"<a:prstTxWarp prst=\"") + m_oPrst.ToString() + (L"\">");
 
 				if ( m_oAvLst.IsInit() )
 					sResult += m_oAvLst->toXML();
 
-				sResult += _T("</a:prstTxWarp>");
+				sResult += (L"</a:prstTxWarp>");
 
 				return sResult;
 			}
@@ -1422,7 +1426,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), m_oPrst )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"prst"), m_oPrst )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1451,24 +1455,24 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CGeomRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader ); 
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:rect l=\"") + m_oL.ToString() 
-					                 + _T("\" t=\"") + m_oT.ToString() 
-					                + _T("\" r=\"") + m_oR.ToString() 
-					                + _T("\" b=\"") + m_oB.ToString() 
-					                + _T("\"/>");
+                std::wstring sResult = (L"<a:rect l=\"") + m_oL.ToString()
+					                 + (L"\" t=\"") + m_oT.ToString() 
+					                + (L"\" r=\"") + m_oR.ToString() 
+					                + (L"\" b=\"") + m_oB.ToString() 
+					                + (L"\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1481,10 +1485,10 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("b"), m_oB )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), m_oL )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r"), m_oR )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("t"), m_oT )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"b"), m_oB )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"l"), m_oL )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r"), m_oR )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"t"), m_oT )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1513,11 +1517,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CCustomGeometry2D::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1527,23 +1531,23 @@ namespace OOX
 				{
                     std::wstring sName = oReader.GetName();
 
-					if ( _T("a:ahLst") == sName )
+					if ( (L"a:ahLst") == sName )
 						m_oAhLst = oReader;
-					else if ( _T("a:avLst") == sName )  
+					else if ( (L"a:avLst") == sName )  
 						m_oAvLst = oReader;
-					else if ( _T("a:cxnLst") == sName )  
+					else if ( (L"a:cxnLst") == sName )  
 						m_oCnxLst = oReader;
-					else if ( _T("a:gdLst") == sName )  
+					else if ( (L"a:gdLst") == sName )  
 						m_oGdLst = oReader;
-					else if ( _T("a:pathLst") == sName )  
+					else if ( (L"a:pathLst") == sName )  
 						m_oPthLst = oReader;
-					else if ( _T("a:rect") == sName )  
+					else if ( (L"a:rect") == sName )  
 						m_oRect = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:custGeom>");
+                std::wstring sResult = (L"<a:custGeom>");
 
 				if ( m_oAvLst.IsInit() )
 					sResult += m_oAvLst->toXML();
@@ -1562,7 +1566,7 @@ namespace OOX
 
 				sResult += m_oPthLst.toXML();
 
-				sResult += _T("</a:custGeom>");
+				sResult += (L"</a:custGeom>");
 
 				return sResult;
 			}

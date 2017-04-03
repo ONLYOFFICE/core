@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -147,9 +147,9 @@ namespace OOX
 		}
 
 
-		CString CDir::toXML() const
+		std::wstring CDir::toXML() const
 		{
-				CString sResult = _T("<w:dir");
+				std::wstring sResult = _T("<w:dir");
 				if(m_oVal.IsInit())
                 {
                     sResult += _T(" val=\"") + m_oVal->ToString() + _T("\"");

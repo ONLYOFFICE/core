@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,21 +46,41 @@ namespace PPTX
 		class Scene3d : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Scene3d)
+			WritingElement_AdditionConstructors(Scene3d)
+			PPTX_LOGIC_BASE2(Scene3d)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_scene3d;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:camera")
+						camera = oReader;
+                	if (strName == L"a:lightRig")
+						lightRig = oReader;
+                	if (strName == L"a:backdrop")
+						backdrop = oReader;
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-                CString sCameraNodeName = _T("a:camera");
-                CString sLightRigNodeName = _T("a:lightRig");
-                CString sBackdropNodeName = _T("a:backdrop");
-                camera		= node.ReadNode(sCameraNodeName);
-                lightRig	= node.ReadNode(sLightRigNodeName);
-                backdrop	= node.ReadNode(sBackdropNodeName);
+                camera		= node.ReadNode(L"a:camera");
+                lightRig	= node.ReadNode(L"a:lightRig");
+                backdrop	= node.ReadNode(L"a:backdrop");
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(camera);

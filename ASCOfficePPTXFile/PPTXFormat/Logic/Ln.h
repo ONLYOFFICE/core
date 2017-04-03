@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,6 +37,8 @@
 #include "./../Limit/PenAlign.h"
 #include "./../Limit/LineCap.h"
 #include "./../Limit/CompoundLine.h"
+
+#include "EffectProperties.h"
 #include "UniFill.h"
 #include "PrstDash.h"
 #include "LineEnd.h"
@@ -49,12 +51,62 @@ namespace PPTX
 		class Ln : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Ln)
+			WritingElement_AdditionConstructors(Ln)
+			Ln()
+			{
+			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				//m_eDashType   = OOX::Drawing::linedashtypeUnknown;
+
+				m_name = oReader.GetName();
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (_T("bevel") == sName	||
+						_T("miter") == sName  ||
+						_T("round") == sName )
+					{
+						Join.fromXML(oReader);
+					}
+					else if ( _T("tailEnd") == sName )
+						tailEnd = oReader;
+					else if ( _T("headEnd") == sName )
+						headEnd = oReader;
+
+					else if (	_T("gradFill")	== sName ||
+								_T("noFill")	== sName ||
+								_T("pattFill")	== sName ||
+								_T("solidFill")	== sName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( _T("custDash") == sName )
+					{
+						//custDash = oReader;
+						//m_eDashType = OOX::Drawing::linedashtypeCustom;
+					}
+					else if ( _T("prstDash") == sName )
+					{
+						prstDash = oReader;
+						//m_eDashType = OOX::Drawing::linedashtypePreset;
+					}
+					else if ( _T("a:extLst") == sName )
+						Effects.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name = _T("a:ln");
+				m_name = node.GetName();
 
 				node.ReadAttributeBase(L"algn", algn);
 				node.ReadAttributeBase(L"cap", cap);
@@ -67,17 +119,36 @@ namespace PPTX
 				headEnd = node.ReadNodeNoNS(_T("headEnd"));
 				tailEnd = node.ReadNodeNoNS(_T("tailEnd"));
 
-				Normalize();
-				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cap"),  cap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cmpd"), cmpd )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"),    w )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();				
+			}
+			virtual std::wstring toXML() const
+			{
+				std::wstring _name = m_name;
+				if (_name.empty())
+					_name = _T("a:ln");
+
+				std::wstring sAttrNamespace;
+
+				if (_name == L"w14:textOutline")
+					sAttrNamespace = _T("w14:");
+
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("w"), w);
-				oAttr.WriteLimitNullable(_T("cap"), cap);
-				oAttr.WriteLimitNullable(_T("cmpd"), cmpd);
-				oAttr.WriteLimitNullable(_T("algn"), algn);
+				oAttr.Write				(sAttrNamespace + _T("w"),		w);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("cap"),	cap);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("cmpd"),	cmpd);
+				oAttr.WriteLimitNullable(sAttrNamespace + _T("algn"),	algn);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(Fill);
@@ -86,15 +157,16 @@ namespace PPTX
 				oValue.WriteNullable(headEnd);
 				oValue.WriteNullable(tailEnd);
 
-				return XmlUtils::CreateNode(_T("a:ln"), oAttr, oValue);
+				return XmlUtils::CreateNode(_name, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString _name = m_name;
-				if (_name == _T(""))
+				std::wstring _name = m_name;
+				if (_name.empty())
 					_name = _T("a:ln");
-				CString sAttrNamespace;
+				
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					_name = _T("w14:textOutline");
@@ -272,7 +344,11 @@ namespace PPTX
 			}
 
 		public:
+//			OOX::Drawing::ELineDashType	m_eDashType;   // Тип штриха
+
+			EffectProperties			Effects;
 			UniFill						Fill;
+
 			nullable<PrstDash>			prstDash;
 			//custDash (Custom Dash)  ยง20.1.8.21 
 			LineJoin					Join;
@@ -284,7 +360,7 @@ namespace PPTX
 			nullable_limit<Limit::CompoundLine> cmpd;
 			nullable_int						w;
 
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

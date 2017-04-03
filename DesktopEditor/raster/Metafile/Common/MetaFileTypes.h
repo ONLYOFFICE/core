@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,10 +68,19 @@ typedef unsigned char BYTE;
 	#endif
 #endif
 
-#define MWT_IDENTITY	  0x01
-#define MWT_LEFTMULTIPLY  0x02
-#define MWT_RIGHTMULTIPLY 0x03
-#define MWT_SET           0x04
+#ifndef MWT_IDENTITY
+	#define MWT_IDENTITY	  0x01
+#endif
+#ifndef MWT_LEFTMULTIPLY
+	#define MWT_LEFTMULTIPLY  0x02
+#endif
+#ifndef MWT_RIGHTMULTIPLY
+	#define MWT_RIGHTMULTIPLY 0x03
+#endif
+#ifndef MWT_SET
+	#define MWT_SET           0x04
+#endif
+
 
 //---------------------------------------------------------------------------------------------------
 // Modes for CWmfFile.SetMapMode
@@ -256,9 +265,15 @@ typedef unsigned char BYTE;
 #define BI_JPEG       4L
 #define BI_PNG        5L
 
-#define LAYOUT_LTR                        0x0000
-#define LAYOUT_RTL                        0x0001
-#define LAYOUT_BITMAPORIENTATIONPRESERVED 0x0008
+#ifndef LAYOUT_LTR
+	#define LAYOUT_LTR							0x0000
+#endif
+#ifndef LAYOUT_RTL
+	#define LAYOUT_RTL							0x0001
+#endif
+#ifndef LAYOUT_BITMAPORIENTATIONPRESERVED
+	#define LAYOUT_BITMAPORIENTATIONPRESERVED	0x0008
+#endif
 
 namespace MetaFile
 {

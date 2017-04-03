@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 #include "CellRangeRef.h"
 #include <Binary/CFRecord.h>
 
-#include <boost/algorithm/string.hpp>
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
 {
@@ -49,10 +49,11 @@ PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init)
 
 PtgArea3d::PtgArea3d(const unsigned short ixti_init, const std::wstring& ref_str, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
-	area(boost::algorithm::to_upper_copy(ref_str)),
+	area(ref_str),
 	ixti(ixti_init),
 	cell_base_ref(cell_base_ref_init)
 {
+	XmlUtils::GetUpper(area);
 }
 
 
@@ -60,13 +61,6 @@ BiffStructurePtr PtgArea3d::clone()
 {
 	return BiffStructurePtr(new PtgArea3d(*this));
 }
-
-void PtgArea3d::storeFields(CFRecord& record)
-{
-	record << ixti;
-	record << area; 
-}
-
 
 void PtgArea3d::loadFields(CFRecord& record)
 {

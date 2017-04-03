@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,13 +33,15 @@
 #ifndef PPTX_IFILE_CONTAINER_INCLUDE_H_
 #define PPTX_IFILE_CONTAINER_INCLUDE_H_
 
-#include "DocxFormat/IFileContainer.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/IFileContainer.h"
 #include "FileMap.h"
 #include "PPTXEvent.h"
 
 namespace PPTX
 {
-	class FileContainer : public PPTX::IFileContainer
+	class LegacyDiagramText;
+
+	class FileContainer : public OOX::IFileContainer
 	{
 	public:
 		FileContainer()
@@ -50,16 +52,19 @@ namespace PPTX
 		virtual ~FileContainer()
 		{
 		}
+		smart_ptr<PPTX::LegacyDiagramText> legacyDiagramText (const OOX::RId& rId) const;
+
 	protected:
 		void read(const OOX::CPath& filename);
-		void read(const PPTX::Rels::File& rels, const OOX::CPath& path);
+		void read(const OOX::CRels& rels, const OOX::CPath& path);
 
 		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
-		void read(const PPTX::Rels::File& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
-		void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const;
-		void write(PPTX::Rels::File& rels, const OOX::CPath& current, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const;
+		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
+		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 		void WrittenSetFalse();
+		OOX::CPath CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation );
 
 		long m_lPercent;
 		bool m_bCancelled;
@@ -73,7 +78,7 @@ namespace PPTX
 		}
 	
 		void _read(const OOX::CPath& filename);
-		void _read(const PPTX::Rels::File& rels, const OOX::CPath& path);
+		void _read(const OOX::CRels& rels, const OOX::CPath& path);
 	};
 } // namespace PPTX
 

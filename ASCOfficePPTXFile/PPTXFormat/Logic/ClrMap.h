@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,8 +43,13 @@ namespace PPTX
 		class ClrMap : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ClrMap)
+			WritingElement_AdditionConstructors(ClrMap)
+			PPTX_LOGIC_BASE2(ClrMap)
 
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_clrMap;
+			}	
 			ClrMap& operator=(const ClrMap& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -53,14 +58,64 @@ namespace PPTX
 				m_name = oSrc.m_name;
 				
 				ColorMap.clear();
-				for (std::map<CString, Limit::ColorSchemeIndex>::const_iterator pPair = oSrc.ColorMap.begin(); pPair != oSrc.ColorMap.end(); ++pPair)
+				for (std::map<std::wstring, Limit::ColorSchemeIndex>::const_iterator pPair = oSrc.ColorMap.begin(); pPair != oSrc.ColorMap.end(); ++pPair)
 				{
-					ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(pPair->first, pPair->second));
+					ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(pPair->first, pPair->second));
 				}
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				ColorMap.clear();
+
+				ReadAttributes(oReader);
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				Limit::ColorSchemeIndex lColorIndex_accent1;
+				Limit::ColorSchemeIndex lColorIndex_accent2;
+				Limit::ColorSchemeIndex lColorIndex_accent3;
+				Limit::ColorSchemeIndex lColorIndex_accent4;
+				Limit::ColorSchemeIndex lColorIndex_accent5;
+				Limit::ColorSchemeIndex lColorIndex_accent6;
+				Limit::ColorSchemeIndex lColorIndex_bg1;
+				Limit::ColorSchemeIndex lColorIndex_bg2;
+				Limit::ColorSchemeIndex lColorIndex_tx1;
+				Limit::ColorSchemeIndex lColorIndex_tx2;
+				Limit::ColorSchemeIndex lColorIndex_folHlink;
+				Limit::ColorSchemeIndex lColorIndex_hlink;
+				
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("accent1"), lColorIndex_accent1)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent2"), lColorIndex_accent2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent3"), lColorIndex_accent3 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent4"), lColorIndex_accent4 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent5"), lColorIndex_accent5 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("accent6"), lColorIndex_accent6 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("bg1"), lColorIndex_bg1 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("bg2"), lColorIndex_bg2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx1"), lColorIndex_tx1 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx1"), lColorIndex_tx2 )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("folHlink"), lColorIndex_folHlink )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("hlink"), lColorIndex_hlink )
+				WritingElement_ReadAttributes_End( oReader )
+				
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex_accent1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex_accent2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex_accent3));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex_accent4));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex_accent5));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex_accent6));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex_bg1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex_bg2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex_tx1));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex_tx2));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex_folHlink));
+				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex_hlink));
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -69,18 +124,18 @@ namespace PPTX
 
 				Limit::ColorSchemeIndex lColorIndex;
 				
-				lColorIndex._set(node.GetAttribute(_T("accent1")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("accent2")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("accent3")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("accent4")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("accent5")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("accent6")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("bg1")));		ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("bg2")));		ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("tx1")));		ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("tx2")));		ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("folHlink")));ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("hlink")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent1")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent2")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent3")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent4")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent5")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("accent6")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("bg1")));		ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("bg2")));		ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("tx1")));		ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("tx2")));		ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("folHlink")));ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("hlink")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex));
 			}
 
             void fromXMLW(const XmlUtils::CXmlNode& cnode)
@@ -93,25 +148,25 @@ namespace PPTX
 
 				Limit::ColorSchemeIndex lColorIndex;
 
-				lColorIndex._set(node.GetAttribute(_T("w:accent1")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:accent2")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:accent3")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:accent4")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:accent5")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:accent6")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:bg1")));				ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:bg2")));				ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:t1")));				ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:t2")));				ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:followedHyperlink")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex));
-				lColorIndex._set(node.GetAttribute(_T("w:hyperlink")));			ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent1")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent2")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent3")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent3"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent4")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent4"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent5")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent5"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:accent6")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("accent6"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:bg1")));				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:bg2")));				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("bg2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:t1")));				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx1"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:t2")));				ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("tx2"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:followedHyperlink")));	ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("folHlink"), lColorIndex));
+				lColorIndex._set(node.GetAttribute(_T("w:hyperlink")));			ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex));
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				
-				for (std::map<CString, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
+				for (std::map<std::wstring, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
 				{
 					oAttr.Write(pPair->first, pPair->second.get());
 				}
@@ -123,7 +178,7 @@ namespace PPTX
 				pWriter->StartNode(m_name);
 
 				pWriter->StartAttributes();
-				for (std::map<CString, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
+				for (std::map<std::wstring, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
 				{
 					pWriter->WriteAttribute(pPair->first, pPair->second.get());
 				}
@@ -132,9 +187,9 @@ namespace PPTX
 				pWriter->EndNode(m_name);
 			}
 
-			virtual CString GetColorSchemeIndex(const CString& str)const
+			virtual std::wstring GetColorSchemeIndex(const std::wstring& str)const
 			{
-				std::map<CString, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.find(str);
+				std::map<std::wstring, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.find(str);
 				if (ColorMap.end() != pPair)
 					return pPair->second.get();
 				return str;
@@ -144,7 +199,7 @@ namespace PPTX
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-				for (std::map<CString, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
+				for (std::map<std::wstring, Limit::ColorSchemeIndex>::const_iterator pPair = ColorMap.begin(); pPair != ColorMap.end(); ++pPair)
 				{
 					pWriter->WriteLimit1(SchemeClr_GetBYTECode(pPair->first), pPair->second);
 				}
@@ -168,7 +223,7 @@ namespace PPTX
 					Limit::ColorSchemeIndex _index;
 					_index.SetStringCode(ind);
 
-					ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(SchemeClr_GetStringCode(_at), _index));
+					ColorMap.insert(std::pair<std::wstring,Limit::ColorSchemeIndex>(SchemeClr_GetStringCode(_at), _index));
 				}
 
 				pReader->Seek(_e);				
@@ -176,10 +231,10 @@ namespace PPTX
 
 		public:
 
-			std::map<CString, Limit::ColorSchemeIndex> ColorMap;
+			std::map<std::wstring, Limit::ColorSchemeIndex> ColorMap;
 
 		public:
-			CString			m_name;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

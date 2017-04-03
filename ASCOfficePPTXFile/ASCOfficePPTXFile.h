@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,23 +32,16 @@
 #ifndef ASC_OFFICE_PPTX_FILE
 #define ASC_OFFICE_PPTX_FILE
 
-//todo
-#if defined(_WIN32) || defined (_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../DesktopEditor/common/ASCVariant.h"
-    #include "../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include "../DesktopEditor/common/ASCVariant.h"
 
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "PPTXFormat/PPTXEvent.h"
 
 
-typedef void (*load_from_resource)(void*, int, CString&);
-typedef bool (*extract_to_directory)(void*, CString&, CString&);
-typedef bool (*compress_from_directory)(void*, CString&, CString&);
-typedef bool (*progress_operation)(void*, long, long);
+typedef void (*load_from_resource)		(void*, int, std::wstring&);
+typedef bool (*extract_to_directory)	(void*, std::wstring&, std::wstring&);
+typedef bool (*compress_from_directory)	(void*, std::wstring&, std::wstring&);
+typedef bool (*progress_operation)		(void*, long, long);
 
 namespace PPTX
 {
@@ -58,75 +51,52 @@ namespace PPTX
 class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
-	//todo
-	//OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 	PPTX::Folder*					m_pFolder;
-    CString                         m_strTempDir;
-	CString							m_strDirectory;
+    std::wstring                    m_strTempDir;
+    std::wstring					m_strDirectory;
 
 	// writer to ppty
-	CString		m_strFontDirectory;
-	CString		m_strMediaDirectory;
+	std::wstring		m_strFontDirectory;
+	std::wstring		m_strMediaDirectory;
     bool		m_bIsUseSystemFonts;
-	CString		m_strEmbeddedFontsDirectory;
+	std::wstring		m_strEmbeddedFontsDirectory;
 
-	CString		m_strFolderThemes;
+	std::wstring		m_strFolderThemes;
 
 	//load_from_resource m_fCallbackResource;
-	extract_to_directory m_fCallbackExtract;
+    extract_to_directory    m_fCallbackExtract;
 	compress_from_directory m_fCallbackCompress;
-	progress_operation m_fCallbackProgress;
-	void* m_pCallbackArg;
+    progress_operation      m_fCallbackProgress;
+    void*                   m_pCallbackArg;
 public:
 
 	CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg);
 
 	~CPPTXFile();
 
-	HRESULT LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
+	HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
 
-	HRESULT SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
+	HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
 
-#if defined(_WIN32) || defined (_WIN64)
-	STDMETHOD(get_TempDirectory)(BSTR* pVal);
-	STDMETHOD(put_TempDirectory)(BSTR newVal);
+    HRESULT get_TempDirectory(std::wstring* pVal);
+    HRESULT put_TempDirectory(std::wstring newVal);
 
-	STDMETHOD(GetDVDXml)(BSTR* pbstrPTTXml);
-	STDMETHOD(GetBluRayXml)(BSTR* pbstrDVDXml);
+    HRESULT GetDVDXml       (std::wstring* pbstrPTTXml);
+    HRESULT GetBluRayXml    (std::wstring* pbstrDVDXml);
 
-	STDMETHOD(get_DrawingXml)(BSTR* pVal);
-	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
-	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
-	virtual bool Progress(long ID, long Percent);
-	// to PPTY
-	STDMETHOD(SetMediaDir)(BSTR bsMediaDir);
-	STDMETHOD(SetFontDir)(BSTR bsFontDir);
-	STDMETHOD(SetThemesDir)(BSTR bsDir);
-	STDMETHOD(SetUseSystemFonts)(VARIANT_BOOL useSystemFonts);
-	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput);
-	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput);
-    STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
-#else
-    HRESULT get_TempDirectory(BSTR* pVal);
-    HRESULT put_TempDirectory(BSTR newVal);
+    HRESULT get_DrawingXml  (std::wstring* pVal);
 
-    HRESULT GetDVDXml(BSTR* pbstrPTTXml);
-    HRESULT GetBluRayXml(BSTR* pbstrDVDXml);
+    virtual bool Progress   (long ID, long Percent);
 
-    HRESULT get_DrawingXml(BSTR* pVal);
-    HRESULT SetAdditionalParam(BSTR ParamName, VARIANT ParamValue);
-    HRESULT GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue);
-
-    virtual bool Progress(long ID, long Percent);
+    void SetEmbeddedFontsDirectory(std::wstring val);
 
     // to PPTY
-    HRESULT SetMediaDir(BSTR bsMediaDir);
-    HRESULT SetFontDir(BSTR bsFontDir);
-    HRESULT SetThemesDir(BSTR bsDir);
-    HRESULT SetUseSystemFonts(VARIANT_BOOL useSystemFonts);
-    HRESULT OpenFileToPPTY(BSTR bsInput, BSTR bsOutput);
-    HRESULT OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput);
-    HRESULT ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
-#endif
+	HRESULT SetMediaDir			(std::wstring bsMediaDir);
+    HRESULT SetFontDir			(std::wstring bsFontDir);
+    HRESULT SetThemesDir		(std::wstring bsDir);
+    HRESULT SetUseSystemFonts	(bool useSystemFonts);
+    HRESULT OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
+    HRESULT OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
+    HRESULT ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
 };
 #endif //ASC_OFFICE_PPTX_FILE

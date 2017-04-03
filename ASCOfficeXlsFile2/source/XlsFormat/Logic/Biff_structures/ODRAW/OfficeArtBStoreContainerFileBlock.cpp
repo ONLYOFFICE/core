@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,11 +41,6 @@ namespace ODRAW
 XLS::BiffStructurePtr OfficeArtBStoreContainerFileBlock::clone()
 {
 	return XLS::BiffStructurePtr(new OfficeArtBStoreContainerFileBlock(*this));
-}
-
-
-void OfficeArtBStoreContainerFileBlock::store(XLS::CFRecord& record)
-{	
 }
 
 void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader & metafileHeader)

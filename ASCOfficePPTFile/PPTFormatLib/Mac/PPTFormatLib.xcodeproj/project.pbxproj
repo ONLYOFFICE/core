@@ -1,0 +1,619 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6967B0881E279D8D00A129E2 /* PPTFormatLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0071E279D8D00A129E2 /* PPTFormatLib.cpp */; };
+		6967B0891E279D8D00A129E2 /* Converter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B00A1E279D8D00A129E2 /* Converter.cpp */; };
+		6967B08A1E279D8D00A129E2 /* ShapeWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B00D1E279D8D00A129E2 /* ShapeWriter.cpp */; };
+		6967B08B1E279D8D00A129E2 /* PPTDocumentInfoOneUser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0151E279D8D00A129E2 /* PPTDocumentInfoOneUser.cpp */; };
+		6967B08C1E279D8D00A129E2 /* ReadStructures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0191E279D8D00A129E2 /* ReadStructures.cpp */; };
+		6967B08D1E279D8D00A129E2 /* Records.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B01B1E279D8D00A129E2 /* Records.cpp */; };
+		6967B08E1E279D8D00A129E2 /* SlidePersist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B01F1E279D8D00A129E2 /* SlidePersist.cpp */; };
+		6967B08F1E279D8D00A129E2 /* AnimationTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0241E279D8D00A129E2 /* AnimationTypes.cpp */; };
+		6967B0901E279D8D00A129E2 /* ArtBlip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B0311E279D8D00A129E2 /* ArtBlip.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6967AFF91E279D3900A129E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6967AFFB1E279D3900A129E2 /* libPPTFormatLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPPTFormatLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6967B0071E279D8D00A129E2 /* PPTFormatLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PPTFormatLib.cpp; path = ../../PPTFormatLib.cpp; sourceTree = "<group>"; };
+		6967B0081E279D8D00A129E2 /* PPTFormatLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PPTFormatLib.h; path = ../../PPTFormatLib.h; sourceTree = "<group>"; };
+		6967B00A1E279D8D00A129E2 /* Converter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Converter.cpp; sourceTree = "<group>"; };
+		6967B00B1E279D8D00A129E2 /* Converter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Converter.h; sourceTree = "<group>"; };
+		6967B00C1E279D8D00A129E2 /* ImageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
+		6967B00D1E279D8D00A129E2 /* ShapeWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ShapeWriter.cpp; sourceTree = "<group>"; };
+		6967B00E1E279D8D00A129E2 /* ShapeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeWriter.h; sourceTree = "<group>"; };
+		6967B00F1E279D8D00A129E2 /* StylesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StylesWriter.h; sourceTree = "<group>"; };
+		6967B0121E279D8D00A129E2 /* ClassesAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassesAtom.h; sourceTree = "<group>"; };
+		6967B0131E279D8D00A129E2 /* CommonZLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonZLib.h; sourceTree = "<group>"; };
+		6967B0141E279D8D00A129E2 /* PPTDocumentInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPTDocumentInfo.h; sourceTree = "<group>"; };
+		6967B0151E279D8D00A129E2 /* PPTDocumentInfoOneUser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PPTDocumentInfoOneUser.cpp; sourceTree = "<group>"; };
+		6967B0161E279D8D00A129E2 /* PPTDocumentInfoOneUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPTDocumentInfoOneUser.h; sourceTree = "<group>"; };
+		6967B0171E279D8D00A129E2 /* PPTFileDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPTFileDefines.h; sourceTree = "<group>"; };
+		6967B0181E279D8D00A129E2 /* PPTFileReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPTFileReader.h; sourceTree = "<group>"; };
+		6967B0191E279D8D00A129E2 /* ReadStructures.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReadStructures.cpp; sourceTree = "<group>"; };
+		6967B01A1E279D8D00A129E2 /* ReadStructures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReadStructures.h; sourceTree = "<group>"; };
+		6967B01B1E279D8D00A129E2 /* Records.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Records.cpp; sourceTree = "<group>"; };
+		6967B01C1E279D8D00A129E2 /* Records.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Records.h; sourceTree = "<group>"; };
+		6967B01D1E279D8D00A129E2 /* Slide.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Slide.h; sourceTree = "<group>"; };
+		6967B01E1E279D8D00A129E2 /* SlideInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideInfo.h; sourceTree = "<group>"; };
+		6967B01F1E279D8D00A129E2 /* SlidePersist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SlidePersist.cpp; sourceTree = "<group>"; };
+		6967B0201E279D8D00A129E2 /* SlidePersist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidePersist.h; sourceTree = "<group>"; };
+		6967B0221E279D8D00A129E2 /* AnimationInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationInfoAtom.h; sourceTree = "<group>"; };
+		6967B0241E279D8D00A129E2 /* AnimationTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AnimationTypes.cpp; sourceTree = "<group>"; };
+		6967B0251E279D8D00A129E2 /* AnimationTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationTypes.h; sourceTree = "<group>"; };
+		6967B0261E279D8D00A129E2 /* BlipEntityAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlipEntityAtom.h; sourceTree = "<group>"; };
+		6967B0271E279D8D00A129E2 /* BookmarkEntityAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkEntityAtom.h; sourceTree = "<group>"; };
+		6967B0281E279D8D00A129E2 /* BookmarkSeedAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkSeedAtom.h; sourceTree = "<group>"; };
+		6967B0291E279D8D00A129E2 /* ColorSchemeAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorSchemeAtom.h; sourceTree = "<group>"; };
+		6967B02A1E279D8D00A129E2 /* CString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CString.h; sourceTree = "<group>"; };
+		6967B02B1E279D8D00A129E2 /* CurrentUserAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurrentUserAtom.h; sourceTree = "<group>"; };
+		6967B02C1E279D8D00A129E2 /* DocRoutingSlipAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocRoutingSlipAtom.h; sourceTree = "<group>"; };
+		6967B02D1E279D8D00A129E2 /* DocumentAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentAtom.h; sourceTree = "<group>"; };
+		6967B02E1E279D8D00A129E2 /* DocumentRecords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentRecords.h; sourceTree = "<group>"; };
+		6967B02F1E279D8D00A129E2 /* DocumentTextInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentTextInfo.h; sourceTree = "<group>"; };
+		6967B0311E279D8D00A129E2 /* ArtBlip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArtBlip.cpp; sourceTree = "<group>"; };
+		6967B0321E279D8D00A129E2 /* ArtBlip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtBlip.h; sourceTree = "<group>"; };
+		6967B0331E279D8D00A129E2 /* BlipStoreContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlipStoreContainer.h; sourceTree = "<group>"; };
+		6967B0341E279D8D00A129E2 /* BlipStoreEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlipStoreEntry.h; sourceTree = "<group>"; };
+		6967B0351E279D8D00A129E2 /* ChildAnchor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildAnchor.h; sourceTree = "<group>"; };
+		6967B0361E279D8D00A129E2 /* ClientAnchor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientAnchor.h; sourceTree = "<group>"; };
+		6967B0371E279D8D00A129E2 /* DrawingContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingContainer.h; sourceTree = "<group>"; };
+		6967B0381E279D8D00A129E2 /* DrawingGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingGroup.h; sourceTree = "<group>"; };
+		6967B0391E279D8D00A129E2 /* DrawingRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawingRecord.h; sourceTree = "<group>"; };
+		6967B03A1E279D8D00A129E2 /* GroupShape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupShape.h; sourceTree = "<group>"; };
+		6967B03B1E279D8D00A129E2 /* GroupShapeContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupShapeContainer.h; sourceTree = "<group>"; };
+		6967B03C1E279D8D00A129E2 /* RegGroupItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegGroupItems.h; sourceTree = "<group>"; };
+		6967B03D1E279D8D00A129E2 /* Shape.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape.h; sourceTree = "<group>"; };
+		6967B03E1E279D8D00A129E2 /* ShapeContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeContainer.h; sourceTree = "<group>"; };
+		6967B03F1E279D8D00A129E2 /* ShapeProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeProperties.h; sourceTree = "<group>"; };
+		6967B0401E279D8D00A129E2 /* TextBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBox.h; sourceTree = "<group>"; };
+		6967B0411E279D8D00A129E2 /* EndDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EndDocument.h; sourceTree = "<group>"; };
+		6967B0421E279D8D00A129E2 /* ExCDAudioContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExCDAudioContainer.h; sourceTree = "<group>"; };
+		6967B0431E279D8D00A129E2 /* ExControlAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExControlAtom.h; sourceTree = "<group>"; };
+		6967B0441E279D8D00A129E2 /* ExHyperlinkAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExHyperlinkAtom.h; sourceTree = "<group>"; };
+		6967B0451E279D8D00A129E2 /* ExMediaAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExMediaAtom.h; sourceTree = "<group>"; };
+		6967B0461E279D8D00A129E2 /* ExMIDIAudioContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExMIDIAudioContainer.h; sourceTree = "<group>"; };
+		6967B0471E279D8D00A129E2 /* ExObjListAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExObjListAtom.h; sourceTree = "<group>"; };
+		6967B0481E279D8D00A129E2 /* ExObjListContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExObjListContainer.h; sourceTree = "<group>"; };
+		6967B0491E279D8D00A129E2 /* ExObjRefAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExObjRefAtom.h; sourceTree = "<group>"; };
+		6967B04A1E279D8D00A129E2 /* ExOleEmbedAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExOleEmbedAtom.h; sourceTree = "<group>"; };
+		6967B04B1E279D8D00A129E2 /* ExOleLinkAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExOleLinkAtom.h; sourceTree = "<group>"; };
+		6967B04C1E279D8D00A129E2 /* ExOleObjAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExOleObjAtom.h; sourceTree = "<group>"; };
+		6967B04D1E279D8D00A129E2 /* ExVideoContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExVideoContainer.h; sourceTree = "<group>"; };
+		6967B04E1E279D8D00A129E2 /* ExWAVAudioEmbeddedContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExWAVAudioEmbeddedContainer.h; sourceTree = "<group>"; };
+		6967B04F1E279D8D00A129E2 /* ExWAVAudioLinkContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExWAVAudioLinkContainer.h; sourceTree = "<group>"; };
+		6967B0501E279D8D00A129E2 /* FontEntityAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontEntityAtom.h; sourceTree = "<group>"; };
+		6967B0511E279D8D00A129E2 /* GridSpacing10Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GridSpacing10Atom.h; sourceTree = "<group>"; };
+		6967B0521E279D8D00A129E2 /* GuideAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuideAtom.h; sourceTree = "<group>"; };
+		6967B0531E279D8D00A129E2 /* HeadersFootersAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeadersFootersAtom.h; sourceTree = "<group>"; };
+		6967B0541E279D8D00A129E2 /* InteractiveInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractiveInfoAtom.h; sourceTree = "<group>"; };
+		6967B0551E279D8D00A129E2 /* KinsokuAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinsokuAtom.h; sourceTree = "<group>"; };
+		6967B0561E279D8D00A129E2 /* MasterPersistAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterPersistAtom.h; sourceTree = "<group>"; };
+		6967B0571E279D8D00A129E2 /* MasterTextPropAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterTextPropAtom.h; sourceTree = "<group>"; };
+		6967B0581E279D8D00A129E2 /* MetafileBlob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetafileBlob.h; sourceTree = "<group>"; };
+		6967B0591E279D8D00A129E2 /* MouseTextInteractiveInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseTextInteractiveInfoAtom.h; sourceTree = "<group>"; };
+		6967B05A1E279D8D00A129E2 /* NamedShowSlidesAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NamedShowSlidesAtom.h; sourceTree = "<group>"; };
+		6967B05B1E279D8D00A129E2 /* NormalViewSetInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NormalViewSetInfoAtom.h; sourceTree = "<group>"; };
+		6967B05C1E279D8D00A129E2 /* NotesAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesAtom.h; sourceTree = "<group>"; };
+		6967B05D1E279D8D00A129E2 /* NotesPersistAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesPersistAtom.h; sourceTree = "<group>"; };
+		6967B05E1E279D8D00A129E2 /* NoZoomViewInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoZoomViewInfoAtom.h; sourceTree = "<group>"; };
+		6967B05F1E279D8D00A129E2 /* OutlineTextRefAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineTextRefAtom.h; sourceTree = "<group>"; };
+		6967B0601E279D8D00A129E2 /* PersistDirectoryAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PersistDirectoryAtom.h; sourceTree = "<group>"; };
+		6967B0611E279D8D00A129E2 /* PlaceHolderAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceHolderAtom.h; sourceTree = "<group>"; };
+		6967B0621E279D8D00A129E2 /* RecordsIncluder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordsIncluder.h; sourceTree = "<group>"; };
+		6967B0631E279D8D00A129E2 /* RoundTripColorMappingAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTripColorMappingAtom.h; sourceTree = "<group>"; };
+		6967B0641E279D8D00A129E2 /* RoundTripCompositeMainMasterId12Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTripCompositeMainMasterId12Atom.h; sourceTree = "<group>"; };
+		6967B0651E279D8D00A129E2 /* RoundTripNewPlaceholderId12Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTripNewPlaceholderId12Atom.h; sourceTree = "<group>"; };
+		6967B0661E279D8D00A129E2 /* RoundTripOriginalMainMasterId12Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTripOriginalMainMasterId12Atom.h; sourceTree = "<group>"; };
+		6967B0671E279D8D00A129E2 /* RoundTripThemeAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoundTripThemeAtom.h; sourceTree = "<group>"; };
+		6967B0681E279D8D00A129E2 /* ShapeFlags10Atom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeFlags10Atom.h; sourceTree = "<group>"; };
+		6967B0691E279D8D00A129E2 /* ShapeFlagsAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShapeFlagsAtom.h; sourceTree = "<group>"; };
+		6967B06A1E279D8D00A129E2 /* SlideAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideAtom.h; sourceTree = "<group>"; };
+		6967B06B1E279D8D00A129E2 /* SlideColorSchemeAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideColorSchemeAtom.h; sourceTree = "<group>"; };
+		6967B06C1E279D8D00A129E2 /* SlideContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideContainer.h; sourceTree = "<group>"; };
+		6967B06D1E279D8D00A129E2 /* SlideListWithText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideListWithText.h; sourceTree = "<group>"; };
+		6967B06E1E279D8D00A129E2 /* SlidePersistAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlidePersistAtom.h; sourceTree = "<group>"; };
+		6967B06F1E279D8D00A129E2 /* SlideViewInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideViewInfoAtom.h; sourceTree = "<group>"; };
+		6967B0701E279D8D00A129E2 /* SoundCollAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundCollAtom.h; sourceTree = "<group>"; };
+		6967B0711E279D8D00A129E2 /* SoundCollectionContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundCollectionContainer.h; sourceTree = "<group>"; };
+		6967B0721E279D8D00A129E2 /* SoundContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundContainer.h; sourceTree = "<group>"; };
+		6967B0731E279D8D00A129E2 /* SoundDataBlob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundDataBlob.h; sourceTree = "<group>"; };
+		6967B0741E279D8D00A129E2 /* SSDocInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSDocInfoAtom.h; sourceTree = "<group>"; };
+		6967B0751E279D8D00A129E2 /* SSlideLayoutAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSlideLayoutAtom.h; sourceTree = "<group>"; };
+		6967B0761E279D8D00A129E2 /* SSSlideInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSSlideInfoAtom.h; sourceTree = "<group>"; };
+		6967B0771E279D8D00A129E2 /* StyleTextPropAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StyleTextPropAtom.h; sourceTree = "<group>"; };
+		6967B0781E279D8D00A129E2 /* TextBookmarkAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBookmarkAtom.h; sourceTree = "<group>"; };
+		6967B0791E279D8D00A129E2 /* TextBytesAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBytesAtom.h; sourceTree = "<group>"; };
+		6967B07A1E279D8D00A129E2 /* TextCFExceptionAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextCFExceptionAtom.h; sourceTree = "<group>"; };
+		6967B07B1E279D8D00A129E2 /* TextCharsAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextCharsAtom.h; sourceTree = "<group>"; };
+		6967B07C1E279D8D00A129E2 /* TextFullSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFullSettings.h; sourceTree = "<group>"; };
+		6967B07D1E279D8D00A129E2 /* TextHeaderAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextHeaderAtom.h; sourceTree = "<group>"; };
+		6967B07E1E279D8D00A129E2 /* TextInteractiveInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextInteractiveInfoAtom.h; sourceTree = "<group>"; };
+		6967B07F1E279D8D00A129E2 /* TextMasterStyleAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextMasterStyleAtom.h; sourceTree = "<group>"; };
+		6967B0801E279D8D00A129E2 /* TextPFExceptionAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextPFExceptionAtom.h; sourceTree = "<group>"; };
+		6967B0811E279D8D00A129E2 /* TextRulerAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextRulerAtom.h; sourceTree = "<group>"; };
+		6967B0821E279D8D00A129E2 /* TextSIExceptionAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextSIExceptionAtom.h; sourceTree = "<group>"; };
+		6967B0831E279D8D00A129E2 /* TextSpecInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextSpecInfoAtom.h; sourceTree = "<group>"; };
+		6967B0841E279D8D00A129E2 /* UserEditAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserEditAtom.h; sourceTree = "<group>"; };
+		6967B0851E279D8D00A129E2 /* VBAInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VBAInfoAtom.h; sourceTree = "<group>"; };
+		6967B0861E279D8D00A129E2 /* ViewInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewInfoAtom.h; sourceTree = "<group>"; };
+		6967B0871E279D8D00A129E2 /* ZoomViewInfoAtom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZoomViewInfoAtom.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6967AFF81E279D3900A129E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6967AFF21E279D3900A129E2 = {
+			isa = PBXGroup;
+			children = (
+				6967AFFD1E279D3900A129E2 /* PPTFormatLib */,
+				6967AFFC1E279D3900A129E2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6967AFFC1E279D3900A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967AFFB1E279D3900A129E2 /* libPPTFormatLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967AFFD1E279D3900A129E2 /* PPTFormatLib */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0071E279D8D00A129E2 /* PPTFormatLib.cpp */,
+				6967B0081E279D8D00A129E2 /* PPTFormatLib.h */,
+				6967B0091E279D8D00A129E2 /* PPTXWriter */,
+				6967B0101E279D8D00A129E2 /* Reader */,
+				6967B0211E279D8D00A129E2 /* Records */,
+			);
+			path = PPTFormatLib;
+			sourceTree = "<group>";
+		};
+		6967B0091E279D8D00A129E2 /* PPTXWriter */ = {
+			isa = PBXGroup;
+			children = (
+				6967B00A1E279D8D00A129E2 /* Converter.cpp */,
+				6967B00B1E279D8D00A129E2 /* Converter.h */,
+				6967B00C1E279D8D00A129E2 /* ImageManager.h */,
+				6967B00D1E279D8D00A129E2 /* ShapeWriter.cpp */,
+				6967B00E1E279D8D00A129E2 /* ShapeWriter.h */,
+				6967B00F1E279D8D00A129E2 /* StylesWriter.h */,
+			);
+			name = PPTXWriter;
+			path = ../../PPTXWriter;
+			sourceTree = "<group>";
+		};
+		6967B0101E279D8D00A129E2 /* Reader */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0121E279D8D00A129E2 /* ClassesAtom.h */,
+				6967B0131E279D8D00A129E2 /* CommonZLib.h */,
+				6967B0141E279D8D00A129E2 /* PPTDocumentInfo.h */,
+				6967B0151E279D8D00A129E2 /* PPTDocumentInfoOneUser.cpp */,
+				6967B0161E279D8D00A129E2 /* PPTDocumentInfoOneUser.h */,
+				6967B0171E279D8D00A129E2 /* PPTFileDefines.h */,
+				6967B0181E279D8D00A129E2 /* PPTFileReader.h */,
+				6967B0191E279D8D00A129E2 /* ReadStructures.cpp */,
+				6967B01A1E279D8D00A129E2 /* ReadStructures.h */,
+				6967B01B1E279D8D00A129E2 /* Records.cpp */,
+				6967B01C1E279D8D00A129E2 /* Records.h */,
+				6967B01D1E279D8D00A129E2 /* Slide.h */,
+				6967B01E1E279D8D00A129E2 /* SlideInfo.h */,
+				6967B01F1E279D8D00A129E2 /* SlidePersist.cpp */,
+				6967B0201E279D8D00A129E2 /* SlidePersist.h */,
+			);
+			name = Reader;
+			path = ../../Reader;
+			sourceTree = "<group>";
+		};
+		6967B0211E279D8D00A129E2 /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0221E279D8D00A129E2 /* AnimationInfoAtom.h */,
+				6967B0231E279D8D00A129E2 /* Animations */,
+				6967B0261E279D8D00A129E2 /* BlipEntityAtom.h */,
+				6967B0271E279D8D00A129E2 /* BookmarkEntityAtom.h */,
+				6967B0281E279D8D00A129E2 /* BookmarkSeedAtom.h */,
+				6967B0291E279D8D00A129E2 /* ColorSchemeAtom.h */,
+				6967B02A1E279D8D00A129E2 /* CString.h */,
+				6967B02B1E279D8D00A129E2 /* CurrentUserAtom.h */,
+				6967B02C1E279D8D00A129E2 /* DocRoutingSlipAtom.h */,
+				6967B02D1E279D8D00A129E2 /* DocumentAtom.h */,
+				6967B02E1E279D8D00A129E2 /* DocumentRecords.h */,
+				6967B02F1E279D8D00A129E2 /* DocumentTextInfo.h */,
+				6967B0301E279D8D00A129E2 /* Drawing */,
+				6967B0411E279D8D00A129E2 /* EndDocument.h */,
+				6967B0421E279D8D00A129E2 /* ExCDAudioContainer.h */,
+				6967B0431E279D8D00A129E2 /* ExControlAtom.h */,
+				6967B0441E279D8D00A129E2 /* ExHyperlinkAtom.h */,
+				6967B0451E279D8D00A129E2 /* ExMediaAtom.h */,
+				6967B0461E279D8D00A129E2 /* ExMIDIAudioContainer.h */,
+				6967B0471E279D8D00A129E2 /* ExObjListAtom.h */,
+				6967B0481E279D8D00A129E2 /* ExObjListContainer.h */,
+				6967B0491E279D8D00A129E2 /* ExObjRefAtom.h */,
+				6967B04A1E279D8D00A129E2 /* ExOleEmbedAtom.h */,
+				6967B04B1E279D8D00A129E2 /* ExOleLinkAtom.h */,
+				6967B04C1E279D8D00A129E2 /* ExOleObjAtom.h */,
+				6967B04D1E279D8D00A129E2 /* ExVideoContainer.h */,
+				6967B04E1E279D8D00A129E2 /* ExWAVAudioEmbeddedContainer.h */,
+				6967B04F1E279D8D00A129E2 /* ExWAVAudioLinkContainer.h */,
+				6967B0501E279D8D00A129E2 /* FontEntityAtom.h */,
+				6967B0511E279D8D00A129E2 /* GridSpacing10Atom.h */,
+				6967B0521E279D8D00A129E2 /* GuideAtom.h */,
+				6967B0531E279D8D00A129E2 /* HeadersFootersAtom.h */,
+				6967B0541E279D8D00A129E2 /* InteractiveInfoAtom.h */,
+				6967B0551E279D8D00A129E2 /* KinsokuAtom.h */,
+				6967B0561E279D8D00A129E2 /* MasterPersistAtom.h */,
+				6967B0571E279D8D00A129E2 /* MasterTextPropAtom.h */,
+				6967B0581E279D8D00A129E2 /* MetafileBlob.h */,
+				6967B0591E279D8D00A129E2 /* MouseTextInteractiveInfoAtom.h */,
+				6967B05A1E279D8D00A129E2 /* NamedShowSlidesAtom.h */,
+				6967B05B1E279D8D00A129E2 /* NormalViewSetInfoAtom.h */,
+				6967B05C1E279D8D00A129E2 /* NotesAtom.h */,
+				6967B05D1E279D8D00A129E2 /* NotesPersistAtom.h */,
+				6967B05E1E279D8D00A129E2 /* NoZoomViewInfoAtom.h */,
+				6967B05F1E279D8D00A129E2 /* OutlineTextRefAtom.h */,
+				6967B0601E279D8D00A129E2 /* PersistDirectoryAtom.h */,
+				6967B0611E279D8D00A129E2 /* PlaceHolderAtom.h */,
+				6967B0621E279D8D00A129E2 /* RecordsIncluder.h */,
+				6967B0631E279D8D00A129E2 /* RoundTripColorMappingAtom.h */,
+				6967B0641E279D8D00A129E2 /* RoundTripCompositeMainMasterId12Atom.h */,
+				6967B0651E279D8D00A129E2 /* RoundTripNewPlaceholderId12Atom.h */,
+				6967B0661E279D8D00A129E2 /* RoundTripOriginalMainMasterId12Atom.h */,
+				6967B0671E279D8D00A129E2 /* RoundTripThemeAtom.h */,
+				6967B0681E279D8D00A129E2 /* ShapeFlags10Atom.h */,
+				6967B0691E279D8D00A129E2 /* ShapeFlagsAtom.h */,
+				6967B06A1E279D8D00A129E2 /* SlideAtom.h */,
+				6967B06B1E279D8D00A129E2 /* SlideColorSchemeAtom.h */,
+				6967B06C1E279D8D00A129E2 /* SlideContainer.h */,
+				6967B06D1E279D8D00A129E2 /* SlideListWithText.h */,
+				6967B06E1E279D8D00A129E2 /* SlidePersistAtom.h */,
+				6967B06F1E279D8D00A129E2 /* SlideViewInfoAtom.h */,
+				6967B0701E279D8D00A129E2 /* SoundCollAtom.h */,
+				6967B0711E279D8D00A129E2 /* SoundCollectionContainer.h */,
+				6967B0721E279D8D00A129E2 /* SoundContainer.h */,
+				6967B0731E279D8D00A129E2 /* SoundDataBlob.h */,
+				6967B0741E279D8D00A129E2 /* SSDocInfoAtom.h */,
+				6967B0751E279D8D00A129E2 /* SSlideLayoutAtom.h */,
+				6967B0761E279D8D00A129E2 /* SSSlideInfoAtom.h */,
+				6967B0771E279D8D00A129E2 /* StyleTextPropAtom.h */,
+				6967B0781E279D8D00A129E2 /* TextBookmarkAtom.h */,
+				6967B0791E279D8D00A129E2 /* TextBytesAtom.h */,
+				6967B07A1E279D8D00A129E2 /* TextCFExceptionAtom.h */,
+				6967B07B1E279D8D00A129E2 /* TextCharsAtom.h */,
+				6967B07C1E279D8D00A129E2 /* TextFullSettings.h */,
+				6967B07D1E279D8D00A129E2 /* TextHeaderAtom.h */,
+				6967B07E1E279D8D00A129E2 /* TextInteractiveInfoAtom.h */,
+				6967B07F1E279D8D00A129E2 /* TextMasterStyleAtom.h */,
+				6967B0801E279D8D00A129E2 /* TextPFExceptionAtom.h */,
+				6967B0811E279D8D00A129E2 /* TextRulerAtom.h */,
+				6967B0821E279D8D00A129E2 /* TextSIExceptionAtom.h */,
+				6967B0831E279D8D00A129E2 /* TextSpecInfoAtom.h */,
+				6967B0841E279D8D00A129E2 /* UserEditAtom.h */,
+				6967B0851E279D8D00A129E2 /* VBAInfoAtom.h */,
+				6967B0861E279D8D00A129E2 /* ViewInfoAtom.h */,
+				6967B0871E279D8D00A129E2 /* ZoomViewInfoAtom.h */,
+			);
+			name = Records;
+			path = ../../Records;
+			sourceTree = "<group>";
+		};
+		6967B0231E279D8D00A129E2 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0241E279D8D00A129E2 /* AnimationTypes.cpp */,
+				6967B0251E279D8D00A129E2 /* AnimationTypes.h */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
+		6967B0301E279D8D00A129E2 /* Drawing */ = {
+			isa = PBXGroup;
+			children = (
+				6967B0311E279D8D00A129E2 /* ArtBlip.cpp */,
+				6967B0321E279D8D00A129E2 /* ArtBlip.h */,
+				6967B0331E279D8D00A129E2 /* BlipStoreContainer.h */,
+				6967B0341E279D8D00A129E2 /* BlipStoreEntry.h */,
+				6967B0351E279D8D00A129E2 /* ChildAnchor.h */,
+				6967B0361E279D8D00A129E2 /* ClientAnchor.h */,
+				6967B0371E279D8D00A129E2 /* DrawingContainer.h */,
+				6967B0381E279D8D00A129E2 /* DrawingGroup.h */,
+				6967B0391E279D8D00A129E2 /* DrawingRecord.h */,
+				6967B03A1E279D8D00A129E2 /* GroupShape.h */,
+				6967B03B1E279D8D00A129E2 /* GroupShapeContainer.h */,
+				6967B03C1E279D8D00A129E2 /* RegGroupItems.h */,
+				6967B03D1E279D8D00A129E2 /* Shape.h */,
+				6967B03E1E279D8D00A129E2 /* ShapeContainer.h */,
+				6967B03F1E279D8D00A129E2 /* ShapeProperties.h */,
+				6967B0401E279D8D00A129E2 /* TextBox.h */,
+			);
+			path = Drawing;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6967AFFA1E279D3900A129E2 /* PPTFormatLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6967B0041E279D3900A129E2 /* Build configuration list for PBXNativeTarget "PPTFormatLib" */;
+			buildPhases = (
+				6967AFF71E279D3900A129E2 /* Sources */,
+				6967AFF81E279D3900A129E2 /* Frameworks */,
+				6967AFF91E279D3900A129E2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PPTFormatLib;
+			productName = PPTFormatLib;
+			productReference = 6967AFFB1E279D3900A129E2 /* libPPTFormatLib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6967AFF31E279D3900A129E2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = OnlyOffce;
+				TargetAttributes = {
+					6967AFFA1E279D3900A129E2 = {
+						CreatedOnToolsVersion = 8.2;
+						DevelopmentTeam = 2WH24U26GJ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 6967AFF61E279D3900A129E2 /* Build configuration list for PBXProject "PPTFormatLib" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 6967AFF21E279D3900A129E2;
+			productRefGroup = 6967AFFC1E279D3900A129E2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6967AFFA1E279D3900A129E2 /* PPTFormatLib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6967AFF71E279D3900A129E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6967B08F1E279D8D00A129E2 /* AnimationTypes.cpp in Sources */,
+				6967B08E1E279D8D00A129E2 /* SlidePersist.cpp in Sources */,
+				6967B0891E279D8D00A129E2 /* Converter.cpp in Sources */,
+				6967B0881E279D8D00A129E2 /* PPTFormatLib.cpp in Sources */,
+				6967B08D1E279D8D00A129E2 /* Records.cpp in Sources */,
+				6967B08A1E279D8D00A129E2 /* ShapeWriter.cpp in Sources */,
+				6967B08C1E279D8D00A129E2 /* ReadStructures.cpp in Sources */,
+				6967B08B1E279D8D00A129E2 /* PPTDocumentInfoOneUser.cpp in Sources */,
+				6967B0901E279D8D00A129E2 /* ArtBlip.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6967B0021E279D3900A129E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		6967B0031E279D3900A129E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6967B0051E279D3900A129E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
+					BUILD_CONFIG_FULL_VERSION,
+					_SVG_CONVERT_TO_IMAGE_,
+					_PRESENTATION_WRITER_,
+					ENABLE_PPT_TO_PPTX_CONVERT,
+					PPT_DEF,
+					PPTX_DEF,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/,
+					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
+					"$(PROJECT_DIR)/../../../DesktopEditor/xml/libxml2/include",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6967B0061E279D3900A129E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+					_IOS,
+					DONT_WRITE_EMBEDDED_FONTS,
+					BUILD_CONFIG_FULL_VERSION,
+					_SVG_CONVERT_TO_IMAGE_,
+					_PRESENTATION_WRITER_,
+					ENABLE_PPT_TO_PPTX_CONVERT,
+					PPT_DEF,
+					PPTX_DEF,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/,
+					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../../Common/3dParty/boost/boost_1_58_0",
+					"$(PROJECT_DIR)/../../../DesktopEditor/xml/libxml2/include",
+					"$(PROJECT_DIR)/../../../DesktopEditor/freetype-2.5.2/include",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6967AFF61E279D3900A129E2 /* Build configuration list for PBXProject "PPTFormatLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6967B0021E279D3900A129E2 /* Debug */,
+				6967B0031E279D3900A129E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6967B0041E279D3900A129E2 /* Build configuration list for PBXNativeTarget "PPTFormatLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6967B0051E279D3900A129E2 /* Debug */,
+				6967B0061E279D3900A129E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6967AFF31E279D3900A129E2 /* Project object */;
+}

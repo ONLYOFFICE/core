@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,9 +43,26 @@ namespace PPTX
 		class Lin : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Lin)
+			WritingElement_AdditionConstructors(Lin)
+			PPTX_LOGIC_BASE2(Lin)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_lin;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("ang"), ang)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("scaled"), scaled)
+				WritingElement_ReadAttributes_End	( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"ang", ang);
@@ -53,7 +70,7 @@ namespace PPTX
 
 				Normalize();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("ang"), ang);
@@ -93,8 +110,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");

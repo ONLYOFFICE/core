@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,7 +58,7 @@ namespace PPTX
 			template<class T> T& as()				{ return base.as<T>(); }
 			template<class T> const T& as() const	{ return base.as<T>(); }
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 		//public:
 		private:
 			smart_ptr<WrapperWritingElement> base;
@@ -101,7 +101,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetTransitionTypeFrom(XmlUtils::CXmlNode& element);
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			// PPTY format serialise
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -147,18 +147,18 @@ namespace PPTX
 				pWriter->WriteString1(0, m_strNodeName);
 				
 				
-				std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
+				std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
 				while (pos1 != m_strAttributesNames.end())
 				{
-					const CString& s = *pos1;
+					const std::wstring& s = *pos1;
 					pWriter->WriteString1(1, s);
 					pos1++;
 				}
 
-				std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
+				std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
 				while (pos2 != m_strAttributesValues.end())
 				{
-					const CString& s = *pos2;;
+					const std::wstring& s = *pos2;;
 					pWriter->WriteString1(2, s);
 					pos2++;
 				}
@@ -177,13 +177,13 @@ namespace PPTX
 
 				//if (c1 == c2)
 				{
-					std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
-					std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
+					std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
+					std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
 
 					while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
 					{
-						const CString& s1 = *pos1;
-						const CString& s2 = *pos2;
+						const std::wstring& s1 = *pos1;
+						const std::wstring& s2 = *pos2;
 
 						pWriter->WriteAttribute(s1, s2);
 						
@@ -199,7 +199,7 @@ namespace PPTX
 
 			virtual void toXmlWriterOld(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString name = m_strNodeName;
+				std::wstring name = m_strNodeName;
 				if ((name != _T("p:random")) &&
 					(name != _T("p:circle")) &&
 					(name != _T("p:dissolve")) &&
@@ -235,13 +235,13 @@ namespace PPTX
 
 				//if (c1 == c2)
 				{
-					std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
-					std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
+					std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
+					std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
 
 					while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
 					{
-						const CString& s1 = *pos1;
-						const CString& s2 = *pos2;
+						const std::wstring& s1 = *pos1;
+						const std::wstring& s2 = *pos2;
 
 						pWriter->WriteAttribute(s1, s2);
 
@@ -256,9 +256,9 @@ namespace PPTX
 			}
 
 		public:
-			CString				m_strNodeName;
-			std::list<CString>	m_strAttributesNames;
-			std::list<CString>	m_strAttributesValues;
+			std::wstring				m_strNodeName;
+			std::list<std::wstring>	m_strAttributesNames;
+			std::list<std::wstring>	m_strAttributesValues;
 
 		protected:
 			virtual void FillParentPointersForChilds(){};

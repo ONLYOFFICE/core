@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,8 @@ namespace PPTX
 		class BulletSize : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BulletSize)
+			WritingElement_AdditionConstructors(BulletSize)
+			PPTX_LOGIC_BASE2(BulletSize)
 
 			BulletSize& operator=(const BulletSize& oSrc)
 			{
@@ -56,11 +57,29 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				if (m_Size.IsInit())
+					return m_Size->getType();
+				return OOX::et_Unknown;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = oReader.GetName();
+				
+				if (strName == _T("a:buSzTx"))
+					m_Size.reset(new Logic::BuSzTx(oReader));
+				else if (strName == _T("a:buSzPct"))
+					m_Size.reset(new Logic::BuSzPct(oReader));
+				else if (strName == _T("a:buSzPts"))
+					m_Size.reset(new Logic::BuSzPts(oReader));
+				else 
+					m_Size.reset();
+			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = node.GetName();
+				std::wstring strName = node.GetName();
 
 				if (strName == _T("a:buSzTx"))
 					m_Size.reset(new Logic::BuSzTx(node));
@@ -68,7 +87,8 @@ namespace PPTX
 					m_Size.reset(new Logic::BuSzPct(node));
 				else if (strName == _T("a:buSzPts"))
 					m_Size.reset(new Logic::BuSzPts(node));
-				else m_Size.reset();
+				else 
+					m_Size.reset();
 			}
 
 			virtual void ReadBulletSizeFrom(XmlUtils::CXmlNode& element)
@@ -80,7 +100,8 @@ namespace PPTX
 					m_Size.reset(new Logic::BuSzPct(oNode));
 				else if(element.GetNode(_T("a:buSzPts"), oNode))
 					m_Size.reset(new Logic::BuSzPts(oNode));
-				else m_Size.reset();
+				else
+					m_Size.reset();
 			}
 			virtual bool is_init()const{return (m_Size.IsInit());};
 			virtual bool has_spec_size()const{return ((is_init()) && (!is<BuSzTx>()));};
@@ -89,7 +110,7 @@ namespace PPTX
 			template<class T> AVSINLINE T&			as()		{ return m_Size.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Size.as<T>(); }
 
-			virtual CString toXML()const
+			virtual std::wstring toXML()const
 			{
 				if (m_Size.IsInit())
 					return m_Size->toXML();

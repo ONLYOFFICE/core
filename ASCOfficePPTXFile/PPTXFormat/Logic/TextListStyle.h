@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,13 @@ namespace PPTX
 		class TextListStyle : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TextListStyle)
+			WritingElement_AdditionConstructors(TextListStyle)
 
-		public:
+			TextListStyle()
+			{
+				m_name = L"a:lstStyle";
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -64,7 +68,45 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_Unknown;//a_bodyStyle;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = oReader.GetName();
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("defPPr") == strName)
+						levels[9] = oReader;
+					else if (_T("lvl1pPr") == strName)
+						levels[0] = oReader;
+					else if (_T("lvl2pPr") == strName)
+						levels[1] = oReader;
+					else if (_T("lvl3pPr") == strName)
+						levels[2] = oReader;
+					else if (_T("lvl4pPr") == strName)
+						levels[3] = oReader;
+					else if (_T("lvl5pPr") == strName)
+						levels[4] = oReader;
+					else if (_T("lvl6pPr") == strName)
+						levels[5] = oReader;
+					else if (_T("lvl7pPr") == strName)
+						levels[6] = oReader;
+					else if (_T("lvl8pPr") == strName)
+						levels[7] = oReader;
+					else if (_T("lvl9pPr") == strName)
+						levels[8] = oReader;
+				}
+			}			
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(/*defPPr*/  levels[9]);
@@ -116,7 +158,7 @@ namespace PPTX
 			{
 				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
 
-				CString arr_names[10] = {_T("a:lvl1pPr"), _T("a:lvl2pPr"), _T("a:lvl3pPr"), _T("a:lvl4pPr"), _T("a:lvl5pPr"), 
+				std::wstring arr_names[10] = {_T("a:lvl1pPr"), _T("a:lvl2pPr"), _T("a:lvl3pPr"), _T("a:lvl4pPr"), _T("a:lvl5pPr"), 
 					_T("a:lvl6pPr"), _T("a:lvl7pPr"), _T("a:lvl8pPr"), _T("a:lvl9pPr"), _T("a:defPPr")};
 
 				while (pReader->GetPos() < _end_rec)
@@ -139,10 +181,8 @@ namespace PPTX
 						levels[i]->Merge(lstStyle->levels[i]);
 			}
 		public:
-			nullable<TextParagraphPr> levels[10];
-		//private:
-		public:
-			mutable CString m_name;
+			nullable<TextParagraphPr>	levels[10];
+			mutable std::wstring		m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

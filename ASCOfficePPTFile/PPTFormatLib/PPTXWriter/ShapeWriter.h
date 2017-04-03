@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,7 @@
 
 namespace NSPresentationEditor
 {
-	static inline LONG GetPPTXPlaceHolderType(const int & lType)
+    static inline LONG GetPPTXPlaceHolderType(const int & lType)
 	{
 		switch (lType)
 		{
@@ -150,7 +150,7 @@ namespace NSPresentationEditor
 		
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
 
-		LONG									m_lNextShapeID;
+        LONG									m_lNextShapeID;
 
 		bool									m_bWordArt;
 		bool									m_bTextBox;
@@ -207,14 +207,14 @@ namespace NSPresentationEditor
 			m_oWriterVML.ClearNoAttack();
 		}
 //--------------------------------------------------------------------
-			CString ConvertShape	();
-			CString ConvertImage	();
-			CString ConvertLine		(CPen		& pen);
-			CString	ConvertShadow	(CShadow	& shadow);
-			CString	ConvertBrush	(CBrush		& brush);
-	static	CString	ConvertColor	(CColor		& color, long alpha);
+            std::wstring ConvertShape	();
+            std::wstring ConvertImage	();
+            std::wstring ConvertLine		(CPen		& pen);
+            std::wstring	ConvertShadow	(CShadow	& shadow);
+            std::wstring	ConvertBrush	(CBrush		& brush);
+    static	std::wstring	ConvertColor	(CColor		& color, long alpha);
 // тип рендерера-----------------------------------------------------------------------------
-	virtual HRESULT get_Type(LONG* lType)	;
+    virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------
 	virtual HRESULT NewPage()				;
 	virtual HRESULT get_Height(double* dHeight);
@@ -225,10 +225,10 @@ namespace NSPresentationEditor
 	virtual HRESULT get_DpiY(double* dDpiY)	;
 
 // pen --------------------------------------------------------------------------------------
-	virtual HRESULT get_PenColor(LONG* lColor)		;
-	virtual HRESULT put_PenColor(const LONG& lColor);
-	virtual HRESULT get_PenAlpha(LONG* lAlpha)		;
-	virtual HRESULT put_PenAlpha(const LONG& lAlpha);
+    virtual HRESULT get_PenColor(LONG* lColor)		;
+    virtual HRESULT put_PenColor(const LONG& lColor);
+    virtual HRESULT get_PenAlpha(LONG* lAlpha)		;
+    virtual HRESULT put_PenAlpha(const LONG& lAlpha);
 	virtual HRESULT get_PenSize(double* dSize)		;
 	virtual HRESULT put_PenSize(const double& dSize);
 	virtual HRESULT get_PenDashStyle(BYTE* val)		;
@@ -241,35 +241,35 @@ namespace NSPresentationEditor
 	virtual HRESULT put_PenLineJoin(const BYTE& val);
 	virtual HRESULT get_PenDashOffset(double* dOffset);
 	virtual HRESULT put_PenDashOffset(const double& dOffset);
-	virtual HRESULT get_PenAlign(LONG* lAlign)		;
-	virtual HRESULT put_PenAlign(const LONG& lAlign);
+    virtual HRESULT get_PenAlign(LONG* lAlign)		;
+    virtual HRESULT put_PenAlign(const LONG& lAlign);
 	virtual HRESULT get_PenMiterLimit(double* dOffset);
 	virtual HRESULT put_PenMiterLimit(const double& dOffset);
-	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
+    virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
 // brush ------------------------------------------------------------------------------------
-	virtual HRESULT get_BrushType(LONG* lType)				;
-	virtual HRESULT put_BrushType(const LONG& lType)		;
-	virtual HRESULT get_BrushColor1(LONG* lColor)			;
-	virtual HRESULT put_BrushColor1(const LONG& lColor)		;
-	virtual HRESULT get_BrushAlpha1(LONG* lAlpha)			;
-	virtual HRESULT put_BrushAlpha1(const LONG& lAlpha)		;
-	virtual HRESULT get_BrushColor2(LONG* lColor)			;
-	virtual HRESULT put_BrushColor2(const LONG& lColor)		;
-	virtual HRESULT get_BrushAlpha2(LONG* lAlpha)			;
-	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha)		;
+    virtual HRESULT get_BrushType(LONG* lType)				;
+    virtual HRESULT put_BrushType(const LONG& lType)		;
+    virtual HRESULT get_BrushColor1(LONG* lColor)			;
+    virtual HRESULT put_BrushColor1(const LONG& lColor)		;
+    virtual HRESULT get_BrushAlpha1(LONG* lAlpha)			;
+    virtual HRESULT put_BrushAlpha1(const LONG& lAlpha)		;
+    virtual HRESULT get_BrushColor2(LONG* lColor)			;
+    virtual HRESULT put_BrushColor2(const LONG& lColor)		;
+    virtual HRESULT get_BrushAlpha2(LONG* lAlpha)			;
+    virtual HRESULT put_BrushAlpha2(const LONG& lAlpha)		;
 	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath); 
 	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath); 
-	virtual HRESULT get_BrushTextureMode(LONG* lMode)		;
-	virtual HRESULT put_BrushTextureMode(const LONG& lMode)	;
-	virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)	;
-	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
+    virtual HRESULT get_BrushTextureMode(LONG* lMode)		;
+    virtual HRESULT put_BrushTextureMode(const LONG& lMode)	;
+    virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)	;
+    virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
 	virtual HRESULT get_BrushLinearAngle(double* dAngle)	;
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 
-	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
+    virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName);
@@ -278,8 +278,8 @@ namespace NSPresentationEditor
 	virtual HRESULT put_FontPath(const std::wstring& bsName);
 	virtual HRESULT get_FontSize(double* dSize)		;
 	virtual HRESULT put_FontSize(const double& dSize);
-	virtual HRESULT get_FontStyle(LONG* lStyle)		;
-	virtual HRESULT put_FontStyle(const LONG& lStyle);
+    virtual HRESULT get_FontStyle(LONG* lStyle)		;
+    virtual HRESULT put_FontStyle(const LONG& lStyle);
 	virtual HRESULT get_FontStringGID(INT* bGID)	;
 	virtual HRESULT put_FontStringGID(const INT& bGID);
 	virtual HRESULT get_FontCharSpace(double* dSpace);
@@ -307,7 +307,7 @@ namespace NSPresentationEditor
 	virtual HRESULT PathCommandArcTo(const double& x, const double& y, const double& w, const double& h, const double& startAngle, const double& sweepAngle);
 	virtual HRESULT PathCommandClose()								;
 	virtual HRESULT PathCommandEnd()								;
-	virtual HRESULT DrawPath(const LONG& nType)						;
+    virtual HRESULT DrawPath(const LONG& nType)						;
 	virtual HRESULT PathCommandStart()								;
 	virtual HRESULT PathCommandGetCurrentPoint(double* x, double* y);
 
@@ -329,48 +329,45 @@ namespace NSPresentationEditor
 	virtual HRESULT ResetTransform();
 
 // -----------------------------------------------------------------------------------------
-	virtual HRESULT get_ClipMode(LONG* plMode);
-	virtual HRESULT put_ClipMode(const LONG& lMode)	;
+    virtual HRESULT get_ClipMode(LONG* plMode);
+    virtual HRESULT put_ClipMode(const LONG& lMode)	;
 
 // additiaonal params ----------------------------------------------------------------------
-	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
-	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand)	;
-	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);	
+    virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
+    virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand)	;
+    virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 //////////////////////////////////////////////////////////////////////////////////////////////////
-		// shadow -----------------------------------------------------------------------------------
-		HRESULT SetShadow (BSTR bsXML);
-		HRESULT get_ShadowDistanceX (double* val);
-		HRESULT put_ShadowDistanceX (double val);
-		HRESULT get_ShadowDistanceY (double* val);
-		HRESULT put_ShadowDistanceY (double val);
-		HRESULT get_ShadowBlurSize (double* val);
-		HRESULT put_ShadowBlurSize (double val);
-		HRESULT get_ShadowColor (LONG* val);
-		HRESULT put_ShadowColor (LONG val);
-		HRESULT get_ShadowAlpha (LONG* val);
-		HRESULT put_ShadowAlpha (LONG val);
+        // shadow -----------------------------------------------------------------------------------
+        HRESULT SetShadow (std::wstring bsXML);
+        HRESULT get_ShadowDistanceX (double* val);
+        HRESULT put_ShadowDistanceX (double val);
+        HRESULT get_ShadowDistanceY (double* val);
+        HRESULT put_ShadowDistanceY (double val);
+        HRESULT get_ShadowBlurSize (double* val);
+        HRESULT put_ShadowBlurSize (double val);
+        HRESULT get_ShadowColor (LONG* val);
+        HRESULT put_ShadowColor (LONG val);
+        HRESULT get_ShadowAlpha (LONG* val);
+        HRESULT put_ShadowAlpha (LONG val);
         HRESULT get_ShadowVisible (bool* val);
         HRESULT put_ShadowVisible (bool val);
-		// edge -------------------------------------------------------------------------------------
-		HRESULT SetEdgeText (BSTR bsXML);
-		HRESULT get_EdgeVisible (LONG* val);
-		HRESULT put_EdgeVisible (LONG val);
-		HRESULT get_EdgeColor (LONG* val);
-		HRESULT put_EdgeColor (LONG val);
-		HRESULT get_EdgeAlpha (LONG* val);
-		HRESULT put_EdgeAlpha (LONG val);
-		HRESULT get_EdgeDist (double* val);
-		HRESULT put_EdgeDist (double val);
+        // edge -------------------------------------------------------------------------------------
+        HRESULT SetEdgeText (std::wstring bsXML);
+        HRESULT get_EdgeVisible (LONG* val);
+        HRESULT put_EdgeVisible (LONG val);
+        HRESULT get_EdgeColor (LONG* val);
+        HRESULT put_EdgeColor (LONG val);
+        HRESULT get_EdgeAlpha (LONG* val);
+        HRESULT put_EdgeAlpha (LONG val);
+        HRESULT get_EdgeDist (double* val);
+        HRESULT put_EdgeDist (double val);
 
 
-		HRESULT SetFont(BSTR bsXML);
-		HRESULT SetPen(BSTR bsXML);
-		HRESULT SetBrush(BSTR bsXML);
-	// additiaonal params ----------------------------------------------------------------------
-		HRESULT SetAdditionalParam (BSTR ParamName, VARIANT ParamValue);
-		HRESULT GetAdditionalParam (BSTR ParamName, VARIANT* ParamValue);
-	public:
-		void SetRelsGenerator(CRelsGenerator* pGenerator)
+        HRESULT SetFont(std::wstring bsXML);
+        HRESULT SetPen(std::wstring bsXML);
+        HRESULT SetBrush(std::wstring bsXML);
+    public:
+        void SetRelsGenerator(CRelsGenerator* pGenerator)
 		{
 			m_pRels = pGenerator;
 		}
@@ -417,12 +414,12 @@ namespace NSPresentationEditor
 
 		double							m_dTransformAngle;
 
-		LONG							m_lCurrentCommandType;	// текущая команда
+        LONG							m_lCurrentCommandType;	// текущая команда
 
 		double							m_dDpiX;				
 		double							m_dDpiY;
 
-		LONG							m_lClipMode;
+        LONG							m_lClipMode;
 
 		CPen							m_oPen;				// настройки всей графики (скопирован ашник из AVSGraphics)
 		CBrush							m_oBrush;
@@ -442,9 +439,7 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			CString str = _T("");
-			str.Format(_T("<a:moveTo><a:pt x=\"%d\" y=\"%d\"/></a:moveTo>"), (LONG)x, (LONG)y);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" + std::to_wstring((int)y) + L"\"/></a:moveTo>");
 		}
 		inline void LineTo(const double& dX, const double& dY)
 		{
@@ -452,9 +447,7 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			CString str = _T("");
-			str.Format(_T("<a:lnTo><a:pt x=\"%d\" y=\"%d\"/></a:lnTo>"), (LONG)x, (LONG)y);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" +std::to_wstring((int)y) + L"\"/></a:lnTo>");
 		}
 		inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 		{
@@ -470,10 +463,9 @@ namespace NSPresentationEditor
 			double _y3 = y3;
 			m_oFullTransform.TransformPoint(_x3, _y3);
 
-			CString str = _T("");
-			str.Format(_T("<a:cubicBezTo><a:pt x=\"%d\" y=\"%d\"/><a:pt x=\"%d\" y=\"%d\"/><a:pt x=\"%d\" y=\"%d\"/></a:cubicBezTo>"), 
-				(LONG)_x1, (LONG)_y1, (LONG)_x2, (LONG)_y2, (LONG)_x3, (LONG)_y3);
-			m_oWriterPath.WriteString(str);
+            m_oWriterPath.WriteString(L"<a:cubicBezTo><a:pt x=\"" + std::to_wstring((int)x1) + L"\" y=\"" + std::to_wstring((int)y1)
+                                      + L"\"/><a:pt x=\"" + std::to_wstring((int)x2) + L"\" y=\"" + std::to_wstring((int)y2) + L"\"/><a:pt x=\""
+                                      + std::to_wstring((int)x3) + L"\" y=\"" + std::to_wstring((int)y3) + L"\"/></a:cubicBezTo>");
 		}
 		void Start()
 		{
@@ -485,7 +477,7 @@ namespace NSPresentationEditor
 		}
 		void Close()
 		{
-			CString str = _T("<a:close/>");
+            std::wstring str = _T("<a:close/>");
 			m_oWriterPath.WriteString(str);
 		}
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,11 +55,11 @@ int RtfDocument::GetType()
 	return TYPE_RTF_DOCUMENT;
 }
 
-CString RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfDocument::RenderToRtf(RenderParameter oRenderParameter)
 {
 	return L"";
 }
-CString RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return L"";
 }

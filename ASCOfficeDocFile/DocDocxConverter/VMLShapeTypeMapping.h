@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,11 +37,13 @@
 
 namespace DocFileFormat
 {
+	static int count_vml_objects = 0;
+
 	class VMLShapeTypeMapping: public PropertiesMapping, public IMapping
 	{
 	private: 
-		XMLTools::XMLElement<wchar_t> *_lock;
-		bool _isInlineShape;
+        XMLTools::XMLElement *  _lock;
+        bool                    _isInlineShape;
 
 	public:
 		VMLShapeTypeMapping(XMLTools::CStringXmlWriter* writer, bool isInlineShape = false );

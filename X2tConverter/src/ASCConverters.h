@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,7 +63,7 @@ namespace NExtractTools
 	int xlst2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
 
     int pptx2pptt_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-    int pptx_dir2pptt_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+    int pptx_dir2pptt_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     int pptx2pptt			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	int pptt_bin2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
     int pptt_bin2pptx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,7 @@
 #include "./../../WrapperWritingElement.h"
 #include "./../../Limit/BlipCompression.h"
 #include "./../UniEffect.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -45,8 +45,12 @@ namespace PPTX
 		class Blip : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Blip)
+			WritingElement_AdditionConstructors(Blip)
 
+			Blip(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}	
 			Blip& operator=(const Blip& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -66,14 +70,25 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_blip;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:link"), link )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("cstate"), cstate )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+				std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
 				pWriter->StartNode(strName);
 
 				pWriter->StartAttributes();
@@ -125,28 +140,29 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				double dX = 0;
-				double dY = 0;
-				double dW = pWriter->GetWidthMM();
-				double dH = pWriter->GetHeightMM();
+				double dX = pWriter->GetShapeX(); //mm
+				double dY = pWriter->GetShapeY();
+
+				double dW = pWriter->GetShapeWidth(); //mm
+				double dH = pWriter->GetShapeHeight();
 
 				FileContainer* pRels = NULL;
+				
 				if (pWriter->m_pCommonRels->is_init())
 					pRels = pWriter->m_pCommonRels->operator ->();
 
-
-				CString olePath;
-				if(!oleFilepathBin.IsEmpty())
+				std::wstring olePath;
+				if(!oleFilepathBin.empty())
 				{
 					olePath = oleFilepathBin;
 				}
-				else if(!oleRid.IsEmpty())
+				else if(!oleRid.empty())
 				{
-					olePath= this->GetFullOleName(PPTX::RId(oleRid), pRels);
+					olePath= this->GetFullOleName(OOX::RId(oleRid), pRels);
 				}
 
 				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), olePath, dX, dY, dW, dH);
-				CString s = oId.GetPath2();
+				std::wstring s = oId.GetPath2();
 
 				pWriter->StartRecord(3);
 
@@ -157,23 +173,22 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		public:
-			virtual CString GetFullPicName(FileContainer* pRels = NULL)const;
-			virtual CString GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullPicName(FileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullOleName(const OOX::RId& pRId, FileContainer* pRels = NULL)const;
 
 		public:
 			std::vector<UniEffect> Effects;
 
 			nullable_limit<Limit::BlipCompression> cstate;
-			nullable<PPTX::RId> embed;
-			nullable<PPTX::RId> link;
-		//private:
+			nullable<OOX::RId> embed;
+			nullable<OOX::RId> link;
 		public:
-			CString m_namespace;
-		//internal
-			CString oleRid;
-			CString oleFilepathBin;
-			CString oleFilepathImg;
-			CString oleRidImg;
+			std::wstring m_namespace;
+
+			std::wstring oleRid;
+			std::wstring oleFilepathBin;
+			std::wstring oleFilepathImg;
+			std::wstring oleRidImg;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

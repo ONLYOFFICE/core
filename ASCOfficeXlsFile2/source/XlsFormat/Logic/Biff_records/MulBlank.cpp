@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -81,15 +81,6 @@ BaseObjectPtr MulBlank::clone()
 {
 	return BaseObjectPtr(new MulBlank(*this));
 }
-
-
-void MulBlank::writeFields(CFRecord& record)
-{
-#pragma message("####################### MulBlank record is not implemented")
-	Log::error("MulBlank record is not implemented.");
-	//record << some_value;
-}
-
 
 void MulBlank::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,8 +54,8 @@ public:
 		
 		m_oCharProperty.SetDefault();
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);	
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 class OOXFieldInsertText : public IDocumentElement
 {
@@ -66,14 +66,14 @@ public:
 	{
 		return TYPE_OOX_FIELD;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
 		if( NULL != m_oText )
 			return m_oText->RenderToRtf( oRenderParameter );
 		else
 			return L"";
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class OOXFieldSeparate : public IDocumentElement
@@ -83,12 +83,12 @@ public:
 	{
 		return TYPE_OOX_FIELD;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		return L"}{\\fldrslt";
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return L"<w:fldChar w:fldCharType=\"separate\"/>";
 	}
@@ -101,12 +101,12 @@ public:
 	{
 		return TYPE_OOX_FIELD;
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
 		return L"}}";
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return L"<w:fldChar w:fldCharType=\"end\"/>";
 	}
@@ -117,7 +117,10 @@ public:
 class RtfFieldInst : public IDocumentElement
 {
 public:
-
+	RtfFieldInst() 
+	{
+		SetDefault();
+	} 
 	void SetDefaultRtf()
 	{
 		SetDefault();
@@ -131,8 +134,8 @@ public:
 		m_pTextItems = TextItemContainerPtr( new TextItemContainer() );
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 
 	RtfCharProperty			m_oCharProperty;
 	TextItemContainerPtr	m_pTextItems;
@@ -153,7 +156,7 @@ public:
 
 	_FieldMode				m_eMode;
 	bool					m_bReferenceToEndnote;
-	CString					m_sData;
+    std::wstring					m_sData;
 	
 	RtfFieldInstPtr			m_pInsert;
 	RtfFieldInstPtr			m_pResult;
@@ -197,8 +200,8 @@ public:
 		m_oCharProperty.SetDefault();
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 typedef boost::shared_ptr<RtfField>				RtfFieldPtr;

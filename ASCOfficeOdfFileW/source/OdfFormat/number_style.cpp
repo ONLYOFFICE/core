@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -296,8 +296,10 @@ void number_currency_symbol::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"number:language", number_language_);
 			CP_XML_ATTR_OPT(L"number:country", number_country_);
 			
-			for (long i=0; i < text_.size(); i++)
+			for (size_t i = 0; i < text_.size(); i++)
+			{
 				CP_XML_STREAM() << text_[i];
+			}
 		}
 	}
 }                      

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -93,29 +93,23 @@ namespace DocFileFormat
 		{
 		case ShapeContainer::TYPE_CODE_0xF004:
 			return new ShapeContainer();
-			break;
 
 		case Shape::TYPE_CODE_0xF00A:
 			return new Shape();
-			break;
 
 		case ShapeOptions::TYPE_CODE_0xF00B:
 		case ShapeOptions::TYPE_CODE_0xF121:
 		case ShapeOptions::TYPE_CODE_0xF122:
 			return new ShapeOptions();
-			break;
 
 		case ClientAnchor::TYPE_CODE_0xF010:
 			return new ClientAnchor();
-			break;
 
 		case ChildAnchor::TYPE_CODE_0xF00F:
 			return new ChildAnchor();
-			break;
 
 		case BlipStoreEntry::TYPE_CODE_0xF007:
 			return new BlipStoreEntry();
-			break;
 
 		case BitmapBlip::TYPE_CODE_0xF01D:				//OfficeArtBlipJPEG
 		case BitmapBlip::TYPE_CODE_0xF01E:				//OfficeArtBlipPNG
@@ -125,25 +119,25 @@ namespace DocFileFormat
 		case BitmapBlip::TYPE_CODE_0xF029:				//OfficeArtBlipTIFF
 		case BitmapBlip::TYPE_CODE_0xF02A:				//OfficeArtBlipJPEG
 			return new BitmapBlip();
-			break;
 
 		case MetafilePictBlip::TYPE_CODE_0xF01A:			//OfficeArtBlipEMF
 		case MetafilePictBlip::TYPE_CODE_0xF01B:			//OfficeArtBlipWMF
 		case MetafilePictBlip::TYPE_CODE_0xF01C			:	//OfficeArtBlipPICT
-															return new MetafilePictBlip();				break;
+															return new MetafilePictBlip();
 
-		case DrawingGroup::TYPE_CODE_0xF000				:	return new DrawingGroup();					break;
-		case DrawingGroupRecord::TYPE_CODE_0xF006		:	return new DrawingGroupRecord();			break;
-		case BlipStoreContainer::TYPE_CODE_0xF001		:	return new BlipStoreContainer();			break;
-		case SplitMenuColorContainer::TYPE_CODE_0xF11E	:	return new SplitMenuColorContainer();		break;
-		case ClientData::TYPE_CODE_0xF011				:	return new ClientData();					break;
-		case DrawingContainer::TYPE_CODE_0xF002			:	return new DrawingContainer();				break;
-		case DrawingRecord::TYPE_CODE_0xF008			:	return new DrawingRecord();					break;
-		case GroupContainer::TYPE_CODE_0xF003			:	return new GroupContainer();				break;
-		case GroupShapeRecord::TYPE_CODE_0xF009			:	return new GroupShapeRecord ();				break;
-		case OfficeArtClientTextbox::TYPE_CODE_0xF00D	:	return new OfficeArtClientTextbox ();		break;
+		case DrawingGroup::TYPE_CODE_0xF000				:	return new DrawingGroup();
+		case DrawingGroupRecord::TYPE_CODE_0xF006		:	return new DrawingGroupRecord();
+		case BlipStoreContainer::TYPE_CODE_0xF001		:	return new BlipStoreContainer();
+		case SplitMenuColorContainer::TYPE_CODE_0xF11E	:	return new SplitMenuColorContainer();
+		case ClientData::TYPE_CODE_0xF011				:	return new ClientData();
+		case DrawingContainer::TYPE_CODE_0xF002			:	return new DrawingContainer();
+		case DrawingRecord::TYPE_CODE_0xF008			:	return new DrawingRecord();		
+		case GroupContainer::TYPE_CODE_0xF003			:	return new GroupContainer();
+		case GroupShapeRecord::TYPE_CODE_0xF009			:	return new GroupShapeRecord ();
+		case OfficeArtClientTextbox::TYPE_CODE_0xF00D	:	return new OfficeArtClientTextbox ();
 
-		default:	return new UnknownRecord();		break;
+		default:	
+			return new UnknownRecord();		
 		}
 	}
 }

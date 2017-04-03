@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,7 +51,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -119,7 +119,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -131,11 +131,10 @@ namespace OOX
 					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
 					if (m_oOrientation.IsInit())
 					{
-						CString sOrientation = m_oOrientation->ToString();
+                        std::wstring sOrientation = m_oOrientation->ToString();
 						writer.WriteString(L" orientation=\"");
-						writer.WriteString(sOrientation.GetBuffer());
+                        writer.WriteString(sOrientation.c_str());
 						writer.WriteString(L"\"");
-						sOrientation.ReleaseBuffer();
 					}
 					writer.WriteString(L"/>");
 				}
@@ -182,7 +181,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -245,7 +244,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -293,7 +292,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -367,7 +366,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -429,7 +428,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -491,7 +490,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -621,7 +620,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -630,12 +629,14 @@ namespace OOX
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(_T("<sheetViews>"));
-					for( unsigned int i = 0, length = m_arrItems.size();  i< length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size();  i< length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(_T("</sheetViews>"));
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -678,7 +679,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -757,7 +758,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -815,7 +816,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -922,7 +923,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString  toXML() const
+            virtual std::wstring  toXML() const
 			{
 				return _T("");
 			}
@@ -931,7 +932,7 @@ namespace OOX
 				if(!m_oId.IsInit()) return;
 
 				writer.WriteString(L"<legacyDrawingHF");
-				WritingStringAttrString(L"r:id", m_oId->ToString2());
+				WritingStringAttrString(L"r:id", m_oId->ToString());
 				WritingStringNullableAttrInt(L"cfe", m_oCfe, m_oCfe->GetValue());
 				WritingStringNullableAttrInt(L"cff", m_oCff, m_oCff->GetValue());
 				WritingStringNullableAttrInt(L"cfo", m_oCfo, m_oCfo->GetValue());
@@ -1024,7 +1025,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString  toXML() const
+            virtual std::wstring  toXML() const
 			{
 				return _T("");
 			}
@@ -1033,7 +1034,7 @@ namespace OOX
 				if(m_oId.IsInit())
 				{
 					writer.WriteString(L"<picture");
-					WritingStringAttrString(L"r:id", m_oId->ToString2());
+					WritingStringAttrString(L"r:id", m_oId->ToString());
 					writer.WriteString(L"/>");
 				}
 				

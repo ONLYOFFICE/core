@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,14 +46,6 @@ BiffStructurePtr PictFmlaKey::clone()
 {
 	return BiffStructurePtr(new PictFmlaKey(*this));
 }
-
-
-void PictFmlaKey::store(CFRecord& record)
-{
-#pragma message("####################### PictFmlaKey record has no BiffStructure::fromXML() implemented")
-	Log::error(" Error!!! PictFmlaKey record has no BiffStructure::fromXML() implemented.");
-}
-
 
 void PictFmlaKey::load(CFRecord& record)
 {

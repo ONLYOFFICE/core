@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,9 +50,7 @@ public:
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtContainer;
 
-	// overridden:
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void storeFields(XLS::CFRecord& record);
 
 	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
 

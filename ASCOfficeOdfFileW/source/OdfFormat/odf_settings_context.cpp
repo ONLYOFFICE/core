@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -142,7 +142,7 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 			if (item_map_indexed) item_map_indexed->config_name_ = L"Views";
 		}
 
-		for (int v = 0 ; v < views_.size(); v++)
+		for (size_t v = 0 ; v < views_.size(); v++)
 		{
 			office_element_ptr views_entry_elm;
 			{
@@ -150,7 +150,7 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 				views_elm->add_child_element(views_entry_elm);
 			}
 
-			for (int i = 0; i < views_[v].content.size(); i++)
+			for (size_t i = 0; i < views_[v].content.size(); i++)
 			{
 				views_entry_elm->add_child_element(views_[v].content[i]);
 			}
@@ -164,7 +164,7 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 				item_map_named= dynamic_cast<settings_config_item_map_named*>(tables_elm.get());
 				if (item_map_named) item_map_named->config_name_ = L"Tables";
 
-				for (int t = 0 ; t < views_[v].tables.size(); t++)
+				for (size_t t = 0 ; t < views_[v].tables.size(); t++)
 				{
 					office_element_ptr table_elm;
 					create_element(L"config", L"config-item-map-entry", table_elm, odf_context_);
@@ -173,7 +173,7 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 					item_map_entry= dynamic_cast<settings_config_item_map_entry*>(table_elm.get());
 					if (item_map_entry) item_map_entry->config_name_ = views_[v].tables[t].name;
 
-					for (int j = 0; j < views_[v].tables[t].content.size(); j++)
+					for (size_t j = 0; j < views_[v].tables[t].content.size(); j++)
 					{
 						table_elm->add_child_element(views_[v].tables[t].content[j]);
 					}
@@ -190,7 +190,7 @@ void odf_settings_context::process_office_settings(office_element_ptr root )
 		item_set = dynamic_cast<settings_config_item_set*>(ooo_config_elm.get());
 		if (item_set) item_set->config_name_ = L"ooo:configuration-settings";
 
-		for (int j = 0; j < config_content_.size(); j++)
+		for (size_t j = 0; j < config_content_.size(); j++)
 		{
 			ooo_config_elm->add_child_element(config_content_[j]);
 		}

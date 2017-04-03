@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,8 +48,13 @@ namespace PPTX
 			explicit UniColor(XmlUtils::CXmlNode& node);
 			const UniColor& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			void fromXMLParent(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual OOX::EElementType getType () const;
+
 			virtual void GetColorFrom(XmlUtils::CXmlNode& element);
             virtual bool is_init()const{return (Color.IsInit());};
 
@@ -69,7 +74,7 @@ namespace PPTX
 				return 0;
 			}
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

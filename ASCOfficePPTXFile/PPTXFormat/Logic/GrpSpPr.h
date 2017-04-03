@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,8 +48,12 @@ namespace PPTX
 		class GrpSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GrpSpPr)
+			WritingElement_AdditionConstructors(GrpSpPr)
 
+			GrpSpPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 			GrpSpPr& operator=(const GrpSpPr& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -62,10 +66,54 @@ namespace PPTX
 				bwMode		= oSrc.bwMode;
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_groupSpPr;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( L"xfrm" == sName)
+						xfrm = oReader;
+					else if ( L"blipFill"	== sName	||
+							  L"gradFill"	== sName	||
+							  L"grpFill"	== sName	||
+							  L"noFill"		== sName	||
+							  L"pattFill"	== sName	||
+							  L"solidFill"	== sName )
+					{
+						Fill.fromXML(oReader);
+					}
+					else if ( L"effectDag"	== sName	||
+							  L"effectLst"	== sName	||
+							  L"extLst"		== sName )
+					{
+						EffectList.fromXML(oReader);		
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+				WritingElement_ReadAttributes_End( oReader )
+			}	
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				node.ReadAttributeBase(L"bwMode", bwMode);
 
 				XmlUtils::CXmlNodes oNodes;
@@ -77,7 +125,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 						if (_T("xfrm") == strName)
 						{
 							if (!xfrm.IsInit())
@@ -98,7 +146,7 @@ namespace PPTX
 			}
 
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("bwMode"), bwMode);
@@ -109,17 +157,16 @@ namespace PPTX
 				oValue.Write(EffectList);
 				oValue.WriteNullable(scene3d);
 
-				return XmlUtils::CreateNode(_T("p:grpSpPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(m_namespace + L":grpSpPr", oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->StartNode(_T("wpg:grpSpPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:grpSpPr"));
-				else
-					pWriter->StartNode(_T("p:grpSpPr"));
+				std::wstring namespace_ = m_namespace;
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+
+				pWriter->StartNode(namespace_ + L":grpSpPr");
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("bwMode"), bwMode);
@@ -130,12 +177,7 @@ namespace PPTX
 				EffectList.toXmlWriter(pWriter);
 				pWriter->Write(scene3d);
 				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("wpg:grpSpPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:grpSpPr"));
-				else
-					pWriter->EndNode(_T("p:grpSpPr"));
+				pWriter->EndNode(namespace_ + L":grpSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -207,8 +249,9 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			
+			std::wstring				m_namespace;
 
-		public:
 			nullable<Xfrm>				xfrm;
 			UniFill						Fill;
 			EffectProperties			EffectList;
@@ -218,12 +261,11 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				if(xfrm.IsInit())
-					xfrm->SetParentPointer(this);
 				Fill.SetParentPointer(this);
 				EffectList.SetParentPointer(this);
-				if(scene3d.IsInit())
-					scene3d->SetParentPointer(this);
+				
+				if(xfrm.IsInit())		xfrm->SetParentPointer(this);
+				if(scene3d.IsInit())	scene3d->SetParentPointer(this);
 			}
 		};
 	} // namespace Logic

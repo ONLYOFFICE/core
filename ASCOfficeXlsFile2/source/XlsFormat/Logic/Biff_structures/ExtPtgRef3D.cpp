@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,11 +46,6 @@ ExtPtgRef3D::ExtPtgRef3D(const CellRef& cell_base_ref_init)
 BiffStructurePtr ExtPtgRef3D::clone()
 {
 	return BiffStructurePtr(new ExtPtgRef3D(*this));
-}
-
-void ExtPtgRef3D::store(CFRecord& record)
-{
-	record << iTabs << loc;
 }
 
 

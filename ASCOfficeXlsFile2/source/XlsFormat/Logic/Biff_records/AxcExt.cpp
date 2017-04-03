@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,22 +48,6 @@ AxcExt::~AxcExt()
 BaseObjectPtr AxcExt::clone()
 {
 	return BaseObjectPtr(new AxcExt(*this));
-}
-
-
-void AxcExt::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAutoMin);
-	SETBIT(flags, 1, fAutoMax);
-	SETBIT(flags, 2, fAutoMajor);
-	SETBIT(flags, 3, fAutoMinor);
-	SETBIT(flags, 4, fDateAxis);
-	SETBIT(flags, 5, fAutoBase);
-	SETBIT(flags, 6, fAutoCross);
-	SETBIT(flags, 7, fAutoDate);
-	record >> catMin >> catMax >> catMajor >> duMajor >> catMinor >> duMinor >> duBase >> catCrossDate >> flags;
-
 }
 
 

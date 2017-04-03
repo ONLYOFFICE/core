@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"script", script);
 				node.ReadAttributeBase(L"typeface", typeface);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("script"), script);
@@ -115,11 +115,11 @@ namespace PPTX
 			}
 
 		public:
-			CString script;
-			CString typeface;
+			std::wstring script;
+			std::wstring typeface;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

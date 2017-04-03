@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,9 +43,26 @@ namespace PPTX
 		class Rect : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Rect)
+			WritingElement_AdditionConstructors(Rect)
+			PPTX_LOGIC_BASE2(Rect)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_rect;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("t"), t )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("l"), l )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r"), r )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("b"), b )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -55,7 +72,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"l", l);
 				node.ReadAttributeBase(L"r", r);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("l"), l);
@@ -68,8 +85,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString _name;
-				CString sAttrNamespace;
+				std::wstring _name;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					_name = _T("w14:") + XmlUtils::GetNameNoNS(m_name);
@@ -148,11 +165,11 @@ namespace PPTX
 			nullable_string r;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("l"), l);

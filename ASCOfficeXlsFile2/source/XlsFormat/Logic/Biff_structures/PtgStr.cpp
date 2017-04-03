@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,21 +56,29 @@ BiffStructurePtr PtgStr::clone()
 }
 
 
-void PtgStr::storeFields(CFRecord& record)
-{
-	record << string_;
-}
-
 
 void PtgStr::loadFields(CFRecord& record)
 {
-	record >> string_;
+	ShortXLUnicodeString s;
+	record >> s;
+
+	string_ = s;
+	
+	int pos1 = string_.find(L"\"");
+	int pos2 = string_.rfind(L"\"");
+	
+	if (pos1 == 0 && pos2 >= string_.length() - 1)
+	{
+		string_ = string_.substr(1, string_.length() - 2);
+	}
+
+	string_ = L"\"" + string_ + L"\"";
 }
 
 
 void PtgStr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push(L"\"" + boost::algorithm::replace_all_copy(std::wstring(string_), L"\"", L"\"\"") + L"\"");
+	ptg_stack.push(string_);
 }
 
 

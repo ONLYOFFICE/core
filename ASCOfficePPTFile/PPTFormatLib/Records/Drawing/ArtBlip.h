@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,9 +40,9 @@ class CRecordOfficeArtBlip  : public CUnknownRecord
 {
 public:
 	CPPTDocumentInfo *	m_oDocumentInfo;
+	
 	std::wstring		m_sFileName;
-
-	CString				m_strMemoryForder;
+	std::wstring		m_strMemoryForder;
 
 	CRecordOfficeArtBlip()
 	{

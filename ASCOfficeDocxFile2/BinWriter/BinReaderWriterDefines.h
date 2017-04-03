@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -152,7 +152,8 @@ extern int g_nCurFormatVersion;
 		Comments = 8,
 		Settings = 9,
 		Footnotes = 10,
-		Endnotes = 11
+		Endnotes = 11,
+		Background
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -287,7 +288,9 @@ extern int g_nCurFormatVersion;
 		tblPrChange = 13,
 		TableCellSpacing = 14,
 		RowBandSize = 15,
-		ColBandSize = 16
+		ColBandSize = 16,
+		tblCaption = 17,
+		tblDescription = 18
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -446,20 +449,21 @@ extern int g_nCurFormatVersion;
 	};}
 	namespace c_oSerParType{enum c_oSerParType
 	{
-		Par = 0,
-		pPr = 1,
-		Content = 2,
-		Table = 3,
-		sectPr =  4,
-		Run = 5,
-		CommentStart = 6,
-		CommentEnd = 7,
-		OMathPara = 8,
-		OMath = 9,
-		Hyperlink = 10,
-		FldSimple = 11,
-		Del = 12,
-		Ins = 13
+		Par				= 0,
+		pPr				= 1,
+		Content			= 2,
+		Table			= 3,
+		sectPr			=  4,
+		Run				= 5,
+		CommentStart	= 6,
+		CommentEnd		= 7,
+		OMathPara		= 8,
+		OMath			= 9,
+		Hyperlink		= 10,
+		FldSimple		= 11,
+		Del				= 12,
+		Ins				= 13,
+		Background		= 14
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -506,6 +510,12 @@ extern int g_nCurFormatVersion;
 		endnoteReference = 27,
 		arPr = 28
 	};}
+    namespace c_oSerBackgroundType{enum c_oSerBackgroundType
+	{
+		Color		= 0,
+		ColorTheme	= 1,
+		pptxDrawing = 2
+	};}
 	namespace c_oSerImageType{enum c_oSerImageType
 	{
 		MediaId = 0,
@@ -549,7 +559,8 @@ extern int g_nCurFormatVersion;
 		SizeRelH = 27,
 		SizeRelV = 28,
 		Embedded = 29,
-		GraphicFramePr = 30
+		GraphicFramePr = 30,
+		DocPr = 31
 	};}
 	namespace c_oSerEffectExtent{enum c_oSerEffectExtent
 	{
@@ -977,6 +988,14 @@ extern int g_nCurFormatVersion;
 		PrFntPos = 9,
 		PrEndPos = 10,
 		PrRef = 11
+	};}
+	namespace c_oSerDocPr{enum c_oSerDocPr
+	{
+		Id = 0,
+		Name = 1,
+		Hidden = 2,
+		Title	= 3,
+		Descr = 4
 	};}
 }
 

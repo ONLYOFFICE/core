@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(EffectElement)
+			WritingElement_AdditionConstructors(EffectElement)
+			PPTX_LOGIC_BASE2(EffectElement)
 
 			EffectElement& operator=(const EffectElement& oSrc)
 			{
@@ -54,14 +55,27 @@ namespace PPTX
 				ref = oSrc.ref;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_effect;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), ref)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"ref", ref);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (!ref.IsInit())
 					return _T("<a:effect/>");

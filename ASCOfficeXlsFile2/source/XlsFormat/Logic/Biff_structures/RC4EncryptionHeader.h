@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,12 +44,15 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeRC4EncryptionHeader;
 
-	Version EncryptionVersionInfo;
-		CRYPT::CryptRC4Data	RC4Data;
+	Version								EncryptionVersionInfo;
+	
+	CRYPT::CryptRC4Data					crypt_data_rc4;
+	CRYPT::ECMADecryptor::_cryptData	crypt_data_aes;
+	
+	bool								bStandard;
 };
 
 	typedef boost::shared_ptr<RC4EncryptionHeader> RC4EncryptionHeaderPtr;

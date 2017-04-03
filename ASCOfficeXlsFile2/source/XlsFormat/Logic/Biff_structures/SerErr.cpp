@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,15 +53,6 @@ BiffStructurePtr SerErr::clone()
 {
 	return BiffStructurePtr(new SerErr(*this));
 }
-
-
-void SerErr::store(CFRecord& record)
-{
-    record.storeAnyData(fixed_type);
-	record << err;
-	record.reserveNunBytes(7); // reserved/unused
-}
-
 
 void SerErr::load(CFRecord& record)
 {

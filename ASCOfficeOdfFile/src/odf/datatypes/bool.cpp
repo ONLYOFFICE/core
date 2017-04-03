@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,10 +31,11 @@
  */
 
 #include "bool.h"
-#include <boost/algorithm/string.hpp>
 
 #include <ostream>
 #include <sstream>
+
+#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore { namespace odf_types { 
 
@@ -46,7 +47,7 @@ std::wostream & operator << (std::wostream & _Wostream, const Bool & _Val)
 Bool Bool::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;
-    boost::algorithm::to_lower(tmp);
+	XmlUtils::GetLower(tmp);
 
 	if (tmp == L"0" || tmp == L"false") return Bool(false);
 	else return Bool(true);

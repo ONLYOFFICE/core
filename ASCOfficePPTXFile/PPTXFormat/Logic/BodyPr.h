@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,9 +51,67 @@ namespace PPTX
 		class BodyPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BodyPr)
+			WritingElement_AdditionConstructors(BodyPr)
+			
+			BodyPr(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}			
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					
+					if (L"a:prstTxWarp" == strName)
+						prstTxWarp = oReader;
+					else if (L"a:scene3d" == strName)
+						scene3d = oReader;
+					else if (L"a:sp3d" == strName)
+						sp3d = oReader;
+					else if (strName == L"a:noAutofit" || strName == L"a:spAutoFit" || strName == L"a:normAutofit")
+						Fit.fromXML(oReader);
+					else if (L"a:flatTx" == strName)
+					{
+						//oNode.ReadAttributeBase(L"z", flatTx);
+					}
+					
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("anchor"), anchor )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("anchorCtr"), anchorCtr )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("bIns"), bIns )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("compatLnSpc"), compatLnSpc )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("forceAA"), forceAA )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fromWordArt"), fromWordArt )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("horzOverflow"), horzOverflow )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("lIns"), lIns )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("numCol"), numCol )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rIns"), rIns )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rot"), rot )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rtlCol"), rtlCol )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("spcCol"), spcCol )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("spcFirstLastPara"), spcFirstLastPara )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tIns"), tIns )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("upright"), upright )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("vert"), vert )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("vertOverflow"), vertOverflow )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrap"), wrap )
+				WritingElement_ReadAttributes_End	( oReader )
+
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -91,8 +149,10 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("rot"), rot);
 				oAttr.Write(_T("spcFirstLastPara"), spcFirstLastPara);
@@ -132,6 +192,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
 				pWriter->StartNode(m_namespace + _T(":bodyPr"));
 
 				pWriter->StartAttributes();
@@ -172,10 +234,16 @@ namespace PPTX
 				pWriter->EndNode(m_namespace + _T(":bodyPr"));
 			}
 
-			void Merge(BodyPr& bodyPr)const
+			
+			void Merge(nullable<BodyPr>& bodyPr)const
 			{
+				if (!bodyPr.IsInit()) 
+				{
+					bodyPr = new PPTX::Logic::BodyPr();
+				}
+
 				if(Fit.type != TextFit::FitEmpty)
-					Fit.Merge(bodyPr.Fit);
+					Fit.Merge(bodyPr->Fit);
 	/*
 				nullable_property<PrstTxWarp> prstTxWarp;
 				nullable_property<Scene3d> scene3d;
@@ -184,43 +252,43 @@ namespace PPTX
 	*/
 				// Attributes
 				if(anchor.IsInit())
-					bodyPr.anchor = *anchor;
+					bodyPr->anchor = *anchor;
 				if(anchorCtr.IsInit())
-					bodyPr.anchorCtr = *anchorCtr;
+					bodyPr->anchorCtr = *anchorCtr;
 				if(bIns.IsInit())
-					bodyPr.bIns = *bIns;
+					bodyPr->bIns = *bIns;
 				if(compatLnSpc.IsInit())
-					bodyPr.compatLnSpc = *compatLnSpc;
+					bodyPr->compatLnSpc = *compatLnSpc;
 				if(forceAA.IsInit())
-					bodyPr.forceAA = *forceAA;
+					bodyPr->forceAA = *forceAA;
 				if(fromWordArt.IsInit())
-					bodyPr.fromWordArt = *fromWordArt;
+					bodyPr->fromWordArt = *fromWordArt;
 				if(horzOverflow.IsInit())
-					bodyPr.horzOverflow = *horzOverflow;
+					bodyPr->horzOverflow = *horzOverflow;
 				if(lIns.IsInit())
-					bodyPr.lIns = *lIns;
+					bodyPr->lIns = *lIns;
 				if(numCol.IsInit())
-					bodyPr.numCol = *numCol;
+					bodyPr->numCol = *numCol;
 				if(rIns.IsInit())
-					bodyPr.rIns = *rIns;
+					bodyPr->rIns = *rIns;
 				if(rot.IsInit())
-					bodyPr.rot = *rot;
+					bodyPr->rot = *rot;
 				if(rtlCol.IsInit())
-					bodyPr.rtlCol = *rtlCol;
+					bodyPr->rtlCol = *rtlCol;
 				if(spcCol.IsInit())
-					bodyPr.spcCol = *spcCol;
+					bodyPr->spcCol = *spcCol;
 				if(spcFirstLastPara.IsInit())
-					bodyPr.spcFirstLastPara = *spcFirstLastPara;
+					bodyPr->spcFirstLastPara = *spcFirstLastPara;
 				if(tIns.IsInit())
-					bodyPr.tIns = *tIns;
+					bodyPr->tIns = *tIns;
 				if(upright.IsInit())
-					bodyPr.upright = *upright;
+					bodyPr->upright = *upright;
 				if(vert.IsInit())
-					bodyPr.vert = *vert;
+					bodyPr->vert = *vert;
 				if(vertOverflow.IsInit())
-					bodyPr.vertOverflow = *vertOverflow;
+					bodyPr->vertOverflow = *vertOverflow;
 				if(wrap.IsInit())
-					bodyPr.wrap = *wrap;
+					bodyPr->wrap = *wrap;
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -445,7 +513,7 @@ namespace PPTX
 			nullable_limit<Limit::TextWrap>			wrap;
 		//private:
 		public:
-			mutable CString									m_namespace;
+			mutable std::wstring									m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

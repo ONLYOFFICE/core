@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,7 @@ namespace PPTX
 		public:
 			RunBase(){}
 			virtual ~RunBase(){}
-			virtual CString GetText()const =0;
+			virtual std::wstring GetText()const =0;
 		};
 	} // namespace Logic
 } // namespace PPTX

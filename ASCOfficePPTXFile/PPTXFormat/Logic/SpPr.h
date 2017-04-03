@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,14 +52,31 @@ namespace PPTX
 		class SpPr : public WrapperWritingElement
 		{
 		public:
-			SpPr();
-			virtual ~SpPr();			
+			SpPr(std::wstring ns = L"a");
+			virtual ~SpPr();	
+
 			explicit SpPr(XmlUtils::CXmlNode& node);
 			const SpPr& operator =(XmlUtils::CXmlNode& node);
 
-		public:
+			explicit SpPr(XmlUtils::CXmlLiteReader& oReader);
+			const SpPr& operator =(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_spPr;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+				WritingElement_ReadAttributes_End( oReader )
+			}	
+				
+			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
@@ -220,7 +237,7 @@ namespace PPTX
 			nullable_limit<Limit::BWMode> bwMode;
 		//private:
 		public:
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

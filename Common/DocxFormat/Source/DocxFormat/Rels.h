@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,6 +43,10 @@
 #include "../Base/SmartPtr.h"
 #include "../SystemUtility/SystemUtility.h"
 
+#include "../../../../DesktopEditor/common/File.h"
+
+#include <boost/algorithm/string.hpp>
+
 namespace OOX
 {
 	namespace Rels
@@ -51,41 +55,43 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRelationShip)
-			CRelationShip(const OOX::RId& rId, const CString& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
+
+            CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 			{
-				m_oTarget.m_strFilename.Replace(_T(" "), _T("_"));
+				XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
 			}
-			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
+
+            CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal): m_rId(rId), m_oTarget(pExternal->Uri()), m_sType(pExternal->type().RelationType())
 			{
-				m_sMode = new CString( _T("External") );
+                m_sMode = new std::wstring( _T("External") );
 			}
-			virtual ~CRelationShip()
+
+            virtual ~CRelationShip()
 			{
 			}
 			
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+            virtual void  fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+            virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("Id"),         m_rId );
 				oNode.ReadAttributeBase( _T("Target"),     m_oTarget );
 				oNode.ReadAttributeBase( _T("Type"),       m_sType );
 				oNode.ReadAttributeBase( _T("TargetMode"), m_sMode );
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write( _T("Id"),         m_rId.ToString() );
 				oAttr.Write( _T("Type"),       m_sType );
-				CString sTarget = m_oTarget.m_strFilename;
-				sTarget.Replace(_T("\\"), _T("/"));
+                std::wstring sTarget = m_oTarget.m_strFilename;
+
+                XmlUtils::replace_all(sTarget, _T("\\"), _T("/"));
 				sTarget = XmlUtils::EncodeXmlString(sTarget);
 				oAttr.Write( _T("Target"), sTarget);
 				if(m_sMode.IsInit())
@@ -103,7 +109,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				CString sTempTarget;
+                std::wstring sTempTarget;
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("Id"),         m_rId )
@@ -121,14 +127,7 @@ namespace OOX
 
 		public:
 
-			//const bool operator <(const CRelationShip& rhs) const
-			//{
-			//	return m_rId < rhs.m_rId;
-			//}
-
-		public:
-
-			const CString Type() const
+            const std::wstring Type() const
 			{
 				return m_sType;
 			}
@@ -146,7 +145,7 @@ namespace OOX
 					return false;
                 return ( *m_sMode == _T("External" ));
 			}
-			const RId     rId() const
+            const RId rId() const
 			{
 				return m_rId;
 			}
@@ -154,14 +153,12 @@ namespace OOX
 		private:
 			RId						m_rId;
 			CPath					m_oTarget;
-			CString					m_sType;
-			nullable<CString>       m_sMode;
+            std::wstring            m_sType;
+            nullable<std::wstring>  m_sMode;
 		};
 
 	} // namespace Rels
-} // namespace OOX
-namespace OOX
-{
+
 	class CRels
 	{
 	public:
@@ -184,65 +181,59 @@ namespace OOX
 
 		}
 
-	public:
-
 		void Read (const CPath& oFilePath)
 		{
-			CPath oRelsPath = CreateFileName( oFilePath );
+            CPath oRelsPath = CreateFileName( oFilePath );
 
-			if ( CSystemUtility::IsFileExist( oRelsPath ) )
-			{
 #ifdef USE_LITE_READER
 
-				XmlUtils::CXmlLiteReader oReader;
+            XmlUtils::CXmlLiteReader oReader;
 
-				if ( !oReader.FromFile( oRelsPath.GetPath() ) )
-					return;
+            if ( !oReader.FromFile( oRelsPath.GetPath() ) )
+                return;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+            if ( !oReader.ReadNextNode() )
+                return;
 
-				std::wstring sName = oReader.GetName();
-				if ( _T("Relationships") == sName )
-				{
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nRelationshipsDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
-						{
-							sName = oReader.GetName();
-							if ( _T("Relationship") == sName )
-							{
-								Rels::CRelationShip *oRel = new Rels::CRelationShip(oReader);
-								if (oRel) m_arrRelations.push_back( oRel );
-							}
-						}
-					}
-				}
-
+            std::wstring sName = oReader.GetName();
+            if ( _T("Relationships") == sName )
+            {
+                if ( !oReader.IsEmptyNode() )
+                {
+                    int nRelationshipsDepth = oReader.GetDepth();
+                    while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
+                    {
+                        sName = oReader.GetName();
+                        if ( _T("Relationship") == sName )
+                        {
+                            OOX::Rels::CRelationShip *oRel = new OOX::Rels::CRelationShip(oReader);
+                            if (oRel) m_arrRelations.push_back( oRel );
+                        }
+                    }
+                }
+            }
 #else
 
-				XmlUtils::CXmlNode oNode;
+            XmlUtils::CXmlNode oNode;
 
-                if ( oNode.FromXmlFile2( oRelsPath.GetPath() ) && _T("Relationships") == oNode.GetName() )
-				{
-					XmlUtils::CXmlNodes oNodes;
-					if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
-					{
-						XmlUtils::CXmlNode oRelNode;
-						for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
-						{
-							if ( oNodes.GetAt( nIndex, oRelNode ) )
-							{
-                                //Rels::CRelationShip oRel = oRelNode;
-                                Rels::CRelationShip *oRel = new Rels::CRelationShip (oRelNode);
-                                m_arrRelations.push_back( oRel );
-							}
-						}
-					}
-				}
+            if ( oNode.FromXmlFile( oRelsPath.GetPath() ) && _T("Relationships") == oNode.GetName() )
+            {
+                XmlUtils::CXmlNodes oNodes;
+                if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
+                {
+                    XmlUtils::CXmlNode oRelNode;
+                    for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
+                    {
+                        if ( oNodes.GetAt( nIndex, oRelNode ) )
+                        {
+                            //Rels::CRelationShip oRel = oRelNode;
+                            Rels::CRelationShip *oRel = new Rels::CRelationShip (oRelNode);
+                            m_arrRelations.push_back( oRel );
+                        }
+                    }
+                }
+            }
 #endif
-			}
 		}
 		void Write(const CPath& oFilePath) const
 		{
@@ -267,18 +258,17 @@ namespace OOX
 
 				oWriter.WriteNodeEnd(_T("Relationships") );
 
-				CDirectory::SaveToFile( oFile.GetPath(), oWriter.GetXmlString() );
+				NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 			}
 		}
 
-	public:
 
 		void Registration(const RId& rId, const FileType& oType, const CPath& oPath)
 		{
 			if( !( FileTypes::Unknow == oType ) )
 			{
-				CString strFileName	= oPath.m_strFilename;
-				CString strDir		= oPath.GetDirectory() + _T("");
+                std::wstring strFileName	= oPath.m_strFilename;
+                std::wstring strDir		= oPath.GetDirectory() + _T("");
 
 				if ( _T("") == oPath.GetExtention() )
 				{
@@ -307,7 +297,7 @@ namespace OOX
 		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
 		{
 			(*ppRelationShip) = NULL;
-			for( unsigned int i = 0, length = m_arrRelations.size(); i < length; ++i)
+			for( size_t i = 0, length = m_arrRelations.size(); i < length; ++i)
 			{
 				if ((m_arrRelations[i]) && (m_arrRelations[i]->rId() == rId))
 				{
@@ -320,7 +310,7 @@ namespace OOX
 
 		const CPath CreateFileName(const CPath& oFilePath) const
 		{
-            CString strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
+            std::wstring strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
 
 			if ( _T("") == oFilePath.GetFilename() )	strTemp += _T(".rels");
 			else										strTemp += ( oFilePath.GetFilename() + _T(".rels") );

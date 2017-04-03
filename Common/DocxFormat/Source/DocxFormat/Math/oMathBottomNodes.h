@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -208,11 +208,11 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				if (sNodeName.IsEmpty()) return L"";
+				if (sNodeName.empty()) return L"";
 
-				CString sResult = _T("<") + sNodeName;
+				std::wstring sResult = _T("<") + sNodeName;
 				if (m_val.IsInit())
 				{
 					sResult += _T(" m:val=\"");
@@ -238,8 +238,8 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			CString sNodeName;
-			CString GetMathNodeName(const EElementType & enumType)  const
+			std::wstring sNodeName;
+			std::wstring GetMathNodeName(const EElementType & enumType)  const
 			{//todooo вытащить в одно место - пересекается с MathArgNodes
 				switch(enumType)
 				{
@@ -307,7 +307,9 @@ namespace OOX
 					case OOX::et_m_zeroAsc:			return L"m:zeroAsc";
 					case OOX::et_m_zeroDesc:		return L"m:zeroDesc";
 					case OOX::et_m_zeroWid:			return L"m:zeroWid";
-				}
+                    default:
+                        break;
+                }
 				return L"";
 			}
 			nullable<TMathBottomType> m_val;			

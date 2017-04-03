@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -213,10 +213,10 @@ public:
 		m_bHtmlAutoSpace			= PROP_DEF;
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 private: 
-	CString GetRtfFormat( int nFormat, bool bFootnote )
+    std::wstring GetRtfFormat( int nFormat, bool bFootnote )
 	{
 		if( PROP_DEF == nFormat )
 		{
@@ -499,12 +499,12 @@ public:
 	TextItemContainerPtr m_oFooterFirst;
 	TextItemContainerPtr m_oFooterRight;
 
-	CString m_sIDHeaderLeft; //для OOX
-	CString m_sIDHeaderFirst;
-	CString m_sIDHeaderRight;
-	CString m_sIDFooterLeft;
-	CString m_sIDFooterFirst;
-	CString m_sIDFooterRight;
+    std::wstring m_sIDHeaderLeft; //для OOX
+    std::wstring m_sIDHeaderFirst;
+    std::wstring m_sIDHeaderRight;
+    std::wstring m_sIDFooterLeft;
+    std::wstring m_sIDFooterFirst;
+    std::wstring m_sIDFooterRight;
 
 	int m_nSrAuth;
 	int m_nSrDate;
@@ -638,10 +638,10 @@ public:
 
 		m_pOldSectionProp = RtfSectionPropertyPtr(NULL);
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 private: 
-	CString SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
+    std::wstring SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
 };
 
 typedef boost::shared_ptr<RtfDocumentProperty>	RtfDocumentPropertyPtr;
@@ -662,9 +662,9 @@ public:
 		return TYPE_RTF_SECTION;
 	}
 
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult = m_oProperty.RenderToRtf(  oRenderParameter );
+        std::wstring sResult = m_oProperty.RenderToRtf(  oRenderParameter );
 
 		if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
 			sResult += L"\\sectd";
@@ -675,7 +675,7 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if (!m_bFinalize) return L"";
 		

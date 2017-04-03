@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,73 +33,73 @@
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
-bool RtfMath::IsRtfControlPropertyBool( CString sControlW )
+bool RtfMath::IsRtfControlPropertyBool( std::string sControl )
 {
-	const TCHAR* mc_aRtfControlWords[]		= { L"maln", L"malnScr", L"mdegHide", L"mdiff", L"mdispDef", 
-	L"mgrow", L"mhideBot", L"mhideLeft", L"mhideRight", L"mhideTop", L"mlit", L"mmaxDist", L"mnoBreak", L"mnor", 
-	L"mobjDist", L"mopEmu", L"mplcHide", L"mshow", L"msmallFracN", L"mstrikeBLTR", L"mstrikeH", L"mstrikeTLBR", 
-	L"mstrikeV", L"msubHide", L"msupHide", L"mtransp", L"mwrapRight", L"mzeroAsc", L"mzeroDesc", L"mzeroWid"};
+    const char* mc_aRtfControlWords[]		= { "maln", "malnScr", "mdegHide", "mdiff", "mdispDef",
+    "mgrow", "mhideBot", "mhideLeft", "mhideRight", "mhideTop", "mlit", "mmaxDist", "mnoBreak", "mnor",
+    "mobjDist", "mopEmu", "mplcHide", "mshow", "msmallFracN", "mstrikeBLTR", "mstrikeH", "mstrikeTLBR",
+    "mstrikeV", "msubHide", "msupHide", "mtransp", "mwrapRight", "mzeroAsc", "mzeroDesc", "mzeroWid"};
 
-	int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
+    int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( char* );
 
 	//можно бинарный поиск вставить
 	for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
-		if( mc_aRtfControlWords[ i ] == sControlW )
+        if( mc_aRtfControlWords[ i ] == sControl )
 			return true;
 	return false;
 }
-bool RtfMath::IsRtfControlProperty( CString sControlW )
+bool RtfMath::IsRtfControlProperty( std::string sControl )
 {
-	const TCHAR* mc_aRtfControlWords[]		= {L"margSz", L"mbaseJc", L"mbegChr", L"mbrkBin", L"mbrkBinSub", L"mcGp", 
-	L"mcGpRule", L"mchr", L"mcount", L"mcSp", L"mdefJc", L"mendChr", L"minterSp", L"mintLim", L"mintraSp", L"mmJc", 
-	L"mlimLoc", L"mlMargin", L"mmcJc", L"mnaryLim", L"mpos", L"mpostSp", L"mpreSp", L"mrMargin", L"mrSp", L"mrSpRule",
-	L"msepChr", L"mshp", L"mtype", L"mvertJc", L"mwrapIndent", L"mmathFont"};
+    const char* mc_aRtfControlWords[]		= {"margSz", "mbaseJc", "mbegChr", "mbrkBin", "mbrkBinSub", "mcGp",
+    "mcGpRule", "mchr", "mcount", "mcSp", "mdefJc", "mendChr", "minterSp", "mintLim", "mintraSp", "mmJc",
+    "mlimLoc", "mlMargin", "mmcJc", "mnaryLim", "mpos", "mpostSp", "mpreSp", "mrMargin", "mrSp", "mrSpRule",
+    "msepChr", "mshp", "mtype", "mvertJc", "mwrapIndent", "mmathFont"};
 
-	int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
+    int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( char* );
 	
 	//можно бинарный поиск вставить
 	for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
 	{
-		if( mc_aRtfControlWords[ i ] == sControlW )
+        if( mc_aRtfControlWords[ i ] == sControl )
 			return true;
 	}
 	return false;
 }
 
-bool RtfMath::IsRtfControlWord( CString sControlW )
+bool RtfMath::IsRtfControlWord( std::string sControl )
 {
-	const TCHAR* mc_aRtfControlWords[]		= { L"moMath", L"moMathPara", L"moMathParaPr", L"maccPr", L"macc", 
-	L"me", L"mctrlPr", L"margPr", L"mbarPr", L"mbar", L"mborderBoxPr", L"mborderBox", L"mboxPr", L"mbox"/*, L"mbrk"*/, 
-	L"mdPr", L"md", L"meqArrPr", L"meqArr", L"mfPr", L"mf", L"mfuncPr", L"mfunc", 
-	L"mgroupChrPr", L"mgroupChr", L"mlimLowPr", L"mlimLow",L"mlimUppPr", L"mlimUpp", L"mmathPr", L"mmcPr", L"mmc", 
-	L"mmcs", L"mmPr", L"mmr", L"mm", L"mnaryPr", L"mnary", L"mphantPr", L"mphant", L"mmRun", L"mmDel", 
-	L"mmIns", L"mradPr", L"mrad", /*MRPr",*/ L"msPrePr", L"msPre", L"msSubPr", L"msSub", L"msSubSupPr", 
-	L"msSubSup", L"msSupPr", L"msSup", L"msub", L"msup", L"mden", L"mlim", L"mnum", L"mdeg"/*mmText",*/, L"mfName", L"mscr", L"mrPr" };
+    const char* mc_aRtfControlWords[]		= { "moMath", "moMathPara", "moMathParaPr", "maccPr", "macc",
+    "me", "mctrlPr", "margPr", "mbarPr", "mbar", "mborderBoxPr", "mborderBox", "mboxPr", "mbox"/*, "mbrk"*/,
+    "mdPr", "md", "meqArrPr", "meqArr", "mfPr", "mf", "mfuncPr", "mfunc",
+    "mgroupChrPr", "mgroupChr", "mlimLowPr", "mlimLow","mlimUppPr", "mlimUpp", "mmathPr", "mmcPr", "mmc",
+    "mmcs", "mmPr", "mmr", "mm", "mnaryPr", "mnary", "mphantPr", "mphant", "mmRun", "mmDel",
+    "mmIns", "mradPr", "mrad", /*MRPr",*/ "msPrePr", "msPre", "msSubPr", "msSub", "msSubSupPr",
+    "msSubSup", "msSupPr", "msSup", "msub", "msup", "mden", "mlim", "mnum", "mdeg"/*mmText",*/, "mfName", "mscr", "mrPr" };
 
-	int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
+    int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( char* );
 	
 	//можно бинарный поиск вставить
 	for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
 	{
-		if( mc_aRtfControlWords[ i ] == sControlW )
+        if( mc_aRtfControlWords[ i ] == sControl )
 			return true;
 	}
 	return false;
 }
 
-CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 {
-	if (m_sRtfName.IsEmpty())
+    if (m_sRtfName.empty())
 		return L"";
 
-	CString sResult;
+    std::wstring sResult;
 	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
 		sResult += L"{\\mmath";
 
-    sResult += L"{\\" + m_sRtfName;
+    sResult += L"{\\" + std::wstring(m_sRtfName.begin(), m_sRtfName.end());
 	RenderParameter oNewParameter = oRenderParameter;
 
-	CString sVal;
+    std::wstring sVal;
 
 	if (m_bIsVal)
 	{
@@ -114,14 +114,14 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 			sVal += L" " + m_oVal[i]->RenderToRtf( oNewParameter );
 		}
 	}
-	if (!sVal.IsEmpty())
+    if (!sVal.empty())
 	{
 		sResult += sVal;
 	}
 	//else
 	{
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_NESTED;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 			sResult += m_aArray[i]->RenderToRtf( oNewParameter );
 	}
 	sResult += L"}";
@@ -131,26 +131,26 @@ CString RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if (m_sOOXName.IsEmpty()) return L"";
+    if (m_sOOXName.empty()) return L"";
 
-	CString sResult;
-	CString sContent;
-	CString sProp;
-	CString sVal;
+    std::wstring sResult;
+    std::wstring sContent;
+    std::wstring sProp;
+    std::wstring sVal;
 
 	RenderParameter oNewParam = oRenderParameter;
 
 	if (m_bIsVal || m_bIsBool)
 	{
 		oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sVal += m_aArray[i]->RenderToOOX(oNewParam);
 		}
 
-		if (sVal.IsEmpty())
+        if (sVal.empty())
 		{
 			oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
 			sVal = m_oVal.RenderToOOX(oNewParam);
@@ -159,16 +159,15 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 	else
 	{
 		oNewParam.nType = RENDER_TO_OOX_PARAM_MATH;
-		for( int i = 0; i < m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sContent += m_aArray[i]->RenderToOOX(oNewParam);
 		}
 	}
+    std::wstring wsOOXName(m_sOOXName.begin(), m_sOOXName.end());
 
-	sResult += L"<";
-	sResult += m_sOOXName;
-
-	if( false == sVal.IsEmpty() )
+    sResult += L"<" + wsOOXName;
+    if( false == sVal.empty() )
 	{
 		if (m_bIsBool)
 		{
@@ -185,9 +184,7 @@ CString RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 
 	sResult += sContent;
 
-	sResult += L"</";
-		sResult += m_sOOXName;
-	sResult += L">";
+    sResult += L"</" + wsOOXName + L">";
 
 //альтернативная картинка
 //	if( NULL != m_oPicture )
@@ -200,133 +197,133 @@ void RtfMath::SetOOXType(int type)
 	OOX::EElementType type_ms = (OOX::EElementType)type;
 	switch(type_ms)
 	{
-		case OOX::et_m_acc:			m_sRtfName = L"macc";			break;
-		case OOX::et_m_accPr:		m_sRtfName = L"maccPr";			break;
-		case OOX::et_m_aln:			m_sRtfName = L"maln";			break;
-		case OOX::et_m_alnScr:		m_sRtfName = L"malnScr";		break;
-		case OOX::et_m_argPr:		m_sRtfName = L"margPr";			break;
-    	case OOX::et_m_argSz:		m_sRtfName = L"margSz";			break;
-		case OOX::et_m_bar:			m_sRtfName = L"mbar";			break;
-		case OOX::et_m_barPr:		m_sRtfName = L"mbarPr";			break;
-		case OOX::et_m_baseJc:		m_sRtfName = L"mbaseJc";		break;
-		case OOX::et_m_begChr:		m_sRtfName = L"mbegChr";		break;
-		case OOX::et_m_borderBox:	m_sRtfName = L"mborderBox";		break;
-		case OOX::et_m_borderBoxPr:	m_sRtfName = L"mborderBoxPr";	break;
-		case OOX::et_m_box:			m_sRtfName = L"mbox";			break;
-		case OOX::et_m_boxPr:		m_sRtfName = L"mboxPr";			break;
-		case OOX::et_m_brk:			m_sRtfName = L"mbrk";			break;
-		case OOX::et_m_brkBin:		m_sRtfName = L"mbrkBin";		break;
-		case OOX::et_m_brkBinSub:	m_sRtfName = L"mbrkBinSub";		break;
-		case OOX::et_m_cGp:			m_sRtfName = L"mcGp";			break;
-		case OOX::et_m_cGpRule:		m_sRtfName = L"mcGpRule";		break;
-		case OOX::et_m_chr:			m_sRtfName = L"mchr";			break;
-		case OOX::et_m_count:		m_sRtfName = L"mcount";			break;
-		case OOX::et_m_cSp:			m_sRtfName = L"mcSp";			break;
-		case OOX::et_m_ctrlPr:		m_sRtfName = L"mctrlPr";		break;
-		case OOX::et_m_d:			m_sRtfName = L"md";				break;
-		case OOX::et_m_defJc:		m_sRtfName = L"mdefJc";			break;
-		case OOX::et_m_deg:			m_sRtfName = L"mdeg";			break;
-		case OOX::et_m_degHide:		m_sRtfName = L"mdegHide";		break;
-		case OOX::et_m_den:			m_sRtfName = L"mden";			break;
-		case OOX::et_m_diff:		m_sRtfName = L"mdiff";			break;
-		case OOX::et_m_dispDef:		m_sRtfName = L"mdispDef";		break;
-		case OOX::et_m_dPr:			m_sRtfName = L"mdPr";			break;
-		case OOX::et_m_e:			m_sRtfName = L"me";				break;
-		case OOX::et_m_endChr:		m_sRtfName = L"mendChr";		break;
-		case OOX::et_m_eqArr:		m_sRtfName = L"meqArr";			break;
-		case OOX::et_m_eqArrPr:		m_sRtfName = L"meqArrPr";		break;
-		case OOX::et_m_f:			m_sRtfName = L"mf";				break;
-		case OOX::et_m_fName:		m_sRtfName = L"mfName";			break;
-		case OOX::et_m_fPr:			m_sRtfName = L"mfPr";			break;
-		case OOX::et_m_func:		m_sRtfName = L"mfunc";			break;
-		case OOX::et_m_funcPr:		m_sRtfName = L"mfuncPr";		break;
-		case OOX::et_m_groupChr:	m_sRtfName = L"mgroupChr";		break;
-		case OOX::et_m_groupChrPr:	m_sRtfName = L"mgroupChrPr";	break;
-		case OOX::et_m_grow:		m_sRtfName = L"mgrow";			break;
-		case OOX::et_m_hideBot:		m_sRtfName = L"mhideBot";		break;
-		case OOX::et_m_hideLeft:	m_sRtfName = L"mhideLeft";		break;
-		case OOX::et_m_hideRight:	m_sRtfName = L"mhideRight";		break;
-		case OOX::et_m_hideTop:		m_sRtfName = L"mhideTop";		break;
-		case OOX::et_m_interSp:		m_sRtfName = L"minterSp";		break;
-		case OOX::et_m_intLim:		m_sRtfName = L"mintLim";		break;
-		case OOX::et_m_intraSp:		m_sRtfName = L"mintraSp";		break;
-		case OOX::et_m_jc:			m_sRtfName = L"mjc";			break;
-		case OOX::et_m_lim:			m_sRtfName = L"mlim";			break;
-		case OOX::et_m_limLoc:		m_sRtfName = L"mlimLoc";		break;
-		case OOX::et_m_limLow:		m_sRtfName = L"mlimLow";		break;
-		case OOX::et_m_limLowPr:	m_sRtfName = L"mlimLowPr";		break;
-		case OOX::et_m_limUpp:		m_sRtfName = L"mlimUpp";		break;
-		case OOX::et_m_limUppPr:	m_sRtfName = L"mlimUppPr";		break;
-		case OOX::et_m_lit:			m_sRtfName = L"mlit";			break;
-		case OOX::et_m_lMargin:		m_sRtfName = L"mlMargin";		break;
-		case OOX::et_m_m:			m_sRtfName = L"mm";				break;
-		case OOX::et_m_mathFont:	m_sRtfName = L"mmathFont";		break;
-		case OOX::et_m_mathPr:		m_sRtfName = L"mmathPr";		break;
-		case OOX::et_m_maxDist:		m_sRtfName = L"mmaxDist";		break;
-		case OOX::et_m_mc:			m_sRtfName = L"mmc";			break;
-		case OOX::et_m_mcJc:		m_sRtfName = L"mmcJc";			break;
-		case OOX::et_m_mcPr:		m_sRtfName = L"mmcPr";			break;
-		case OOX::et_m_mcs:			m_sRtfName = L"mmcs";			break;
-		case OOX::et_m_mPr:			m_sRtfName = L"mmPr";			break;
-		case OOX::et_m_mr:			m_sRtfName = L"mmr";			break;
-		case OOX::et_m_nary:		m_sRtfName = L"mnary";			break;
-		case OOX::et_m_naryLim:		m_sRtfName = L"mnaryLim";		break;
-		case OOX::et_m_naryPr:		m_sRtfName = L"mnaryPr";		break;
-		case OOX::et_m_noBreak:		m_sRtfName = L"mnoBreak";		break;
-		case OOX::et_m_nor:			m_sRtfName = L"mnor";			break;
-		case OOX::et_m_num:			m_sRtfName = L"mnum";			break;
-		case OOX::et_m_objDist:		m_sRtfName = L"mobjDist";		break;
-		case OOX::et_m_oMath:		m_sRtfName = L"moMath";			break;
-		case OOX::et_m_oMathPara:	m_sRtfName = L"moMathPara";		break;
-		case OOX::et_m_oMathParaPr:	m_sRtfName = L"moMathParaPr";	break;
-		case OOX::et_m_opEmu:		m_sRtfName = L"mopEmu";			break;
-		case OOX::et_m_phant:		m_sRtfName = L"mphant";			break;
-		case OOX::et_m_phantPr:		m_sRtfName = L"mphantPr";		break;
-		case OOX::et_m_plcHide:		m_sRtfName = L"mplcHide";		break;
-		case OOX::et_m_pos:			m_sRtfName = L"mpos";			break;
-		case OOX::et_m_postSp:		m_sRtfName = L"mpostSp";		break;
-		case OOX::et_m_preSp:		m_sRtfName = L"mpreSp";			break;
-		case OOX::et_m_r:			m_sRtfName = L"mr";				break;
-		case OOX::et_m_rad:			m_sRtfName = L"mrad";			break;
-		case OOX::et_m_radPr:		m_sRtfName = L"mradPr";			break;
-		case OOX::et_m_rMargin:		m_sRtfName = L"mrMargin";		break;
-		case OOX::et_m_rPr:			m_sRtfName = L"mrPr";			break;
-		case OOX::et_m_rSp:			m_sRtfName = L"mrSp";			break;
-		case OOX::et_m_rSpRule:		m_sRtfName = L"mrSpRule";		break;
-		case OOX::et_m_scr:			m_sRtfName = L"mscr";			break;
-		case OOX::et_m_sepChr:		m_sRtfName = L"msepChr";		break;
-		case OOX::et_m_show:		m_sRtfName = L"mshow";			break;
-		case OOX::et_m_shp:			m_sRtfName = L"mshp";			break;
-		case OOX::et_m_smallFrac:	m_sRtfName = L"msmallFrac";		break;
-		case OOX::et_m_sPre:		m_sRtfName = L"msPre";			break;
-		case OOX::et_m_sPrePr:		m_sRtfName = L"msPrePr";		break;
-		case OOX::et_m_sSub:		m_sRtfName = L"msSub";			break;
-		case OOX::et_m_sSubPr:		m_sRtfName = L"msSubPr";		break;
-		case OOX::et_m_sSubSup:		m_sRtfName = L"msSubSup";		break;
-		case OOX::et_m_sSubSupPr:	m_sRtfName = L"msSubSupPr";		break;
-		case OOX::et_m_sSup:		m_sRtfName = L"msSup";			break;
-		case OOX::et_m_sSupPr:		m_sRtfName = L"msSupPr";		break;
-		case OOX::et_m_strikeBLTR:	m_sRtfName = L"mstrikeBLTR";	break;
-		case OOX::et_m_strikeH:		m_sRtfName = L"mstrikeH";		break;
-		case OOX::et_m_strikeTLBR:	m_sRtfName = L"mstrikeTLBR";	break;
-		case OOX::et_m_strikeV:		m_sRtfName = L"mstrikeV";		break;
-		case OOX::et_m_sty:			m_sRtfName = L"msty";			break;
-		case OOX::et_m_sub:			m_sRtfName = L"msub";			break;
-		case OOX::et_m_subHide:		m_sRtfName = L"msubHide";		break;
-		case OOX::et_m_sup:			m_sRtfName = L"msup";			break;
-		case OOX::et_m_supHide:		m_sRtfName = L"msupHide";		break;
-		case OOX::et_m_t:			m_sRtfName = L"mt";				break;
-		case OOX::et_m_transp:		m_sRtfName = L"mtransp";		break;
-		case OOX::et_m_type:		m_sRtfName = L"mtype";			break;
-		case OOX::et_m_vertJc:		m_sRtfName = L"mvertJc";		break;
-		case OOX::et_m_wrapIndent:	m_sRtfName = L"mwrapIndent";	break;
-		case OOX::et_m_wrapRight:	m_sRtfName = L"mwrapRight";		break;
-		case OOX::et_m_zeroAsc:		m_sRtfName = L"mzeroAsc";		break;
-		case OOX::et_m_zeroDesc:	m_sRtfName = L"mzeroDesc";		break;
-		case OOX::et_m_zeroWid:		m_sRtfName = L"mzeroWid";		break;
+        case OOX::et_m_acc:			m_sRtfName = "macc";			break;
+        case OOX::et_m_accPr:		m_sRtfName = "maccPr";			break;
+        case OOX::et_m_aln:			m_sRtfName = "maln";			break;
+        case OOX::et_m_alnScr:		m_sRtfName = "malnScr";         break;
+        case OOX::et_m_argPr:		m_sRtfName = "margPr";			break;
+        case OOX::et_m_argSz:		m_sRtfName = "margSz";			break;
+        case OOX::et_m_bar:			m_sRtfName = "mbar";			break;
+        case OOX::et_m_barPr:		m_sRtfName = "mbarPr";			break;
+        case OOX::et_m_baseJc:		m_sRtfName = "mbaseJc";         break;
+        case OOX::et_m_begChr:		m_sRtfName = "mbegChr";         break;
+        case OOX::et_m_borderBox:	m_sRtfName = "mborderBox";		break;
+        case OOX::et_m_borderBoxPr:	m_sRtfName = "mborderBoxPr";	break;
+        case OOX::et_m_box:			m_sRtfName = "mbox";			break;
+        case OOX::et_m_boxPr:		m_sRtfName = "mboxPr";			break;
+        case OOX::et_m_brk:			m_sRtfName = "mbrk";			break;
+        case OOX::et_m_brkBin:		m_sRtfName = "mbrkBin";         break;
+        case OOX::et_m_brkBinSub:	m_sRtfName = "mbrkBinSub";		break;
+        case OOX::et_m_cGp:			m_sRtfName = "mcGp";			break;
+        case OOX::et_m_cGpRule:		m_sRtfName = "mcGpRule";		break;
+        case OOX::et_m_chr:			m_sRtfName = "mchr";			break;
+        case OOX::et_m_count:		m_sRtfName = "mcount";			break;
+        case OOX::et_m_cSp:			m_sRtfName = "mcSp";			break;
+        case OOX::et_m_ctrlPr:		m_sRtfName = "mctrlPr";         break;
+        case OOX::et_m_d:			m_sRtfName = "md";				break;
+        case OOX::et_m_defJc:		m_sRtfName = "mdefJc";			break;
+        case OOX::et_m_deg:			m_sRtfName = "mdeg";			break;
+        case OOX::et_m_degHide:		m_sRtfName = "mdegHide";		break;
+        case OOX::et_m_den:			m_sRtfName = "mden";			break;
+        case OOX::et_m_diff:		m_sRtfName = "mdiff";			break;
+        case OOX::et_m_dispDef:		m_sRtfName = "mdispDef";		break;
+        case OOX::et_m_dPr:			m_sRtfName = "mdPr";			break;
+        case OOX::et_m_e:			m_sRtfName = "me";				break;
+        case OOX::et_m_endChr:		m_sRtfName = "mendChr";         break;
+        case OOX::et_m_eqArr:		m_sRtfName = "meqArr";			break;
+        case OOX::et_m_eqArrPr:		m_sRtfName = "meqArrPr";		break;
+        case OOX::et_m_f:			m_sRtfName = "mf";				break;
+        case OOX::et_m_fName:		m_sRtfName = "mfName";			break;
+        case OOX::et_m_fPr:			m_sRtfName = "mfPr";			break;
+        case OOX::et_m_func:		m_sRtfName = "mfunc";			break;
+        case OOX::et_m_funcPr:		m_sRtfName = "mfuncPr";         break;
+        case OOX::et_m_groupChr:	m_sRtfName = "mgroupChr";		break;
+        case OOX::et_m_groupChrPr:	m_sRtfName = "mgroupChrPr";     break;
+        case OOX::et_m_grow:		m_sRtfName = "mgrow";			break;
+        case OOX::et_m_hideBot:		m_sRtfName = "mhideBot";		break;
+        case OOX::et_m_hideLeft:	m_sRtfName = "mhideLeft";		break;
+        case OOX::et_m_hideRight:	m_sRtfName = "mhideRight";		break;
+        case OOX::et_m_hideTop:		m_sRtfName = "mhideTop";		break;
+        case OOX::et_m_interSp:		m_sRtfName = "minterSp";		break;
+        case OOX::et_m_intLim:		m_sRtfName = "mintLim";         break;
+        case OOX::et_m_intraSp:		m_sRtfName = "mintraSp";		break;
+        case OOX::et_m_jc:			m_sRtfName = "mjc";             break;
+        case OOX::et_m_lim:			m_sRtfName = "mlim";			break;
+        case OOX::et_m_limLoc:		m_sRtfName = "mlimLoc";         break;
+        case OOX::et_m_limLow:		m_sRtfName = "mlimLow";         break;
+        case OOX::et_m_limLowPr:	m_sRtfName = "mlimLowPr";		break;
+        case OOX::et_m_limUpp:		m_sRtfName = "mlimUpp";         break;
+        case OOX::et_m_limUppPr:	m_sRtfName = "mlimUppPr";		break;
+        case OOX::et_m_lit:			m_sRtfName = "mlit";			break;
+        case OOX::et_m_lMargin:		m_sRtfName = "mlMargin";		break;
+        case OOX::et_m_m:			m_sRtfName = "mm";				break;
+        case OOX::et_m_mathFont:	m_sRtfName = "mmathFont";		break;
+        case OOX::et_m_mathPr:		m_sRtfName = "mmathPr";         break;
+        case OOX::et_m_maxDist:		m_sRtfName = "mmaxDist";		break;
+        case OOX::et_m_mc:			m_sRtfName = "mmc";             break;
+        case OOX::et_m_mcJc:		m_sRtfName = "mmcJc";			break;
+        case OOX::et_m_mcPr:		m_sRtfName = "mmcPr";			break;
+        case OOX::et_m_mcs:			m_sRtfName = "mmcs";			break;
+        case OOX::et_m_mPr:			m_sRtfName = "mmPr";			break;
+        case OOX::et_m_mr:			m_sRtfName = "mmr";             break;
+        case OOX::et_m_nary:		m_sRtfName = "mnary";			break;
+        case OOX::et_m_naryLim:		m_sRtfName = "mnaryLim";		break;
+        case OOX::et_m_naryPr:		m_sRtfName = "mnaryPr";         break;
+        case OOX::et_m_noBreak:		m_sRtfName = "mnoBreak";		break;
+        case OOX::et_m_nor:			m_sRtfName = "mnor";			break;
+        case OOX::et_m_num:			m_sRtfName = "mnum";			break;
+        case OOX::et_m_objDist:		m_sRtfName = "mobjDist";		break;
+        case OOX::et_m_oMath:		m_sRtfName = "moMath";			break;
+        case OOX::et_m_oMathPara:	m_sRtfName = "moMathPara";		break;
+        case OOX::et_m_oMathParaPr:	m_sRtfName = "moMathParaPr";	break;
+        case OOX::et_m_opEmu:		m_sRtfName = "mopEmu";			break;
+        case OOX::et_m_phant:		m_sRtfName = "mphant";			break;
+        case OOX::et_m_phantPr:		m_sRtfName = "mphantPr";		break;
+        case OOX::et_m_plcHide:		m_sRtfName = "mplcHide";		break;
+        case OOX::et_m_pos:			m_sRtfName = "mpos";			break;
+        case OOX::et_m_postSp:		m_sRtfName = "mpostSp";         break;
+        case OOX::et_m_preSp:		m_sRtfName = "mpreSp";			break;
+        case OOX::et_m_r:			m_sRtfName = "mr";				break;
+        case OOX::et_m_rad:			m_sRtfName = "mrad";			break;
+        case OOX::et_m_radPr:		m_sRtfName = "mradPr";			break;
+        case OOX::et_m_rMargin:		m_sRtfName = "mrMargin";		break;
+        case OOX::et_m_rPr:			m_sRtfName = "mrPr";			break;
+        case OOX::et_m_rSp:			m_sRtfName = "mrSp";			break;
+        case OOX::et_m_rSpRule:		m_sRtfName = "mrSpRule";		break;
+        case OOX::et_m_scr:			m_sRtfName = "mscr";			break;
+        case OOX::et_m_sepChr:		m_sRtfName = "msepChr";         break;
+        case OOX::et_m_show:		m_sRtfName = "mshow";			break;
+        case OOX::et_m_shp:			m_sRtfName = "mshp";			break;
+        case OOX::et_m_smallFrac:	m_sRtfName = "msmallFrac";		break;
+        case OOX::et_m_sPre:		m_sRtfName = "msPre";			break;
+        case OOX::et_m_sPrePr:		m_sRtfName = "msPrePr";         break;
+        case OOX::et_m_sSub:		m_sRtfName = "msSub";			break;
+        case OOX::et_m_sSubPr:		m_sRtfName = "msSubPr";         break;
+        case OOX::et_m_sSubSup:		m_sRtfName = "msSubSup";		break;
+        case OOX::et_m_sSubSupPr:	m_sRtfName = "msSubSupPr";		break;
+        case OOX::et_m_sSup:		m_sRtfName = "msSup";			break;
+        case OOX::et_m_sSupPr:		m_sRtfName = "msSupPr";         break;
+        case OOX::et_m_strikeBLTR:	m_sRtfName = "mstrikeBLTR";     break;
+        case OOX::et_m_strikeH:		m_sRtfName = "mstrikeH";		break;
+        case OOX::et_m_strikeTLBR:	m_sRtfName = "mstrikeTLBR";     break;
+        case OOX::et_m_strikeV:		m_sRtfName = "mstrikeV";		break;
+        case OOX::et_m_sty:			m_sRtfName = "msty";			break;
+        case OOX::et_m_sub:			m_sRtfName = "msub";			break;
+        case OOX::et_m_subHide:		m_sRtfName = "msubHide";		break;
+        case OOX::et_m_sup:			m_sRtfName = "msup";			break;
+        case OOX::et_m_supHide:		m_sRtfName = "msupHide";		break;
+        case OOX::et_m_t:			m_sRtfName = "mt";				break;
+        case OOX::et_m_transp:		m_sRtfName = "mtransp";         break;
+        case OOX::et_m_type:		m_sRtfName = "mtype";			break;
+        case OOX::et_m_vertJc:		m_sRtfName = "mvertJc";         break;
+        case OOX::et_m_wrapIndent:	m_sRtfName = "mwrapIndent";     break;
+        case OOX::et_m_wrapRight:	m_sRtfName = "mwrapRight";		break;
+        case OOX::et_m_zeroAsc:		m_sRtfName = "mzeroAsc";		break;
+        case OOX::et_m_zeroDesc:	m_sRtfName = "mzeroDesc";		break;
+        case OOX::et_m_zeroWid:		m_sRtfName = "mzeroWid";		break;
 		default:
 		{
-			m_sRtfName = L"";
+            m_sRtfName = "";
 			break;
 		}
 	}

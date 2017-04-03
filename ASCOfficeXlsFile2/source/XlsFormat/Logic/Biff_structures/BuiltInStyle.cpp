@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,13 +41,6 @@ BiffStructurePtr BuiltInStyle::clone()
 {
 	return BiffStructurePtr(new BuiltInStyle(*this));
 }
-
-
-void BuiltInStyle::store(CFRecord& record)
-{
-	record << istyBuiltIn << iLevel;
-}
-
 
 void BuiltInStyle::load(CFRecord& record)
 {

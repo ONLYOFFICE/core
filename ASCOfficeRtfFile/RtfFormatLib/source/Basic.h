@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,8 +37,9 @@
 #include "IdGenerator.h"
 #include "RtfDefine.h"
 
-#include "boost/shared_ptr.hpp"
- 
+#include <boost/shared_ptr.hpp>
+#include "../../../ASCOfficeOdfFile/include/cpdoccore/CPOptional.h"
+
 enum _MetricUnits{ mu_none, mu_Auto, mu_Percent, mu_Twips };
 
 
@@ -51,7 +52,7 @@ class RenderParameter
 		
 		int			nType;
 		int			nValue;
-		CString		sValue;
+        std::wstring		sValue;
 		int			RtfType;
 		
 		RenderParameter()
@@ -76,8 +77,8 @@ public:
 		{
 			return true;
 		}
-		virtual CString RenderToRtf(RenderParameter oRenderParameter) = 0;
-		virtual CString RenderToOOX(RenderParameter oRenderParameter) = 0;
+        virtual std::wstring RenderToRtf(RenderParameter oRenderParameter) = 0;
+        virtual std::wstring RenderToOOX(RenderParameter oRenderParameter) = 0;
 };
 
 class IRenderableProperty: public IDocumentElement
@@ -122,18 +123,22 @@ public:
 	{
 		//todooo - add map for seach
 
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
 			if( m_aArray[i] == piRend )
-				return i;
+				return (int)i;
+		}
 		return -1;
 	}
 	void RemoveItem( T piRend )
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < (int)m_aArray.size(); i++ )
+		{
 			if( m_aArray[i] == piRend )
 			{
 				m_aArray.erase(m_aArray.begin()+i);
 			}
+		}
 	}
 	void RemoveItem( int nIndex = -1 )
 	{
@@ -203,9 +208,11 @@ template<class T> class ItemSingleContainer: public ItemContainer<T>
 public: 
     int AddItem( T piRend)
 	{
-        for( int i = 0; i < ItemContainer<T>::m_aArray.size(); i++ )
+        for( int i = 0; i < (int)ItemContainer<T>::m_aArray.size(); i++ )
+		{
             if( ItemContainer<T>::m_aArray[i] == piRend )
 				return i;
+		}
         ItemContainer<T>::m_aArray.push_back(piRend);
         return (int)ItemContainer<T>::m_aArray.size() - 1;
 	}
@@ -245,10 +252,10 @@ typedef boost::shared_ptr<ITextItemContainer> ITextItemContainerPtr;
 class TextItemContainer : public ITextItemContainer
 {
 public: 
-	CString RenderToRtf(RenderParameter oRenderParameter)
+    std::wstring RenderToRtf(RenderParameter oRenderParameter)
 	{
-		CString sResult;
-		for( int i = 0; i < (int)m_aArray.size(); i++ )//идем с конца - из за св-в секций
+        std::wstring sResult;
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
 
@@ -259,11 +266,11 @@ public:
 		}
 		return sResult;
 	}
-	CString RenderToOOX(RenderParameter oRenderParameter)
+    std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
-		CString sResult;
+        std::wstring sResult;
        
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
+		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
             sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}

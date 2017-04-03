@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_MEDIAFILE_INCLUDE_H_
 
 #include "../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -42,9 +42,12 @@ namespace PPTX
 	{
 		class MediaFile : public WrapperWritingElement
 		{
-		public:
-			
-			PPTX_LOGIC_BASE(MediaFile)
+		public:			
+			WritingElement_AdditionConstructors(MediaFile)
+
+			MediaFile()
+			{
+			}
 
 			MediaFile& operator=(const MediaFile& oSrc)
 			{
@@ -57,16 +60,26 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				ReadAttributes(oReader);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name		= XmlUtils::GetNameNoNS(node.GetName());
 				link		= node.GetAttribute(_T("r:link"));
 				node.ReadAttributeBase(L"contentType", contentType);
 			}
-
-			virtual CString toXML() const
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("r:link"),	link)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("contentType"),	contentType)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:link"), link.ToString());
@@ -75,8 +88,8 @@ namespace PPTX
 				return XmlUtils::CreateNode(_T("a:") + name, oAttr);
 			}
 		public:
-			CString				name;
-			PPTX::RId			link;
+			std::wstring		name;
+			OOX::RId			link;
 			nullable_string		contentType;
 		protected:
 			virtual void FillParentPointersForChilds(){};

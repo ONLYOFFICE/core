@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		class EffectProperties : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(EffectProperties)
+			WritingElement_AdditionConstructors(EffectProperties)
+			PPTX_LOGIC_BASE2(EffectProperties)
 
 			EffectProperties& operator=(const EffectProperties& oSrc)
 			{
@@ -54,7 +55,23 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				if (List.IsInit())
+					return List->getType();
+				return OOX::et_Unknown;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+				if (strName == _T("effectLst"))
+					List.reset(new Logic::EffectLst(oReader));
+				else if(strName == _T("effectDag"))
+					List.reset(new Logic::EffectDag(oReader));
+				else 
+					List.reset();
+			}
 			
 			virtual bool is_init() const {return (List.IsInit());};
 
@@ -64,7 +81,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (strName == _T("effectLst"))
 					List.reset(new Logic::EffectLst(node));
@@ -87,7 +104,7 @@ namespace PPTX
 				else List.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (!List.IsInit())
 					return _T("");

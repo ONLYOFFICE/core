@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -84,9 +84,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oAnchorLock.IsInit() )
 				{
@@ -279,9 +279,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oEnd.IsInit() )
 				{
@@ -431,9 +431,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oAfter.IsInit() )
 				{
@@ -574,9 +574,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oLeader.IsInit() )
 				{
@@ -645,9 +645,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -698,9 +698,9 @@ namespace ComplexTypes
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString ToString() const
+			virtual std::wstring ToString() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				if ( m_oVal.IsInit() )
 				{
@@ -781,9 +781,9 @@ namespace OOX
 						m_oNumID = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:numPr>");
+				std::wstring sResult = _T("<w:numPr>");
 
 				if ( m_oIlvl.IsInit() )
 				{
@@ -887,9 +887,9 @@ namespace OOX
 						m_oTop = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:pBdr>");
+				std::wstring sResult = _T("<w:pBdr>");
 
 				if ( m_oBar.IsInit() )
 				{
@@ -993,7 +993,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
 
 		private:
@@ -1002,10 +1002,10 @@ namespace OOX
 
 		public:
 
-			nullable<CString                       > m_sAuthor;
+			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                       > m_sUserId;
 
 			nullable<OOX::Logic::CParagraphProperty> m_pParPr;
 
@@ -1078,9 +1078,9 @@ namespace OOX
 					}
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:tabs>");
+				std::wstring sResult = _T("<w:tabs>");
 
 				for (unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
 				{
@@ -1336,9 +1336,9 @@ namespace OOX
 						m_oWordWrap = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:pPr>");
+				std::wstring sResult = _T("<w:pPr>");
 
 				if ( m_oAdjustRightInd.IsInit() ) 
 				{
@@ -1781,7 +1781,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oPageBreakBefore;
 			nullable<OOX::Logic::CPBdr                                   > m_oPBdr;
 			nullable<OOX::Logic::CPPrChange                              > m_oPPrChange;
-			nullable<ComplexTypes::Word::CString_                        > m_oPStyle;
+			nullable<ComplexTypes::Word::String                        > m_oPStyle;
 			nullable<OOX::Logic::CRunProperty                            > m_oRPr;
 			nullable<OOX::Logic::CSectionProperty                        > m_oSectPr;
 			nullable<ComplexTypes::Word::CShading                        > m_oShd;

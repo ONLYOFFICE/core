@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -144,7 +144,7 @@ void styles_context::docx_serialize_table_style(std::wostream & strm, std::wstri
 }
 namespace oox
 {
-math_context::math_context(bool graphic) :  base_font_size_(12)
+math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :  base_font_size_(12), fonts_container_(fonts)
 {
 	graphRPR_ = graphic;
 

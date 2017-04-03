@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,29 +37,29 @@
 
 namespace ImageHelper
 {
-	struct __BITMAPINFOHEADER 
-	{
-		DWORD      biSize;
-		LONG       biWidth;
-		LONG       biHeight;
-		WORD       biPlanes;
-		WORD       biBitCount;
-		DWORD      biCompression;
-		DWORD      biSizeImage;
-		LONG       biXPelsPerMeter;
-		LONG       biYPelsPerMeter;
-		DWORD      biClrUsed;
-		DWORD      biClrImportant;
-	};
+    struct __BITMAPINFOHEADER
+    {
+        _UINT32     biSize;
+        _INT32      biWidth;
+        _INT32      biHeight;
+        _UINT16     biPlanes;
+        _UINT16     biBitCount;
+        _UINT32     biCompression;
+        _UINT32     biSizeImage;
+        _INT32      biXPelsPerMeter;
+        _INT32      biYPelsPerMeter;
+        _UINT32     biClrUsed;
+        _UINT32     biClrImportant;
+    };
 
-	struct __BITMAPCOREHEADER
-	{
-        DWORD   bcSize;                 /* used to get to color table */
-        WORD    bcWidth;
-        WORD    bcHeight;
-        WORD    bcPlanes;
-        WORD    bcBitCount;
-	};
+    struct __BITMAPCOREHEADER
+    {
+        _UINT32     bcSize;                 /* used to get to color table */
+        _UINT16     bcWidth;
+        _UINT16     bcHeight;
+        _UINT16     bcPlanes;
+        _UINT16     bcBitCount;
+    };
 
 	inline Global::_BlipType SaveImageToFileFromDIB(unsigned char* data, int size, const std::wstring& file_name)//without ext
 	{
@@ -133,7 +133,7 @@ namespace ImageHelper
 		{
 			oFrame.put_Data((unsigned char*)data + offset);
 			
-			if (!oFrame.SaveFile(file_name + _T(".png"), 4/*CXIMAGE_FORMAT_PNG*/))
+            if (!oFrame.SaveFile(file_name + L".png", 4/*CXIMAGE_FORMAT_PNG*/))
 				result = Global::msoblipERROR;
 
 			oFrame.put_Data(NULL);
@@ -141,7 +141,7 @@ namespace ImageHelper
 		else if (result == Global::msoblipWMF)
 		{
 			NSFile::CFileBinary file;
-			if (file.CreateFileW(file_name + _T(".wmf")))
+            if (file.CreateFileW(file_name + L".wmf"))
 			{
 				file.WriteFile((BYTE*)data, size);
 				file.CloseFile();
@@ -150,12 +150,12 @@ namespace ImageHelper
 		else if (biSizeImage > 0)
 		{
 			NSFile::CFileBinary file;
-			if (file.CreateFileW(file_name + _T(".bmp")))
+            if (file.CreateFileW(file_name + L".bmp"))
 			{
-				WORD vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
-				DWORD dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);
-				DWORD dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
-				DWORD dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
+                _UINT16 vtType		= 0x4D42;				file.WriteFile((BYTE*)&vtType,	2);
+                _UINT32 dwLen		= biSizeImage;			file.WriteFile((BYTE*)&dwLen,	4);
+                _UINT32 dwRes		= 0;					file.WriteFile((BYTE*)&dwRes,	4);
+                _UINT32 dwOffset	= 2;					file.WriteFile((BYTE*)&dwOffset, 4);
 			
 				file.WriteFile((BYTE*)data, size);
 				file.CloseFile();
@@ -169,9 +169,9 @@ namespace DocFileFormat
 {
 	WordprocessingDocument::WordprocessingDocument(const std::wstring & _pathOutput, const WordDocument* _docFile) : 
 		OpenXmlPackage( _docFile ), 
-		FontTableXML( _T( "" ) ),	DocumentXML( _T( "" ) ), 
-		StyleSheetXML( _T( "" ) ),	FootnotesXML ( _T( "" ) ),	NumberingXML( _T( "" ) ),
-		CommentsXML( _T( "" ) ),	SettingsXML( _T( "" ) ),	CommandTableXML ( _T( "" ) )
+        FontTableXML( L"" ),	DocumentXML( L"" ),
+        StyleSheetXML( L"" ),	FootnotesXML ( L"" ),	NumberingXML( L"" ),
+        CommentsXML( L"" ),     SettingsXML( L"" ),     CommandTableXML ( L"" )
 	{
 		m_strOutputPath = _pathOutput;
 	}
@@ -182,31 +182,27 @@ namespace DocFileFormat
 
 	void WordprocessingDocument::SaveDocument()
 	{
-		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + _T( "word" ) ;
-		//OOX::CPath pathWord = CString(m_strOutputPath.c_str()) + FILE_SEPARATOR_STR + _T( "word" );
-		//FileSystem::Directory::CreateDirectory( pathWord.GetPath() );
-        NSDirectory::CreateDirectory( pathWord );
+        std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
+         NSDirectory::CreateDirectory( pathWord );
 
 		WritePackage();
 
 		//Write main content. (word directory)
 
-		SaveToFile(pathWord, std::wstring( _T("document.xml" ) ),		DocumentXML );
-		SaveToFile(pathWord, std::wstring( _T( "fontTable.xml" ) ),	FontTableXML );
-		SaveToFile(pathWord, std::wstring( _T( "styles.xml" ) ),		StyleSheetXML );
-		SaveToFile(pathWord, std::wstring( _T( "footnotes.xml" ) ),	FootnotesXML );
-		SaveToFile(pathWord, std::wstring( _T( "endnotes.xml" ) ),		EndnotesXML );
-		SaveToFile(pathWord, std::wstring( _T( "numbering.xml" ) ),	NumberingXML );
-		SaveToFile(pathWord, std::wstring( _T( "comments.xml" ) ),		CommentsXML );
-		SaveToFile(pathWord, std::wstring( _T( "settings.xml" ) ),		SettingsXML );
-		SaveToFile(pathWord, std::wstring( _T( "customizations.xml" ) ),CommandTableXML );
+        SaveToFile(pathWord, std::wstring( L"document.xml" ),		DocumentXML );
+        SaveToFile(pathWord, std::wstring( L"fontTable.xml" ),      FontTableXML );
+        SaveToFile(pathWord, std::wstring( L"styles.xml" ),         StyleSheetXML );
+        SaveToFile(pathWord, std::wstring( L"footnotes.xml" ),      FootnotesXML );
+        SaveToFile(pathWord, std::wstring( L"endnotes.xml" ),		EndnotesXML );
+        SaveToFile(pathWord, std::wstring( L"numbering.xml" ),      NumberingXML );
+        SaveToFile(pathWord, std::wstring( L"comments.xml" ),		CommentsXML );
+        SaveToFile(pathWord, std::wstring( L"settings.xml" ),		SettingsXML );
+        SaveToFile(pathWord, std::wstring( L"customizations.xml" ), CommandTableXML );
 
 		if (!ImagesList.empty())
 		{
-			std::wstring pathMedia = pathWord + FILE_SEPARATOR_STR + _T( "media" );
-			//OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T( "media" );
-			//FileSystem::Directory::CreateDirectory( pathMedia.GetPath() );
-
+            std::wstring pathMedia = pathWord + FILE_SEPARATOR_STR + L"media";
+ 
             NSDirectory::CreateDirectory(pathMedia);
 
 			int i = 1;
@@ -221,12 +217,12 @@ namespace DocFileFormat
 
 					if (Global::msoblipDIB == iter->blipType)
 					{//user_manual_v52.doc						
-						std::wstring file_name = pathMedia + FILE_SEPARATOR_STR + _T("image") + FormatUtils::IntToWideString(i++);
+                        std::wstring file_name = pathMedia + FILE_SEPARATOR_STR + L"image" + FormatUtils::IntToWideString(i++);
 						iter->blipType = ImageHelper::SaveImageToFileFromDIB(bytes, iter->data.size(), file_name);
 					}
 					else
 					{
-						SaveToFile(pathMedia, std::wstring(_T("image" )) + FormatUtils::IntToWideString(i++) + iter->ext, (void*)bytes, (unsigned int)iter->data.size());
+                        SaveToFile(pathMedia, std::wstring(L"image" ) + FormatUtils::IntToWideString(i++) + iter->ext, (void*)bytes, (unsigned int)iter->data.size());
 					}
 					
 					RELEASEARRAYOBJECTS(bytes);
@@ -236,15 +232,13 @@ namespace DocFileFormat
 
 		if (!OleObjectsList.empty())
 		{
-			std::wstring pathObjects = pathWord + FILE_SEPARATOR_STR + _T( "embeddings") ;
-			//OOX::CPath pathObjects = pathWord + FILE_SEPARATOR_STR + _T( "embeddings" );
-			//FileSystem::Directory::CreateDirectory( pathObjects.GetPath());
+            std::wstring pathObjects = pathWord + FILE_SEPARATOR_STR + L"embeddings" ;
             NSDirectory::CreateDirectory( pathObjects );
 
 			int i = 1;
 			for (std::list<OleObjectFileStructure>::iterator iter = OleObjectsList.begin(); iter != OleObjectsList.end(); ++iter)
 			{
-				std::wstring fileName = pathObjects + FILE_SEPARATOR_STR  + _T( "oleObject" ) + FormatUtils::IntToWideString(i++) + iter->ext;
+                std::wstring fileName = pathObjects + FILE_SEPARATOR_STR  + L"oleObject" + FormatUtils::IntToWideString(i++) + iter->ext;
 
 				if (!iter->data.empty())
 				{
@@ -262,12 +256,12 @@ namespace DocFileFormat
 
 		for (std::list<std::wstring>::iterator iter = HeaderXMLList.begin(); iter != HeaderXMLList.end(); ++iter)
 		{
-			SaveToFile(pathWord, ( std::wstring( _T( "header" ) ) + FormatUtils::IntToWideString(++headersCount) + std::wstring( _T( ".xml" ) ) ), *iter);
+            SaveToFile(pathWord, ( std::wstring( L"header" ) + FormatUtils::IntToWideString(++headersCount) + std::wstring( L".xml" ) ), *iter);
 		}
 
 		for (std::list<std::wstring>::iterator iter = FooterXMLList.begin(); iter != FooterXMLList.end(); ++iter)
 		{
-			SaveToFile(pathWord, ( std::wstring( _T( "footer" ) ) + FormatUtils::IntToWideString(++footersCount) + std::wstring( _T( ".xml" ) ) ), *iter);
+            SaveToFile(pathWord, ( std::wstring( L"footer" ) + FormatUtils::IntToWideString(++footersCount) + std::wstring( L".xml" ) ), *iter);
 		}
 	}
 }

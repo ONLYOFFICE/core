@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,39 +49,46 @@ namespace DocFileFormat
 			unsigned char fNested:1;
 			unsigned char fHasSep:1;
 		};
-
-	public:
 		static const int STRUCTURE_SIZE = 2;
 
-		FieldCharacter():
-		fldch(0), grffld(0)
-		{
-		}
-
-		virtual ~FieldCharacter()
-		{
-		}
+		FieldCharacter() : fldch(0), grffld(0)	{}
+		virtual ~FieldCharacter()	{}
 
 		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length)
 		{
-			FieldCharacter* pFldChar	=	new FieldCharacter();
+			FieldCharacter* pFldChar = new FieldCharacter();
 			if (pFldChar)
 			{
-				pFldChar->fldch				=	pReader->ReadByte();
-				pFldChar->grffld			=	pReader->ReadByte();
-
-#ifdef _DEBUG
-				grffldEnd*	__grffldEnd	=	(grffldEnd*)(&pFldChar->grffld);
-				int dbg						=	0;
-#endif
+				pFldChar->fldch		= pReader->ReadByte();
+				pFldChar->grffld	= pReader->ReadByte();
 			}
 
 			return static_cast<ByteStructure*>(pFldChar);
 		}
 
-	private:
-
 		unsigned char fldch;
 		unsigned char grffld;
+	};
+
+	class ListNumCache: public ByteStructure
+	{
+	public:
+		static const int STRUCTURE_SIZE = 4;
+
+		ListNumCache() : value(-1)		{}
+		virtual			~ListNumCache()	{}
+		
+		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length)
+		{
+			ListNumCache* pList	= new ListNumCache();
+			if (pList)
+			{
+				pList->value = pReader->ReadInt32();
+			}
+
+			return static_cast<ByteStructure*>(pList);
+		}
+
+		int value;
 	};
 }

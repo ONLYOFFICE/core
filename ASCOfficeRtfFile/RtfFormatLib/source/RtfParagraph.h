@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,8 +61,8 @@ public:
 	
 	void SetDefault();
 	
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
 	bool operator==( const RtfOldList& oOldList );
 };
@@ -83,6 +83,6 @@ public:
 	{
 	}
 	int AddItem( IDocumentElementPtr piRend );	
-	CString RenderToRtf(RenderParameter oRenderParameter);	
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };

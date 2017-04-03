@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,6 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-
 #include "draw_common.h"
 
 namespace cpdoccore { 
@@ -93,7 +92,7 @@ std::wstring process_border(const border_style	& borderStyle,
         if (szInt <= 0)      szInt = 1;
 
 		w_sz = boost::lexical_cast<std::wstring>( szInt );
-		w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+		w_color = borderStyle.get_color().get_hex_value() ;
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
@@ -904,12 +903,12 @@ void style_page_layout::add_child_element( xml::sax * Reader, const std::wstring
 // style-page-layout-properties-attlist
 void style_page_layout_properties_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"fo:page-width", fo_page_width_);
-    CP_APPLY_ATTR(L"fo:page-height", fo_page_height_);
+    CP_APPLY_ATTR(L"fo:page-width",		fo_page_width_);
+    CP_APPLY_ATTR(L"fo:page-height",	fo_page_height_);
     common_num_format_attlist_.add_attributes(Attributes);
     common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:paper-tray-name", style_paper_tray_name_);
-    CP_APPLY_ATTR(L"style:print-orientation", style_print_orientation_);
+    CP_APPLY_ATTR(L"style:paper-tray-name",		style_paper_tray_name_);
+    CP_APPLY_ATTR(L"style:print-orientation",	style_print_orientation_);
    
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
@@ -919,7 +918,8 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_padding_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
-    
+	common_draw_fill_attlist_.add_attributes(Attributes);
+
 	CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
     CP_APPLY_ATTR(L"style:print",					style_print_);
     CP_APPLY_ATTR(L"style:print-page-order",		style_print_page_order_);
@@ -1134,14 +1134,14 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
 			CP_XML_NODE(L"w:pgMar")
 			{
-				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
-				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
-				CP_XML_ATTR(L"w:gutter"	, 0 );
-				
 				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_	, margin_left_length) );
 				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, margin_right_length) );
 				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	, Context.get_header_footer_context().header()) );
 				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_	, Context.get_header_footer_context().footer()) );
+				
+				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_	) );
+				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_ ) );
+				CP_XML_ATTR(L"w:gutter"	, 0 );
 			}
 		}
 
@@ -1186,14 +1186,14 @@ void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_con
 			w =  fo_page_width_->get_value_unit(length::emu);
 			if (w < 914400) w = 914400;
 
-			w_w = std::to_wstring(w);
+			w_w = boost::lexical_cast<std::wstring>(w);
 		}
         if (fo_page_height_)
 		{
 			h = fo_page_height_->get_value_unit(length::emu);
 			if (h < 914400) h = 914400;
 
-			w_h = std::to_wstring(h);
+			w_h = boost::lexical_cast<std::wstring>(h);
 		}
                 
         std::wstring w_orient = L"custom";
@@ -1260,18 +1260,26 @@ void style_page_layout_properties::add_child_element( xml::sax * Reader, const s
 {
     style_page_layout_properties_elements_.add_child_element(Reader, Ns, Name, getContext());
 }
-bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox::docx_conversion_context & Context)
-{
-	if (!style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)return false;
 
-    if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
+bool style_page_layout_properties::docx_background_serialize(std::wostream & strm, oox::docx_conversion_context & Context, oox::_oox_fill & fill, int id)
+{
+	if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_ && 
+		style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent)
+		return true; //??
     //прозрачный фон
+	
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:background")
 		{
-			std::wstring color = style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
-			CP_XML_ATTR(L"w:color",color);
+			std::wstring color = L"ffffff";
+			
+			if (style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_)
+				color = style_page_layout_properties_attlist_.common_background_color_attlist_.fo_background_color_->get_color().get_hex_value();
+			
+			CP_XML_ATTR(L"w:color", color);
+
+			oox::vml_serialize_background(CP_XML_STREAM(), fill, color, id);
 		}
 	}
 	return true;
@@ -1286,19 +1294,17 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 		{
 			Context.process_section( CP_XML_STREAM(), columns);
 			
+			bool next_page = Context.is_next_dump_page_properties();
+			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (Context.is_next_dump_page_properties())
-				{
-					CP_XML_ATTR(L"w:val", L"nextPage");
-				}else
-				{
-					CP_XML_ATTR(L"w:val", L"continuous");
-				}
+				if (next_page)	CP_XML_ATTR(L"w:val", L"nextPage");
+				else			CP_XML_ATTR(L"w:val", L"continuous");
 			}			
 
 			std::wstring masterPageName = Context.get_master_page_name();
-			bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+			bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
+			
 			if (res == false)
 			{
 				// default???
@@ -1308,7 +1314,7 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 				Context.remove_page_properties();
 				Context.add_page_properties(masterPageNameLayout);
 				
-				bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
+				bool res = Context.get_headers_footers().write_sectPr(masterPageName, next_page, strm);
 			}
 	
 			oox::section_context::_section & section = Context.get_section_context().get();
@@ -1558,7 +1564,7 @@ void header_footer_impl::docx_convert(oox::docx_conversion_context & Context)
 	if (content_.header_footer_content_.tracked_changes_)
 		content_.header_footer_content_.tracked_changes_->docx_convert(Context);
 
-    for (int i=0; i < content_.header_footer_content_.content_.size(); i++)
+    for (size_t i = 0; i < content_.header_footer_content_.content_.size(); i++)
     {
         content_.header_footer_content_.content_[i]->docx_convert(Context);
     }

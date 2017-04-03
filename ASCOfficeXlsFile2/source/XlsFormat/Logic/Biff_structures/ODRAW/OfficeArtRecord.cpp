@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,17 +42,6 @@ OfficeArtRecord::OfficeArtRecord(const unsigned char recVer, const unsigned shor
 	rh_own.recVer = recVer;
 	rh_own.recType = recType;
 }
-
-void OfficeArtRecord::store(XLS::CFRecord& record)
-{
-	rh_own.recInstance = GetInstanceToStore();
-
-	record << rh_own;
-	size_t data_start_ptr = record.getDataSize();
-	storeFields(record);
-	record.registerDelayedDataSource(record.getDataSize() - data_start_ptr, XLS::rt_MsoDrawing);
-}
-
 
 void OfficeArtRecord::load(XLS::CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,12 +50,10 @@ public:
 
 	virtual void load(CFRecord& record, int linkSize);
 	virtual void load(CFRecord& record, FtPioGrbit& pictFlags);
-	virtual void store(CFRecord& record, FtPioGrbit& pictFlags);
 
 	static const ElementType	type = typeFtPictFmla;
 
 	virtual void load(CFRecord& record){}
-	virtual void store(CFRecord& record){}
 
 	ObjFmla		fmla;
 	_UINT32		lPosInCtlStm;

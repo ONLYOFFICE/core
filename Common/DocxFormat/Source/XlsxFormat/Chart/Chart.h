@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -78,18 +78,17 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-                CString sPath = oPath.GetPath();
+                std::wstring sPath = oPath.GetPath();
                 write2(sPath);
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
-			virtual void write2(CString& sFilename) const
+            virtual void write2(const std::wstring& sFilename) const
 			{
 				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				toXML(sXml);
-				NSFile::CFileBinary::SaveToFile(sFilename.GetBuffer(), sXml.GetData());
-				sFilename.ReleaseBuffer();
+                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,9 @@
  */
 #pragma once
 
+#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
+
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
 class OOXDocumentReader
@@ -58,11 +60,18 @@ public:
 
 		m_poReader		= oParam.oReader;
 		m_poDocument	= oParam.oRtf;
+
+		if ( m_ooxDocument->m_oBackground.IsInit())
+		{
+			m_poDocument->m_pBackground = RtfShapePtr(new RtfShape());
+			OOXBackgroundReader oBackgroundReader(m_ooxDocument->m_oBackground.GetPointer());
+			oBackgroundReader.Parse( oParam, m_poDocument->m_pBackground);
+		}
 		
 		int last_section_start = 0;
 		
 		//считаем количесво секций и заполняем их свойства .. 
-		for (long i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
+		for (size_t i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
 		{
 			if (m_ooxDocument->m_arrItems[i] == NULL) continue;
 
@@ -77,7 +86,7 @@ public:
                         RtfSectionPtr s(new RtfSection());
                         _section section(s, last_section_start, i + 1);
 
-						last_section_start = i + 1;
+						last_section_start = (int)i + 1;
 
 						section.props->m_oProperty.SetDefaultOOX();
 
@@ -97,7 +106,7 @@ public:
 		if (last_section.end_para < m_ooxDocument->m_arrItems.size())
 		{
             RtfSectionPtr s(new RtfSection());
-            _section section(s, last_section.end_para, m_ooxDocument->m_arrItems.size());
+            _section section(s, last_section.end_para, (int)m_ooxDocument->m_arrItems.size());
 			
 			section.props->m_oProperty.SetDefaultOOX();
 			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,16 +61,16 @@ namespace package
     class pptx_document;
 }
 
-pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odfDocument): 
-	output_document_(NULL)
-	,odf_document_(odfDocument)
-	,pptx_text_context_(odf_document_->odf_context(),*this)
-	,pptx_table_context_(*this)
-	,pptx_comments_context_(comments_context_handle_)
-	,pptx_slide_context_(*this/*, pptx_text_context_*/)
-	,math_context_(true)
-	,last_idx_placeHolder(1)
-	,last_uniq_big_id(1)
+pptx_conversion_context::pptx_conversion_context( odf_reader::odf_document * odfDocument)
+	:output_document_		(NULL)
+	,odf_document_			(odfDocument)
+	,pptx_text_context_		(odf_document_->odf_context(), *this)
+	,pptx_table_context_	(*this)
+	,pptx_comments_context_	(comments_context_handle_)
+	,pptx_slide_context_	(*this/*, pptx_text_context_*/)
+	,math_context_			(odf_document_->odf_context().fontContainer(), true)
+	,last_idx_placeHolder	(1)
+	,last_uniq_big_id		(1)
 {
     applicationFonts_ = new CApplicationFonts();
 }
@@ -99,7 +99,7 @@ void pptx_conversion_context::process_layouts()
 	get_text_context().set_process_layouts(true);
 
 	//актуальные
-	for (int layout_index =0; layout_index < layouts.content.size(); layout_index++)
+	for (size_t layout_index =0; layout_index < layouts.content.size(); layout_index++)
 	{
 		start_layout(layout_index);
 
@@ -116,8 +116,9 @@ void pptx_conversion_context::process_layouts()
 
 		if (master)
 		{
-			BOOST_FOREACH(odf_reader::office_element_ptr elm, master->content_)
+			for (size_t i = 0; i < master->content_.size(); i++)			
 			{
+				odf_reader::office_element_ptr elm = master->content_[i];
 				if (elm->get_type() == odf_reader::typeDrawFrame)
 				{
 					odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame *>(elm.get());
@@ -151,7 +152,7 @@ void pptx_conversion_context::process_master_pages()
 	get_text_context().set_process_layouts(true);
 
 	//берем только актуальные
-	for (int master_index =0; master_index < masters.content.size();master_index++)
+	for (size_t master_index =0; master_index < masters.content.size();master_index++)
 	{
 		start_master(master_index);
 		
@@ -209,8 +210,10 @@ void pptx_conversion_context::end_document()
 {
     unsigned int count = 1;
    
-	BOOST_FOREACH(const pptx_xml_slideMaster_ptr& slideM, slideMasters_)
+	for (size_t i = 0; i < slideMasters_.size(); i++)
     {
+		pptx_xml_slideMaster_ptr& slideM = slideMasters_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideM->write_to(content->content());
@@ -230,8 +233,10 @@ void pptx_conversion_context::end_document()
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	count=0;
-	BOOST_FOREACH(const pptx_xml_slide_ptr& slide, slides_)
+	for (size_t i = 0; i < slides_.size(); i++)
     {
+		pptx_xml_slide_ptr& slide = slides_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slide->write_to(content->content());
@@ -250,8 +255,10 @@ void pptx_conversion_context::end_document()
 		count++;
     }
 ///////////////////////////////////////////////////////////////////////////////////////////
-	BOOST_FOREACH(const pptx_xml_slideLayout_ptr& slideL, slideLayouts_)
+	for (size_t i = 0; i < slideLayouts_.size(); i++)
     {
+		pptx_xml_slideLayout_ptr& slideL = slideLayouts_[i];
+
         package::slide_content_ptr content = package::slide_content::create();
 
 		slideL->write_to(content->content());
@@ -263,6 +270,7 @@ void pptx_conversion_context::end_document()
 	//размеры страниц в презентации
     odf_reader::odf_read_context & context =  root()->odf_context();
     odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
+	
 	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
 	{
 		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_->style_name();
@@ -279,20 +287,20 @@ void pptx_conversion_context::end_document()
 	//добавляем диаграммы
 
 	count = 0;
-    BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
+	for (size_t i = 0; i < charts_.size(); i++)
     {
 		count++;
 		package::chart_content_ptr content = package::chart_content::create();
 
-		chart->serialize(content->content());
-		chart->dump_rels(content->get_rel_file()->get_rels());
+		charts_[i]->serialize(content->content());
+		charts_[i]->dump_rels(content->get_rel_file()->get_rels());
 
 		output_document_->get_ppt_files().add_charts(content);
 	
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//добавляем темы
-	for (int i=0; i < themes_.size();i++)
+	for (size_t i=0; i < themes_.size(); i++)
     {
 		output_document_->get_ppt_files().add_theme(themes_[i]);
 	
@@ -492,7 +500,7 @@ bool pptx_conversion_context::start_master(int master_index)
 	process_theme(masters.content[master_index].master_name);//add default theme - одинаковые но под разными именами
 	current_master().add_theme(current_theme().id(), L"tId1");	
 
-	for (long i=0;i<masters.content[master_index].layouts.size();i++)
+	for (size_t i = 0; i < masters.content[master_index].layouts.size(); i++)
 	{
 		current_master().add_layout(masters.content[master_index].layouts[i].Id, masters.content[master_index].layouts[i].rId, 0x80000000 + last_uniq_big_id++);
 	}
@@ -514,7 +522,7 @@ void pptx_conversion_context::end_page()
     } 
 
 	get_slide_context().serialize_background(current_slide().Background());
-	get_slide_context().serialize_objects(current_slide().Data());
+	get_slide_context().serialize_objects	(current_slide().Data());
 	get_slide_context().serialize_animations(current_slide().Timing());
 	
 	get_slide_context().dump_rels(current_slide().Rels());//hyperlinks, mediaitems, ...
@@ -543,9 +551,9 @@ std::pair<int,int> pptx_conversion_context::add_author_comments(std::wstring aut
 
 void pptx_conversion_context::end_master()
 {
-	get_slide_context().serialize_background(current_master().Background(),true);	
-	get_slide_context().serialize_objects(current_master().Data());
-	get_slide_context().serialize_HeaderFooter(current_master().DataExtra());
+	get_slide_context().serialize_background	(current_master().Background(),true);	
+	get_slide_context().serialize_objects		(current_master().Data());
+	get_slide_context().serialize_HeaderFooter	(current_master().DataExtra());
 	
 	get_slide_context().dump_rels(current_master().Rels());//hyperlinks, mediaitems, ...
 

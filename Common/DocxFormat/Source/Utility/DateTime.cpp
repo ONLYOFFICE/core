@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,6 +31,7 @@
  */
 #include "DateTime.h"
 #include "time.h"
+#include "../XML/Utils.h"
 
 //----------------------------------------------------------------------------------------------
 //  DateTime
@@ -57,7 +58,7 @@ DateTime::DateTime()
 }
 
 
-DateTime::DateTime(const CString &sValue, const CString &sPattern)	
+DateTime::DateTime(const std::wstring &sValue, const std::wstring &sPattern)
 	:
     m_nYear         ( ParseValue( sValue, sPattern, _T("%YYYY")) ),
     m_nMonth        ( ParseValue( sValue, sPattern, _T("%MM")  ) ),
@@ -70,31 +71,31 @@ DateTime::DateTime(const CString &sValue, const CString &sPattern)
 }
 
 
-const CString  DateTime::ToString  (const CString &sPattern) const
+const std::wstring  DateTime::ToString  (const std::wstring &sPattern) const
 {
-	CString sResult = sPattern, sTemp;
+    std::wstring sResult = sPattern, sTemp;
 
-	sTemp.Format( _T("%04d"), m_nYear        ); sResult.Replace( _T("%YYYY"), sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nMonth       ); sResult.Replace( _T("%MM"),   sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nDay         ); sResult.Replace( _T("%DD"),   sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nHour        ); sResult.Replace( _T("%hh"),   sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nMinute      ); sResult.Replace( _T("%mm"),   sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nSecond      ); sResult.Replace( _T("%ss"),   sTemp ); sTemp.Empty();
-	sTemp.Format( _T("%02d"), m_nMillisecond ); sResult.Replace( _T("%ms"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nYear,  _T("%04d") ); XmlUtils::replace_all(sResult, _T("%YYYY"), sTemp );
+    sTemp = XmlUtils::IntToString(m_nMonth, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%MM"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nDay,   _T("%02d") ); XmlUtils::replace_all(sResult, _T("%DD"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nHour,  _T("%02d") ); XmlUtils::replace_all(sResult, _T("%hh"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nMinute, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%mm"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nSecond, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%ss"),   sTemp );
+    sTemp = XmlUtils::IntToString(m_nMillisecond, _T("%02d") ); XmlUtils::replace_all(sResult, _T("%ms"),   sTemp );
 
 	return sResult;
 }
 
 
-const DateTime DateTime::Parse     (const CString &sValue, const CString &sPattern)
+const DateTime DateTime::Parse     (const std::wstring &sValue, const std::wstring &sPattern)
 {
 	return DateTime( sValue, sPattern );
 }
 
 
-const int      DateTime::ParseValue(const CString &sValue, const CString &sPattern, const CString &sElement)
+const int      DateTime::ParseValue(const std::wstring &sValue, const std::wstring &sPattern, const std::wstring &sElement)
 {
-	const int nPos = sPattern.Find( sElement );
+    const int nPos = sPattern.find( sElement );
 
 	if ( -1 != nPos )
 	{
@@ -105,9 +106,9 @@ const int      DateTime::ParseValue(const CString &sValue, const CString &sPatte
 				nSepCount++;
 		}
 
-		const CString sNumeric = sValue.Mid( nPos - nSepCount , sElement.GetLength() - 1 );
+        const std::wstring sNumeric = sValue.substr( nPos - nSepCount , sElement.length() - 1 );
 
-		return _wtoi( sNumeric );
+        return _wtoi( sNumeric.c_str() );
 	}
 	return 0;
 }

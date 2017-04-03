@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -99,7 +99,7 @@ void math_semantics::add_child_element( xml::sax * Reader, const std::wstring & 
 
 void math_semantics::oox_convert(oox::math_context & Context)
 {
-	for (int i = 0 ; i < content_.size(); i++)
+	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
         math_element->oox_convert(Context);

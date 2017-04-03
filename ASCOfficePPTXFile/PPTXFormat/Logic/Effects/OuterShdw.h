@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,8 @@ namespace PPTX
 		class OuterShdw : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(OuterShdw)
+			WritingElement_AdditionConstructors(OuterShdw)
+			PPTX_LOGIC_BASE2(OuterShdw)
 
 			OuterShdw& operator=(const OuterShdw& oSrc)
 			{
@@ -66,8 +67,42 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_innerShdw;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+					Color.fromXML(oReader);
+				}
+
+				FillParentPointersForChilds();
+		}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"), blurRad)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"), dir)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dist"), dist)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algnt"), algn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("kx"), kx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ky"), ky)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), rotWithShape)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);
@@ -86,7 +121,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("blurRad"), blurRad);

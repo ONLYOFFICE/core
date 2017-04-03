@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,12 +52,6 @@ PtgArray::PtgArray(const PtgDataType data_type)
 BiffStructurePtr PtgArray::clone()
 {
 	return BiffStructurePtr(new PtgArray(*this));
-}
-
-
-void PtgArray::storeFields(CFRecord& record)
-{
-	record.reserveNunBytes(7); // unused
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -133,18 +133,20 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<bookViews>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
+				
 				writer.WriteString(_T("</bookViews>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -117,7 +117,7 @@ namespace DocFileFormat
 		SectionPropertyExceptions* sepxBackup	= documentMapping->_lastValidSepx;
 
 		//start w:tc
-		documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tc" ) );
+        documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tc" );
 
 		//find cell end
 		int cpCellEnd = documentMapping->findCellEndCp(cp, depth);
@@ -141,7 +141,7 @@ namespace DocFileFormat
 		}
 
 		//end w:tc
-		documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tc" ) );
+        documentMapping->GetXMLWriter()->WriteNodeEnd( L"w:tc" );
 	}
 
 }
@@ -526,7 +526,7 @@ namespace DocFileFormat
 											documentMapping->m_document->FIB->m_bOlderVersion);
 
 		//start table
-		documentMapping->GetXMLWriter()->WriteNodeBegin( _T( "w:tbl" ) );
+        documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tbl" );
 
 		//Convert it
 		TablePropertiesMapping tpMapping( documentMapping->GetXMLWriter(), documentMapping->m_document->Styles, grid );
@@ -542,7 +542,7 @@ namespace DocFileFormat
 		}
 
 		//close w:tbl
-		documentMapping->GetXMLWriter()->WriteNodeEnd( _T( "w:tbl" ) );
+        documentMapping->GetXMLWriter()->WriteNodeEnd( L"w:tbl" );
 
 		RELEASEOBJECT( grid );
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,15 +50,6 @@ BaseObjectPtr AnyObject::clone()
 {
 	return BaseObjectPtr(new AnyObject(*this));
 }
-
-
-void AnyObject::writeFields(CFRecord& record)
-{
-#pragma message("####################### AnyObject record is not implemented")
-	Log::info("AnyObject record is not implemented.");
-	//record << some_value;
-}
-
 
 void AnyObject::readFields(CFRecord& record)
 {

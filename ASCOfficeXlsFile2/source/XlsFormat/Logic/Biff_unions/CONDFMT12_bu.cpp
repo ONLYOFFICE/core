@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -107,7 +107,7 @@ int CONDFMT12::serialize(std::wostream & stream)
 		{
 			CondFmt12 * condFmt	= dynamic_cast<CondFmt12*>(m_CondFmt12.get());
 
-			CP_XML_ATTR(L"sqref", condFmt->mainCF.sqref.sqref);
+			CP_XML_ATTR(L"sqref", condFmt->mainCF.sqref.strValue);
 			//condition_id
 			//condition_pos
 			for (int i = 0; i < m_arCF12.size(); i++)

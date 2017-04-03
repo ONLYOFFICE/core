@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-//#include "stdafx.h"
+
 #include "PPTShape.h"
 #include "PresetShapesHeader.h"
 
@@ -47,7 +47,7 @@ CPPTShape* CPPTShape::CreateByType(PPTShapes::ShapeType type)
 	CPPTShape* pShape = NULL;
 	switch (type)
 	{
-// msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
+// msosptNotchedCircularArrow           0x00000064 A value that SHOULD NOT be used.
 // msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
 
 	case sptNotchedCircularArrow:

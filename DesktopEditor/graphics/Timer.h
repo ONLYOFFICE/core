@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,12 +80,13 @@ namespace NSTimers
     }
 #endif
     
+    // CLOCK_MONOTONIC defined ONLY since macOS 10.12!!! (crash on earlier version)
 	static DWORD GetTickCount()
 	{
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 		return ::GetTickCount();
 #else
-#ifdef CLOCK_MONOTONIC
+#if defined(CLOCK_MONOTONIC) && !defined(_MAC)
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
 

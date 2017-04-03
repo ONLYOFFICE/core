@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,7 +80,7 @@ static const _sh_typ Shape_Types_Mapping[] = // index === OOX::Drawing::EShapeTy
 	{	L""								,  7},			//	shapetypeChartX,
 	{	L"chevron"						,  7},			//	shapetypeChevron,
 	{	L""								,  7},			//	shapetypeChord,
-	{	L"circular-arrow"				,  7},			//	shapetypeCircularArrow,
+	{	L""								,  7},			//	shapetypeCircularArrow,
 	{	L"cloud"						,  7},			//	shapetypeCloud,
 	{	L"cloud-callout"				,  7},			//	shapetypeCloudCallout,
 	{	L""								,  7},			//	shapetypeCorner,

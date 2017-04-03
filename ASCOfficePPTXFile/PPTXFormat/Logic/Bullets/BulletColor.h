@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		class BulletColor : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BulletColor)
+			WritingElement_AdditionConstructors(BulletColor)
+			PPTX_LOGIC_BASE2(BulletColor)
 
 			BulletColor& operator=(const BulletColor& oColor)
 			{
@@ -55,17 +56,33 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				if (m_Color.IsInit())
+					return m_Color->getType();
+				return OOX::et_Unknown;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+                std::wstring strName = oReader.GetName();
 
-		public:
+				if (strName == _T("a:buClrTx"))
+					m_Color.reset(new Logic::BuClrTx(oReader));
+				else if (strName == _T("a:buClr"))
+					m_Color.reset(new Logic::BuClr(oReader));
+				else 
+					m_Color.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString strName = node.GetName();
+				std::wstring strName = node.GetName();
 
 				if (strName == _T("a:buClrTx"))
 					m_Color.reset(new Logic::BuClrTx(node));
 				else if (strName == _T("a:buClr"))
 					m_Color.reset(new Logic::BuClr(node));
-				else m_Color.reset();
+				else 
+					m_Color.reset();
 			}
 
 			void ReadBulletColorFrom(XmlUtils::CXmlNode& element)
@@ -75,7 +92,8 @@ namespace PPTX
 					m_Color.reset(new Logic::BuClrTx(oNode));
 				else if (element.GetNode(_T("a:buClr"), oNode))
 					m_Color.reset(new Logic::BuClr(oNode));
-				else m_Color.reset();
+				else 
+					m_Color.reset();
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -147,7 +165,7 @@ namespace PPTX
 				return 0;
 			}
 
-			virtual CString toXML()const
+			virtual std::wstring toXML()const
 			{
 				if (m_Color.IsInit())
 					return m_Color->toXML();

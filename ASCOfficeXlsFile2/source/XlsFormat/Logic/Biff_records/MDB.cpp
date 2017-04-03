@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr MDB::clone()
 {
 	return BaseObjectPtr(new MDB(*this));
 }
-
-
-void MDB::writeFields(CFRecord& record)
-{
-#pragma message("####################### MDB record is not implemented")
-	Log::error("MDB record is not implemented.");
-	//record << some_value;
-}
-
 
 void MDB::readFields(CFRecord& record)
 {

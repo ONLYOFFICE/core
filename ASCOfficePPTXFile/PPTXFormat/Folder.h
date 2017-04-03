@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define PPTX_FOLDER_INCLUDE_H_
 
 #include "FileContainer.h"
-#include "DocxFormat/RId.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {

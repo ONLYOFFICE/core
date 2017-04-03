@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,8 +32,9 @@
 #include <string>
 
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "../../../Common/DocxFormat/Source/XML/libxml2/libxml2.h"
 
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../DesktopEditor/xml/src/xmllight_private.h"
 
 #include "../../include/cpdoccore/xml/sax.h"
 
@@ -72,7 +73,7 @@ public:
     virtual NodeType next(int Depth);
     
 private:
-	smart_ptr< XmlUtils::CXmlLiteReader > xml_;
+    smart_ptr< XmlUtils::CXmlLiteReader_Private > xml_;
 
 };
 
@@ -112,7 +113,7 @@ namespace
 
 saxXmlLiteReader::saxXmlLiteReader(const wchar_t * FileName)
 {
-	xml_ = new XmlUtils::CXmlLiteReader();
+    xml_ = new XmlUtils::CXmlLiteReader_Private();
 	
 	xml_->FromFile(FileName);
 
@@ -156,7 +157,7 @@ std::wstring saxXmlLiteReader::namespacePrefix()
 {
 	if (xml_.IsInit() == false) return _T("");
 
-	xmlChar* pName = xmlTextReaderPrefix(xml_->getNativeReader());
+    xmlChar* pName = xmlTextReaderPrefix(xml_->getNativeReader());
 	if (NULL == pName)
 		return L"";
 

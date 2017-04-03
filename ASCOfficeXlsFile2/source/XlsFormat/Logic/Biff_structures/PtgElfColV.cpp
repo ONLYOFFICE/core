@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,26 +43,15 @@ BiffStructurePtr PtgElfColV::clone()
 	return BiffStructurePtr(new PtgElfColV(*this));
 }
 
-
-
-void PtgElfColV::storeFields(CFRecord& record)
-{
-	record << loc;
-}
-
-
 void PtgElfColV::loadFields(CFRecord& record)
 {
 	record >> loc;
 }
 
-
 void PtgElfColV::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	ptg_stack.push(CellRangeRef(loc, CellRangeRef::stColumnBelow).toString());
 }
-
-
 
 } // namespace XLS
 

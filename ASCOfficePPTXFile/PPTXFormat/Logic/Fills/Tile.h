@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,8 @@ namespace PPTX
 		class Tile : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Tile)
+			WritingElement_AdditionConstructors(Tile)
+			PPTX_LOGIC_BASE2(Tile)
 
 			Tile& operator=(const Tile& oSrc)
 			{
@@ -62,7 +63,25 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_tile;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("algn"), algn )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("flip"), flip )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx"), tx )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ty"), ty )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"algn", algn);
@@ -72,7 +91,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"tx", tx);
 				node.ReadAttributeBase(L"ty", ty);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("algn"), algn);

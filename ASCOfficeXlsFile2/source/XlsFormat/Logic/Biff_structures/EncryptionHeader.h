@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,14 +48,13 @@ public:
 	static const XLS::ElementType	type = XLS::typeEncryptionHeader;
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
 
-	EncryptionHeaderFlags Flags;
-    _INT32			AlgID;
-    _INT32			AlgIDHash;
-	_UINT32			KeySize;
-	_UINT32			ProviderType;
-	std::wstring	CSPName;
+	EncryptionHeaderFlags	Flags;
+    _INT32					AlgID;
+    _INT32					AlgIDHash;
+	_UINT32					KeySize;
+	_UINT32					ProviderType;
+	std::wstring			CSPName;
 };
 
 } // namespace CRYPTO

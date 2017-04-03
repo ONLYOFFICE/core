@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,13 +50,6 @@ BaseObjectPtr InterfaceEnd::clone()
 {
 	return BaseObjectPtr(new InterfaceEnd(*this));
 }
-
-
-void InterfaceEnd::writeFields(CFRecord& record)
-{
-	// No data in this record
-}
-
 
 void InterfaceEnd::readFields(CFRecord& record)
 {

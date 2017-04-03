@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,7 +38,7 @@ namespace PPTX2EditorAdvanced
 {
 	using namespace NSBinPptxRW;
 
-	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const CString& strSourceDirectory, const CString& strDstFile)
+	DWORD Convert(NSBinPptxRW::CBinaryFileWriter& oBinaryWriter, PPTX::Folder& oFolder, const std::wstring& strSourceDirectory, const std::wstring& strDstFile)
 	{	
 		// сначала соберем все объекты для конвертации и сформируем main-таблицы
 		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;
@@ -50,7 +50,7 @@ namespace PPTX2EditorAdvanced
 		std::vector<smart_ptr<PPTX::NotesSlide>>		_notes;
 		std::vector<smart_ptr<PPTX::NotesMaster>>		_notesMasters;
 
-		smart_ptr<PPTX::Presentation> presentation = oFolder.get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+		smart_ptr<PPTX::Presentation> presentation = oFolder.Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		int cx = presentation->sldSz->cx;
 		int cy = presentation->sldSz->cy;
 
@@ -100,7 +100,7 @@ namespace PPTX2EditorAdvanced
 			size_t nCountLayouts = slideMaster->sldLayoutIdLst.size();
 			for (size_t iLayout = 0; iLayout < nCountLayouts; ++iLayout)
 			{
-                CString rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
+                std::wstring rId = slideMaster->sldLayoutIdLst[iLayout].rid.get();
                 smart_ptr<PPTX::SlideLayout> slideLayout = ((*slideMaster)[rId]).smart_dynamic_cast<PPTX::SlideLayout>();
 
 				// проверяем layout
@@ -160,7 +160,7 @@ namespace PPTX2EditorAdvanced
 		size_t nCount = presentation->sldIdLst.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-            CString rId = presentation->sldIdLst[i].rid.get();
+            std::wstring rId = presentation->sldIdLst[i].rid.get();
             smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();
 			
             if (slide.IsInit() == false)
@@ -218,7 +218,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteULONG(0);
 		
 		// App
-		smart_ptr<PPTX::App> app = oFolder.get(PPTX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+		smart_ptr<PPTX::App> app = oFolder.Get(OOX::Presentation::FileTypes::App).smart_dynamic_cast<PPTX::App>();
 		if (app.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::App);
@@ -226,7 +226,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// Core
-		smart_ptr<PPTX::Core> core = oFolder.get(PPTX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::Presentation::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
 		if (core.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::Core);
@@ -234,7 +234,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// PresProps
-		smart_ptr<PPTX::PresProps> presProps = presentation->get(PPTX::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
+		smart_ptr<PPTX::PresProps> presProps = presentation->Get(OOX::Presentation::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
 		if (presProps.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::PresProps);
@@ -242,7 +242,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// ViewProps
-		smart_ptr<PPTX::ViewProps> viewProps = presentation->get(PPTX::FileTypes::ViewProps).smart_dynamic_cast<PPTX::ViewProps>();
+		smart_ptr<PPTX::ViewProps> viewProps = presentation->Get(OOX::Presentation::FileTypes::ViewProps).smart_dynamic_cast<PPTX::ViewProps>();
 		if (viewProps.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::ViewProps);
@@ -250,61 +250,81 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// TableStyles
-		smart_ptr<PPTX::TableStyles> tablestyles = presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+		smart_ptr<PPTX::TableStyles> tablestyles = presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 		if (tablestyles.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::TableStyles);
 			tablestyles->toPPTY(&oBinaryWriter);
 		}
 
-		// Presentation
+	// Presentation
 		oBinaryWriter.StartMainRecord(NSMainTables::Presentation);
 		presentation->toPPTY(&oBinaryWriter);
 
-		// themes
+	// themes
 		oBinaryWriter.StartMainRecord(NSMainTables::Themes);
-		ULONG nCountThemes = (ULONG)_themes.size();
+		
+		ULONG nCountThemes = 0;
+        for (size_t i = 0; i < _themes.size(); ++i)
+        {
+			if (_themes[i].IsInit()) nCountThemes++;
+        }		
 		oBinaryWriter.WriteULONG(nCountThemes);
-		for (ULONG i = 0; i < nCountThemes; ++i)
+		
+		for (size_t  i = 0; i < _themes.size(); ++i)
 		{
+			if (_themes[i].IsInit() == false) continue;
 			_themes[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slidemasters
+	// slidemasters
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideMasters);
-		ULONG nCountSM = (ULONG)_slideMasters.size();
+		
+		ULONG nCountSM = 0;
+        for (size_t i = 0; i < _slideMasters.size(); ++i)
+        {
+			if (_slideMasters[i].IsInit()) nCountSM++;
+        }
 		oBinaryWriter.WriteULONG(nCountSM);
-		for (ULONG i = 0; i < nCountSM; ++i)
+		
+		for (size_t i = 0; i < _slideMasters.size(); ++i)
 		{
+			if (_slideMasters[i].IsInit() == false) continue;
+			
 			_slideMasters[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slidelayouts
+	// slidelayouts
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideLayouts);
-        ULONG nCountL = 0;
-
-        for (ULONG i = 0; i < _layouts.size(); ++i)
+       
+		ULONG nCountL = 0;
+        for (size_t i = 0; i < _layouts.size(); ++i)
         {
-            if (_layouts[i].IsInit())nCountL++;
+			if (_layouts[i].IsInit())nCountL++;
         }
-
 		oBinaryWriter.WriteULONG(nCountL);
-        for (ULONG i = 0; i < _layouts.size(); ++i)
+
+        for (size_t i = 0; i < _layouts.size(); ++i)
 		{
-            if (_layouts[i].IsInit() == false)
-            {
-                continue;
-                //непонятки с 42 шаблоном в FY10_September_Partner_Call.pptx
-            }
+            if (_layouts[i].IsInit() == false)	continue;	//непонятки с 42 шаблоном в FY10_September_Partner_Call.pptx
+
 			_layouts[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// slides
+	// slides
 		oBinaryWriter.StartMainRecord(NSMainTables::Slides);
-		ULONG nCountS = (ULONG)_slides.size();
+		
+		ULONG nCountS = 0;
+        for (size_t i = 0; i < _slides.size(); ++i)
+        {
+			if (_slides[i].IsInit())	nCountS++;
+        }
 		oBinaryWriter.WriteULONG(nCountS);
-		for (ULONG i = 0; i < nCountS; ++i)
+
+		for (size_t i = 0; i < _slides.size(); ++i)
 		{
+			if (_slides[i].IsInit() == false )	continue;
+
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
 
@@ -312,7 +332,7 @@ namespace PPTX2EditorAdvanced
 		{
 			// ПОКА нету NOTES
 
-			// notes
+		// notes
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
 			ULONG nCountN = (ULONG)_notes.size();
 			oBinaryWriter.WriteULONG(nCountN);
@@ -321,7 +341,7 @@ namespace PPTX2EditorAdvanced
 				_notes[i]->toPPTY(&oBinaryWriter);
 			}
 
-			// notesmasters
+		// notesmasters
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
 			ULONG nCountNM = (ULONG)_notesMasters.size();
 			oBinaryWriter.WriteULONG(nCountNM);
@@ -336,10 +356,10 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::ImageMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		std::map<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
+		std::map<std::wstring, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
 
 		LONG lIndexI = 0;
-		for (std::map<CString, NSShapeImageGen::CImageInfo>::iterator pPair = pIMaps->begin(); pPair != pIMaps->end(); ++pPair)
+		for (std::map<std::wstring, NSShapeImageGen::CImageInfo>::iterator pPair = pIMaps->begin(); pPair != pIMaps->end(); ++pPair)
 		{
 			NSShapeImageGen::CImageInfo& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexI++, oRec.GetPath2());
@@ -356,12 +376,12 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::FontMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		std::map<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
+		std::map<std::wstring, std::wstring>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
 
 		LONG lIndexF = 0;
-		for (std::map<CString, CString>::iterator pPair = pFMaps->begin(); pPair != pFMaps->end(); ++pPair)
+		for (std::map<std::wstring, std::wstring>::iterator pPair = pFMaps->begin(); pPair != pFMaps->end(); ++pPair)
 		{
-			CString& oRec = pPair->second;
+			std::wstring& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexF++, oRec);
 		}
 
@@ -448,10 +468,8 @@ namespace PPTX2EditorAdvanced
 #else
             oFile.CreateFile(strDstFile);
 #endif
-			CString strPrefix = _T("");
-			strPrefix.Format(_T("PPTY;v1;%d;"), nBinBufferLen);
-			CStringA sW = (CStringA)strPrefix;
-			oFile.WriteFile(sW.GetBuffer(), (DWORD)sW.GetLength());
+			std::string strPrefix = "PPTY;v1;" + std::to_string(nBinBufferLen) + ";";
+            oFile.WriteFile((void*)strPrefix.c_str(), (DWORD)strPrefix.length());
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}

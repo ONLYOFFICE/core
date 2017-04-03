@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,13 +44,57 @@ namespace PPTX
 		class CNvPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CNvPr)
+			WritingElement_AdditionConstructors(CNvPr)
 
-		public:
+			CNvPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
+
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_cNvPr;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_int id_;
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),	id_)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),	name)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("descr"), descr)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hidden"), hidden)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("title"), title)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				id = id_.get_value_or(0);
+				Normalize();
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if (sName == L"a:hlinkClick")
+						hlinkClick = oReader;
+					else if (sName == L"a:hlinkHover")
+						hlinkHover = oReader;
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 				id		= node.ReadAttributeInt(L"id");
 				name	= node.GetAttribute(L"name");
+				
 				node.ReadAttributeBase(L"descr", descr);
 				node.ReadAttributeBase(L"hidden", hidden);
 				node.ReadAttributeBase(L"title", title);
@@ -61,40 +105,45 @@ namespace PPTX
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			
+			std::wstring toXML2(std::wstring node_name) const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("id"), id);
-				oAttr.Write(_T("name"), name);
-				oAttr.Write(_T("descr"), descr);
-				oAttr.Write(_T("hidden"), hidden);
-				oAttr.Write(_T("title"), title);
+									oAttr.Write(_T("id"),		id);
+									oAttr.Write(_T("name"),		XmlUtils::EncodeXmlString(name));
+                if (descr.IsInit())
+                {
+                    std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+                    XmlUtils::replace_all(d, L"\n", L"&#xA;");
+
+                    oAttr.Write(_T("descr"), d);
+                }
+									oAttr.Write(_T("hidden"),	hidden);
+				if (title.IsInit())	oAttr.Write(_T("title"),	XmlUtils::EncodeXmlString(title.get()));
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(hlinkClick);
 				oValue.WriteNullable(hlinkHover);
 
-				return XmlUtils::CreateNode(_T("p:cNvPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(node_name.empty() ? (m_namespace + L":cNvPr") : node_name, oAttr, oValue);
+			}
+			virtual std::wstring toXML() const
+			{
+				return toXML2(L"");
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-                CString namespace_;
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-                    namespace_= _T("pic");
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-                    namespace_= _T("xdr");
-				else
-                    namespace_= _T("p");
+                std::wstring namespace_ = m_namespace;
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_= _T("pic");
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_= _T("xdr");
 
                 toXmlWriter2(namespace_, pWriter);
 
 			}
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				//if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX && id == -1)
-				//	return;
-
 				pWriter->StartNode(strNS + _T(":cNvPr"));
 
 				int _id = id;
@@ -112,11 +161,16 @@ namespace PPTX
 				}
 
 				pWriter->StartAttributes();
-                pWriter->WriteAttribute (_T("id"),      _id);
-                pWriter->WriteAttribute2(_T("name"),    name);
-                pWriter->WriteAttribute2(_T("descr"),   descr);
-                pWriter->WriteAttribute (_T("hidden"),  hidden);
-                pWriter->WriteAttribute (_T("title"),   title);
+									pWriter->WriteAttribute (_T("id"),      _id);
+									pWriter->WriteAttribute (_T("name"),    XmlUtils::EncodeXmlString(name));
+                if (descr.IsInit())
+                {
+                    std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+                    XmlUtils::replace_all(d, L"\n", L"&#xA;");
+                    pWriter->WriteAttribute	(_T("descr"),   d);
+                }
+									pWriter->WriteAttribute (_T("hidden"),  hidden);
+				if (title.IsInit())	pWriter->WriteAttribute (_T("title"),   XmlUtils::EncodeXmlString(title.get()));
 
 				pWriter->EndAttributes();
 
@@ -191,9 +245,10 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring		m_namespace;
+
 			int					id;
-			CString				name;
+			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;
 			nullable_string		title;

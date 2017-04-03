@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,14 +49,6 @@ Compat12::~Compat12()
 BaseObjectPtr Compat12::clone()
 {
 	return BaseObjectPtr(new Compat12(*this));
-}
-
-
-void Compat12::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_Compat12);
-	record << frtHeader;
-	record << fNoCompatChk;
 }
 
 

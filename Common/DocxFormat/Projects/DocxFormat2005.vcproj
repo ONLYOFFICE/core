@@ -1331,25 +1331,13 @@
 		<Filter
 			Name="Utility"
 			>
+			<File
+				RelativePath="..\Source\SystemUtility\File.h"
+				>
+			</File>
 			<Filter
 				Name="FileSys"
 				>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\Directory.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\Directory.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\File.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\SystemUtility\FileSystem\File.h"
-					>
-				</File>
 				<File
 					RelativePath="..\Source\SystemUtility\SystemUtility.cpp"
 					>
@@ -1615,10 +1603,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\GraphicFrame.h"
-					>
-				</File>
-				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Image.h"
 					>
 				</File>
@@ -1872,6 +1856,10 @@
 			Name="DiagramML"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramData.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
 				>
 			</File>
@@ -1879,10 +1867,6 @@
 		<Filter
 			Name="Base"
 			>
-			<File
-				RelativePath="..\Source\Base\ASCString.h"
-				>
-			</File>
 			<File
 				RelativePath="..\Source\Base\Base.h"
 				>
@@ -1908,14 +1892,6 @@
 			Name="XML"
 			>
 			<File
-				RelativePath="..\Source\XML\stringcommon.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\stringcommon.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\XML\StringWriter.h"
 				>
 			</File>
@@ -1925,10 +1901,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\XML\XmlSimple.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XML\xmlutils.h"
 				>
 			</File>
 		</Filter>
@@ -2025,10 +1997,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\Source\SystemUtility\FileSystem\File.cpp"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\DocxFormat\File.h"
 			>
 		</File>
@@ -2094,10 +2062,6 @@
 		</File>
 		<File
 			RelativePath="..\Source\DocxFormat\RId.h"
-			>
-		</File>
-		<File
-			RelativePath="..\Source\SystemUtility\SystemUtility.cpp"
 			>
 		</File>
 		<File

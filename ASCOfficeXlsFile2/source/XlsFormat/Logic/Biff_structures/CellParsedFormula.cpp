@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,16 +48,6 @@ BiffStructurePtr CellParsedFormula::clone()
 {
 	return BiffStructurePtr(new CellParsedFormula(*this));
 }
-
-
-void CellParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Formula);
-	rgcb.store(record);
-}
-
 
 void CellParsedFormula::load(CFRecord& record)
 {

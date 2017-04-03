@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -103,7 +103,7 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 		
 		if (m_ooxTableRowProps->m_oTrPrChange->m_oDate.IsInit())
         {
-            std::wstring sVal = string2std_string(m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue());
+            std::wstring sVal = m_ooxTableRowProps->m_oTrPrChange->m_oDate->GetValue();
             oOutputProperty.m_nTrDate = RtfUtility::convertDateTime( sVal);
         }
 		
@@ -161,16 +161,18 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 
 	if( m_ooxTable->m_oTblGrid.IsInit() )
 	{
-		for( int i = 0; i < m_ooxTable->m_oTblGrid->m_arrGridCol.size(); i++ )
+		for (size_t i = 0; i < m_ooxTable->m_oTblGrid->m_arrGridCol.size(); i++ )
 		{
 			if (m_ooxTable->m_oTblGrid->m_arrGridCol[i] && m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW.IsInit())
-			oOutputTable.m_aTableGrid.push_back( m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW->ToTwips() );
+			{
+				oOutputTable.m_aTableGrid.push_back( m_ooxTable->m_oTblGrid->m_arrGridCol[i]->m_oW->ToTwips() );
+			}
 		}
 	}
 
 	long nRowCount = m_ooxTable->m_nCountRow, nCurRow = 0;
 
-	for( int i = 0; i < m_ooxTable->m_arrItems.size(); i++ )
+	for (size_t i = 0; i < m_ooxTable->m_arrItems.size(); i++ )
 	{
 		if (m_ooxTable->m_arrItems[i] == NULL) continue;
 		if (m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
@@ -196,19 +198,19 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 //применяет свойства параграфа связанные с положением
 void OOXTableReader::ApplyParagraphProperty( RtfTable& oOutputTable )
 {
-	for( int i = 0; i < oOutputTable.GetCount(); i++ )
+	for (int i = 0; i < oOutputTable.GetCount(); i++ )
 	{
 		boost::shared_ptr<RtfTableRow> oCurRow ;
 		oOutputTable.GetItem(oCurRow,i);
 		if( oCurRow )
-			for( int j = 0; j < oCurRow->GetCount(); j++ )
+			for (int j = 0; j < oCurRow->GetCount(); j++ )
 			{
 				boost::shared_ptr<RtfTableCell> oCurCell ;
 				oCurRow->GetItem( oCurCell, j );
 				if( oCurCell )
 				{
 					boost::shared_ptr<ITextItem> pCurTextItem;
-					for( int k = 0; k < oCurCell->GetCount(); k++ )
+					for (int k = 0; k < oCurCell->GetCount(); k++ )
 					{
 						oCurCell->GetItem(pCurTextItem, k);
 						if( NULL != pCurTextItem && pCurTextItem->GetType() == TYPE_RTF_PARAGRAPH )

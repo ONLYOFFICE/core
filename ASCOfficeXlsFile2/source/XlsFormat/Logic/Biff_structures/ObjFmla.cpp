@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,31 +71,6 @@ void ObjFmla::load(CFRecord& record)
 	{
 		record.skipNunBytes(padding_size);
 	}
-}
-
-
-void ObjFmla::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
-	size_t start_ptr = record.getDataSize();
-
-	if(fmla_found)
-	{
-		fmla.store(record);
-	}
-
-	if(true)
-	{
-		record << embedInfo;
-	}
-
-	size_t data_size = record.getDataSize() - start_ptr;
-	if(0 != (data_size & 1))
-	{
-		record.reserveNunBytes(1); // padding
-		data_size++;
-	}
-	record.registerDelayedDataSource(data_size, rt_Obj);
 }
 
 

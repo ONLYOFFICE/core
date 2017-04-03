@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,14 +48,6 @@ SXStreamID::~SXStreamID()
 BaseObjectPtr SXStreamID::clone()
 {
 	return BaseObjectPtr(new SXStreamID(*this));
-}
-
-
-void SXStreamID::writeFields(CFRecord& record)
-{
-#pragma message("####################### SXStreamID record is not implemented")
-	Log::error("SXStreamID record is not implemented.");
-	//record << some_value;
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,15 +40,14 @@
 
 #include "office_elements_type.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
 #include "../docx/docx_conversion_context.h"
 #include "../docx/xlsxconversioncontext.h"
 #include "../docx/pptx_conversion_context.h"
 
 #include "visitor.h"
 #include "../conversionelement.h"
+
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace odf_reader {
@@ -58,7 +57,7 @@ class document_context;
 class office_element;
 typedef shared_ptr<office_element>::Type	office_element_ptr;
 typedef weak_ptr<office_element>::Type		office_element_weak_ptr;
-typedef std::vector<office_element_ptr>	office_element_ptr_array;
+typedef std::vector<office_element_ptr>		office_element_ptr_array;
 
 class office_element : public xml::element<wchar_t>,
     public common::read_doc_element,
@@ -137,13 +136,7 @@ public:
 private:
     virtual void add_text(const std::wstring & Text)
     {
-        std::wstring text = Text;
-        boost::algorithm::erase_all(text, L" ");
-        boost::algorithm::erase_all(text, L"\t");
-        boost::algorithm::erase_all(text, L"\n");
-        boost::algorithm::erase_all(text, L"\r");
-        //CP_ASSERT(false);
-    }
+	}
 
 // office_element impl
 public:

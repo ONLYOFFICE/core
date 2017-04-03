@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,7 +56,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -65,7 +65,7 @@ namespace OOX
 				if(m_oId.IsInit())
 				{
 					writer.WriteString(L"<drawing r:id=\"");
-					writer.WriteString(m_oId->ToString2());
+					writer.WriteString(m_oId->ToString());
 					writer.WriteString(L"\"/>");
 				}
 				
@@ -167,7 +167,7 @@ namespace OOX
 									sName = XmlUtils::GetNameNoNS(oReader.GetName());
 									if ( _T("Choice") != sName  && _T("Fallback") != sName ) continue;
 		
-									nullable<CString> sRequires;
+                                    nullable<std::wstring> sRequires;
 									WritingElement_ReadAttributes_Start( oReader )
 										WritingElement_ReadAttributes_Read_if ( oReader, _T("Requires"), sRequires )
 									WritingElement_ReadAttributes_End( oReader )
@@ -210,13 +210,13 @@ namespace OOX
 			{
 				NSStringUtils::CStringBuilder sXml;
 				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
 				sXml.WriteString(_T("</xdr:wsDr>"));				
 
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-				sPath.ReleaseBuffer();
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
@@ -236,7 +236,7 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-			const OOX::RId AddImage (CString& sSrc)
+            const OOX::RId AddImage (std::wstring& sSrc)
 			{
 				smart_ptr<OOX::File> oImage = smart_ptr<OOX::File>( new OOX::Spreadsheet::Image( sSrc ) );
 				const OOX::RId rId = Add( oImage );

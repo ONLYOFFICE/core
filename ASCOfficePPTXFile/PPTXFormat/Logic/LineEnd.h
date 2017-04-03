@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,26 @@ namespace PPTX
 		class LineEnd : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(LineEnd)
+			WritingElement_AdditionConstructors(LineEnd)
+			PPTX_LOGIC_BASE2(LineEnd)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buSzPts;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w"), w )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("len"), len )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = node.GetName();
@@ -55,7 +72,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"w", w);
 				node.ReadAttributeBase(L"len", len);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("type"), type);
@@ -144,7 +161,7 @@ namespace PPTX
 			nullable_limit<Limit::LineEndSize> len;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

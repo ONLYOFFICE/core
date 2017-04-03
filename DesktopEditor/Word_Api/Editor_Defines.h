@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -744,12 +744,20 @@
 
 #define ASC_MENU_EVENT_TYPE_ERROR                   500
 
+#define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
+#define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
 
-#define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES               2404    //  CAscColorSchemes
-#define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME         2415    //  SET(int)
+#define ASC_SOCKET_EVENT_TYPE_OPEN                  10000
+#define ASC_SOCKET_EVENT_TYPE_ON_CLOSE              10010
+#define ASC_SOCKET_EVENT_TYPE_MESSAGE               10020
+#define ASC_SOCKET_EVENT_TYPE_ON_DISCONNECT         11010
+#define ASC_SOCKET_EVENT_TYPE_TRY_RECONNECT         11020
 
-#define ASC_MENU_EVENT_TYPE_AUTH_PARTICIPANTS_CHANGED   2416
-#define ASC_MENU_EVENT_TYPE_LOST_CONNECTION             2420
-#define ASC_MENU_EVENT_TYPE_DROP_CONNECTION             2421
+#define ASC_COAUTH_EVENT_TYPE_PARTICIPANTS_CHANGED  20101
+#define ASC_COAUTH_EVENT_TYPE_LOST_CONNECTION       20102
+#define ASC_COAUTH_EVENT_TYPE_DROP_CONNECTION       20103
+
+#define ASC_COAUTH_EVENT_TYPE_INSERT_URL_IMAGE      21000
+#define ASC_COAUTH_EVENT_TYPE_LOAD_URL_IMAGE        21001
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

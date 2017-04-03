@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,6 @@
 #include "NvGraphicFramePr.h"
 #include "Xfrm.h"
 #include "ShapeProperties.h"
-//#include "DocxFormat/RId.h"
 #include "Table/Table.h"
 #include "SmartArt.h"
 #include "Pic.h"
@@ -50,38 +49,51 @@ namespace PPTX
 		class GraphicFrame : public WrapperWritingElement
 		{
 		public:
-			GraphicFrame();
+			GraphicFrame(std::wstring ns = L"p");
 			virtual ~GraphicFrame();			
+			
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_graphicFrame;
+			}
+			explicit GraphicFrame(XmlUtils::CXmlLiteReader& oReader);
+			const GraphicFrame& operator =(XmlUtils::CXmlLiteReader& oReader);
+
 			explicit GraphicFrame(XmlUtils::CXmlNode& node);
 			const GraphicFrame& operator =(XmlUtils::CXmlNode& node);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
-			void fromXMLOle(XmlUtils::CXmlNode& node);
-			virtual CString toXML() const;
-			virtual void GetRect(Aggplus::RECT& pRect)const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
+					bool fromXML3(XmlUtils::CXmlLiteReader& oReader);
+
+			void ReadAttributes3(XmlUtils::CXmlLiteReader& oReader);
+			
+			virtual std::wstring toXML() const;
+					std::wstring toXML2() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-	
+					void toXmlWriter2(NSBinPptxRW::CXmlWriter* pWriter) const;
 
+			virtual void GetRect(Aggplus::RECT& pRect)const;
+	
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-		public:
+
+			std::wstring			m_namespace;
+
 			NvGraphicFramePr		nvGraphicFramePr;
-			Xfrm					xfrm;
-			//property<Graphic> grpahic;
-			//nullable_property<PPTX::RId> dm;
-			//nullable_property<PPTX::RId> lo;
-			//nullable_property<PPTX::RId> qs;
-			//nullable_property<PPTX::RId> cs;
+
+			nullable<Xfrm>			xfrm;
+
 			nullable_string			spid;
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;
-			nullable<COLEObject>	oleObject;
+			nullable<SpTreeElem>	element;
 
-			CString		 GetVmlXmlBySpid(CString & rels)	const;
+			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(FillEffect)
+			WritingElement_AdditionConstructors(FillEffect)
+			PPTX_LOGIC_BASE2(FillEffect)
 			
 			FillEffect& operator=(const FillEffect& oSrc)
 			{
@@ -54,15 +55,31 @@ namespace PPTX
 				Fill = oSrc.Fill;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_fill;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Fill.fromXML(oReader);
+				}
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Fill.GetFillFrom(node);
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:fill>") + Fill.toXML() + _T("</a:fill>");
 			}

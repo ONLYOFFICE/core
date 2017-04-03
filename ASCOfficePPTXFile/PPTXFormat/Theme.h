@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,8 +33,8 @@
 #ifndef PPTX_THEME_FILE_INCLUDE_H_
 #define PPTX_THEME_FILE_INCLUDE_H_
 
-#include "WrapperFile.h"
 #include "FileContainer.h"
+#include "WrapperFile.h"
 
 #include "Theme/ThemeElements.h"
 #include "Logic/DefaultShapeDefinition.h"
@@ -44,9 +44,9 @@
 #include "Logic/ClrMap.h"
 
 #include "Presentation.h"
-#include "DocxFormat/Media/Image.h"
-#include "DocxFormat/Media/OleObject.h"
-#include "DocxFormat/External/HyperLink.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
 
 namespace PPTX
 {
@@ -75,9 +75,9 @@ namespace PPTX
 			m_map = NULL;
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 			
-			CString strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
+			std::wstring strNodeName = XmlUtils::GetNameNoNS(oNode.GetName());
 			if (_T("themeOverride") == strNodeName)
 			{
 				themeElements = oNode;
@@ -120,7 +120,7 @@ namespace PPTX
 			for (size_t i = 0; i < count; ++i)
 				extraClrSchemeLst[i].SetParentFilePointer(this);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
@@ -139,7 +139,7 @@ namespace PPTX
 
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("a:theme"), oAttr, oValue));
 			
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 			FileContainer::write(filename, directory, content);
@@ -281,9 +281,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::ThemePPTX;
+			return OOX::Presentation::FileTypes::ThemePPTX;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -295,42 +295,42 @@ namespace PPTX
 		}
 
 		//////
-		DWORD GetRGBAFromScheme(const CString& str)const
+		DWORD GetRGBAFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetRGBAFromScheme(str);
 		}
-		DWORD GetARGBFromScheme(const CString& str)const
+		DWORD GetARGBFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetARGBFromScheme(str);
 		}
-		DWORD GetBGRAFromScheme(const CString& str)const
+		DWORD GetBGRAFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetBGRAFromScheme(str);
 		}
-		DWORD GetABGRFromScheme(const CString& str)const
+		DWORD GetABGRFromScheme(const std::wstring& str)const
 		{
 			return themeElements.clrScheme.GetABGRFromScheme(str);
 		}
 
 		//////
-		DWORD GetRGBAFromMap(const CString& str)const
+		DWORD GetRGBAFromMap(const std::wstring& str)const
 		{
 			return GetRGBAFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetARGBFromMap(const CString& str)const
+		DWORD GetARGBFromMap(const std::wstring& str)const
 		{
 			return GetARGBFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetBGRAFromMap(const CString& str)const
+		DWORD GetBGRAFromMap(const std::wstring& str)const
 		{
 			return GetBGRAFromScheme(m_map->GetColorSchemeIndex(str));
 		}
-		DWORD GetABGRFromMap(const CString& str)const
+		DWORD GetABGRFromMap(const std::wstring& str)const
 		{
 			return GetABGRFromScheme(m_map->GetColorSchemeIndex(str));
 		}
 
-		virtual void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
+		virtual void FillShapeProperties(Logic::ShapeProperties& props, const std::wstring& type)const
 		{
             if(presentation.IsInit())
 			{
@@ -348,23 +348,23 @@ namespace PPTX
 			props.SetMajorLatin(themeElements.fontScheme.majorFont.latin);
 			props.SetMinorLatin(themeElements.fontScheme.minorFont.latin);
 		}
-		virtual CString GetMediaFullPathNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetMediaFullPathNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::Image> p = image(rid);
+			smart_ptr<OOX::Image> p = GetImage(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;
 		}
-		virtual CString GetFullHyperlinkNameFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetFullHyperlinkNameFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::HyperLink> p = hyperlink(rid);
+			smart_ptr<OOX::HyperLink> p = GetHyperlink(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
 		}
-		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		virtual std::wstring GetOleFromRId(const OOX::RId& rid)const
 		{
-			smart_ptr<PPTX::OleObject> p = oleObject(rid);
+			smart_ptr<OOX::OleObject> p = GetOleObject(rid);
 			if (!p.is_init())
 				return _T("");
 			return p->filename().m_strFilename;

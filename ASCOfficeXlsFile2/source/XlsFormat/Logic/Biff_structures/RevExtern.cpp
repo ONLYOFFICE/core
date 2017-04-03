@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,14 +52,6 @@ BiffStructurePtr RevExtern::clone()
 {
 	return BiffStructurePtr(new RevExtern(*this));
 }
-
-void RevExtern::store(CFRecord& record)
-{
-#pragma message("####################### RevExtern record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! RevExtern record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void RevExtern::load(CFRecord& record)
 {

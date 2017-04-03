@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -240,13 +240,13 @@ public:
     void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
 
 public:
-	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles, int nFlag = 0);
-	void LoadFromFolder(const std::wstring& strDirectory);
-	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
-	void Add(CFontInfo* pInfo);
-	CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
-	CArray<CFontInfo*> GetAllByName(const std::wstring& strFontName);
-	void SetDefaultFont(std::wstring& sName);
+	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);
+	void LoadFromFolder (const std::wstring& strDirectory);
+	bool CheckLoadFromFolderBin	(const std::wstring& strDirectory);
+	void Add (CFontInfo* pInfo);
+	CFontInfo* GetByParams (CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
+	CArray<CFontInfo*> GetAllByName (const std::wstring& strFontName);
+	void SetDefaultFont (std::wstring& sName);
 };
 
 class CApplicationFonts
@@ -268,15 +268,15 @@ public:
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
       
-    CArray<std::wstring> GetSetupFontFiles();
-    void InitializeFromArrayFiles(CArray<std::wstring>& files, int nFlag = 0);
+	std::vector<std::wstring> GetSetupFontFiles();
+	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);
 
 #if defined(_WIN32) || defined (_WIN64)
 	void InitFromReg();
 #endif
     
 #ifdef _IOS
-    CArray<std::wstring> GetSetupFontFiles_ios();
+    std::vector<std::wstring> GetSetupFontFiles_ios();
 #endif
 
 	CFontManager* GenerateFontManager();

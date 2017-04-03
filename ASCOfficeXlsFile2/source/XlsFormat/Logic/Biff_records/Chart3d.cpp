@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,19 +48,6 @@ Chart3d::~Chart3d()
 BaseObjectPtr Chart3d::clone()
 {
 	return BaseObjectPtr(new Chart3d(*this));
-}
-
-
-void Chart3d::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fPerspective);
-	SETBIT(flags, 1, fCluster);
-	SETBIT(flags, 2, f3DScaling);
-	SETBIT(flags, 4, fNotPieChart);
-	SETBIT(flags, 5, fWalls2D);
-	unsigned short pcHeight_raw = static_cast<unsigned short>(pcHeight);
-	record << anRot << anElev << pcDist << pcHeight_raw << pcDepth << pcGap << flags;
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,14 +44,14 @@ namespace PPTX
 		public:
 			enum eFit {FitEmpty = 0, FitNo = 1, FitSpAuto = 2, FitNormAuto = 3};
 
-			TextFit(){
+			WritingElement_AdditionConstructors(TextFit)
+			TextFit()
+			{
 				type = FitEmpty;
 			}
-			PPTX_LOGIC_BASE2(TextFit)
 			
 			virtual bool is_init(){return (type != FitEmpty);};
 
-		public:
 			void GetTextFitFrom(XmlUtils::CXmlNode& element)
 			{
 				type = FitEmpty;
@@ -73,12 +73,12 @@ namespace PPTX
 
 					if (sFontScale.is_init())
 					{
-						int nFound = sFontScale->ReverseFind(TCHAR('%'));
+                        int nFound = (int)sFontScale->rfind(wchar_t('%'));
 						if (nFound < 0)
 							fontScale = *sFontScale;
 						else
 						{
-							CString sRet = sFontScale->Mid(0, nFound);
+							std::wstring sRet = sFontScale->substr(0, nFound);
 							double dRet = XmlUtils::GetDouble(sRet);
 							int val = (int)(dRet * 1000);
 							fontScale = val;
@@ -87,12 +87,12 @@ namespace PPTX
 
 					if (sLnSpcRed.is_init())
 					{
-						int nFound = sLnSpcRed->ReverseFind(TCHAR('%'));
+                        int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
 						if (nFound < 0)
 							lnSpcReduction = *sLnSpcRed;
 						else
 						{
-							CString sRet = sLnSpcRed->Mid(0, nFound);
+							std::wstring sRet = sLnSpcRed->substr(0, nFound);
 							double dRet = XmlUtils::GetDouble(sRet);
 							int val = (int)(dRet * 1000);
 							lnSpcReduction = val;
@@ -101,11 +101,42 @@ namespace PPTX
 				}
 			}
 
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_textFit;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring strName = oReader.GetName();
+
+				if (_T("a:noAutofit") == strName)
+					type = FitNo;
+				else if (_T("a:spAutoFit") == strName)
+					type = FitSpAuto;
+				else if (_T("a:normAutofit") == strName)
+				{
+					type = FitNormAuto;
+
+					ReadAttributes(oReader);
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_string sFontScale;
+				nullable_string sLnSpcRed;
+
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("fontScale"),			sFontScale)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("lnSpcReduction"),	sLnSpcRed)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize(sFontScale, sLnSpcRed);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				type = FitEmpty;
 
-				CString strName = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring strName = node.GetName();
 
 				if (_T("a:noAutofit") == strName)
 					type = FitNo;
@@ -121,36 +152,10 @@ namespace PPTX
 					node.ReadAttributeBase(L"fontScale", sFontScale);
 					node.ReadAttributeBase(L"lnSpcReduction", sLnSpcRed);
 
-					if (sFontScale.is_init())
-					{
-						int nFound = sFontScale->ReverseFind(TCHAR('%'));
-						if (nFound < 0)
-							fontScale = *sFontScale;
-						else
-						{
-							CString sRet = sFontScale->Mid(0, nFound);
-							double dRet = XmlUtils::GetDouble(sRet);
-							int val = (int)(dRet * 1000);
-							fontScale = val;
-						}
-					}
-
-					if (sLnSpcRed.is_init())
-					{
-						int nFound = sLnSpcRed->ReverseFind(TCHAR('%'));
-						if (nFound < 0)
-							lnSpcReduction = *sLnSpcRed;
-						else
-						{
-							CString sRet = sLnSpcRed->Mid(0, nFound);
-							double dRet = XmlUtils::GetDouble(sRet);
-							int val = (int)(dRet * 1000);
-							lnSpcReduction = val;
-						}
-					}
+					Normalize(sFontScale, sLnSpcRed);
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (type == FitNo)
 					return _T("<a:noAutofit/>");
@@ -266,7 +271,38 @@ namespace PPTX
 			nullable_int	fontScale;
 			nullable_int	lnSpcReduction;
 		protected:
-			virtual void FillParentPointersForChilds(){};
+            virtual void FillParentPointersForChilds(){}
+
+			void Normalize(nullable_string & sFontScale, nullable_string & sLnSpcRed)
+			{
+				if (sFontScale.is_init())
+				{
+                    int nFound = (int)sFontScale->rfind(wchar_t('%'));
+					if (nFound < 0)
+						fontScale = *sFontScale;
+					else
+					{
+						std::wstring sRet = sFontScale->substr(0, nFound);
+						double dRet = XmlUtils::GetDouble(sRet);
+						int val = (int)(dRet * 1000);
+						fontScale = val;
+					}
+				}
+
+				if (sLnSpcRed.is_init())
+				{
+                    int nFound = (int)sLnSpcRed->rfind(wchar_t('%'));
+					if (nFound < 0)
+						lnSpcReduction = *sLnSpcRed;
+					else
+					{
+						std::wstring sRet = sLnSpcRed->substr(0, nFound);
+						double dRet = XmlUtils::GetDouble(sRet);
+						int val = (int)(dRet * 1000);
+						lnSpcReduction = val;
+					}
+				}
+			}
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,14 +40,6 @@ namespace XLS
 BiffStructurePtr ExtPtgAreaErr3D::clone()
 {
 	return BiffStructurePtr(new ExtPtgAreaErr3D(*this));
-}
-
-
-void ExtPtgAreaErr3D::store(CFRecord& record)
-{
-#pragma message("####################### ExtPtgAreaErr3D record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtPtgAreaErr3D record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 

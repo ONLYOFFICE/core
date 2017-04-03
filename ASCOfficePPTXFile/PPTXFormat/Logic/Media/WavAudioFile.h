@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define PPTX_LOGIC_WAVAUDIOFILE_INCLUDE_H_
 
 #include "../../WrapperWritingElement.h"
-#include "../../DocxFormat/RId.h"
+#include "../../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -43,7 +43,8 @@ namespace PPTX
 		class WavAudioFile : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(WavAudioFile)
+			WritingElement_AdditionConstructors(WavAudioFile)
+			PPTX_LOGIC_BASE2(WavAudioFile)
 
 			WavAudioFile& operator=(const WavAudioFile& oSrc)
 			{
@@ -55,7 +56,22 @@ namespace PPTX
 				m_name = oSrc.m_name;
 				return *this;
 			}
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_snd; //todooo расширить ...
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("name"), name )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());
@@ -64,7 +80,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"name", name);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:embed"), embed.ToString());
@@ -87,9 +103,9 @@ namespace PPTX
 
 		public:
 			nullable_string name;
-			PPTX::RId		embed;
+			OOX::RId		embed;
 		public:
-			CString			m_name;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

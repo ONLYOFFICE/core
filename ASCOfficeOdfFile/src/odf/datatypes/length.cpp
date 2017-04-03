@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -184,7 +184,7 @@ double inch_to_pt(double Val)
 
 double emu_to_pt(double Val)
 {
-    return Val * 72.0 / (360000.0 * 2.54);
+    return Val / 12700;	// 1 / 12700  =  72.0 / (360000.0 * 2.54);
 }
 double px_to_pt(double Val)
 {

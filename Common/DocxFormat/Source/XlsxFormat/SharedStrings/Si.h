@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,32 +56,32 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<si>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</si>"));
 			}
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer) const
 			{
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 			}
 			std::wstring ToString()
 			{
 				std::wstring sRes;
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
 					WritingElement* we = m_arrItems[i];
 					if(OOX::Spreadsheet::et_r == we->getType())
 					{
 						CRun* pRun = static_cast<CRun*>(we);
-						for(unsigned int j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
+						for(size_t j = 0, length2 = pRun->m_arrItems.size(); j < length2; ++j)
 						{
 							CText* pText = pRun->m_arrItems[j];
 							sRes.append(pText->ToString());

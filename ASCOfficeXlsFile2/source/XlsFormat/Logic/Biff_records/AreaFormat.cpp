@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,16 +49,6 @@ BaseObjectPtr AreaFormat::clone()
 {
 	return BaseObjectPtr(new AreaFormat(*this));
 }
-
-
-void AreaFormat::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAuto);
-	SETBIT(flags, 1, fInvertNeg);
-	record << rgbFore << rgbBack << fls << flags << icvFore << icvBack;
-}
-
 
 void AreaFormat::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,13 +70,13 @@ class xlsx_comments
 public:
     xlsx_comments();
     ~xlsx_comments();
-    static xlsx_comments_ptr create();
 
-public:
     void add(_xlsx_comment & d);
     bool empty() const;
 
-   void serialize(std::wostream & strm);    
+	void serialize(std::wostream & strm);    
+	
+	static xlsx_comments_ptr create();
 
 private:
     class Impl;

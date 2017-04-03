@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,33 +39,20 @@ namespace DocFileFormat
 	class Shape: public Record
 	{
 	public: 
-		int spid;
-		/// This shape is a group shape 
-		bool fGroup;
-		/// Not a top-level shape 
-		bool fChild;
-		/// This is the topmost group shape.
-		/// Exactly one of these per drawing. 
-		bool fPatriarch; 
-		/// The shape has been deleted 
-		bool fDeleted;
-		/// The shape is an OLE object 
-		bool fOleShape;
-		/// Shape has a hspMaster property 
-		bool fHaveMaster;
-		/// Shape is flipped horizontally 
-		bool fFlipH;
-		/// Shape is flipped vertically 
-		bool fFlipV;
-		/// Connector type of shape 
-		bool fConnector;
-		/// Shape has an anchor of some kind 
-		bool fHaveAnchor;
-		/// Background shape 
-		bool fBackground;
-		/// Shape has a shape type property
-		bool fHaveSpt;
-		/// The shape type of the shape
+		int		spid;
+		bool	fGroup;
+		bool	fChild;
+		bool	fPatriarch;			// This is the topmost group shape. Exactly one of these per drawing.
+		bool	fDeleted;			// The shape has been deleted 
+		bool	fOleShape;			// The shape is an OLE object
+		bool	fHaveMaster;
+		bool	fFlipH;
+		bool	fFlipV;
+		bool	fConnector;
+		bool	fHaveAnchor;
+		bool	fBackground;
+		bool	fHaveSpt;
+
 		ShapeType* shapeType;
 
 	public:
@@ -80,7 +67,7 @@ namespace DocFileFormat
 
 		virtual ~Shape()
 		{
-			RELEASEOBJECT( this->shapeType );
+			RELEASEOBJECT( shapeType );
 		}
 
 		Shape( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
@@ -120,12 +107,12 @@ namespace DocFileFormat
 
 		inline int GetShapeID() const
 		{
-			return this->spid;
+			return spid;
 		}
 
 		inline ShapeType* GetShapeType() const
 		{
-			return this->shapeType;
+			return shapeType;
 		}
 
 		template<class T> bool is() const

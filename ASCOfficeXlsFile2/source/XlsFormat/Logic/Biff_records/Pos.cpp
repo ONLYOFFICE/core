@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,8 @@ namespace XLS
 
 Pos::Pos()
 {
-	m_iLinkObject = -1;
+	m_iLinkObject	= -1;
+	m_iLayoutTarget	= 0; //not set, 1 - outer, 2 -inner
 }
 
 
@@ -53,21 +54,6 @@ BaseObjectPtr Pos::clone()
 {
 	return BaseObjectPtr(new Pos(*this));
 }
-
-
-void Pos::writeFields(CFRecord& record)
-{
-	record << mdTopLt << mdBotRt;
-	record << x1;
-	record.reserveNunBytes(2); // unused1
-	record << y1;
-	record.reserveNunBytes(2); // unused2
-	record << x2;
-	record.reserveNunBytes(2); // unused3
-	record << y2;
-	record.reserveNunBytes(2); // unused4
-}
-
 
 void Pos::readFields(CFRecord& record)
 {
@@ -93,8 +79,8 @@ int Pos::serialize(std::wostream & _stream)
 	{
 		Frame* Frame_ = dynamic_cast<Frame*>(m_Frame.get());
 
-		bAutoPosition	= !Frame_->fAutoPosition;
-		bAutoSize		= !Frame_->fAutoSize;
+		bAutoPosition	= Frame_->fAutoPosition;
+		bAutoSize		= Frame_->fAutoSize;
 	}
 	double x = x1 / 4000.;
 	double y = y1 / 4000.;
@@ -113,9 +99,14 @@ int Pos::serialize(std::wostream & _stream)
 			{
 				CP_XML_NODE(L"c:manualLayout")
 				{
-					//if (m_iLinkObject == 1) x += 0.5	+ (w > 0 ? w : 0);
+					if (m_iLayoutTarget > 0)
+					{
+						CP_XML_NODE(L"c:layoutTarget"){CP_XML_ATTR(L"val", m_iLayoutTarget == 1 ? L"outer" : L"inner");}
+					}
+					//if (m_iLinkObject == 1 && mdTopLt == 2 &&  mdBotRt == 2 && x == 0) 
+					//	x += 0.5 - (w > 0 ? w / 2 : 0);
 					//if (m_iLinkObject == 2) x += 0.5	+ (w > 0 ? w : 0);
-					if (m_iLinkObject == 3) y += 0		+ (h > 0 ? h : 0);
+					//if (m_iLinkObject == 3) y += 0	+ (h > 0 ? h : 0);
 
 					CP_XML_NODE(L"c:xMode")	{CP_XML_ATTR(L"val", L"edge");}
 					CP_XML_NODE(L"c:yMode")	{CP_XML_ATTR(L"val", L"edge");}

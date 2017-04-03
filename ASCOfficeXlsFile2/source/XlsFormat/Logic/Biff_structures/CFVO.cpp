@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,17 +40,6 @@ namespace XLS
 BiffStructurePtr CFVO::clone()
 {
 	return BiffStructurePtr(new CFVO(*this));
-}
-
-
-void CFVO::store(CFRecord& record)
-{
-	record << cfvoType;
-	fmla.store(record);
-	if(!fmla.getCCE())
-	{
-		record << numValue;
-	}
 }
 
 

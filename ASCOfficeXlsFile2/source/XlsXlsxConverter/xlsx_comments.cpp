@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,8 +63,6 @@ public:
 
 	void serialize(std::wostream & strm)
     {
-		//std::sort(xlsx_comment_.begin(), xlsx_comment_.end(), sort_()); - излишне
-        
 		CP_XML_WRITER(strm)
         {
             CP_XML_NODE(L"comments")
@@ -73,27 +71,27 @@ public:
 
 				CP_XML_NODE(L"authors")
 				{
-					BOOST_FOREACH(std::wstring const & a, author_list_)
+					for (int i = 0 ; i < author_list_.size(); i++)
 					{
 						CP_XML_NODE(L"author")
 						{
-							CP_XML_STREAM() << a;
+							CP_XML_STREAM() << author_list_[i];
 						}
 					}
 				}
 
 				CP_XML_NODE(L"commentList")
 				{
-					BOOST_FOREACH(_xlsx_comment const & c, xlsx_comment_)
+					for (int i = 0 ; i < xlsx_comment_.size(); i++)
 					{
 						CP_XML_NODE(L"comment")
 						{
-							CP_XML_ATTR(L"ref", c.ref_);
-							CP_XML_ATTR(L"authorId", c.author_);
+							CP_XML_ATTR(L"ref", xlsx_comment_[i].ref_);
+							CP_XML_ATTR(L"authorId", xlsx_comment_[i].author_);
 							
 							CP_XML_NODE(L"text")
 							{
-								CP_XML_STREAM() << c.content_;
+								CP_XML_STREAM() << xlsx_comment_[i].content_;
 							}
 						} 					
 					}
@@ -106,14 +104,16 @@ public:
     {
         return ( xlsx_comment_.empty());
     }
+
     void add(_xlsx_comment & c)
     {
 		bool find = false;
-		for (long i=0;i<author_list_.size();i++)
+
+		for (long i = 0; i < author_list_.size(); i++)
 		{		
 			if (c.author_ == author_list_[i])
 			{
-				find=true;
+				find = true;
 				c.author_ = boost::lexical_cast<std::wstring>(i);
 				break;
 			}

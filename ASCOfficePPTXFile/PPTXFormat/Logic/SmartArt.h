@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,11 @@ namespace PPTX
 		class SmartArt : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(SmartArt)
+			WritingElement_AdditionConstructors(SmartArt)
+
+			SmartArt()
+			{
+			}
 
 			SmartArt& operator=(const SmartArt& oSrc)
 			{
@@ -53,15 +57,34 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_dgm_DiagrammParts;
+			}
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("r:cs"), id_color)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:dm"), id_data)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:lo"), id_layout)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:qs"), id_style)
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				//FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"r:dm", id_data);
-				FillParentPointersForChilds();
+				node.ReadAttributeBase(L"r:cs", id_color);
+				node.ReadAttributeBase(L"r:lo", id_layout);
+				node.ReadAttributeBase(L"r:qs", id_style);
+				//FillParentPointersForChilds();
 			}
-
-
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -86,9 +109,10 @@ namespace PPTX
 				pReader->SkipRecord();
 			}
 
-		public:
-
-			nullable<PPTX::RId> id_data;
+			nullable<OOX::RId>				id_data;
+			nullable<OOX::RId>				id_color;
+			nullable<OOX::RId>				id_layout;
+			nullable<OOX::RId>				id_style;
 
 			nullable<PPTX::Logic::SpTree>	m_diag;
 			smart_ptr<PPTX::CCommonRels>	m_oCommonRels;
@@ -100,34 +124,24 @@ namespace PPTX
 			}
 
 		public:
-			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter);
+			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
 		};
 
 		class ChartRec : public WrapperWritingElement
 		{
 		public:
+			WritingElement_AdditionConstructors(ChartRec)
+			
 			ChartRec()	
 			{
 				m_bData = false;
 				m_lChartNumber = 0;
 			}
-			virtual ~ChartRec() 
-			{
-			}
-			explicit ChartRec(XmlUtils::CXmlNode& node)	
-			{ 
-				fromXML(node); 
-			}
-			const ChartRec& operator =(XmlUtils::CXmlNode& node)
-			{
-				fromXML(node);
-				return *this;
-			}
+
 			ChartRec(const ChartRec& oSrc) 
 			{ 
 				*this = oSrc; 
 			}
-
 			ChartRec& operator=(const ChartRec& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -135,8 +149,18 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("r:id"), id_data )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_bData = false;
+				ReadAttributes( oReader );
+				FillParentPointersForChilds();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_bData = false;
@@ -144,24 +168,16 @@ namespace PPTX
 				node.ReadAttributeBase(L"r:id", id_data);
 				FillParentPointersForChilds();
 			}
-
-
-			virtual CString toXML() const
-			{
-				return _T("");
-			}
-
+			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
+			nullable<OOX::RId>	id_data;
 
-			nullable<PPTX::RId> id_data;
-
-			LONG m_lChartNumber;
-			bool m_bData;
+			LONG				m_lChartNumber;
+			bool				m_bData;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{				

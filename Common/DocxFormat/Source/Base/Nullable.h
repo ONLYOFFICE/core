@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,11 +32,12 @@
 #pragma once
 
 #include "SmartPtr.h"
-#include "../XML/xmlutils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
-// чтобы не писать мега классы с мега приведением типов - 
-// - напишем все по-простому. «ато будет все максимально быстро и 
-// компилиться 3 часа не будет
+#include "../XML/Utils.h"
+
+#include "../Base/Base.h"
+#include "../../../Base64.h"
 
 namespace NSCommon
 {
@@ -63,14 +64,14 @@ namespace NSCommon
 		}
 
 	public:
-		AVSINLINE Type& operator*()  { return *m_pPointer; }
-		AVSINLINE Type* operator->() { return  m_pPointer; }
+        Type& operator*()  { return *m_pPointer; }
+        Type* operator->() { return  m_pPointer; }
 
-		AVSINLINE Type& operator*() const  { return *m_pPointer; }
-		AVSINLINE Type* operator->() const { return  m_pPointer; }
+        Type& operator*() const  { return *m_pPointer; }
+        Type* operator->() const { return  m_pPointer; }
 
-		AVSINLINE const Type& get()const { return  *m_pPointer; } 
-		AVSINLINE Type& get() { return  *m_pPointer; }
+        const Type& get()const { return  *m_pPointer; }
+        Type& get() { return  *m_pPointer; }
 
 	public:
 		nullable_base<Type>& operator=(const nullable_base<Type> &oOther)
@@ -96,16 +97,16 @@ namespace NSCommon
 		}
 
 	public:
-		AVSINLINE bool IsInit() const
+        bool IsInit() const
 		{ 
 			return (NULL != m_pPointer); 
 		}
-		AVSINLINE bool is_init() const
+        bool is_init() const
 		{
 			return IsInit();
 		}
 
-		AVSINLINE void reset(Type* pType = NULL)
+        void reset(Type* pType = NULL)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = pType;
@@ -165,15 +166,6 @@ namespace NSCommon
                 this->m_pPointer = new Type( cwsValue );
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		nullable<Type>& operator=(const BSTR &value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			if (NULL != value)
-                this->m_pPointer = new Type( value );
-			return *this;
-		}
-#endif
 
         //nullable<Type>& operator=(std::wstring& cwsValue)
         //{
@@ -234,14 +226,14 @@ namespace NSCommon
             return (*this->m_pPointer) == oOther;
 		}
 
-        AVSINLINE Type& operator*()  { return *this->m_pPointer; }
-        AVSINLINE Type* operator->() { return  this->m_pPointer; }
+        Type& operator*()  { return *this->m_pPointer; }
+        Type* operator->() { return  this->m_pPointer; }
 
-        AVSINLINE Type& operator*() const  { return *this->m_pPointer; }
-        AVSINLINE Type* operator->() const { return  this->m_pPointer; }
+        Type& operator*() const  { return *this->m_pPointer; }
+        Type* operator->() const { return  this->m_pPointer; }
 
-        AVSINLINE const Type& get()const { return  *this->m_pPointer; }
-        AVSINLINE Type& get2()const { return  *this->m_pPointer; }
+        const Type& get()const { return  *this->m_pPointer; }
+        Type& get2()const { return  *this->m_pPointer; }
 
 		template<class T> const bool is()const
 		{
@@ -261,7 +253,7 @@ namespace NSCommon
 			return *pResult;
 		}
 
-		AVSINLINE bool Init()
+        bool Init()
 		{
             RELEASEOBJECT(this->m_pPointer);
 
@@ -293,36 +285,36 @@ namespace NSCommon
 
 	public:
 
-		AVSINLINE void operator=(const CString& value)
+        void operator=(const std::wstring& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new Type();
             this->m_pPointer->_set(value);
 		}
-		AVSINLINE void operator=(Type* pType)
+        void operator=(Type* pType)
 		{
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer	= pType;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			if (NULL != value)
-			{
-                this->m_pPointer = new Type();
-                this->m_pPointer->_set((CString)value);
-			}
-		}
-#endif
-		AVSINLINE void operator=(const BYTE& value)
+//#if defined(_WIN32) || defined (_WIN64)
+//		void operator=(const BSTR& value)
+//		{
+//            RELEASEOBJECT(this->m_pPointer);
+//			if (NULL != value)
+//			{
+//                this->m_pPointer = new Type();
+//                this->m_pPointer->_set((std::wstring)value);
+//			}
+//		}
+//#endif
+        void operator=(const BYTE& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new Type();
             this->m_pPointer->SetBYTECode(value);
 		}
 
-		AVSINLINE void operator=(const Type& value)
+        void operator=(const Type& value)
 		{
 			*this = value.get();
 		}
@@ -340,25 +332,25 @@ namespace NSCommon
 			return *this;
 		}
 
-		AVSINLINE const CString& get_value_or(const CString& value) const
+        const std::wstring& get_value_or(const std::wstring& value) const
 		{
             if (NULL == this->m_pPointer)
 				return value;
             return this->m_pPointer->get();
 		}
-		AVSINLINE const CString& get_value() const
+        const std::wstring& get_value() const
 		{
             return this->m_pPointer->get();
 		}
 
 	public:
-        AVSINLINE Type& operator*()  { return *this->m_pPointer; }
-        AVSINLINE Type* operator->() { return  this->m_pPointer; }
+        Type& operator*()  { return *this->m_pPointer; }
+        Type* operator->() { return  this->m_pPointer; }
 
-        AVSINLINE Type& operator*() const  { return *this->m_pPointer; }
-        AVSINLINE Type* operator->() const { return  this->m_pPointer; }
+        Type& operator*() const  { return *this->m_pPointer; }
+        Type* operator->() const { return  this->m_pPointer; }
 
-        AVSINLINE const Type& get()const { return  *this->m_pPointer; }
+        const Type& get()const { return  *this->m_pPointer; }
 	};
 
 	class nullable_int : public nullable_base<int>
@@ -368,7 +360,7 @@ namespace NSCommon
 		{
 		}
 
-		AVSINLINE void normalize(const int& min, const int& max)
+        void normalize(const int& min, const int& max)
 		{
 			if (IsInit())
 			{
@@ -378,7 +370,7 @@ namespace NSCommon
 					*m_pPointer = max;
 			}
 		}
-		AVSINLINE void normalize_positive()
+        void normalize_positive()
 		{
 			if (IsInit())
 			{
@@ -395,21 +387,21 @@ namespace NSCommon
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-            RELEASEOBJECT(this->m_pPointer);
-			
-			if (NULL != value)
-                this->m_pPointer = new int(XmlUtils::GetInteger(value));
-		}
-#endif
-		AVSINLINE void operator=(const CString& value)
+//#if defined(_WIN32) || defined (_WIN64)
+//		void operator=(const BSTR& value)
+//		{
+//            RELEASEOBJECT(this->m_pPointer);
+//			
+//			if (NULL != value)
+//                this->m_pPointer = new int(XmlUtils::GetInteger(value));
+//		}
+//#endif
+        void operator=(const std::wstring& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new int(XmlUtils::GetInteger(value));
 		}
-		AVSINLINE void operator=(const int& value)
+        void operator=(const int& value)
 		{
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new int(value);
@@ -424,7 +416,7 @@ namespace NSCommon
 			return *this;
 		}
 
-		AVSINLINE int get_value_or(const int& value) const
+        int get_value_or(const int& value) const
 		{
 			if (NULL == m_pPointer)
 			{
@@ -435,19 +427,19 @@ namespace NSCommon
 		}
 
 	public:
-		AVSINLINE int& operator*()  { return *m_pPointer; }
-		AVSINLINE int* operator->() { return  m_pPointer; }
+        int& operator*()  { return *m_pPointer; }
+        int* operator->() { return  m_pPointer; }
 
-		AVSINLINE int& operator*() const  { return *m_pPointer; }
-		AVSINLINE int* operator->() const { return  m_pPointer; }
+        int& operator*() const  { return *m_pPointer; }
+        int* operator->() const { return  m_pPointer; }
 
-		AVSINLINE const int& get()const { return  *m_pPointer; }
+        const int& get()const { return  *m_pPointer; }
 	public:
-		AVSINLINE CString toString() const
+        std::wstring toString() const
 		{
-			CString result;
+            std::wstring result;
 			//if (IsInit())
-			//	result.Format(_T("%d"), get());
+            //	result = std::to_wstring( get());
 
 			return result;
 		}
@@ -459,7 +451,7 @@ namespace NSCommon
 		{
 		}
 
-		AVSINLINE void normalize(const size_t& max)
+        void normalize(const size_t& max)
 		{
 			if (IsInit())
 			{
@@ -467,24 +459,17 @@ namespace NSCommon
 					*m_pPointer = max;
 			}
 		}
-		nullable_sizet& operator=(const wchar_t* cwsValue)
+		nullable_sizet& operator=(const std::wstring & sValue)
 		{
 			RELEASEOBJECT(m_pPointer);
 
-			if ( NULL != cwsValue )
-				m_pPointer = new size_t(XmlUtils::GetUInteger(cwsValue));
+			if ( !sValue.empty() )
+				m_pPointer = new size_t(XmlUtils::GetUInteger(sValue));
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new size_t(XmlUtils::GetUInteger(value));
-		}
-#endif
-		AVSINLINE void operator=(const size_t& value)
+
+        void operator=(const size_t& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new size_t(value);
@@ -500,7 +485,7 @@ namespace NSCommon
 			return *this;
 		}
 
-		AVSINLINE size_t get_value_or(const size_t& value) const
+        size_t get_value_or(const size_t& value) const
 		{
 			if (NULL == m_pPointer)
 			{
@@ -510,13 +495,13 @@ namespace NSCommon
 			return *m_pPointer;
 		}
 	public:
-		AVSINLINE size_t& operator*()  { return *m_pPointer; }
-		AVSINLINE size_t* operator->() { return  m_pPointer; }
+        size_t& operator*()  { return *m_pPointer; }
+        size_t* operator->() { return  m_pPointer; }
 
-		AVSINLINE size_t& operator*() const  { return *m_pPointer; }
-		AVSINLINE size_t* operator->() const { return  m_pPointer; }
+        size_t& operator*() const  { return *m_pPointer; }
+        size_t* operator->() const { return  m_pPointer; }
 
-		AVSINLINE const size_t& get()const { return  *m_pPointer; } 
+        const size_t& get()const { return  *m_pPointer; }
 	};
 	class nullable_double : public nullable_base<double>
 	{
@@ -525,7 +510,7 @@ namespace NSCommon
 		{
 		}
 
-		AVSINLINE void normalize(const double& min, const double& max)
+        void normalize(const double& min, const double& max)
 		{
 			if (IsInit())
 			{
@@ -535,24 +520,16 @@ namespace NSCommon
 					*m_pPointer = max;
 			}
 		}
-		nullable_double& operator=(const wchar_t* cwsValue)
+        nullable_double& operator=(const std::wstring & sValue)
 		{
 			RELEASEOBJECT(m_pPointer);
 
-			if ( NULL != cwsValue )
-				m_pPointer = new double(XmlUtils::GetDouble(cwsValue));
+            if ( !sValue.empty() )
+                m_pPointer = new double(XmlUtils::GetDouble(sValue));
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new double(XmlUtils::GetDouble(value));
-		}
-#endif
-		AVSINLINE void operator=(const double& value)
+        void operator=(const double& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new double(value);
@@ -568,7 +545,7 @@ namespace NSCommon
 			return *this;
 		}
 
-		AVSINLINE double get_value_or(const double& value) const
+        double get_value_or(const double& value) const
 		{
 			if (NULL == m_pPointer)
 			{
@@ -579,13 +556,13 @@ namespace NSCommon
 		}
 
 	public:
-		AVSINLINE double& operator*()  { return *m_pPointer; }
-		AVSINLINE double* operator->() { return  m_pPointer; }
+        double& operator*()  { return *m_pPointer; }
+        double* operator->() { return  m_pPointer; }
 
-		AVSINLINE double& operator*() const  { return *m_pPointer; }
-		AVSINLINE double* operator->() const { return  m_pPointer; }
+        double& operator*() const  { return *m_pPointer; }
+        double* operator->() const { return  m_pPointer; }
 
-		AVSINLINE const double& get()const { return  *m_pPointer; } 
+        const double& get()const { return  *m_pPointer; }
 	};
 	class nullable_bool : public nullable_base<bool>
 	{
@@ -594,13 +571,22 @@ namespace NSCommon
 		{
 		}
 	protected:
-		bool set(const CString& value)
+        bool set(const std::wstring& value)
 		{
-			if ((_T("true") == value) || (_T("1") == value))
+            if ((L"true" == value) || (L"1" == value))
 				return true;
 			return false;
 		}
 	public:
+        nullable_bool& operator=(const std::wstring &sValue)
+		{
+			RELEASEOBJECT(m_pPointer);
+
+			if (!sValue.empty() )
+				m_pPointer = new bool(XmlUtils::GetBoolean2(sValue));
+
+			return *this;
+		}
 		nullable_bool& operator=(const wchar_t* cwsValue)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -610,15 +596,7 @@ namespace NSCommon
 
 			return *this;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new bool(set((CString)value));
-		}
-#endif
-		AVSINLINE void operator=(const bool& value)
+        void operator=(const bool& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new bool(value);
@@ -634,7 +612,7 @@ namespace NSCommon
 			return *this;
 		}
 
-		AVSINLINE bool get_value_or(const bool& value) const
+        bool get_value_or(const bool& value) const
 		{
 			if (NULL == m_pPointer)
 			{
@@ -644,28 +622,25 @@ namespace NSCommon
 			return *m_pPointer;
 		}
 
-	public:
-		AVSINLINE bool& operator*()  { return *m_pPointer; }
-		AVSINLINE bool* operator->() { return  m_pPointer; }
+        bool& operator*()  { return *m_pPointer; }
+        bool* operator->() { return  m_pPointer; }
 
-		AVSINLINE bool& operator*() const  { return *m_pPointer; }
-		AVSINLINE bool* operator->() const { return  m_pPointer; }
+        bool& operator*() const  { return *m_pPointer; }
+        bool* operator->() const { return  m_pPointer; }
 
-		AVSINLINE const bool& get()const { return  *m_pPointer; } 
-	public:
-		AVSINLINE CString toString() const
+        const bool& get()const { return  *m_pPointer; }
+
+        std::wstring toString() const
 		{
-			CString result;
-			//if (IsInit())
-			//	result =  get() ? _T("true") : _T("false");
+            std::wstring result;
 
 			return result;
 		}
 	};
-	class nullable_string : public nullable_base<CString>
+    class nullable_string : public nullable_base<std::wstring>
 	{
 	public:
-		nullable_string() : nullable_base<CString>()
+        nullable_string() : nullable_base<std::wstring>()
 		{
 		}
 		nullable_string(const nullable_string& oOther)
@@ -673,23 +648,15 @@ namespace NSCommon
 			if ( NULL == oOther.m_pPointer )
 				m_pPointer = NULL;
 			else
-				m_pPointer	= new CString( *oOther.m_pPointer );
+                m_pPointer	= new std::wstring( *oOther.m_pPointer );
 		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator=(const BSTR& value)
+        void operator=(const std::wstring& value)
 		{
 			RELEASEOBJECT(m_pPointer);
-			if (NULL != value)
-				m_pPointer = new CString(value);
-		}
-#endif
-		AVSINLINE void operator=(const CString& value)
-		{
-			RELEASEOBJECT(m_pPointer);
-			m_pPointer = new CString(value);
+            m_pPointer = new std::wstring(value);
 			
 		}
-		AVSINLINE void operator=(CString* value)
+        void operator=(std::wstring* value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = value;
@@ -699,27 +666,27 @@ namespace NSCommon
 			RELEASEOBJECT(m_pPointer);
 
 			if ( NULL != oSrc.m_pPointer )
-				m_pPointer = new CString(*oSrc);
+                m_pPointer = new std::wstring(*oSrc);
 			return *this;
 		}
 
-		AVSINLINE CString get_value_or(const CString& value) const
+        std::wstring get_value_or(const std::wstring& value) const
 		{
 			if (NULL == m_pPointer)
 			{
-				CString ret = value;
+                std::wstring ret = value;
 				return ret;
 			}
 			return *m_pPointer;
 		}
 
 	public:
-		AVSINLINE CString& operator*()  { return *m_pPointer; }
-		AVSINLINE CString* operator->() { return  m_pPointer; }
+        std::wstring& operator*()  { return *m_pPointer; }
+        std::wstring* operator->() { return  m_pPointer; }
 
-		AVSINLINE CString& operator*() const  { return *m_pPointer; }
-		AVSINLINE CString* operator->() const { return  m_pPointer; }
+        std::wstring& operator*() const  { return *m_pPointer; }
+        std::wstring* operator->() const { return  m_pPointer; }
 
-		AVSINLINE CString& get()const { return  *m_pPointer; } 
+        std::wstring& get()const { return  *m_pPointer; }
 	};
 }

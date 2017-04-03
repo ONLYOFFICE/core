@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,22 +41,6 @@ BiffStructurePtr FtGboData::clone()
 {
 	return BiffStructurePtr(new FtGboData(*this));
 }
-
-
-
-void FtGboData::store(CFRecord& record)
-{
-	unsigned short ft = 0x000F; // reserved
-	unsigned short cb = 0x0006; // reserved
-	record << ft << cb;
-
-	record << accel;
-	record.reserveNunBytes(2); // reserved
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fNo3d);
-	record << flags;
-}
-
 
 void FtGboData::load(CFRecord& record)
 {

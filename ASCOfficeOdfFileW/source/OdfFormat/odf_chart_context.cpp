@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,6 +33,7 @@
 #include "logging.h"
 
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
@@ -241,13 +242,13 @@ std::wstring odf_chart_context::Impl::convert_formula(std::wstring oox_formula)
 	}
 	std::wstring odf_formula = formulas_converter_chart.convert_chart_distance(oox_formula);
 	
-	//boost::algorithm::replace_all(odf_formula, L"$", L"");
+	//XmlUtils::replace_all( odf_formula, L"$", L"");
 	return odf_formula;
 }
 
 chart_chart* odf_chart_context::Impl::get_current_chart()
 {
-	for (long i=current_level_.size()-1; i>=0; i--)
+	for (long i = (long)current_level_.size() - 1; i >= 0; i--)
 	{
 		chart_chart * chart = dynamic_cast<chart_chart*>(current_level_[i].elm.get());
 		if (chart) return chart;
@@ -256,7 +257,7 @@ chart_chart* odf_chart_context::Impl::get_current_chart()
 }
 chart_series* odf_chart_context::Impl::get_current_series()
 {
-	for (long i=current_level_.size()-1; i>=0; i--)
+	for (long i = (long)current_level_.size() - 1; i >= 0; i--)
 	{
 		chart_series * chart = dynamic_cast<chart_series*>(current_level_[i].elm.get());
 		if (chart) return chart;
@@ -343,7 +344,7 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 	std::wstring style_name;
 	
 	odf_element_state		state={chart_elm, style_name, style_elm, level};
-	odf_chart_level_state	level_state = {NULL,NULL,NULL,NULL,chart_elm};
+	odf_chart_level_state	level_state = {NULL, NULL, NULL, NULL, chart_elm};
 
 	style* style_ = dynamic_cast<style*>(style_elm.get());
 	if (style_)
@@ -365,18 +366,18 @@ void odf_chart_context::start_chart(office_element_ptr & root)
 
 	impl_->current_chart_state_.elements_.push_back(state);
 }
-void odf_chart_context::set_chart_size(double width_pt, double height_pt)
+void odf_chart_context::set_chart_size(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt)
 {
-	if (width_pt <0.01 || height_pt < 0.01)return;
+	if (!width_pt && !height_pt) return;
 
-	impl_->current_chart_state_.chart_height_pt = height_pt;
-	impl_->current_chart_state_.chart_width_pt = width_pt;
+	impl_->current_chart_state_.chart_height_pt = *height_pt;
+	impl_->current_chart_state_.chart_width_pt = *width_pt;
 	
 	chart_chart *chart = impl_->get_current_chart();
 	if (!chart)return;
 
-	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(width_pt,length::pt).get_value_unit(length::cm),length::cm);
-	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(height_pt,length::pt).get_value_unit(length::cm),length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
+	chart->chart_chart_attlist_.common_draw_size_attlist_.svg_height_ = length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 void odf_chart_context::set_chart_type(std::wstring type)
 {
@@ -705,7 +706,7 @@ void odf_chart_context::end_group_series()
 	bool presentZ = false;
 	long countX = 0;
 	long countY = 0;
-	for (long j = 0; j < impl_->axis_.size(); j++)
+	for (size_t j = 0; j < impl_->axis_.size(); j++)
 	{
 		if (impl_->axis_[j].dimension ==1)		countX++;
 		else if (impl_->axis_[j].dimension ==3)	presentZ = true;
@@ -726,9 +727,9 @@ void odf_chart_context::end_group_series()
 		countY--;
 	}
 
-	for (long i=0; i < impl_->axis_group_series_.size(); i++)
+	for (size_t i=0; i < impl_->axis_group_series_.size(); i++)
 	{
-		for (long j = 0; j < impl_->axis_.size(); j++)
+		for (size_t j = 0; j < impl_->axis_.size(); j++)
 		{
 			if (impl_->axis_[j].oox_id == impl_->axis_group_series_[i] && impl_->axis_[j].dimension ==2)
 			{
@@ -740,7 +741,7 @@ void odf_chart_context::end_group_series()
 	}
 
 
-	for (long i =0; i < impl_->group_series_.size() && axis_name.length() > 0; i++)
+	for (size_t i =0; i < impl_->group_series_.size() && axis_name.length() > 0; i++)
 	{
 		chart_series *series= dynamic_cast<chart_series*>(impl_->group_series_[i].get());
 		if (series)
@@ -898,7 +899,7 @@ void odf_chart_context::end_plot_area()
 	if (plot_area)
 	{
 		std::wstring cell_range;
-		for (long i = 0; i < impl_->data_cell_ranges_.size(); i++)
+		for (size_t i = 0; i < impl_->data_cell_ranges_.size(); i++)
 		{
 			cell_range = cell_range + impl_->data_cell_ranges_[i].ref + L" ";
 		}
@@ -927,7 +928,7 @@ void odf_chart_context::end_text()
 	odf_text_context * text_context_ = text_context();
 	if (text_context_ == NULL || impl_->current_level_.size() <1 )return;
 
-	for (long i=0; i< text_context_->text_elements_list_.size(); i++)
+	for (size_t i=0; i< text_context_->text_elements_list_.size(); i++)
 	{
 		if (text_context_->text_elements_list_[i].level ==0)
 		{
@@ -1399,7 +1400,7 @@ void odf_chart_context::end_chart()
 
 
 	int cat = 0;
-	for (long i = 0; i < impl_->axis_.size() && impl_->categories_.size() > 0; i++)
+	for (size_t i = 0; i < impl_->axis_.size() && impl_->categories_.size() > 0; i++)
 	{
 		if (impl_->axis_[i].elm == NULL) continue;
 		
@@ -1625,7 +1626,7 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 
 	bool add = false;
 
-    for (long i = 0; i < cells.size(); i++)
+    for (size_t i = 0; i < cells.size(); i++)
     {
 		if (cells[i].cash_only)
 			continue;
@@ -1689,9 +1690,9 @@ void odf_chart_context::Impl::create_local_table()
 	int min_row = 0xffff;
 	
 	//выкинем дублирующие ref
-	for (long i = 0; i < cash_.size(); i++)
+	for (size_t i = 0; i < cash_.size(); i++)
 	{
-		for (long j = i + 1; j < cash_.size(); j++)
+		for (size_t j = i + 1; j < cash_.size(); j++)
 		{
 			if (cash_[j].ref == cash_[i].ref && cash_[j].ref.length() > 1)
 			{
@@ -1700,7 +1701,7 @@ void odf_chart_context::Impl::create_local_table()
 		}
 	}
 
-	for (long i = 0; i < cash_.size(); i++)
+	for (size_t i = 0; i < cash_.size(); i++)
 	{
 		std::vector<std::wstring> refs;
 		boost::algorithm::split(refs,cash_[i].ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
@@ -1745,7 +1746,7 @@ void odf_chart_context::Impl::create_local_table()
 				row_header	= true;
 		}
 
-		for (long j = 0; j < cash_[i].data_str.size(); j++)
+		for (size_t j = 0; j < cash_[i].data_str.size(); j++)
 		{
 			_cell_cash c = {0, 0, false, false, L""};
 
@@ -1812,7 +1813,7 @@ void odf_chart_context::Impl::create_local_table()
 		table_elm->add_child_element(cols_elm);
 
 
-		for (long i=0; i < max_columns - (col_header ? 1 : 0); i++)
+		for (int i=0; i < max_columns - (col_header ? 1 : 0); i++)
 			cols_elm->add_child_element(col_elm);
 
 		office_element_ptr row_headers_elm;
@@ -1839,12 +1840,12 @@ void odf_chart_context::Impl::create_local_table()
 			if ((std::min)(r1, r2) > min_row)	min_row = (std::min)(r1, r2);
 			if ((std::min)(c1, c2) > min_col)	min_col = (std::min)(c1, c2);
 
-			for (int i = 0 ; i < cells_cash_label.size(); i++)
+			for (size_t i = 0 ; i < cells_cash_label.size(); i++)
 			{
 				cells_cash_label[i].row -= min_row - 1;
 				cells_cash_label[i].col -= min_col - 1;
 			}
-			for (int i = 0 ; i < cells_cash.size(); i++)
+			for (size_t i = 0 ; i < cells_cash.size(); i++)
 			{
 				cells_cash[i].row -= min_row - 1;
 				cells_cash[i].col -= min_col - 1;

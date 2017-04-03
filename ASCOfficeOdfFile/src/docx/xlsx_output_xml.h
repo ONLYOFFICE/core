@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -62,8 +62,10 @@ public:
 	std::wostream & autofilter();
 	std::wostream & conditionalFormatting();
 	std::wostream & sort();
+	std::wostream & ole_objects();
 	
 	rels & hyperlinks_rels();
+	rels & ole_objects_rels();
 
     void write_to(std::wostream & strm);
 

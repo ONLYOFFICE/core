@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,13 +49,6 @@ BaseObjectPtr UserSViewEnd::clone()
 {
 	return BaseObjectPtr(new UserSViewEnd(*this));
 }
-
-
-void UserSViewEnd::writeFields(CFRecord& record)
-{
-	record.reserveNunBytes(2, static_cast<unsigned short>(1)); // reserved
-}
-
 
 void UserSViewEnd::readFields(CFRecord& record)
 {

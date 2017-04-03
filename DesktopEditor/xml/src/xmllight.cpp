@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -127,6 +127,10 @@ namespace XmlUtils
 	std::string CXmlLiteReader::GetText2A()
 	{
 		return m_pInternal->GetText2A();
+	}
+    std::wstring CXmlLiteReader::GetText3()
+	{
+		return m_pInternal->GetText3();
 	}
 
 	std::wstring CXmlLiteReader::GetOuterXml()

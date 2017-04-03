@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,6 +39,8 @@ class CxImage;
 class CBgraFrame
 {
 private:
+	int m_nFileType;
+
 	int m_lWidth;
 	int m_lHeight;
 	int m_lStride;
@@ -67,6 +69,7 @@ private:
 	}
 	inline void Clear()
 	{
+		m_nFileType	= 0;
 		m_lWidth	= 0;
 		m_lHeight	= 0;
 		m_lStride	= 0;
@@ -120,7 +123,10 @@ public:
 public:
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
-    bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
+    
+	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
+
+	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 private:
 
 	void CxImageToMediaFrame( CxImage& img );

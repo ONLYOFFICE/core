@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -103,14 +103,14 @@ namespace OOX
 			}
 		}
 
-		CString CPPrChange::toXML() const
+		std::wstring CPPrChange::toXML() const
 		{
-			CString sResult = _T("<w:pPrChange ");
+			std::wstring sResult = _T("<w:pPrChange ");
 
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += _T("w:author=\"");
-				sResult += m_sAuthor->GetString();
+                sResult += m_sAuthor.get2();
 				sResult += _T("\" ");
 			}
 
@@ -131,7 +131,7 @@ namespace OOX
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += _T("oouserid=\"");
-				sResult += m_sUserId->GetString();
+                sResult += m_sUserId.get2();
 				sResult += _T("\" ");
 			}
 

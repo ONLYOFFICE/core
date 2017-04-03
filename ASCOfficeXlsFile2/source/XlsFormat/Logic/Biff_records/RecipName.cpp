@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,14 +48,6 @@ RecipName::~RecipName()
 BaseObjectPtr RecipName::clone()
 {
 	return BaseObjectPtr(new RecipName(*this));
-}
-
-
-void RecipName::writeFields(CFRecord& record)
-{
-#pragma message("####################### RecipName record is not implemented")
-	Log::error("RecipName record is not implemented.");
-	//record << some_value;
 }
 
 

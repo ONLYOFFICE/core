@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,9 +37,12 @@
 
 #include "FromTo.h"
 #include "Pic.h"
-#include "GraphicFrame.h"
 #include "Pos.h"
 #include "Shape.h"
+
+#include "Shape.h"
+
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 
 namespace OOX
 {
@@ -57,7 +60,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -65,6 +68,10 @@ namespace OOX
 			{
 				if(isValid())
 				{
+					if(m_oAlternateContent.IsInit() && m_oAlternateContent->ToBool())
+					{
+						writer.WriteString(L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\">");
+					}
 					std::wstring sStart;
 					std::wstring sEnd;
 					if(m_oFrom.IsInit() && m_oTo.IsInit())
@@ -88,7 +95,7 @@ namespace OOX
 						if(m_oExt.IsInit())
 							m_oExt->toXML(writer);
 					}
-					else if(m_oPos.IsInit() && m_oExt.IsInit())
+					else
 					{
 						sStart.append(_T("<xdr:absoluteAnchor>"));
 						sEnd = _T("</xdr:absoluteAnchor>");
@@ -98,16 +105,19 @@ namespace OOX
 						if(m_oExt.IsInit())
 							m_oExt->toXML(writer);
 					}
-					else
-						return;
 					if(m_oXml.IsInit())
 						writer.WriteString(m_oXml.get());	
 					if(m_oGraphicFrame.IsInit())
-						m_oGraphicFrame->toXML(writer);
-					writer.WriteString(sEnd);	
+						writer.WriteString(m_oGraphicFrame->toXML());
+					writer.WriteString(sEnd);
+
+					if(m_oAlternateContent.IsInit() && m_oAlternateContent->ToBool())
+					{
+						writer.WriteString(L"</mc:Choice><mc:Fallback/></mc:AlternateContent>");
+					}
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -130,11 +140,10 @@ namespace OOX
 					else if ( _T("graphicFrame") == sName )
 					{
 						m_oGraphicFrame = oReader;
-						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->m_oChartGraphic.IsInit()) && 
-															(m_oGraphicFrame->m_oChartGraphic->m_oGraphicData.IsInit()))
+						if ((m_oGraphicFrame.IsInit())  &&	(m_oGraphicFrame->spid.IsInit()))
 						{
 							//вытащим выше ссылку на объект (для удобства)
-							m_sSpId = m_oGraphicFrame->m_oChartGraphic->m_oGraphicData->m_sSpId;
+							m_sSpId = m_oGraphicFrame->spid.get();
 						}
 					}
 	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
@@ -154,7 +163,7 @@ namespace OOX
 						{
 							XmlUtils::CXmlLiteReader oShapeReader;
 							//сформируем полноценную xml-строку
-                            CString xmlString;// = L"<?xml version=\"1.0\"?>";// encoding=\"UTF-8\"
+                            std::wstring xmlString;// = L"<?xml version=\"1.0\"?>";// encoding=\"UTF-8\"
 							xmlString += L"<root ";
 								xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 								xmlString += L"xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" ";	
@@ -179,14 +188,14 @@ namespace OOX
 								if ((m_oShape.IsInit()) && (m_oShape->m_oNvSpPr.IsInit()) && 
 									(m_oShape->m_oNvSpPr->m_oCNvPr.IsInit()) && (m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst.IsInit()))
 								{
-									for (int i=0; i < m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt.size();i++)
+									for (size_t i=0; i < m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt.size();i++)
 									{
 										OOX::Drawing::COfficeArtExtension* pExt = m_oShape->m_oNvSpPr->m_oCNvPr->m_oExtLst->m_arrExt[i];
 										if (pExt->m_oCompatExt.IsInit() && pExt->m_oCompatExt->m_sSpId.IsInit())
 										{
 											//собственно это и есть ссылка на обеъект -> переложим ее "повыше" (для удобства)
 											m_oXml.reset();
-											m_sSpId = string2std_string(pExt->m_oCompatExt->m_sSpId.get());
+											m_sSpId = pExt->m_oCompatExt->m_sSpId.get();
 										}
 									}
 								}
@@ -209,9 +218,9 @@ namespace OOX
 								std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 								if ( _T("Fallback") == sName || _T("Choice") == sName )
 								{
-									CString sRequires;
+                                    std::wstring sRequires;
 									ReadAttributesRequire(oReader, sRequires);
-									CString xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
+                                    std::wstring xmlString;// = L"<?xml version=\"1.0\"?>"; //encoding=\"UTF-8\"
 									xmlString += L"<root ";
 										xmlString += L"xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" ";
 										xmlString += L"xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
@@ -223,7 +232,7 @@ namespace OOX
 									xmlString += L"</root>";
 
 									//todo better check (a14 can be math, slicer)
-									if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.Find(L"a14:m")))
+                                    if(_T("Choice") == sName && !(L"a14" == sRequires && -1 != xmlString.find(L"a14:m")))
 									{
 										continue;
 									}
@@ -271,7 +280,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, CString& sRequire)
+            void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire)
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
@@ -284,17 +293,18 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
 			nullable<OOX::Spreadsheet::CPos>				m_oPos;
 			nullable<OOX::Spreadsheet::CExt>				m_oExt;
-			nullable<OOX::Spreadsheet::CGraphicFrame>		m_oGraphicFrame;
+			nullable<PPTX::Logic::GraphicFrame>				m_oGraphicFrame;
 			nullable<OOX::Spreadsheet::CPic>				m_oPicture;
 			nullable<OOX::Spreadsheet::CGroupShape>			m_oGroupShape;
 			nullable<OOX::Spreadsheet::CShape>				m_oShape;
 			nullable<OOX::Spreadsheet::CConnShape>			m_oConnShape;
 
 			// для pptx:ObjectDrawingConverter
-			nullable<std::wstring>								m_oXml;
+			nullable<std::wstring>							m_oXml;
+			nullable<SimpleTypes::COnOff<>>					m_oAlternateContent;
 
 			//для удобства
-			nullable<std::wstring>								m_sSpId;
+			nullable<std::wstring>							m_sSpId;
 		};
 	} //Spreadsheet
 } // namespace OOX

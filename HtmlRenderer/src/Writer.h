@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -809,6 +809,19 @@ namespace NSHtmlRenderer
         {
             if (m_pRenderer)
                return m_pRenderer->put_ClipMode(lMode);
+            return S_OK;
+        }
+
+        inline virtual HRESULT StartConvertCoordsToIdentity()
+        {
+            if (m_pRenderer)
+                m_pRenderer->StartConvertCoordsToIdentity();
+            return S_OK;
+        }
+        inline virtual HRESULT EndConvertCoordsToIdentity()
+        {
+            if (m_pRenderer)
+                m_pRenderer->EndConvertCoordsToIdentity();
             return S_OK;
         }
     };

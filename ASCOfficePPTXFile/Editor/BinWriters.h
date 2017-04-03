@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,6 +37,6 @@
 #include "imagemanager.h"
 #include "./XmlWriter.h"
 #include "../PPTXFormat/FileContainer.h"
-#include "../PPTXFormat/DocxFormat/WritingElement.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "BinaryFileReaderWriter.h"

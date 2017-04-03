@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,6 +65,7 @@ namespace OOX
 			graphictypeDiagram      = 3, // Диаграммы		21.4
 			graphictypeShape	    = 4, // Шейпы			20.4
 			graphictypeGroupShape   = 5, // Группы Шейпов	20.4
+			graphictypeLegacyDrawing= 6,
 		};
 
 		class CGraphic : public WritingElementWithChilds<WritingElement> //в данном случае псевдо - так как ДОЛЖЕН быть тока 1 элемент
@@ -79,11 +80,11 @@ namespace OOX
 			}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CGraphic::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -144,7 +145,7 @@ namespace OOX
 					} 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				// TO DO: Реализовать CGraphic::toXML()
 				return _T("");
@@ -158,17 +159,16 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("uri"), m_sUri )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("uri"), m_sUri )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
         public:
-			EGraphicType                     m_eGraphicType;
-			// Attributes
-			nullable<CString>                m_sUri;
-			//Child
+			EGraphicType				m_eGraphicType;
+	// Attributes
+            nullable<std::wstring>		m_sUri;
+	//Child
 		};
 	} // Drawing
 

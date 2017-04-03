@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,24 +49,6 @@ WsBool::~WsBool()
 BaseObjectPtr WsBool::clone()
 {
 	return BaseObjectPtr(new WsBool(*this));
-}
-
-
-void WsBool::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fShowAutoBreaks);
-	SETBIT(flags, 4, fDialog);
-	SETBIT(flags, 5, fApplyStyles);
-	SETBIT(flags, 6, fRowSumsBelow);
-	SETBIT(flags, 7, fColSumsRight);
-	SETBIT(flags, 8, fFitToPage);
-	SETBIT(flags, 10, fDspGuts);
-	SETBIT(flags, 12, fSyncHoriz);
-	SETBIT(flags, 13, fSyncVert);
-	SETBIT(flags, 14, fAltExprEval);
-	SETBIT(flags, 15, fAltFormulaEntry);
-	record << flags;
 }
 
 

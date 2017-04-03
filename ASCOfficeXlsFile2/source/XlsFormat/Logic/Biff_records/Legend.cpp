@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,20 +48,6 @@ Legend::~Legend()
 BaseObjectPtr Legend::clone()
 {
 	return BaseObjectPtr(new Legend(*this));
-}
-
-
-void Legend::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAutoPosition);
-	SETBIT(flags, 2, fAutoPosX);
-	SETBIT(flags, 3, fAutoPosY);
-	SETBIT(flags, 4, fVert);
-	SETBIT(flags, 5, fWasDataTable);
-	record << x << y << dx << dy;
-	record.reserveNunBytes(1); // unused
-	record << wSpace << flags;
 }
 
 
@@ -125,6 +111,8 @@ int Legend::serialize(std::wostream & _stream, int size)
 					dy = dy * size;
 				}
 			}
+			CP_XML_NODE(L"c:layout");
+			CP_XML_NODE(L"c:overlay") {CP_XML_ATTR(L"val", 0);}
 		}
 		else
 		{

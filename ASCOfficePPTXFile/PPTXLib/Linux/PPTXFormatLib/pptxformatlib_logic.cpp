@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../../PPTXFormat/DocxFormat/IFileContainer.cpp"
 #include "../../../PPTXFormat/Logic/Colors/SchemeClr.cpp"
 #include "../../../PPTXFormat/Logic/Fills/Blip.cpp"
 #include "../../../PPTXFormat/Logic/Table/TableCell.cpp"
@@ -58,12 +57,12 @@
 #include "../../../PPTXFormat/Logic/SpPr.cpp"
 #include "../../../PPTXFormat/Logic/SpTree.cpp"
 #include "../../../PPTXFormat/Logic/SpTreeElem.cpp"
-//#include "../../../PPTXFormat/Logic/Timing.cpp"
 #include "../../../PPTXFormat/Logic/TxBody.cpp"
 #include "../../../PPTXFormat/Logic/UniColor.cpp"
 #include "../../../PPTXFormat/Logic/UniEffect.cpp"
+#include "../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp"
+#include "../../../PPTXFormat/Logic/Controls.cpp"
 #include "../../../PPTXFormat/FileContainer.cpp"
 #include "../../../PPTXFormat/FileFactory.cpp"
 #include "../../../PPTXFormat/FileMap.cpp"
 #include "../../../PPTXFormat/Folder.cpp"
-#include "../../../PPTXFormat/Logic/Controls.cpp"

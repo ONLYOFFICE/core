@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,14 +46,6 @@ OfficeArtFDGGBlock::OfficeArtFDGGBlock()
 XLS::BiffStructurePtr OfficeArtFDGGBlock::clone()
 {
 	return XLS::BiffStructurePtr(new OfficeArtFDGGBlock(*this));
-}
-
-
-void OfficeArtFDGGBlock::storeFields(XLS::CFRecord& record)
-{
-	_UINT32 cidcl = Rgidcl.size();
-	record << spidMax << cidcl << cspSaved << cdgSaved;
-	record << Rgidcl;
 }
 
 

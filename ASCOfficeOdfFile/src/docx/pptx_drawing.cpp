@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,20 +38,6 @@ namespace cpdoccore {
 
 namespace oox {
 
-static const int _odf_to_docx_ShapeType[]=
-{ 4,4,4,34,};
-
-static const std::wstring _docxShapeType[]=
-{
-	L"rect", 
-	L"rect", 
-	L"rect", 
-	L"ellipse", 
-	L"ellipse", 
-	L"line", 
-	L"custGeom"
-};
-
 void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
 {
 	_CP_OPT(std::wstring) strTextContent;
@@ -61,7 +47,8 @@ void pptx_serialize_text(std::wostream & strm, _pptx_drawing & val)
     {
 		CP_XML_NODE(L"p:txBody")
 		{  
-			oox_serialize_bodyPr(CP_XML_STREAM(), val);
+			val.serialize_bodyPr(CP_XML_STREAM());
+			
 			if (strTextContent)
 			{	
 				CP_XML_STREAM() << strTextContent.get();
@@ -86,10 +73,10 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
             {
                 CP_XML_NODE(L"p:cNvPr")
                 {
-                    CP_XML_ATTR(L"id", val.id);
-                    CP_XML_ATTR(L"name", val.name);
+                    CP_XML_ATTR(L"id",		val.id);
+                    CP_XML_ATTR(L"name",	val.name);
 
-					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
+					oox_serialize_hlink(CP_XML_STREAM(), val.hlinks);
 
 				}
                 CP_XML_NODE(L"p:cNvPicPr")
@@ -106,14 +93,14 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
 
             CP_XML_NODE(L"p:spPr")
             {
-				oox_serialize_xfrm(CP_XML_STREAM(),val);
+				val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
 
                 CP_XML_NODE(L"a:prstGeom")
                 {                   
                     CP_XML_ATTR(L"prst", L"rect");
                     CP_XML_NODE(L"a:avLst");
                 }
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
             } 			
 			//_CP_OPT(std::wstring) strTextContent;
 			//odf::GetProperty(properties,L"text-content",strTextContent);
@@ -169,13 +156,13 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 
 				if (!bNoRect)
 				{					
-					oox_serialize_xfrm(CP_XML_STREAM(),val);
+					val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+					val.serialize_shape(CP_XML_STREAM());
 
-					oox_serialize_shape(CP_XML_STREAM(),val);
 					oox_serialize_ln(CP_XML_STREAM(), val.additional);
 				}
 			}
-			pptx_serialize_text(CP_XML_STREAM(), val);
+			 pptx_serialize_text(CP_XML_STREAM(), val);
 		}
     }  // CP_XML_WRITER  
 }
@@ -197,7 +184,7 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
             } 
-			oox_serialize_xfrm(CP_XML_STREAM(),val,L"p");
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -210,14 +197,13 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
 					{
 						CP_XML_ATTR(L"xmlns:c", L"http://schemas.openxmlformats.org/drawingml/2006/chart");
 						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-						CP_XML_ATTR(L"r:id", val.chartId);
+						CP_XML_ATTR(L"r:id", val.objectId);
 					}
 				}
 			}               
 		} // p:graphicFrame
     }  // CP_XML_WRITER  
 }
-
 void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
@@ -235,7 +221,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
                 CP_XML_NODE(L"p:cNvGraphicFramePr");
 				CP_XML_NODE(L"p:nvPr");
             } 
-			oox_serialize_xfrm(CP_XML_STREAM(),val,L"p");
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
 
 			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
 
@@ -258,23 +244,73 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
     }  // CP_XML_WRITER  
 }
 
-void pptx_serialize(std::wostream & strm, _pptx_drawing & val)
+
+void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
 {
-	if (val.type == typeShape)
+    CP_XML_WRITER(strm)    
+    {
+		CP_XML_NODE(L"p:graphicFrame")
+        {                  
+            CP_XML_NODE(L"p:nvGraphicFramePr")
+            {
+                CP_XML_NODE(L"p:cNvPr")
+                {
+                    CP_XML_ATTR(L"id", val.id);
+                    CP_XML_ATTR(L"name", val.name);
+                }
+
+                CP_XML_NODE(L"p:cNvGraphicFramePr");
+				CP_XML_NODE(L"p:nvPr");
+            } 
+			val.serialize_xfrm(CP_XML_STREAM(), L"p", true);
+
+			//oox_serialize_ln(CP_XML_STREAM(),val.additional);
+
+            CP_XML_NODE(L"a:graphic")
+            {                   
+                CP_XML_NODE(L"a:graphicData")
+				{
+					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/presentationml/2006/ole");
+					CP_XML_NODE(L"p:oleObj")
+					{
+						CP_XML_ATTR(L"r:id",	val.objectId);
+						CP_XML_ATTR(L"progId",	val.objectProgId);
+						CP_XML_ATTR(L"imgW",	val.cx );
+						CP_XML_ATTR(L"imgH",	val.cy );
+						CP_XML_NODE(L"p:embed");
+
+						val.id = 0;
+						pptx_serialize_image(CP_XML_STREAM(), val);
+					}
+				}
+			} 
+		} // p:graphicFrame
+    }  // CP_XML_WRITER  
+}
+
+
+void _pptx_drawing::serialize(std::wostream & strm)
+{
+	if (type == typeShape)
 	{
-		pptx_serialize_shape(strm,val);
+		pptx_serialize_shape(strm, *this);
 	}
-	else if (val.type == typeImage)
+	else if (type == typeImage)
 	{
-		pptx_serialize_image(strm,val);
+		pptx_serialize_image(strm, *this);
 	}
-	else if (val.type == typeChart)
+	else if (type == typeChart)
 	{
-		pptx_serialize_chart(strm,val);
+		pptx_serialize_chart(strm, *this);
 	}
-	else if (val.type == typeTable)
+	else if (type == typeTable)
 	{
-		pptx_serialize_table(strm,val);
+		pptx_serialize_table(strm, *this);
+	}
+	else if (type == typeMsObject || 
+				type == typeOleObject)
+	{
+		pptx_serialize_object(strm, *this);
 	}
 }
 

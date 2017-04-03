@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,10 +51,9 @@ public:
 	static const ElementType	type = typeXFProp;
 
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
 
-	int		serialize(std::wostream & stream);
-	void	serialize_attr(CP_ATTR_NODE);
+	int		serialize		(std::wostream & stream);
+	void	serialize_attr	(CP_ATTR_NODE);
 
 	unsigned short		xfPropType;
 	unsigned short		cb;

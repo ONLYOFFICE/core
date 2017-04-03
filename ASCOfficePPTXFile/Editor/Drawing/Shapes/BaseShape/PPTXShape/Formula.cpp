@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,7 @@
 
 double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManager)
 {
-	if ((0 == m_lIndex) || (-m_lIndex > pManager->Guides->size()) || (m_lIndex > pManager->Adjustments->size()))
+	if ((0 == m_lIndex) || (-m_lIndex > (int)pManager->Guides->size()) || (m_lIndex > (int)pManager->Adjustments->size()))
 		return 0.0;
 	if((m_lIndex < 0) && (dNonDefResult > (*pManager->Guides)[-m_lIndex-1]))
 		return (*pManager->Guides)[-m_lIndex-1];
@@ -91,7 +91,7 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManag
 	{
 		(*pManager->Guides)[-m_lIndex-1] = dRes;
 		// переопределим формулу
-		pManager->mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
+                pManager->mapGuides.insert(std::pair<std::wstring, long>(m_sName, -m_lIndex-1));
 	}
 	else
 		(*pManager->Adjustments)[m_lIndex-1] = (long)dRes;

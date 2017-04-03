@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -109,9 +109,9 @@ void main()
 	oFonts.Initialize();
 
 	CMetaFile oMetaFile(&oFonts);
-	ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
+	//ConvertFolder(oMetaFile, L"D://test//_svm//1//", c_lMetaSvm);
 	//ConvertFolder(oMetaFile, L"D://Test Files//Wmf//Test//", c_lMetaWmf);
-	//ConvertFolder(oMetaFile, L"D://Test Files//Emf//Temp//", c_lMetaEmf);
+	ConvertFolder(oMetaFile, L"D://test//_emf", c_lMetaEmf);
 
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();

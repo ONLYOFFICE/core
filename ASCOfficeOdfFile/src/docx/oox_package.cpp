@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,6 +74,8 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"wav" == extension)	return  L"audio/wav";
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	else if (L"docx" == extension)	return  L"application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	else if (L"doc" == extension)	return  L"application/msword";
 	else							return	L"application/octet-stream";
 
 
@@ -112,14 +114,48 @@ content_type_content * content_types_file::content()
 
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
-	for (int i = 0 ; i < content_type_content_.get_default().size(); i++)
+	std::vector<default_content_type> & defaults = content_type_content_.get_default();
+	
+	for (int i = 0 ; i < defaults.size(); i++)
 	{
-		if (content_type_content_.get_default()[i].extension() == extension)
+		if (defaults[i].extension() == extension)
 			return true;
 	}
+	
 	content_type_content_.add_default(extension, get_mime_type(extension));
 	return true;
 }
+
+bool content_types_file::add_or_find_override(const std::wstring & fileName)
+{
+	std::vector<override_content_type> & override_ = content_type_content_.get_override();
+	
+	for (int i = 0 ; i < override_.size(); i++)
+	{
+		if (override_[i].part_name() == fileName)
+			return true;
+	}
+	
+	std::wstring content_type;
+	
+	int pos = fileName.rfind(L".");	
+	std::wstring extension = pos >= 0 ? fileName.substr(pos + 1) : L"";
+	
+	if (extension == L"xlsx")
+	{
+		content_type = L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+		content_type_content_.add_override(fileName, content_type);
+	}
+	if (extension == L"bin")
+	{
+		//content_type = L"application/vnd.openxmlformats-officedocument.oleObject";
+
+		add_or_find_default(extension);
+	}
+
+	return true;
+}
+
 void content_types_file::set_media(mediaitems & _Mediaitems)
 {
     BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
@@ -178,7 +214,7 @@ void rels_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"_rels";
 
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
    
 	if (rels_file_)
         rels_file_->write(path);
@@ -265,7 +301,7 @@ docProps_files::docProps_files()
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     core_.write(path);
     app_.write(path);
@@ -281,14 +317,15 @@ media::media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts) : mediaitem
 void media::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
+	mediaitems::items_array & items = mediaitems_.items();
+    for (int i = 0; i < items.size(); i++ )
     {
-        if (item.mediaInternal && item.valid && item.type == typeImage )
+        if (items[i].mediaInternal && items[i].valid && (items[i].type == typeImage || items[i].type == typeMedia))
         {
-			std::wstring & file_name  = item.href;
-			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
+			std::wstring & file_name	= items[i].href;
+			std::wstring file_name_out	= RootPath + FILE_SEPARATOR_STR + items[i].outputName;
 			
 			CImageFileFormatChecker svmFileChecker;
 			if (svmFileChecker.isSvmFile(file_name))
@@ -296,14 +333,12 @@ void media::write(const std::wstring & RootPath)
 				ConvertSvmToImage(file_name, file_name_out, appFonts_);
 			}
 			else
-				NSFile::CFileBinary::Copy(item.href, file_name_out);
+				NSFile::CFileBinary::Copy(items[i].href, file_name_out);
         }
     }
 
 }
-///////////////////////////////////////////////////////////////////////////////////
-
-
+//------------------------------------------------------------------------------------------------------------
 charts::charts(mediaitems & _ChartsItems) : chartsitems_(_ChartsItems)
 {    
 }
@@ -312,6 +347,35 @@ void charts::write(const std::wstring & RootPath)
 {
 
 }
+//--------------------------------------------------------------------------------------------------------------
+embeddings::embeddings(mediaitems & _EmbeddingsItems) : embeddingsitems_(_EmbeddingsItems)
+{    
+}
+void embeddings::write(const std::wstring & RootPath)
+{
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"embeddings";
+    NSDirectory::CreateDirectory(path.c_str());
+
+	content_types_file & content_types = get_main_document()->get_content_types_file();           
+    
+	mediaitems::items_array & items = embeddingsitems_.items();
+    for (int i = 0; i < items.size(); i++ )
+    {
+        if ( items[i].mediaInternal && items[i].valid &&
+			(items[i].type == typeMsObject || items[i].type == typeOleObject))
+        {
+			int pos = items[i].outputName.rfind(L".");	
+			std::wstring extension = pos >= 0 ? items[i].outputName.substr(pos + 1) : L"";
+			
+			content_types.add_or_find_default(extension);
+
+			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].outputName;
+			
+			NSFile::CFileBinary::Copy(items[i].href, file_name_out);
+		}
+    }
+}
+
 }
 }
 }

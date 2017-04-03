@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,15 +50,6 @@ BaseObjectPtr Label::clone()
 {
 	return BaseObjectPtr(new Label(*this));
 }
-
-
-void Label::writeFields(CFRecord& record)
-{
-	global_info_ = record.getGlobalWorkbookInfo();
-
-	record << cell << st;
-}
-
 
 void Label::readFields(CFRecord& record)
 {
@@ -124,15 +115,6 @@ BaseObjectPtr CommentText::clone()
 {
 	return BaseObjectPtr(new CommentText(*this));
 }
-
-
-void CommentText::writeFields(CFRecord& record)
-{
-	global_info_ = record.getGlobalWorkbookInfo();
-
-	record << cell << st;
-}
-
 
 void CommentText::readFields(CFRecord& record)
 {

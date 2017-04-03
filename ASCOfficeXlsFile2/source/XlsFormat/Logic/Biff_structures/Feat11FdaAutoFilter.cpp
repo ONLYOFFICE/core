@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,12 +41,6 @@ BiffStructurePtr Feat11FdaAutoFilter::clone()
 {
 	return BiffStructurePtr(new Feat11FdaAutoFilter(*this));
 }
-
-
-void Feat11FdaAutoFilter::store(CFRecord& record)
-{	
-}
-
 
 void Feat11FdaAutoFilter::load(CFRecord& record)
 {	

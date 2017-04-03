@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,7 @@ namespace DocFileFormat
 		/// Generates a style id for custom style names or returns the build-in identifier for build-in styles.
 		static std::wstring MakeStyleId( StyleSheetDescription* std );
 		static std::map<std::wstring, std::wstring> m_mapStyleId;
-		static ASCOfficeCriticalSection m_mapStyleIdLock;
+		static OfficeCriticalSection m_mapStyleIdLock;
 		virtual ~StyleSheetMapping();
 
 	private:

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,27 +38,27 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		void Geometry::ConvertToCustomVML(IRenderer* pOOXToVMLRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight)
+		void Geometry::ConvertToCustomVML(IRenderer* pOOXToVMLRenderer, std::wstring& strPath, std::wstring& strRect, LONG& lWidth, LONG& lHeight)
 		{
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+			if (!pOOXToVMLRenderer) return;
 
 			NSPresentationEditor::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
-				const PPTX::Logic::PrstGeom lpGeom = this->as<PPTX::Logic::PrstGeom>();
+				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
 
 				OOXMLShapes::ShapeType _lspt = PPTX2EditorAdvanced::GetShapeTypeFromStr(lpGeom.prst.get());
 				if(_lspt == OOXMLShapes::sptNil) 
 					return;
 
 				lpShapeElement = new NSPresentationEditor::CShapeElement(NSBaseShape::pptx, (int)_lspt);
-				CString strAdjustValues = lpGeom.GetODString();
+				std::wstring strAdjustValues = lpGeom.GetODString();
 				lpShapeElement->m_oShape.m_pShape->LoadAdjustValuesList(strAdjustValues);
 			}
 			else if (this->is<PPTX::Logic::CustGeom>())
 			{
-				const PPTX::Logic::CustGeom lpGeom = this->as<PPTX::Logic::CustGeom>();
-				CString strShape = lpGeom.GetODString();
+				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
+				std::wstring strShape = lpGeom.GetODString();
 				lpShapeElement = new NSPresentationEditor::CShapeElement(strShape);
 			}
 
@@ -84,18 +84,15 @@ namespace PPTX
 
 			NSPresentationEditor::CPath& oPath = lpShapeElement->m_oShape.m_pShape->m_oPath;
 			
-			VARIANT var;
-			var.vt = VT_I4;
-			var.lVal = 0;
 			COOXToVMLGeometry* pOOXToVMLGeometry = dynamic_cast<COOXToVMLGeometry*>(pOOXToVMLRenderer);
-			if(NULL != pOOXToVMLGeometry)
+
+            if(NULL != pOOXToVMLGeometry)
 				pOOXToVMLGeometry->NewShape();
 
 			NSPresentationEditor::CGraphicPath oGrPath;			
 			CMetricInfo oMetricInfo;
 
-			int nSize = oPath.m_arParts.size();
-			for (int nIndex = 0; nIndex < nSize; ++nIndex)
+			for (size_t nIndex = 0; nIndex < oPath.m_arParts.size(); ++nIndex)
 			{
 				oGrPath.Clear();
 				oPath.m_arParts[nIndex].ToRendererOOX(&oGrPath, oInfo, oMetricInfo, NSBaseShape::pptx);
@@ -128,11 +125,11 @@ namespace PPTX
                 double dkoefX = (double)lCoordSize / (std::max)(1., _dWidth);
                 double dkoefY = (double)lCoordSize / (std::max)(1., _dHeight);
 
-				strRect = _T("");
-				strRect.Format(_T("%d,%d,%d,%d"), (int)(dkoefX * txRect.left), (int)(dkoefY * txRect.top),
-					(int)(dkoefX * txRect.right), (int)(dkoefY * txRect.bottom));
+                strRect =   std::to_wstring((int)(dkoefX * txRect.left))    + L"," +
+                            std::to_wstring((int)(dkoefY * txRect.top))     + L"," +
+                            std::to_wstring((int)(dkoefX * txRect.right))   + L"," +
+                            std::to_wstring((int)(dkoefY * txRect.bottom));
 			}
-#endif
         }
 	}
 }

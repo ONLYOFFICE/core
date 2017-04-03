@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,17 +38,6 @@
 
 namespace StlUtils
 {
-    static inline std::wstring IntToWideString(int value)
-	{
-#if defined(_WIN32) || defined(_WIN64)
-        wchar_t strValue[256];
-		_itow_s(value, strValue, 256, 10);
-		return std::wstring(strValue);
-#else
-        return std::to_wstring(value);
-#endif
-	}
-
 	static inline std::wstring DoubleToWideString(double value)
 	{
 #if defined(_WIN32) || defined(_WIN64)
@@ -59,17 +48,6 @@ namespace StlUtils
         return std::to_wstring(value);
 #endif
     }
-
-    static inline std::string IntToString(int value)
-	{
-#if defined(_WIN32) || defined(_WIN64)
-        char strValue[256];
-		_itoa_s(value, strValue, 256, 10);
-        return std::string(strValue);
-#else
-        return std::to_string(value);
-#endif
-	}
 
 	static inline std::string DoubleToString(double value)
 	{

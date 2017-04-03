@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "Blip.h"
 #include "./../../Slide.h"
@@ -41,6 +41,26 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			Effects.clear();
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+
+				UniEffect uni;
+				Effects.push_back(uni);
+				Effects.back().fromXML(oReader);
+			}
+		
+			FillParentPointersForChilds();
+		}
 		void Blip::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -55,7 +75,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString Blip::toXML() const
+		std::wstring Blip::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 
@@ -68,7 +88,7 @@ namespace PPTX
 			XmlUtils::CNodeValue oValue;
 			oValue.WriteArray(Effects);
 
-			CString strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
+			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
 			return XmlUtils::CreateNode(strName, oAttr, oValue);
 		}
 
@@ -79,13 +99,13 @@ namespace PPTX
 				Effects[i].SetParentPointer(this);
 		}
 
-		CString Blip::GetFullPicName(FileContainer* pRels)const
+		std::wstring Blip::GetFullPicName(FileContainer* pRels)const
 		{
 			if(embed.IsInit())
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::Image> p = pRels->image(*embed);
+					smart_ptr<OOX::Image> p = pRels->GetImage(*embed);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
@@ -104,7 +124,7 @@ namespace PPTX
 			{
 				if (pRels != NULL)
 				{
-					smart_ptr<PPTX::Image> p = pRels->image(*link);
+					smart_ptr<OOX::Image> p = pRels->GetImage(*link);
 					if (p.is_init())
 						return p->filename().m_strFilename;
 				}
@@ -121,11 +141,11 @@ namespace PPTX
 			}
 			return _T("");
 		}
-		CString Blip::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		std::wstring Blip::GetFullOleName(const OOX::RId& oRId, FileContainer* pRels)const
 		{
 			if (pRels != NULL)
 			{
-				smart_ptr<PPTX::OleObject> p = pRels->oleObject(oRId);
+				smart_ptr<OOX::OleObject> p = pRels->GetOleObject(oRId);
 				if (p.is_init())
 					return p->filename().m_strFilename;
 			}

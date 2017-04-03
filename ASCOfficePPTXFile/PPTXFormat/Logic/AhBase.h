@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,12 +45,18 @@ namespace PPTX
 		class AhBase : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AhBase)
+			WritingElement_AdditionConstructors(AhBase)
+			PPTX_LOGIC_BASE2(AhBase)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				if (ah.IsInit())
+					return ah->getType();
+				return OOX::et_Unknown;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("ahXY"))
 					ah.reset(new Logic::AhXY(node));
@@ -58,7 +64,16 @@ namespace PPTX
 					ah.reset(new Logic::AhPolar(node));
 				else ah.reset();
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
+				if (sName == L"ahXY")
+					ah.reset(new Logic::AhXY(oReader));
+				else if(sName == L"ahPolar")
+					ah.reset(new Logic::AhPolar(oReader));
+				else ah.reset();
+			}
 			virtual void GetAdjustHandleFrom(XmlUtils::CXmlNode& element)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -69,7 +84,7 @@ namespace PPTX
 				else ah.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (ah.is_init())
 					return ah->toXML();
@@ -105,7 +120,7 @@ namespace PPTX
 					ah->SetParentPointer(pParent);
 			}
 			
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				if (!ah.IsInit())
 					return _T("");

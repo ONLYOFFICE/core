@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,8 +35,6 @@
 
 #include "../CommonInclude.h"
 
-//#include "Colors.h"
-
 namespace OOX
 {
 	namespace Spreadsheet
@@ -64,7 +62,7 @@ namespace OOX
 				return et_RgbColor;
 			}
 		private:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -95,7 +93,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -366,7 +364,7 @@ namespace OOX
 			{
 			}
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -415,11 +413,11 @@ namespace OOX
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),      m_oAuto )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"),      m_oIndexed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),      m_oRgb )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),      m_oThemeColor )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),      m_oTint )
+                    WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),    m_oAuto )
+                    WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"), m_oIndexed )
+                    WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),     m_oRgb )
+                    WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),   m_oThemeColor )
+                    WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
@@ -443,7 +441,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -645,7 +643,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -736,11 +734,10 @@ namespace OOX
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
-					CString sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
+                    std::wstring sVerticalAlign = m_oVertAlign->m_oVerticalAlign->ToString();
 					writer.WriteString(L"<vertAlign val=\"");
-					writer.WriteString(sVerticalAlign.GetBuffer());
+                    writer.WriteString(sVerticalAlign);
 					writer.WriteString(L"\"/>");
-					sVerticalAlign.ReleaseBuffer();
 				}
 				writer.WriteString(_T("</rPr>"));
 			}
@@ -801,20 +798,20 @@ namespace OOX
 			}
 		public:
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
-			nullable<CCharset>												m_oCharset;
-			nullable<CColor>												m_oColor;
+            nullable<CCharset>                                                      m_oCharset;
+            nullable<CColor>                                                        m_oColor;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
-			nullable<CFontFamily >											m_oFamily;
+            nullable<CFontFamily >                                                  m_oFamily;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			nullable<ComplexTypes::Spreadsheet::CString_>							m_oRFont;
-			nullable<CFontScheme>											m_oScheme;
+            nullable<ComplexTypes::Spreadsheet::String >                            m_oRFont;
+            nullable<CFontScheme>                                                   m_oScheme;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
-			nullable<CUnderline>											m_oUnderline;
-			nullable<CVerticalAlign>										m_oVertAlign;
+            nullable<CUnderline>                                                    m_oUnderline;
+            nullable<CVerticalAlign>                                                m_oVertAlign;
 		};
 	} //Spreadsheet
 } // namespace OOX

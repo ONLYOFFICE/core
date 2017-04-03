@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,23 +37,23 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
-#include <boost/regex.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/odf/odf_document.h>
 
 #include "serialize_elements.h"
-#include "../docx/xlsx_utils.h"
 #include "style_graphic_properties.h"
 #include "odfcontext.h"
 #include "calcs_styles.h"
-#include "svg_parser.h"
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
+
+#include "../docx/xlsx_utils.h"
+#include "../docx/oox_drawing.h"
 
 namespace cpdoccore { 
 
@@ -275,13 +275,13 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 
 	if (draw_enhanced_geometry_attlist_.draw_enhanced_path_)
 	{
-		std::vector<svg_path::_polyline> o_Polyline;
+		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
 		
 		try
 		{
-			res = svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
+			res = ::svg_path::parseSvgD(o_Polyline, draw_enhanced_geometry_attlist_.draw_enhanced_path_.get(), true);
 		}
 		catch(...)
 		{
@@ -292,7 +292,7 @@ void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
-            svg_path::oox_serialize(output_, o_Polyline);
+            ::svg_path::oox_serialize(output_, o_Polyline);
 			Context.get_drawing_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
 			if (draw_enhanced_geometry_attlist_.drawooo_sub_view_size_)

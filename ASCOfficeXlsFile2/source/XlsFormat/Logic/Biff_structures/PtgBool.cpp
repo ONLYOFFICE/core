@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,12 +68,6 @@ PtgBool::PtgBool(const std::wstring& word)
 BiffStructurePtr PtgBool::clone()
 {
 	return BiffStructurePtr(new PtgBool(*this));
-}
-
-
-void PtgBool::storeFields(CFRecord& record)
-{
-	record << boolean_;
 }
 
 

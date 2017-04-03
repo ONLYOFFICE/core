@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,7 +61,7 @@ namespace BinDocxRW
 	void BinaryHeaderFooterTableWriter::WriteHdrFtrContent(std::vector<OOX::CHdrFtr*>& aHdrFtrs, std::vector<SimpleTypes::EHdrFtr>& aHdrFtrTypes, std::vector<OOX::Logic::CSectionProperty*>& aHdrSectPrs, bool bHdr)
 	{
 		int nCurPos = 0;
-		for(int i = 0, length = aHdrFtrs.size(); i < length; ++i)
+		for(size_t i = 0; i < aHdrFtrs.size(); ++i)
 		{
 			OOX::CHdrFtr* pHdrFtr = aHdrFtrs[i];
 			SimpleTypes::EHdrFtr eType = aHdrFtrTypes[i];

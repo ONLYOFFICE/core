@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class LineTo : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(LineTo)
+			WritingElement_AdditionConstructors(LineTo)
+			PPTX_LOGIC_BASE2(LineTo)
 
 			LineTo& operator=(const LineTo& oSrc)
 			{
@@ -55,7 +56,33 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_lineTo;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader);
+					}
+				}
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -66,11 +93,9 @@ namespace PPTX
 				}
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
-				CString str;
-				str.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x, y);
-				return _T("<a:lnTo>") + str + _T("</a:lnTo>");
+				return _T("<a:lnTo><a:pt x=\"") + x + L"\" y=\"" + y + _T("\"/></a:lnTo>");
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -101,17 +126,16 @@ namespace PPTX
 			}
 
 		public:
-			CString x;
-			CString y;
+			std::wstring x;
+			std::wstring y;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
-				CString str;
-				str.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x, y);
-				return _T("<lnTo>") + str + _T("</lnTo>");
+                std::wstring str = L"<pt x=\"" + x + L"\" y=\"" + y + L"\" />";
+                return _T("<lnTo>") + str + _T("</lnTo>");
 			}
 		};
 	} // namespace Logic

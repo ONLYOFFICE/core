@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,12 @@
 #pragma once   
 
 #include "svg_parser.h"
+#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace cpdoccore 
-{ 
 namespace svg_path
 {
-    void skipSpaces(int&          io_rPos, const std::wstring&     rStr, const int     nLen)
+    void skipSpaces(int& io_rPos, const std::wstring& rStr, const int nLen)
     {
         while( io_rPos < nLen && L' ' == rStr[io_rPos] )
         {
@@ -46,7 +45,7 @@ namespace svg_path
         }
     }
 
-    void skipSpacesAndCommas(int&         io_rPos,const std::wstring&    rStr,const int    nLen)
+    void skipSpacesAndCommas(int& io_rPos,const std::wstring& rStr,const int nLen)
     {
         while(io_rPos < nLen && (wchar_t(' ') == rStr[io_rPos] || wchar_t(',') == rStr[io_rPos]))
         {
@@ -68,7 +67,7 @@ namespace svg_path
 		return isOnNumberChar(rStr[nPos],bSignAllowed);
 	}
 
-	bool getDoubleChar(double&  o_fRetval,int &  io_rPos, const std::wstring&      rStr)
+	bool getDoubleChar(double&  o_fRetval,int &  io_rPos, const std::wstring& rStr)
 	{
 		wchar_t aChar( rStr[io_rPos] );
 		std::wstring  sNumberString;
@@ -120,7 +119,7 @@ namespace svg_path
 		return false;
 	}
 
-	bool importDoubleAndSpaces( double&             o_fRetval, int&          io_rPos, const std::wstring&     rStr, const int    nLen )
+	bool importDoubleAndSpaces( double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen )
 	{
 		if( !getDoubleChar(o_fRetval, io_rPos, rStr) )
 			return false;
@@ -130,7 +129,7 @@ namespace svg_path
 		return true;
 	}
 
-	bool importFlagAndSpaces(int&         o_nRetval, int&         io_rPos, const std::wstring&    rStr, const int    nLen)
+	bool importFlagAndSpaces(int& o_nRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
 	{
 		wchar_t aChar( rStr[io_rPos] );
 
@@ -152,14 +151,13 @@ namespace svg_path
 		return true;
 	}
 
-	void putNumberChar( std::wstring & rStr, double          fValue )
+	void putNumberChar( std::wstring & rStr, double fValue )
 	{
 		const std::wstring sValue = boost::lexical_cast<std::wstring>(fValue) ;
 		rStr.append(sValue);
 	}
 
-	void putNumberCharWithSpace( std::wstring &    rStr,  double             fValue,
-									 double                 fOldValue,  bool                   bUseRelativeCoordinates )
+	void putNumberCharWithSpace( std::wstring & rStr, double fValue, double fOldValue, bool bUseRelativeCoordinates )
 	{
 		if( bUseRelativeCoordinates )
 			fValue -= fOldValue;
@@ -180,7 +178,6 @@ namespace svg_path
 	{
 		return bUseRelativeCoordinates ? cLowerCaseCommand : cUpperCaseCommand;
 	}
-
 
 	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ)
     {
@@ -808,6 +805,152 @@ namespace svg_path
     }
 
 
-}
+	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement)
+	{
+        Polyline.clear();
+        const int nLen(rSvgDStatement.length());
+        int nPos(0);
+        bool bIsClosed(false);
+        
+		double nLastX( 0.0 );
+        double nLastY( 0.0 );
+		
+		double nLastControlX( 0.0 );
+ 		double nLastControlY( 0.0 );
+		
+		_polyline aCurrPoly;
+
+        skipSpaces(nPos, rSvgDStatement, nLen);
+
+        while(nPos < nLen)
+        {
+            bool bRelative	(false);
+            bool bMoveTo	(false);
+            const wchar_t aCurrChar(rSvgDStatement[nPos]);
+
+			aCurrPoly.command.clear();
+
+            switch(aCurrChar)
+            {
+                case 'x' :
+                {
+                    nPos++;
+                    bIsClosed = true;
+
+                } break;
+                case 'm' :
+                case 't' :
+                {
+                    bMoveTo = true;
+                }
+                case 'l' :
+                case 'r' :
+                {
+                    if('t' == aCurrChar || 'r' == aCurrChar)
+                    {
+                        bRelative = true;
+                    }
+					
+                    if(aCurrPoly.points.size() > 0)
+                    {
+                        if(bIsClosed)
+                        {
+                        }
+                        Polyline.push_back(aCurrPoly);
+
+                        bIsClosed = false;
+						
+						if(bMoveTo)	aCurrPoly.command = L"m";
+						else		aCurrPoly.command = L"l";
+						
+						aCurrPoly.points.clear();
+                    }
+                    nPos++;
+                    skipSpaces(nPos, rSvgDStatement, nLen);
+					aCurrPoly.command.clear();
+
+                    while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    {
+                        double nX, nY;
+
+                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
+                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+
+                        if(bRelative)
+                        {
+                            nX += nLastX;
+                            nY += nLastY;
+                        }
+
+                        nLastX = nX;
+                        nLastY = nY;
+
+ 						if(bMoveTo)	aCurrPoly.command = L"m";
+						else		aCurrPoly.command = L"l";
+						
+						aCurrPoly.points.push_back(_point(nX, nY));
+                        Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();   
+					}    
+                }break;
+
+				case 'v' :
+					bRelative = true;
+				case 'c' :
+                {
+                    nPos++;
+                    skipSpaces(nPos, rSvgDStatement, nLen);
+
+                    while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    {
+                        double nX, nY;
+                        double nX1, nY1;
+                        double nX2, nY2;
+
+						if(!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+
+                        if(bRelative)
+                        {
+                            nX1 += nLastX;
+                            nY1 += nLastY;
+                            nX2 += nLastX;
+                            nY2 += nLastY;
+                            nX += nLastX;
+                            nY += nLastY;
+                        }
+						aCurrPoly.command = L"c";
+
+						aCurrPoly.points.push_back(_point(nX1, nY1));
+						aCurrPoly.points.push_back(_point(nX2, nY2));
+						aCurrPoly.points.push_back(_point(nX, nY));
+
+                        Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();   
+
+                        nLastX = nX;
+                        nLastY = nY;
+
+						nLastControlX = nX2;
+						nLastControlY = nY2;
+                    }                    
+                }break;
+
+                 default:
+                {
+                     ++nPos;
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
 }
 

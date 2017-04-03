@@ -5,14 +5,15 @@ CONFIG -= qt
 
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
+
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 DESTDIR = $$PWD/../../build/bin/AllFontsGen
 
 TARGET = $$CORE_BUILDS_PLATFORM_PREFIX
 
-
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lOfficeUtils
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics -lOfficeUtils -lUnicodeConverter
 
 DEFINES += \
     _QT \

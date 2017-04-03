@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,11 +42,6 @@ BiffStructurePtr ExtRst::clone()
 	return BiffStructurePtr(new ExtRst(*this));
 }
 
-void ExtRst::store(CFRecord& record)
-{
-//	unsigned short reserved = 1;
-//	record  << reserved << cb << phs << rphssub << rgphruns;
-}
 
 ExtRst::ExtRst(std::list<CFRecordPtr>& cont_recs) : cont_recs_(cont_recs)
 {

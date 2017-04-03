@@ -21,13 +21,15 @@ DEFINES += UNICODE \
            _USE_LIBXML2_READER_ \
            _USE_XMLLITE_READER_ \
             USE_LITE_READER \
-            BUILD_CONFIG_FULL_VERSION \
             DONT_WRITE_EMBEDDED_FONTS \
             LIBXML_READER_ENABLED
 
 INCLUDEPATH += \
     ../../../DesktopEditor/freetype-2.5.2/include \
     ../../../DesktopEditor/xml/libxml2/include
+
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 HEADERS += \
     ../Source/TxtXmlEvent.h \
@@ -47,14 +49,7 @@ SOURCES += \
     ../Source/Common/Encoding.cpp \
     ../Source/Common/ToString.cpp \
     ../Source/TxtFormat/File.cpp \
-    ../Source/TxtFormat/TxtFile.cpp
-
-build_fast {
-SOURCES += \
-    txtxmlformatlib_converter.cpp
-} else {
-SOURCES += \
+    ../Source/TxtFormat/TxtFile.cpp \
     ../Source/TxtXmlFile.cpp \
     ../Source/ConvertDocx2Txt.cpp \
     ../Source/ConvertTxt2Docx.cpp
-}

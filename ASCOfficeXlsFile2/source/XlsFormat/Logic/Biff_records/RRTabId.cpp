@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,16 +49,6 @@ BaseObjectPtr RRTabId::clone()
 {
 	return BaseObjectPtr(new RRTabId(*this));
 }
-
-
-void RRTabId::writeFields(CFRecord& record)
-{
-	for(BiffStructurePtrVector::iterator it = sheet_ids.begin(), itEnd = sheet_ids.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
 
 void RRTabId::readFields(CFRecord& record)
 {

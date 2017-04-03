@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "TimeNodeBase.h"
 #include "Seq.h"
@@ -72,7 +72,7 @@ namespace PPTX
 
 		void TimeNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if(name == _T("seq"))
 				m_node.reset(new Logic::Seq(node));
@@ -135,7 +135,7 @@ namespace PPTX
 			else m_node.reset();
 		}
 
-		CString TimeNodeBase::toXML() const
+		std::wstring TimeNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
 				return m_node->toXML();

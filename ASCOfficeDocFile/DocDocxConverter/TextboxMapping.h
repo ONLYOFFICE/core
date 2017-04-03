@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,9 +50,8 @@ namespace DocFileFormat
 		void SetTextboxStyle(const std::wstring & style);
 
 	private:    
+		static int		TextboxCount;
 
-		static int TextboxCount;
-		
 		int				m_nTBIndex;
 		
 		double			m_dxTextLeft;

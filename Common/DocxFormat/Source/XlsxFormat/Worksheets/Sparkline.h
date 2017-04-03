@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,7 +53,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -120,14 +120,14 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklines>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</x14:sparklines>"));
 			}
@@ -170,7 +170,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -432,8 +432,8 @@ namespace OOX
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLast;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorHigh;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorLow;
-				nullable<std::wstring>										m_oRef;
-				nullable<CSparklines>									m_oSparklines;
+				nullable<std::wstring>								m_oRef;
+				nullable<CSparklines>								m_oSparklines;
 		};
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
 		{
@@ -447,14 +447,14 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<x14:sparklineGroups xmlns:xm=\"http://schemas.microsoft.com/office/excel/2006/main\">"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</x14:sparklineGroups>"));
 			}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,23 +70,16 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<a:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
 				else
 					sResult = _T("<a:t>");
 
-                CString s = m_sText;
-                s.Replace(_T("&"),	_T("&amp;"));
-                s.Replace(_T("'"),	_T("&apos;"));
-                s.Replace(_T("<"),	_T("&lt;"));
-                s.Replace(_T(">"),	_T("&gt;"));
-                s.Replace(_T("\""),	_T("&quot;"));
-
-                sResult += s;
+                sResult += XmlUtils::EncodeXmlString(m_sText);
 
 				sResult += _T("</a:t>");
 
@@ -131,7 +124,7 @@ namespace OOX
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 
 			// Value
-			CString                             m_sText;
+            std::wstring                             m_sText;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -218,7 +211,7 @@ namespace OOX
 				}			
 
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -336,11 +329,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -358,7 +351,7 @@ namespace OOX
 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -396,10 +389,10 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -415,7 +408,7 @@ namespace OOX
 						m_oRunProperty = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -436,6 +429,98 @@ namespace OOX
 			nullable<CRunProperty>			m_oRunProperty;
 		};
 		//--------------------------------------------------------------------------------
+		class CBulletAutoNum : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CBulletAutoNum)
+			CBulletAutoNum()
+			{
+			}
+			virtual ~CBulletAutoNum()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return et_a_buChar;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if	  ( oReader, L"startAt",	m_nStartAt)
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"type",		m_sType)
+				WritingElement_ReadAttributes_End	( oReader )		
+			}
+		public:
+
+			nullable<SimpleTypes::CDecimalNumber<>>	m_nStartAt;
+			nullable<std::wstring>					m_sType;		//временно .. потом на тип переделать
+		};
+		class CBulletChar : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CBulletChar)
+			CBulletChar()
+			{
+			}
+			virtual ~CBulletChar()
+			{
+			}
+
+		public:
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+			}
+            virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual EElementType getType() const
+			{
+				return et_a_buAutoNum;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"char", m_sChar)
+				WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+
+			nullable<std::wstring> m_sChar;
+		};
 		// 21.1.2.2.7 pPr (Text Paragraph Properties)
 		//--------------------------------------------------------------------------------	
 		class CParagraphProperty : public WritingElement
@@ -451,12 +536,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 
 				// TO DO
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -478,9 +563,19 @@ namespace OOX
 						m_oAfterSpacing = oReader;
 					else if ( _T("a:spcBef") == sName )
 						m_oBeforeSpacing = oReader;
+					else if ( _T("a:buBlip") == sName )
+						m_oBuBlip = oReader;
+					else if ( _T("a:buChar") == sName )
+						m_oBuChar = oReader;
+					else if ( _T("a:buAutoNum") == sName )
+						m_oBuAutoNum = oReader;
+					else if ( _T("a:buClr") == sName )
+						m_oBuClr = oReader;
+					else if ( _T("a:buFont") == sName )
+						m_oBuFont = oReader;
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -525,12 +620,12 @@ namespace OOX
 			nullable<CLineSpacing>											m_oBeforeSpacing;
 			nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;			
 
-			//buAutoNum //(Auto-Numbered Bullet) §21.1.2.4.1
-			//buBlip //(Picture Bullet) §21.1.2.4.2
-			//buChar //(Character Bullet) §21.1.2.4.3
-			//buClr //(Color Specified) §21.1.2.4.4
+			nullable<OOX::Drawing::CBlipFillProperties>						m_oBuBlip;
+			nullable<OOX::Drawing::CBulletChar>								m_oBuChar;
+			nullable<OOX::Drawing::CBulletAutoNum>							m_oBuAutoNum;
+			nullable<OOX::Drawing::CSolidColorFillProperties>				m_oBuClr;
+			nullable<OOX::Drawing::CTextFont>								m_oBuFont;
 			//buClrTx //(Follow Text) §21.1.2.4.5
-			//buFont //(Specified) §21.1.2.4.6
 			//buFontTx //(Follow text) §21.1.2.4.7
 			//buNone //(No Bullet) §21.1.2.4.8
 			//buSzPct //(Bullet Size Percentage) §21.1.2.4.9
@@ -555,12 +650,12 @@ namespace OOX
 			}
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 
 				// TO DO
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -585,7 +680,7 @@ namespace OOX
 						//m_oEndParagraphProperty = oReader; 
 				}
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}

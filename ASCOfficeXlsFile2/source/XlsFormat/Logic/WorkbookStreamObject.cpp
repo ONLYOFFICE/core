@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -105,6 +105,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					m_GlobalsSubstream = elements_.back();
 					elements_.pop_back();
 				}
+				if (!GlobalsSubstream_found) return false;
 			}
 			break;
 			case BOF::st_Worksheet:

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,7 +76,7 @@ public:
     {}
     std::wostream & xml_to_stream(std::wostream & _Wostream) const;
 
-    const std::wstring & part_name() const { return part_name_; }
+    const std::wstring & part_name()	const { return part_name_; }
     const std::wstring & content_type() const { return content_type_; }
 
 public:

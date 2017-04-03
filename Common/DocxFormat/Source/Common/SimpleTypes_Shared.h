@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,41 +46,35 @@ namespace SimpleTypes
 	public:
 		CRelationshipId() {}
 
-		CString GetValue() const
+        std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(const CString &sValue)
+        void    SetValue(const std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+        std::wstring FromString(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+        std::wstring ToString  () const
 		{
 			return m_sValue;
 		}
-		std::wstring ToString2()
-		{
-			std::wstring sRes(m_sValue.GetBuffer());
-			m_sValue.ReleaseBuffer();
-			return sRes;
-		}
 
-		SimpleType_FromString2    (CString)
+        SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CRelationshipId)
 
 	private:
 
-		CString m_sValue;
+        std::wstring m_sValue;
 	};
 
 
@@ -116,46 +110,46 @@ namespace SimpleTypes
 	public:
 		CCalendarType() {}
 
-		virtual ECalendarType FromString(CString &sValue)
+        virtual ECalendarType FromString(std::wstring &sValue)
 		{
-            if      ( _T("gregorian")            == sValue ) this->m_eValue = calendartypeGregorian;
-            else if ( _T("gregorianArabic")      == sValue ) this->m_eValue = calendartypeGregorianArabic;
-            else if ( _T("gregorianMeFrench")    == sValue ) this->m_eValue = calendartypeGregorianMeFrench;
-            else if ( _T("gregorianUs")          == sValue ) this->m_eValue = calendartypeGregorianUs;
-            else if ( _T("gregorianXlitEnglish") == sValue ) this->m_eValue = calendartypeGregorianXlitEnglish;
-            else if ( _T("gregorianXlitFrench")  == sValue ) this->m_eValue = calendartypeGregorianXlitFrench;
-            else if ( _T("hebrew")               == sValue ) this->m_eValue = calendartypeHebrew;
-            else if ( _T("hijri")                == sValue ) this->m_eValue = calendartypeHijri;
-            else if ( _T("japan")                == sValue ) this->m_eValue = calendartypeJapan;
-            else if ( _T("korea")                == sValue ) this->m_eValue = calendartypeKorea;
-            else if ( _T("none")                 == sValue ) this->m_eValue = calendartypeNone;
-            else if ( _T("saka")                 == sValue ) this->m_eValue = calendartypeSaka;
-            else if ( _T("taiwan")               == sValue ) this->m_eValue = calendartypeTaiwan;
-            else if ( _T("thai")                 == sValue ) this->m_eValue = calendartypeThai;
-            else                                             this->m_eValue = eDefValue;
+            if      ( L"gregorian"            == sValue ) this->m_eValue = calendartypeGregorian;
+            else if ( L"gregorianArabic"      == sValue ) this->m_eValue = calendartypeGregorianArabic;
+            else if ( L"gregorianMeFrench"    == sValue ) this->m_eValue = calendartypeGregorianMeFrench;
+            else if ( L"gregorianUs"          == sValue ) this->m_eValue = calendartypeGregorianUs;
+            else if ( L"gregorianXlitEnglish" == sValue ) this->m_eValue = calendartypeGregorianXlitEnglish;
+            else if ( L"gregorianXlitFrench"  == sValue ) this->m_eValue = calendartypeGregorianXlitFrench;
+            else if ( L"hebrew"               == sValue ) this->m_eValue = calendartypeHebrew;
+            else if ( L"hijri"                == sValue ) this->m_eValue = calendartypeHijri;
+            else if ( L"japan"                == sValue ) this->m_eValue = calendartypeJapan;
+            else if ( L"korea"                == sValue ) this->m_eValue = calendartypeKorea;
+            else if ( L"none"                 == sValue ) this->m_eValue = calendartypeNone;
+            else if ( L"saka"                 == sValue ) this->m_eValue = calendartypeSaka;
+            else if ( L"taiwan"               == sValue ) this->m_eValue = calendartypeTaiwan;
+            else if ( L"thai"                 == sValue ) this->m_eValue = calendartypeThai;
+            else											this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString       ToString  () const 
+        virtual std::wstring       ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case calendartypeGregorian            : return _T("gregorian");
-			case calendartypeGregorianArabic      : return _T("gregorianArabic");
-			case calendartypeGregorianMeFrench    : return _T("gregorianMeFrench");
-			case calendartypeGregorianUs          : return _T("gregorianUs");
-			case calendartypeGregorianXlitEnglish : return _T("gregorianXlitEnglish");
-			case calendartypeGregorianXlitFrench  : return _T("gregorianXlitFrench");
-			case calendartypeHebrew               : return _T("hebrew");
-			case calendartypeHijri                : return _T("hijri");
-			case calendartypeJapan                : return _T("japan");
-			case calendartypeKorea                : return _T("korea");
-			case calendartypeNone                 : return _T("none");
-			case calendartypeSaka                 : return _T("saka");
-			case calendartypeTaiwan               : return _T("taiwan");
-			case calendartypeThai                 : return _T("thai");
-			default                               : return _T("none");
+			case calendartypeGregorian            : return L"gregorian";
+			case calendartypeGregorianArabic      : return L"gregorianArabic";
+			case calendartypeGregorianMeFrench    : return L"gregorianMeFrench";
+			case calendartypeGregorianUs          : return L"gregorianUs";
+			case calendartypeGregorianXlitEnglish : return L"gregorianXlitEnglish";
+			case calendartypeGregorianXlitFrench  : return L"gregorianXlitFrench";
+			case calendartypeHebrew               : return L"hebrew";
+			case calendartypeHijri                : return L"hijri";
+			case calendartypeJapan                : return L"japan";
+			case calendartypeKorea                : return L"korea";
+			case calendartypeNone                 : return L"none";
+			case calendartypeSaka                 : return L"saka";
+			case calendartypeTaiwan               : return L"taiwan";
+			case calendartypeThai                 : return L"thai";
+			default                               : return L"none";
 			}
 		}
 
@@ -178,22 +172,22 @@ namespace SimpleTypes
 	public:
 		CConformanceClass() {}
 
-		virtual EConformanceClass FromString(CString &sValue)
+        virtual EConformanceClass FromString(std::wstring &sValue)
 		{
-            if      ( _T("strict")       == sValue ) this->m_eValue = conformanceclassStrict;
-            else if ( _T("transitional") == sValue ) this->m_eValue = conformanceclassTransitional;
-            else                                     this->m_eValue = eDefValue;
+            if      ( L"strict"       == sValue )	this->m_eValue = conformanceclassStrict;
+            else if ( L"transitional" == sValue )	this->m_eValue = conformanceclassTransitional;
+            else									this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString           ToString  () const 
+        virtual std::wstring           ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case conformanceclassStrict       : return _T("strict");
-			case conformanceclassTransitional : return _T("transitional");
-			default                           : return _T("strict");
+			case conformanceclassStrict       : return L"strict";
+			case conformanceclassTransitional : return L"transitional";
+			default                           : return L"strict";
 			}
 		}
 
@@ -209,82 +203,82 @@ namespace SimpleTypes
 	public:
 		CGuid() {}
 
-		bool    FromString(CString &sValue)
+        bool    FromString(std::wstring &sValue)
 		{
 			// GUID "{00000000-5BD2-4BC8-9F70-7020E1357FB2}"
 
 			TGuid oZeroGUID = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			m_oGUID = oZeroGUID;
 
-			if ( sValue.GetLength() != 38 )
+            if ( sValue.length() != 38 )
 				return false;
 			
             T_ULONG64 unTemp = 0;
 
-            CString sMidValue;
-            sMidValue = sValue.Mid( 1, 8 );
+            std::wstring sMidValue;
+            sMidValue = sValue.substr( 1, 8 );
 
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.a = (unsigned int)unTemp;
 
-            sMidValue = sValue.Mid( 10, 4 );
+            sMidValue = sValue.substr( 10, 4 );
             if ( !HexToInt(sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.b = (unsigned short)unTemp;
 
-            sMidValue = sValue.Mid( 15, 4 );
+            sMidValue = sValue.substr( 15, 4 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.c = (unsigned short)unTemp;
 
-            sMidValue = sValue.Mid( 20, 2 );
+            sMidValue = sValue.substr( 20, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.d = (unsigned char)unTemp;
 
 
-            sMidValue = sValue.Mid( 22, 2 );
+            sMidValue = sValue.substr( 22, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.e = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 25, 2 );
+            sMidValue = sValue.substr( 25, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.f = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 27, 2 );
+            sMidValue = sValue.substr( 27, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.g = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 29, 2 );
+            sMidValue = sValue.substr( 29, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.h = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 31, 2 );
+            sMidValue = sValue.substr( 31, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.i = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 33, 2 );
+            sMidValue = sValue.substr( 33, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
 			m_oGUID.j = (unsigned char)unTemp;
 
-            sMidValue = sValue.Mid( 35, 2 );
+            sMidValue = sValue.substr( 35, 2 );
             if ( !HexToInt( sMidValue, unTemp ) )
 				return false;
 
@@ -293,42 +287,34 @@ namespace SimpleTypes
 			return true;
 		}
 
-#if defined(_WIN32) || defined (_WIN64)
-		bool    FromString(const BSTR bsValue)
-		{
-			CString sTemp( bsValue );
-			return FromString( (CString &)sTemp );
-		}
-#endif
-
 		bool    FromString(const std::wstring& wsStr)
 		{
 			// TO DO: переделать
-			CString sTemp( wsStr.c_str() );
-			return FromString( (CString &)sTemp );
+            std::wstring sTemp( wsStr.c_str() );
+            return FromString( (std::wstring &)sTemp );
 		}
         bool    FromString(const wchar_t* cwsStr)
         {
             std::wstring wsStr = cwsStr;
             return FromString( (const std::wstring&)wsStr );
         }
-		CString ToString  () const 
+        std::wstring ToString  () const
 		{
-			CString sResult;
-			sResult.Format( _T("{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}"), m_oGUID.a, m_oGUID.b, m_oGUID.c, m_oGUID.d, m_oGUID.e, m_oGUID.f, m_oGUID.g, m_oGUID.h, m_oGUID.i, m_oGUID.j, m_oGUID.k );
-			return sResult;
+			std::wstringstream sstream;
+			sstream << boost::wformat( L"{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}" ) % m_oGUID.a % m_oGUID.b % m_oGUID.c % m_oGUID.d % m_oGUID.e % m_oGUID.f % m_oGUID.g % m_oGUID.h % m_oGUID.i % m_oGUID.j % m_oGUID.k;
+			return sstream.str();
 		}
 
 		SimpleType_Operator_Equal (CGuid)
 
 	private:
 
-        bool HexToInt(CString& sValue, T_ULONG64& unResult)
+        bool HexToInt(std::wstring& sValue, T_ULONG64& unResult)
 		{
 			bool bResult = true;
 
 			unResult = 0;
-			for ( int nIndex = sValue.GetLength() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
+            for ( int nIndex = (int)sValue.length() - 1, nMult = 0; nIndex >= 0; nIndex--, nMult += 4 )
 			{
 				unResult += HexToInt( (int)sValue[nIndex], bResult ) << nMult;
 			}
@@ -381,11 +367,11 @@ namespace SimpleTypes
 			m_unA = 255;
 		}
 
-		virtual int     FromString(CString &sValue)
+        virtual int     FromString(std::wstring &sValue)
 		{
-			if ( 6 <= sValue.GetLength() )
+            if ( 6 <= sValue.length() )
             {
-                CString midString = sValue.Mid( 0, 6 );
+                std::wstring midString = sValue.substr( 0, 6 );
                 Parse( midString );
             }
 			else
@@ -394,13 +380,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-			CString sResult;
-
-            sResult.Format( _T("%.6X"), this->m_eValue );
-
-			return sResult;
+            return XmlUtils::IntToString(this->m_eValue, L"%06X");
 		}
 
 		SimpleType_FromString     (int)
@@ -435,9 +417,9 @@ namespace SimpleTypes
 
 	private:
 
-		void Parse(CString& sValue)
+        void Parse(std::wstring& sValue)
 		{
-			if ( sValue.GetLength() < 6 )
+            if ( sValue.length() < 6 )
 				return;
 
 			m_unR = HexToInt( (int)sValue[1] ) + (unsigned char)(HexToInt( (int)sValue[0] ) << 4);
@@ -475,35 +457,35 @@ namespace SimpleTypes
 	public:
 		CLang() {}
 
-		CString GetValue() const
+        std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+        void    SetValue(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+        std::wstring FromString(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+        std::wstring ToString  () const
 		{
 			return m_sValue;
 		}
 
-		SimpleType_FromString2    (CString)
+        SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CLang)
 
 	private:
 
-		CString m_sValue;
+        std::wstring m_sValue;
 	};
 
 
@@ -519,10 +501,10 @@ namespace SimpleTypes
 	};
 	enum EOnOffToString
 	{
-		onofftostringTrue = 0,
-		onofftostringT = 1,
-		onofftostringOn  = 2,
-		onofftostring1  = 3
+        onofftostringTrue   = 0,
+        onofftostringT      = 1,
+        onofftostringOn     = 2,
+        onofftostring1      = 3
 	};
 	template<EOnOff eDefValue = onoffFalse>
 	class COnOff : public CSimpleType<EOnOff, eDefValue>
@@ -530,71 +512,71 @@ namespace SimpleTypes
 	public:
 		COnOff() {}
 
-		virtual EOnOff  FromString(CString &sValue)
+        virtual EOnOff  FromString(std::wstring &sValue)
 		{
-            if      ( _T("true")  == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("True")  == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("1")     == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("t")     == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("on")    == sValue ) this->m_eValue = onoffTrue;
-            else if ( _T("f")     == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("0")     == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("false") == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("False") == sValue ) this->m_eValue = onoffFalse;
-            else if ( _T("off")   == sValue ) this->m_eValue = onoffFalse;
+            if      ( L"true"  == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"True"  == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"1"     == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"t"     == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"on"    == sValue ) this->m_eValue = onoffTrue;
+            else if ( L"f"     == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"0"     == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"false" == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"False" == sValue ) this->m_eValue = onoffFalse;
+            else if ( L"off"   == sValue ) this->m_eValue = onoffFalse;
             else                              this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case onoffFalse : return _T("false");
-			case onoffTrue  : return _T("true");
-			default         : return _T("false");
+			case onoffFalse : return L"false";
+			case onoffTrue  : return L"true";
+			default         : return L"false";
 			}
 		}
-		CString ToString2(EOnOffToString eType) const
+        std::wstring ToString2(EOnOffToString eType) const
 		{
 			if (onofftostringTrue == eType)
 			{
-				switch (this->m_eValue)
+                switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("false");
-				case onoffTrue: return _T("true");
-				default: return _T("false");
+				case onoffFalse:	return L"false";
+				case onoffTrue:		return L"true";
+				default:			return L"false";
 				}
 			}
 			else if (onofftostring1 == eType)
 			{
-				switch (this->m_eValue)
+                switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("0");
-				case onoffTrue: return _T("1");
-				default: return _T("0");
+				case onoffFalse:	return L"0";
+				case onoffTrue:		return L"1";
+				default:			return L"0";
 				}
 			}
 			else if (onofftostringOn == eType)
 			{
-				switch (this->m_eValue)
+                switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("off");
-				case onoffTrue: return _T("on");
-				default: return _T("off");
+				case onoffFalse:	return L"off";
+				case onoffTrue:		return L"on";
+				default:			return L"off";
 				}
 			}
 			else if (onofftostringT == eType)
 			{
-				switch (this->m_eValue)
+                switch (this->m_eValue)
 				{
-				case onoffFalse: return _T("f");
-				case onoffTrue: return _T("t");
-				default: return _T("f");
+				case onoffFalse:	return L"f";
+				case onoffTrue:		return L"t";
+				default:			return L"f";
 				}
 			}
-			return _T("false");
+			return L"false";
 		}
 		std::wstring ToString3(EOnOffToString eType) const
 		{
@@ -602,39 +584,39 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("false");
-				case onoffTrue  : return _T("true");
-				default         : return _T("false");
+				case onoffFalse : return L"false";
+				case onoffTrue  : return L"true";
+				default         : return L"false";
 				}
 			}
 			else if(onofftostring1 == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("0");
-				case onoffTrue  : return _T("1");
-				default         : return _T("0");
+				case onoffFalse : return L"0";
+				case onoffTrue  : return L"1";
+				default         : return L"0";
 				}
 			}
 			else if(onofftostringOn == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("off");
-				case onoffTrue  : return _T("on");
-				default         : return _T("off");
+				case onoffFalse : return L"off";
+				case onoffTrue  : return L"on";
+				default         : return L"off";
 				}
 			}
 			else if(onofftostringT == eType)
 			{
                 switch(this->m_eValue)
 				{
-				case onoffFalse : return _T("f");
-				case onoffTrue  : return _T("t");
-				default         : return _T("f");
+				case onoffFalse : return L"f";
+				case onoffTrue  : return L"t";
+				default         : return L"f";
 				}
 			}
-			return _T("false");
+			return L"false";
 		}
 		bool ToBool() 
 		{
@@ -658,48 +640,48 @@ namespace SimpleTypes
 	public:
 		CPanose() {}
 
-		CString GetValue() const
+        std::wstring GetValue() const
 		{
 			return m_sValue;
 		}
 
-		void    SetValue(CString &sValue)
+        void    SetValue(std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
 
 
-		CString FromString(CString &sValue)
+        std::wstring FromString(std::wstring &sValue)
 		{
-			if ( 20 > sValue.GetLength() )
+            if ( 20 > sValue.length() )
 			{
 				m_sValue = sValue;
-				for ( int nIndex = 0; nIndex < 20 - sValue.GetLength(); nIndex++ )
+                for ( size_t nIndex = 0; nIndex < 20 - sValue.length(); nIndex++ )
 				{
-					m_sValue += _T("0");
+					m_sValue += L"0";
 				}
 			}
-			else if ( 20 == sValue.GetLength() )
+            else if ( 20 == sValue.length() )
 				m_sValue = sValue;
 			else
 			{
-				m_sValue = sValue.Mid( 0, 20 );
+                m_sValue = sValue.substr( 0, 20 );
 			}
 
 			return m_sValue;
 		}
 
-		CString ToString  () const 
+        std::wstring ToString  () const
 		{
 			return m_sValue;
 		}
 
-		SimpleType_FromString2    (CString)
+        SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CPanose)
 
 		unsigned char Get_Number(int nIndex)
 		{
-			if ( m_sValue.GetLength() < 20 )
+            if ( m_sValue.length() < 20 )
 				return 0;
 
             nIndex = (std::max)( 0, (std::min)( 9, nIndex ) );
@@ -712,7 +694,7 @@ namespace SimpleTypes
 
 	private:
 
-		CString m_sValue;
+        std::wstring m_sValue;
 	};
 
 
@@ -720,7 +702,7 @@ namespace SimpleTypes
 	// String 22.9.2.13 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	// Ничего не делаем, используем ATL::CString
+    // Ничего не делаем, используем ATL::std::wstring
 
 	//--------------------------------------------------------------------------------
 	// TwipsMeasure 22.9.2.14 (Part 1)
@@ -731,7 +713,7 @@ namespace SimpleTypes
 	public:
 		CTwipsMeasure() {}
 
-		virtual double  FromString(CString &sValue)
+        virtual double  FromString(std::wstring &sValue)
 		{
 			Parse(sValue, 20);
 
@@ -741,14 +723,14 @@ namespace SimpleTypes
 			return m_dValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
-			CString sResult;
+            std::wstring sResult;
 
 			if ( m_bUnit )
-				sResult.Format( _T("%fpt"), m_dValue);
+				sResult = boost::lexical_cast<std::wstring>( m_dValue ) + L"pt";
 			else
-				sResult.Format( _T("%d"), (int)(m_dValue * 20) );
+                sResult = std::to_wstring( (int)(m_dValue * 20) );
 
 			return sResult;
 		}
@@ -790,16 +772,12 @@ namespace SimpleTypes
 
         }
 
-		virtual unsigned int FromString(CString &sValue)
+        virtual unsigned int FromString(std::wstring &sValue)
 		{
 
             try
             {
-#if !defined(_WIN32) && !defined (_WIN64)
-		        this->m_eValue = _wtoi( sValue.c_str() );
-#else
-				this->m_eValue = _wtoi( sValue );
-#endif
+                this->m_eValue = _wtoi( sValue.c_str() );
                 return this->m_eValue;
             }
             catch(...)
@@ -808,11 +786,7 @@ namespace SimpleTypes
 
             try
             {
-#if !defined(_WIN32) && !defined (_WIN64)
-				this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
-#else
-				this->m_eValue = static_cast<int>(_wtoi64(sValue));
-#endif
+                this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
 			}
             catch(...)
             {
@@ -823,12 +797,9 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-        virtual CString      ToString  () const
+        virtual std::wstring      ToString  () const
 		{
-			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
-
-			return sResult;
+            return std::to_wstring( this->m_eValue);
 		}
 
 
@@ -853,24 +824,24 @@ namespace SimpleTypes
 	public:
 		CVerticalAlignRun() {}
 
-		virtual EVerticalAlignRun    FromString(CString &sValue)
+        virtual EVerticalAlignRun    FromString(std::wstring &sValue)
 		{
-            if      ( _T("baseline")    == sValue ) this->m_eValue = verticalalignrunBaseline;
-            else if ( _T("subscript")   == sValue ) this->m_eValue = verticalalignrunSubscript;
-            else if ( _T("superscript") == sValue ) this->m_eValue = verticalalignrunSuperscript;
+            if      ( L"baseline"    == sValue ) this->m_eValue = verticalalignrunBaseline;
+            else if ( L"subscript"   == sValue ) this->m_eValue = verticalalignrunSubscript;
+            else if ( L"superscript" == sValue ) this->m_eValue = verticalalignrunSuperscript;
             else                                    this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString              ToString  () const 
+        virtual std::wstring              ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case verticalalignrunBaseline    : return _T("baseline");
-			case verticalalignrunSubscript   : return _T("subscript");
-			case verticalalignrunSuperscript : return _T("superscript");
-			default                          : return _T("baseline");
+			case verticalalignrunBaseline    : return L"baseline";
+			case verticalalignrunSubscript   : return L"subscript";
+			case verticalalignrunSuperscript : return L"superscript";
+			default                          : return L"baseline";
 			}
 		}
 
@@ -898,28 +869,28 @@ namespace SimpleTypes
 	public:
 		CXAlign() {}
 
-		virtual EXAlign FromString(CString &sValue)
+        virtual EXAlign FromString(std::wstring &sValue)
 		{
-            if      ( _T("center")  == sValue ) this->m_eValue = xalignCenter;
-            else if ( _T("inside")  == sValue ) this->m_eValue = xalignInside;
-            else if ( _T("left")    == sValue ) this->m_eValue = xalignLeft;
-            else if ( _T("outside") == sValue ) this->m_eValue = xalignOutside;
-            else if ( _T("right")   == sValue ) this->m_eValue = xalignRight;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"center"  == sValue )	this->m_eValue = xalignCenter;
+            else if ( L"inside"  == sValue )	this->m_eValue = xalignInside;
+            else if ( L"left"    == sValue )	this->m_eValue = xalignLeft;
+            else if ( L"outside" == sValue )	this->m_eValue = xalignOutside;
+            else if ( L"right"   == sValue )	this->m_eValue = xalignRight;
+            else								this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case xalignCenter  : return _T("center");
-			case xalignInside  : return _T("inside");
-			case xalignLeft    : return _T("left");
-			case xalignOutside : return _T("outside");
-			case xalignRight   : return _T("right");
-			default            : return _T("left");
+			case xalignCenter  : return L"center";
+			case xalignInside  : return L"inside";
+			case xalignLeft    : return L"left";
+			case xalignOutside : return L"outside";
+			case xalignRight   : return L"right";
+			default            : return L"left";
 			}
 		}
 
@@ -950,31 +921,31 @@ namespace SimpleTypes
 	public:
 		CYAlign() {}
 
-		virtual EYAlign FromString(CString &sValue)
+        virtual EYAlign FromString(std::wstring &sValue)
 		{
-            if      ( _T("bottom")  == sValue ) this->m_eValue = yalignBottom;
-			else if ( _T("bot")		== sValue ) this->m_eValue = yalignBottom;
-            else if ( _T("center")  == sValue ) this->m_eValue = yalignCenter;
-            else if ( _T("inline")  == sValue ) this->m_eValue = yalignInline;
-            else if ( _T("inside")  == sValue ) this->m_eValue = yalignInside;
-            else if ( _T("outside") == sValue ) this->m_eValue = yalignOutside;
-            else if ( _T("top")     == sValue ) this->m_eValue = yalignTop;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"bottom"		== sValue ) this->m_eValue = yalignBottom;
+            else if ( L"bot"		== sValue ) this->m_eValue = yalignBottom;
+            else if ( L"center"		== sValue ) this->m_eValue = yalignCenter;
+            else if ( L"inline"		== sValue ) this->m_eValue = yalignInline;
+            else if ( L"inside"		== sValue ) this->m_eValue = yalignInside;
+            else if ( L"outside"	== sValue ) this->m_eValue = yalignOutside;
+            else if ( L"top"		== sValue ) this->m_eValue = yalignTop;
+            else								this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-		virtual CString ToString  () const 
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case yalignBottom  : return _T("bottom");
-			case yalignCenter  : return _T("center");
-			case yalignInline  : return _T("inline");
-			case yalignInside  : return _T("inside");
-			case yalignOutside : return _T("outside");
-			case yalignTop     : return _T("top");
-			default            : return _T("top");
+			case yalignBottom  : return L"bottom";
+			case yalignCenter  : return L"center";
+			case yalignInline  : return L"inline";
+			case yalignInside  : return L"inside";
+			case yalignOutside : return L"outside";
+			case yalignTop     : return L"top";
+			default            : return L"top";
 			}
 		}
 
@@ -1022,19 +993,22 @@ namespace SimpleTypes
         CColorType()
         {
             SetRGB();
-            m_sValue.Format( _T("#%02X%02X%02X"), m_unR, m_unG, m_unB );
+
+			std::wstringstream sstream;
+			sstream << boost::wformat( L"%02x%02x%02x" ) % m_unR % m_unG % m_unB;
+			m_sValue = sstream.str();
         }
 
-        virtual EColorType FromString(CString& sValue)
+        virtual EColorType FromString(std::wstring& sValue)
         {
             wchar_t wsFirstChar = 0;
-            if (sValue.GetLength() > 0)
+            if (sValue.length() > 0)
                 wsFirstChar = sValue[0];
 
             m_sValue = sValue;
             if (wsFirstChar == _T('#'))
             {
-                CString sHexColor = sValue.Mid(1);
+                std::wstring sHexColor = sValue.substr(1);
                 ByHexColor(sHexColor);
             }
             else
@@ -1043,7 +1017,7 @@ namespace SimpleTypes
             return this->m_eValue;
         }
 
-        virtual CString ToString() const
+        virtual std::wstring ToString() const
         {
             return m_sValue;
         }
@@ -1055,7 +1029,9 @@ namespace SimpleTypes
             m_unG = unG;
             m_unB = unB;
 
-            m_sValue.Format( _T("#%02X%02X%02X"), unR, unG, unB );
+			std::wstringstream sstream;
+			sstream << boost::wformat( L"%02x%02x%02x" ) % m_unR % m_unG % m_unB;
+			m_sValue = sstream.str();
         }
 
         SimpleType_FromString     (EColorType)
@@ -1082,7 +1058,7 @@ namespace SimpleTypes
 
 
 	private:
-		void ByHexColor(CString& sValue)
+        void ByHexColor(std::wstring& sValue)
 		{
             this->m_eValue = colortypeRGB;
 
@@ -1095,7 +1071,7 @@ namespace SimpleTypes
 		}
 		void SetRGB()
 		{
-			switch(this->m_eValue)
+            switch(this->m_eValue)
 			{
 				case  colortypeAqua:
 				{
@@ -1202,32 +1178,32 @@ namespace SimpleTypes
 				}break;
 			}
 		}
-		void ByColorName(CString& sValue)
+        void ByColorName(std::wstring& sValue)
 		{
-			if      (sValue.Find(_T("aqua"))	>= 0)this->m_eValue = colortypeAqua;
-			else if (sValue.Find(_T("black"))	>= 0)this->m_eValue = colortypeBlack;
-			else if (sValue.Find(_T("blue"))	>= 0)this->m_eValue = colortypeBlue;
-			else if (sValue.Find(_T("fuchsia")) >= 0)this->m_eValue = colortypeFuchsia;
-			else if (sValue.Find(_T("gray"))	>= 0)this->m_eValue = colortypeGray;
-			else if (sValue.Find(_T("green"))	>= 0)this->m_eValue = colortypeGreen;
-			else if (sValue.Find(_T("lime"))	>= 0)this->m_eValue = colortypeLime;
-			else if (sValue.Find(_T("maroon"))	>= 0)this->m_eValue = colortypeMaroon;
-			else if (sValue.Find(_T("navy"))	>= 0)this->m_eValue = colortypeNavy;
-			else if (sValue.Find(_T("olive"))	>= 0)this->m_eValue = colortypeOlive;
-			else if (sValue.Find(_T("purple"))	>= 0)this->m_eValue = colortypePurple;
-			else if (sValue.Find(_T("red"))		>= 0)this->m_eValue = colortypeRed;
-			else if (sValue.Find(_T("silver"))	>= 0)this->m_eValue = colortypeSilver;
-			else if (sValue.Find(_T("teal"))	>= 0)this->m_eValue = colortypeTeal;
-			else if (sValue.Find(_T("white"))	>= 0)this->m_eValue = colortypeWhite;
-			else if (sValue.Find(_T("yellow"))	>= 0)this->m_eValue = colortypeYellow;
-			else this->m_eValue = colortypeNone;
+			if      (std::wstring::npos != sValue.find(L"aqua"))	this->m_eValue = colortypeAqua;
+            else if (std::wstring::npos != sValue.find(L"black"))	this->m_eValue = colortypeBlack;
+            else if (std::wstring::npos != sValue.find(L"blue"))	this->m_eValue = colortypeBlue;
+            else if (std::wstring::npos != sValue.find(L"fuchsia"))	this->m_eValue = colortypeFuchsia;
+            else if (std::wstring::npos != sValue.find(L"gray"))	this->m_eValue = colortypeGray;
+            else if (std::wstring::npos != sValue.find(L"green"))	this->m_eValue = colortypeGreen;
+            else if (std::wstring::npos != sValue.find(L"lime"))	this->m_eValue = colortypeLime;
+            else if (std::wstring::npos != sValue.find(L"maroon"))	this->m_eValue = colortypeMaroon;
+            else if (std::wstring::npos != sValue.find(L"navy"))	this->m_eValue = colortypeNavy;
+            else if (std::wstring::npos != sValue.find(L"olive"))	this->m_eValue = colortypeOlive;
+            else if (std::wstring::npos != sValue.find(L"purple"))	this->m_eValue = colortypePurple;
+            else if (std::wstring::npos != sValue.find(L"red"))		this->m_eValue = colortypeRed;
+            else if (std::wstring::npos != sValue.find(L"silver"))	this->m_eValue = colortypeSilver;
+            else if (std::wstring::npos != sValue.find(L"teal"))	this->m_eValue = colortypeTeal;
+            else if (std::wstring::npos != sValue.find(L"white"))	this->m_eValue = colortypeWhite;
+            else if (std::wstring::npos != sValue.find(L"yellow"))	this->m_eValue = colortypeYellow;
+            else this->m_eValue = colortypeNone;
 
 			SetRGB();
 		}
 
 	private:
 
-		CString m_sValue;
+        std::wstring m_sValue;
 
 		unsigned char m_unR;
 		unsigned char m_unG;
@@ -1249,27 +1225,27 @@ namespace SimpleTypes
 	public:
 		CTrueFalse() {}
 
-		virtual ETrueFalse FromString(CString &sValue)
+        virtual ETrueFalse FromString(std::wstring &sValue)
 		{
-            if      ( _T("t")     == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("true")  == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("True")  == sValue ) this->m_eValue = booleanTrue;
-            else if ( _T("")      == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("f")     == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("false") == sValue ) this->m_eValue = booleanFalse;
-            else if ( _T("False") == sValue ) this->m_eValue = booleanFalse;
-            else                              this->m_eValue = booleanFalse;
+            if      ( L"t"     == sValue )	this->m_eValue = booleanTrue;
+            else if ( L"true"  == sValue )	this->m_eValue = booleanTrue;
+            else if ( L"True"  == sValue )	this->m_eValue = booleanTrue;
+            else if ( L""      == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"f"     == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"false" == sValue )	this->m_eValue = booleanFalse;
+            else if ( L"False" == sValue )	this->m_eValue = booleanFalse;
+            else							this->m_eValue = booleanFalse;
 
             return this->m_eValue;
 		}
 
-		virtual CString    ToString  () const 
+        virtual std::wstring    ToString  () const
 		{
             switch(this->m_eValue)
 			{
-			case booleanFalse : return _T("f");
-			case booleanTrue  : return _T("t");
-			default           : return _T("f");
+			case booleanFalse : return L"f";
+			case booleanTrue  : return L"t";
+			default           : return L"f";
 			}
 		}
 

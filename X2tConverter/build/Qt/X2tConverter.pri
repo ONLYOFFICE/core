@@ -7,7 +7,7 @@
 QT       -= core
 QT       -= gui
 
-VERSION = 2.0.2.417
+VERSION = 2.0.3.448
 DEFINES += INTVER=$$VERSION
 
 TARGET = x2t
@@ -35,7 +35,11 @@ core_windows {
 
 #CONFIG += build_for_centos6
 build_for_centos6 {
+core_linux_64 {
     QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux-x86-64.so.2
+} else {
+    QMAKE_LFLAGS += -Wl,--dynamic-linker=./ld-linux.so.2
+}
 }
 
 DEFINES += UNICODE \
@@ -46,11 +50,9 @@ DEFINES += UNICODE \
     PPTX_DEF\
     PPT_DEF\
     ENABLE_PPT_TO_PPTX_CONVERT\
-    NODOCX \
     #DISABLE_FILE_DOWNLOADER \
     FILTER_FLATE_DECODE_ENABLED \
     CXIMAGE_DONT_DECLARE_TCHAR \
-    BUILD_CONFIG_FULL_VERSION \
     DONT_WRITE_EMBEDDED_FONTS \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
     LIBXML_READER_ENABLED
@@ -69,6 +71,9 @@ core_windows {
 core_mac {
     INCLUDEPATH += ../../../OfficeUtils/src/zlib-1.2.3
 }
+
+INCLUDEPATH += ../../../DesktopEditor/xml/build/qt
+
 
 INCLUDEPATH += ../../../DesktopEditor/xml/libxml2/include
 INCLUDEPATH += ../../../DesktopEditor/freetype-2.5.2/include
@@ -91,13 +96,15 @@ DEPENDPATH += $$PWD/../../../ASCOfficeDocxFile2
 
 ##############################################################################################################
 
-SOURCES += ../../src/cextracttools.cpp \
-    ../../../Common/OfficeFileFormatChecker2.cpp \
-	../../src/ASCConverters.cpp
-HEADERS += ../../src/cextracttools.h \
-    ../../../Common/OfficeFileFormatChecker.h \
-	../../src/ASCConverters.h \
-	../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
+SOURCES +=  ../../src/cextracttools.cpp \
+            ../../../Common/OfficeFileFormatChecker2.cpp \
+            ../../src/ASCConverters.cpp \
+            ../../../DesktopEditor/xml/src/xmllight.cpp \
+    ../../../DesktopEditor/xml/src/xmldom.cpp
+HEADERS +=  ../../src/cextracttools.h \
+            ../../../Common/OfficeFileFormatChecker.h \
+            ../../src/ASCConverters.h \
+            ../../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h
 
 
 #Xls file

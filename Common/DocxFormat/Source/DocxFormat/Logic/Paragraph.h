@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -112,20 +112,20 @@ namespace OOX
 			}
 
 			void AddRun(CRun *pRun);
-			void AddText(CString& sText);
-            void AddText(CString& sText, CRunProperty *pProperty);
+			void AddText(std::wstring& sText);
+            void AddText(std::wstring& sText, CRunProperty *pProperty);
 			void AddTab();
 			void AddTab(CRunProperty *pProperty);
 			void AddBreak(SimpleTypes::EBrType eType);
 			void AddSpace(const int nCount);
 			void AddSpace(const int nCount, CRunProperty *pProperty);
-			void AddBookmarkStart(int nId, CString& sName);
+			void AddBookmarkStart(int nId, std::wstring& sName);
 			void AddBookmarkEnd  (int nId);
 		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_p;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,7 @@
 #include "utils.h"
 
 #include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace xml {
 
@@ -97,74 +97,59 @@ std::string replace_xml_to_text_ImplRegEx(const std::string & Text)
 
 std::wstring replace_text_to_xml_ImplReplace(const std::wstring & Text)
 {
-    std::wstring newStr;
-    newStr.resize(Text.size());
-    newStr = ::boost::algorithm::replace_all_copy(Text, L"&", L"&amp;");
-    ::boost::algorithm::replace_all(newStr, L"'", L"&apos;");
-    ::boost::algorithm::replace_all(newStr, L"<", L"&lt;");
-    ::boost::algorithm::replace_all(newStr, L">", L"&gt;");
-    ::boost::algorithm::replace_all(newStr, L"\"", L"&quot;");
-    return newStr;
+	return XmlUtils::EncodeXmlString(Text);
 }
 
 std::string replace_text_to_xml_ImplReplace(const std::string & Text)
 {
-    std::string newStr;
-    newStr.resize(Text.size());
-    newStr = ::boost::algorithm::replace_all_copy(Text, "&", "&amp;");
-    ::boost::algorithm::replace_all(newStr, "'", "&apos;");
-    ::boost::algorithm::replace_all(newStr, "<", "&lt;");
-    ::boost::algorithm::replace_all(newStr, ">", "&gt;");
-    ::boost::algorithm::replace_all(newStr, "\"", "&quot;");
-    return newStr;
+    return XmlUtils::EncodeXmlString(Text);
 }
 std::string replace_amp_text_to_xml_ImplReplace(const std::string & Text)
 {
-    std::string newStr;
-    newStr.resize(Text.size());
-    newStr = ::boost::algorithm::replace_all_copy(Text, "&", "&amp;");
-    ::boost::algorithm::replace_all(newStr, L"&lt;", L"<");
-    ::boost::algorithm::replace_all(newStr, L"&gt;", L">");
+    std::string newStr = Text;
+
+	XmlUtils::replace_all( newStr, "&", "&amp;");
+    XmlUtils::replace_all( newStr, "&lt;", "<");
+    XmlUtils::replace_all( newStr, "&gt;", ">");
 	
 	return newStr;
 }
 std::wstring replace_amp_text_to_xml_ImplReplace(const std::wstring & Text)
 {
-    std::wstring newStr;
-    newStr.resize(Text.size());
-    newStr = ::boost::algorithm::replace_all_copy(Text, "&", "&amp;");
-    ::boost::algorithm::replace_all(newStr, L"&lt;", L"<");
-    ::boost::algorithm::replace_all(newStr, L"&gt;", L">");
+    std::wstring newStr = Text;
+    XmlUtils::replace_all( newStr, L"&", L"&amp;");
+    XmlUtils::replace_all( newStr, L"&lt;", L"<");
+    XmlUtils::replace_all( newStr, L"&gt;", L">");
 	
 	return newStr;
 }
 std::wstring replace_xml_to_text_ImplReplace(const std::wstring & Text)
 {
-    std::wstring newStr;
-    newStr = ::boost::algorithm::replace_all_copy(Text, L"&amp;", L"&");
-    ::boost::algorithm::replace_all(newStr, L"&apos;", L"'");
-    ::boost::algorithm::replace_all(newStr, L"&lt;", L"<");
-    ::boost::algorithm::replace_all(newStr, L"&gt;", L">");
-    ::boost::algorithm::replace_all(newStr, L"&quot;", L"\"");
+    std::wstring newStr = Text;
+	XmlUtils::replace_all( newStr, L"&amp;", L"&");
+    XmlUtils::replace_all( newStr, L"&apos;", L"'");
+    XmlUtils::replace_all( newStr, L"&lt;", L"<");
+    XmlUtils::replace_all( newStr, L"&gt;", L">");
+    XmlUtils::replace_all( newStr, L"&quot;", L"\"");
     return newStr;
 }
 
 std::string replace_xml_to_text_ImplReplace(const std::string & Text)
 {
-    std::string newStr;
-    newStr = ::boost::algorithm::replace_all_copy(Text, "&amp;", "&");
-    ::boost::algorithm::replace_all(newStr, "&apos;", "'");
-    ::boost::algorithm::replace_all(newStr, "&lt;", "<");
-    ::boost::algorithm::replace_all(newStr, "&gt;", ">");
-    ::boost::algorithm::replace_all(newStr, "&quot;", "\"");
+    std::string newStr = Text;
+	XmlUtils::replace_all( newStr, "&amp;", "&");
+    XmlUtils::replace_all( newStr, "&apos;", "'");
+    XmlUtils::replace_all( newStr, "&lt;", "<");
+    XmlUtils::replace_all( newStr, "&gt;", ">");
+    XmlUtils::replace_all( newStr, "&quot;", "\"");
     return newStr;
 }
 
 std::wstring replace_lt_gt_ImplReplace(const std::wstring & Text)
 {
-    std::wstring newStr;
-    newStr = ::boost::algorithm::replace_all_copy(Text, L"<", L"&lt;");
-    ::boost::algorithm::replace_all(newStr, L">", L"&gt;");
+    std::wstring newStr = Text;
+    XmlUtils::replace_all( newStr, L"<", L"&lt;");
+    XmlUtils::replace_all( newStr, L">", L"&gt;");
     return newStr;
 }
 

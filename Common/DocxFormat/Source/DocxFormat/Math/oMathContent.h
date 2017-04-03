@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -109,7 +109,7 @@ namespace OOX
 						m_oElement = oReader;
 				}
 			}
-			 CString      toXML() const;
+			 std::wstring      toXML() const;
 			
 			virtual EElementType getType() const
 			{
@@ -154,7 +154,7 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -196,9 +196,9 @@ namespace OOX
 						m_oArgSz = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:argPr>");
+				std::wstring sResult = _T("<m:argPr>");
 				
 				if ( m_oArgSz.IsInit() )
 					sResult += m_oArgSz->toXML();
@@ -251,7 +251,7 @@ namespace OOX
 						m_oElement = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -295,7 +295,7 @@ namespace OOX
 						m_oPos = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -340,7 +340,7 @@ namespace OOX
 						m_oElement = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -398,7 +398,7 @@ namespace OOX
 						m_oStrikeV = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -449,7 +449,7 @@ namespace OOX
 						m_oElement = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -502,7 +502,7 @@ namespace OOX
 						m_oOpEmu = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -545,9 +545,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:brk m:alnAt=\"");
+				std::wstring sResult = _T("<m:brk m:alnAt=\"");
 				sResult += m_alnAt->ToString();
 				sResult += _T("\" />");
 				return sResult;
@@ -602,10 +602,10 @@ namespace OOX
 						m_oRPr = oReader;
 					else if ( _T("a:rPr") == sName )
 					{
-						CString sXml = oReader.GetOuterXml();
+						std::wstring sXml = oReader.GetOuterXml();
 						XmlUtils::CXmlNode node;
-						node.FromXmlString(sXml.GetBuffer());
-						sXml.ReleaseBuffer();
+						node.FromXmlString(sXml);
+
 						m_oARPr = node;
 					}
 					else if ( _T("w:ins") == sName )
@@ -614,9 +614,9 @@ namespace OOX
 						m_oDel = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:ctrlPr>");
+				std::wstring sResult = _T("<m:ctrlPr>");
 
 				if ( m_oRPr.IsInit() )
 					sResult += m_oRPr->toXML();
@@ -683,9 +683,9 @@ namespace OOX
 						m_oShp = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:dPr>");
+				std::wstring sResult = _T("<m:dPr>");
 
 				if ( m_oBegChr.IsInit() )
 					sResult += m_oBegChr->toXML();
@@ -767,9 +767,9 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:d>");
+				std::wstring sResult = _T("<m:d>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -831,9 +831,9 @@ namespace OOX
 						m_oRSpRule = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:eqArrPr>");
+				std::wstring sResult = _T("<m:eqArrPr>");
 
 				if ( m_oBaseJc.IsInit() )
 					sResult += m_oBaseJc->toXML();
@@ -915,9 +915,9 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:eqArr>");
+				std::wstring sResult = _T("<m:eqArr>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -975,7 +975,7 @@ namespace OOX
 						m_oNum = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1020,9 +1020,9 @@ namespace OOX
 						m_oType = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:fPr>");
+				std::wstring sResult = _T("<m:fPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -1079,7 +1079,7 @@ namespace OOX
 						m_oFuncPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1121,9 +1121,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:funcPr>");
+				std::wstring sResult = _T("<m:funcPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -1174,7 +1174,7 @@ namespace OOX
 						m_oGroupChrPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1222,9 +1222,9 @@ namespace OOX
 						m_oVertJc = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:groupChrPr>");
+				std::wstring sResult = _T("<m:groupChrPr>");
 
 				if ( m_oChr.IsInit() )
 					sResult += m_oChr->toXML();
@@ -1290,7 +1290,7 @@ namespace OOX
 						m_oLimLowPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1332,9 +1332,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:limLowPr>");
+				std::wstring sResult = _T("<m:limLowPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -1387,7 +1387,7 @@ namespace OOX
 						m_oLimUppPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1429,9 +1429,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:limUppPr>");
+				std::wstring sResult = _T("<m:limUppPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -1476,10 +1476,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mathFont m:val=\"");
-				sResult += m_val->GetString();
+				std::wstring sResult = _T("<m:mathFont m:val=\"");
+				sResult += m_val.get2();
 				sResult += _T("\" />");
 				return sResult;
 			}
@@ -1500,7 +1500,7 @@ namespace OOX
 
 		public:
 			// Attr
-			nullable<CString> m_val;
+			nullable<std::wstring> m_val;
 		};			 
 
 		//--------------------------------------------------------------------------------
@@ -1570,9 +1570,9 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mathPr>");
+				std::wstring sResult = _T("<m:mathPr>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -1625,7 +1625,7 @@ namespace OOX
 						m_oMcPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -1667,9 +1667,9 @@ namespace OOX
 						m_oMcJc = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mcPr>");
+				std::wstring sResult = _T("<m:mcPr>");
 
 				if ( m_oCount.IsInit() )
 					sResult += m_oCount->toXML();
@@ -1729,9 +1729,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mcs>");
+				std::wstring sResult = _T("<m:mcs>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -1805,9 +1805,9 @@ namespace OOX
 						m_oRSpRule = oReader;							
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mPr>");
+				std::wstring sResult = _T("<m:mPr>");
 
 				if ( m_oBaseJc.IsInit() )
 					sResult += m_oBaseJc->toXML();
@@ -1893,9 +1893,9 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:mr>");
+				std::wstring sResult = _T("<m:mr>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -1965,9 +1965,9 @@ namespace OOX
 					
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:m>");
+				std::wstring sResult = _T("<m:m>");
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
@@ -2027,7 +2027,7 @@ namespace OOX
 						m_oSup = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -2080,9 +2080,9 @@ namespace OOX
 						m_oSupHide = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:naryPr>");
+				std::wstring sResult = _T("<m:naryPr>");
 
 				if ( m_oChr.IsInit() )
 					sResult += m_oChr->toXML();
@@ -2151,9 +2151,9 @@ namespace OOX
 						m_oMJc = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:oMathParaPr>");
+				std::wstring sResult = _T("<m:oMathParaPr>");
 
 				if ( m_oMJc.IsInit() )
 					sResult += m_oMJc->toXML();
@@ -2205,7 +2205,7 @@ namespace OOX
 						m_oPhantPr = oReader;
 				}
 			}
-			virtual CString      toXML() const;
+			virtual std::wstring      toXML() const;
 
 			virtual EElementType getType() const
 			{
@@ -2257,9 +2257,9 @@ namespace OOX
 						m_oZeroWid = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:phantPr>");
+				std::wstring sResult = _T("<m:phantPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -2385,10 +2385,10 @@ namespace OOX
 						m_oRPr = oReader;
 					else if ( _T("a:rPr") == sName )
 					{
-						CString sXml = oReader.GetOuterXml();
+						std::wstring sXml = oReader.GetOuterXml();
 						XmlUtils::CXmlNode node;
-						node.FromXmlString(sXml.GetBuffer());
-						sXml.ReleaseBuffer();
+						node.FromXmlString(sXml);
+
 						m_oARPr = node;
 					}
 					else if ( _T("w:ruby") == sName )
@@ -2411,8 +2411,8 @@ namespace OOX
 						m_oYearShort = oReader;
 				}
 			}
-			virtual CString      toXML() const;			
-			virtual CString      toXMLInner() const;
+			virtual std::wstring      toXML() const;			
+			virtual std::wstring      toXMLInner() const;
 
 			virtual EElementType getType() const
 			{
@@ -2480,16 +2480,16 @@ namespace OOX
 
 				m_oRun = oReader;
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				sResult += _T("<w:del");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T(" w:author=\"");
-					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 					sResult += _T("\" ");
 				}
 
@@ -2510,7 +2510,7 @@ namespace OOX
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T(" oouserid=\"");
-					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
+					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
 					sResult += _T("\" ");
 				}
 				sResult += _T(">");
@@ -2540,10 +2540,10 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CString                       > m_sAuthor;
+			nullable<std::wstring                       > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                       > m_sUserId;
 			// Childs
 			nullable<CMRun>								m_oRun;
 		};
@@ -2568,16 +2568,16 @@ namespace OOX
 
 				m_oRun = oReader;
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 
 				sResult += _T("<w:ins");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T(" w:author=\"");
-					sResult += XmlUtils::EncodeXmlString(m_sAuthor->GetString());
+					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 					sResult += _T("\" ");
 				}
 
@@ -2598,7 +2598,7 @@ namespace OOX
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T(" oouserid=\"");
-					sResult += XmlUtils::EncodeXmlString(m_sUserId->GetString());
+					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
 					sResult += _T("\" ");
 				}
 				sResult += _T(">");
@@ -2608,7 +2608,7 @@ namespace OOX
 					sResult += m_oRun->toXMLInner();
 				}
 
-				sResult += "</w:ins>";
+				sResult += L"</w:ins>";
 				return sResult;
 			}
 
@@ -2628,10 +2628,10 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString                       > m_sUserId;
+			nullable<std::wstring                  >	m_sAuthor;
+			nullable<SimpleTypes::CDateTime        >	m_oDate;
+			nullable<SimpleTypes::CDecimalNumber<> >	m_oId;
+			nullable<std::wstring                  >	m_sUserId;
 			// Childs
 			nullable<CMRun>								m_oRun;
 		};
@@ -2667,9 +2667,9 @@ namespace OOX
 						m_oDegHide = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:radPr>");
+				std::wstring sResult = _T("<m:radPr>");
 
 				if ( m_oCtrlPr.IsInit() )
 					sResult += m_oCtrlPr->toXML();
@@ -2724,9 +2724,9 @@ namespace OOX
 						m_oRadPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:rad>");
+				std::wstring sResult = _T("<m:rad>");
 
 				if ( m_oRadPr.IsInit())
 					sResult += m_oRadPr->toXML();
@@ -2791,9 +2791,9 @@ namespace OOX
 						m_oSty = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:rPr>");
+				std::wstring sResult = _T("<m:rPr>");
 				
 				if ( m_oAln.IsInit() )
 					sResult += m_oAln->toXML();
@@ -2861,9 +2861,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sPrePr>");
+				std::wstring sResult = _T("<m:sPrePr>");
 
 				if (m_oCtrlPr.IsInit())
 					sResult += m_oCtrlPr->toXML();
@@ -2916,9 +2916,9 @@ namespace OOX
 						m_oSup = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sPre>");
+				std::wstring sResult = _T("<m:sPre>");
 
 				if ( m_oSPrePr.IsInit() )
 					sResult += m_oSPrePr->toXML();
@@ -2979,9 +2979,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSubPr>");
+				std::wstring sResult = _T("<m:sSubPr>");
 
 				if (m_oCtrlPr.IsInit())
 					sResult += m_oCtrlPr->toXML();
@@ -3032,9 +3032,9 @@ namespace OOX
 						m_oSub = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSub>");
+				std::wstring sResult = _T("<m:sSub>");
 
 				if (m_oSSubPr.IsInit())
 					sResult += m_oSSubPr->toXML();
@@ -3093,9 +3093,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSubSupPr>");
+				std::wstring sResult = _T("<m:sSubSupPr>");
 
 				if (m_oAlnScr.IsInit())
 					sResult += m_oAlnScr->toXML();
@@ -3152,9 +3152,9 @@ namespace OOX
 						m_oSup = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSubSup>");
+				std::wstring sResult = _T("<m:sSubSup>");
 
 				if (m_oSSubSupPr.IsInit())
 					sResult += m_oSSubSupPr->toXML();
@@ -3213,9 +3213,9 @@ namespace OOX
 						m_oCtrlPr = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSupPr>");
+				std::wstring sResult = _T("<m:sSupPr>");
 
 				if (m_oCtrlPr.IsInit())
 					sResult += m_oCtrlPr->toXML();
@@ -3266,9 +3266,9 @@ namespace OOX
 						m_oSup = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<m:sSup>");
+				std::wstring sResult = _T("<m:sSup>");
 
 				if (m_oSSupPr.IsInit())
 					sResult += m_oSSupPr->toXML();
@@ -3326,9 +3326,9 @@ namespace OOX
 
 				m_sText = oReader.GetText2();
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				if ( m_oSpace.IsInit() )
 					sResult = _T("<m:t xml:space=\"") + m_oSpace->ToString() + _T("\">");
@@ -3379,7 +3379,7 @@ namespace OOX
 			// Attributes
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
 			// Value
-			CString                             m_sText;
+			std::wstring                             m_sText;
 
 		};		
 	} // namespace OMath	

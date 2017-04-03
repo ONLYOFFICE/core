@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,8 +45,8 @@ namespace PPTX
 		class Blend : public WrapperWritingElement
 		{
 		public:
-			
-			PPTX_LOGIC_BASE(Blend)
+			WritingElement_AdditionConstructors(Blend)
+			PPTX_LOGIC_BASE2(Blend)
 
 			Blend& operator=(const Blend& oSrc)
 			{
@@ -57,8 +57,32 @@ namespace PPTX
 				blend = oSrc.blend;
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_blend;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (strName == L"a:cont")
+						cont = oReader;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blend"), blend)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cont	= node.ReadNode(_T("a:cont"));
@@ -66,7 +90,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:blend blend=\"") + blend.get() + _T("\">") + cont.toXML() + _T("</a:blend>");
 			}

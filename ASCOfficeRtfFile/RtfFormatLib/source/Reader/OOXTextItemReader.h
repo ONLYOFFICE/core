@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,6 +53,22 @@ public:
 	{
 		switch(ooxElement->getType())
 		{
+			case OOX::et_a_p:
+			{
+				OOX::Drawing::CParagraph * pParagraph = dynamic_cast<OOX::Drawing::CParagraph*>(ooxElement);
+				
+				OOXParagraphReader	m_oParagraphReader(pParagraph);
+				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
+				//применяем к новому параграфу default property
+				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
+				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
+				oNewParagraph->m_oProperty.m_nItap = 0;
+
+				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
+				{
+					m_oTextItems->AddItem( oNewParagraph );
+				}
+			}break;
 			case OOX::et_w_p:
 			{
 				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
@@ -67,15 +83,6 @@ public:
 				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
-					//if( true == oParam.oRtf->m_oStatusSection.start_new )
-					//{
-					//	RtfSectionPtr oCurSection;
-					//	if( true == oParam.oRtf->GetItem( oCurSection, oParam.oRtf->m_oStatusSection.number - 1) )
-					//	{
-					//		m_oTextItems = oCurSection;
-					//	}
-					//	oParam.oRtf->m_oStatusSection.start_new = false;
-					//}
 				}
 			}break;
 			case OOX::et_w_tbl:
@@ -106,13 +113,15 @@ public:
 			case OOX::et_w_sdtContent:
 			{
 				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
-				for (int i = 0; i < pSdt->m_arrItems.size(); i++)
+				for (size_t i = 0; i < pSdt->m_arrItems.size(); i++)
 				{
 					Parse( pSdt->m_arrItems[i], oParam );
 				}
 
 			}break;
-		}
+            default:
+                break;
+        }
 		return true;
 	}
 };

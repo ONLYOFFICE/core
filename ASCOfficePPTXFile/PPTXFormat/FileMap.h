@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,9 @@
 #ifndef PPTX_FILEMAP_INCLUDE_H_
 #define PPTX_FILEMAP_INCLUDE_H_
 
-#include "DocxFormat/File.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/ContentTypes.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 
 #include <map>
 
@@ -51,16 +53,16 @@ namespace PPTX
 		}
 	public:
 
-        std::map<CString, smart_ptr<PPTX::File>> m_map;
+        std::map<std::wstring, smart_ptr<OOX::File>> m_map;
 
 	public:
 
-        AVSINLINE std::map<CString, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
+        AVSINLINE std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator find(const OOX::CPath& path)
 		{
             return m_map.find(path.m_strFilename);
 		}
 
-		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<PPTX::File>& value)
+		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<OOX::File>& value)
 		{
             m_map[key.m_strFilename] = value;
 		}

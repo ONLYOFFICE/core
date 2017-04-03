@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,6 @@
 #include <sstream>
 
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/functional/hash/hash.hpp>
 
 #include "xlsx_font.h"
@@ -60,7 +59,6 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_color & color, const s
     if (color.rgb)
     {
         std::wstring rgb = *color.rgb;
-        boost::algorithm::to_upper(rgb);
         strm << L"rgb=\"" << rgb << L"\" ";
     }
 

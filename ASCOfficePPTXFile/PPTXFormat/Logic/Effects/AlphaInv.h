@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		class AlphaInv : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaInv)
+			WritingElement_AdditionConstructors(AlphaInv)
+			PPTX_LOGIC_BASE2(AlphaInv)
 
 			AlphaInv& operator=(const AlphaInv& oSrc)
 			{
@@ -55,14 +56,30 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaInv;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					Color.fromXML(oReader);
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Color.GetColorFrom(node);
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:alphaInv>") + Color.toXML() + _T("</a:alphaInv>");
 			}

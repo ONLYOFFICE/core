@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,15 +33,15 @@
 #ifndef PPTX_WRAPPER_FILE_INCLUDE_H_
 #define PPTX_WRAPPER_FILE_INCLUDE_H_
 
-#include "DocxFormat/File.h"
-#include "DocxFormat/NamespaceOwn.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
+#include "Namespaces.h"
 #include "FileMap.h"
 
 #include "../Editor/BinWriters.h"
 
 namespace PPTX
 {
-	class WrapperFile : public PPTX::File
+	class WrapperFile : public OOX::File
 	{
 	public:
 		WrapperFile()

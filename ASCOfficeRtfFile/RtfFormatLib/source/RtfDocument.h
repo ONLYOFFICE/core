@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,6 +35,7 @@
 #include "RtfGlobalTables.h"
 #include "RtfSection.h"
 #include "RtfMath.h"
+#include "RtfShape.h"
 
 struct _section
 {
@@ -56,6 +57,7 @@ public:
 	RtfStyleTable			m_oStyleTable;
 	RtfRevisionTable		m_oRevisionTable;
 	RtfInformation			m_oInformation;
+	RtfShapePtr				m_pBackground;
 
 	RtfListTable			m_oListTable;
 	RtfListOverrideTable	m_oListOverrideTable;
@@ -79,9 +81,11 @@ public:
 	IdGenerator m_oIdGenerator;
 	void SetShapeId( int nShapeId )
 	{
-		for( int i = 0; i < (int)m_aShapeId.size(); i++ )
+		for (size_t i = 0; i < m_aShapeId.size(); i++ )
+		{
 			if( nShapeId == m_aShapeId[i] )
 				return;
+		}
 		m_aShapeId.push_back( nShapeId );
 	}
 	int GetShapeId(  int& nShapeId  )
@@ -93,12 +97,15 @@ public:
 		{
 			bool bUnique = true;
 			nNewShapeId = m_oIdGenerator.Generate_ShapeId();
-			for( int i = 0; i < (int)m_aShapeId.size(); i++ )
+			
+			for (size_t i = 0; i < m_aShapeId.size(); i++ )
+			{
 				if( nNewShapeId == m_aShapeId[i] )
 				{
 					bUnique = false;
 					break;
 				}
+			}
 			if( true == bUnique )
 			{
 				nShapeId = nNewShapeId;
@@ -111,7 +118,7 @@ public:
 	RtfDocument();
 	int GetType();
 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfDocument> RtfDocumentPtr;

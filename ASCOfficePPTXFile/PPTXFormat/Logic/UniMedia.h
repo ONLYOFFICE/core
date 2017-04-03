@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,12 +45,32 @@ namespace PPTX
 		class UniMedia : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniMedia)
+			WritingElement_AdditionConstructors(UniMedia)
 
-		public:
+
+			UniMedia()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (name == _T("audioCd"))
+					Media.reset(new Logic::AudioCD(oReader));
+				else if (name == _T("wavAudioFile"))
+					Media.reset(new Logic::WavAudioFile(oReader));
+				else if (name == _T("audioFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else if (name == _T("videoFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else if (name == _T("quickTimeFile"))
+					Media.reset(new Logic::MediaFile(oReader));
+				else Media.reset();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("audioCd"))
 					Media.reset(new Logic::AudioCD(node));
@@ -81,7 +101,7 @@ namespace PPTX
 				else Media.reset();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (Media.IsInit())
 					return Media->toXML();

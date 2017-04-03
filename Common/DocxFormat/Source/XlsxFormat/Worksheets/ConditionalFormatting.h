@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -54,7 +54,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -115,7 +115,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -123,10 +123,10 @@ namespace OOX
 			{
 				if (3 < m_arrItems.size()) // min 2 + 2
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<colorScale>"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</colorScale>"));
@@ -168,7 +168,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -176,7 +176,7 @@ namespace OOX
 			{
 				if (2 == m_arrItems.size() && m_oColor.IsInit())
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<dataBar"));
 					WritingStringNullableAttrInt(L"maxLength", m_oMaxLength, m_oMaxLength->GetValue());
 					WritingStringNullableAttrInt(L"minLength", m_oMinLength, m_oMinLength->GetValue());
@@ -187,7 +187,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					m_oColor->toXML2(writer, _T("color"));
@@ -252,7 +252,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -291,7 +291,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -299,7 +299,7 @@ namespace OOX
 			{
 				if (1 < m_arrItems.size()) // min value = 2
 				{
-					CString sValue;
+                    std::wstring sValue;
 					writer.WriteString(_T("<iconSet"));
 					WritingStringNullableAttrString(L"iconSet", m_oIconSet, m_oIconSet->ToString())
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
@@ -317,7 +317,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</iconSet>"));
@@ -380,13 +380,13 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oType.IsInit() && m_oPriority.IsInit() && 0 < m_arrItems.size())
+				if (isValid())
 				{
 					writer.WriteString(L"<cfRule");
 					WritingStringAttrString(L"type", m_oType->ToString());
@@ -398,7 +398,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"dxfId", m_oDxfId, m_oDxfId->GetValue());
 					if (m_oEqualAverage.IsInit() && true == m_oEqualAverage->ToBool())
 						writer.WriteString(_T (" equalAverage=\"1\""));
-					WritingStringNullableAttrString(L"text", m_oOperator, m_oOperator->ToString());
+					WritingStringNullableAttrString(L"operator", m_oOperator, m_oOperator->ToString());
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
 						writer.WriteString(_T (" percent=\"1\""));
 					WritingStringNullableAttrInt(L"rank", m_oRank, m_oRank->GetValue());
@@ -410,7 +410,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</cfRule>"));
@@ -441,6 +441,11 @@ namespace OOX
 			virtual EElementType getType () const
 			{
 				return et_ConditionalFormattingRule;
+			}
+
+			bool isValid () const
+			{
+				return m_oType.IsInit() && m_oPriority.IsInit();
 			}
 
 		private:
@@ -497,17 +502,25 @@ namespace OOX
 			}
 
 		public:
-			virtual CString toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if (m_oSqRef.IsInit() && 0 < m_arrItems.size())
+				bool isValid = false;
+				for(size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					CString sRoot;
+					if(m_arrItems[i]->isValid())
+					{
+						isValid = true;
+						break;
+					}
+				}
+				if (m_oSqRef.IsInit() && isValid)
+				{
 					writer.WriteString(L"<conditionalFormatting");
-					WritingStringAttrString(L"sqref", m_oSqRef->ToString2());
+					WritingStringAttrString(L"sqref", m_oSqRef.get());
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())
 					{
@@ -516,7 +529,7 @@ namespace OOX
 
 					writer.WriteString(_T(">"));
 
-					for (unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					for (size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
 
 					writer.WriteString(_T("</conditionalFormatting>"));
@@ -557,7 +570,7 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>			m_oPivot;
-			nullable<SimpleTypes::CRelationshipId >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
+			nullable<std::wstring >	m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
 	} //Spreadsheet
 } // namespace OOX

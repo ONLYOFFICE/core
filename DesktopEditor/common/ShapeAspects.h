@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,13 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  ShapeAspects.h
-//  UTILS
-//
-//  Created by alexey.musinov on 09.10.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #ifndef SHAPE_ASPECTS_H
 #define SHAPE_ASPECTS_H

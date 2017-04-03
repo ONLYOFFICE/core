@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -77,9 +77,9 @@ namespace DocFileFormat
 		int _gridIndex;
 		int _cellIndex;
 		
-		XMLTools::XMLElement<wchar_t>* _tcPr;
-		XMLTools::XMLElement<wchar_t>* _tcMar;
-		XMLTools::XMLElement<wchar_t>* _tcBorders;
+        XMLTools::XMLElement* _tcPr;
+        XMLTools::XMLElement* _tcMar;
+        XMLTools::XMLElement* _tcBorders;
 		
 		const std::vector<short>* _grid;
 		std::vector<short>		_tGrid;

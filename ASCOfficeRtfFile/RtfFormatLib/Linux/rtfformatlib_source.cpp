@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,19 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../source/DestinationCommand.cpp"
+
 #include "../source/RtfBookmark.cpp"
 #include "../source/RtfChar.cpp"
 #include "../source/RtfDocument.cpp"
 #include "../source/RtfGlobalTables.cpp"
 #include "../source/RtfOldList.cpp"
-#include "../source/RtfOle.cpp"
 #include "../source/RtfPicture.cpp"
+#include "../source/RtfOle.cpp"
+#include "../source/RtfField.cpp"
+#include "../source/RtfParagraph.cpp"
 #include "../source/RtfProperty.cpp"
 #include "../source/RtfReader.cpp"
 #include "../source/RtfSection.cpp"
 #include "../source/RtfShape.cpp"
 #include "../source/RtfWriter.cpp"
+#include "../source/RtfMath.cpp"
+
+#include "../source/Reader/OOXMathReader.cpp"
+#include "../source/Reader/OOXDrawingGraphicReader.cpp"
 #include "../source/Reader/OOXHeaderReader.cpp"
 #include "../source/Reader/OOXParagraphElementReaders.cpp"
 #include "../source/Reader/OOXReader.cpp"
@@ -49,4 +55,3 @@
 #include "../source/Reader/OOXTableReader.cpp"
 #include "../source/Writer/OOXDocumentWriter.cpp"
 #include "../source/Writer/OOXWriter.cpp"
-#include "../source/ConvertationManager.cpp"

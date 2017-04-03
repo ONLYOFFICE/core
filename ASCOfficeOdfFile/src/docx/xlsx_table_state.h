@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -127,7 +127,10 @@ public:
 	void serialize_table_format				(std::wostream & _Wostream);
 	void serialize_merge_cells				(std::wostream & _Wostream);
     void serialize_hyperlinks				(std::wostream & _Wostream);
-    void dump_rels_hyperlinks				(rels & Rels);
+    void serialize_ole_objects				(std::wostream & _Wostream);
+    
+	void dump_rels_hyperlinks				(rels & Rels);
+	void dump_rels_ole_objects				(rels & Rels);
 
     std::wstring get_table_name()	const { return tableName_; }
 	int			 get_table_id()		const { return tableId_; }

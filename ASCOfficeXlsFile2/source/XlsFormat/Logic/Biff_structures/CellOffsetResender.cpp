@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,16 +63,6 @@ void CellOffsetResender::resend(CFStream& stream, const unsigned int data_place,
 
 	stream.appendDelayedItems(CFStream::ReceiverItems(), source_items);
 }
-
-
-void CellOffsetResender::store(CFRecord& record)
-{
-	if(row_starts)
-	{
-		record.registerDelayedDataReceiver(&resend, 0, rt_Blank);
-	}
-}
-
 
 void CellOffsetResender::load(CFRecord& record)
 {

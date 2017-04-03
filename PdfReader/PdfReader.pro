@@ -24,7 +24,11 @@ CONFIG += build_cximage_zlib_disable
 include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
+#UnicodeConverter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+
 core_windows {
+
 LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \

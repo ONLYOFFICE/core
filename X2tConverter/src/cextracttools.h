@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,9 +35,10 @@
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
-#include "../../Common/DocxFormat/Source/XML/stringcommon.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
+
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/common/Path.h"
@@ -45,12 +46,12 @@
 #include <iostream>
 #include <fstream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes))
 
 namespace NExtractTools
 {
-    static const TCHAR* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
-    static const TCHAR* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
+    static const wchar_t* gc_sDoctRendererXml = _T("<Settings><SrcFileType>%d</SrcFileType><DstFileType>%d</DstFileType><SrcFilePath>%ls</SrcFilePath><DstFilePath>%ls</DstFilePath><FontsDirectory>%ls</FontsDirectory><ImagesDirectory>%ls</ImagesDirectory><ThemesDirectory>%ls</ThemesDirectory><Changes TopItem=\"%d\">%ls</Changes>%ls</Settings>");
+    static const wchar_t* gc_sDoctRendererMailMergeXml = _T("<MailMergeData DatabasePath=\"%ls\" Start=\"%d\" End=\"%d\" Field=\"%ls\" />");
 
     typedef enum tagTConversionDirection
     {
@@ -223,10 +224,11 @@ namespace NExtractTools
                         XmlUtils::CXmlNode oXmlNode;
                         if(oXmlNodes.GetAt(i, oXmlNode))
                         {
-                            CString sValue;
+                            std::wstring sValue;
                             if(oXmlNode.GetTextIfExist(sValue))
                             {
                                 std::wstring sName = oXmlNode.GetName();
+
                                 if(_T("fileName") == sName)
                                     fileName = new std::wstring(sValue);
                                 else if(_T("from") == sName)
@@ -294,7 +296,7 @@ namespace NExtractTools
 					XmlUtils::CXmlNode oXmlNode;
 					if(oXmlNodes.GetAt(i, oXmlNode))
 					{
-						CString sValue;
+                        std::wstring sValue;
 						if(oXmlNode.GetTextIfExist(sValue))
 						{
 							std::wstring sName = oXmlNode.GetName();
@@ -337,6 +339,8 @@ namespace NExtractTools
 		int* m_nDoctParams;
 		std::wstring* m_sHtmlFileInternalPath;
 		std::wstring* m_sPassword;
+		//output params
+		mutable bool m_bOutputConvertCorrupted;
 	public:
 		InputParams()
 		{
@@ -358,6 +362,8 @@ namespace NExtractTools
 			m_nDoctParams = NULL;
 			m_sHtmlFileInternalPath = NULL;
 			m_sPassword = NULL;
+
+			m_bOutputConvertCorrupted = false;
 		}
 		~InputParams()
 		{
@@ -384,7 +390,7 @@ namespace NExtractTools
 		bool FromXmlFile(const std::wstring& sFilename)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlFile2(std_string2string(sFilename)))
+            if(TRUE == oRoot.FromXmlFile(sFilename))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -396,7 +402,7 @@ namespace NExtractTools
 		bool FromXml(const std::wstring& sXml)
 		{
 			XmlUtils::CXmlNode oRoot;
-			if(TRUE == oRoot.FromXmlString(std_string2string(sXml)))
+			if(TRUE == oRoot.FromXmlString(sXml))
 			{
 				return FromXmlNode(oRoot);
 			}
@@ -428,7 +434,7 @@ namespace NExtractTools
 						}
 						else
 						{
-							CString sValue;
+                            std::wstring sValue;
 							if(oXmlNode.GetTextIfExist(sValue))
 							{
 								if(_T("m_sKey") == sName)
@@ -480,26 +486,28 @@ namespace NExtractTools
         }
         std::wstring getXmlOptions()
 		{
-			CString sRes;
+            std::wstring sRes;
 			int nCsvEncoding = 65001; //utf8
-			char cDelimiter = ',';
-			if(NULL != m_nCsvTxtEncoding)
+            std::string cDelimiter = ",";
+
+            if(NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
 			if(NULL != m_nCsvDelimiter)
 			{
 				switch (*m_nCsvDelimiter)
 				{
-				case TCSVD_TAB: cDelimiter = '\t'; break;
-				case TCSVD_SEMICOLON: cDelimiter = ';'; break;
-				case TCSVD_COLON: cDelimiter = ':'; break;
-				case TCSVD_COMMA: cDelimiter = ','; break;
-				case TCSVD_SPACE: cDelimiter = ' '; break;
+                case TCSVD_TAB:         cDelimiter = "\t";  break;
+                case TCSVD_SEMICOLON:   cDelimiter = ";";   break;
+                case TCSVD_COLON:       cDelimiter = ":";   break;
+                case TCSVD_COMMA:       cDelimiter = ",";   break;
+                case TCSVD_SPACE:       cDelimiter = " ";   break;
 				}
 			}
             int nFileType = 1;
             if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
-            CString sSaveType;
+
+            std::wstring sSaveType;
             if(NULL != m_nFormatTo)
             {
                 if(AVS_OFFICESTUDIO_FILE_OTHER_JSON == *m_nFormatTo)
@@ -507,8 +515,12 @@ namespace NExtractTools
                 else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatTo)
                     nFileType = 2;
             }
-            sRes.Format(_T("<xmlOptions><fileOptions fileType='%d' codePage='%d' delimiter='%c' %ls /><TXTOptions><Encoding>%d</Encoding></TXTOptions></xmlOptions>"), nFileType, nCsvEncoding, cDelimiter, sSaveType, nCsvEncoding);
-            return sRes.GetBuffer();
+            sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
+            sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+            sRes += L"' delimiter='" + std::wstring(cDelimiter.begin(), cDelimiter.end()) + L"' " + sSaveType;
+            sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
+
+            return sRes;
 		}
 		TConversionDirection getConversionDirection()
 		{
@@ -738,7 +750,7 @@ namespace NExtractTools
 #if defined(_WIN32) || defined (_WIN64)
         options_stream.open(xmlFileName.c_str());
 #else
-        options_stream.open(stringWstingToUtf8String(xmlFileName));
+        options_stream.open(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xmlFileName));
 #endif
 		if (options_stream.is_open())
 		{		
@@ -867,10 +879,12 @@ namespace NExtractTools
 		}
         return true;
 	}
+#ifndef _IOS
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
                             const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     int apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
+#endif
 }
 #endif // CEXTRACTTOOLS_H

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,17 +40,6 @@ namespace XLS
 BiffStructurePtr SqRef::clone()
 {
 	return BiffStructurePtr(new SqRef(*this));
-}
-
-
-void SqRef::store(CFRecord& record)
-{
-	unsigned short cref = rgrefs.size();
-	record << cref;
-	for(std::vector<Ref8U>::iterator it = rgrefs.begin(), itEnd = rgrefs.end(); it != itEnd; ++it)
-	{
-		it->store(record);
-	}
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,7 +57,6 @@ public:
 	void operator-=(const CellRef& subtracted_ref);
 
     virtual void load(CFRecord& record) {}
-    virtual void store(CFRecord& record) {}
 
     const int	getRow() const;
     const int	getColumn() const;
@@ -169,30 +168,6 @@ public:
 				break;
 		}
 	};
-
-	virtual void store(CFRecord& record)
-	{
-		RwType rw(static_cast<RwType>(row));
-		ColType col;
-		switch(rel_info)
-		{
-			case rel_Present:
-				col = static_cast<ColType>(column) & ((1 << (sizeof(ColType) * 8 - 2)) - 1);
-				col |= rowRelative ? (1 << (sizeof(ColType) * 8 - 1)) : 0;
-				col |= colRelative ? (1 << (sizeof(ColType) * 8 - 2)) : 0;
-				break;
-			case rel_Absent:
-				col = static_cast<ColType>(column);
-				break;
-			case rel_PresentQuoted:
-				col = static_cast<ColType>(column) & ((1 << (sizeof(ColType) * 8 - 2)) - 1);
-				col |= rowRelative ? (1 << (sizeof(ColType) * 8 - 1)) : 0;
-				col |= fQuoted ? (1 << (sizeof(ColType) * 8 - 2)) : 0;
-				break;
-		}
-		record << rw << col;
-	};
-
 
 };
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,9 +45,15 @@ namespace PPTX
 		class CSld : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CSld)
+			WritingElement_AdditionConstructors(CSld)
+			
+			CSld() : spTree(L"p")
+			{
+			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"name", attrName);
@@ -59,7 +65,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"), attrName);
@@ -107,7 +113,7 @@ namespace PPTX
 						
 						pWriter->StartRecord(2);		//pWriter->WriteRecordArray(2, 0, spTree.SpTreeElems);  - вручную
 							pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size() + (controls.IsInit() ? 1 : 0));
-							for(int i = 0; i < spTree.SpTreeElems.size();i++)
+							for(size_t i = 0; i < spTree.SpTreeElems.size();i++)
 								pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
 						
 							if (controls.IsInit())	controls->toPPTY(pWriter); //можно искуственно добавить controls в sptree .. и все "это" перенести туда
@@ -146,7 +152,6 @@ namespace PPTX
 						}
 						case 1:
 						{
-							spTree.m_name = _T("p:spTree");
 							spTree.fromPPTY(pReader);
 							break;
 						}
@@ -161,7 +166,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
 			nullable_string			attrName;
 
 			nullable<Bg>			bg;

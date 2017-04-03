@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,13 +49,6 @@ BaseObjectPtr Excel9File::clone()
 {
 	return BaseObjectPtr(new Excel9File(*this));
 }
-
-
-void Excel9File::writeFields(CFRecord& record)
-{
-	// no data in this tag;
-}
-
 
 void Excel9File::readFields(CFRecord& record)
 {

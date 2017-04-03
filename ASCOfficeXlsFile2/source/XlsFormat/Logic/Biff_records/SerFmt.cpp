@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,16 +48,6 @@ SerFmt::~SerFmt()
 BaseObjectPtr SerFmt::clone()
 {
 	return BaseObjectPtr(new SerFmt(*this));
-}
-
-
-void SerFmt::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fSmoothedLine);
-	SETBIT(flags, 1, f3DBubbles);
-	SETBIT(flags, 2, fArShadow);
-	record << flags;
 }
 
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,7 @@ public:
 	CFParsedFormulaNoCCE(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 	void load(CFRecord& record, const unsigned short cce);
-	virtual void store(CFRecord& record);
+
 private:
 	// stub to make the class non-abstract
 	virtual void load(CFRecord& record);

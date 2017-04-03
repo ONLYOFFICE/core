@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,31 +53,6 @@ BaseObjectPtr Text::clone()
 {
 	return BaseObjectPtr(new Text(*this));
 }
-
-
-void Text::writeFields(CFRecord& record)
-{
-	unsigned short flags1 = 0;
-	unsigned short flags2 = 0;
-
-	SETBIT(flags1,  0, fAutoColor);
-	SETBIT(flags1,  1, fShowKey);
-	SETBIT(flags1,  2, fShowValue);
-	SETBIT(flags1,  4, fAutoText);
-	SETBIT(flags1,  5, fGenerated);
-	SETBIT(flags1,  6, fDeleted);
-	SETBIT(flags1,  7, fAutoMode);
-	SETBIT(flags1, 11, fShowLabelAndPerc);
-	SETBIT(flags1, 12, fShowPercent);
-	SETBIT(flags1, 13, fShowBubbleSizes);
-	SETBIT(flags1, 14, fShowLabel);
-
-	SETBITS(flags2, 0, 3, dlp);
-	SETBITS(flags2, 14, 15, iReadingOrder);
-
-	record << at  << vat << wBkgMode << rgbText << x << y << dx << dy << flags1 << icvText << flags2 << trot;
-}
-
 
 void Text::readFields(CFRecord& record)
 {

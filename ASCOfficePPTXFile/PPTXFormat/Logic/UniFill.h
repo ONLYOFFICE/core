@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,11 +48,63 @@ namespace PPTX
 		class UniFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(UniFill)
-		public:
+			WritingElement_AdditionConstructors(UniFill)
+			UniFill()
+			{
+				m_type = notInit;
+				Fill.reset();
+			}
+
+			virtual OOX::EElementType getType() const
+			{
+				if (Fill.IsInit())
+					return Fill->getType();
+				return OOX::et_Unknown;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+				
+				if (name == _T("blipFill"))
+				{
+					m_type = blipFill;
+					Fill.reset(new Logic::BlipFill(oReader));
+				}
+				else if(name == _T("noFill"))
+				{
+					m_type = noFill;
+					Fill.reset(new Logic::NoFill(oReader));
+				}
+				else if(name == _T("solidFill"))
+				{
+					m_type = solidFill;
+					Fill.reset(new Logic::SolidFill(oReader));
+				}
+				else if(name == _T("gradFill"))
+				{
+					m_type = gradFill;
+					Fill.reset(new Logic::GradFill(oReader));
+				}
+				else if(name == _T("pattFill"))
+				{
+					m_type = pattFill;
+					Fill.reset(new Logic::PattFill(oReader));
+				}
+				else if(name == _T("grpFill"))
+				{
+					m_type = grpFill;
+					Fill.reset(new Logic::GrpFill(oReader));
+				}
+				else
+				{
+					m_type = notInit;
+					Fill.reset();
+				}	
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (name == _T("blipFill"))
 				{
@@ -102,7 +154,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("blipFill") == strName)
 						{
@@ -146,10 +198,10 @@ namespace PPTX
 				m_type = notInit;
 				Fill.reset();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (Fill.IsInit())
-					Fill->toXML();
+					return Fill->toXML();
 				return _T("");
 			}
 
@@ -293,39 +345,38 @@ namespace PPTX
 													pReader->Skip(6); // len + start attributes + type
 
 													// -------------------
-													CString strUrl = pReader->GetString2();
-													CString strTempFile = _T("");
-													CString strOrigBase64 = _T("");
+													std::wstring strUrl = pReader->GetString2();
+													std::wstring strTempFile = _T("");
+													std::wstring strOrigBase64 = _T("");
 
 
-													if (0 == strUrl.Find(_T("data:")))
+													if (0 == strUrl.find(_T("data:")))
 													{
 														bool bBase64 = false;
 														
 														strOrigBase64 = strUrl;
-														int nFind = strUrl.Find(_T(","));
+														int nFind = (int)strUrl.find(_T(","));
 
-														CString sImageExtension;
+														std::wstring sImageExtension;
 
-														CString sFormatDataString = strUrl.Mid(5,nFind-5);
-														sFormatDataString.MakeLower();
+														std::wstring sFormatDataString = XmlUtils::GetLower(strUrl.substr(5, nFind - 5));
 														{
-															int nFind1 = sFormatDataString.Find(_T("base64"));
+															int nFind1 = (int)sFormatDataString.find(_T("base64"));
 															if (nFind1 >=0 ) bBase64 = true;
 															
-															nFind1 = sFormatDataString.Find(_T("image/"));
+															nFind1 = (int)sFormatDataString.find(_T("image/"));
 															if (nFind1>=0)
 															{
-																int nFind2 = sFormatDataString.Find(_T(";"));
-																if (nFind2 < 0) nFind2  = sFormatDataString.GetLength();
+																int nFind2 = (int)sFormatDataString.find(_T(";"));
+																if (nFind2 < 0) nFind2  = (int)sFormatDataString.length();
 														
-																sImageExtension = sFormatDataString.Mid(nFind1 + 6, nFind2 - 6 - nFind1);
+																sImageExtension = sFormatDataString.substr(nFind1 + 6, nFind2 - 6 - nFind1);
 															}
 														}
-														strUrl.Delete(0, nFind + 1);
+														strUrl.erase(0, nFind + 1);
 
-														CStringA __s = (CStringA)strUrl;
-														int len = __s.GetLength();
+														std::string __s = std::string(strUrl.begin(), strUrl.end());
+														int len =(int)__s.length();
 														BYTE* pDstBuffer = NULL;
 														int dstLen = 0;
 
@@ -336,22 +387,22 @@ namespace PPTX
 
 															pDstBuffer = new BYTE[dstLenTemp];
 															dstLen = dstLenTemp;
-															Base64::Base64Decode(__s.GetBuffer(), len, pDstBuffer, &dstLen);
+															Base64::Base64Decode(__s.c_str(), len, pDstBuffer, &dstLen);
 														}
 														else
 														{
-															pDstBuffer = (BYTE*) __s.GetBuffer();
+															pDstBuffer = (BYTE*) __s.c_str();
 															dstLen = len;
 														}
-														if (sImageExtension.GetLength() < 1) 
+														if (sImageExtension.length() < 1) 
 														{
 															CImageFileFormatChecker checker;
-															sImageExtension = std_string2string(checker.DetectFormatByData(pDstBuffer, dstLen));								
+															sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
 														}
                                                         //папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
-                                                        CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
+                                                        std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
 														
-														OOX::CPath pathTemp = FileSystem::Directory::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+														OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
 
                                                         CFile oTempFile;
                                                         oTempFile.CreateFile(pathTemp.GetPath());
@@ -366,12 +417,12 @@ namespace PPTX
 													}
 													else
 													{
-														if (0 != strUrl.Find(_T("http:")) &&
-															0 != strUrl.Find(_T("https:")) &&
-															0 != strUrl.Find(_T("ftp:")) &&
-															0 != strUrl.Find(_T("file:")))
+														if (0 != strUrl.find(_T("http:")) &&
+															0 != strUrl.find(_T("https:")) &&
+															0 != strUrl.find(_T("ftp:")) &&
+															0 != strUrl.find(_T("file:")))
 														{
-															if (0 == strUrl.Find(_T("theme")))
+															if (0 == strUrl.find(_T("theme")))
 															{
                                                                 strUrl = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR + strUrl;
 															}
@@ -395,13 +446,13 @@ namespace PPTX
 													if (!pFill->blip.is_init())
 														pFill->blip = new PPTX::Logic::Blip();
 
-													pFill->blip->embed = new PPTX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
+													pFill->blip->embed = new OOX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
 													if (pFill->blip.is_init())
 														pFill->blip->m_namespace = _T("a");
 
 													if(oRelsGeneratorInfo.m_nOleRId > 0)
 													{
-														pFill->blip->oleRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+														pFill->blip->oleRid = OOX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
 														pFill->blip->oleFilepathBin = oRelsGeneratorInfo.m_sFilepathBin;
 														pFill->blip->oleFilepathImg = oRelsGeneratorInfo.m_sFilepathImg;
 														pFill->blip->oleRidImg = pFill->blip->embed->get();
@@ -676,6 +727,7 @@ namespace PPTX
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
 			Type								m_type;
+			std::wstring						m_namespace;
 
 		protected:
 			virtual void FillParentPointersForChilds()

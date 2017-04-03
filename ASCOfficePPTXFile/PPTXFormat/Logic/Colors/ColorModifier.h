@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,8 +42,40 @@ namespace PPTX
 		class ColorModifier : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(ColorModifier)
-		public:
+			WritingElement_AdditionConstructors(ColorModifier)
+			PPTX_LOGIC_BASE2(ColorModifier)
+
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstClr;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				name = oReader.GetName();
+
+				ReadAttributes( oReader );
+
+				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
+				{
+					ReadAttributes2( oReader );
+				}
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_string sTmp;
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), sTmp)
+				WritingElement_ReadAttributes_End( oReader )
+
+                if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
+					*val = (*val) * 1000; 
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name	= node.GetName();
@@ -54,11 +86,11 @@ namespace PPTX
 					nullable_string sTmp;
 					node.ReadAttributeBase(L"val", sTmp);
 
-					if (val.is_init() && sTmp.is_init() && sTmp->Find(TCHAR('%')) != -1)
+                    if (val.is_init() && sTmp.is_init() && sTmp->find(wchar_t('%')) != -1)
 						*val = (*val) * 1000;
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), val);
@@ -85,8 +117,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{				
-				CString _name;
-				CString sAttrNamespace;
+				std::wstring _name;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					_name = _T("w14:") + XmlUtils::GetNameNoNS(name);
@@ -102,7 +134,7 @@ namespace PPTX
 			}
 
 		public:
-			CString			name;
+			std::wstring			name;
 			nullable_int	val;
 		protected:
 			virtual void FillParentPointersForChilds(){};

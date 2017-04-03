@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,10 +39,13 @@
 #include <Logic/Biff_records/AxesUsed.h>
 #include <Logic/Biff_records/CrtLayout12A.h>
 #include <Logic/Biff_records/DataLabExt.h>
+#include <Logic/Biff_records/DataLabExtContents.h>
 #include <Logic/Biff_records/StartObject.h>
 #include <Logic/Biff_records/EndObject.h>
 #include <Logic/Biff_records/End.h>
 #include <Logic/Biff_records/ObjectLink.h>
+#include <Logic/Biff_records/FrtWrapper.h>
+#include <Logic/Biff_records/TextPropsStream.h>
 
 #include <Logic/Biff_unions/FONTLIST.h>
 #include <Logic/Biff_unions/FRAME.h>
@@ -55,6 +58,7 @@
 #include <Logic/Biff_unions/CRTMLFRT.h>
 #include <Logic/Biff_unions/ATTACHEDLABEL.h>
 #include <Logic/Biff_unions/TEXTPROPS.h>
+#include <Logic/Biff_unions/SHAPEPROPS.h>
 
 namespace XLS
 {
@@ -84,13 +88,36 @@ public:
 	{
 		if(proc.optional<DataLabExt>())
 		{
-			proc.mandatory<StartObject>();
+			while (true)
+			{
+				CFRecordType::TypeId type = proc.getNextRecordType();
+				
+				//Log::warning(CFRecordType::getStringById(type));
+
+				if (type == rt_NONE || type == rt_BOF ) break;
+				if (type == rt_EndObject) 
+				{
+					proc.SkipRecord();	
+					break;
+				}
+				else if (type == rt_Text)
+				{
+					proc.mandatory<ATTACHEDLABEL>();
+				}
+				else
+				{
+					proc.SkipRecord();	
+				}
+			}
 		}
-		if(!proc.mandatory<ATTACHEDLABEL>())
+		else
 		{
-			return false;
+			if(!proc.mandatory<ATTACHEDLABEL>())
+			{
+				return false;
+			}
 		}
-		proc.optional<EndObject>();
+
 		return true;
 	};
 };
@@ -215,33 +242,33 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 	count = proc.repeated<Parenthesis_CHARTFORMATS_1>(0, 0);
 
 	int count1 = elements_.size();
-	while(count1 > 0)
-	{
-		_chart_format cf;
 
+	_chart_format cf;
+	while(!elements_.empty())
+	{
 		if ("DataLabExt" == elements_.front()->getClassName())
 		{//необязат
+			if (cf.dataLabExt) 
+			{
+				m_arChartFormats.push_back(cf);
+				cf.attachedLABEL = NULL;
+			}
 			cf.dataLabExt = elements_.front();
 			elements_.pop_front();
 			count--;
-		}
-		if (cf.dataLabExt)
-		{//start
-			elements_.pop_front();
-			count--;
+			continue;
 		}
 		if ("ATTACHEDLABEL" == elements_.front()->getClassName())
 		{//обязат
+			if (cf.attachedLABEL)
+			{
+				m_arChartFormats.push_back(cf);
+				cf.dataLabExt = NULL;
+			}
 			cf.attachedLABEL = elements_.front();
 			elements_.pop_front();
 			count--;
-		
-			m_arChartFormats.push_back(cf);
-		}
-		if (cf.dataLabExt)
-		{//end
-			elements_.pop_front();
-			count--;
+			continue;
 		}
 	}
 	if (proc.optional<TEXTPROPS>())

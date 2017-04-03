@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,8 +48,13 @@ namespace PPTX
 		class GradFill : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(GradFill)
-
+			WritingElement_AdditionConstructors(GradFill)
+			
+			GradFill(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
+			
 			GradFill& operator=(const GradFill& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -67,8 +72,51 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_gradFill;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-		public:
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("path") == strName)
+						path = oReader;
+					else if (_T("lin") == strName)
+						lin = oReader;
+					else if (_T("tileRect") == strName)
+						tileRect = oReader;
+					else if (_T("gsLst") == strName)
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nCurDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						{
+							Gs g; GsLst.push_back(g);
+							GsLst.back().fromXML(oReader);
+						}
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rotWithShape"), rotWithShape )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("flip"), flip )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -89,7 +137,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("path") == strName)
 						{
@@ -112,7 +160,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("flip"), flip);
@@ -124,14 +172,14 @@ namespace PPTX
 				oValue.WriteNullable(lin);
 				oValue.WriteNullable(tileRect);
 
-				CString strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				std::wstring strName = m_namespace.empty() ? _T("gradFill") : (m_namespace + _T(":gradFill"));
 				return XmlUtils::CreateNode(strName, oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sAttrNamespace;
-				CString strName;
+				std::wstring sAttrNamespace;
+				std::wstring strName;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sAttrNamespace = _T("w14:");
@@ -139,7 +187,7 @@ namespace PPTX
 				}
 				else
 				{
-					strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+					strName = m_namespace.empty() ? _T("gradFill") : (m_namespace + _T(":gradFill"));
 				}
 
 				pWriter->StartNode(strName);
@@ -230,7 +278,7 @@ namespace PPTX
 			nullable<Path>				path;
 			nullable<Rect>				tileRect;
 
-			CString m_namespace;
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

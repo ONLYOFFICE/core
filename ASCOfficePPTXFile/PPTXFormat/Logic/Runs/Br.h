@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class Br : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Br)
+			WritingElement_AdditionConstructors(Br)
+			PPTX_LOGIC_BASE2(Br)
 
 			Br& operator=(const Br& oSrc)
 			{
@@ -53,15 +54,30 @@ namespace PPTX
 				rPr = oSrc.rPr;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_br;
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				rPr = node.ReadNode(_T("a:rPr"));
 				FillParentPointersForChilds();
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-			virtual CString toXML() const
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					
+					if ( _T("a:rPr") == sName )
+						rPr = oReader;
+				}
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rPr);
@@ -88,8 +104,8 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 
-			virtual CString GetText()const{return _T("\n");};
-		public:
+			virtual std::wstring GetText()const{return _T("\n");};
+
 			nullable<RunProperties> rPr;
 		protected:
 			virtual void FillParentPointersForChilds()

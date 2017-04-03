@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,7 +34,7 @@
 #define PPTX_PPTSLIDES_XMLID_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "../DocxFormat/RId.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/RId.h"
 
 namespace PPTX
 {
@@ -45,14 +45,13 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(XmlId)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name		= XmlUtils::GetNameNoNS(node.GetName());
+				m_name = XmlUtils::GetNameNoNS(node.GetName());
 				node.ReadAttributeBase(L"r:id", rid);
 				node.ReadAttributeBase(L"id", id);
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("r:id"), rid.ToString());
@@ -65,7 +64,9 @@ namespace PPTX
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteString2(0, id);
+				
 				rid.toPPTY(1, pWriter);
+				
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
@@ -81,11 +82,9 @@ namespace PPTX
 				pWriter->EndNode(_T("p:") + m_name);
 			}
 
-		public:
 			nullable_string			id;
-			PPTX::RId				rid;
-		public:
-			CString					m_name;
+			OOX::RId				rid;
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

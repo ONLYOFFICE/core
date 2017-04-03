@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,11 +39,9 @@ namespace DocFileFormat
   {
     public:
       static const unsigned short TYPE_CODE_0xF008 = 0xF008;
-
-      /// The number of shapes in this drawing
-      unsigned int csp;
-      /// The last MSOSPID given to an SP in this DG
-      int spidCur;
+     
+	  unsigned int	csp;		// The number of shapes in this drawing
+      int			spidCur;	// The last MSOSPID given to an SP in this DG
 
 	  DrawingRecord():
 	  Record(), csp(0), spidCur(0)
@@ -53,8 +51,8 @@ namespace DocFileFormat
 	  DrawingRecord( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
       Record( _reader, size, typeCode, version, instance )
       {
-	    this->csp = this->Reader->ReadUInt32();
-		this->spidCur = this->Reader->ReadInt32();
+			csp		= Reader->ReadUInt32();
+			spidCur	= Reader->ReadInt32();
       }
 
 	  virtual ~DrawingRecord()

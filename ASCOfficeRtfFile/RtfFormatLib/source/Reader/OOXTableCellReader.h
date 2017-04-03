@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -66,7 +66,7 @@ public:
 			oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
 		}
 
-		for(int i = 0; i < m_ooxTableCell->m_arrItems.size(); i++ )
+		for (size_t i = 0; i < m_ooxTableCell->m_arrItems.size(); i++ )
 		{
 			switch(m_ooxTableCell->m_arrItems[i]->getType())
 			{

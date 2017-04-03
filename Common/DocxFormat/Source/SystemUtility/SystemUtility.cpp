@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,17 +33,12 @@
 
 #if defined(_WIN32) || defined (_WIN64)
 	#include <windows.h>
-#else
-	#include "../Base/ASCString.h"
 #endif
 
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
-
-
-#include "FileSystem/FileSystem.h"
-
-//#include "AVSUtils.h"
-//#include "File.h"
+#include "../XML/Utils.h"
 
 namespace OOX
 {
@@ -51,19 +46,22 @@ namespace OOX
     {
 		CheckIsRoot();
     }
-    CPath::CPath(const CString& sName, bool bIsNorm) : m_strFilename(sName)
+
+	CPath::CPath(const std::wstring& sName, bool bIsNorm) : m_strFilename(sName)
     {
 		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
-    CPath::CPath(LPCSTR& sName, bool bIsNorm) : m_strFilename(sName)
+    CPath::CPath(const char*& sName, bool bIsNorm)
     {
+		std::string s(sName);
+		m_strFilename = std::wstring(s.begin(), s.end());
 		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
-    CPath::CPath(LPCWSTR& sName, bool bIsNorm) : m_strFilename(sName)
+    CPath::CPath(const wchar_t*& sName, bool bIsNorm) : m_strFilename(sName)
     {
 		CheckIsRoot();
 		if (bIsNorm)
@@ -85,27 +83,118 @@ namespace OOX
 		//Normalize();
         return *this;
     }
-	CPath& CPath::operator=(const CString& oSrc)
+	CPath& CPath::operator=(const std::wstring& oSrc)
     {
         m_strFilename = oSrc;
 		Normalize();
         return *this;
     }
-    CPath& CPath::operator=(LPCSTR oSrc)
+    CPath& CPath::operator=(const char* oSrc)
+    {
+		std::string s(oSrc);
+		m_strFilename = std::wstring(s.begin(), s.end());
+        Normalize();
+        return *this;
+    }
+    CPath& CPath::operator=(const wchar_t* oSrc)
     {
         m_strFilename = oSrc;
         Normalize();
         return *this;
     }
-    CPath& CPath::operator=(LPCWSTR oSrc)
-    {
-        m_strFilename = oSrc;
-        Normalize();
-        return *this;
-    }
+	void CPath::Normalize()
+	{
+		if (0 == m_strFilename.length())
+			return;
+
+		//todooo оптимизировать 
+		XmlUtils::replace_all(m_strFilename, L"/", FILE_SEPARATOR_STR);
+		XmlUtils::replace_all(m_strFilename, L"\\", FILE_SEPARATOR_STR);
+
+		const wchar_t*  pData   = m_strFilename.c_str();
+        int             nLen    = (int) m_strFilename.length();
+
+        wchar_t*    pDataNorm       = new wchar_t   [nLen + 1];
+        int*        pSlashPoints    = new int       [nLen + 1];
+
+        int nStart          = 0;
+        int nCurrent        = 0;
+        int nCurrentSlash   = -1;
+        int nCurrentW       = 0;
+        bool bIsUp          = false;
+
+#if !defined(_WIN32) && !defined (_WIN64)
+        if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+            pDataNorm[nCurrentW++] = pData[nCurrent];
+#endif
+		while (nCurrent < nLen)
+		{
+            if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
+			{
+				if (nStart < nCurrent)
+				{
+					bIsUp = false;
+					if ((nCurrent - nStart) == 2)
+					{
+						if (pData[nStart] == (wchar_t)'.' && pData[nStart + 1] == (wchar_t)'.')
+						{
+							if (nCurrentSlash > 0)
+							{
+								--nCurrentSlash;
+								nCurrentW = pSlashPoints[nCurrentSlash];
+								bIsUp = true;
+							}
+						}
+					}
+					if (!bIsUp)
+					{
+                        pDataNorm[nCurrentW++] = (wchar_t) FILE_SEPARATOR_CHAR;
+						++nCurrentSlash;
+						pSlashPoints[nCurrentSlash] = nCurrentW;
+					}
+				}
+				nStart = nCurrent + 1;					
+				++nCurrent;
+				continue;
+			}
+			pDataNorm[nCurrentW++] = pData[nCurrent];
+			++nCurrent;
+		}
+
+		pDataNorm[nCurrentW] = (wchar_t)'\0';
+
+		m_strFilename = std::wstring(pDataNorm, nCurrentW);
+
+		delete []pSlashPoints;
+		delete []pDataNorm;				
+	}
+
+
+	bool CPath::FileInDirectoryCorrect()
+	{
+		std::wstring fileDirectory = GetDirectory(false);
+
+        std::wstring lowerFileName = XmlUtils::GetLower(m_strFilename);
+
+        std::vector<std::wstring> trueArray;
+
+		NSDirectory::GetFiles2(fileDirectory, trueArray);
+
+        for (size_t i = 0; i < trueArray.size(); i++)
+		{
+            std::wstring lowerTest = XmlUtils::GetLower(trueArray[i]);
+
+			if (lowerTest == lowerFileName)
+			{
+				m_strFilename = trueArray[i];
+				return true;
+			}
+		}
+		return false;
+	}
 
     /*
-	AVSINLINE CString CPath::GetExtention(bool bIsPoint) const
+	AVSINLINE std::wstring CPath::GetExtention(bool bIsPoint) const
     {
         int nFind = m_strFilename.ReverseFind('.');
         if (-1 == nFind)
@@ -114,11 +203,11 @@ namespace OOX
         if (!bIsPoint)
             ++nFind;
 
-        return m_strFilename.Mid(nFind);
+        return m_strFilename.substr(nFind);
     }
     */
     /*
-    AVSINLINE CString CPath::GetDirectory(bool bIsSlash) const
+    AVSINLINE std::wstring CPath::GetDirectory(bool bIsSlash) const
     {
         int nPos = m_strFilename.ReverseFind('\\');
         if (-1 == nPos)
@@ -129,12 +218,12 @@ namespace OOX
         {
             if (bIsSlash)
                 ++nPos;
-            return m_strFilename.Mid(0, nPos);
+            return m_strFilename.substr(0, nPos);
         }
     }
     */
     /*
-    AVSINLINE CString CPath::GetPath() const
+    AVSINLINE std::wstring CPath::GetPath() const
     {
         return m_strFilename;
     }
@@ -143,13 +232,11 @@ namespace OOX
 
 namespace OOX
 {
-    bool CSystemUtility::CreateFile(const CString& strFileName)
+    bool CSystemUtility::CreateFile(const std::wstring& strFileName)
     {
 #if defined(_WIN32) || defined (_WIN64)
-		BSTR strPath = strFileName.AllocSysString();
-        HANDLE hResult = ::CreateFile(strPath, GENERIC_READ, 0, NULL, 
+        HANDLE hResult = ::CreateFile(strFileName.c_str(), GENERIC_READ, 0, NULL, 
             CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-        SysFreeString(strPath);
 
         if (hResult == INVALID_HANDLE_VALUE)
             return false;
@@ -158,7 +245,7 @@ namespace OOX
         
         return true;
 #else
-        std::string path_string = stringWstingToUtf8String(strFileName);
+        std::string path_string = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName);
         FILE * pFile = fopen (path_string.c_str(), "wb");
         if (NULL != pFile)
         {
@@ -170,27 +257,27 @@ namespace OOX
 #endif
     }
 
-    bool CSystemUtility::IsFileExist(const CString& strFileName)
+    bool CSystemUtility::IsFileExist(const std::wstring& strFileName)
     {
-        return FileSystem::File::Exists(strFileName);
+        return NSFile::CFileBinary::Exists(strFileName);
     }
     bool CSystemUtility::IsFileExist(const CPath& oPath)
     {
         return IsFileExist(oPath.GetPath());
     }
 
-    CString CSystemUtility::GetDirectoryName(const CString& strFileName)
+    std::wstring CSystemUtility::GetDirectoryName(const std::wstring& strFileName)
     {
         CPath oPath(strFileName);
         return oPath.GetDirectory();
     }
 
-    int CSystemUtility::GetFilesCount(const CString& strDirPath, const bool& bRecursive)
+    int CSystemUtility::GetFilesCount(const std::wstring& strDirPath, const bool& bRecursive)
     {
-        return FileSystem::Directory::GetFilesCount(strDirPath, bRecursive);
+        return NSDirectory::GetFilesCount(strDirPath, bRecursive);
     }
 
-    CString CSystemUtility::GetFileExtention(const CString& strFileName)
+    std::wstring CSystemUtility::GetFileExtention(const std::wstring& strFileName)
     {
         CPath oPath(strFileName);
         return oPath.GetExtention();
@@ -198,10 +285,10 @@ namespace OOX
 
     bool CSystemUtility::CreateDirectories(const CPath& oPath)
     {
-		return FileSystem::Directory::CreateDirectory(oPath.GetPath());
+        return NSDirectory::CreateDirectory(oPath.GetPath());
     }
 
-    void CSystemUtility::ReplaceExtention(CString& strName, CString& str1, CString& str2)
+    void CSystemUtility::ReplaceExtention(std::wstring& strName, std::wstring& str1, std::wstring& str2)
     {
         return;
     }

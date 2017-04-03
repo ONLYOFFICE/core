@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -87,7 +87,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("name"), name);
@@ -252,7 +252,7 @@ namespace PPTX
 			}
 
 		public:
-			CString name;
+			std::wstring name;
 			std::vector<Logic::UniFill>		fillStyleLst;
 			std::vector<Logic::Ln>			lnStyleLst;
 			std::vector<Logic::EffectStyle>	effectStyleLst;

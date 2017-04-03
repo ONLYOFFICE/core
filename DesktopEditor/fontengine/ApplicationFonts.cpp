@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1327,9 +1327,9 @@ void CFontList::SetDefaultFont(std::wstring& sName)
 	}
 }
 
-void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
+void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 {
-	int nCount = oArray.GetCount();
+	size_t nCount = oArray.size();
 
 	FT_Library pLibrary = NULL;
 	if (FT_Init_FreeType(&pLibrary))
@@ -1347,7 +1347,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
 
     // определяем размер буфера, чтобы не выделять много кусков, а обойтись одним
     int nMaxFontSize = 0;
-    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+    for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
     {
         NSFile::CFileBinary oFile;
         if (oFile.OpenFile(oArray[nIndex]))
@@ -1356,7 +1356,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
             if (nSizeTmp > 100000000)
             {
                 // такие огромные шрифты не учитываем
-                oArray.RemoveAt(nIndex);
+                oArray.erase(oArray.begin() + nIndex, oArray.begin() + nIndex + 1);
                 nIndex--;
                 nCount--;
             }
@@ -1596,7 +1596,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray, int nFlag)
 }
 void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 {
-    CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory, true);
+	std::vector<std::wstring> oArray = NSDirectory::GetFiles(strDirectory, true);
 	this->LoadFromArrayFiles(oArray);
 }
 
@@ -1765,7 +1765,7 @@ static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring
 
 #endif
 
-CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
+std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 {
 #if defined(_WIN32) || defined (_WIN64)
     // Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
@@ -1791,8 +1791,9 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
     std::wstring sName;
     std::wstring sData;
 
-    std::map<std::wstring, bool> map_files;
-    CArray<std::wstring> oArray;
+    std::map<std::wstring, bool> map_files;	
+	std::vector<std::wstring> oArray;
+
     while (GetNextNameValue( HKEY_LOCAL_MACHINE, wsPath, sName, sData ) == ERROR_SUCCESS)
     {
         if (wsPath.length())
@@ -1805,7 +1806,7 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 
             if (map_files.find(sData) == map_files.end())
             {
-                oArray.Add(sData);
+                oArray.push_back(sData);
                 map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sData,true));
             }
             continue;
@@ -1820,7 +1821,7 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 
             if (map_files.find(sFileInDir) == map_files.end())
             {
-                oArray.Add(sFileInDir);
+                oArray.push_back(sFileInDir);
                 map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sFileInDir,true));
             }
             continue;
@@ -1830,13 +1831,16 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #endif
 
 #if defined(__linux__) && !defined(_MAC)
-    return NSDirectory::GetFiles(L"/usr/share/fonts", true);
+     std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/usr/share/fonts", true);
+     NSDirectory::GetFiles2(L"/usr/share/X11/fonts", _array, true);
+     NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);     
+     return _array;
 #endif
 
 #if defined(_MAC) && !defined(_IOS)
-    CArray<std::wstring> _array = NSDirectory::GetFiles(L"/Library/Fonts", true);
-    NSDirectory::GetFiles2(L"/System/Library/Fonts", _array, true);
-    return _array;
+	std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/Library/Fonts", true);
+	NSDirectory::GetFiles2(L"/System/Library/Fonts", _array, true);
+	return _array;
 #endif
     
 #ifdef _IOS
@@ -1844,11 +1848,11 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
     return GetSetupFontFiles_ios();
 #endif
 
-    CArray<std::wstring> ret;
+	std::vector<std::wstring> ret;
     return ret;
 }
 
-void CApplicationFonts::InitializeFromArrayFiles(CArray<std::wstring>& files, int nFlag)
+void CApplicationFonts::InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag)
 {
     m_oList.LoadFromArrayFiles(files, nFlag);
 }
@@ -1857,7 +1861,7 @@ void CApplicationFonts::InitializeFromArrayFiles(CArray<std::wstring>& files, in
 
 void CApplicationFonts::InitFromReg()
 {
-    CArray<std::wstring> oArray = GetSetupFontFiles();
+	std::vector<std::wstring> oArray = GetSetupFontFiles();
 	m_oList.LoadFromArrayFiles(oArray);
 }
 

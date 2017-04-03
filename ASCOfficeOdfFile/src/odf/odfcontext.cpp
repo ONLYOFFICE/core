@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,7 +32,6 @@
 
 #include "odfcontext.h"
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { 
 
@@ -107,7 +106,7 @@ void styles_container::add_style(	const std::wstring & Name,
 
         // TODO: как правильно??
         std::wstring lName = Name;
-        boost::algorithm::to_lower(lName);
+		XmlUtils::GetLower(lName);
         //if ( boost::algorithm::contains(lName, L"internet_20_link") )
         if (lName == L"internet_20_link")///???????????????
             hyperlink_style_pos_ = pos;
@@ -224,8 +223,9 @@ void styles_container::add_master_page_name(const std::wstring & StyleName, cons
 std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std::wstring & layout_name,const std::wstring & master_name)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t index =0;
+	
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].layout_name == layout_name && content[index].master_name == master_name)
 		{
@@ -251,8 +251,8 @@ std::pair<int,std::wstring> presentation_layouts_instance::add_or_find(const std
 std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std::wstring & master_name)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t  index =0;
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].master_name == master_name)
 		{
@@ -277,8 +277,8 @@ std::pair<int,std::wstring> presentation_masters_instance::add_or_find(const std
 void presentation_masters_instance::add_layout_to(const std::wstring & master_name, presentation_layouts_instance::_layout & layout)
 {
 	bool find = false;
-	int index =0;
-	for (index=0;index<content.size();index++)
+	size_t index = 0;
+	for (index = 0; index < content.size(); index++)
 	{
 		if (content[index].master_name == master_name)
 		{

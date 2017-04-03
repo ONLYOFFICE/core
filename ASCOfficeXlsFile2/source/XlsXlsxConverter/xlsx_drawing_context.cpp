@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -340,7 +340,7 @@ bool xlsx_drawing_context::start_drawing(int type)
 external_items::Type xlsx_drawing_context::getType()
 {
 	if (current_drawing_states == NULL)		return external_items::typeUnknown;
-	if (current_drawing_states->size() < 1) return external_items::typeUnknown;
+	if (current_drawing_states->empty()) return external_items::typeUnknown;
 
 	return current_drawing_states->back()->type;
 }
@@ -366,7 +366,8 @@ void xlsx_drawing_context::start_comment()
 
 	current_drawing_states->push_back(create_drawing_state());
 
-	current_drawing_states->back()->type = external_items::typeComment;
+	current_drawing_states->back()->type			= external_items::typeComment;
+	//current_drawing_states->back()->vmlwrite_mode_	= true; это только для HF !!!
 	
 	count_object++;
 
@@ -435,29 +436,29 @@ void xlsx_drawing_context::start_shape(int type)
 
 void xlsx_drawing_context::set_id(int id)
 {
-	if (current_drawing_states == NULL)		return;
-	if (current_drawing_states->size() < 1) return;
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->id = id;
 }
 void xlsx_drawing_context::set_FlipH()
 {
-	if (current_drawing_states == NULL)		return;
-	if (current_drawing_states->size() < 1) return;
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->flipH = true;
 }
 void xlsx_drawing_context::set_FlipV()
 {
 	if (current_drawing_states == NULL)		return;
-	if (current_drawing_states->size() < 1) return;
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->flipV = true;
 }
 void xlsx_drawing_context::set_shape_id(int id)
 {
-	if (current_drawing_states == NULL)		return;
-	if (current_drawing_states->size() < 1) return;
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	if (current_drawing_states->back()->bTextBox)	return;
 
@@ -465,13 +466,15 @@ void xlsx_drawing_context::set_shape_id(int id)
 }
 void xlsx_drawing_context::set_object_visible	(bool val)
 {
-	if (current_drawing_states == NULL);
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->object.visible = val;
 }
 void xlsx_drawing_context::set_object_anchor	(int col, int row)
 {
-	if (current_drawing_states == NULL);
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->object.col = col;
 	current_drawing_states->back()->object.row = row;
@@ -484,8 +487,9 @@ void xlsx_drawing_context::set_object_id(int val)
 
 void xlsx_drawing_context::end_drawing()
 {
-	if (current_drawing_states == NULL)		return;
-	if (current_drawing_states->size() < 1) return;
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
 	if (current_drawing_states->back()->type == external_items::typeGroup)  return;
 	
 	end_drawing(current_drawing_states->back());
@@ -566,6 +570,7 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 void xlsx_drawing_context::serialize_group()
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 
 	_drawing_state_ptr & drawing_state = current_drawing_states->front();
 	std::wstringstream strm;
@@ -719,14 +724,18 @@ void xlsx_drawing_context::serialize_shape_comment(_drawing_state_ptr & drawing_
 				CP_XML_NODE(L"x:MoveWithCells"){}
 				CP_XML_NODE(L"x:SizeWithCells"){}
 
-				std::wstringstream strmAnchor;
-				strmAnchor	<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
-						<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)		<< L", " 
-						<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)			<< L", " 
-						<< drawing_state->sheet_anchor.rwTo		<< L", " << (int)(2 * drawing_state->sheet_anchor.yTo / 12700.); 
-				if (!strmAnchor.str().empty())
-				{
-					CP_XML_NODE(L"x:Anchor"){CP_XML_CONTENT(strmAnchor.str());}
+				if (drawing_state->sheet_anchor.xFrom >= 0 && drawing_state->sheet_anchor.yFrom > 0)
+				{//old xls don't have this
+					std::wstringstream strmAnchor;
+					strmAnchor	
+							<< drawing_state->sheet_anchor.colFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.xFrom / 12700.)	<< L", " 
+							<< drawing_state->sheet_anchor.rwFrom	<< L", " << (int)(2 * drawing_state->sheet_anchor.yFrom / 12700.)	<< L", " 
+							<< drawing_state->sheet_anchor.colTo	<< L", " << (int)(2 * drawing_state->sheet_anchor.xTo / 12700.)		<< L", " 
+							<< drawing_state->sheet_anchor.rwTo		<< L", " << (int)(2 * drawing_state->sheet_anchor.yTo / 12700.); 
+					if (!strmAnchor.str().empty())
+					{
+						CP_XML_NODE(L"x:Anchor"){CP_XML_CONTENT(strmAnchor.str());}
+					}
 				}
 				CP_XML_NODE(L"x:AutoFill")	{CP_XML_CONTENT("False");}
 				CP_XML_NODE(L"x:Row")		{CP_XML_CONTENT(drawing_state->object.row);}
@@ -1742,6 +1751,7 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 void xlsx_drawing_context::set_child_anchor(int x, int y, int cx, int cy)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->child_anchor.x	= x;
 	current_drawing_states->back()->child_anchor.y	= y;
@@ -1751,6 +1761,7 @@ void xlsx_drawing_context::set_child_anchor(int x, int y, int cx, int cy)
 void xlsx_drawing_context::set_group_anchor(int x, int y, int cx, int cy)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->group_anchor.x	= x;
 	current_drawing_states->back()->group_anchor.y	= y;
@@ -1760,6 +1771,8 @@ void xlsx_drawing_context::set_group_anchor(int x, int y, int cx, int cy)
 void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, double cy)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
 	if (current_drawing_states->back()->type_anchor != 0) return;	
 
 	current_drawing_states->back()->absolute_anchor.x	= x;
@@ -1773,12 +1786,14 @@ void xlsx_drawing_context::set_absolute_anchor(double x, double y, double cx, do
 void xlsx_drawing_context::set_fill_texture_mode(int val)
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 		
 	current_drawing_states->back()->fill.texture_mode = (_texture_mode)val;
 }
 void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	if (str.empty()) return;
 
@@ -1788,6 +1803,7 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 void xlsx_drawing_context::set_crop_top	(double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->fill.texture_crop[1] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
@@ -1795,6 +1811,7 @@ void xlsx_drawing_context::set_crop_top	(double val)
 void xlsx_drawing_context::set_crop_bottom(double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.texture_crop[3] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
@@ -1802,6 +1819,7 @@ void xlsx_drawing_context::set_crop_bottom(double val)
 void xlsx_drawing_context::set_crop_left (double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.texture_crop[0] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
@@ -1809,6 +1827,7 @@ void xlsx_drawing_context::set_crop_left (double val)
 void xlsx_drawing_context::set_crop_right (double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.texture_crop[2] = val;
     current_drawing_states->back()->fill.texture_crop_enabled = true;
@@ -1816,12 +1835,14 @@ void xlsx_drawing_context::set_crop_right (double val)
 void xlsx_drawing_context::set_rotation (double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->rotation = val;
 }
 void xlsx_drawing_context::set_line_color (int nColor, const std::wstring & sColor)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.fill.color.sRGB = sColor;
 	current_drawing_states->back()->line.fill.color.nRGB = nColor;
@@ -1829,6 +1850,7 @@ void xlsx_drawing_context::set_line_color (int nColor, const std::wstring & sCol
 void xlsx_drawing_context::set_line_color (int index, int type)
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	_color color;
 	if (type == 3)
@@ -1853,18 +1875,21 @@ void xlsx_drawing_context::set_line_color (int index, int type)
 void xlsx_drawing_context::set_fill_angle (double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.angle = val;
 }
 void xlsx_drawing_context::set_fill_focus (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->fill.focus = val;
 }
 void xlsx_drawing_context::set_fill_color (int nColor, const std::wstring & sColor, bool background)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	if (background)	
 	{
@@ -1880,6 +1905,7 @@ void xlsx_drawing_context::set_fill_color (int nColor, const std::wstring & sCol
 void xlsx_drawing_context::set_fill_color (int index, int type, bool background)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 	
 	_color color;
 	if (type == 3)
@@ -1904,7 +1930,7 @@ void xlsx_drawing_context::set_fill_color (int index, int type, bool background)
 void xlsx_drawing_context::set_fill_opacity	(double val, bool background)
 {
 	if (current_drawing_states == NULL) return;
-	
+	if (current_drawing_states->empty()) return;
 	
 	if (background)	current_drawing_states->back()->fill.opacity2	= val;
 	else			current_drawing_states->back()->fill.opacity	= val;
@@ -1912,7 +1938,7 @@ void xlsx_drawing_context::set_fill_opacity	(double val, bool background)
 void xlsx_drawing_context::add_fill_colors(double position, const std::wstring & col)
 {
 	if (current_drawing_states == NULL) return;
-	
+	if (current_drawing_states->empty()) return;
 
 	_color color;
 	color.sRGB = col;
@@ -1921,6 +1947,7 @@ void xlsx_drawing_context::add_fill_colors(double position, const std::wstring &
 void xlsx_drawing_context::add_fill_colors(double position, int index, int type)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	_color color;
 	color.index = index;
@@ -1931,6 +1958,7 @@ void xlsx_drawing_context::add_fill_colors(double position, int index, int type)
 void xlsx_drawing_context::set_fill_type (int val)
 {
 	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->fill.type = (_fill_type) val;
 }
@@ -1938,6 +1966,7 @@ void xlsx_drawing_context::set_fill_type (int val)
 void xlsx_drawing_context::set_line_dash(int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	switch (val)
 	{
@@ -1958,6 +1987,7 @@ void xlsx_drawing_context::set_line_dash(int val)
 void xlsx_drawing_context::set_line_type (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	switch(val)
 	{
@@ -1970,6 +2000,7 @@ void xlsx_drawing_context::set_line_type (int val)
 void xlsx_drawing_context::set_line_style (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	switch(val)
 	{
@@ -1984,6 +2015,7 @@ void xlsx_drawing_context::set_line_style (int val)
 void xlsx_drawing_context::set_line_width (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.width = val;
 }
@@ -1991,48 +2023,58 @@ void xlsx_drawing_context::set_line_width (int val)
 void xlsx_drawing_context::set_line_arrow(bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.enabled = val;
 }
 void xlsx_drawing_context::set_arrow_start (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.start = val;
 }
 void xlsx_drawing_context::set_arrow_end (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.end = val;
 }
 void xlsx_drawing_context::set_arrow_start_width (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.start_width = val;
 }
 void xlsx_drawing_context::set_arrow_end_width (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.end_width = val;
 }
 void xlsx_drawing_context::set_arrow_start_length (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.start_length = val;
 }
 void xlsx_drawing_context::set_arrow_end_length (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->line.arrow.end_length = val;
 }
 //----------------------------------------------------------------------
 void xlsx_drawing_context::set_fill_old_version (_UINT32 val)
 {
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
 	unsigned char backColorIdx		= GETBITS(val, 0, 7);
 	unsigned char patternColorIdx	= GETBITS(val, 8,15);
 	unsigned char pattern			= GETBITS(val,16,23);
@@ -2086,6 +2128,9 @@ void xlsx_drawing_context::set_line_old_version (_UINT32 val)
 }
 void xlsx_drawing_context::set_flag_old_version(_UINT16 val, _UINT16 val2)
 {
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
 	unsigned short flips_flag = 0;
 	if (current_drawing_states->back()->shape_id == MSOSPT::msosptArc)
 	{
@@ -2144,6 +2189,7 @@ void xlsx_drawing_context::set_flag_old_version(_UINT16 val, _UINT16 val2)
 void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::wstring & display, bool is_external)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	std::wstring sId			= std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_.size()+1);
 	std::wstring link_correct	= link;
@@ -2161,72 +2207,84 @@ void xlsx_drawing_context::set_hyperlink(const std::wstring & link, const std::w
 void xlsx_drawing_context::set_wordart_text(const std::wstring & text)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.text = text;
 }
 void xlsx_drawing_context::set_wordart_font(const std::wstring & val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.font = val;
 }
 void xlsx_drawing_context::set_wordart_size	(int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.size = val;
 }
 void xlsx_drawing_context::set_text_align (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.align = val;
 }
 void xlsx_drawing_context::set_text_vert_align (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.vert_align = val;
 }
 void xlsx_drawing_context::set_text_vertical (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.vertical = val;
 }
 void xlsx_drawing_context::set_text_margin(RECT & val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.margins = val;
 }
 void xlsx_drawing_context::set_text_fit_shape(bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.fit_shape = val;
 }
 void xlsx_drawing_context::set_wordart_bold	(bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.bold = val;
 }
 void xlsx_drawing_context::set_wordart_italic (bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.italic = val;
 }
 void xlsx_drawing_context::set_wordart_underline (bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.underline = val;
 }
 void xlsx_drawing_context::set_wordart_strike(bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.strike = val;
 }
@@ -2234,86 +2292,101 @@ void xlsx_drawing_context::set_wordart_strike(bool val)
 void xlsx_drawing_context::set_wordart_vertical	(bool val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.vertical = val;
 }
 void xlsx_drawing_context::set_wordart_spacing	(double val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->wordart.spacing = val;
 }
 void xlsx_drawing_context::set_text (const std::wstring & text)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.content = text;
 }
 void xlsx_drawing_context::set_text_wrap (int val)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->text.wrap = val;
 }
 void xlsx_drawing_context::set_custom_rect(_rect & rect)
 {
 	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->custom_rect = rect;
 }
 void xlsx_drawing_context::set_properties(const std::wstring & str)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->shape = str;
 }
 void xlsx_drawing_context::set_custom_verticles (std::vector<ODRAW::MSOPOINT> & points)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->custom_verticles = points;
 }
 void xlsx_drawing_context::set_custom_guides (std::vector<ODRAW::MSOSG> & guides)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
+
 	if (current_drawing_states->back()->shape_id == MSOSPT::msosptNotchedCircularArrow) return;
 	
 	current_drawing_states->back()->custom_guides = guides;
 }
 void xlsx_drawing_context::set_custom_segments (std::vector<ODRAW::MSOPATHINFO> & segments)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->custom_segments = segments;
 }
 void xlsx_drawing_context::set_custom_adjustHandles(std::vector<ODRAW::ADJH> & handles)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 	
 	current_drawing_states->back()->custom_adjustHandles = handles;
 }
 void xlsx_drawing_context::set_custom_adjustValues(std::vector<_CP_OPT(int)> & values)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->custom_adjustValues = values;
 }
 void xlsx_drawing_context::set_custom_path (int type_path)
 {
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->custom_path = type_path;
 }
 //----------------------------------------------------------------------------------------------------------
 bool xlsx_drawing_context::get_mode_vmlwrite ()
 {//comment, shapes in header/footer, ....
-	if (current_drawing_states == NULL) return false;
+	if (current_drawing_states == NULL) return false;	
+	if (current_drawing_states->empty()) return false;
 
 	return current_drawing_states->back()->vmlwrite_mode_;
 }
 void xlsx_drawing_context::set_mode_vmlwrite (bool val)
 {//comment, shapes in header/footer, ....
-	if (current_drawing_states == NULL) return;
+	if (current_drawing_states == NULL) return;	
+	if (current_drawing_states->empty()) return;
 
 	current_drawing_states->back()->vmlwrite_mode_ = val;
 }
@@ -2344,44 +2417,12 @@ bool xlsx_drawing_context::ChangeBlack2ColorImage(std::wstring sRgbColor1, std::
 
 	std::wstring image_path = context_.get_mediaitems().media_path() + drawing_state->fill.texture_target.substr(6);
 
-	int rgbColor1 = STR::hex_str2int(sRgbColor1);
-	int rgbColor2 = STR::hex_str2int(sRgbColor2);
+	size_t rgbColor1 = STR::hex_str2int(sRgbColor1);
+	size_t rgbColor2 = STR::hex_str2int(sRgbColor2);
 
 	CBgraFrame bgraFrame;
 
-	if (bgraFrame.OpenFile(image_path))
-	{
-		int smpl = abs(bgraFrame.get_Stride() / bgraFrame.get_Width());
-
-		BYTE * rgb = bgraFrame.get_Data();
-		
-		BYTE R1 = (BYTE)(rgbColor1);
-		BYTE G1 = (BYTE)(rgbColor1 >> 8);
-		BYTE B1 = (BYTE)(rgbColor1 >> 16);
-
-		BYTE R2 = (BYTE)(rgbColor2);
-		BYTE G2 = (BYTE)(rgbColor2 >> 8);
-		BYTE B2 = (BYTE)(rgbColor2 >> 16);
-
-		for (int i = 0 ; i < bgraFrame.get_Width() * bgraFrame.get_Height(); i++)
-		{
-			if (rgb[i * smpl + 0 ] == 0x00 && rgb[i * smpl + 1 ] == 0x00 && rgb[i * smpl + 2 ] == 0x00)
-			{
-				rgb[i * smpl + 0 ] = R1;
-				rgb[i * smpl + 1 ] = G1;
-				rgb[i * smpl + 2 ] = B1;
-			}
-			else
-			{
-				rgb[i * smpl + 0 ] = R2;
-				rgb[i * smpl + 1 ] = G2;
-				rgb[i * smpl + 2 ] = B2;
-			}
-		}
-		bgraFrame.SaveFile(image_path, 1); 
-		return true;
-	}
-	return false;
+	return bgraFrame.ReColorPatternImage(image_path, rgbColor1, rgbColor2);
 }
 
 void xlsx_drawing_context::serialize_vml_HF(std::wostream & strm) 

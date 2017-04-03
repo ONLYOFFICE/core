@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,17 +41,17 @@ public:
 	OOXColorReader2( )
 	{
 	}
-	bool Parse( ReaderParameter oParam, RtfColor& oOutputColor,CString sColor, CString sTheme,CString sThemeShade, CString sThemeTint )
+	bool Parse( ReaderParameter oParam, RtfColor& oOutputColor,std::wstring sColor, std::wstring sTheme,std::wstring sThemeShade, std::wstring sThemeTint )
 	{	
 		//XmlUtils::CXmlLiteReader oXmlReader;
 		//if( TRUE == oXmlReader.OpenFromXmlNode( oParam.oNode ) )
 		//{
 
-		//	CString sThemeColor = oXmlReader.ReadNodeAttribute(sTheme, L"" );
-		//	CString themeShade = oXmlReader.ReadNodeAttribute(sThemeShade, L"0" );
-		//	CString themeTint = oXmlReader.ReadNodeAttribute(sThemeTint, L"255" );
-		//	CString val = oXmlReader.ReadNodeAttribute(sColor, L"" );
-		//	if( !sThemeColor.IsEmpty() )
+		//	std::wstring sThemeColor = oXmlReader.ReadNodeAttribute(sTheme, L"" );
+		//	std::wstring themeShade = oXmlReader.ReadNodeAttribute(sThemeShade, L"0" );
+		//	std::wstring themeTint = oXmlReader.ReadNodeAttribute(sThemeTint, L"255" );
+		//	std::wstring val = oXmlReader.ReadNodeAttribute(sColor, L"" );
+		//	if( !sThemeColor.empty() )
 		//	{
 		//		//Todo  tx1 - моджет приходить text1
 		//		RtfColor::ThemeColor oTheme = RtfColor::TC_NONE;
@@ -109,7 +109,7 @@ public:
 		//			oOutputColor.SetShade( nShade );
 		//			return true;
 		//		}
-		//		else if( false == val.IsEmpty() )
+		//		else if( false == val.empty() )
 		//		{
 		//			oOutputColor.SetHEXString( val );
 		//			return true;

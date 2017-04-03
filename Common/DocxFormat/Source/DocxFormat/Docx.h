@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -103,8 +103,8 @@ namespace OOX
 
 	public:
 
-                bool Read(const CPath& oFilePath);
-                bool Write(const CPath& oFilePath)
+        bool Read(const CPath& oFilePath);
+        bool Write(const CPath& oFilePath)
 		{
 
 			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
@@ -113,9 +113,9 @@ namespace OOX
 
 			// Создаем папку
 #if defined(_WIN32) || defined (_WIN64)
-			CreateDirectoryW( oFilePath.GetPath(), NULL );
+			CreateDirectoryW( oFilePath.GetPath().c_str(), NULL );
 #else
-            std::string sFileParthUtf8 = stringWstingToUtf8String (oFilePath.GetPath());
+            std::string sFileParthUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oFilePath.GetPath());
             mkdir (sFileParthUtf8.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
 
@@ -126,7 +126,7 @@ namespace OOX
 			oRels.Write( oFilePath / FILE_SEPARATOR_STR );
 			oContent.Write( oFilePath );
 
-                        return true;
+            return true;
 		}
 
 
@@ -193,7 +193,7 @@ namespace OOX
 			{
 				OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
 
-				smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
+                smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
 				if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
 					return (OOX::CHdrFtr*)pFile.operator->();
 				else 

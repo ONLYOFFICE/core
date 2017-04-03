@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@
 #include "oox_rels.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 class CApplicationFonts;
 
@@ -81,6 +81,7 @@ public:
 							content_types_file	();
 	void					write				(const std::wstring & RootPath);
 	bool					add_or_find_default	(const std::wstring & extension);
+	bool					add_or_find_override(const std::wstring & fileName);
 	void					set_media			(mediaitems & _Mediaitems);
     content_type_content *	content				();
 
@@ -224,7 +225,18 @@ private:
     mediaitems & chartsitems_;
         
 };
+class embeddings : public element
+{
+public:
+    embeddings(mediaitems & _EmbeddingsItems);
 
+public:
+    virtual void write(const std::wstring & RootPath);
+
+private:
+    mediaitems & embeddingsitems_;
+        
+};
 } // namespace package
 } // namespace oox
 } // namespace cpdoccore

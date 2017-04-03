@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -159,8 +159,8 @@ public:
 
 	std::wstring				get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(odf_types::color)				draw_start_color_;
-	_CP_OPT(odf_types::color)				draw_end_color_;
+	_CP_OPT(odf_types::color)			draw_start_color_;
+	_CP_OPT(odf_types::color)			draw_end_color_;
 
 	_CP_OPT(odf_types::percent)			draw_end_intensity_; 
 	_CP_OPT(odf_types::percent)			draw_start_intensity_;
@@ -169,11 +169,11 @@ public:
 	_CP_OPT(odf_types::percent)			draw_cx_;
 	
 	_CP_OPT(odf_types::percent)			draw_border_;
-	_CP_OPT(int)				draw_angle_;
-	_CP_OPT(odf_types::gradient_style)		draw_style_;
+	_CP_OPT(int)						draw_angle_;
+	_CP_OPT(odf_types::gradient_style)	draw_style_;
 
- 	_CP_OPT(std::wstring)		draw_name_;
-	_CP_OPT(std::wstring)		draw_display_name_;
+ 	_CP_OPT(std::wstring)				draw_name_;
+	_CP_OPT(std::wstring)				draw_display_name_;
 	
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void serialize(std::wostream & strm);

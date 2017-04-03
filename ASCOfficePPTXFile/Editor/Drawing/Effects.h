@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,60 +32,53 @@
 #pragma once
 
 #include <vector>
-
-#if defined(_WIN32) || defined (_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
-
+#include <string>
 
 namespace NSPresentationEditor
 {
-	class CEffect
-	{
-	public:
-		CString m_strEffect;
+    class CEffect
+    {
+    public:
+        std::wstring m_strEffect;
 
-	public:
-		CEffect() : m_strEffect(_T(""))
-		{
-		}
-		CEffect& operator=(const CEffect& oSrc)
-		{
-			m_strEffect	= oSrc.m_strEffect;
-			return *this;
-		}
-		CEffect(const CEffect& oSrc)
-		{
-			*this = oSrc;
-		}
-		~CEffect()
-		{
-		}
-	};
+    public:
+        CEffect() : m_strEffect((L""))
+        {
+        }
+        CEffect& operator=(const CEffect& oSrc)
+        {
+            m_strEffect	= oSrc.m_strEffect;
+            return *this;
+        }
+        CEffect(const CEffect& oSrc)
+        {
+            *this = oSrc;
+        }
+        ~CEffect()
+        {
+        }
+    };
 
-	class CEffects
-	{
-	public:
-		std::vector<CEffect> m_arEffects;
+    class CEffects
+    {
+    public:
+        std::vector<CEffect> m_arEffects;
 
-	public:
-		CEffects() : m_arEffects()
-		{
-		}
-		CEffects& operator=(const CEffects& oSrc)
-		{
-			m_arEffects.insert(m_arEffects.end(), oSrc.m_arEffects.begin(), oSrc.m_arEffects.end());
-			return *this;
-		}
-		CEffects(const CEffects& oSrc)
-		{
-			*this = oSrc;
-		}
-		~CEffects()
-		{
-		}
-	};
+    public:
+        CEffects() : m_arEffects()
+        {
+        }
+        CEffects& operator=(const CEffects& oSrc)
+        {
+            m_arEffects.insert(m_arEffects.end(), oSrc.m_arEffects.begin(), oSrc.m_arEffects.end());
+            return *this;
+        }
+        CEffects(const CEffects& oSrc)
+        {
+            *this = oSrc;
+        }
+        ~CEffects()
+        {
+        }
+    };
 }

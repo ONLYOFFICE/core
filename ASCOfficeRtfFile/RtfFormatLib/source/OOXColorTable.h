@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,7 +64,7 @@ public:
 	}
 	bool GetItem( ThemeColor eTheme, RtfColor& oOutput )
 	{
-		for( int i = 0 ; i < m_aTable.size(); i++ )
+		for (size_t i = 0 ; i < m_aTable.size(); i++ )
 			if( m_aTable[i].oTheme == eTheme )
 			{
 				oOutput = m_aTable[i].oColor;
@@ -72,7 +72,7 @@ public:
 			}
 		return false;
 	}
-	bool GetItem( CString sTheme, RtfColor& oOutput )
+	bool GetItem( std::wstring sTheme, RtfColor& oOutput )
 	{
 		ThemeColor oThemeColor;
 		if( true == RtfColor.GetThemeByString("",oThemeColor) )

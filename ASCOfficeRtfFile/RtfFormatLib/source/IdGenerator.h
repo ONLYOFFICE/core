@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,12 +33,7 @@
 
 #include <map>
 
-#ifdef _WIN32
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include <boost/lexical_cast.hpp>
 
 class IdGenerator
 {
@@ -76,18 +71,14 @@ public:
 
 	}
 
-	CString Generate_rId()
+    std::wstring Generate_rId()
 	{
-		CString sResult;
-		sResult.AppendFormat( L"rId%d", m_nrIdCount++ );
-		return sResult;
+        return L"rId" + std::to_wstring(m_nrIdCount++);
 	}
 
-	CString Generate_FitTextId()
+    std::wstring Generate_FitTextId()
 	{
-		CString sResult;
-		sResult.AppendFormat( L"%d", m_nFitTextIdCount++ );
-		return sResult;
+        return std::to_wstring(m_nFitTextIdCount++);
 	}
 
 	int Generate_ImageIndex()
@@ -131,12 +122,12 @@ public:
 		return m_nShapeId++;
 	}
 	
-	CString Generate_OleId()
+    std::wstring Generate_OleId()
 	{
-		CString sId;
-		sId.AppendFormat( L"%d", m_nOleId++ );
-		CString sResult = L"_1330071130";
-		sResult = sResult.Left( sResult.GetLength() - sId.GetLength() );
+        std::wstring sId = std::to_wstring(m_nOleId++);
+        std::wstring sResult = L"_1330071130";
+
+        sResult = sResult.substr(0, sResult.length() - sId.length() );
 		sResult += sId;
 		return sResult;
 	}
@@ -151,7 +142,7 @@ class OOXIdGenerator
 {
 private: 
 
-	std::map<CString, long> m_mapId;
+    std::map<std::wstring, long> m_mapId;
 	int m_nCounter;
 
 public: 
@@ -160,9 +151,9 @@ public:
 	{
 		m_nCounter = 1;
 	}
-	int GetId( CString sKey )
+    int GetId( std::wstring sKey )
 	{
-		std::map<CString, long>::iterator pPair = m_mapId.find( sKey );
+        std::map<std::wstring, long>::iterator pPair = m_mapId.find( sKey );
 		
 		if( m_mapId.end() == pPair )
 		{

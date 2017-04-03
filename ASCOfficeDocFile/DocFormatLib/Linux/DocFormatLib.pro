@@ -23,16 +23,16 @@ DEFINES +=  UNICODE \
         _UNICODE \
         _USE_XMLLITE_READER_ \
          USE_LITE_READER \
-         USE_ATL_CSTRING \
         _USE_LIBXML2_READER_ \
-        LIBXML_READER_ENABLED
+        LIBXML_READER_ENABLED \
+        DONT_WRITE_EMBEDDED_FONTS \
 
 INCLUDEPATH += \
 	../../../DesktopEditor/freetype-2.5.2/include \
 	../../../DesktopEditor/xml/libxml2/include
 
 core_mac {
-    QMAKE_MAC_SDK = macosx10.11
+    #QMAKE_MAC_SDK = macosx10.11
 }
 
 SOURCES +=  \
@@ -40,12 +40,15 @@ SOURCES +=  \
      ../../../Common/3dParty/pole/pole.cpp \
     ../../DocDocxConverter/EncryptionHeader.cpp \
     ../../DocDocxConverter/DrawingPrimitives.cpp \
-    ../../DocDocxConverter/Spa.cpp
+    ../../DocDocxConverter/Spa.cpp \
+    ../../DocDocxConverter/OleObject.cpp
 
-build_fast {
+core_release {
 SOURCES += \
     docformatlib_converter.cpp
-} else {
+}
+
+core_debug {
 SOURCES += \
     ../../DocDocxConverter/AnnotationReferenceDescriptor.cpp \
     ../../DocDocxConverter/CharacterPropertiesMapping.cpp \

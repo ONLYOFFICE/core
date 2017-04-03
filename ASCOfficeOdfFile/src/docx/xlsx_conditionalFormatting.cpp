@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -141,9 +141,9 @@ public:
 								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								if (c.rules[j].rank)		CP_XML_ATTR(L"rank",		*c.rules[j].rank);
 
-								//CP_XML_ATTR(L"bottom"			, 0);
-								//CP_XML_ATTR(L"equalAverage"	, 0);
-								//CP_XML_ATTR(L"aboveAverage"	, 0);							
+                                //CP_XML_ATTR(L"bottom"			, 0);
+                                //CP_XML_ATTR(L"equalAverage"	, 0);
+                                //CP_XML_ATTR(L"aboveAverage"	, 0);
 								if (c.rules[j].type == 1)
 								{
 									CP_XML_ATTR(L"type", *c.rules[j].formula_type);									

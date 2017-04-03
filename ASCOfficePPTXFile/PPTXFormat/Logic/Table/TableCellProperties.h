@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,7 +48,11 @@ namespace PPTX
 		class TableCellProperties : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TableCellProperties)
+			WritingElement_AdditionConstructors(TableCellProperties)
+
+			TableCellProperties()
+			{
+			}
 
 			TableCellProperties& operator=(const TableCellProperties& oSrc)
 			{
@@ -74,8 +78,49 @@ namespace PPTX
 				HorzOverflow	= oSrc.HorzOverflow;
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (_T("a:lnL") == strName)
+						LnL = oReader;
+					else if (_T("a:lnR") == strName)
+						LnR = oReader;
+					else if (_T("a:lnT") == strName)
+						LnT = oReader;
+					else if (_T("a:lnB") == strName)
+						LnB = oReader;
+					else if (_T("a:cell3D") == strName)
+						cell3D = oReader;
+					else if (_T("a:lnBlToTr") == strName)
+						LnTlToBr = oReader;
+					else if (_T("a:lnBlToTr") == strName)
+						LnBlToTr = oReader;
+					else
+						Fill.fromXML(oReader);
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("marL"), MarL )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("marR"), MarR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("marT"), MarT )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("marB"), MarB )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("vert"), Vert )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("anchor"), Anchor )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("anchorCtr"), AnchorCtr )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("horzOverflow"), HorzOverflow )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				LnL				= node.ReadNode(_T("a:lnL"));
@@ -100,7 +145,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("marL"), MarL);

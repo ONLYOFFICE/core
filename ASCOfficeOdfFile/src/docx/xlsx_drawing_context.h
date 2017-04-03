@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,35 +80,34 @@ public:
 
 	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
 
-	void start_drawing(std::wstring const & name);
-	void end_drawing();
+	void start_drawing	(std::wstring const & name);
+	void end_drawing	();
    
 	void start_group(std::wstring const & name);
-    void end_group();
-
-    void start_image(std::wstring const & path);
-    void end_image();
-   
-	void start_chart(std::wstring const & path);
-    void end_chart();
+    void end_group	();
 
 	void start_shape(int type);
 	//...пока тока общие свойства ... частные для каждого объекта пооозже
     void end_shape();
 
-	void start_object_ole();
-	void end_object_ole();
+	void start_frame();
+		void set_image		(const std::wstring & path);
+		void set_chart		(const std::wstring & path);
+		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
+		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
+		void set_text_box	();
+	void end_frame();
 
 	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
 
-	void set_translate(double x_pt, double y_pt);
-	void set_scale(double cx_pt, double cy_pt);
-	void set_rotate(double angle);
+	void set_translate	(double x_pt, double y_pt);
+	void set_scale		(double cx_pt, double cy_pt);
+	void set_rotate		(double angle);
 
-	void set_anchor(std::wstring anchor, double x_pt, double y_pt, bool group = false);
-	void set_property(odf_reader::_property p);
-    void set_clipping(const std::wstring & str );
-	void set_fill(_oox_fill & fill);
+	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
+	void set_property	(odf_reader::_property p);
+    void set_clipping	(const std::wstring & str );
+	void set_fill		(_oox_fill & fill);
 
 	std::vector<odf_reader::_property> & get_properties();
 
@@ -136,6 +135,7 @@ private:
 	void process_image				(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_);
     void process_chart				(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_);
     void process_shape				(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_);
+    void process_object				(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_);
 
 	void process_common_properties	(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_table_metrics & table_metrics);
 

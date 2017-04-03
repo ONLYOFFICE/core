@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,11 @@ namespace PPTX
 		class DefaultShapeDefinition : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(DefaultShapeDefinition)
+			WritingElement_AdditionConstructors(DefaultShapeDefinition)
+			
+			DefaultShapeDefinition()
+			{
+			}
 
 			DefaultShapeDefinition& operator=(const DefaultShapeDefinition& oSrc)
 			{
@@ -61,11 +65,32 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (_T("spPr") == strName)
+						spPr.fromXML(oReader);
+					else if (_T("bodyPr") == strName)
+						bodyPr = oReader;
+					else if (_T("lstStyle") == strName)
+						lstStyle.fromXML(oReader);
+					else if (_T("style") == strName)
+						style = oReader;
+				}
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_name		= XmlUtils::GetNameNoNS(node.GetName());
+				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -76,7 +101,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("spPr") == strName)
 							spPr = oNode;
@@ -91,11 +116,11 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(spPr);
-				oValue.Write(bodyPr);
+				oValue.WriteNullable(bodyPr);
 				oValue.Write(lstStyle);
 				oValue.WriteNullable(style);
 
@@ -105,7 +130,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteRecord1(0, spPr);
-				pWriter->WriteRecord1(1, bodyPr);
+				pWriter->WriteRecord2(1, bodyPr);
 				pWriter->WriteRecord1(2, lstStyle);
 				pWriter->WriteRecord2(3, style);
 			}
@@ -127,8 +152,8 @@ namespace PPTX
 						}
 						case 1:
 						{
-							bodyPr.m_namespace = _T("a");
-							bodyPr.fromPPTY(pReader);
+							bodyPr = BodyPr(L"a");
+							bodyPr->fromPPTY(pReader);
 							break;
 						}
 						case 2:
@@ -139,8 +164,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							style = new ShapeStyle();
-							style->m_ns = _T("a");
+							style = new ShapeStyle(L"a");
 							style->fromPPTY(pReader);
 							break;
 						}
@@ -160,7 +184,9 @@ namespace PPTX
 				pWriter->m_lFlag = 0x04;
 				spPr.toXmlWriter(pWriter);
 				pWriter->m_lFlag = 0;
-				bodyPr.toXmlWriter(pWriter);
+				
+				if (bodyPr.IsInit())
+					bodyPr->toXmlWriter(pWriter);
 				lstStyle.toXmlWriter(pWriter);
 				pWriter->Write(style);
 
@@ -169,16 +195,19 @@ namespace PPTX
 
 		public:
 			SpPr					spPr;
-			BodyPr					bodyPr;
+			nullable<BodyPr>		bodyPr;
 			TextListStyle			lstStyle;
 			nullable<ShapeStyle>	style;
-		public:
-			CString m_name;
+
+			std::wstring			m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
 				spPr.SetParentPointer(this);
-				bodyPr.SetParentPointer(this);
+				
+				if (bodyPr.IsInit())
+					bodyPr->SetParentPointer(this);
+				
 				lstStyle.SetParentPointer(this);
 				if(style.IsInit())
 					style->SetParentPointer(this);

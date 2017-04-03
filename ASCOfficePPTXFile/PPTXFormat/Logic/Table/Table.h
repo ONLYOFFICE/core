@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,11 @@ namespace PPTX
 		class Table : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Table)
+			WritingElement_AdditionConstructors(Table)
+
+			Table()
+			{
+			}
 
 			Table& operator=(const Table& oSrc)
 			{
@@ -58,8 +62,6 @@ namespace PPTX
                 tableProperties = oSrc.tableProperties;
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -72,8 +74,45 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			virtual CString toXML() const
+					if (strName == L"tblGrid")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+							if (strName1 == L"gridCol")
+							{
+								TableCol col;
+								TableCols.push_back(col);
+								TableCols.back().fromXML(oReader);
+							}
+						}
+					}
+					else if (strName == L"tblPr")
+						tableProperties = oReader;
+					else if (strName == L"tr")
+					{
+						TableRow tr;
+						TableRows.push_back(tr);
+						TableRows.back().fromXML(oReader);
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
                 oValue.WriteNullable(tableProperties);
@@ -158,7 +197,6 @@ namespace PPTX
 				pWriter->EndNode(_T("a:tbl"));
 			}
 			
-		public:
 			std::vector<TableCol>			TableCols;
 			std::vector<TableRow>			TableRows;
             nullable<TableProperties>	tableProperties;

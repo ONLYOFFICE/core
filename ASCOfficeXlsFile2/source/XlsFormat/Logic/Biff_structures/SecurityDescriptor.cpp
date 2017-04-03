@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,14 +51,6 @@ SecurityDescriptor::SecurityDescriptor(CFRecord& record)
 BiffStructurePtr SecurityDescriptor::clone()
 {
 	return BiffStructurePtr(new SecurityDescriptor(*this));
-}
-
-
-void SecurityDescriptor::store(CFRecord& record)
-{
-#pragma message("####################### SecurityDescriptor record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! SecurityDescriptor record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 

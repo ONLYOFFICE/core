@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,9 +32,6 @@
 #pragma once
 
 #if defined(_WIN32) || defined (_WIN64)
-	#include <atlwin.h>
-	#include <atltypes.h>
-	#include <atlcoll.h>
 #endif
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
@@ -46,7 +43,7 @@ namespace NSWMFToImageConverter
 	class CImageExt
 	{
 	public:
-		LONG GetImageType(CString strFile)
+		LONG GetImageType(std::wstring strFile)
 		{		
 			CFile oFile;
 			if (S_OK != oFile.OpenFile(strFile))

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,24 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void EffectDag::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+            Effects.clear();
+			ReadAttributes( oReader );
 
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring sName = oReader.GetName();
+				
+				UniEffect uni;
+				Effects.push_back(uni);
+				Effects.back().fromXML(oReader);
+			}
+		}
 		void EffectDag::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_name	= node.GetName();
@@ -47,7 +64,7 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString EffectDag::toXML() const
+		std::wstring EffectDag::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("name"), name);

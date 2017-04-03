@@ -31,7 +31,7 @@ bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
     CApplicationFonts oFonts;
     CFontManager* pFontManager = NULL;
     
-    CArray<std::wstring> fonts;
+    std::vector<std::wstring> fonts;
     if (m_bUseSystemFonts)
     {
         fonts = oFonts.GetSetupFontFiles();

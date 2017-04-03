@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -272,7 +272,7 @@ void text_section::serialize(std::wostream & _Wostream)
 			if (text_section_source_)
 				text_section_source_->serialize(CP_XML_STREAM());
  			
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}   
@@ -321,7 +321,7 @@ void text_index_body::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			for (int i = 0 ; i < index_content_main_.size(); i++)
+			for (size_t i = 0 ; i < index_content_main_.size(); i++)
 			{
 				index_content_main_[i]->serialize(CP_XML_STREAM());
 			}
@@ -350,7 +350,7 @@ void text_index_title::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			for (int i = 0 ; i < index_content_main_.size(); i++)
+			for (size_t i = 0 ; i < index_content_main_.size(); i++)
 			{
 				index_content_main_[i]->serialize(CP_XML_STREAM());
 			}
@@ -426,7 +426,7 @@ void text_tracked_changes::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {   
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize (CP_XML_STREAM());
 			}
@@ -446,7 +446,7 @@ void text_insertion::serialize(std::wostream & _Wostream)
 			if (office_change_info_)
 				office_change_info_->serialize(CP_XML_STREAM());
 
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}  
@@ -466,7 +466,7 @@ void text_deletion::serialize(std::wostream & _Wostream)
 			if (office_change_info_)
 				office_change_info_->serialize(CP_XML_STREAM());
 
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}  
@@ -489,7 +489,7 @@ void text_format_change::serialize(std::wostream & _Wostream)
 			if (office_change_info_)
 				office_change_info_->serialize(CP_XML_STREAM());
 
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}  
@@ -525,7 +525,7 @@ void text_unknown_change::serialize(std::wostream & _Wostream)
 			if (office_change_info_)
 				office_change_info_->serialize(CP_XML_STREAM());
 
-			for (int i = 0 ; i < content_.size(); i++)
+			for (size_t i = 0 ; i < content_.size(); i++)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}  

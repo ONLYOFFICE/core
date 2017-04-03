@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,7 +49,7 @@ namespace DocFileFormat
 		EndnoteReferenceCharactersPlex(NULL), FieldsPlex(NULL), FootnoteDocumentFieldsPlex(NULL),
 		EndnoteDocumentFieldsPlex(NULL), HeadersAndFootersDocumentFieldsPlex(NULL), HeaderStoriesPlex(NULL),
 		AnnotationsReferencePlex(NULL), IndividualCommentsPlex(NULL), TextboxBreakPlex(NULL), TextboxBreakPlexHeader(NULL),
-		TextboxIndividualPlex(NULL),
+		TextboxIndividualPlex(NULL),AssocNames(NULL), BookmarkAnnotNames(NULL), Captions(NULL), AutoCaptions(NULL), ListPlex(NULL),
 		OfficeDrawingPlex(NULL), OfficeDrawingPlexHeader(NULL), SectionPlex(NULL), BookmarkStartPlex(NULL), BookmarkEndPlex(NULL),
 		AutoTextPlex(NULL), AllPapxFkps(NULL), AllChpxFkps(NULL), AllPapx(NULL), AllPapxVector(NULL), AllSepx(NULL), Styles(NULL), listTable(NULL),
 		AnnotationOwners(NULL), DocProperties(NULL), listFormatOverrideTable(NULL), headerAndFooterTable(NULL), encryptionHeader(NULL)
@@ -218,10 +218,14 @@ namespace DocFileFormat
 			m_pStorage->GetStream ("WordDocument", &TableStream);
 		}
 
-		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,	FIB->m_FibWord97.lcbSttbfRMark, bOlderVersion);
-		FontTable			=	new StringTable<FontFamilyName>	(TableStream, FIB->m_FibWord97.fcSttbfFfn,		FIB->m_FibWord97.lcbSttbfFfn,	bOlderVersion);
-		BookmarkNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfBkmk,		FIB->m_FibWord97.lcbSttbfBkmk,	bOlderVersion);
-		AutoTextNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfGlsy,		FIB->m_FibWord97.lcbSttbfGlsy,	bOlderVersion);
+		RevisionAuthorTable	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfRMark,		FIB->m_FibWord97.lcbSttbfRMark,			bOlderVersion);
+		FontTable			=	new StringTable<FontFamilyName>	(TableStream, FIB->m_FibWord97.fcSttbfFfn,			FIB->m_FibWord97.lcbSttbfFfn,			bOlderVersion);
+		BookmarkNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfBkmk,			FIB->m_FibWord97.lcbSttbfBkmk,			bOlderVersion);
+		AutoTextNames		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfGlsy,			FIB->m_FibWord97.lcbSttbfGlsy,			bOlderVersion);
+		AssocNames			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAssoc,		FIB->m_FibWord97.lcbSttbfAssoc,			bOlderVersion);
+		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		bOlderVersion);
+		Captions			=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfCaption,		FIB->m_FibWord97.lcbSttbfCaption,		bOlderVersion);
+		AutoCaptions		=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAutoCaption,	FIB->m_FibWord97.lcbSttbfAutoCaption,	bOlderVersion);
 
 		if (m_pCallFunc)
 		{
@@ -268,7 +272,7 @@ namespace DocFileFormat
 		OfficeDrawingPlex					=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaMom,		FIB->m_FibWord97.lcbPlcSpaMom,		bOlderVersion);
 		OfficeDrawingPlexHeader				=	new Plex<Spa>				(Spa::GetSize(bOlderVersion),		TableStream, FIB->m_FibWord97.fcPlcSpaHdr,		FIB->m_FibWord97.lcbPlcSpaHdr,		bOlderVersion);
 
-		TextboxIndividualPlex				=	new Plex<EmptyStructure>	(EmptyStructure::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	bOlderVersion);
+		TextboxIndividualPlex				=	new Plex<FTXBXS>			(FTXBXS::STRUCTURE_SIZE,			TableStream, FIB->m_FibWord97.fcPlcftxbxTxt,	FIB->m_FibWord97.lcbPlcftxbxTxt,	bOlderVersion);
 
 		SectionPlex							=	new Plex<SectionDescriptor>	(SectionDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfSed,		FIB->m_FibWord97.lcbPlcfSed,		bOlderVersion);
 		BookmarkStartPlex					=	new Plex<BookmarkFirst>		(BookmarkFirst::STRUCTURE_SIZE,		TableStream, FIB->m_FibWord97.fcPlcfBkf,		FIB->m_FibWord97.lcbPlcfBkf,		bOlderVersion);
@@ -286,12 +290,13 @@ namespace DocFileFormat
 			}
 		}
 
-		AutoTextPlex						=	new Plex<EmptyStructure> (EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, bOlderVersion);
-		FieldsPlex							=	new Plex<FieldCharacter> (FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, bOlderVersion);
-		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter> (FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, bOlderVersion);
-		EndnoteDocumentFieldsPlex			=	new Plex<FieldCharacter> (FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldEdn, FIB->m_FibWord97.lcbPlcfFldEdn, bOlderVersion);
-		HeadersAndFootersDocumentFieldsPlex	=	new Plex<FieldCharacter> (FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldHdr, FIB->m_FibWord97.lcbPlcfFldHdr, bOlderVersion);
-
+		AutoTextPlex						=	new Plex<EmptyStructure>(EmptyStructure::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfGlsy,   FIB->m_FibWord97.lcbPlcfGlsy, bOlderVersion);
+		FieldsPlex							=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldMom, FIB->m_FibWord97.lcbPlcfFldMom, bOlderVersion);
+		FootnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldFtn, FIB->m_FibWord97.lcbPlcfFldFtn, bOlderVersion);
+		EndnoteDocumentFieldsPlex			=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldEdn, FIB->m_FibWord97.lcbPlcfFldEdn, bOlderVersion);
+		HeadersAndFootersDocumentFieldsPlex	=	new Plex<FieldCharacter>(FieldCharacter::STRUCTURE_SIZE, TableStream, FIB->m_FibWord97.fcPlcfFldHdr, FIB->m_FibWord97.lcbPlcfFldHdr, bOlderVersion);
+		ListPlex							=	new Plex<ListNumCache>	(ListNumCache::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBteLvc, FIB->m_FibWord97.lcbPlcfBteLvc, bOlderVersion);
+		
 		if (m_pCallFunc)
 		{
 			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 200000 );
@@ -366,9 +371,9 @@ namespace DocFileFormat
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < this->Text->size(); ++j, ++k )
+					for (unsigned int j = BookmarkStartEndCPs[i].first, k = 0; j < Text->size(); ++j, ++k )
 					{
-						if ( this->Text->at( j ) == 1 )
+						if ( Text->at( j ) == 1 )
 						{
 							PictureBulletsCPsMap.insert (std::make_pair( k, j ));
 						}
@@ -419,7 +424,7 @@ namespace DocFileFormat
 				int cp = SectionPlex->CharacterPositions[i + 1];
 
 				//Get the SEPX
-				VirtualStreamReader wordReader( this->WordDocumentStream, sed->fcSepx, bOlderVersion);
+				VirtualStreamReader wordReader( WordDocumentStream, sed->fcSepx, bOlderVersion);
 
 				//!!!TODO: cbSepx is the size in bytes of the rest properties part!!!
 				short cbSepx	=	wordReader.ReadInt16();
@@ -592,6 +597,11 @@ namespace DocFileFormat
 		RELEASEOBJECT(FontTable);
 		RELEASEOBJECT(BookmarkNames);
 		RELEASEOBJECT(AutoTextNames);
+		RELEASEOBJECT(AutoCaptions);
+		RELEASEOBJECT(Captions);
+		RELEASEOBJECT(BookmarkAnnotNames);
+		RELEASEOBJECT(AssocNames);
+
 		RELEASEOBJECT(IndividualFootnotesPlex);
 		RELEASEOBJECT(FootnoteReferenceCharactersPlex);
 		RELEASEOBJECT(IndividualEndnotesPlex);
@@ -613,6 +623,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(BookmarkStartPlex);
 		RELEASEOBJECT(BookmarkEndPlex);
 		RELEASEOBJECT(AutoTextPlex);
+		RELEASEOBJECT(ListPlex);
 		RELEASEOBJECT(Styles);
 		RELEASEOBJECT(listTable);
 		RELEASEOBJECT(AllPapx);
@@ -661,7 +672,7 @@ namespace DocFileFormat
 
 			//last fkp? 
 			//use full table
-			if ( i++ == ( this->AllChpxFkps->size() - 1 ) )
+			if ( i++ == ( AllChpxFkps->size() - 1 ) )
 			{
 				max = fkp->rgfcSize;
 			}
@@ -699,8 +710,7 @@ namespace DocFileFormat
 		{
 			FormattedDiskPageCHPX *fkp = (*iter);      
 
-			// get the CHPX
-
+// get the CHPX
 			for (unsigned int j = 0; j < fkp->grpchpxSize; ++j)
 			{
 				if ( ( fkp->rgfc[j] < fcMin ) && ( fkp->rgfc[j + 1] > fcMin ) )

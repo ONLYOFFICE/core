@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		class PrstGeom : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(PrstGeom)
+			WritingElement_AdditionConstructors(PrstGeom)
+			PPTX_LOGIC_BASE2(PrstGeom)
 
 			PrstGeom& operator=(const PrstGeom& oSrc)
 			{
@@ -56,8 +57,50 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_prstGeom;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:avLst")
+					{
+						if ( oReader.IsEmptyNode() )
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						{
+							std::wstring sName1 = oReader.GetName();
+							
+							if (sName1 == L"a:gd")
+							{
+								Gd gd;
+								avLst.push_back(gd);
+								avLst.back().fromXML(oReader);
+							}
+						}
+					}
+				}
+			
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), prst)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"prst", prst);
@@ -65,7 +108,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("prst"), prst.get());
@@ -116,12 +159,12 @@ namespace PPTX
 					avLst[i].SetParentPointer(this);
 			}
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("prst"), prst.get());
 
-				CString strXml = _T("");
+				std::wstring strXml = _T("");
 				size_t nCount = avLst.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += avLst[i].GetODString();

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,217 +40,217 @@
 
 namespace Base64
 {
-	const int B64_BASE64_FLAG_NONE		= 0;
-	const int B64_BASE64_FLAG_NOPAD		= 1;
-	const int B64_BASE64_FLAG_NOCRLF	= 2;
-//	const int INT_MAX					= 2147483647;    /* maximum (signed) int value */
+    const int B64_BASE64_FLAG_NONE		= 0;
+    const int B64_BASE64_FLAG_NOPAD		= 1;
+    const int B64_BASE64_FLAG_NOCRLF	= 2;
+    const int B64_BASE64_INT_MAX		= 2147483647;    /* maximum (signed) int value */
 
-	inline int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE)
-	{
-		__int64 nSrcLen4 = static_cast<__int64>(nSrcLen)*4;
-		if (nSrcLen4 > INT_MAX)
-			return -1;
+    inline int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE)
+    {
+        __int64 nSrcLen4 = static_cast<__int64>(nSrcLen)*4;
+        if (nSrcLen4 > B64_BASE64_INT_MAX)
+            return -1;
 
-		int nRet = static_cast<int>(nSrcLen4/3);
+        int nRet = static_cast<int>(nSrcLen4/3);
 
-		if ((dwFlags & B64_BASE64_FLAG_NOPAD) == 0)
-			nRet += nSrcLen % 3;
+        if ((dwFlags & B64_BASE64_FLAG_NOPAD) == 0)
+            nRet += nSrcLen % 3;
 
-		int nCRLFs = nRet / 76 + 1;
-		int nOnLastLine = nRet % 76;
+        int nCRLFs = nRet / 76 + 1;
+        int nOnLastLine = nRet % 76;
 
-		if (nOnLastLine)
-		{
-			if (nOnLastLine % 4)
-				nRet += 4-(nOnLastLine % 4);
-		}
+        if (nOnLastLine)
+        {
+            if (nOnLastLine % 4)
+                nRet += 4-(nOnLastLine % 4);
+        }
 
-		nCRLFs *= 2;
+        nCRLFs *= 2;
 
-		if ((dwFlags & B64_BASE64_FLAG_NOCRLF) == 0)
-			nRet += nCRLFs;
+        if ((dwFlags & B64_BASE64_FLAG_NOCRLF) == 0)
+            nRet += nCRLFs;
 
-		return nRet;
-	}
+        return nRet;
+    }
 
-	inline int Base64DecodeGetRequiredLength(int nSrcLen) throw()
-	{
-		return nSrcLen;
-	}
+    inline int Base64DecodeGetRequiredLength(int nSrcLen) throw()
+    {
+        return nSrcLen;
+    }
 
-        inline bool Base64Encode(const BYTE *pbSrcData, int nSrcLen, LPSTR szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE) throw()
-	{
-		static const char s_chBase64EncodingTable[64] = {
-			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-			'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',	'h',
-			'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-			'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
+    inline bool Base64Encode(const BYTE *pbSrcData, int nSrcLen, char* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE) throw()
+    {
+        static const char s_chBase64EncodingTable[64] = {
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+            'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',	'h',
+            'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+            'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
 
-		if (!pbSrcData || !szDest || !pnDestLen)
-                        return false;
+        if (!pbSrcData || !szDest || !pnDestLen)
+            return false;
 
-		if (*pnDestLen < Base64EncodeGetRequiredLength(nSrcLen, dwFlags))
-                        return false;
+        if (*pnDestLen < Base64EncodeGetRequiredLength(nSrcLen, dwFlags))
+            return false;
 
-		int nWritten( 0 );
-		int nLen1( (nSrcLen/3)*4 );
-		int nLen2( nLen1/76 );
-		int nLen3( 19 );
+        int nWritten( 0 );
+        int nLen1( (nSrcLen/3)*4 );
+        int nLen2( nLen1/76 );
+        int nLen3( 19 );
 
-		for (int i=0; i<=nLen2; i++)
-		{
-			if (i==nLen2)
-				nLen3 = (nLen1%76)/4;
+        for (int i=0; i<=nLen2; i++)
+        {
+            if (i==nLen2)
+                nLen3 = (nLen1%76)/4;
 
-			for (int j=0; j<nLen3; j++)
-			{
-				DWORD dwCurr(0);
-				for (int n=0; n<3; n++)
-				{
-					dwCurr |= *pbSrcData++;
-					dwCurr <<= 8;
-				}
-				for (int k=0; k<4; k++)
-				{
-					BYTE b = (BYTE)(dwCurr>>26);
-					*szDest++ = s_chBase64EncodingTable[b];
-					dwCurr <<= 6;
-				}
-			}
-			nWritten+= nLen3*4;
+            for (int j=0; j<nLen3; j++)
+            {
+                DWORD dwCurr(0);
+                for (int n=0; n<3; n++)
+                {
+                    dwCurr |= *pbSrcData++;
+                    dwCurr <<= 8;
+                }
+                for (int k=0; k<4; k++)
+                {
+                    BYTE b = (BYTE)(dwCurr>>26);
+                    *szDest++ = s_chBase64EncodingTable[b];
+                    dwCurr <<= 6;
+                }
+            }
+            nWritten+= nLen3*4;
 
-			if ((dwFlags & B64_BASE64_FLAG_NOCRLF)==0)
-			{
-				*szDest++ = '\r';
-				*szDest++ = '\n';
-				nWritten+= 2;
-			}
-		}
+            if ((dwFlags & B64_BASE64_FLAG_NOCRLF)==0)
+            {
+                *szDest++ = '\r';
+                *szDest++ = '\n';
+                nWritten+= 2;
+            }
+        }
 
-		if (nWritten && (dwFlags & B64_BASE64_FLAG_NOCRLF)==0)
-		{
-			szDest-= 2;
-			nWritten -= 2;
-		}
+        if (nWritten && (dwFlags & B64_BASE64_FLAG_NOCRLF)==0)
+        {
+            szDest-= 2;
+            nWritten -= 2;
+        }
 
-		nLen2 = (nSrcLen%3) ? (nSrcLen%3 + 1) : 0;
-		if (nLen2)
-		{
-			DWORD dwCurr(0);
-			for (int n=0; n<3; n++)
-			{
-				if (n<(nSrcLen%3))
-					dwCurr |= *pbSrcData++;
-				dwCurr <<= 8;
-			}
-			for (int k=0; k<nLen2; k++)
-			{
-				BYTE b = (BYTE)(dwCurr>>26);
-				*szDest++ = s_chBase64EncodingTable[b];
-				dwCurr <<= 6;
-			}
-			nWritten+= nLen2;
-			if ((dwFlags & B64_BASE64_FLAG_NOPAD)==0)
-			{
-				nLen3 = nLen2 ? 4-nLen2 : 0;
-				for (int j=0; j<nLen3; j++)
-				{
-					*szDest++ = '=';
-				}
-				nWritten+= nLen3;
-			}
-		}
+        nLen2 = (nSrcLen%3) ? (nSrcLen%3 + 1) : 0;
+        if (nLen2)
+        {
+            DWORD dwCurr(0);
+            for (int n=0; n<3; n++)
+            {
+                if (n<(nSrcLen%3))
+                    dwCurr |= *pbSrcData++;
+                dwCurr <<= 8;
+            }
+            for (int k=0; k<nLen2; k++)
+            {
+                BYTE b = (BYTE)(dwCurr>>26);
+                *szDest++ = s_chBase64EncodingTable[b];
+                dwCurr <<= 6;
+            }
+            nWritten+= nLen2;
+            if ((dwFlags & B64_BASE64_FLAG_NOPAD)==0)
+            {
+                nLen3 = nLen2 ? 4-nLen2 : 0;
+                for (int j=0; j<nLen3; j++)
+                {
+                    *szDest++ = '=';
+                }
+                nWritten+= nLen3;
+            }
+        }
 
-		*pnDestLen = nWritten;
-                return true;
-	}
+        *pnDestLen = nWritten;
+        return true;
+    }
 
-	inline int DecodeBase64Char(unsigned int ch) throw()
-	{
-		// returns -1 if the character is invalid
-		// or should be skipped
-		// otherwise, returns the 6-bit code for the character
-		// from the encoding table
-		if (ch >= 'A' && ch <= 'Z')
-			return ch - 'A' + 0;	// 0 range starts at 'A'
-		if (ch >= 'a' && ch <= 'z')
-			return ch - 'a' + 26;	// 26 range starts at 'a'
-		if (ch >= '0' && ch <= '9')
-			return ch - '0' + 52;	// 52 range starts at '0'
-		if (ch == '+')
-			return 62;
-		if (ch == '/')
-			return 63;
-		return -1;
-	}
+    inline int DecodeBase64Char(unsigned int ch) throw()
+    {
+        // returns -1 if the character is invalid
+        // or should be skipped
+        // otherwise, returns the 6-bit code for the character
+        // from the encoding table
+        if (ch >= 'A' && ch <= 'Z')
+            return ch - 'A' + 0;	// 0 range starts at 'A'
+        if (ch >= 'a' && ch <= 'z')
+            return ch - 'a' + 26;	// 26 range starts at 'a'
+        if (ch >= '0' && ch <= '9')
+            return ch - '0' + 52;	// 52 range starts at '0'
+        if (ch == '+')
+            return 62;
+        if (ch == '/')
+            return 63;
+        return -1;
+    }
 
-        inline bool Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
-	{
-		// walk the source buffer
-		// each four character sequence is converted to 3 bytes
-		// CRLFs and =, and any characters not in the encoding table
-		// are skiped
+    inline bool Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
+    {
+        // walk the source buffer
+        // each four character sequence is converted to 3 bytes
+        // CRLFs and =, and any characters not in the encoding table
+        // are skiped
 
-		if (szSrc == NULL || pnDestLen == NULL)
-                        return false;
-		
-		LPCSTR szSrcEnd = szSrc + nSrcLen;
-		int nWritten = 0;
-		
-                bool bOverflow = (pbDest == NULL) ? true : false;
-		
-		while (szSrc < szSrcEnd &&(*szSrc) != 0)
-		{
-			DWORD dwCurr = 0;
-			int i;
-			int nBits = 0;
-			for (i=0; i<4; i++)
-			{
-				if (szSrc >= szSrcEnd)
-					break;
-				int nCh = DecodeBase64Char(*szSrc);
-				szSrc++;
-				if (nCh == -1)
-				{
-					// skip this char
-					i--;
-					continue;
-				}
-				dwCurr <<= 6;
-				dwCurr |= nCh;
-				nBits += 6;
-			}
+        if (szSrc == NULL || pnDestLen == NULL)
+            return false;
 
-			if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
-                                bOverflow = true;
+        const char* szSrcEnd = szSrc + nSrcLen;
+        int nWritten = 0;
 
-			// dwCurr has the 3 bytes to write to the output buffer
-			// left to right
-			dwCurr <<= 24-nBits;
-			for (i=0; i<nBits/8; i++)
-			{
-				if(!bOverflow)
-				{
-					*pbDest = (BYTE) ((dwCurr & 0x00ff0000) >> 16);
-					pbDest++;
-				}
-				dwCurr <<= 8;
-				nWritten++;
-			}
+        bool bOverflow = (pbDest == NULL) ? true : false;
 
-		}
-		
-		*pnDestLen = nWritten;
-		
-		if(bOverflow)
-		{
-			// if (pbDest != NULL) ATLASSERT(FALSE);
-		
-                        return false;
-		}
-		
-                return true;
-	}
+        while (szSrc < szSrcEnd && (*szSrc) != 0)
+        {
+            DWORD dwCurr = 0;
+            int i;
+            int nBits = 0;
+            for (i=0; i<4; i++)
+            {
+                if (szSrc >= szSrcEnd)
+                    break;
+                int nCh = DecodeBase64Char(*szSrc);
+                szSrc++;
+                if (nCh == -1)
+                {
+                    // skip this char
+                    i--;
+                    continue;
+                }
+                dwCurr <<= 6;
+                dwCurr |= nCh;
+                nBits += 6;
+            }
+
+            if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
+                bOverflow = true;
+
+            // dwCurr has the 3 bytes to write to the output buffer
+            // left to right
+            dwCurr <<= 24-nBits;
+            for (i=0; i<nBits/8; i++)
+            {
+                if(!bOverflow)
+                {
+                    *pbDest = (BYTE) ((dwCurr & 0x00ff0000) >> 16);
+                    pbDest++;
+                }
+                dwCurr <<= 8;
+                nWritten++;
+            }
+
+        }
+
+        *pnDestLen = nWritten;
+
+        if(bOverflow)
+        {
+            // if (pbDest != NULL) ATLASSERT(FALSE);
+
+            return false;
+        }
+
+        return true;
+    }
 }
 
 #pragma pack(pop)
@@ -273,7 +273,7 @@ static const BYTE map2[] =
     0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
     0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
-static bool Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestLen)
+static bool Base64Decode(const char* szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestLen)
 {
 	const char *in = szSrc;
 	BYTE *out = pbDest;

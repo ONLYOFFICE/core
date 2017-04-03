@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,12 +32,10 @@
 
 #include "xlsx_package.h"
 
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/ref.hpp>
 #include <boost/make_shared.hpp>
 
-#include "../../../ASCOfficeOdfFile/include/cpdoccore/utf8cpp/utf8.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace oox {
 
@@ -101,9 +99,9 @@ void sheet_content::add_rel(relationship const & r)
 
 void sheet_content::add_rels(rels & r)
 {
-    BOOST_FOREACH(relationship & item, r.relationships())
+	for (int i = 0; i < r.relationships().size(); i++)
 	{
-		rels_->get_rels().add(item);
+		rels_->get_rels().add(r.relationships()[i]);
 	}
 }
 ////////////
@@ -119,36 +117,34 @@ void sheets_files::add_sheet(sheet_content_ptr sheet)
 void sheets_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
-    BOOST_FOREACH(const sheet_content_ptr & item, sheets_)
+	for (int i = 0; i < sheets_.size(); i++)
     {
-        if (item)
+        if (sheets_[i])
         {
-            count++;
-            const std::wstring fileName = std::wstring(L"sheet") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName = std::wstring(L"sheet") + std::to_wstring(i + 1) + L".xml";
             content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
             static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
             contentTypes.add_override(std::wstring(L"/xl/worksheets/") + fileName, kWSConType);
 
             if (rels_)
             {
-                const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
+                const std::wstring id = std::wstring(L"sId") + std::to_wstring(i + 1);
                 static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
                 const std::wstring fileRef = std::wstring(L"worksheets/") + fileName;
                 rels_->add(id, kWSRel, fileRef);
             }
 
-            item->get_rel_file()->set_file_name(fileName + L".rels"); 
-            rels_files relFiles;
-            relFiles.add_rel_file(item->get_rel_file());
+            sheets_[i]->get_rel_file()->set_file_name(fileName + L".rels"); 
+            
+			rels_files relFiles;
+            relFiles.add_rel_file(sheets_[i]->get_rel_file());
             relFiles.write(path);
             
             //item->get_rel_file()->write(path.string<std::wstring>());
 
-            package::simple_element(fileName, item->str()).write(path);
+            package::simple_element(fileName, sheets_[i]->str()).write(path);
         }
     }
 }
@@ -163,7 +159,7 @@ xl_files::xl_files()
 void xl_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     sheets_files_.set_rels(&rels_files_);
     sheets_files_.set_main_document( this->get_main_document() );
@@ -276,29 +272,26 @@ void xl_charts_files::add_chart(chart_content_ptr chart)
 void xl_charts_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
-    BOOST_FOREACH(const chart_content_ptr & item, charts_)
+	for (size_t i = 0; i < charts_.size(); i++)
     {
-        if (item)
+        if (charts_[i])
         {
-            count++;
-            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
+            const std::wstring fileName = std::wstring(L"chart") + std::to_wstring(i + 1) + L".xml";
             content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
            
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
             contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, item->str()).write(path);
+            package::simple_element(fileName, charts_[i]->str()).write(path);
 
-            if (item->get_rels().empty() == false)
+            if (charts_[i]->get_rels().empty() == false)
 			{
 				rels_files relFiles;
-				item->rels_file_->set_file_name(fileName + L".rels");
+				charts_[i]->rels_file_->set_file_name(fileName + L".rels");
 				
-				relFiles.add_rel_file(item->rels_file_);
+				relFiles.add_rel_file(charts_[i]->rels_file_);
 				relFiles.write(path);
 			}
         }
@@ -313,15 +306,15 @@ xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 void xl_drawings::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    BOOST_FOREACH(drawing_elm const & e, drawings_)
+	for (int i = 0; i < drawings_.size(); i++)
     {
-        package::simple_element(e.filename, e.content).write(path);        
+        package::simple_element(drawings_[i].filename, drawings_[i].content).write(path);        
 
         rels_files relFiles;
-        rels_file_ptr r = rels_file::create(e.filename + L".rels");
-        e.rels->dump_rels(r->get_rels());
+        rels_file_ptr r = rels_file::create(drawings_[i].filename + L".rels");
+        drawings_[i].rels->dump_rels(r->get_rels());
                 
         relFiles.add_rel_file(r);
         relFiles.write(path);
@@ -330,11 +323,11 @@ void xl_drawings::write(const std::wstring & RootPath)
 
 		if (vml)
 		{
-			contentTypes.add_override(L"/xl/drawings/" + e.filename, L"application/vnd.openxmlformats-officedocument.vmlDrawing");
+			contentTypes.add_override(L"/xl/drawings/" + drawings_[i].filename, L"application/vnd.openxmlformats-officedocument.vmlDrawing");
 		}
 		else
 		{
-			contentTypes.add_override(L"/xl/drawings/" + e.filename, L"application/vnd.openxmlformats-officedocument.drawing+xml");
+			contentTypes.add_override(L"/xl/drawings/" + drawings_[i].filename, L"application/vnd.openxmlformats-officedocument.drawing+xml");
 		}
     }
 }
@@ -348,16 +341,16 @@ xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
 void xl_comments::write(const std::wstring & RootPath)
 {
 	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-	FileSystem::Directory::CreateDirectory(vml_path.c_str());
+    NSDirectory::CreateDirectory(vml_path.c_str());
    
-	BOOST_FOREACH(comment_elm const & e, comments_)
+	for (int i = 0; i < comments_.size(); i++)
     {
 		content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
 
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
-        contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
+        contentTypes.add_override(std::wstring(L"/xl/") + comments_[i].filename, kWSConType);
 			
-		package::simple_element(e.filename, e.content).write(RootPath);        
+		package::simple_element(comments_[i].filename, comments_[i].content).write(RootPath);        
 	}
 }
 

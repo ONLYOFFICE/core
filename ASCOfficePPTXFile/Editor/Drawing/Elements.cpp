@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -125,11 +125,11 @@ bool NSPresentationEditor::CShapeElement::SetUpTextPlaceholder(std::wstring newT
 	bool result = false;
 	NSPresentationEditor::CTextAttributesEx* pText = &m_oShape.m_oText;
 
-	for (int p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
+	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{
 		if (pText->m_arParagraphs[p].m_arSpans.size() >0)//??? по всем?
 		{
-			int pos = pText->m_arParagraphs[p].m_arSpans[0].m_strText.find(L"*");
+			int pos = (int)pText->m_arParagraphs[p].m_arSpans[0].m_strText.find(L"*");
 			
 			if (pos >= 0)
 			{

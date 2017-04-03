@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,6 @@
 
 #include "RunBase.h"
 #include "./../RunProperties.h"
-//#include "../../../../Common/DocxFormat/Source/Utility/Encoding.h"
 
 namespace PPTX
 {
@@ -44,7 +43,8 @@ namespace PPTX
 		class Run : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Run)
+			WritingElement_AdditionConstructors(Run)
+			PPTX_LOGIC_BASE2(Run)
 
 			Run& operator=(const Run& oSrc)
 			{
@@ -56,8 +56,31 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_r;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if ( oReader.IsEmptyNode() )
+					return;
 
-		public:
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+					if ( L"a:rPr" == sName )
+					{
+						rPr =  oReader ;
+					}
+					else if ( L"a:t" == sName )
+					{
+						if (!text.IsInit())
+							text = oReader.GetText2();
+					}
+
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;
@@ -69,7 +92,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("rPr") == strName)
 						{
@@ -86,19 +109,14 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rPr);
 				
 				if (text.IsInit())
                 {
-                    CString s = *text;
-                    s.Replace(_T("&"),	_T("&amp;"));
-                    s.Replace(_T("'"),	_T("&apos;"));
-                    s.Replace(_T("<"),	_T("&lt;"));
-                    s.Replace(_T(">"),	_T("&gt;"));
-                    s.Replace(_T("\""),	_T("&quot;"));
+                    std::wstring s = XmlUtils::EncodeXmlString(*text);
 
                     oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
                 }
@@ -142,8 +160,8 @@ namespace PPTX
 					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
 			}
 
-			virtual CString GetText()const{return text.get_value_or(_T(""));};
-			void SetText(const CString& srcText)
+			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
+			void SetText(const std::wstring& srcText)
 			{
 				text = srcText;
 			}

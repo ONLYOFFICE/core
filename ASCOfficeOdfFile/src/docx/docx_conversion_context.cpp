@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,7 +52,8 @@
 #include "oox_rels.h"
 #include "logging.h"
 
-#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 static int current_id_changes = 0;
 
@@ -82,6 +83,8 @@ void text_tracked_context::start_changes_content()
 
 void text_tracked_context::end_changes_content()
 {
+	docx_context_.finish_run();	//0106GS-GettingStartedWithWriter_el.odt - удаленный заголовок
+
 	current_state_.content.push_back(changes_stream_.str());
 	
 	docx_context_.set_delete_text_state	(false);		
@@ -130,8 +133,8 @@ text_tracked_context::_state & text_tracked_context::get_tracked_change(std::wst
 //----------------------------------------------------------------------------------------------------------------
 
 docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfDocument) : 
-	mediaitems_			(OdfDocument->get_folder() ),
 	next_dump_page_properties_	(false),
+	page_break_					(false),
 	page_break_after_			(false),
 	page_break_before_			(false),
 	in_run_						(false),
@@ -150,7 +153,8 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * OdfD
 	delayed_converting_			(false),
 	process_headers_footers_	(false),
 	process_comment_			(false),
-	math_context_				(false),
+	mediaitems_					(OdfDocument->get_folder() ),
+	math_context_				(OdfDocument->odf_context().fontContainer(), false),
 	odf_document_				(OdfDocument)
 {
 	streams_man_		= streams_man::create(temp_stream_);
@@ -320,7 +324,7 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
 	
 	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
-    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+    XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 	
 	return hyperlinks_.add(href_correct, type, draw);
 }
@@ -565,7 +569,8 @@ mc:Ignorable=\"w14 wp14\">";
         
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);		
-        for (int i = 0; i < (std::min)( content.size(), (size_t)9); i++)
+       
+		for (size_t i = 0; i < (std::min)( content.size(), (size_t)9); i++)
         {
             start_text_list_style(inst->get_text_list_style()->get_style_name());
             content[i]->docx_convert(*this);
@@ -832,13 +837,20 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
  //in_styles = true -> styles.xml
 //почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
 {
+	bool in_drawing	= false;
+
+ 	if (get_drawing_context().get_current_shape() || get_drawing_context().get_current_frame())
+	{
+		in_drawing = true;
+	}
 	std::wstringstream & paragraph_style	= get_styles_context().paragraph_nodes();
  	std::wstringstream & run_style			= get_styles_context().text_style();
    
 	CP_XML_WRITER(strm)
 	{
+		//Tutor_Charlotte_Tutor_the_Entire_World_.odt
 		if (get_section_context().dump_.empty() == false && (!ParentId.empty() || get_section_context().get().is_dump_ || in_header_) 
-			 && !get_table_context().in_table())
+			 && !get_table_context().in_table() && !in_drawing)
 		{//две подряд секции или если стиль определен и в заголовки нельзя пихать !!!
 			CP_XML_NODE(L"w:pPr")
 			{
@@ -853,7 +865,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 		{		
 			CP_XML_NODE(L"w:pPr")
 			{
-				if ( !get_table_context().in_table() )
+				if ( !get_table_context().in_table() && !in_drawing)
 				{
 					CP_XML_STREAM() << get_section_context().dump_;
 					get_section_context().dump_.clear();
@@ -1280,14 +1292,14 @@ void docx_conversion_context::start_text_changes (std::wstring id)
 		if (state.type	== 1)
 		{
 
-			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+			output_stream() << L"<w:ins" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
 		}
 		
 		if (state.type	== 2)
 		{
-			for (int i = 0 ; i < state.content.size(); i++)
+			for (size_t i = 0 ; i < state.content.size(); i++)
 			{
-				output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) <<  L"\">";
+				output_stream() << L"<w:del" << format_change << L" w:id=\"" << boost::lexical_cast<std::wstring>(current_id_changes++) <<  L"\">";
 
 				output_stream() << state.content[i];
 
@@ -1319,7 +1331,7 @@ void docx_conversion_context::start_changes()
 		std::wstring change_attr;
 		change_attr += L" w:date=\""	+ state.date	+ L"\"";
 		change_attr += L" w:author=\""	+ state.author	+ L"\"";
-		change_attr += L" w:id=\""		+ std::to_wstring(current_id_changes++) + L"\"";
+		change_attr += L" w:id=\""		+ boost::lexical_cast<std::wstring>(current_id_changes++) + L"\"";
 
 		if (state.type	== 1)
 		{

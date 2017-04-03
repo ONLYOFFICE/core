@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "CxnSp.h"
 #include "SpTree.h"
@@ -41,28 +41,58 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
-		CxnSp::CxnSp()
+		CxnSp::CxnSp(std::wstring ns)
 		{
+			m_namespace = ns;
 		}
-
 		CxnSp::~CxnSp()
 		{
 		}
-
 		CxnSp::CxnSp(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const CxnSp& CxnSp::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
+		CxnSp::CxnSp(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+		}
+		const CxnSp& CxnSp::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
+		void CxnSp::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+			if ( oReader.IsEmptyNode() )
+				return;
+					
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (_T("nvCxnSpPr") == strName)
+					nvCxnSpPr = oReader;
+				else if (_T("spPr") == strName)
+					spPr = oReader;
+				else if (_T("style") == strName)
+					style = oReader;
+			}
+
+			FillParentPointersForChilds();
+		}
 
 		void CxnSp::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
 			{
@@ -72,7 +102,7 @@ namespace PPTX
 					XmlUtils::CXmlNode oNode;
 					oNodes.GetAt(i, oNode);
 
-					CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 					if (_T("nvCxnSpPr") == strName)
 						nvCxnSpPr = oNode;
@@ -86,14 +116,14 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString CxnSp::toXML() const
+		std::wstring CxnSp::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvCxnSpPr);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(_T("<p:cxnSp>"), oValue);
+			return XmlUtils::CreateNode(m_namespace + L":cxnSp", oValue);
 		}
 
 		void CxnSp::FillParentPointersForChilds()

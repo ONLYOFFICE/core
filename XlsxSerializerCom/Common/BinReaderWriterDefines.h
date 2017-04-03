@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,19 +34,19 @@
 
 namespace BinXlsxRW
 {
-	const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
-	const double g_dKoef_mm_to_twips = 20 * g_dKoef_mm_to_pt;
-	const double g_dKoef_mm_to_emu = 36000;
-	const double g_dKoef_mm_to_eightpoint = 8 * g_dKoef_mm_to_pt;
+    const double g_dKoef_mm_to_pt           = 72 / (2.54 * 10);
+    const double g_dKoef_mm_to_twips        = 20 * g_dKoef_mm_to_pt;
+    const double g_dKoef_mm_to_emu          = 36000;
+    const double g_dKoef_mm_to_eightpoint   = 8 * g_dKoef_mm_to_pt;
 
-	const static TCHAR* g_sFormatSignature = _T("XLSY");
+    const static wchar_t* g_sFormatSignature = L"XLSY";
 	const int g_nFormatVersion = 2;
 	extern int g_nCurFormatVersion;
 
 	namespace c_oFileTypes{enum c_oFileTypes
 	{
 		XLSX	= 1,
-		CSV		= 2,
+        CSV		= 2,
 		JSON	= 3
 	};} 
 
@@ -242,39 +242,41 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerWorksheetColTypes{enum c_oSerWorksheetColTypes
 	{
-		BestFit = 0,
-		Hidden = 1,
-		Max = 2,
-		Min = 3,
-		Style = 4,
-		Width = 5,
-		CustomWidth = 6
+		BestFit		= 0,
+		Hidden		= 1,
+		Max			= 2,
+		Min			= 3,
+		Style		= 4,
+		Width		= 5,
+		CustomWidth = 6,
+		OutLevel	= 7
 	};}
 	namespace c_oSerHyperlinkTypes{enum c_oSerWorksheetColTypes
 	{
-		Ref = 0,
-		Hyperlink = 1,
-		Location = 2,
-		Tooltip = 3,
-		Display = 4
+		Ref			= 0,
+		Hyperlink	= 1,
+		Location	= 2,
+		Tooltip		= 3,
+		Display		= 4
 	};}
 	namespace c_oSerSheetFormatPrTypes{enum c_oSerSheetFormatPrTypes
 	{
-		DefaultColWidth = 0,
-		DefaultRowHeight = 1,
-		BaseColWidth = 2,
-		CustomHeight = 3,
-		ZeroHeight = 4
+		DefaultColWidth		= 0,
+		DefaultRowHeight	= 1,
+		BaseColWidth		= 2,
+		CustomHeight		= 3,
+		ZeroHeight			= 4
 	};}
 	namespace c_oSerRowTypes{enum c_oSerRowTypes
 	{
-		Row = 0,
-		Style = 1,
-		Height = 2,
-		Hidden = 3,
-		Cells = 4,
-		Cell = 5,
-		CustomHeight = 6
+		Row		= 0,
+		Style	= 1,
+		Height	= 2,
+		Hidden	= 3,
+		Cells	= 4,
+		Cell	= 5,
+		CustomHeight = 6,
+		OutLevel	= 7
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{
@@ -494,7 +496,8 @@ namespace BinXlsxRW
 		SortState = 5,
 		TableColumns = 6,
 		TableStyleInfo = 7,
-		HeaderRowCount = 8
+		HeaderRowCount = 8,
+		AltTextTable = 9
 	};}
 	namespace c_oSer_TableStyleInfo{enum c_oSer_TableStyleInfo
 	{
@@ -801,6 +804,11 @@ namespace BinXlsxRW
         SparklineRef = 29,
         SparklineSqRef = 30
     };}
+	namespace c_oSer_AltTextTable{enum c_oSer_AltTextTable
+	{
+		AltText = 0,
+		AltTextSummary = 1
+	};}
 }
 
 #endif //

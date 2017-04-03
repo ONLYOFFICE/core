@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,14 +41,6 @@ BaseObjectPtr LPr::clone()
 {
 	return BaseObjectPtr(new LPr(*this));
 }
-
-
-void LPr::writeFields(CFRecord& record)
-{
-	// The record is unused
-	// EXCEPT::LE::WhatIsTheFuck("LPr must appears in the intermediate XML file while it must not.", __FUNCTION__);
-}
-
 
 void LPr::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -110,7 +110,7 @@ namespace OOX
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			CString sXml;
+			std::wstring sXml;
 			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 
 			if ( m_sCategory.IsInit() )
@@ -220,7 +220,7 @@ namespace OOX
 
 			sXml += _T("</cp:coreProperties>");
 
-			CDirectory::SaveToFile( oPath.GetPath(), sXml );
+			NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml );
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		}
 
@@ -239,30 +239,30 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		void SetCreator(CString sVal)
+		void SetCreator(std::wstring sVal)
 		{
 			m_sCreator = sVal;
 		}
-		void SetLastModifiedBy(CString sVal)
+		void SetLastModifiedBy(std::wstring sVal)
 		{
 			m_sLastModifiedBy = sVal;
 		}
 
-		nullable<CString> m_sCategory;
-		nullable<CString> m_sContentStatus;
-		nullable<CString> m_sCreated;
-		nullable<CString> m_sCreator;
-		nullable<CString> m_sDescription;
-		nullable<CString> m_sIdentifier;
-		nullable<CString> m_sKeywords;
-		nullable<CString> m_sLanguage;
-		nullable<CString> m_sLastModifiedBy;
-		nullable<CString> m_sLastPrinted;
-		nullable<CString> m_sModified;
-		nullable<CString> m_sRevision;
-		nullable<CString> m_sSubject;
-		nullable<CString> m_sTitle;
-		nullable<CString> m_sVersion;
+		nullable<std::wstring> m_sCategory;
+		nullable<std::wstring> m_sContentStatus;
+		nullable<std::wstring> m_sCreated;
+		nullable<std::wstring> m_sCreator;
+		nullable<std::wstring> m_sDescription;
+		nullable<std::wstring> m_sIdentifier;
+		nullable<std::wstring> m_sKeywords;
+		nullable<std::wstring> m_sLanguage;
+		nullable<std::wstring> m_sLastModifiedBy;
+		nullable<std::wstring> m_sLastPrinted;
+		nullable<std::wstring> m_sModified;
+		nullable<std::wstring> m_sRevision;
+		nullable<std::wstring> m_sSubject;
+		nullable<std::wstring> m_sTitle;
+		nullable<std::wstring> m_sVersion;
 	};
 } // namespace OOX
 

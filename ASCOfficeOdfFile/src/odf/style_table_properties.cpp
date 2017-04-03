@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -87,27 +87,6 @@ bool table_format_properties::add_child_element( xml::sax * Reader, const std::w
     }
 }
 
-/*
-
-[ ] w:tblStyle              Referenced Table Style
-[ ] w:tblpPr                Floating Table Positioning
-[ ] w:tblOverlap            Floating Table Allows Other Tables to Overlap
-[ ] w:bidiVisual            Visually Right to Left Table
-[ ] w:tblStyleRowBandSize   Number of Rows in Row Band
-[ ] w:tblStyleColBandSize   Number of Columns in Column Band
-[x] w:tblW                  Preferred Table Width
-[x] w:jc                    Table Alignment
-[ ] w:tblCellSpacing        Table Cell Spacing Default
-[ ] w:tblInd                Table Indent from Leading Margin
-[ ] w:tblBorders            Table Borders
-[ ] w:shd                   Table Shading
-[ ] w:tblLayout             Table Layout
-[ ] w:tblCellMar            Table Cell Margin Defaults
-[ ] w:tblLook               Table Style Conditional Formatting Settings
-[ ] w:tblPrChange           Revision Information for Table Properties
-
-*/
-
 void table_format_properties::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _tblPr = Context.get_styles_context().table_style();
@@ -115,13 +94,13 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
     if (style_rel_width_)
     {
         int w_w = (int)(0.5 + 50.0 * style_rel_width_->get_value());
-        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\"/>";
+        _tblPr << L"<w:tblW w:type=\"pct\" w:w=\"" <<  w_w << "\" />";
     }
     else if (style_width_)
     {
         int w_w = (int)(0.5 + 20.0 * style_width_->get_value_unit(length::pt));
  		if (w_w > 31680)w_w = 31680;
-       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\"/>";
+       _tblPr << L"<w:tblW w:type=\"dxa\" w:w=\"" <<  w_w << "\" />";
     }
     else
     {
@@ -147,6 +126,7 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 			if (w_val != L"center" && common_horizontal_margin_attlist_.fo_margin_left_ )
 			{
 				odf_types::length indent = common_horizontal_margin_attlist_.fo_margin_left_->get_length();
+				
 				_tblPr << L"<w:tblInd w:w=\"" << indent.get_value_unit(odf_types::length::pt) * 20 << "\" w:type=\"dxa\" />";
 			}
 		}

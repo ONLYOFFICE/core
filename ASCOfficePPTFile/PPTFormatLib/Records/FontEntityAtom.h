@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 class CRecordFontEntityAtom : public CUnknownRecord
 {
 public:
-	CStringW m_strFaceName;
+    std::wstring m_strFaceName;
 
     BYTE m_lfCharSet;
 
@@ -84,13 +84,13 @@ public:
                                                , &pStrUtf32_Conv, &pStrUtf32 [lLen]
                                                , strictConversion))
             {
-                m_strFaceName = CString((wchar_t*)pStrUtf32/*, lLen*/);
+                m_strFaceName = std::wstring((wchar_t*)pStrUtf32/*, lLen*/);
             }
             delete [] pStrUtf32;
          }
         else
         {
-            m_strFaceName = CString((wchar_t*)utf16FaceName/*, lReadByte/2*/); // по факту .. нули нам не нужны
+            m_strFaceName = std::wstring((wchar_t*)utf16FaceName/*, lReadByte/2*/); // по факту .. нули нам не нужны
         }
         m_lfCharSet = StreamUtils::ReadBYTE(pStream);
 		

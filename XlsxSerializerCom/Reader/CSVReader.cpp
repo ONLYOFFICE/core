@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,23 +38,23 @@
 
 namespace CSVReader
 {
-    void AddCell(CString &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
+    void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 	{
 		while(!oDeleteChars.empty())
 		{
 			INT nIndex = oDeleteChars.top() - nStartCell;
-			sText.Delete(nIndex);
+            sText.erase(nIndex, 1);
 			oDeleteChars.pop();
 		}
 		// Пустую не пишем
-		if (0 == sText.GetLength())
+        if (0 == sText.length())
 			return;
 
 		OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 		pCell->m_oType.Init();
 
 		WCHAR *pEndPtr;
-		double dValue = wcstod(sText, &pEndPtr);
+        double dValue = wcstod(sText.c_str(), &pEndPtr);
 		if (NULL != *pEndPtr)
 		{
 			// Не число
@@ -81,7 +81,7 @@ namespace CSVReader
 		pCell->setRowCol(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-    void ReadFromCsvToXlsx(const CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
+    void ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
 	{
 		// Создадим Workbook
 		oXlsx.CreateWorkbook();
@@ -125,23 +125,25 @@ namespace CSVReader
 		pXfs->m_oAligment->m_oWrapText->SetValue(SimpleTypes::onoffTrue);
 		pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-		std::wstring sSheetRId = _T("rId1");
+		std::wstring sSheetRId = L"rId1";
 		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
 		pWorksheet->m_oSheetData.Init();
+		
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
+		
 		pSheet->m_oName.Init();
-		pSheet->m_oName->append(_T("Sheet1"));
+		pSheet->m_oName->append(L"Sheet1");
 		pSheet->m_oSheetId.Init();
 		pSheet->m_oSheetId->SetValue(1);
 		pSheet->m_oRid.Init();
-		pSheet->m_oRid->SetValue(std_string2string(sSheetRId));
+		pSheet->m_oRid->SetValue(sSheetRId);
 
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		pWorkbook->m_oSheets.Init();
 		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 		NSFile::CFileBinary oFile;
-		if(oFile.OpenFile(string2std_string(sFileName)))
+		if(oFile.OpenFile(sFileName))
 		{
 			DWORD nFileSize = 0;
 			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
@@ -191,7 +193,7 @@ namespace CSVReader
 					if (bInQuote)
 						continue;
 					// New Cell
-					CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
+                    std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
 					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
                     bIsWrap = false;
 
@@ -213,7 +215,7 @@ namespace CSVReader
 					// New line
 					if (nStartCell != nIndex)
 					{
-						CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
+                        std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
 						AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
                         bIsWrap = false;
 					}
@@ -263,7 +265,7 @@ namespace CSVReader
 			if (nStartCell != nSize)
 			{
 				// New line
-				CString sCellText(pTemp + nStartCell, nSize - nStartCell);
+                std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
 				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 			}

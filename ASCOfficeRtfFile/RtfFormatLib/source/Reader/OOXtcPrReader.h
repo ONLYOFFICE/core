@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -92,30 +92,41 @@ public:
 			//todooo сделать реализацию с процентами
 			if( m_ooxTableCellProps->m_oTcMar->m_oBottom.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW.IsInit())
 			{
-				oOutputProperty.m_nPaddingBottom = m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingBottom = 3;
+				oOutputProperty.m_nPaddingBottom	= (int)m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW->GetValue();
+				oOutputProperty.m_nIsPaddingBottom	= 3;
 			}
 			if( m_ooxTableCellProps->m_oTcMar->m_oEnd.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oEnd->m_oW.IsInit())
 			{
-				oOutputProperty.m_nPaddingRight = m_ooxTableCellProps->m_oTcMar->m_oEnd->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingRight = 3;
+				oOutputProperty.m_nPaddingRight		= (int)m_ooxTableCellProps->m_oTcMar->m_oEnd->m_oW->GetValue();
+				oOutputProperty.m_nIsPaddingRight	= 3;
 			}
 			if( m_ooxTableCellProps->m_oTcMar->m_oStart.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oStart->m_oW.IsInit())
 			{
-				oOutputProperty.m_nPaddingLeft = m_ooxTableCellProps->m_oTcMar->m_oStart->m_oW->GetValue();
-				oOutputProperty.m_nIsPaddingLeft = 3;
+				oOutputProperty.m_nPaddingLeft		= (int)m_ooxTableCellProps->m_oTcMar->m_oStart->m_oW->GetValue();
+				oOutputProperty.m_nIsPaddingLeft	= 3;
 			}
 			if( m_ooxTableCellProps->m_oTcMar->m_oTop.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oTop->m_oW.IsInit())
 			{
-				oOutputProperty.m_nPaddingTop = m_ooxTableCellProps->m_oTcMar->m_oTop->m_oW->GetValue();
+				oOutputProperty.m_nPaddingTop	= (int)m_ooxTableCellProps->m_oTcMar->m_oTop->m_oW->GetValue();
 				oOutputProperty.m_nIsPaddingTop = 3;
 			}
 		}
 
 		if( m_ooxTableCellProps->m_oTcW.IsInit() && m_ooxTableCellProps->m_oTcW->m_oW.IsInit()) 
 		{
-			oOutputProperty.m_nWidth		= m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
-			oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
+			bool auto_ = false;
+			if (m_ooxTableCellProps->m_oTcW->m_oType.IsInit() && m_ooxTableCellProps->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthAuto)
+				auto_ = true;
+
+			if (auto_)
+			{
+				oOutputProperty.m_eWidthUnits = mu_Auto;
+			}
+			else
+			{
+				oOutputProperty.m_nWidth		= (int)m_ooxTableCellProps->m_oTcW->m_oW->GetValue();
+				oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
+			}
 		}
 		if( m_ooxTableCellProps->m_oHideMark.IsInit())
 			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool() ? 1 : 0;

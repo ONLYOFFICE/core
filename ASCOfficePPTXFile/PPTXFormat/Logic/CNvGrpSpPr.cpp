@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
          CNvGrpSpPr& CNvGrpSpPr::operator=(const CNvGrpSpPr& oSrc)
         {
             parentFile		= oSrc.parentFile;
@@ -54,6 +53,8 @@ namespace PPTX
 
 		void CNvGrpSpPr::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			XmlUtils::CXmlNode oNode;
 			if (node.GetNode(_T("a:grpSpLocks"), oNode))
 			{
@@ -66,9 +67,37 @@ namespace PPTX
 				oNode.ReadAttributeBase(L"noUngrp", noUngrp);
 			}
 		}
+		void CNvGrpSpPr::ReadAttributesLocks(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, _T("noChangeAspect"),	noChangeAspect)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noGrp"),	noGrp)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noMove"), noMove)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noResize"), noResize)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noRot"), noRot)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noSelect"), noSelect)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("noUngrp"), noUngrp)
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void CNvGrpSpPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			
+			if ( oReader.IsEmptyNode() )
+				return;
+					
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring strName = oReader.GetName();
 
-
-		CString CNvGrpSpPr::toXML() const
+				if (strName == L"a:grpSpLocks")
+				{
+					ReadAttributesLocks(oReader);
+				}
+			}
+		}
+		std::wstring CNvGrpSpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("noChangeAspect"), noChangeAspect);
@@ -79,10 +108,7 @@ namespace PPTX
 			oAttr.Write(_T("noSelect"), noSelect);
 			oAttr.Write(_T("noUngrp"), noUngrp);
 
-			if (_T("") == oAttr.m_strValue)
-				return _T("<p:cNvGrpSpPr/>");
-
-			return _T("<p:cNvGrpSpPr>") + XmlUtils::CreateNode(_T("a:grpSpLocks"), oAttr) + _T("</p:cNvGrpSpPr>");
+			return XmlUtils::CreateNode(m_namespace + L":cNvGrpSpPr", XmlUtils::CreateNode(_T("a:grpSpLocks"), oAttr));
 		}
 
 	} // namespace Logic

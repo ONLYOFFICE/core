@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "Converter.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
@@ -42,11 +42,11 @@ namespace NSBinPptxRW
 	class CPPTXWriter
 	{
 	private:
-		CBinaryFileReader	m_oReader;
-		CImageManager2		m_oImageManager;
-		CString				m_strDstFolder;
+		CBinaryFileReader			m_oReader;
+		CImageManager2				m_oImageManager;
+		std::wstring				m_strDstFolder;
 
-		std::map<BYTE, LONG> m_mainTables;
+		std::map<BYTE, LONG>		m_mainTables;
 
 		std::vector<PPTX::Theme>			m_arThemes;
 		
@@ -65,14 +65,14 @@ namespace NSBinPptxRW
 		
 		PPTX::Presentation				m_oPresentation;
 		PPTX::TableStyles				m_oTableStyles;
-		PPTX::VmlDrawing				m_oVmlDrawing;
+		OOX::CVmlDrawing				m_oVmlDrawing;
 		PPTX::App						m_oApp;
 		PPTX::Core						m_oCore;
 		PPTX::ViewProps					m_oViewProps;
 		PPTX::PresProps					m_oPresProps;
+		PPTX::NotesSlide				m_oDefaultNote;
 
         bool							m_bIsDefaultNoteMaster;
-		PPTX::NotesSlide				m_oDefaultNote;
 
 	public:
 
@@ -85,36 +85,38 @@ namespace NSBinPptxRW
 		{
 		}
 
-		void Init(CString strFolder)
+		void Init(std::wstring strFolder)
 		{
-			m_strDstFolder = strFolder;
-            OOX::CPath pathPPT = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
+            m_strDstFolder          = strFolder;
 
-            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder));
-            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder), _T("docProps"));
-            FileSystem::Directory::CreateDirectory(pathPPT.GetPath());
+            OOX::CPath pathPPT      = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
+            OOX::CPath pathDocProps = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps");
+
+            NSDirectory::CreateDirectory(m_strDstFolder);
+            NSDirectory::CreateDirectory(pathDocProps.GetPath());
+            NSDirectory::CreateDirectory(pathPPT.GetPath());
 
 			m_oImageManager.Clear();
 
             OOX::CPath pathMedia = pathPPT / _T("media");
-            FileSystem::Directory::CreateDirectory(pathMedia.GetPath());
+            NSDirectory::CreateDirectory(pathMedia.GetPath());
 
             m_oImageManager.SetDstMedia(pathMedia.GetPath());
 
             OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
-            FileSystem::Directory::CreateDirectory(pathEmbeddings.GetPath());
+            NSDirectory::CreateDirectory(pathEmbeddings.GetPath());
 
             m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
 
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 
             OOX::CPath pathTheme = pathPPT  / _T("theme");
-            FileSystem::Directory::CreateDirectory(pathTheme.GetPath());
+            NSDirectory::CreateDirectory(pathTheme.GetPath());
 
             m_oReader.m_strFolderThemes = pathTheme.GetPath();
         }
 
-        void OpenPPTY(BYTE* pBuffer, int len, CString srcFolder, CString strThemesFolder)
+        void OpenPPTY(BYTE* pBuffer, int len, std::wstring srcFolder, std::wstring strThemesFolder)
 		{
 			int start_pos = 0;
 
@@ -125,7 +127,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            CStringA __str_ppty((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            std::string __str_ppty((char*)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -135,7 +137,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            CStringA __str_version((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            std::string __str_version((char*)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -145,8 +147,8 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            CStringA __str_decode_len_ansi((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
-			CString  __str_decode_len = (CString)__str_decode_len_ansi;
+            std::string __str_decode_len_ansi((char*)(pBuffer + start_pos), cur_pos - start_pos);
+            std::wstring  __str_decode_len = std::wstring(__str_decode_len_ansi.begin(), __str_decode_len_ansi.end());
 			start_pos = cur_pos + 1;
 
 			pBuffer += start_pos;
@@ -156,7 +158,7 @@ namespace NSBinPptxRW
 
 			BYTE* pDstBuffer = new BYTE[dstLenTemp];
 			int dstLen = dstLenTemp;
-            Base64::Base64Decode((LPCSTR)pBuffer, len, pDstBuffer, &dstLen);
+            Base64::Base64Decode((const char*)pBuffer, len, pDstBuffer, &dstLen);
 
 			m_oReader.m_strContentTypes = _T("");
 			m_oReader.Init(pDstBuffer, 0, dstLen);
@@ -258,7 +260,7 @@ namespace NSBinPptxRW
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(6); // type + len + start attr
 
-				int index =0;
+				size_t index =0;
 				while (true)
 				{
 					BYTE _at = m_oReader.GetUChar_TypeNode();
@@ -306,8 +308,8 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder = m_oReader.m_strFolderThemes;
                 OOX::CPath pathFolderRels = pathFolder  + FILE_SEPARATOR_STR + _T("_rels");
 
-                FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
-                FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory(pathFolder.GetPath());
+                NSDirectory::CreateDirectory(pathFolderRels.GetPath());
 
                 m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -327,8 +329,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->StartTheme();
 					m_arThemes[i].fromPPTY(&m_oReader);
 
-					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("theme%d.xml"), i + 1);
+                    std::wstring strMasterXml = L"theme" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
 
 					m_oReader.m_pRels->CloseRels();
@@ -350,8 +351,8 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder = m_strDstFolder  + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slideMasters");
                 OOX::CPath pathFolderRels = pathFolder  + FILE_SEPARATOR_STR + _T("_rels");
 
-                FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
-                FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory(pathFolder.GetPath());
+                NSDirectory::CreateDirectory(pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -373,8 +374,7 @@ namespace NSBinPptxRW
 					{
 						arrLays.push_back(PPTX::Logic::XmlId());
 						
-						CString sId = _T("");
-						sId.Format(_T("%u"), 0x80000000 + __nCountLayouts + j + 1);
+                        std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + __nCountLayouts + j + 1));
 
 						arrLays[j].m_name = _T("sldLayoutId");
 						arrLays[j].id = sId;
@@ -384,8 +384,7 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->CloseRels();
 
-					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("slideMaster%d.xml"), i + 1);
+                    std::wstring strMasterXml = L"slideMaster" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlideMasters[i].toXmlWriter(&oXmlWriter);
@@ -405,8 +404,8 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR+ _T("ppt")  + FILE_SEPARATOR_STR + _T("slideLayouts");
                 OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
-				FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
-				FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory(pathFolder.GetPath());
+                NSDirectory::CreateDirectory(pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -421,8 +420,7 @@ namespace NSBinPptxRW
 					m_arSlideLayouts[i].fromPPTY(&m_oReader);
 					m_oReader.m_pRels->CloseRels();
 
-					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("slideLayout%d.xml"), i + 1);
+                    std::wstring strMasterXml = L"slideLayout" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlideLayouts[i].toXmlWriter(&oXmlWriter);
@@ -443,8 +441,8 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slides");
                 OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
-				FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
-				FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory (pathFolder.GetPath());
+                NSDirectory::CreateDirectory (pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -464,10 +462,9 @@ namespace NSBinPptxRW
                         OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
                         if (1 == nComment)
 						{
-                            FileSystem::Directory::CreateDirectory (pathFolderCommentDir.GetPath());
+                            NSDirectory::CreateDirectory (pathFolderCommentDir.GetPath());
 						}
-						CString strCommentFile = _T("");
-                        strCommentFile.Format(_T("comment%d.xml"), nComment);
+                        std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
 
 						oXmlWriter.ClearNoAttack();
 						m_arSlides[i].comments->toXmlWriter(&oXmlWriter);
@@ -480,8 +477,7 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->CloseRels();
 
-					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("slide%d.xml"), i + 1);
+                    std::wstring strMasterXml = L"slide" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlides[i].toXmlWriter(&oXmlWriter);
@@ -535,8 +531,8 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR  + _T("ppt")  + FILE_SEPARATOR_STR + _T("notesSlides");
                 OOX::CPath pathFolderRels	= pathFolder + FILE_SEPARATOR_STR  + _T("_rels");
 
-                FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
-                FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory (pathFolder.GetPath());
+                NSDirectory::CreateDirectory (pathFolderRels.GetPath());
 
 				LONG lCount = (LONG)m_arSlides.size();				
 				for (LONG i = 0; i < lCount; ++i)
@@ -545,8 +541,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->StartNote(i);
 					m_oReader.m_pRels->CloseRels();
 
-					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("notesSlide%d.xml"), i + 1);
+                    std::wstring strMasterXml = L"notesSlide" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
 
 					m_oDefaultNote.toXmlWriter(&oXmlWriter);
@@ -683,7 +678,7 @@ namespace NSBinPptxRW
                 OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
                 OOX::CPath pathFolderRels	= pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
-                FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
+                NSDirectory::CreateDirectory (pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oPresentation.fromPPTY(&m_oReader);
@@ -694,8 +689,8 @@ namespace NSBinPptxRW
 				{
 					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId());
 
-					CString sId = _T("");
-					sId.Format(_T("%u"), 0x80000000 + nCountLayouts);
+                    std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + nCountLayouts));
+
 					m_oPresentation.sldMasterIdLst[i].m_name = _T("sldMasterId");
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
@@ -712,9 +707,9 @@ namespace NSBinPptxRW
 				{
 					m_oPresentation.sldIdLst.push_back(PPTX::Logic::XmlId());
 
-					CString sId = _T("");
-					sId.Format(_T("%u"), 256 + i);
-					m_oPresentation.sldIdLst[i].m_name = _T("sldId");
+                    std::wstring sId = std::to_wstring(256 + i);
+
+                    m_oPresentation.sldIdLst[i].m_name = _T("sldId");
 					m_oPresentation.sldIdLst[i].id = sId;
 					m_oPresentation.sldIdLst[i].rid = (size_t)nCurrentRels;
 					++nCurrentRels;
@@ -755,7 +750,7 @@ namespace NSBinPptxRW
 
 			// content types
 			CStringWriter oContentTypes;
-			oContentTypes.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+			oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 				<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
 				<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/>\
 				<Default Extension=\"png\" ContentType=\"image/png\" />\
@@ -773,20 +768,20 @@ namespace NSBinPptxRW
 				<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
 				<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
 				<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />"));
+				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
 
 			// themes
 			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)
 			{
-				CString strTheme = _T("");
-				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), i + 1);
+                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(i + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
 				oContentTypes.WriteString(strTheme);
 			}
             if (true)
 			{
 				// notes theme
-				CString strTheme = _T("");
-				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), m_arThemes.size() + 1);
+                std::wstring strTheme = L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring((int)m_arThemes.size() + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
 				oContentTypes.WriteString(strTheme);
 
 				oContentTypes.WriteString(_T("<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>"));
@@ -795,40 +790,40 @@ namespace NSBinPptxRW
 			// masters
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-				CString strMaster = _T("");
-				strMaster.Format(_T("<Override PartName=\"/ppt/slideMasters/slideMaster%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\" />"), i + 1);
+                std::wstring strMaster = L"<Override PartName=\"/ppt/slideMasters/slideMaster" + std::to_wstring(i + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml\"/>";
 				oContentTypes.WriteString(strMaster);
 			}
 
 			// layouts
 			for (LONG i = 0; i < nCountLayouts; ++i)
 			{
-				CString strL = _T("");
-				strL.Format(_T("<Override PartName=\"/ppt/slideLayouts/slideLayout%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\" />"), i + 1);
+                std::wstring strL = L"<Override PartName=\"/ppt/slideLayouts/slideLayout" + std::to_wstring(i + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>";
 				oContentTypes.WriteString(strL);
 			}
 
 			// slides
 			for (LONG i = 0; i < nCountSlides; ++i)
 			{
-				CString strS = _T("");
-				strS.Format(_T("<Override PartName=\"/ppt/slides/slide%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\" />"), i + 1);
+                std::wstring strS = L"<Override PartName=\"/ppt/slides/slide" + std::to_wstring(i + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slide+xml\"/>";
 				oContentTypes.WriteString(strS);
 			}
 
 			// notes
 			for (LONG i = 0; i < nCountSlides; ++i)
 			{
-				CString strN = _T("");
-				strN.Format(_T("<Override PartName=\"/ppt/notesSlides/notesSlide%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>"), i + 1);
+                std::wstring strN = L"<Override PartName=\"/ppt/notesSlides/notesSlide" + std::to_wstring(i + 1) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>";
 				oContentTypes.WriteString(strN);
 			}
 
 			// slideComments
 			for (int i = 1; i < nComment; ++i)
 			{
-				CString strN = _T("");
-				strN.Format(_T("<Override PartName=\"/ppt/comments/comment%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.comments+xml\"/>"), i);
+                std::wstring strN = L"<Override PartName=\"/ppt/comments/comment" + std::to_wstring(i) +
+                        L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.comments+xml\"/>";
 				oContentTypes.WriteString(strN);				
 			}
 			// comment authors
@@ -843,12 +838,12 @@ namespace NSBinPptxRW
 
 			CFile oFile;
             oFile.CreateFile(m_strDstFolder + _T("/[Content_Types].xml"));
-			CString strContentTypes = oContentTypes.GetData();
+			std::wstring strContentTypes = oContentTypes.GetData();
 			oFile.WriteStringUTF8(strContentTypes);
 			oFile.CloseFile();
 
 
-			CString strRELS = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+			std::wstring strRELS = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/>\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"ppt/presentation.xml\"/>\
@@ -856,7 +851,7 @@ namespace NSBinPptxRW
 </Relationships>");
 
             OOX::CPath filePathRels = m_strDstFolder + FILE_SEPARATOR_STR + _T("_rels");
-            FileSystem::Directory::CreateDirectory (filePathRels.GetPath());
+            NSDirectory::CreateDirectory (filePathRels.GetPath());
 
             filePathRels = filePathRels + FILE_SEPARATOR_STR + _T(".rels");
            
@@ -892,7 +887,7 @@ namespace NSBinPptxRW
 					}
 					case 1:
 					{
-						CStringA strMaster64 = m_oReader.GetString2A();
+						std::string strMaster64 = m_oReader.GetString2A();
 						break;
 					}
 					default:
@@ -921,7 +916,7 @@ namespace NSBinPptxRW
 						}
 						case 1:
 						{
-							CStringA strLayout64 = m_oReader.GetString2A();
+							std::string strLayout64 = m_oReader.GetString2A();
 							break;
 						}
 						default:
@@ -964,16 +959,14 @@ namespace NSBinPptxRW
 
 			for (int i = 0; i < nCountThemes; ++i)
 			{
-				CString s = _T("");
-				s.Format(_T("Theme %d"), i + 1);
+                std::wstring s = L"Theme " + std::to_wstring( i + 1);
 				m_oApp.TitlesOfParts.push_back(PPTX::Logic::PartTitle());
 				m_oApp.TitlesOfParts[i].m_title = s;
 			}
 
 			for (int i = 0; i < nCountSlides; ++i)
 			{
-				CString s = _T("");
-				s.Format(_T("Slide %d"), i + 1);
+                std::wstring s = L"Slide " + std::to_wstring( i + 1);
 				m_oApp.TitlesOfParts.push_back(PPTX::Logic::PartTitle());
 				m_oApp.TitlesOfParts[nCountThemes + i].m_title = s;
 			}
@@ -1031,27 +1024,25 @@ namespace NSBinPptxRW
 		}
 		void CreateDefaultNotesMasters(int nIndexTheme)
 		{
-			CString strThemeNotes = _T("");
-			strThemeNotes.Format(_T("theme%d.xml"), nIndexTheme);
+            std::wstring strThemeNotes = L"theme" + std::to_wstring( nIndexTheme ) + L".xml";
 		
             OOX::CPath pathNotesTheme = m_oReader.m_strFolderThemes + FILE_SEPARATOR_STR + strThemeNotes;
 			Writers::DefaultNotesThemeWriter notesTheme;
 			notesTheme.Write(pathNotesTheme.GetPath());
 /////////////////////
 			OOX::CPath pathNotesMasters = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("notesMasters");
-            FileSystem::Directory::CreateDirectory(pathNotesMasters.GetPath());
+            NSDirectory::CreateDirectory(pathNotesMasters.GetPath());
 
 			OOX::CPath pathNotesMaster1 = pathNotesMasters / _T("notesMaster1.xml");
 			Writers::DefaultNotesMasterWriter notesMaster;
 			notesMaster.Write(pathNotesMaster1.GetPath());
 
 			OOX::CPath pathNotesMasterRels = pathNotesMasters / _T("_rels");
-            FileSystem::Directory::CreateDirectory(pathNotesMasterRels.GetPath());
+            NSDirectory::CreateDirectory(pathNotesMasterRels.GetPath());
 	
-			CString strThemeNotesNum = _T("");
-			strThemeNotesNum.Format(_T("%d"), nIndexTheme);
+            std::wstring strThemeNotesNum = std::to_wstring(nIndexTheme);
 			
-			CString strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+			std::wstring strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 								<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 								<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
 			CFile oFileRels;
@@ -1075,7 +1066,7 @@ namespace NSBinPptxRW
 			xfrm->chOffY = 0;
 			xfrm->chExtX = 0;
 			xfrm->chExtY = 0;
-			m_oDefaultNote.cSld.spTree.m_name = _T("p:spTree");
+			
 			m_oDefaultNote.cSld.spTree.grpSpPr.xfrm = xfrm;
 
 			// shape comment !!! (TODO:)
@@ -1099,6 +1090,11 @@ namespace NSBinPptxRW
 			pTxRun->SetText(_T("")); // enter simple comment here
 
 			pShape->txBody = pTxBody;
+            if (pShape->txBody.IsInit())
+            {
+                if (!pShape->txBody->bodyPr.IsInit())
+                    pShape->txBody->bodyPr = new PPTX::Logic::BodyPr;
+            }
 
 			PPTX::Logic::RunElem elm;
 			pTxBody->Paragrs[0].RunElems.push_back(elm);

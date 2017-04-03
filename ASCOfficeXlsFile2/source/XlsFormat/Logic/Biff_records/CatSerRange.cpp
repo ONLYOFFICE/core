@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,18 +49,6 @@ BaseObjectPtr CatSerRange::clone()
 {
 	return BaseObjectPtr(new CatSerRange(*this));
 }
-
-
-void CatSerRange::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fBetween);
-	SETBIT(flags, 1, fMaxCross);
-	SETBIT(flags, 2, fReversed);
-
-	record << catCross << catLabel << catMark << flags;
-}
-
 
 void CatSerRange::readFields(CFRecord& record)
 {

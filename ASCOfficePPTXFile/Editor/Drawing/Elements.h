@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,7 @@
 #if defined(PPTX_DEF)
 namespace PPTX2EditorAdvanced
 {
-	AVSINLINE OOXMLShapes::ShapeType GetShapeTypeFromStr(const CString& str)//const
+    AVSINLINE OOXMLShapes::ShapeType GetShapeTypeFromStr(const std::wstring& str)//const
 	{
 		if(str == _T(""))
 			return OOXMLShapes::sptNil;
@@ -288,10 +288,6 @@ namespace PPTX2EditorAdvanced
 
 namespace NSPresentationEditor
 {
-	/**************************************************************
-				  здесь все типы элементов
-	**************************************************************/
-
 	class CImageElement : public IElement
 	{
 	public:
@@ -341,64 +337,65 @@ namespace NSPresentationEditor
 
 		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
 		{
-			CString strXml = SaveToXML();
+            std::wstring strXml = SaveToXML();
 			oWriter.WriteString(strXml);
 		}
 		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
 		{
 		}
 
-		virtual CString SaveToXML()
+        virtual std::wstring SaveToXML()
 		{
-			if (!m_oAnimations.m_arAnimations.empty())
-				return ToAnimationXml();
+            std::wstring strEffect;
+
+//			if (!m_oAnimations.m_arAnimations.empty())
+//				return ToAnimationXml();
 			
-			LONG lFlags = 0;
-			if (m_bFlipH)
-				lFlags |= 0x0001;
-			if (m_bFlipV)
-				lFlags |= 0x0002;
+//			LONG lFlags = 0;
+//			if (m_bFlipH)
+//				lFlags |= 0x0001;
+//			if (m_bFlipV)
+//				lFlags |= 0x0002;
 
-			CString strEffect = _T("");
-            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
-					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"), 
-					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
-					m_dRotate, lFlags, m_strImageFileName, 
-					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer, 
-					m_dStartTime, m_dEndTime);
-
-			return strEffect;
-		}
-
-		CString ToAnimationXml()
-		{
-			LONG lFlags = 0;
-			if (m_bFlipH)
-				lFlags |= 0x0001;
-			if (m_bFlipV)
-				lFlags |= 0x0002;
-
-			CString strEffect = _T("");
-            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
-					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"), 
-					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
-					m_dRotate, lFlags, m_strImageFileName, 
-					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer, 
-					m_dStartTime, m_dEndTime);
-
-			CString TimeLine;
-			TimeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),
-				m_dStartTime, m_dEndTime );
-
-			CString Source	= m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
-			Source	+=	TimeLine;
-			Source	+=	_T("</ImagePaint-DrawImageFromFileAnimate>");
-
-			strEffect.Replace ( _T("</ImagePaint-DrawImageFromFile>"), Source );
-			strEffect.Replace ( _T("<ImagePaint-DrawImageFromFile"), _T("<ImagePaint-DrawImageFromFileAnimate") );
+//            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
+//					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"),
+//					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
+//					m_dRotate, lFlags, m_strImageFileName,
+//					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
+//					m_dStartTime, m_dEndTime);
 
 			return strEffect;
 		}
+
+//        std::wstring ToAnimationXml()
+//		{
+//			LONG lFlags = 0;
+//			if (m_bFlipH)
+//				lFlags |= 0x0001;
+//			if (m_bFlipV)
+//				lFlags |= 0x0002;
+
+//            std::wstring strEffect = _T("");
+//            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
+//					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"),
+//					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
+//					m_dRotate, lFlags, m_strImageFileName,
+//					m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
+//					m_dStartTime, m_dEndTime);
+
+//            std::wstring TimeLine;
+//			TimeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),
+//				m_dStartTime, m_dEndTime );
+
+//            std::wstring Source	= m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+//			Source	+=	TimeLine;
+//			Source	+=	_T("</ImagePaint-DrawImageFromFileAnimate>");
+
+//			strEffect.Replace ( _T("</ImagePaint-DrawImageFromFile>"), Source );
+//			strEffect.Replace ( _T("<ImagePaint-DrawImageFromFile"), _T("<ImagePaint-DrawImageFromFileAnimate") );
+
+//			return strEffect;
+//		}
 
 		virtual IElement* CreateDublicate()
 		{
@@ -430,7 +427,7 @@ namespace NSPresentationEditor
 		
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 
-		AVSINLINE CString ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
 			NSGuidesVML::CFormParam pParamCoef;
 			pParamCoef.m_eType = ptValue;
@@ -441,7 +438,7 @@ namespace NSPresentationEditor
 		}
 
 
-		CString ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
+        std::wstring ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
 			if (bIsNamespace)
 			{
@@ -449,7 +446,7 @@ namespace NSPresentationEditor
 			}
 			return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 						
-			CString strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
+            std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
 
 			strXmlPPTX += _T("</a:custGeom>");
 			return strXmlPPTX;
@@ -498,7 +495,7 @@ namespace NSPresentationEditor
 			m_bShapePreset	= false;
 		}
 
-		CShapeElement(const CString& str) : IElement(), m_oShape(NSBaseShape::unknown, 0x1000)
+        CShapeElement(const std::wstring& str) : IElement(), m_oShape(NSBaseShape::unknown, 0x1000)
 		{
 			m_lShapeType	= 0x1000;
 			m_bShapePreset	= false;
@@ -513,10 +510,10 @@ namespace NSPresentationEditor
 			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
 			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
 
-			m_oShape.m_oText.m_oBounds.left		*= dScaleX;
-			m_oShape.m_oText.m_oBounds.right	*= dScaleX;
-			m_oShape.m_oText.m_oBounds.top		*= dScaleY;
-			m_oShape.m_oText.m_oBounds.bottom	*= dScaleY;
+			m_oShape.m_oText.m_oBounds.left		= (int)(dScaleX * m_oShape.m_oText.m_oBounds.left);
+			m_oShape.m_oText.m_oBounds.right	= (int)(dScaleX * m_oShape.m_oText.m_oBounds.right);
+			m_oShape.m_oText.m_oBounds.top		= (int)(dScaleY * m_oShape.m_oText.m_oBounds.top);
+			m_oShape.m_oText.m_oBounds.bottom	= (int)(dScaleY * m_oShape.m_oText.m_oBounds.bottom);
 		}
 		virtual ~CShapeElement()
 		{
@@ -707,12 +704,12 @@ namespace NSPresentationEditor
 				}
 			case CElementProperty::epFontBold:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (pProperty->m_dwValue != 0);
 					break;
 				}
 			case CElementProperty::epFontItalic:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (pProperty->m_dwValue != 0);
 					break;
 				}
 			case CElementProperty::epFontStrikeout:
@@ -727,7 +724,7 @@ namespace NSPresentationEditor
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 
-		AVSINLINE CString ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
 		{
 			CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(m_oShape.m_pShape);
 			if (NULL == pPPTShape)
@@ -746,7 +743,7 @@ namespace NSPresentationEditor
 
 #ifndef OPTIMIZE_COMPILE_CONVERT_PPT_TO_PPTX
 
-		CString ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
+        std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
 			if (pPPTShape->m_eType == PPTShapes::sptCRect)
 			{
@@ -757,7 +754,7 @@ namespace NSPresentationEditor
 				return _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 			}
 						
-			CString strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
+            std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
 
 			CFormulaConverter pFormulaConverter;
 
@@ -829,7 +826,7 @@ namespace NSPresentationEditor
 			return strXmlPPTX;
 		}
 #else
-		CString ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
+        std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false)
 		{
 			if (pPPTShape->m_eType == PPTShapes::sptCRect)
 			{
@@ -848,7 +845,7 @@ namespace NSPresentationEditor
 				return _T("<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
 			}
 						
-			CString strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
+            std::wstring strXmlPPTX = bIsNamespace ? _T("<a:custGeom xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">") : _T("<a:custGeom>");
 
 			CFormulaConverter pFormulaConverter;
 
@@ -856,14 +853,14 @@ namespace NSPresentationEditor
 			pFormulaConverter.ConvertCoef(pCoef);
 
 			//guids----------------------------------------
-			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.size();
+			int nGuidCount = (int)pPPTShape->m_oManager.m_arFormulas.size();
 			if (0 != nGuidCount)
 			{
 				pFormulaConverter.ConvertFormula(pPPTShape->m_oManager.m_arFormulas);
 			}				
 
 			//path------------------------------------------
-			int nPathCount = pPPTShape->m_strPath.GetLength();
+            int nPathCount = (int)pPPTShape->m_strPath.length();
 			if (0 != nPathCount && pPPTShape->m_eType != 1)
 			{
 				pFormulaConverter.ConvertPath(pPPTShape->m_strPath, pPPTShape->m_oPath);
@@ -875,8 +872,8 @@ namespace NSPresentationEditor
 					pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
 				}
 
-				int nHandlesCount = pPPTShape->m_arHandles.size();
-				int nAdjCount = pPPTShape->m_arAdjustments.size();
+				int nHandlesCount	= (int)pPPTShape->m_arHandles.size();
+				int nAdjCount		= (int)pPPTShape->m_arAdjustments.size();
 
 				//handles
 				if (0 != nHandlesCount || 0 != nAdjCount)
@@ -960,48 +957,48 @@ namespace NSPresentationEditor
 		{
 		}
 
-		virtual CString SaveToXML()	
+        virtual std::wstring SaveToXML()
 		{
-			CString element = _T("");
-			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf'>"), m_dStartTime, m_dEndTime-m_dStartTime, (double)m_nAmplify);
+            std::wstring element;
+//			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf'>"), m_dStartTime, m_dEndTime-m_dStartTime, (double)m_nAmplify);
 
-			int lIndex = m_strAudioFileName.find(L"file:///");
-			if (0 == lIndex)
-			{
-				m_strAudioFileName = m_strAudioFileName.substr(8);
-				//m_strFileName.Replace('/', '\\');
-				//m_strFileName.Replace(L"%20", L" ");
-			}
+//			int lIndex = m_strAudioFileName.find(L"file:///");
+//			if (0 == lIndex)
+//			{
+//				m_strAudioFileName = m_strAudioFileName.substr(8);
+//				//m_strFileName.Replace('/', '\\');
+//				//m_strFileName.Replace(L"%20", L" ");
+//			}
 
-			CString strFileName = std_string2string(m_strAudioFileName);
-			CorrectXmlString(strFileName);
+//			std::wstring strFileName = m_strAudioFileName;
+//			CorrectXmlString(strFileName);
 
-			CString source;
-            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls' loop='%d' />"), m_dClipStartTime, m_dClipEndTime, strFileName, m_bLoop);
-			element	+=	source;		
+//            std::wstring source;
+//            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls' loop='%d' />"), m_dClipStartTime, m_dClipEndTime, strFileName, m_bLoop);
+//			element	+=	source;
 
-			CString animations;
-			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
-			{
-				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
-				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-				animations						=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+//            std::wstring animations;
+//			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
+//			{
+//				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
+//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
+//				animations						=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
-				element		+=	animations;
-			}
+//				element		+=	animations;
+//			}
 			
-			CString timeLine;
-			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
+//            std::wstring timeLine;
+//			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
 			
-			element			+=	timeLine;		
-			element			+=	_T("</AudioSource>");
+//			element			+=	timeLine;
+//			element			+=	_T("</AudioSource>");
 
 			return element;
 		}
 
 		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
 		{
-			CString strXml = SaveToXML();
+            std::wstring strXml = SaveToXML();
 			oWriter.WriteString(strXml);
 		}
 
@@ -1063,21 +1060,21 @@ namespace NSPresentationEditor
 
 		virtual void WriteToXml(XmlUtils::CXmlWriter& oWriter)
 		{
-			CString strXml = SaveToXML();
+            std::wstring strXml = SaveToXML();
 			oWriter.WriteString(strXml);
 		}
 		virtual void ReadFromXml(XmlUtils::CXmlNode& oNode)
 		{
 		}
 		
-		virtual CString SaveToXML()
+        virtual std::wstring SaveToXML()
 		{
-			return GetVideoStream () + GetAudioStream ();
+            return L""; //GetVideoStream () + GetAudioStream ();
 		}
 		
-		CString ToAnimationXml()
+        std::wstring ToAnimationXml()
 		{
-			return _T("");
+            return L"";
 		}
 
 		virtual IElement* CreateDublicate()
@@ -1102,386 +1099,83 @@ namespace NSPresentationEditor
 		{
 		}
 
-		inline CString GetVideoStream ()
-		{
-			int lIndex = m_strVideoFileName.find(L"file:///");
-			if (0 == lIndex)
-			{
-				m_strVideoFileName = m_strVideoFileName.substr(8);
-				/*m_strFileName.Replace('/', '\\');*/
-			}
+//        inline std::wstring GetVideoStream ()
+//		{
+//			int lIndex = m_strVideoFileName.find(L"file:///");
+//			if (0 == lIndex)
+//			{
+//				m_strVideoFileName = m_strVideoFileName.substr(8);
+//				/*m_strFileName.Replace('/', '\\');*/
+//			}
 			
-			CString strFileName = std_string2string(m_strVideoFileName);
-			CorrectXmlString(strFileName);
+//			std::wstring strFileName = m_strVideoFileName;
+//			CorrectXmlString(strFileName);
 
-			CString element;
-			element.Format ( _T("<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' ")
-				_T(" widthmetric='%d' heightmetric='%d' ")
-                _T(" file='%ls' begin='%f' end='%f' >"),
-				(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom, m_dRotate, m_bLoop,
-				m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
-				strFileName, m_dClipStartTime, m_dClipEndTime );
+//            std::wstring element;
+//			element.Format ( L"<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' \
+//widthmetric='%d' heightmetric='%d' file='%ls' begin='%f' end='%f' >",
+//				(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom, m_dRotate, m_bLoop,
+//				m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
+//				strFileName, m_dClipStartTime, m_dClipEndTime );
 
-			CString animations;
-			if(!m_oAnimations.m_arAnimations.empty())
-			{
-                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
-				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+//            std::wstring animations;
+//			if(!m_oAnimations.m_arAnimations.empty())
+//			{
+//                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
+//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
+//                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
-				element		+=	animations;
-			}
+//				element		+=	animations;
+//			}
 
-			CString timeLine;
-			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
+//            std::wstring timeLine;
+//			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
 
-			element			+=	timeLine;		
-			element			+=	_T("</VideoStream>");
+//			element			+=	timeLine;
+//			element			+=	L"</VideoStream>";
 
-			return element;
-		}
+//			return element;
+//		}
 
-		inline CString GetAudioStream ()
-		{
-			CString element = _T("");
-			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >"), m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
+//        inline std::wstring GetAudioStream ()
+//		{
+//            std::wstring element;
+//			element.Format(L"<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >", m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
 
-			int lIndex = m_strVideoFileName.find(L"file:///");
-			if (0 == lIndex)
-			{
-				m_strVideoFileName = m_strVideoFileName.substr(8);
-				//m_strFileName.Replace('/', '\\');
-				//m_strFileName.Replace(L"%20", L" ");
-			}
+//			int lIndex = m_strVideoFileName.find(L"file:///");
+//			if (0 == lIndex)
+//			{
+//				m_strVideoFileName = m_strVideoFileName.substr(8);
+//				//m_strFileName.Replace('/', '\\');
+//				//m_strFileName.Replace(L"%20", L" ");
+//			}
 
-			CString strFileName = std_string2string(m_strVideoFileName);
-			CorrectXmlString(strFileName);
+//			std::wstring strFileName = m_strVideoFileName;
+//			CorrectXmlString(strFileName);
 
-			CString source;
-            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>"), m_dClipStartTime, m_dClipEndTime, strFileName);
-			element	+=	source;		
+//            std::wstring source;
+//            source.Format(L"<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>", m_dClipStartTime, m_dClipEndTime, strFileName);
+//			element	+=	source;
 
-			CString animations;
-			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
-			{
-                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
-				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+//            std::wstring animations;
+//			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
+//			{
+//                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
+//				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
+//                                animations		=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
-				element		+=	animations;
-			}
+//				element		+=	animations;
+//			}
 			
-			CString timeLine;
-			timeLine.Format ( _T("<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> "),	m_dStartTime, m_dEndTime );
+//            std::wstring timeLine;
+//			timeLine.Format ( L"<timeline type = \"1\"  begin=\"%f\" end=\"%f\" fadein=\"0\" fadeout=\"0\" completeness=\"1.0\"/> ",	m_dStartTime, m_dEndTime );
 			
-			element			+=	timeLine;		
-			element			+=	_T("</AudioSource>");
+//			element			+=	timeLine;
+//			element			+=	L"</AudioSource>";
 
-			return element;
-		}
+//			return element;
+//		}
 	};
 
 }
-namespace NSStrings
-{
-	class CTextItem
-	{
-	protected:
-		wchar_t*	m_pData;
-		size_t		m_lSize;
 
-		wchar_t*	m_pDataCur;
-		size_t		m_lSizeCur;
-
-	public:
-		CTextItem()
-		{
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= m_lSize;
-		}
-		CTextItem(const CTextItem& oSrc)
-		{
-			m_pData = NULL;
-			*this = oSrc;
-		}
-		CTextItem& operator=(const CTextItem& oSrc)
-		{
-			RELEASEMEM(m_pData);
-
-			m_lSize		= oSrc.m_lSize;
-			m_lSizeCur	= oSrc.m_lSizeCur;
-			m_pData		= (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, oSrc.m_pData, m_lSizeCur * sizeof(wchar_t));
-							
-			m_pDataCur = m_pData + m_lSizeCur;
-
-			return *this;
-		}
-
-		CTextItem(const size_t& nLen)
-		{
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-				
-			m_lSizeCur = 0;
-			m_pDataCur = m_pData;
-		}
-		CTextItem(wchar_t* pData, const size_t& nLen)
-		{
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-				
-			m_lSizeCur = m_lSize;
-			m_pDataCur = m_pData + m_lSize;
-		}
-		CTextItem(wchar_t* pData, BYTE* pUnicodeChecker = NULL)
-		{
-			size_t nLen = GetStringLen(pData);
-
-			m_lSize = nLen;
-			m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-			memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-				
-			m_lSizeCur = m_lSize;
-			m_pDataCur = m_pData + m_lSize;
-
-			if (NULL != pUnicodeChecker)
-			{
-				wchar_t* pMemory = m_pData;
-				while (pMemory < m_pDataCur)
-				{
-					if (!pUnicodeChecker[*pMemory])
-						*pMemory = wchar_t(' ');
-					++pMemory;
-				}
-			}
-		}
-		virtual ~CTextItem()
-		{
-			RELEASEMEM(m_pData);
-		}
-
-		AVSINLINE void AddSize(const size_t& nSize)
-		{
-			if (NULL == m_pData)
-			{
-                m_lSize = (std::max)(nSize, (size_t) 1000);
-				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-				
-				m_lSizeCur = 0;
-				m_pDataCur = m_pData;
-				return;
-			}
-
-			if ((m_lSizeCur + nSize) > m_lSize)
-			{
-				while ((m_lSizeCur + nSize) > m_lSize)
-				{
-					m_lSize *= 2;
-				}
-
-				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
-				if (NULL != pRealloc)
-				{
-					// реаллок сработал
-					m_pData		= pRealloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-				else
-				{
-					wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-					free(m_pData);
-					m_pData		= pMalloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-			}
-		}
-
-	public:
-		
-		AVSINLINE void operator+=(const CTextItem& oTemp)
-		{
-			WriteString(oTemp.m_pData, oTemp.m_lSizeCur);
-		}
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void operator+=(_bstr_t& oTemp)
-		{
-			size_t nLen = oTemp.length();
-			WriteString(oTemp.GetBSTR(), nLen);
-		}
-#endif
-		AVSINLINE void operator+=(CString& oTemp)
-		{
-			size_t nLen = (size_t)oTemp.GetLength();
-
-			#ifdef _UNICODE
-			WriteString(oTemp.GetBuffer(), nLen);
-			#else
-			CStringW str = (CStringW)oTemp;
-			WriteString(str.GetBuffer(), nLen);
-			#endif
-		}
-		AVSINLINE wchar_t operator[](const size_t& nIndex)
-		{
-			if (nIndex < m_lSizeCur)
-				return m_pData[nIndex];
-
-			return 0;
-		}
-
-		AVSINLINE void SetText(BSTR& bsText)
-		{
-			ClearNoAttack();
-#if defined(_WIN32) || defined (_WIN64)
-			size_t nLen = GetStringLen(bsText);
-            WriteString(bsText, nLen);
-#else
-            size_t nLen = bsText.length();
-            WriteString(bsText.c_str(), nLen);
-#endif
-
-			for (size_t i = 0; i < nLen; ++i)
-			{
-				if (WCHAR(8233) == m_pData[i])
-					m_pData[i] = WCHAR(' ');
-			}
-		}
-		AVSINLINE void AddSpace()
-		{
-			AddSize(1);
-			*m_pDataCur = wchar_t(' ');
-
-			++m_lSizeCur;
-			++m_pDataCur;
-		}
-		AVSINLINE void CorrectUnicode(const BYTE* pUnicodeChecker)
-		{
-			if (NULL != pUnicodeChecker)
-			{
-				wchar_t* pMemory = m_pData;
-				while (pMemory < m_pDataCur)
-				{
-					if (!pUnicodeChecker[*pMemory])
-						*pMemory = wchar_t(' ');
-					++pMemory;
-				}
-			}
-		}
-		AVSINLINE void RemoveLastSpaces()
-		{
-			wchar_t* pMemory = m_pDataCur - 1;
-			while ((pMemory > m_pData) && (wchar_t(' ') == *pMemory))
-			{
-				--pMemory;
-				--m_lSizeCur;
-				--m_pDataCur;
-			}
-
-		}
-		AVSINLINE bool IsSpace()
-		{
-			if (1 != m_lSizeCur)
-				return false;
-			return (wchar_t(' ') == *m_pData);
-		}
-		
-	public:
-        AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
-		{
-			AddSize(nLen);
-            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-            //memcpy(m_pDataCur, pString, nLen << 1);
-			m_pDataCur += nLen;
-			m_lSizeCur += nLen;
-		}
-		AVSINLINE size_t GetCurSize()
-		{
-			return m_lSizeCur;
-		}
-		AVSINLINE size_t GetSize()
-		{
-			return m_lSize;
-		}
-		AVSINLINE void Clear()
-		{
-			RELEASEMEM(m_pData);
-			
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-		AVSINLINE void ClearNoAttack()
-		{
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-
-		AVSINLINE size_t GetStringLen(wchar_t* pData)
-		{
-			wchar_t* s = pData;
-			for (; *s != 0; ++s);
-			return (size_t)(s - pData);
-		}
-
-		AVSINLINE CString GetCString()
-		{
-			CString str(m_pData, (int)m_lSizeCur);
-			return str;
-		}
-		AVSINLINE wchar_t* GetBuffer()
-		{
-			return m_pData;
-		}
-	};
-
-	class CStringWriter : public CTextItem
-	{
-	public:
-		CStringWriter() : CTextItem()
-		{
-		}
-		virtual ~CStringWriter()
-		{
-		}
-
-	public:
-		
-#if defined(_WIN32) || defined (_WIN64)
-		AVSINLINE void WriteString(_bstr_t& bsString)
-		{
-			size_t nLen = bsString.length();
-			CTextItem::WriteString(bsString.GetBSTR(), nLen);
-		}
-#endif
-		AVSINLINE void WriteString(CString& sString)
-		{
-			size_t nLen = (size_t)sString.GetLength();
-
-			#ifdef _UNICODE
-			CTextItem::WriteString(sString.GetBuffer(), nLen);
-			#else
-			CStringW str = (CStringW)sString;
-			WriteString(str.GetBuffer(), nLen);
-			#endif
-		}
-		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
-		{
-			CTextItem::WriteString(pString, nLen);
-		}
-		AVSINLINE void Write(CStringWriter& oWriter)
-		{
-			CTextItem::WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-		}
-	};
-}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,23 +50,6 @@ BaseObjectPtr ExternName::clone()
 {
 	return BaseObjectPtr(new ExternName(*this));
 }
-
-
-void ExternName::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fBuiltIn);
-	SETBIT(flags, 1, fWantAdvise);
-	SETBIT(flags, 2, fWantPict);
-	SETBIT(flags, 3, fOle);
-	SETBIT(flags, 4, fOleLink);
-	SETBITS(flags, 5, 14, cf);
-	SETBIT(flags, 15, fIcon);
-	record << flags;
-
-	body->store(record);
-}
-
 
 void ExternName::readFields(CFRecord& record)
 {

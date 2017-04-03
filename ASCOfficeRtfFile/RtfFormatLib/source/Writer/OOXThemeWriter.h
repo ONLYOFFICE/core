@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,12 +41,12 @@ public:
 	OOXThemeWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
 	{
 	}
-	bool Save( CString sFolder ) //todo доделать очистку поле ошибок
+	bool Save( std::wstring sFolder ) //todo доделать очистку поле ошибок
 	{
-		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 		
-        FileSystem::Directory::CreateDirectory(pathWord) ;
-        FileSystem::Directory::CreateDirectory(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
+        NSDirectory::CreateDirectory(pathWord) ;
+        NSDirectory::CreateDirectory(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
 
 		//todooo default theme !!!!!
 		//

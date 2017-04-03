@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -72,8 +72,9 @@ std::wstring process_border(const border_style & borderStyle,
         int szInt = (int)(0.5 + 8.0 * width);
         if (szInt <= 0)
             szInt = 1;
-        w_sz = boost::lexical_cast<std::wstring>( szInt );
-        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+
+        w_sz	= boost::lexical_cast<std::wstring>( szInt );
+        w_color = borderStyle.get_color().get_hex_value();
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
@@ -110,7 +111,7 @@ std::wstring process_border(const border_style & borderStyle,
     return res;
 }
 
-std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mul)
+std::wstring docx_process_margin(const _CP_OPT(length_or_percent) & margin, double Mul)
 {
     if (margin)
     {
@@ -288,8 +289,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			std::wstring w_after, w_before;
 			std::wstring w_line, w_lineRule;
 
-			w_after = process_margin(fo_margin_bottom_, 20.0);
-			w_before = process_margin(fo_margin_top_, 20.0);
+            w_after = docx_process_margin(fo_margin_bottom_, 20.0);
+            w_before = docx_process_margin(fo_margin_top_, 20.0);
 
 			// TODO :   здесь 240 берется из корневого стиля? надо не константу использовать а брать оттуда
 			//          в xsl преобразованиях так же написано 
@@ -341,9 +342,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			// TODO auto indent
 			std::wstring w_left, w_right, w_hanging, w_firstLine;
 
-			w_left = process_margin(fo_margin_left_, 20.0);
-			w_right = process_margin(fo_margin_right_, 20.0);
-			w_firstLine = process_margin(fo_text_indent_, 20.0);
+            w_left = docx_process_margin(fo_margin_left_, 20.0);
+            w_right = docx_process_margin(fo_margin_right_, 20.0);
+            w_firstLine = docx_process_margin(fo_text_indent_, 20.0);
 
 			if (w_left.empty())			w_left = L"0";
 			if (w_right.empty())		w_right = L"0";

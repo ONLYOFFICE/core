@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,9 +44,27 @@ namespace PPTX
 		class Bevel : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Bevel)
+			WritingElement_AdditionConstructors(Bevel)
+			PPTX_LOGIC_BASE2(Bevel)
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_bevel;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("w"), w)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("h"), h)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prst"), prst)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name	= XmlUtils::GetNameNoNS(node.GetName());
@@ -56,7 +74,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"prst", prst);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -81,7 +99,7 @@ namespace PPTX
 			nullable_limit<Limit::BevelType>	prst;
 		//private:
 		public:
-			CString								m_name;
+			std::wstring								m_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		};

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,19 +50,6 @@ BaseObjectPtr CrtLayout12::clone()
 {
 	return BaseObjectPtr(new CrtLayout12(*this));
 }
-
-
-void CrtLayout12::writeFields(CFRecord& record)
-{
-	FrtHeader frtHeader(rt_CrtLayout12);
-	record << frtHeader;
-
-	unsigned short flags = 0;
-	SETBITS(flags, 1, 4, autolayouttype);
-	record << dwCheckSum << flags << wXMode << wYMode << wWidthMode << wHeightMode << x << y << dx << dy;
-	record.reserveNunBytes(2); // reserved2
-}
-
 
 void CrtLayout12::readFields(CFRecord& record)
 {

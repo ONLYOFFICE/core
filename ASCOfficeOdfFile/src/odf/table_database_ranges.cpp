@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,7 +60,7 @@ void table_database_ranges::add_child_element( xml::sax * Reader, const std::wst
 
 void table_database_ranges::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -101,7 +101,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (table_contains_header_)
 		Context.get_table_context().set_database_header(table_contains_header_->get());
 
-	for (int i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
@@ -124,7 +124,7 @@ void table_sort::add_child_element( xml::sax * Reader, const std::wstring & Ns, 
 
 void table_sort::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	for (int i = 0; i < table_sort_by_.size(); i++)
+	for (size_t i = 0; i < table_sort_by_.size(); i++)
 	{
 		table_sort_by * sort_by = dynamic_cast<table_sort_by*>(table_sort_by_[i].get());
 

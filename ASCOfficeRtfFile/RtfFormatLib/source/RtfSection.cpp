@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,16 +32,16 @@
 #include "Writer/OOXWriter.h"
 #include "IdGenerator.h"
 
-CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	switch( m_eCodePage )
 	{
 		case cp_ansi: 
 			{
 				sResult += L"\\ansi";
 				if( PROP_DEF != m_nAnsiCodePage )
-					sResult.AppendFormat( L"\\ansicpg%d", m_nAnsiCodePage );
+                    sResult += L"\\ansicpg" + std::to_wstring( m_nAnsiCodePage );
 
 				break;
 			}
@@ -93,9 +93,9 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fr_EachPage:		sResult += L"ftnrstpg" ;		break;
-		case fr_EachSection:	sResult += L"ftnrestart";	break;
-		case fr_Continuous:		sResult += L"ftnrstcont";	break;
+		case fr_EachPage:		sResult += L"\\ftnrstpg" ;		break;
+		case fr_EachSection:	sResult += L"\\ftnrestart";	break;
+		case fr_Continuous:		sResult += L"\\ftnrstcont";	break;
 		}
 	}
 	
@@ -103,10 +103,10 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eFootnoteRestart )
 		{
-		case fp_EndSection:		sResult += L"endnotes";	break;
-		case fp_EndDocument:	sResult += L"enddoc";	break;
-		case fp_BeneathText:	sResult += L"ftntj";		break;
-		case fp_BottomPage:		sResult += L"ftnbj";		break;
+		case fp_EndSection:		sResult += L"\\endnotes";	break;
+		case fp_EndDocument:	sResult += L"\\enddoc";	break;
+		case fp_BeneathText:	sResult += L"\\ftntj";		break;
+		case fp_BottomPage:		sResult += L"\\ftnbj";		break;
 		}
 	}
 	
@@ -119,18 +119,18 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		switch( m_eEndnoteRestart )
 		{
-		case er_EachSection:	sResult += L"aftnrestart"; break;
-		case er_Continuous:		sResult += L"aftnrstcont"; break;
+		case er_EachSection:	sResult += L"\\aftnrestart"; break;
+		case er_Continuous:		sResult += L"\\aftnrstcont"; break;
 		}
 	}
 	if( PROP_DEF != m_eEndnotePlacement )
 	{
 		switch( m_eEndnotePlacement )
 		{
-		case ep_EndSection:		sResult += L"aendnotes"; break;
-		case ep_EndDocument:	sResult += L"aenddoc";	break;
-		case ep_BeneathText:	sResult += L"aftntj";	break;
-		case ep_BottomPage:		sResult += L"aftnbj";	break;
+		case ep_EndSection:		sResult += L"\\aendnotes"; break;
+		case ep_EndDocument:	sResult += L"\\aenddoc";	break;
+		case ep_BeneathText:	sResult += L"\\aftntj";	break;
+		case ep_BottomPage:		sResult += L"\\aftnbj";	break;
 		}
 	}
 
@@ -142,9 +142,9 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	return sResult;
 }
-CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( PROP_DEF != m_bHypCaps )
 	{
 		if( 0 == m_bHypCaps )
@@ -158,7 +158,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_INT( m_nTabWidth, sResult, L"w:defaultTabStop" )
 	
 	if( PROP_DEF != m_nZoom )
-		sResult.AppendFormat( L"<w:zoom w:percent=\"%d\" />", m_nZoom );
+        sResult += L"<w:zoom w:percent=\"" + std::to_wstring(m_nZoom) + L"\" />";
 //Page Borders
 	if( PROP_DEF != m_bDorderSurroundHeader )
 	{
@@ -185,10 +185,10 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_nDisplayBackground, sResult, L"w:displayBackgroundShape" );
 
 //footnote, endnote property
-	CString sFootnoteProp;
-	for( int i = 0; i < m_aSpecialFootnotes.size(); i++ )
+    std::wstring sFootnoteProp;
+	for (size_t i = 0; i < m_aSpecialFootnotes.size(); i++ )
 	{
-		sFootnoteProp.AppendFormat( L"<w:footnote w:id=\"%d\" />", m_aSpecialFootnotes[i] );
+        sFootnoteProp += L"<w:footnote w:id=\"" + std::to_wstring(m_aSpecialFootnotes[i]) + L"\" />";
 	}
 	
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
@@ -218,14 +218,14 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case fp_BottomPage:		sFootnoteProp += L"<w:pos w:val=\"pageBottom\"/>";	break;
 		}
 	}
-	if( !sFootnoteProp.IsEmpty() && !m_aSpecialFootnotes.empty())
+    if( !sFootnoteProp.empty() && !m_aSpecialFootnotes.empty())
         sResult += L"<w:footnotePr>" + sFootnoteProp + L"</w:footnotePr>";
 
-	CString sEndnoteProp;
+    std::wstring sEndnoteProp;
     //todooo проверить id
-    for( int i = 0; i < m_aSpecialEndnotes.size(); i++ )
+    for (size_t i = 0; i < m_aSpecialEndnotes.size(); i++ )
 	{
-        sEndnoteProp.AppendFormat( L"<w:endnote w:id=\"%i\"/>", m_aSpecialEndnotes[i] );
+        sEndnoteProp += L"<w:endnote w:id=\"" + std::to_wstring(m_aSpecialEndnotes[i]) + L"\"/>";
 	}
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
 	{
@@ -253,25 +253,25 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case fp_BottomPage:		sEndnoteProp += L"<w:pos w:val=\"pageBottom\"/>";	break;
 		}
 	}
-	if( !sEndnoteProp.IsEmpty() && !m_aSpecialEndnotes.empty())
+    if( !sEndnoteProp.empty() && !m_aSpecialEndnotes.empty())
         sResult += L"<w:endnotePr>" + sEndnoteProp + L"</w:endnotePr>";
 
-	CString sCompat;
+    std::wstring sCompat;
 	if( 1 != m_bHtmlAutoSpace )
 		sCompat += L"<w:doNotUseHTMLParagraphAutoSpacing/>";
 	if( 0 == m_bUseTabAlignment )
 		sCompat += L"<w:forgetLastTabAlignment/>";
 	
-	if( !sCompat.IsEmpty() )
+    if( !sCompat.empty() )
 	{
         sResult += L"<w:compat>" + sCompat + L"</w:compat>";
 	}
 
 	return sResult;
 }
-CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
 	if( RENDER_TO_OOX_PARAM_FIRST_SECTION == oRenderParameter.nType ) //Пишем как свойства документа
 	{
@@ -313,7 +313,7 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		for( int i = 0; i < nCollFormCount; i++ )
 		{
-			sResult.AppendFormat( L"\\colno%d", i + 1 );
+            sResult += L"\\colno" + std::to_wstring( i + 1 );
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol, sResult, L"colsr" )
 			RENDER_RTF_INT( m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth, sResult, L"colw" )
 		}
@@ -517,30 +517,30 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	if (m_pOldSectionProp)
 	{
-		sResult += "{\\*\\oldpprops\\pard";
+        sResult += L"{\\*\\oldpprops\\pard";
 		sResult += m_pOldSectionProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
 	}
 	return sResult;
 }
-CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"<w:sectPr>";
 	
 	if( 1 == m_bBidi )
 		sResult += L"<w:bidi/>";
 	
-	CString sPaperSource;
+    std::wstring sPaperSource;
 	if( PROP_DEF != m_nPaperSourceFirst )
-		sPaperSource.AppendFormat( L" w:first=\"%d\"", m_nPaperSourceFirst );
+        sPaperSource += L" w:first=\"" + std::to_wstring(m_nPaperSourceFirst) + L"\"";
 	if( PROP_DEF != m_nPaperSourceFirst )
-		sPaperSource.AppendFormat( L" w:other=\"%d\"", m_nPaperSourceOther );
+        sPaperSource += L" w:other=\"" + std::to_wstring(m_nPaperSourceOther) + L"\"";
 	
-	if( !sPaperSource.IsEmpty() )
+    if( !sPaperSource.empty() )
         sResult += L"<w:paperSrc " + sPaperSource + L"/>";
 	
 	if( 1 == m_bRtlGutter )
@@ -561,42 +561,44 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//Columns
 	if( PROP_DEF != m_nColumnNumber ) 
 	{
-		CString sCollumnFormating;
+        std::wstring sCollumnFormating;
 		bool bEqualWidth = false;
 		if( m_nColumnNumber != m_oCollumnProperty.m_aCollumnProperty.size() )
 			bEqualWidth = true;
 		else
-			for( int i = 0; i < (int)m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			{
 				if( PROP_DEF == m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
 				{
 					bEqualWidth = true;
 					break;
 				}
-		sCollumnFormating.AppendFormat( L"<w:cols w:num=\"%d\"", m_nColumnNumber );
+			}
+        sCollumnFormating += L"<w:cols w:num=\"" + std::to_wstring(m_nColumnNumber) + L"\"";
 		if( PROP_DEF != m_nColumnSpace )
-			sCollumnFormating.AppendFormat( L" w:space=\"%d\"", m_nColumnSpace );
+            sCollumnFormating += L" w:space=\"" + std::to_wstring(m_nColumnSpace) + L"\"";
 		if( true == bEqualWidth )
 			sCollumnFormating += L" w:equalWidth=\"true\"/>";
 		else
 		{
 			sCollumnFormating += L" w:equalWidth=\"false\">";
-			for( int i = 0; i < (int)m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
+			for (size_t i = 0; i < m_oCollumnProperty.m_aCollumnProperty.size(); i++ )
 			{
 				sCollumnFormating += L"<w:col";
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth )
-					sCollumnFormating.AppendFormat( L" w:w=\"%d\"", m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth );
+                    sCollumnFormating += L" w:w=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnWidth) + L"\"";
 				if( PROP_DEF != m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol )
-					sCollumnFormating.AppendFormat( L" w:space=\"%d\"", m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol );
+                    sCollumnFormating += L" w:space=\"" + std::to_wstring(m_oCollumnProperty.m_aCollumnProperty[i].m_nColumnSpaceToRightOfCol ) + L"\"";
 				sCollumnFormating += L"/>";
 			}
 			sCollumnFormating += L"</w:cols>";
 		}
-		if( false == sCollumnFormating.IsEmpty() )
+        if( false == sCollumnFormating.empty() )
 			sResult += sCollumnFormating;
 	}
 
 	//Footnotes and Endnotes
-	CString sFootnotesProp;
+    std::wstring sFootnotesProp;
 	switch( m_eFootnotesJust )
 	{
 		case fj_sftntj:	sFootnotesProp += L"<w:pos w:val=\"beneathText\"/>";	break;
@@ -633,10 +635,10 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case ff_sftnnzodiacd:	sFootnotesProp += L"<w:numFmt w:val=\"upperLetter\" />";	break;
 		case ff_sftnnzodiacl:	sFootnotesProp += L"<w:numFmt w:val=\"upperLetter\" />";	break;
 	}
-	if(!sFootnotesProp.IsEmpty() )
+    if(!sFootnotesProp.empty() )
         sResult +=  L"<w:footnotePr>" + sFootnotesProp + L"</w:footnotePr>";
 
-	CString sEndnotesProp;
+    std::wstring sEndnotesProp;
 	RENDER_OOX_INT( m_nEndnotesStart, sEndnotesProp, L"w:numStart" )
 	
 	switch( m_eEndnotesRestart )
@@ -668,62 +670,62 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case ef_saftnnzodiacd:	sEndnotesProp += L"<w:numFmt w:val=\"upperLetter\" />";	break;
 		case ef_saftnnzodiacl:	sEndnotesProp += L"<w:numFmt w:val=\"upperLetter\" />";	break;
 	}
-	if(!sEndnotesProp.IsEmpty() )
+    if(!sEndnotesProp.empty() )
         sResult += L"<w:endnotePr>" + sEndnotesProp + L"</w:endnotePr>";
 
 	//Line Numbering
-	CString sLineNumbering;
+    std::wstring sLineNumbering;
 	if( PROP_DEF != m_nLineModulus )
-		sLineNumbering.AppendFormat( L" w:countBy=\"%d\"", m_nLineModulus );
+        sLineNumbering += L" w:countBy=\"" + std::to_wstring(m_nLineModulus) + L"\"";
 	if( PROP_DEF != m_nLineX && 0 != m_nLineX)
-		sLineNumbering.AppendFormat( L" w:distance=\"%d\"", m_nLineX );
+        sLineNumbering += L" w:distance=\"" + std::to_wstring(m_nLineX) + L"\"";
 	if( PROP_DEF != m_nLineStart )
-		sLineNumbering.AppendFormat( L" w:start=\"%d\"", m_nLineStart );
+        sLineNumbering += L" w:start=\"" + std::to_wstring(m_nLineStart) + L"\"";
 	switch( m_eLineNumberRestart )
 	{
 		case lnr_linerestart:	sLineNumbering += L" w:restart=\"newSection\"";	break; 
 		case lnr_lineppage:		sLineNumbering += L" w:restart=\"newPage\"";	break; 
 		case lnr_linecont:		sLineNumbering += L" w:restart=\"continuous\"";	break; 
 	}
-	if( false == sLineNumbering.IsEmpty() )
+    if( false == sLineNumbering.empty() )
         sResult += L"<w:lnNumType " + sLineNumbering+ L"/>";
 
 	//Page Information
-	CString sPageSize;
+    std::wstring sPageSize;
 	if( PROP_DEF != m_nPageWidth )
-		sPageSize.AppendFormat(L" w:w=\"%d\"",m_nPageWidth);
+        sPageSize += L" w:w=\"" + std::to_wstring(m_nPageWidth) + L"\"";
 	if( PROP_DEF != m_nPageHeight )
-		sPageSize.AppendFormat(L" w:h=\"%d\"",m_nPageHeight);
+        sPageSize += L" w:h=\"" + std::to_wstring(m_nPageHeight) + L"\"";
 	if( 1 == m_bLandscapeFormat )
-		sPageSize.Append(L" w:orient=\"landscape\"");
-	if( false == sPageSize.IsEmpty() )
+        sPageSize += L" w:orient=\"landscape\"";
+    if( false == sPageSize.empty() )
         sResult += L"<w:pgSz " + sPageSize + L"/>";
 
-	CString sMargin;
+    std::wstring sMargin;
 	if( PROP_DEF != m_nMarginLeft )
-		sMargin.AppendFormat(L" w:left=\"%d\"", m_nMarginLeft);
+        sMargin += L" w:left=\"" + std::to_wstring(m_nMarginLeft) + L"\"";
 	if( PROP_DEF != m_nMarginRight )
-		sMargin.AppendFormat(L" w:right=\"%d\"", m_nMarginRight);
+        sMargin += L" w:right=\"" + std::to_wstring(m_nMarginRight) + L"\"";
 	if( PROP_DEF != m_nMarginTop )
-		sMargin.AppendFormat(L" w:top=\"%d\"", m_nMarginTop);
+        sMargin += L" w:top=\"" + std::to_wstring(m_nMarginTop) + L"\"";
 	if( PROP_DEF != m_nMarginBottom )
-		sMargin.AppendFormat(L" w:bottom=\"%d\"", m_nMarginBottom);
+        sMargin += L" w:bottom=\"" + std::to_wstring(m_nMarginBottom) + L"\"";
 	if( PROP_DEF != m_nGutterMarginWidth )
-		sMargin.AppendFormat(L" w:gutter=\"%d\"", m_nGutterMarginWidth);
+        sMargin += L" w:gutter=\"" + std::to_wstring(m_nGutterMarginWidth) + L"\"";
 	if( PROP_DEF != m_nHeaderTop )
-		sMargin.AppendFormat(L" w:header=\"%d\"", m_nHeaderTop);
+        sMargin += L" w:header=\"" + std::to_wstring(m_nHeaderTop) + L"\"";
 	if( PROP_DEF != m_nFooterBottom )
-		sMargin.AppendFormat(L" w:footer=\"%d\"", m_nFooterBottom);
-	if( false == sMargin.IsEmpty() )
+        sMargin += L" w:footer=\"" + std::to_wstring(m_nFooterBottom) + L"\"";
+    if( false == sMargin.empty() )
         sResult += L"<w:pgMar " + sMargin + L"/>";
 	if( 1 == m_bTitlePage )
 		sResult += L"<w:titlePg/>";
 
 	//Page Numbers
-	CString sPageNumber;
+    std::wstring sPageNumber;
 	if( PROP_DEF != m_nPageNumberStart )
-		sPageNumber.AppendFormat( L" w:start=\"%d\"", m_nPageNumberStart );
-	if( false == sPageNumber.IsEmpty() )
+        sPageNumber += L" w:start=\"" + std::to_wstring(m_nPageNumberStart) + L"\"";
+    if( false == sPageNumber.empty() )
         sResult += L"<w:pgNumType " + sPageNumber + L"/>";
 	//Vertical Alignment
 	switch( m_eVerticalAlignment )
@@ -744,7 +746,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case 5: sResult += L"<w:textDirection w:val=\"tbLrV\" />";	break;
 	}
 	//Page Borders
-	CString sBorders;
+    std::wstring sBorders;
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_TAG;
 	if( true == m_oBorderLeft.IsValid() )
@@ -767,7 +769,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.sValue = L"w:bottom";
 		sBorders += m_oBorderBottom.RenderToOOX( oNewParam );
 	}
-	if( false == sBorders.IsEmpty() )
+    if( false == sBorders.empty() )
 	{
 		sResult += L"<w:pgBorders";
 		if( PROP_DEF != m_nBorderMeasure )
@@ -793,38 +795,38 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if( 0 != m_oHeaderLeft )
 	{
-		CString sId = SaveFile(m_oHeaderLeft,oRenderParameter, true);
+        std::wstring sId = SaveFile(m_oHeaderLeft,oRenderParameter, true);
         sResult += L"<w:headerReference w:type=\"even\" r:id=\"" + sId + L"\"/>";
 	}
 	if( 0 != m_oHeaderFirst )
 	{
-		CString sId = SaveFile(m_oHeaderFirst,oRenderParameter, true);
+        std::wstring sId = SaveFile(m_oHeaderFirst,oRenderParameter, true);
         sResult += L"<w:headerReference w:type=\"first\" r:id=\"" + sId + L"\"/>";
 	}
 	if( 0 != m_oHeaderRight )
 	{
-		CString sId = SaveFile(m_oHeaderRight,oRenderParameter, true);
+        std::wstring sId = SaveFile(m_oHeaderRight,oRenderParameter, true);
         sResult += L"<w:headerReference w:type=\"default\" r:id=\"" + sId + L"\"/>";
 	}
 	if( 0 != m_oFooterLeft )
 	{
-		CString sId = SaveFile(m_oFooterLeft,oRenderParameter, false);
+        std::wstring sId = SaveFile(m_oFooterLeft,oRenderParameter, false);
         sResult += L"<w:footerReference w:type=\"even\" r:id=\"" + sId + L"\"/>";
 	}
 	if( 0 != m_oFooterFirst )
 	{
-		CString sId = SaveFile(m_oFooterFirst,oRenderParameter, false);
+        std::wstring sId = SaveFile(m_oFooterFirst,oRenderParameter, false);
         sResult += L"<w:footerReference w:type=\"first\" r:id=\"" + sId + L"\"/>";
 	}
 	if( 0 != m_oFooterRight )
 	{
-		CString sId = SaveFile(m_oFooterRight,oRenderParameter, false);
+        std::wstring sId = SaveFile(m_oFooterRight,oRenderParameter, false);
         sResult += L"<w:footerReference w:type=\"default\" r:id=\"" + sId + L"\"/>";
 	}
 	if (m_pOldSectionProp)
 	{
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nSrAuth);
-		CString sDate(RtfUtility::convertDateTime(m_nSrDate).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nSrAuth);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nSrDate).c_str());
 
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -836,19 +838,19 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	sResult += L"</w:sectPr>";
 	return sResult;
 }
-CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader)
+std::wstring RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader)
 {
 	OOXWriter* poOOXWriter		= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
 	RtfDocument* poRtfDocument	= static_cast<RtfDocument*> ( oRenderParameter.poDocument );
 
-	CString sFilename;
+    std::wstring sFilename;
 	if( true == bHeader )
-		sFilename.AppendFormat( L"header%d.xml", poRtfDocument->m_oIdGenerator.Generate_HeaderNumber() );
+        sFilename += L"header" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_HeaderNumber()) + L".xml";
 	else
-		sFilename.AppendFormat( L"footer%d.xml", poRtfDocument->m_oIdGenerator.Generate_FooterNumber() );
+        sFilename += L"footer" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_FooterNumber()) + L".xml";
 
-	CString sContent;
-	CString sRootName;
+    std::wstring sContent;
+    std::wstring sRootName;
 	if( true == bHeader )
 		sRootName = L"w:hdr";
 	else
@@ -867,9 +869,9 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 	sContent += oTarget->RenderToOOX(oNewParameter);
     sContent += L"</" + sRootName + L">";
 
-    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent.GetBuffer());
+    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent);
 	
-	CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
+    std::wstring sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
 	
 	CFile file;
 	
@@ -879,8 +881,8 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 		file.CloseFile();
 	}
 
-	CString sContentTarget = L"/word/"  +  sFilename;
-	CString srID;
+    std::wstring sContentTarget = L"/word/"  +  sFilename;
+    std::wstring srID;
 	if( true == bHeader )
 	{
 		poOOXWriter->m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml", sContentTarget);

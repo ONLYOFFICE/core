@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,13 +33,14 @@
 #define READERS
 
 #include "FileWriter.h"
-#include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
+
+#include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
-#include "../../DesktopEditor/common/ASCVariant.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 namespace BinDocxRW {
 
@@ -316,9 +317,9 @@ public:
 			}
 		case c_oSerProp_rPrType::FontAscii:
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+                std::wstring sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
-				if(!sFontName.IsEmpty())
+                if(!sFontName.empty())
 				{
 					orPr->bFontAscii = true;
 					orPr->FontAscii = sFontName;
@@ -327,9 +328,9 @@ public:
 			}
 		case c_oSerProp_rPrType::FontHAnsi:
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+                std::wstring sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
-				if(!sFontName.IsEmpty())
+                if(!sFontName.empty())
 				{
 					orPr->bFontHAnsi = true;
 					orPr->FontHAnsi = sFontName;
@@ -338,9 +339,9 @@ public:
 			}
 		case c_oSerProp_rPrType::FontCS:
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+                std::wstring sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
-				if(!sFontName.IsEmpty())
+                if(!sFontName.empty())
 				{
 					orPr->bFontCS = true;
 					orPr->FontCS = sFontName;
@@ -349,9 +350,9 @@ public:
 			}
 		case c_oSerProp_rPrType::FontAE:
 			{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+                std::wstring sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
-				if(!sFontName.IsEmpty())
+                if(!sFontName.empty())
 				{
 					orPr->bFontAE = true;
 					orPr->FontAE = sFontName;
@@ -406,7 +407,7 @@ public:
 			}
 		case c_oSerProp_rPrType::RStyle:
 			{
-				CString sRStyle(m_oBufferedStream.GetString3(length));
+                std::wstring sRStyle(m_oBufferedStream.GetString3(length));
 				orPr->bRStyle = true;
 				orPr->RStyle = sRStyle;
 			}
@@ -512,11 +513,10 @@ public:
 				if (length > 0)
 				{
 					long nCurPos = m_oBufferedStream.GetPos();
-					CString* bstrXml = NULL;
-					HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, XMLWRITER_DOC_TYPE_WORDART, &bstrXml);
-					if (S_OK == hRes && NULL != bstrXml)
-						orPr->Outline = *bstrXml;
-					RELEASEOBJECT(bstrXml);
+                    std::wstring strXml;
+                    HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, XMLWRITER_DOC_TYPE_WORDART, strXml);
+                    if (S_OK == hRes)
+                        orPr->Outline = strXml;
 					m_oBufferedStream.Seek(nCurPos + length);
 				}
 			}
@@ -526,11 +526,10 @@ public:
 				if (length > 0)
 				{
 					long nCurPos = m_oBufferedStream.GetPos();
-					CString* bstrXml = NULL;
-					HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_FILL, XMLWRITER_DOC_TYPE_WORDART, &bstrXml);
-					if (S_OK == hRes && NULL != bstrXml)
-						orPr->Fill = _T("<w14:textFill>") + *bstrXml + _T("</w14:textFill>");
-					RELEASEOBJECT(bstrXml);
+                    std::wstring strXml;
+                    HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_FILL, XMLWRITER_DOC_TYPE_WORDART, strXml);
+                    if (S_OK == hRes)
+                        orPr->Fill = _T("<w14:textFill>") + strXml + _T("</w14:textFill>");
 					m_oBufferedStream.Seek(nCurPos + length);
 				}
 			}
@@ -611,20 +610,19 @@ public:
 			{
 				BYTE contextualSpacing = m_oBufferedStream.GetUChar();
 				if(0 != contextualSpacing)
-					pCStringWriter->WriteString(CString(_T("<w:contextualSpacing w:val=\"true\"/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:contextualSpacing w:val=\"true\"/>")));
 				else if(false == bDoNotWriteNullProp)
-					pCStringWriter->WriteString(CString(_T("<w:contextualSpacing w:val=\"false\"/>")));
-				break;
-			}
+                    pCStringWriter->WriteString(std::wstring(_T("<w:contextualSpacing w:val=\"false\"/>")));
+            }break;
 		case c_oSerProp_pPrType::Ind:
 			{
 				XmlUtils::CStringWriter oTempWriter;
 				res = Read2(length, &Binary_pPrReader::ReadInd, this, &oTempWriter);
 				if(oTempWriter.GetCurSize() > 0)
 				{
-					pCStringWriter->WriteString(CString(_T("<w:ind")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:ind")));
 					pCStringWriter->Write(oTempWriter);
-					pCStringWriter->WriteString(CString(_T("/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("/>")));
 				}
 				break;
 			}
@@ -633,38 +631,35 @@ public:
 				BYTE jc = m_oBufferedStream.GetUChar();
 				switch(jc)
 				{
-				case align_Right: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"right\" />")));break;
-				case align_Left: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"left\" />")));break;
-				case align_Center: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"center\" />")));break;
-				case align_Justify: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"both\" />")));break;
-				}
-				break;
-			}
+                case align_Right: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"right\" />")));break;
+                case align_Left: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"left\" />")));break;
+                case align_Center: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"center\" />")));break;
+                case align_Justify: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"both\" />")));break;
+				}				
+            }break;
 		case c_oSerProp_pPrType::KeepLines:
 			{
 				BYTE KeepLines = m_oBufferedStream.GetUChar();
 				if(0 != KeepLines)
-					pCStringWriter->WriteString(CString(_T("<w:keepLines/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:keepLines/>")));
 				else if(false == bDoNotWriteNullProp)
-					pCStringWriter->WriteString(CString(_T("<w:keepLines w:val=\"false\"/>")));
-				break;
-			}
+                    pCStringWriter->WriteString(std::wstring(_T("<w:keepLines w:val=\"false\"/>")));
+            }break;
 		case c_oSerProp_pPrType::KeepNext:
 			{
 				BYTE KeepNext = m_oBufferedStream.GetUChar();
 				if(0 != KeepNext)
-					pCStringWriter->WriteString(CString(_T("<w:keepNext/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:keepNext/>")));
 				else if(false == bDoNotWriteNullProp)
-					pCStringWriter->WriteString(CString(_T("<w:keepNext w:val=\"false\"/>")));
-				break;
-			}
+                    pCStringWriter->WriteString(std::wstring(_T("<w:keepNext w:val=\"false\"/>")));
+            }break;
 		case c_oSerProp_pPrType::PageBreakBefore:
 			{
 				BYTE pageBreakBefore = m_oBufferedStream.GetUChar();
 				if(0 != pageBreakBefore)
-					pCStringWriter->WriteString(CString(_T("<w:pageBreakBefore/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:pageBreakBefore/>")));
 				else if(false == bDoNotWriteNullProp)
-					pCStringWriter->WriteString(CString(_T("<w:pageBreakBefore w:val=\"false\"/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:pageBreakBefore w:val=\"false\"/>")));
 				break;
 			}
 		case c_oSerProp_pPrType::Spacing:
@@ -673,14 +668,14 @@ public:
 				res = Read2(length, &Binary_pPrReader::ReadSpacing, this, &oSpacing);
 				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 				{
-					pCStringWriter->WriteString(CString(_T("<w:spacing")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:spacing")));
 					BYTE bLineRule = linerule_Auto;
 					//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
 					if(oSpacing.bLine)
 					{
 						if(oSpacing.bLineRule)
 							bLineRule = oSpacing.LineRule;
-						CString sLineRule;
+                        std::wstring sLineRule;
 						switch(oSpacing.LineRule)
 						{
 							case linerule_AtLeast:sLineRule = _T(" w:lineRule=\"atLeast\"");break;
@@ -691,48 +686,46 @@ public:
 					}
 					if(oSpacing.bLine)
 					{
-						CString sLine;
+                        std::wstring sLine;
 						if(linerule_Auto == bLineRule)
 						{
 							long nLine = SerializeCommon::Round(oSpacing.Line * 240);
-							sLine.Format(_T(" w:line=\"%d\""), nLine);
+                            sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
 						}
 						else
 						{
 							long nLine = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Line);
-							sLine.Format(_T(" w:line=\"%d\""), nLine);
+                            sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
 						}
 						pCStringWriter->WriteString(sLine);
 					}
 					if(oSpacing.bAfter)
 					{
 						long After = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.After);
-						CString sAfter;
-						sAfter.Format(_T(" w:after=\"%d\""), After);
+                        std::wstring sAfter = L" w:after=\"" + std::to_wstring(After) + L"\"";
 						pCStringWriter->WriteString(sAfter);
 					}
 					if(oSpacing.bAfterAuto)
 					{
 						if(true == oSpacing.AfterAuto)
-							pCStringWriter->WriteString(CString(_T(" w:afterAutospacing=\"1\"")));
+                            pCStringWriter->WriteString(std::wstring(_T(" w:afterAutospacing=\"1\"")));
 						else
-							pCStringWriter->WriteString(CString(_T(" w:afterAutospacing=\"0\"")));
+                            pCStringWriter->WriteString(std::wstring(_T(" w:afterAutospacing=\"0\"")));
 					}
 					if(oSpacing.bBefore)
 					{
 						long Before = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Before);
-						CString sBefore;
-						sBefore.Format(_T(" w:before=\"%d\""), Before);
+                        std::wstring sBefore = L" w:before=\"" + std::to_wstring(Before) + L"\"";
 						pCStringWriter->WriteString(sBefore);
 					}
 					if(oSpacing.bBeforeAuto)
 					{
 						if(true == oSpacing.BeforeAuto)
-							pCStringWriter->WriteString(CString(_T(" w:beforeAutospacing=\"1\"")));
+                            pCStringWriter->WriteString(std::wstring(_T(" w:beforeAutospacing=\"1\"")));
 						else
-							pCStringWriter->WriteString(CString(_T(" w:beforeAutospacing=\"0\"")));
+                            pCStringWriter->WriteString(std::wstring(_T(" w:beforeAutospacing=\"0\"")));
 					}
-					pCStringWriter->WriteString(CString(_T("/>")));
+                    pCStringWriter->WriteString(std::wstring(_T("/>")));
 				}
 				break;
 			}
@@ -746,7 +739,7 @@ public:
 				}
 				else
 				{
-					CString sShd(_T("<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>"));
+                    std::wstring sShd(_T("<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"auto\"/>"));
 					pCStringWriter->WriteString(sShd);
 				}
 				break;
@@ -757,101 +750,90 @@ public:
 				if(0 != WidowControl)
 				{
 					if(false == bDoNotWriteNullProp)
-						pCStringWriter->WriteString(CString(_T("<w:widowControl/>")));
+                        pCStringWriter->WriteString(std::wstring(_T("<w:widowControl/>")));
 				}
 				else
-					pCStringWriter->WriteString(CString(_T("<w:widowControl w:val=\"off\" />")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:widowControl w:val=\"off\" />")));
 				break;
 			}
 		case c_oSerProp_pPrType::Tab:
 			{
 				Tabs oTabs;
 				res = Read2(length, &Binary_pPrReader::ReadTabs, this, &oTabs);
-				int nLen = oTabs.m_aTabs.size();
+				size_t nLen = oTabs.m_aTabs.size();
 				if(nLen > 0)
 				{
-					pCStringWriter->WriteString(CString(_T("<w:tabs>")));
-					for(int i = 0; i < nLen; ++i)
+                    pCStringWriter->WriteString(std::wstring(_T("<w:tabs>")));
+					for(size_t i = 0; i < nLen; ++i)
 					{
 						Tab& oTab = oTabs.m_aTabs[i];
 						long nTab = SerializeCommon::Round( g_dKoef_mm_to_twips * oTab.Pos);
-						CString sVal;
+                        std::wstring sVal;
 						switch(oTab.Val)
 						{
-						case g_tabtype_right: sVal=_T("right");break;
-						case g_tabtype_center: sVal=_T("center");break;
-						case g_tabtype_clear: sVal=_T("clear");break;
-						default: sVal=_T("left");break;
+                            case g_tabtype_right:   sVal=_T("right");   break;
+                            case g_tabtype_center:  sVal=_T("center");  break;
+                            case g_tabtype_clear:   sVal=_T("clear");   break;
+                            default:                sVal=_T("left");    break;
 						}
-						CString sTab;
-                        sTab.Format(_T("<w:tab w:val=\"%ls\" w:pos=\"%d\" />"), sVal, nTab);
-						pCStringWriter->WriteString(sTab);
+                        pCStringWriter->WriteString(L"<w:tab w:val=\"" + sVal + L"\" w:pos=\"" + std::to_wstring(nTab) + L"\"/>");
 					}
-					pCStringWriter->WriteString(CString(_T("</w:tabs>")));
-				}
-				break;
-			}
+                    pCStringWriter->WriteString(std::wstring(_T("</w:tabs>")));
+				}				
+            }break;
 		case c_oSerProp_pPrType::ParaStyle:
 			{
-				CString sStyleName(m_oBufferedStream.GetString3(length));
+                std::wstring sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
-				CString sStyle;
-				sStyle.Append(_T("<w:pStyle w:val=\""));
-				sStyle.Append(sStyleName);
-				sStyle.Append(_T("\" />"));
-				pCStringWriter->WriteString(sStyle);
-				break;
-			}
+                pCStringWriter->WriteString(L"<w:pStyle w:val=\"" + sStyleName + L"\" />");
+            }break;
 		case c_oSerProp_pPrType::numPr:
-			pCStringWriter->WriteString(CString(_T("<w:numPr>")));
-			res = Read2(length, &Binary_pPrReader::ReadNumPr, this, poResult);
-			pCStringWriter->WriteString(CString(_T("</w:numPr>")));
-			break;
+            {
+                pCStringWriter->WriteString(std::wstring(_T("<w:numPr>")));
+                res = Read2(length, &Binary_pPrReader::ReadNumPr, this, poResult);
+                pCStringWriter->WriteString(std::wstring(_T("</w:numPr>")));
+            }break;
 		case c_oSerProp_pPrType::pPr_rPr:
 			{
 				rPr orPr(m_oFontTableWriter.m_mapFonts);
 				res = oBinary_rPrReader.Read(length, &orPr);
 				//Read2(length, &Binary_pPrReader::ReadNumPr, this, &orPr);
 				if(orPr.IsNoEmpty())
-					orPr.Write(pCStringWriter);
-				break;
-			}
+				orPr.Write(pCStringWriter);
+				
+			}break;
 		case c_oSerProp_pPrType::pBdr:
 			{
 				docBorders odocBorders;
 				res = Read1(length, &Binary_pPrReader::ReadBorders, this, &odocBorders);
-				if(false == odocBorders.IsEmpty())
+                if(false == odocBorders.IsEmpty())
 				{
-					pCStringWriter->WriteString(CString(_T("<w:pBdr>")));
+                    pCStringWriter->WriteString(std::wstring(_T("<w:pBdr>")));
 					odocBorders.Write(pCStringWriter, false);
-					pCStringWriter->WriteString(CString(_T("</w:pBdr>")));
-				}
-				break;
-			}
+                    pCStringWriter->WriteString(std::wstring(_T("</w:pBdr>")));
+				}				
+            }break;
 		case c_oSerProp_pPrType::FramePr:
 			{
 				CFramePr oFramePr;
 				res = Read2(length, &Binary_pPrReader::ReadFramePr, this, &oFramePr);
-				if(false == oFramePr.IsEmpty())
-					oFramePr.Write(*pCStringWriter);
-				break;
-			}
+                if(false == oFramePr.IsEmpty())
+					oFramePr.Write(*pCStringWriter);				
+            }break;
 		case c_oSerProp_pPrType::pPrChange:
 			{
 				TrackRevision oPPrChange;
 				res = Read1(length, &Binary_pPrReader::ReadPPrChange, this, &oPPrChange);
-				oPPrChange.Write(pCStringWriter, _T("w:pPrChange"));
-				break;
-			}
-		case c_oSerProp_pPrType::SectPr:
+				oPPrChange.Write(pCStringWriter, _T("w:pPrChange"));				
+            }break;
+        case c_oSerProp_pPrType::SectPr:
 			{
 				SectPr oSectPr;
 				res = Read1(length, &Binary_pPrReader::Read_SecPr, this, &oSectPr);
-				pCStringWriter->WriteString(CString(_T("<w:sectPr>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:sectPr>")));
 				pCStringWriter->WriteString(oSectPr.Write());
-				pCStringWriter->WriteString(CString(_T("</w:sectPr>")));
-				break;
-			}
+                pCStringWriter->WriteString(std::wstring(_T("</w:sectPr>")));
+            }break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;
@@ -871,7 +853,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadInd(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -882,29 +864,27 @@ public:
 			{
 				double dIndLeft = m_oBufferedStream.GetDouble();
 				long nIndLeft = SerializeCommon::Round(dIndLeft * g_dKoef_mm_to_twips);
-				CString sIndLeft;
-				sIndLeft.Format(_T(" w:left=\"%d\""), nIndLeft);
-				pCStringWriter->WriteString(sIndLeft);
+
+                pCStringWriter->WriteString(L" w:left=\"" + std::to_wstring(nIndLeft) + L"\"");
 				break;
 			}
 		case c_oSerProp_pPrType::Ind_Right:
 			{
 				double dIndRight = m_oBufferedStream.GetDouble();
 				long nIndRight = SerializeCommon::Round(dIndRight * g_dKoef_mm_to_twips);
-				CString sIndRight;
-				sIndRight.Format(_T(" w:right=\"%d\""), nIndRight);
-				pCStringWriter->WriteString(sIndRight);
+
+                pCStringWriter->WriteString(L" w:right=\"" + std::to_wstring(nIndRight) + L"\"");
 				break;
 			}
 		case c_oSerProp_pPrType::Ind_FirstLine:
 			{
 				double dIndFirstLine = m_oBufferedStream.GetDouble();
 				long nIndFirstLine = SerializeCommon::Round(dIndFirstLine * g_dKoef_mm_to_twips);
-				CString sIndFirstLine;
+                std::wstring sIndFirstLine;
 				if(nIndFirstLine > 0)
-					sIndFirstLine.Format(_T(" w:firstLine =\"%d\""), nIndFirstLine);
+                    sIndFirstLine = L" w:firstLine =\"" + std::to_wstring(nIndFirstLine) + L"\"";
 				else
-					sIndFirstLine.Format(_T(" w:hanging=\"%d\""), -nIndFirstLine);
+                    sIndFirstLine = L" w:hanging=\"" + std::to_wstring(-nIndFirstLine) + L"\"";
 				pCStringWriter->WriteString(sIndFirstLine);
 				break;
 			}
@@ -913,7 +893,7 @@ public:
 			break;
 		}
 		return res;
-	};
+    }
 	int ReadSpacing(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -949,7 +929,7 @@ public:
 			break;
 		}
 		return res;
-	};
+    }
 	int ReadTabs(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -975,7 +955,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadNumPr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -984,15 +964,15 @@ public:
 		{
 			long nLvl = m_oBufferedStream.GetLong();
 			m_nCurLvl = nLvl;
-			CString sLvl;sLvl.Format(_T("<w:ilvl w:val=\"%d\" />"), nLvl);
-			pCStringWriter->WriteString(sLvl);
+
+            pCStringWriter->WriteString(L"<w:ilvl w:val=\"" + std::to_wstring(nLvl) + L"\"/>");
 		}
 		else if(c_oSerProp_pPrType::numPr_id == type)
 		{
 			long nnumId = m_oBufferedStream.GetLong();
 			m_nCurNumId = nnumId;
-			CString snumId;snumId.Format(_T("<w:numId w:val=\"%d\" />"), nnumId);
-			pCStringWriter->WriteString(snumId);
+
+            pCStringWriter->WriteString(L"<w:numId w:val=\"" + std::to_wstring(nnumId) + L"\"/>");
 		}
 		else if(c_oSerProp_pPrType::numPr_Ins == type)
 		{
@@ -1050,7 +1030,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadBorder(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -1083,7 +1063,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadFramePr(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -1161,9 +1141,9 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
-	int Read_SecPr(BYTE type, long length, void* poResult)
-	{
+    }
+    int Read_SecPr(BYTE type, long length, void* poResult)
+    {
 		SectPr* pSectPr = static_cast<SectPr*>(poResult);
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerProp_secPrType::pgSz == type )
@@ -1302,7 +1282,7 @@ public:
 		else if( c_oSerNumTypes::NumFmtFormat == type )
 		{
 			pNumFmt->m_sFormat.Init();
-			pNumFmt->m_sFormat->Append(m_oBufferedStream.GetString3(length));
+            pNumFmt->m_sFormat->append(m_oBufferedStream.GetString3(length));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1406,11 +1386,11 @@ public:
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
 			int nHdrFtrIndex = m_oBufferedStream.GetLong();
-			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[nHdrFtrIndex];
 				pHdrFtrItem->m_sFilename;
-				CString sType;
+                std::wstring sType;
 				if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 					sType = _T("first");
 				else if(SimpleTypes::hdrftrEven == pHdrFtrItem->eType)
@@ -1431,11 +1411,11 @@ public:
 		if( c_oSerProp_secPrType::hdrftrelem == type )
 		{
 			int nHdrFtrIndex = m_oBufferedStream.GetLong();
-			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
+			if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 			{
 				Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
 				pHdrFtrItem->m_sFilename;
-				CString sType;
+                std::wstring sType;
 				if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 					sType = _T("first");
 				else if(SimpleTypes::hdrftrEven == pHdrFtrItem->eType)
@@ -1632,7 +1612,7 @@ protected:
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_CommonReader2 oBinary_CommonReader2;
 public:
-	CString m_sCurTableShd;
+    std::wstring m_sCurTableShd;
 	std::vector<double> m_aCurTblGrid;
 	bool bCellShd;
 public:
@@ -1650,35 +1630,35 @@ public:
 		if( c_oSerProp_tblPrType::RowBandSize == type )
 		{
 			long nRowBandSize = m_oBufferedStream.GetLong();
-			pWiterTblPr->RowBandSize.Format(_T("<w:tblStyleRowBandSize w:val=\"%d\"/>"), nRowBandSize);
+            pWiterTblPr->RowBandSize = L"<w:tblStyleRowBandSize w:val=\"" + std::to_wstring(nRowBandSize) + L"\"/>";
 		}
 		else if( c_oSerProp_tblPrType::ColBandSize == type )
 		{
 			long nColBandSize = m_oBufferedStream.GetLong();
-			pWiterTblPr->ColBandSize.Format(_T("<w:tblStyleColBandSize w:val=\"%d\"/>"), nColBandSize);
+            pWiterTblPr->ColBandSize = L"<w:tblStyleColBandSize w:val=\"" + std::to_wstring(nColBandSize) + L"\"/>";
 		}
 		else if( c_oSerProp_tblPrType::Jc == type )
 		{
 			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)
 			{
-			case align_Right:pWiterTblPr->Jc = CString(_T("<w:jc w:val=\"right\" />"));break;
-			case align_Left:break;
-			case align_Center:pWiterTblPr->Jc = CString(_T("<w:jc w:val=\"center\" />"));break;
-			case align_Justify:pWiterTblPr->Jc = CString(_T("<w:jc w:val=\"both\" />"));break;
-			}
+                case align_Right:   pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"right\" />")); break;
+                case align_Center:  pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"center\" />"));break;
+                case align_Justify: pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"both\" />"));  break;
+                case align_Left:    break;
+            }
 		}
 		else if( c_oSerProp_tblPrType::TableInd == type )
 		{
 			double dInd = m_oBufferedStream.GetDouble();
 			long nInd = SerializeCommon::Round( g_dKoef_mm_to_twips * dInd);
-			pWiterTblPr->TableInd.Format(_T("<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>"), nInd);
+            pWiterTblPr->TableInd = L"<w:tblInd w:w=\"" + std::to_wstring(nInd) + L"\" w:type=\"dxa\"/>";
 		}
 		else if( c_oSerProp_tblPrType::TableW == type )
 		{
 			docW odocW;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &odocW);
-			pWiterTblPr->TableW = odocW.Write(CString(_T("w:tblW")));
+            pWiterTblPr->TableW = odocW.Write(std::wstring(_T("w:tblW")));
 		}
 		else if( c_oSerProp_tblPrType::TableCellMar == type )
 		{
@@ -1686,22 +1666,22 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				pWiterTblPr->TableCellMar.Append(CString(_T("<w:tblCellMar>")));
-				pWiterTblPr->TableCellMar.Append(oTempWriter.GetData());
-				pWiterTblPr->TableCellMar.Append(CString(_T("</w:tblCellMar>")));
+                pWiterTblPr->TableCellMar += L"<w:tblCellMar>";
+                pWiterTblPr->TableCellMar += oTempWriter.GetData();
+                pWiterTblPr->TableCellMar += L"</w:tblCellMar>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::TableBorders == type )
 		{
 			docBorders odocBorders;
 			oBinary_pPrReader.ReadBordersOut(length, &odocBorders);
-			if(false == odocBorders.IsEmpty())
+            if(false == odocBorders.IsEmpty())
 			{
 				XmlUtils::CStringWriter oTempWriter; 
 				odocBorders.Write(&oTempWriter, false);
-				pWiterTblPr->TableBorders.Append(CString(_T("<w:tblBorders>")));
-				pWiterTblPr->TableBorders.Append(oTempWriter.GetData());
-				pWiterTblPr->TableBorders.Append(CString(_T("</w:tblBorders>")));
+                pWiterTblPr->TableBorders += L"<w:tblBorders>";
+                pWiterTblPr->TableBorders += oTempWriter.GetData();
+                pWiterTblPr->TableBorders += L"</w:tblBorders>";
 			}
 		}
 		else if( c_oSerProp_tblPrType::Shd == type )
@@ -1718,23 +1698,23 @@ public:
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::tblpPr2 == type )
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			res = Read2(length, &Binary_tblPrReader::Read_tblpPr2, this, &oTempWriter);
-			pWiterTblPr->tblpPr.Append(CString(_T("<w:tblpPr")));
-			pWiterTblPr->tblpPr.Append(oTempWriter.GetData());
-			pWiterTblPr->tblpPr.Append(CString(_T("/>")));
+            pWiterTblPr->tblpPr += L"<w:tblpPr";
+            pWiterTblPr->tblpPr += oTempWriter.GetData();
+            pWiterTblPr->tblpPr += L"/>";
 		}
 		else if( c_oSerProp_tblPrType::Style == type )
 		{
-			CString Name(m_oBufferedStream.GetString3(length));
+            std::wstring Name(m_oBufferedStream.GetString3(length));
 			Name = XmlUtils::EncodeXmlString(Name);
-            pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%ls\"/>"), Name);
+            pWiterTblPr->Style = L"<w:tblStyle w:val=\"" + Name + L"\"/>";
 		}
 		else if( c_oSerProp_tblPrType::Look == type )
 		{
@@ -1746,19 +1726,22 @@ public:
 			int nLR = (0 == (nLook & 0x0040)) ? 0 : 1;
 			int nBH = (0 == (nLook & 0x0200)) ? 0 : 1;
 			int nBV = (0 == (nLook & 0x0400)) ? 0 : 1;
-			pWiterTblPr->Look.Format(_T("<w:tblLook w:val=\"%04X\" w:firstRow=\"%d\" w:lastRow=\"%d\" w:firstColumn=\"%d\" w:lastColumn=\"%d\" w:noHBand=\"%d\" w:noVBand=\"%d\"/>"), nLook, nFR, nLR, nFC, nLC, nBH, nBV);
+            pWiterTblPr->Look = L"<w:tblLook w:val=\"" + XmlUtils::IntToString(nLook, L"%04X")
+                            +   L"\" w:firstRow=\""     + std::to_wstring(nFR) + L"\" w:lastRow=\""    + std::to_wstring(nLR)
+                            +   L"\" w:firstColumn=\""  + std::to_wstring(nFC) + L"\" w:lastColumn=\"" + std::to_wstring(nLC)
+                            +   L"\" w:noHBand=\""      + std::to_wstring(nBH) + L"\" w:noVBand=\""    + std::to_wstring(nBV) + L"\"/>";
 		}
 		else if( c_oSerProp_tblPrType::Layout == type )
 		{
 			long nLayout = m_oBufferedStream.GetUChar();
-			CString sLayout;
+            std::wstring sLayout;
 			switch(nLayout)
 			{
 				case 1: sLayout = _T("autofit");break;
 				case 2: sLayout = _T("fixed");break;
 			}
-			if(false == sLayout.IsEmpty())
-                pWiterTblPr->Layout.Format(_T("<w:tblLayout w:type=\"%ls\"/>"), sLayout);
+            if(false == sLayout.empty())
+                pWiterTblPr->Layout = L"<w:tblLayout w:type=\"" + sLayout + L"\"/>";
 		}
 		else if( c_oSerProp_tblPrType::tblPrChange == type )
 		{
@@ -1771,7 +1754,15 @@ public:
 			double dSpacing = m_oBufferedStream.GetDouble();
 			dSpacing /=2;
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
-			pWiterTblPr->TableCellSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
+            pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>";
+		}
+		else if( c_oSerProp_tblPrType::tblCaption == type )
+		{
+			pWiterTblPr->Caption = m_oBufferedStream.GetString3(length);
+		}
+		else if( c_oSerProp_tblPrType::tblDescription == type )
+		{
+			pWiterTblPr->Description = m_oBufferedStream.GetString3(length);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1808,25 +1799,25 @@ public:
 		{
 			docW oLeft;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oLeft);
-			oLeft.Write(*pCStringWriter, CString(_T("w:left")));
+            oLeft.Write(*pCStringWriter, std::wstring(_T("w:left")));
 		}
 		else if( c_oSerMarginsType::top == type )
 		{
 			docW oTop;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oTop);
-			oTop.Write(*pCStringWriter, CString(_T("w:top")));
+            oTop.Write(*pCStringWriter, std::wstring(_T("w:top")));
 		}
 		else if( c_oSerMarginsType::right == type )
 		{
 			docW oRight;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oRight);
-			oRight.Write(*pCStringWriter, CString(_T("w:right")));
+            oRight.Write(*pCStringWriter, std::wstring(_T("w:right")));
 		}
 		else if( c_oSerMarginsType::bottom == type )
 		{
 			docW oBottom;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oBottom);
-			oBottom.Write(*pCStringWriter, CString(_T("w:bottom")));
+            oBottom.Write(*pCStringWriter, std::wstring(_T("w:bottom")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -1840,15 +1831,14 @@ public:
 		{
 			double dX = m_oBufferedStream.GetDouble();
 			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
-			CString sX;sX.Format(_T(" w:tblpX=\"%d\""), nX);
-			pCStringWriter->WriteString(sX);
+            pCStringWriter->WriteString(L" w:tblpX=\"" + std::to_wstring(nX) + L"\"");
 		}
 		else if( c_oSer_tblpPrType::Y == type )
 		{
 			double dY = m_oBufferedStream.GetDouble();
 			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
-			CString sY;sY.Format(_T(" w:tblpY=\"%d\""), nY);
-			pCStringWriter->WriteString(sY);
+
+            pCStringWriter->WriteString(L" w:tblpY=\"" + std::to_wstring(nY) + L"\"");
 		}
 		else if( c_oSer_tblpPrType::Paddings == type )
 		{
@@ -1858,29 +1848,29 @@ public:
 			{
 				double dLeft = oPaddings.Left;
 				long nLeft = SerializeCommon::Round( g_dKoef_mm_to_twips * dLeft);
-				CString sLeft;sLeft.Format(_T(" w:leftFromText=\"%d\""), nLeft);
-				pCStringWriter->WriteString(sLeft);
+
+                pCStringWriter->WriteString(L" w:leftFromText=\"" + std::to_wstring(nLeft) + L"\"");
 			}
 			if(oPaddings.bTop)
 			{
 				double dTop = oPaddings.Top;
 				long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
-				CString sTop;sTop.Format(_T(" w:topFromText=\"%d\""), nTop);
-				pCStringWriter->WriteString(sTop);
+
+                pCStringWriter->WriteString(L" w:topFromText=\"" + std::to_wstring(nTop) + L"\"");
 			}
 			if(oPaddings.bRight)
 			{
 				double dRight = oPaddings.Right;
 				long nRight = SerializeCommon::Round( g_dKoef_mm_to_twips * dRight);
-				CString sRight;sRight.Format(_T(" w:rightFromText=\"%d\""), nRight);
-				pCStringWriter->WriteString(sRight);
+
+                pCStringWriter->WriteString(L" w:rightFromText=\"" + std::to_wstring(nRight) + L"\"");
 			}
 			if(oPaddings.bBottom)
 			{
 				double dBottom = oPaddings.Bottom;
 				long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
-				CString sBottom;sBottom.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
-				pCStringWriter->WriteString(sBottom);
+
+                pCStringWriter->WriteString(L" w:bottomFromText=\"" + std::to_wstring(nBottom) + L"\"");
 			}
 		}
 		else
@@ -1893,13 +1883,13 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSer_tblpPrType2::HorzAnchor == type )
 		{
-			CString sXml;
+            std::wstring sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:horzAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:horzAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:horzAnchor=\"text\""));break;
+            case 0:sXml += (_T(" w:horzAnchor=\"margin\""));break;
+            case 1:sXml += (_T(" w:horzAnchor=\"page\""));break;
+            case 2:sXml += (_T(" w:horzAnchor=\"text\""));break;
+            default:sXml += (_T(" w:horzAnchor=\"text\""));break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1907,32 +1897,32 @@ public:
 		{
 			double dX = m_oBufferedStream.GetDouble();
 			long nX = SerializeCommon::Round( g_dKoef_mm_to_twips * dX);
-			CString sXml;sXml.Format(_T(" w:tblpX=\"%d\""), nX);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:tblpX=\"" + std::to_wstring(nX) + L"\"");
 		}
 		else if( c_oSer_tblpPrType2::TblpXSpec == type )
 		{
-			CString sXml;
+            std::wstring sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpXSpec=\"center\""));break;
-			case 1:sXml.Append(_T(" w:tblpXSpec=\"inside\""));break;
-			case 2:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
-			case 3:sXml.Append(_T(" w:tblpXSpec=\"outside\""));break;
-			case 4:sXml.Append(_T(" w:tblpXSpec=\"right\""));break;
-			default:sXml.Append(_T(" w:tblpXSpec=\"left\""));break;
+                case 0:     sXml += (_T(" w:tblpXSpec=\"center\""));    break;
+                case 1:     sXml += (_T(" w:tblpXSpec=\"inside\""));    break;
+                case 2:     sXml += (_T(" w:tblpXSpec=\"left\""));      break;
+                case 3:     sXml += (_T(" w:tblpXSpec=\"outside\""));   break;
+                case 4:     sXml += (_T(" w:tblpXSpec=\"right\""));     break;
+                default:    sXml += (_T(" w:tblpXSpec=\"left\""));      break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
 		else if( c_oSer_tblpPrType2::VertAnchor == type )
 		{
-			CString sXml;
+            std::wstring sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:vertAnchor=\"margin\""));break;
-			case 1:sXml.Append(_T(" w:vertAnchor=\"page\""));break;
-			case 2:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
-			default:sXml.Append(_T(" w:vertAnchor=\"text\""));break;
+            case 0: sXml += (_T(" w:vertAnchor=\"margin\""));break;
+            case 1: sXml += (_T(" w:vertAnchor=\"page\""));  break;
+            case 2: sXml += (_T(" w:vertAnchor=\"text\""));  break;
+            default:sXml += (_T(" w:vertAnchor=\"text\"")); break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1940,21 +1930,21 @@ public:
 		{
 			double dY = m_oBufferedStream.GetDouble();
 			long nY = SerializeCommon::Round( g_dKoef_mm_to_twips * dY);
-			CString sXml;sXml.Format(_T(" w:tblpY=\"%d\""), nY);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:tblpY=\"" + std::to_wstring(nY) + L"\"");
 		}
 		else if( c_oSer_tblpPrType2::TblpYSpec == type )
 		{
-			CString sXml;
+            std::wstring sXml;
 			switch(m_oBufferedStream.GetUChar())
 			{
-			case 0:sXml.Append(_T(" w:tblpYSpec=\"bottom\""));break;
-			case 1:sXml.Append(_T(" w:tblpYSpec=\"center\""));break;
-			case 2:sXml.Append(_T(" w:tblpYSpec=\"inline\""));break;
-			case 3:sXml.Append(_T(" w:tblpYSpec=\"inside\""));break;
-			case 4:sXml.Append(_T(" w:tblpYSpec=\"outside\""));break;
-			case 5:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
-			default:sXml.Append(_T(" w:tblpYSpec=\"top\""));break;
+            case 0:     sXml += (_T(" w:tblpYSpec=\"bottom\"")); break;
+            case 1:     sXml += (_T(" w:tblpYSpec=\"center\"")); break;
+            case 2:     sXml += (_T(" w:tblpYSpec=\"inline\"")); break;
+            case 3:     sXml += (_T(" w:tblpYSpec=\"inside\"")); break;
+            case 4:     sXml += (_T(" w:tblpYSpec=\"outside\""));break;
+            case 5:     sXml += (_T(" w:tblpYSpec=\"top\""));    break;
+            default:    sXml += (_T(" w:tblpYSpec=\"top\""));    break;
 			}
 			pCStringWriter->WriteString(sXml);
 		}
@@ -1978,9 +1968,9 @@ public:
 		{
 			BYTE CantSplit = m_oBufferedStream.GetUChar();
 			if(0 != CantSplit)
-				pCStringWriter->WriteString(CString(_T("<w:cantSplit />")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit />")));
 			else
-				pCStringWriter->WriteString(CString(_T("<w:cantSplit w:val=\"false\"/>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:cantSplit w:val=\"false\"/>")));
 		}
 		else if( c_oSerProp_rowPrType::After == type )
 		{
@@ -1989,7 +1979,7 @@ public:
 			if(true == orowPrAfterBefore.bGridAfter && orowPrAfterBefore.nGridAfter > 0 && false == orowPrAfterBefore.oAfterWidth.bW)
 			{
 				//ищем по tblGrid
-				long nGridLength = m_aCurTblGrid.size();
+				long nGridLength = (long)m_aCurTblGrid.size();
 				if(orowPrAfterBefore.nGridAfter < nGridLength)
 				{
 					double nSumW = 0;
@@ -2028,10 +2018,10 @@ public:
 			BYTE jc = m_oBufferedStream.GetUChar();
 			switch(jc)
 			{
-			case align_Right: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"right\" />")));break;
-			case align_Left: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"left\" />")));break;
-			case align_Center: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"center\" />")));break;
-			case align_Justify: pCStringWriter->WriteString(CString(_T("<w:jc w:val=\"both\" />")));break;
+            case align_Right: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"right\" />")));break;
+            case align_Left: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"left\" />")));break;
+            case align_Center: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"center\" />")));break;
+            case align_Justify: pCStringWriter->WriteString(std::wstring(_T("<w:jc w:val=\"both\" />")));break;
 			}
 		}
 		else if( c_oSerProp_rowPrType::TableCellSpacing == type )
@@ -2039,8 +2029,8 @@ public:
 			double dSpacing = m_oBufferedStream.GetDouble();
 			dSpacing /=2;
 			long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
-			CString sSpacing;sSpacing.Format(_T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), nSpacing);
-			pCStringWriter->WriteString(sSpacing);
+
+            pCStringWriter->WriteString(L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>");
 		}
 		else if( c_oSerProp_rowPrType::Height == type )
 		{
@@ -2050,9 +2040,9 @@ public:
 		{
 			BYTE tblHeader = m_oBufferedStream.GetUChar();
 			if(0 != tblHeader)
-				pCStringWriter->WriteString(CString(_T("<w:tblHeader />")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tblHeader />")));
 			else
-				pCStringWriter->WriteString(CString(_T("<w:tblHeader w:val=\"false\"/>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tblHeader w:val=\"false\"/>")));
 		}
 		else if( c_oSerProp_rowPrType::Del == type )
 		{
@@ -2122,8 +2112,8 @@ public:
 		{
 			double dHeight = m_oBufferedStream.GetDouble();
 			long nHeight = SerializeCommon::Round( g_dKoef_mm_to_twips * dHeight);
-			CString sHeight;sHeight.Format(_T("<w:trHeight w:val=\"%d\" />"), nHeight);
-			pCStringWriter->WriteString(sHeight);
+
+            pCStringWriter->WriteString(L"<w:trHeight w:val=\"" + std::to_wstring(nHeight) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2142,8 +2132,7 @@ public:
 			long nGridSpan = m_oBufferedStream.GetLong();
 			if(nGridSpan > 1)
 			{
-				CString sGridSpan;sGridSpan.Format(_T("<w:gridSpan w:val=\"%d\" />"), nGridSpan);
-				pCStringWriter->WriteString(sGridSpan);
+                pCStringWriter->WriteString(L"<w:gridSpan w:val=\"" + std::to_wstring(nGridSpan) + L"\"/>");
 			}
 		}
 		else if( c_oSerProp_cellPrType::Shd == type )
@@ -2160,11 +2149,11 @@ public:
 		{
 			docBorders odocBorders;
 			oBinary_pPrReader.ReadBordersOut(length, &odocBorders);
-			if(false == odocBorders.IsEmpty())
+            if(false == odocBorders.IsEmpty())
 			{
-				pCStringWriter->WriteString(CString(_T("<w:tcBorders>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tcBorders>")));
 				odocBorders.Write(pCStringWriter, true);
-				pCStringWriter->WriteString(CString(_T("</w:tcBorders>")));
+                pCStringWriter->WriteString(std::wstring(_T("</w:tcBorders>")));
 			}
 		}
 		else if( c_oSerProp_cellPrType::CellMar == type )
@@ -2173,25 +2162,25 @@ public:
 			res = Read1(length, &Binary_tblPrReader::ReadCellMargins, this, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				pCStringWriter->WriteString(CString(_T("<w:tcMar>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tcMar>")));
 				pCStringWriter->Write(oTempWriter);
-				pCStringWriter->WriteString(CString(_T("</w:tcMar>")));
+                pCStringWriter->WriteString(std::wstring(_T("</w:tcMar>")));
 			}
 		}
 		else if( c_oSerProp_cellPrType::TableCellW == type )
 		{
 			docW oW;
 			res = Read2(length, &Binary_tblPrReader::ReadW, this, &oW);
-			oW.Write(*pCStringWriter, CString(_T("w:tcW")));
+            oW.Write(*pCStringWriter, std::wstring(_T("w:tcW")));
 		}
 		else if( c_oSerProp_cellPrType::VAlign == type )
 		{
 			BYTE VAlign = m_oBufferedStream.GetUChar();
 			switch(VAlign)
 			{
-			case vertalignjc_Top:pCStringWriter->WriteString(CString(_T("<w:vAlign w:val=\"top\" />")));break;
-			case vertalignjc_Center:pCStringWriter->WriteString(CString(_T("<w:vAlign w:val=\"center\" />")));break;
-			case vertalignjc_Bottom:pCStringWriter->WriteString(CString(_T("<w:vAlign w:val=\"bottom\" />")));break;
+            case vertalignjc_Top:pCStringWriter->WriteString(std::wstring(_T("<w:vAlign w:val=\"top\" />")));break;
+            case vertalignjc_Center:pCStringWriter->WriteString(std::wstring(_T("<w:vAlign w:val=\"center\" />")));break;
+            case vertalignjc_Bottom:pCStringWriter->WriteString(std::wstring(_T("<w:vAlign w:val=\"bottom\" />")));break;
 			}
 		}
 		else if( c_oSerProp_cellPrType::VMerge == type )
@@ -2199,8 +2188,8 @@ public:
 			BYTE VMerge = m_oBufferedStream.GetUChar();
 			switch(VMerge)
 			{
-			case vmerge_Restart:pCStringWriter->WriteString(CString(_T("<w:vMerge w:val=\"restart\" />")));break;
-			case vmerge_Continue:pCStringWriter->WriteString(CString(_T("<w:vMerge w:val=\"continue\" />")));break;
+            case vmerge_Restart:pCStringWriter->WriteString(std::wstring(_T("<w:vMerge w:val=\"restart\" />")));break;
+            case vmerge_Continue:pCStringWriter->WriteString(std::wstring(_T("<w:vMerge w:val=\"continue\" />")));break;
 			}
 		}
 		else if( c_oSerProp_cellPrType::CellDel == type )
@@ -2231,33 +2220,33 @@ public:
 		{
 			SimpleTypes::CTextDirection<> oTextDirection;
 			oTextDirection.SetValue((SimpleTypes::ETextDirection)m_oBufferedStream.GetUChar());
-			pCStringWriter->WriteString(CString(_T("<w:textDirection w:val=\"")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:textDirection w:val=\"")));
 			pCStringWriter->WriteString(oTextDirection.ToString());
-			pCStringWriter->WriteString(CString(_T("\" />")));
+            pCStringWriter->WriteString(std::wstring(_T("\" />")));
 		}
 		else if( c_oSerProp_cellPrType::hideMark == type )
 		{
 			bool hideMark = m_oBufferedStream.GetBool();
 			if(hideMark)
-				pCStringWriter->WriteString(CString(_T("<w:hideMark />")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:hideMark />")));
 			else
-				pCStringWriter->WriteString(CString(_T("<w:hideMark w:val=\"false\"/>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:hideMark w:val=\"false\"/>")));
 		}
 		else if( c_oSerProp_cellPrType::noWrap == type )
 		{
 			bool noWrap = m_oBufferedStream.GetBool();
 			if(noWrap)
-				pCStringWriter->WriteString(CString(_T("<w:noWrap />")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:noWrap />")));
 			else
-				pCStringWriter->WriteString(CString(_T("<w:noWrap w:val=\"false\"/>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:noWrap w:val=\"false\"/>")));
 		}
 		else if( c_oSerProp_cellPrType::tcFitText == type )
 		{
 			bool tcFitText = m_oBufferedStream.GetBool();
 			if(tcFitText)
-				pCStringWriter->WriteString(CString(_T("<w:tcFitText />")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tcFitText />")));
 			else
-				pCStringWriter->WriteString(CString(_T("<w:tcFitText w:val=\"false\"/>")));
+                pCStringWriter->WriteString(std::wstring(_T("<w:tcFitText w:val=\"false\"/>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2303,29 +2292,29 @@ public:
 		{
 			double dLeft = m_oBufferedStream.GetDouble();
 			long nLeft = SerializeCommon::Round( g_dKoef_mm_to_twips * dLeft);
-			CString sXml;sXml.Format(_T(" w:leftFromText=\"%d\""), nLeft);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:leftFromText=\"" + std::to_wstring(nLeft) + L"\"");
 		}
 		else if (c_oSerPaddingType::top == type)
 		{
 			double dTop = m_oBufferedStream.GetDouble();
 			long nTop = SerializeCommon::Round( g_dKoef_mm_to_twips * dTop);
-			CString sXml;sXml.Format(_T(" w:topFromText=\"%d\""), nTop);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:topFromText=\"" + std::to_wstring(nTop) + L"\"");
 		}
 		else if (c_oSerPaddingType::right == type)
 		{
 			double dRight = m_oBufferedStream.GetDouble();
 			long nRight = SerializeCommon::Round( g_dKoef_mm_to_twips * dRight);
-			CString sXml;sXml.Format(_T(" w:rightFromText=\"%d\""), nRight);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:rightFromText=\"" + std::to_wstring(nRight) + L"\"");
 		}
 		else if (c_oSerPaddingType::bottom == type)
 		{
 			double dBottom = m_oBufferedStream.GetDouble();
 			long nBottom = SerializeCommon::Round( g_dKoef_mm_to_twips * dBottom);
-			CString sXml;sXml.Format(_T(" w:bottomFromText=\"%d\""), nBottom);
-			pCStringWriter->WriteString(sXml);
+
+            pCStringWriter->WriteString(L" w:bottomFromText=\"" + std::to_wstring(nBottom) + L"\"");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2407,14 +2396,14 @@ public:
 	int Read()
 	{
 		int res = ReadTable(&Binary_NumberingTableReader::ReadNumberingContent, this);
-		for(int i = 0, length = m_aDocANums.size(); i < length; ++i)
+		for(size_t i = 0; i < m_aDocANums.size(); ++i)
 		{
 			docANum* pdocANum = m_aDocANums[i];
 			pdocANum->Write(oNumberingWriters.m_oANum);
 			delete m_aDocANums[i];
 		}
 		m_aDocANums.clear();
-		for(int i = 0, length = m_aDocNums.size(); i < length; ++i)
+		for(size_t i = 0; i < m_aDocNums.size(); ++i)
 		{
 			m_aDocNums[i]->Write(oNumberingWriters.m_oNumList);
 			delete m_aDocNums[i];
@@ -2564,9 +2553,9 @@ public:
 		else if ( c_oSerNumTypes::lvl_ParaPr == type )
 		{
 			odocLvl->bParaPr = true;
-			odocLvl->ParaPr.WriteString(CString(_T("<w:pPr>")));
+            odocLvl->ParaPr.WriteString(std::wstring(_T("<w:pPr>")));
 			res = oBinary_pPrReader.Read(length, &odocLvl->ParaPr);
-			odocLvl->ParaPr.WriteString(CString(_T("</w:pPr>")));
+            odocLvl->ParaPr.WriteString(std::wstring(_T("</w:pPr>")));
 		}
 		else if ( c_oSerNumTypes::lvl_TextPr == type )
 		{
@@ -2600,7 +2589,7 @@ public:
 		docLvlText* odocLvlText = static_cast<docLvlText*>(poResult);
 		if ( c_oSerNumTypes::lvl_LvlTextItemText == type )
 		{
-			CString sText(m_oBufferedStream.GetString3(length));
+            std::wstring sText(m_oBufferedStream.GetString3(length));
 			odocLvlText->bText = true;
 			odocLvlText->Text = sText;
 		}
@@ -2638,12 +2627,12 @@ public:
 		}
 		else if(c_oSer_st::DefpPr == type)
 		{
-			m_oStylesWriter.m_pPrDefault.WriteString(CString(_T("<w:pPr>")));
+            m_oStylesWriter.m_pPrDefault.WriteString(std::wstring(_T("<w:pPr>")));
 			bool bOldVal = oBinary_pPrReader.bDoNotWriteNullProp;
 			oBinary_pPrReader.bDoNotWriteNullProp = true;
 			res = oBinary_pPrReader.Read(length, &m_oStylesWriter.m_pPrDefault);
 			oBinary_pPrReader.bDoNotWriteNullProp = bOldVal;
-			m_oStylesWriter.m_pPrDefault.WriteString(CString(_T("</w:pPr>")));
+            m_oStylesWriter.m_pPrDefault.WriteString(std::wstring(_T("</w:pPr>")));
 		}
 		else if(c_oSer_st::DefrPr == type)
 		{
@@ -2681,13 +2670,13 @@ public:
 		docStyle* odocStyle = static_cast<docStyle*>(poResult);
 		if(c_oSer_sts::Style_Name == type)
 		{
-			CString Name(m_oBufferedStream.GetString3(length));
+            std::wstring Name(m_oBufferedStream.GetString3(length));
 			Name = XmlUtils::EncodeXmlString(Name);
 			odocStyle->Name = Name;
 		}
 		else if(c_oSer_sts::Style_Id == type)
 		{
-			CString Id(m_oBufferedStream.GetString3(length));
+            std::wstring Id(m_oBufferedStream.GetString3(length));
 			Id = XmlUtils::EncodeXmlString(Id);
 			odocStyle->Id = Id;
 		}
@@ -2701,13 +2690,13 @@ public:
 		}
 		else if(c_oSer_sts::Style_BasedOn == type)
 		{
-			CString BasedOn(m_oBufferedStream.GetString3(length));
+            std::wstring BasedOn(m_oBufferedStream.GetString3(length));
 			BasedOn = XmlUtils::EncodeXmlString(BasedOn);
 			odocStyle->BasedOn = BasedOn;
 		}
 		else if(c_oSer_sts::Style_Next == type)
 		{
-			CString NextId(m_oBufferedStream.GetString3(length));
+            std::wstring NextId(m_oBufferedStream.GetString3(length));
 			NextId = XmlUtils::EncodeXmlString(NextId);
 			odocStyle->NextId = NextId;
 		}
@@ -2765,14 +2754,14 @@ public:
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
-			CString sRowPr = oTempWriter.GetData();
+            std::wstring sRowPr = oTempWriter.GetData();
 			odocStyle->RowPr = sRowPr;
 		}
 		else if(c_oSer_sts::Style_CellPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
-			CString sCellPr = oTempWriter.GetData();
+            std::wstring sCellPr = oTempWriter.GetData();
 			odocStyle->CellPr = sCellPr;
 		}
 		else if(c_oSer_sts::Style_TblStylePr == type)
@@ -2796,22 +2785,22 @@ public:
 				XmlUtils::CStringWriter oCStringWriter;
 				switch(otblStylePr.Type)
 				{
-				case ETblStyleOverrideType::tblstyleoverridetypeBand1Horz: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"band1Horz\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeBand1Vert: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"band1Vert\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeBand2Horz: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"band2Horz\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeBand2Vert: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"band2Vert\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeFirstCol: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"firstCol\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeFirstRow: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"firstRow\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeLastCol: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"lastCol\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeLastRow: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"lastRow\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeNeCell: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"neCell\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeNwCell: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"nwCell\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeSeCell: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"seCell\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeSwCell: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"swCell\">")));break;
-				case ETblStyleOverrideType::tblstyleoverridetypeWholeTable: oCStringWriter.WriteString(CString(_T("<w:tblStylePr w:type=\"wholeTable\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeBand1Horz: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"band1Horz\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeBand1Vert: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"band1Vert\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeBand2Horz: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"band2Horz\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeBand2Vert: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"band2Vert\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeFirstCol: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"firstCol\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeFirstRow: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"firstRow\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeLastCol: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"lastCol\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeLastRow: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"lastRow\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeNeCell: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"neCell\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeNwCell: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"nwCell\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeSeCell: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"seCell\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeSwCell: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"swCell\">")));break;
+                case ETblStyleOverrideType::tblstyleoverridetypeWholeTable: oCStringWriter.WriteString(std::wstring(_T("<w:tblStylePr w:type=\"wholeTable\">")));break;
 				}
 				oCStringWriter.Write(otblStylePr.Writer);
-				oCStringWriter.WriteString(CString(_T("</w:tblStylePr>")));
+                oCStringWriter.WriteString(std::wstring(_T("</w:tblStylePr>")));
 				odocStyle->TblStylePr.push_back(oCStringWriter.GetData());
 			}
 		}
@@ -2844,27 +2833,29 @@ public:
 			res = oBinary_pPrReader.Read(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				ptblStylePr->Writer.WriteString(CString(_T("<w:pPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("<w:pPr>")));
 				ptblStylePr->Writer.Write(oTempWriter);
-				ptblStylePr->Writer.WriteString(CString(_T("</w:pPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("</w:pPr>")));
 			}
 		}
 		else if(c_oSerProp_tblStylePrType::TblPr == type)
 		{
 			CWiterTblPr oWiterTblPr;
 			oBinary_tblPrReader.Read_tblPrOut(length, &oWiterTblPr);
-			if(false == oWiterTblPr.IsEmpty())
+
+            if(false == oWiterTblPr.IsEmpty())
 				ptblStylePr->Writer.WriteString(oWiterTblPr.Write(false, false));
 		}
 		else if(c_oSerProp_tblStylePrType::TrPr == type)
 		{
 			XmlUtils::CStringWriter oTempWriter;
 			oBinary_tblPrReader.Read_RowPrOut(length, &oTempWriter);
-			if(oTempWriter.GetCurSize() > 0)
+
+            if(oTempWriter.GetCurSize() > 0)
 			{
-				ptblStylePr->Writer.WriteString(CString(_T("<w:trPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("<w:trPr>")));
 				ptblStylePr->Writer.Write(oTempWriter);
-				ptblStylePr->Writer.WriteString(CString(_T("</w:trPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("</w:trPr>")));
 			}
 		}
 		else if(c_oSerProp_tblStylePrType::TcPr == type)
@@ -2873,9 +2864,9 @@ public:
 			oBinary_tblPrReader.Read_CellPrOut(length, &oTempWriter);
 			if(oTempWriter.GetCurSize() > 0)
 			{
-				ptblStylePr->Writer.WriteString(CString(_T("<w:tcPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("<w:tcPr>")));
 				ptblStylePr->Writer.Write(oTempWriter);
-				ptblStylePr->Writer.WriteString(CString(_T("</w:tcPr>")));
+                ptblStylePr->Writer.WriteString(std::wstring(_T("</w:tcPr>")));
 			}
 		}
 		else
@@ -2886,9 +2877,9 @@ public:
 class Binary_OtherTableReader : public Binary_CommonReader<Binary_OtherTableReader>
 {
 	Writers::FileWriter& m_oFileWriter;
-	CString m_sFileInDir;
+    std::wstring m_sFileInDir;
 public:
-	Binary_OtherTableReader(CString sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter)
+    Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter)
 	{
 	}
 	int Read()
@@ -2918,16 +2909,16 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerOtherTableTypes::ImageMap_Src == type )
 		{
-			CString sImage(m_oBufferedStream.GetString3(length));
-			CString sFilePath;
+            std::wstring sImage(m_oBufferedStream.GetString3(length));
+            std::wstring sFilePath;
 			bool bDeleteFile = false;
 			NSFile::CFileBinary oFile;
-			if(0 == sImage.Find(_T("data:")))
+            if(0 == sImage.find(_T("data:")))
 			{
 				if(oFile.CreateTempFile())
 					SerializeCommon::convertBase64ToImage(oFile, sImage);
 			}
-			else if(0 == sImage.Find(_T("http:")) || 0 == sImage.Find(_T("https:")) || 0 == sImage.Find(_T("ftp:")) || 0 == sImage.Find(_T("www")))
+            else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
 			{
 				//url
 				sFilePath = SerializeCommon::DownloadImage(sImage);
@@ -2945,11 +2936,11 @@ public:
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
 			}
-			else if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
+			else if(NSFile::CFileBinary::Exists(sFilePath))
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 				if(bDeleteFile)
-					NSFile::CFileBinary::Remove(string2std_string(sFilePath));
+					NSFile::CFileBinary::Remove(sFilePath);
 			}
 		}
 		else
@@ -2996,22 +2987,22 @@ public:
 		}
 		else if ( c_oSer_CommentsType::UserName == type )
 		{
-			CString UserName(m_oBufferedStream.GetString3(length));
+            std::wstring UserName(m_oBufferedStream.GetString3(length));
 			pComment->UserName = UserName;
 		}
 		else if ( c_oSer_CommentsType::UserId == type )
 		{
-			CString UserId(m_oBufferedStream.GetString3(length));
+            std::wstring UserId(m_oBufferedStream.GetString3(length));
 			pComment->UserId = UserId;
 		}
 		else if ( c_oSer_CommentsType::Date == type )
 		{
-			CString Date(m_oBufferedStream.GetString3(length));
+            std::wstring Date(m_oBufferedStream.GetString3(length));
 			pComment->Date = Date;
 		}
 		else if ( c_oSer_CommentsType::Text == type )
 		{
-			CString Text(m_oBufferedStream.GetString3(length));
+            std::wstring Text(m_oBufferedStream.GetString3(length));
 			pComment->Text = Text;
 		}
 		else if ( c_oSer_CommentsType::Solved == type )
@@ -3061,41 +3052,41 @@ public:
 		{
 			int aSchemeMapping[] = { 0, 1, 2, 3, 4, 5, 10, 11, 8, 9, 6, 7 };
 			res = Read2(length, &Binary_SettingsTableReader::ReadClrSchemeMapping, this, aSchemeMapping);
-			CString sSchemeMapping = _T("<w:clrSchemeMapping");
+            std::wstring sSchemeMapping = _T("<w:clrSchemeMapping");
 			for(int i = 0; i < 12; ++i)
 			{
 				switch(i)
 				{
-				case 0: sSchemeMapping.Append(_T(" w:accent1"));break;
-				case 1: sSchemeMapping.Append(_T(" w:accent2"));break;
-				case 2: sSchemeMapping.Append(_T(" w:accent3"));break;
-				case 3: sSchemeMapping.Append(_T(" w:accent4"));break;
-				case 4: sSchemeMapping.Append(_T(" w:accent5"));break;
-				case 5: sSchemeMapping.Append(_T(" w:accent6"));break;
-				case 6: sSchemeMapping.Append(_T(" w:bg1"));break;
-				case 7: sSchemeMapping.Append(_T(" w:bg2"));break;
-				case 8: sSchemeMapping.Append(_T(" w:followedHyperlink"));break;
-				case 9: sSchemeMapping.Append(_T(" w:hyperlink"));break;
-				case 10: sSchemeMapping.Append(_T(" w:t1"));break;
-				case 11: sSchemeMapping.Append(_T(" w:t2"));break;
+                case 0: sSchemeMapping += (_T(" w:accent1"));break;
+                case 1: sSchemeMapping += (_T(" w:accent2"));break;
+                case 2: sSchemeMapping += (_T(" w:accent3"));break;
+                case 3: sSchemeMapping += (_T(" w:accent4"));break;
+                case 4: sSchemeMapping += (_T(" w:accent5"));break;
+                case 5: sSchemeMapping += (_T(" w:accent6"));break;
+                case 6: sSchemeMapping += (_T(" w:bg1"));break;
+                case 7: sSchemeMapping += (_T(" w:bg2"));break;
+                case 8: sSchemeMapping += (_T(" w:followedHyperlink"));break;
+                case 9: sSchemeMapping += (_T(" w:hyperlink"));break;
+                case 10: sSchemeMapping += (_T(" w:t1"));break;
+                case 11: sSchemeMapping += (_T(" w:t2"));break;
 				}
 				switch(aSchemeMapping[i])
 				{
-				case 0: sSchemeMapping.Append(_T("=\"accent1\""));break;
-				case 1: sSchemeMapping.Append(_T("=\"accent2\""));break;
-				case 2: sSchemeMapping.Append(_T("=\"accent3\""));break;
-				case 3: sSchemeMapping.Append(_T("=\"accent4\""));break;
-				case 4: sSchemeMapping.Append(_T("=\"accent5\""));break;
-				case 5: sSchemeMapping.Append(_T("=\"accent6\""));break;
-				case 6: sSchemeMapping.Append(_T("=\"dark1\""));break;
-				case 7: sSchemeMapping.Append(_T("=\"dark2\""));break;
-				case 8: sSchemeMapping.Append(_T("=\"followedHyperlink\""));break;
-				case 9: sSchemeMapping.Append(_T("=\"hyperlink\""));break;
-				case 10: sSchemeMapping.Append(_T("=\"light1\""));break;
-				case 11: sSchemeMapping.Append(_T("=\"light2\""));break;
+                case 0: sSchemeMapping += (_T("=\"accent1\""));break;
+                case 1: sSchemeMapping += (_T("=\"accent2\""));break;
+                case 2: sSchemeMapping += (_T("=\"accent3\""));break;
+                case 3: sSchemeMapping += (_T("=\"accent4\""));break;
+                case 4: sSchemeMapping += (_T("=\"accent5\""));break;
+                case 5: sSchemeMapping += (_T("=\"accent6\""));break;
+                case 6: sSchemeMapping += (_T("=\"dark1\""));break;
+                case 7: sSchemeMapping += (_T("=\"dark2\""));break;
+                case 8: sSchemeMapping += (_T("=\"followedHyperlink\""));break;
+                case 9: sSchemeMapping += (_T("=\"hyperlink\""));break;
+                case 10: sSchemeMapping += (_T("=\"light1\""));break;
+                case 11: sSchemeMapping += (_T("=\"light2\""));break;
 				}
 			}
-			sSchemeMapping.Append(_T("/>"));
+            sSchemeMapping += (_T("/>"));
 			m_oSettingWriter.AddSetting(sSchemeMapping);
 			m_oFileWriter.m_pDrawingConverter->LoadClrMap(sSchemeMapping);
 		}
@@ -3103,9 +3094,9 @@ public:
 		{
 			double dDefTabStop = m_oBufferedStream.GetDouble();
 			long nDefTabStop = SerializeCommon::Round(dDefTabStop * g_dKoef_mm_to_twips);
-			CString sXml;
-			sXml.Format(_T("<w:defaultTabStop w:val=\"%d\"/>"), nDefTabStop);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+            std::wstring sXml;
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:defaultTabStop w:val=\"" + std::to_wstring(nDefTabStop) + L"\"/>");
 		}
 		else if ( c_oSer_SettingsType::MathPr == type )
 		{	
@@ -3297,7 +3288,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE BrkBin;
-			CString sBrkBin (_T("repeat"));
+            std::wstring sBrkBin (_T("repeat"));
 			BrkBin = m_oBufferedStream.GetUChar();			
 			switch(BrkBin)
 			{
@@ -3306,8 +3297,7 @@ public:
 				case 2: sBrkBin = _T("repeat");break;
 			}			
 
-            CString sVal; sVal.Format(_T("<m:brkBin m:val=\"%ls\" />"), sBrkBin);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:brkBin m:val=\"" + sBrkBin + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3319,7 +3309,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE BrkBinSub;
-			CString sBrkBinSub (_T("--"));
+            std::wstring sBrkBinSub (_T("--"));
 			BrkBinSub = m_oBufferedStream.GetUChar();			
 			switch(BrkBinSub)
 			{
@@ -3327,8 +3317,7 @@ public:
 				case 1: sBrkBinSub = _T("-+");break;
 				case 2: sBrkBinSub = _T("--");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:brkBinSub m:val=\"%ls\" />"), sBrkBinSub);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:brkBinSub m:val=\"" + sBrkBinSub + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3340,7 +3329,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE DefJc;
-			CString sDefJc (_T("centerGroup"));
+            std::wstring sDefJc (_T("centerGroup"));
 			DefJc = m_oBufferedStream.GetUChar();			
 			switch(DefJc)
 			{
@@ -3349,8 +3338,7 @@ public:
 				case 2: sDefJc = _T("left");break;
 				case 3: sDefJc = _T("right");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:defJc m:val=\"%ls\" />"), sDefJc);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:defJc m:val=\"" + sDefJc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3362,7 +3350,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:dispDef");
+            std::wstring sVal = _T("<m:dispDef");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -3378,10 +3366,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:interSp m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:interSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3393,15 +3380,14 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE IntLim;
-			CString sIntLim (_T("subSup"));
+            std::wstring sIntLim (_T("subSup"));
 			IntLim = m_oBufferedStream.GetUChar();			
 			switch(IntLim)
 			{
 				case 0: sIntLim = _T("subSup");break;
 				case 1: sIntLim = _T("undOvr");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:intLim m:val=\"%ls\" />"), sIntLim);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:intLim m:val=\"" + sIntLim + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3412,10 +3398,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:intraSp m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:intraSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3426,10 +3411,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:lMargin m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:lMargin m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3440,13 +3424,13 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sFontName(m_oBufferedStream.GetString3(length));
+                std::wstring sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
-				CString sVal;
-				sVal.Append(_T("<m:mathFont m:val=\""));
-				sVal.Append(sFontName);
-				sVal.Append(_T("\" />"));
+                std::wstring sVal;
+                sVal += (_T("<m:mathFont m:val=\""));
+                sVal += (sFontName);
+                sVal += (_T("\" />"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -3460,15 +3444,14 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE NaryLim;
-			CString sNaryLim (_T("subSup"));
+            std::wstring sNaryLim (_T("subSup"));
 			NaryLim = m_oBufferedStream.GetUChar();			
 			switch(NaryLim)
 			{
 				case 0: sNaryLim = _T("subSup");break;
 				case 1: sNaryLim = _T("undOvr");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:naryLim m:val=\"%ls\" />"), sNaryLim);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:naryLim m:val=\"" + sNaryLim + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3479,10 +3462,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:postSp m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:postSp m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3493,10 +3475,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:preSp m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:preSp m:val=\"" + std::to_wstring(lVal)+ L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3507,10 +3488,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:rMargin m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:rMargin m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3522,7 +3502,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:smallFrac m:val=");
+            std::wstring sVal = _T("<m:smallFrac m:val=");
 			if (bVal)
 				sVal += _T("\"true\" />");
 			else
@@ -3538,10 +3518,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			LONG lVal =  Mm_To_Dx(m_oBufferedStream.GetDouble());
-			CString sXml;
-			sXml.Format(_T("<m:wrapIndent m:val=\"%d\"/>"), lVal);
-			m_oFileWriter.m_oSettingWriter.AddSetting(sXml);
+			LONG lVal =  (LONG)Mm_To_Dx(m_oBufferedStream.GetDouble());
+
+            m_oFileWriter.m_oSettingWriter.AddSetting(L"<m:wrapIndent m:val=\"" + std::to_wstring(lVal) + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3553,7 +3532,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:wrapRight m:val=");
+            std::wstring sVal = _T("<m:wrapRight m:val=");
 			if (bVal)
 				sVal += _T("\"true\" />");
 			else
@@ -3579,22 +3558,37 @@ public:
 };
 class Binary_DocumentTableReader : public Binary_CommonReader<Binary_DocumentTableReader>
 {
-	Writers::FileWriter& m_oFileWriter;
-	Writers::FontTableWriter& m_oFontTableWriter;
-	Binary_pPrReader oBinary_pPrReader;
-	Binary_rPrReader oBinary_rPrReader;
-	Binary_tblPrReader oBinary_tblPrReader;
-	XmlUtils::CStringWriter* m_pCurWriter;
-	rPr m_oCur_rPr;
-	rPr m_oMath_rPr;
-	XmlUtils::CStringWriter m_oCur_pPr;
-	BYTE m_byteLastElemType;
-	CComments* m_pComments;
+private:
+    Binary_CommonReader2            oBinary_CommonReader2;
+
+    Writers::FileWriter&            m_oFileWriter;
+    Writers::FontTableWriter&       m_oFontTableWriter;
+    Binary_pPrReader                oBinary_pPrReader;
+    Binary_rPrReader                oBinary_rPrReader;
+    Binary_tblPrReader              oBinary_tblPrReader;
+    XmlUtils::CStringWriter*        m_pCurWriter;
+    rPr                             m_oCur_rPr;
+    rPr                             m_oMath_rPr;
+    XmlUtils::CStringWriter         m_oCur_pPr;
+    BYTE                            m_byteLastElemType;
+    CComments*                      m_pComments;
 public:
-	Writers::ContentWriter& m_oDocumentWriter;
-	Writers::MediaWriter& m_oMediaWriter;
-public:
-	Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments) :Binary_CommonReader(poBufferedStream), m_oDocumentWriter(oDocumentWriter), m_oFileWriter(oFileWriter), m_oMediaWriter(oFileWriter.m_oMediaWriter), m_oFontTableWriter(oFileWriter.m_oFontTableWriter), oBinary_pPrReader(poBufferedStream, oFileWriter), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_tblPrReader(poBufferedStream, oFileWriter), m_oCur_rPr(m_oFontTableWriter.m_mapFonts), m_oMath_rPr(m_oFontTableWriter.m_mapFonts), m_pComments(pComments)
+    Writers::ContentWriter&         m_oDocumentWriter;
+    Writers::MediaWriter&           m_oMediaWriter;
+
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments)
+            : Binary_CommonReader(poBufferedStream)
+            , m_oDocumentWriter(oDocumentWriter)
+            , m_oFileWriter(oFileWriter)
+            , m_oMediaWriter(oFileWriter.m_oMediaWriter)
+            , m_oFontTableWriter(oFileWriter.m_oFontTableWriter)
+            , oBinary_CommonReader2(poBufferedStream)
+            , oBinary_pPrReader(poBufferedStream, oFileWriter)
+            , oBinary_rPrReader(poBufferedStream, oFileWriter)
+            , oBinary_tblPrReader(poBufferedStream, oFileWriter)
+            , m_oCur_rPr(m_oFontTableWriter.m_mapFonts)
+            , m_oMath_rPr(m_oFontTableWriter.m_mapFonts)
+            , m_pComments(pComments)
 	{
 		m_byteLastElemType = c_oSerParType::Content;
 		m_pCurWriter = NULL;
@@ -3605,7 +3599,7 @@ public:
 	int Read()
 	{
 		return ReadTable(&Binary_DocumentTableReader::ReadDocumentContent, this);
-	};
+    }
 	XmlUtils::CStringWriter& GetRunStringWriter()
 	{
 		if(NULL != m_pCurWriter)
@@ -3621,20 +3615,20 @@ public:
 			m_byteLastElemType = c_oSerParType::Par;
 			m_oCur_pPr.ClearNoAttack();
 
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraph, this, NULL);
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:p>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
 		}
 		else if(c_oSerParType::Table == type)
 		{
 			m_byteLastElemType = c_oSerParType::Table;
-			//сбрасываем Shd
-			oBinary_tblPrReader.m_sCurTableShd.Empty();
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:tbl>")));
+        //сбрасываем Shd
+            oBinary_tblPrReader.m_sCurTableShd.clear();
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocTable, this, &m_oDocumentWriter.m_oContent);
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:tbl>")));
-			//сбрасываем Shd
-			oBinary_tblPrReader.m_sCurTableShd.Empty();
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
+		//сбрасываем Shd
+            oBinary_tblPrReader.m_sCurTableShd.clear();
 		}
 		else if ( c_oSerParType::sectPr == type )
 		{
@@ -3644,10 +3638,16 @@ public:
 			if(oSectPr.bEvenAndOddHeaders && oSectPr.EvenAndOddHeaders)
 				m_oFileWriter.m_oSettingWriter.AddSetting(_T("<w:evenAndOddHeaders/>"));
 		}
+        else if ( c_oSerParType::Background == type )
+        {
+            Background oBackground;
+            res = Read2(length, &Binary_DocumentTableReader::Read_Background, this, &oBackground);
+            m_oDocumentWriter.m_oBackground.WriteString(oBackground.Write());
+        }
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadParagraph(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -3656,9 +3656,9 @@ public:
 			res = oBinary_pPrReader.Read(length, &m_oCur_pPr);
 			if(m_oCur_pPr.GetCurSize() > 0)
 			{
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:pPr>")));
+                m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:pPr>")));
 				m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:pPr>")));
+                m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
 			}
 		}
 		else if ( c_oSerParType::Content == type )
@@ -3668,16 +3668,16 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadParagraphContent(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerParType::Run == type )
 		{
 			m_oCur_rPr.Reset();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadRun, this, NULL);
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
 		}
 		else if ( c_oSerParType::CommentStart == type )
 		{
@@ -3690,7 +3690,7 @@ public:
 				{
 					int nNewId = m_pComments->getNextId(pComment->getCount());
 					pComment->setFormatStart(nNewId);
-					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentRangeStart")), CString(_T(""))));
+                    GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
 				}
 			}
 		}
@@ -3702,20 +3702,20 @@ public:
 			{
 				CComment* pComment = m_pComments->get(nId);
 				if(NULL != pComment && pComment->bIdFormat)
-					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentRangeEnd")), CString(_T(""))));
+                    GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
 			}
 		}
 		else if ( c_oSerParType::OMathPara == type )
 		{
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<m:oMathPara>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMathPara>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathOMathPara, this, poResult);
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</m:oMathPara>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMathPara>")));
 		}
 		else if ( c_oSerParType::OMath == type )
 		{
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<m:oMath>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</m:oMath>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</m:oMath>")));
 		}
 		else if ( c_oSerParType::Hyperlink == type )
 		{
@@ -3804,10 +3804,10 @@ public:
 			m_pCurWriter = &pHyperlink->writer;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			long rId;
-			CString sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
-			m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, CString(_T("External")), &rId);
-			CString srId;srId.Format(_T("rId%d"), rId);
-			pHyperlink->rId = srId;
+            std::wstring sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
+            m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, std::wstring(_T("External")), &rId);
+
+            pHyperlink->rId = L"rId" + std::to_wstring(rId);
 			m_pCurWriter = pPrevWriter;
 		}
 		else
@@ -3829,147 +3829,147 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Acc == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:acc>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:acc>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathAcc, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:acc>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:acc>")));
 		}
 		else if ( c_oSer_OMathContentType::ArgPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:argPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:argPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArgPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:argPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:argPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Bar == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:bar>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:bar>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBar, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:bar>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:bar>")));
 		}
 		else if ( c_oSer_OMathContentType::BorderBox == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:borderBox>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:borderBox>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBorderBox, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:borderBox>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:borderBox>")));
 		}
 		else if ( c_oSer_OMathContentType::Box == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:box>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:box>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBox, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:box>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:box>")));
 		}
 		else if ( c_oSer_OMathContentType::CtrlPr == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Delimiter == type )
 		{	
-			GetRunStringWriter().WriteString(CString(_T("<m:d>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:d>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathDelimiter, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:d>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:d>")));
 		}
 		else if ( c_oSer_OMathContentType::EqArr == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:eqArr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:eqArr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathEqArr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:eqArr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:eqArr>")));
 		}
 		else if ( c_oSer_OMathContentType::Fraction == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:f>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:f>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathFraction, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:f>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:f>")));
 		}
 		else if ( c_oSer_OMathContentType::Func == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:func>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:func>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathFunc, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:func>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:func>")));
 		}
 		else if ( c_oSer_OMathContentType::GroupChr == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:groupChr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:groupChr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathGroupChr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:groupChr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:groupChr>")));
 		}
 		else if ( c_oSer_OMathContentType::LimLow == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:limLow>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:limLow>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathLimLow, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:limLow>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:limLow>")));
 		}
 		else if ( c_oSer_OMathContentType::LimUpp == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:limUpp>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:limUpp>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathLimUpp, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:limUpp>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:limUpp>")));
 		}
 		else if ( c_oSer_OMathContentType::Matrix == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:m>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:m>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMatrix, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:m>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:m>")));
 		}
 		else if ( c_oSer_OMathContentType::Nary == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:nary>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:nary>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathNary, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:nary>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:nary>")));
 		}
 		else if ( c_oSer_OMathContentType::OMath == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 		}
 		else if ( c_oSer_OMathContentType::OMathPara == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:oMathPara>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathPara>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathOMathPara, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:oMathPara>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathPara>")));
 		}
 		else if ( c_oSer_OMathContentType::Phant == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:phant>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:phant>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathPhant, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:phant>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:phant>")));
 		}
 		else if ( c_oSer_OMathContentType::MRun == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:r>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRun, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:r>")));
 		}
 		else if ( c_oSer_OMathContentType::Rad == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:rad>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:rad>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathRad, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:rad>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:rad>")));
 		}
 		else if ( c_oSer_OMathContentType::SPre == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:sPre>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sPre>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSPre, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sPre>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sPre>")));
 		}
 		else if ( c_oSer_OMathContentType::SSub == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:sSub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSub, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSub>")));
 		}
 		else if ( c_oSer_OMathContentType::SSubSup == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:sSubSup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubSup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSubSup, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSubSup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubSup>")));
 		}
 		else if ( c_oSer_OMathContentType::SSup == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:sSup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSup, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSup>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -3980,15 +3980,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::AccPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:accPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:accPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathAccPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:accPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:accPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4004,9 +4004,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4018,7 +4018,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:aln");
+            std::wstring sVal = _T("<m:aln");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4035,7 +4035,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:alnScr");
+            std::wstring sVal = _T("<m:alnScr");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4064,13 +4064,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:argSz"));
+            std::wstring sVal(_T("<m:argSz"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4082,15 +4081,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::BarPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:barPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:barPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBarPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:barPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:barPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4101,9 +4100,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Pos == type )
 		{		
@@ -4119,7 +4118,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE BaseJc;
-			CString sBaseJc (_T("top"));
+            std::wstring sBaseJc (_T("top"));
 			BaseJc = m_oBufferedStream.GetUChar();			
 			switch(BaseJc)
 			{
@@ -4128,10 +4127,9 @@ public:
 				case 2: sBaseJc = _T("inline");break;
 				case 3: sBaseJc = _T("inside");break;
 				case 4: sBaseJc = _T("outside");break;
-				case 5: sBaseJc = _T("top");break;
+                case 5: sBaseJc = _T("top");    break;
 			}			
-            CString sVal; sVal.Format(_T("<m:baseJc m:val=\"%ls\" />"), sBaseJc);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:baseJc m:val=\"" + sBaseJc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4142,11 +4140,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sChr = GetMathText (length);
-				CString sVal;
-				sVal.Append(_T("<m:begChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                std::wstring sChr = GetMathText (length);
+                std::wstring sVal;
+                sVal += (_T("<m:begChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 
 				GetRunStringWriter().WriteString(sVal);
 		}
@@ -4159,15 +4157,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::BorderBoxPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:borderBoxPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:borderBoxPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBorderBoxPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:borderBoxPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:borderBoxPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{		
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4178,9 +4176,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{			
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::HideBot == type )
 		{
@@ -4223,15 +4221,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::BoxPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:boxPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:boxPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathBoxPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:boxPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:boxPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{		
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4250,9 +4248,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{		
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Diff == type )
 		{		
@@ -4277,19 +4275,18 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:brk"));
+            std::wstring sVal(_T("<m:brk"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:alnAt=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:alnAt=\"" + std::to_wstring(lVal)+ L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
             bool bVal = m_oBufferedStream.GetBool();
-			CString sVal(_T("<m:brk/>"));
+            std::wstring sVal(_T("<m:brk/>"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4303,14 +4300,13 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:cGp"));
+            std::wstring sVal(_T("<m:cGp"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 			}
-			sVal.Append(_T(" />"));
-			GetRunStringWriter().WriteString(sVal);
+            sVal += (_T("/>"));
+            GetRunStringWriter().WriteString(sVal);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4324,13 +4320,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:cGpRule"));
+            std::wstring sVal(_T("<m:cGpRule"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4343,11 +4338,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sChr = GetMathText (length);
-				CString sVal;
-				sVal.Append(_T("<m:chr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                std::wstring sChr = GetMathText (length);
+                std::wstring sVal;
+                sVal += (_T("<m:chr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4361,13 +4356,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:count"));
+            std::wstring sVal(_T("<m:count"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4381,13 +4375,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:cSp"));
+            std::wstring sVal(_T("<m:cSp"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T(" />"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4441,15 +4434,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::DelimiterPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:dPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:dPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathDelimiterPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:dPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:dPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{		
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4461,7 +4454,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:degHide");
+            std::wstring sVal = _T("<m:degHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4478,7 +4471,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:diff");
+            std::wstring sVal = _T("<m:diff");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4502,9 +4495,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::EndChr == type )
 		{
@@ -4531,11 +4524,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sChr = GetMathText (length);
-				CString sVal;
-				sVal.Append(_T("<m:endChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                std::wstring sChr = GetMathText (length);
+                std::wstring sVal;
+                sVal += (_T("<m:endChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4547,15 +4540,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::EqArrPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:eqArrPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:eqArrPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathEqArrPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:eqArrPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:eqArrPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4574,9 +4567,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::MaxDist == type )
 		{
@@ -4603,21 +4596,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Den == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:den>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:den>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:den>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:den>")));
 		}
 		else if ( c_oSer_OMathContentType::FPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:fPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:fPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathFPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:fPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:fPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Num == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:num>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:num>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:num>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:num>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4628,9 +4621,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Type == type )
 		{
@@ -4645,21 +4638,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::FName == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:fName>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:fName>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:fName>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:fName>")));
 		}
 		else if ( c_oSer_OMathContentType::FuncPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:funcPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:funcPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathFuncPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:funcPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:funcPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4670,9 +4663,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4683,15 +4676,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::GroupChrPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:groupChrPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:groupChrPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathGroupChrPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:groupChrPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:groupChrPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4706,9 +4699,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Pos == type )
 		{
@@ -4728,7 +4721,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:grow");
+            std::wstring sVal = _T("<m:grow");
 			if (!bVal)
 				sVal += _T(" m:val=\"false\" />");
 			else
@@ -4746,7 +4739,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:hideBot");
+            std::wstring sVal = _T("<m:hideBot");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4763,7 +4756,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:hideLeft");
+            std::wstring sVal = _T("<m:hideLeft");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4780,7 +4773,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:hideRight");
+            std::wstring sVal = _T("<m:hideRight");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4797,7 +4790,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:hideTop");
+            std::wstring sVal = _T("<m:hideTop");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4814,7 +4807,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Jc;
-			CString sJc (_T("centerGroup"));
+            std::wstring sJc (_T("centerGroup"));
 			Jc = m_oBufferedStream.GetUChar();			
 			switch(Jc)
 			{
@@ -4823,8 +4816,7 @@ public:
 				case 2:	sJc = _T("left");break;
 				case 3:	sJc = _T("right");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:jc m:val=\"%ls\" />"), sJc);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:jc m:val=\"" + sJc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4836,15 +4828,14 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE LimLoc;
-			CString sLimLoc (_T("subSup"));
+            std::wstring sLimLoc (_T("subSup"));
 			LimLoc = m_oBufferedStream.GetUChar();	
 			switch(LimLoc)
 			{
 				case 0: sLimLoc = _T("subSup");break;
 				case 1: sLimLoc = _T("undOvr");break;
 			}		
-            CString sVal; sVal.Format(_T("<m:limLoc m:val=\"%ls\" />"), sLimLoc);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:limLoc m:val=\"" + sLimLoc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4856,21 +4847,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::Lim == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:lim>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:lim>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:lim>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:lim>")));
 		}
 		else if ( c_oSer_OMathContentType::LimLowPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:limLowPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:limLowPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathLimLowPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:limLowPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:limLowPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4881,9 +4872,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4894,21 +4885,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::Lim == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:lim>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:lim>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:lim>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:lim>")));
 		}
 		else if ( c_oSer_OMathContentType::LimUppPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:limUppPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:limUppPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathLimUppPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:limUppPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:limUppPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4919,9 +4910,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4933,7 +4924,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:lit");
+            std::wstring sVal = _T("<m:lit");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4949,15 +4940,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::MPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:mPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:mPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:mPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:mPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Mr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:mr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:mr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:mr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:mr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4969,7 +4960,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:maxDist");
+            std::wstring sVal = _T("<m:maxDist");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -4985,9 +4976,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::McPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:mcPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:mcPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMcPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:mcPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:mcPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4999,18 +4990,17 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE McJc;
-			CString sMcJc (_T("center"));
+            std::wstring sMcJc (_T("center"));
 			McJc = m_oBufferedStream.GetUChar();			
 			switch(McJc)
 			{
-				case 0: sMcJc = _T("center");break;
-				case 1: sMcJc = _T("inside");break;
-				case 2: sMcJc = _T("left");break;
-				case 3: sMcJc = _T("outside");break;
-				case 4: sMcJc = _T("right");break;
+                case 0: sMcJc = _T("center");   break;
+                case 1: sMcJc = _T("inside");   break;
+                case 2: sMcJc = _T("left");     break;
+                case 3: sMcJc = _T("outside");  break;
+                case 4: sMcJc = _T("right");    break;
 			}			
-            CString sVal; sVal.Format(_T("<m:mcJc m:val=\"%ls\" />"), sMcJc);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:mcJc m:val=\"" + sMcJc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5036,9 +5026,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Mc == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:mc>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:mc>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMc, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:mc>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:mc>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5073,15 +5063,15 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Mcs == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:mcs>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:mcs>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMcs, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:mcs>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:mcs>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::PlcHide == type )
 		{
@@ -5104,9 +5094,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5117,27 +5107,27 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::NaryPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:naryPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:naryPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathNaryPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:naryPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:naryPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Sub == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 		}
 		else if ( c_oSer_OMathContentType::Sup == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5152,9 +5142,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Grow == type )
 		{
@@ -5182,7 +5172,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:noBreak");
+            std::wstring sVal = _T("<m:noBreak");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5199,7 +5189,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:nor");
+            std::wstring sVal = _T("<m:nor");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5216,7 +5206,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:objDist");
+            std::wstring sVal = _T("<m:objDist");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5232,22 +5222,22 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::OMath == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 		}
 		else if ( c_oSer_OMathContentType::OMathParaPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:oMathParaPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:oMathParaPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathOMathParaPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:oMathParaPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:oMathParaPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Run == type )
 		{
 			m_oCur_rPr.Reset();
-			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadRun, this, NULL);
-			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5270,7 +5260,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:opEmu");
+            std::wstring sVal = _T("<m:opEmu");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5286,15 +5276,15 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::PhantPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:phantPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:phantPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathPhantPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:phantPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:phantPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5305,9 +5295,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::Show == type )
 		{
@@ -5339,7 +5329,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:plcHide");
+            std::wstring sVal = _T("<m:plcHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5356,7 +5346,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Pos;
-			CString sPos(_T("bot"));
+            std::wstring sPos(_T("bot"));
 			Pos = m_oBufferedStream.GetUChar();
 			
 			switch(Pos)
@@ -5365,16 +5355,15 @@ public:
 				case 1: sPos = _T("top");break;
 			}
 			
-            CString sVal; sVal.Format(_T("<m:pos m:val=\"%ls\" />"), sPos);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:pos m:val=\"" + sPos + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
-	CString GetMathText (long length)
+    std::wstring GetMathText (long length)
 	{
-		CString strVal(m_oBufferedStream.GetString3(length));
+        std::wstring strVal(m_oBufferedStream.GetString3(length));
 		return XmlUtils::EncodeXmlString(strVal, true);
 	}
 	int ReadMathText(BYTE type, long length, void* poResult)
@@ -5382,7 +5371,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			CString sText = GetMathText (length);			
+            std::wstring sText = GetMathText (length);
 			GetRunStringWriter().WriteString(sText);
 		}
 		else
@@ -5394,11 +5383,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::MText == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:t>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:t>")));
 
 			res = Read2(length, &Binary_DocumentTableReader::ReadMathText, this, poResult);
 
-			GetRunStringWriter().WriteString(CString(_T("</m:t>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:t>")));
 		}
 		else if ( c_oSer_OMathContentType::RPr == type )
 		{
@@ -5409,9 +5398,9 @@ public:
 		}
 		else if ( c_oSer_OMathContentType::MRPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:rPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:rPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathMRPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:rPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:rPr>")));
 		}
 		else if ( c_oSer_OMathContentType::ARPr == type )
 		{
@@ -5426,15 +5415,15 @@ public:
 		}
 		else if (c_oSer_OMathContentType::pagebreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\"/>")));
 		}
 		else if (c_oSer_OMathContentType::linebreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br />")));
 		}
 		else if (c_oSer_OMathContentType::columnbreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"column\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
 		}
 		else if (c_oSer_OMathContentType::Del == type)
 		{
@@ -5474,21 +5463,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::Deg== type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:deg>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:deg>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:deg>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:deg>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else if ( c_oSer_OMathContentType::RadPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:radPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:radPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathRadPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:radPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:radPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5499,9 +5488,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else if ( c_oSer_OMathBottomNodesType::DegHide == type )
 		{
@@ -5549,13 +5538,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:rSp"));
+            std::wstring sVal(_T("<m:rSp"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal) + L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T("/>"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5569,13 +5557,12 @@ public:
 		{
 			LONG lVal;
 			lVal = m_oBufferedStream.GetLong();
-			CString sVal(_T("<m:rSpRule"));
+            std::wstring sVal(_T("<m:rSpRule"));
 			if (lVal)
 			{
-				CString sXml; sXml.Format(_T(" m:val=\"%d\""), lVal);
-				sVal.Append(sXml);
+                sVal += L" m:val=\"" + std::to_wstring(lVal)+ L"\"";
 			}
-			sVal.Append(_T(" />"));
+            sVal += (_T("/>"));
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5588,19 +5575,18 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Scr;
-			CString sScr (_T("roman"));
+            std::wstring sScr (_T("roman"));
 			Scr = m_oBufferedStream.GetUChar();			
 			switch(Scr)
 			{
 				case 0: sScr = _T("double-struck");break;
-				case 1: sScr = _T("fraktur");break;
-				case 2: sScr = _T("monospace");break;
-				case 3: sScr = _T("roman");break;
+                case 1: sScr = _T("fraktur");   break;
+                case 2: sScr = _T("monospace"); break;
+                case 3: sScr = _T("roman");     break;
 				case 4: sScr = _T("sans-serif");break;
-				case 5: sScr = _T("script");break;
+                case 5: sScr = _T("script");    break;
 			}			
-            CString sVal; sVal.Format(_T("<m:scr m:val=\"%ls\" />"), sScr);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:scr m:val=\"" + sScr + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5611,11 +5597,11 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-				CString sChr = GetMathText (length);
-				CString sVal;
-				sVal.Append(_T("<m:sepChr m:val=\""));
-				sVal.Append(sChr);
-				sVal.Append(_T("\" />"));
+                std::wstring sChr = GetMathText (length);
+                std::wstring sVal;
+                sVal += (_T("<m:sepChr m:val=\""));
+                sVal += (sChr);
+                sVal += (_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5628,7 +5614,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:show");
+            std::wstring sVal = _T("<m:show");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5645,15 +5631,14 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Shp;
-			CString sShp (_T("centered"));
+            std::wstring sShp (_T("centered"));
 			Shp = m_oBufferedStream.GetUChar();			
 			switch(Shp)
 			{
 				case 0: sShp = _T("centered");break;
 				case 1: sShp = _T("match");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:shp m:val=\"%ls\" />"), sShp);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:shp m:val=\"" + sShp + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5664,27 +5649,27 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::SPrePr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sPrePr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sPrePr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSPrePr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sPrePr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sPrePr>")));
 		}
 		else if ( c_oSer_OMathContentType::Sub == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 		}
 		else if ( c_oSer_OMathContentType::Sup == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5695,9 +5680,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5708,21 +5693,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::SSubPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sSubPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSubPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSubPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Sub == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5733,9 +5718,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5746,27 +5731,27 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::SSubSupPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sSubSupPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSubSupPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSubSupPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSubSupPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSubSupPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Sub == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sub>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sub>")));
 		}
 		else if ( c_oSer_OMathContentType::Sup == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5781,9 +5766,9 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5794,21 +5779,21 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::SSupPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sSupPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sSupPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSupPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sSupPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sSupPr>")));
 		}
 		else if ( c_oSer_OMathContentType::Sup == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:sup>")));
 		}
 		else if ( c_oSer_OMathContentType::Element == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5819,9 +5804,9 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesType::CtrlPr == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:ctrlPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathCtrlPr, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:ctrlPr>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:ctrlPr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5833,7 +5818,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:strikeBLTR");
+            std::wstring sVal = _T("<m:strikeBLTR");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5850,7 +5835,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:strikeH");
+            std::wstring sVal = _T("<m:strikeH");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5867,7 +5852,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:strikeTLBR");
+            std::wstring sVal = _T("<m:strikeTLBR");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5884,7 +5869,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:strikeV");
+            std::wstring sVal = _T("<m:strikeV");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5901,7 +5886,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Sty;
-			CString sSty (_T("i"));
+            std::wstring sSty (_T("i"));
 			Sty = m_oBufferedStream.GetUChar();	
 			switch(Sty)
 			{
@@ -5910,8 +5895,7 @@ public:
 				case 2: sSty = _T("i");break;
 				case 3: sSty = _T("p");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:sty m:val=\"%ls\" />"), sSty);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:sty m:val=\"" + sSty + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5923,7 +5907,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:subHide");
+            std::wstring sVal = _T("<m:subHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5940,7 +5924,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:supHide");
+            std::wstring sVal = _T("<m:supHide");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5957,7 +5941,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:transp");
+            std::wstring sVal = _T("<m:transp");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -5974,7 +5958,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE Type;
-			CString sType (_T("bar"));
+            std::wstring sType (_T("bar"));
 			Type = m_oBufferedStream.GetUChar();			
 			switch(Type)
 			{
@@ -5983,8 +5967,7 @@ public:
 				case 2: sType = _T("noBar");break;
 				case 3: sType = _T("skw");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:type m:val=\"%ls\" />"), sType);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:type m:val=\"" + sType + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5996,15 +5979,14 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			BYTE VertJc;
-			CString sVertJc (_T("bot"));
+            std::wstring sVertJc (_T("bot"));
 			VertJc = m_oBufferedStream.GetUChar();			
 			switch(VertJc)
 			{
 				case 0: sVertJc = _T("bot");break;
 				case 1: sVertJc = _T("top");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:vertJc m:val=\"%ls\" />"), sVertJc);
-			GetRunStringWriter().WriteString(sVal);
+            GetRunStringWriter().WriteString(L"<m:vertJc m:val=\"" + sVertJc + L"\"/>");
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6016,7 +5998,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:zeroAsc");
+            std::wstring sVal = _T("<m:zeroAsc");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -6033,7 +6015,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:zaroDesc");
+            std::wstring sVal = _T("<m:zaroDesc");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -6050,7 +6032,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 			bool bVal = m_oBufferedStream.GetBool();
-			CString sVal = _T("<m:zeroWid");
+            std::wstring sVal = _T("<m:zeroWid");
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
@@ -6083,60 +6065,60 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if (c_oSerRunType::run == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:t xml:space=\"preserve\">")));
-			CString sText(m_oBufferedStream.GetString3(length));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:t xml:space=\"preserve\">")));
+            std::wstring sText(m_oBufferedStream.GetString3(length));
 			sText = XmlUtils::EncodeXmlString(sText);
 			GetRunStringWriter().WriteString(sText);
-			GetRunStringWriter().WriteString(CString(_T("</w:t>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</w:t>")));
 		}
 		else if (c_oSerRunType::delText == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:delText xml:space=\"preserve\">")));
-			CString sText(m_oBufferedStream.GetString3(length));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:delText xml:space=\"preserve\">")));
+            std::wstring sText(m_oBufferedStream.GetString3(length));
 			sText = XmlUtils::EncodeXmlString(sText);
 			GetRunStringWriter().WriteString(sText);
-			GetRunStringWriter().WriteString(CString(_T("</w:delText>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</w:delText>")));
 		}
 		else if (c_oSerRunType::tab == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:tab/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:tab/>")));
 		}
 		else if (c_oSerRunType::cr == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:cr/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:cr/>")));
 		}
 		else if (c_oSerRunType::noBreakHyphen == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:noBreakHyphen/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:noBreakHyphen/>")));
 		}
 		else if (c_oSerRunType::softHyphen == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:softHyphen/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:softHyphen/>")));
 		}
 		else if (c_oSerRunType::pagenum == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:instrText xml:space=\"preserve\">PAGE \\* MERGEFORMAT</w:instrText></w:r><w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">PAGE \\* MERGEFORMAT</w:instrText></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 		}
 		else if (c_oSerRunType::pagebreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"page\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\"/>")));
 		}
 		else if (c_oSerRunType::linebreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br />")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br />")));
 		}
 		else if (c_oSerRunType::columnbreak == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:br w:type=\"column\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
 		}
 		else if(c_oSerRunType::image == type)
 		{
@@ -6144,16 +6126,16 @@ public:
 			res = Read2(length, &Binary_DocumentTableReader::ReadImage, this, &odocImg);
 			if(odocImg.MediaId >= 0 && odocImg.MediaId < m_oMediaWriter.nImageCount)
 			{
-				CString sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
-                CString sNewImgRel = _T("media/") + sNewImgName;
+                std::wstring sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
+                std::wstring sNewImgRel = _T("media/") + sNewImgName;
 
                 sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
 				long rId;
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
-				odocImg.srId.Format(_T("rId%d"), rId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, std::wstring(), &rId);
+                odocImg.srId = L"rId" + std::to_wstring(rId);
 				//odocImg.srId = m_oMediaWriter.m_poDocumentRelsWriter->AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sNewImgRel, false);
 				//odocImg.srId = m_oMediaWriter.m_aImageRels[odocImg.MediaId];
-				if(!odocImg.srId.IsEmpty())
+                if(!odocImg.srId.empty())
 				{
 					odocImg.Write(&GetRunStringWriter());
 				}
@@ -6170,8 +6152,8 @@ public:
 			}
 			else if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
 			{
-				CString sDrawingProperty = oCDrawingProperty.Write();
-				if(false == sDrawingProperty.IsEmpty())
+                std::wstring sDrawingProperty = oCDrawingProperty.Write();
+                if(false == sDrawingProperty.empty())
 				{
 					ReadDrawing(oCDrawingProperty);
 				}
@@ -6180,39 +6162,40 @@ public:
 		else if(c_oSerRunType::table == type)
 		{
 			//сбрасываем Shd
-			oBinary_tblPrReader.m_sCurTableShd.Empty();
+            oBinary_tblPrReader.m_sCurTableShd.clear();
 			//todo
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:p>")));
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:tbl>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:p>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:tbl>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadDocTable, this, &m_oDocumentWriter.m_oContent);
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:tbl>")));
-			m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p>")));
-			if(m_oCur_pPr.GetCurSize() > 0)
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:tbl>")));
+            m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p>")));
+
+            if(m_oCur_pPr.GetCurSize() > 0)
 			{
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:pPr>")));
+                m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:pPr>")));
 				m_oDocumentWriter.m_oContent.Write(m_oCur_pPr);
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("</w:pPr>")));
+                m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("</w:pPr>")));
 			}
 			//сбрасываем Shd
-			oBinary_tblPrReader.m_sCurTableShd.Empty();
+            oBinary_tblPrReader.m_sCurTableShd.clear();
 		}
 		else if(c_oSerRunType::fldstart == type)
 		{
-			CString sField(m_oBufferedStream.GetString3(length));
+            std::wstring sField(m_oBufferedStream.GetString3(length));
 			sField = XmlUtils::EncodeXmlString(sField);
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:instrText xml:space=\"preserve\">")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
 			GetRunStringWriter().WriteString(sField);
-			GetRunStringWriter().WriteString(CString(_T("</w:instrText></w:r><w:r>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</w:instrText></w:r><w:r>")));
 			if(m_oCur_rPr.IsNoEmpty())
 				m_oCur_rPr.Write(&GetRunStringWriter());
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
 		}
 		else if(c_oSerRunType::fldend == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:fldChar w:fldCharType=\"end\"/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 		}
 		else if ( c_oSerRunType::CommentReference == type )
 		{
@@ -6223,7 +6206,7 @@ public:
 				CComment* pComment = m_pComments->get(nId);
 				if(NULL != pComment && pComment->bIdFormat)
 				{
-					GetRunStringWriter().WriteString(pComment->writeRef(CString(_T("")), CString(_T("w:commentReference")), CString(_T(""))));
+                    GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentReference")), std::wstring(_T(""))));
 				}
 			}
 		}
@@ -6233,19 +6216,19 @@ public:
 		}
 		else if ( c_oSerRunType::separator == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:separator/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:separator/>")));
 		}
 		else if ( c_oSerRunType::continuationSeparator == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:continuationSeparator/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:continuationSeparator/>")));
 		}
 		else if ( c_oSerRunType::footnoteRef == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:footnoteRef/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:footnoteRef/>")));
 		}
 		else if ( c_oSerRunType::endnoteRef == type)
 		{
-			GetRunStringWriter().WriteString(CString(_T("<w:endnoteRef/>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<w:endnoteRef/>")));
 		}
 		else if ( c_oSerRunType::footnoteReference == type)
 		{
@@ -6262,7 +6245,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadFootnoteRef(BYTE type, long length, void* poResult)
 	{
 		OOX::Logic::CFootnoteReference* pFootnoteRef = static_cast<OOX::Logic::CFootnoteReference*>(poResult);
@@ -6301,29 +6284,22 @@ public:
 	}
 	void ReadDrawing(CDrawingProperty &oCDrawingProperty)
 	{
-		CString sDrawingProperty = oCDrawingProperty.Write();
-		if(false == sDrawingProperty.IsEmpty())
+        std::wstring sDrawingProperty = oCDrawingProperty.Write();
+        if(false == sDrawingProperty.empty())
 		{
-			VARIANT var;
-			var.vt = VT_I4;
-			var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
-			m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
+            m_oFileWriter.m_pDrawingConverter->SetDocumentChartsCount(m_oFileWriter.m_oChartWriter.getChartCount());
 
 			long nCurPos = m_oBufferedStream.GetPos();
-			CString* bstrDrawingXml = NULL;
-			m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
+            std::wstring sDrawingXml;
+            m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, sDrawingXml);
 			m_oBufferedStream.Seek(nCurPos);
 
-			VARIANT vt;
-			m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
-			if(VT_I4 == vt.vt)
-				m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
+            m_oFileWriter.m_oChartWriter.setChartCount(m_oFileWriter.m_pDrawingConverter->GetDocumentChartsCount());
 
-			if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
+            if( false == sDrawingXml.empty())
 			{
-				GetRunStringWriter().WriteString(*bstrDrawingXml);
+                GetRunStringWriter().WriteString(sDrawingXml);
 			}
-			RELEASEOBJECT(bstrDrawingXml);
 		}
 	}
 	int ReadObject(BYTE type, long length, void* poResult)
@@ -6331,16 +6307,19 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if( c_oSerParType::OMath == type )
 		{
-			GetRunStringWriter().WriteString(CString(_T("<m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:oMath>")));
+            GetRunStringWriter().WriteString(std::wstring(_T("</m:oMath>")));
 		}
 		else if(c_oSerRunType::pptxDrawing == type) 
 		{
 			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
 			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
-			if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+
+            if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+            {
 				ReadDrawing(oCDrawingProperty);
+            }
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6369,9 +6348,9 @@ public:
 		else if( c_oSerDocTableType::tblGrid == type )
 		{
 			oBinary_tblPrReader.m_aCurTblGrid.clear();
-			pCStringWriter->WriteString(CString(_T("<w:tblGrid>")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:tblGrid>")));
 			res = Read2(length, &Binary_DocumentTableReader::Read_tblGrid, this, poResult);
-			pCStringWriter->WriteString(CString(_T("</w:tblGrid>")));
+            pCStringWriter->WriteString(std::wstring(_T("</w:tblGrid>")));
 		}
 		else if( c_oSerDocTableType::Content == type )
 		{
@@ -6380,7 +6359,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+};
 	int Read_tblGrid(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -6390,8 +6369,8 @@ public:
 			double dgridCol = m_oBufferedStream.GetDouble();
 			oBinary_tblPrReader.m_aCurTblGrid.push_back(dgridCol);
 			long ngridCol = SerializeCommon::Round( g_dKoef_mm_to_twips * dgridCol);
-			CString sgridCol;sgridCol.Format(_T("<w:gridCol w:w=\"%d\"/>"), ngridCol);
-			pCStringWriter->WriteString(sgridCol);
+
+            pCStringWriter->WriteString(L"<w:gridCol w:w=\"" + std::to_wstring(ngridCol)+ L"\"/>");
 		}
 		else if( c_oSerDocTableType::tblGridChange == type )
 		{
@@ -6427,9 +6406,9 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Row == type )
 		{
-			pCStringWriter->WriteString(CString(_T("<w:tr>")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:tr>")));
 			res = Read1(length, &Binary_DocumentTableReader::Read_Row, this, poResult);
-			pCStringWriter->WriteString(CString(_T("</w:tr>")));
+            pCStringWriter->WriteString(std::wstring(_T("</w:tr>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -6441,9 +6420,9 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Row_Pr == type )
 		{
-			pCStringWriter->WriteString(CString(_T("<w:trPr>")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:trPr>")));
 			oBinary_tblPrReader.Read_RowPrOut(length, pCStringWriter);
-			pCStringWriter->WriteString(CString(_T("</w:trPr>")));
+            pCStringWriter->WriteString(std::wstring(_T("</w:trPr>")));
 		}
 		else if( c_oSerDocTableType::Row_Content == type )
 		{
@@ -6459,29 +6438,29 @@ public:
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Cell == type )
 		{
-			pCStringWriter->WriteString(CString(_T("<w:tc>")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:tc>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadCell, this, poResult);
-			pCStringWriter->WriteString(CString(_T("</w:tc>")));
+            pCStringWriter->WriteString(std::wstring(_T("</w:tc>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadCell(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		XmlUtils::CStringWriter* pCStringWriter = static_cast<XmlUtils::CStringWriter*>(poResult);
 		if( c_oSerDocTableType::Cell_Pr == type )
 		{
-			pCStringWriter->WriteString(CString(_T("<w:tcPr>")));
+            pCStringWriter->WriteString(std::wstring(_T("<w:tcPr>")));
 			oBinary_tblPrReader.bCellShd = false;
 			oBinary_tblPrReader.Read_CellPrOut(length, pCStringWriter);
-			if(false == oBinary_tblPrReader.bCellShd && !oBinary_tblPrReader.m_sCurTableShd.IsEmpty())
+            if(false == oBinary_tblPrReader.bCellShd && !oBinary_tblPrReader.m_sCurTableShd.empty())
 			{
 				pCStringWriter->WriteString(oBinary_tblPrReader.m_sCurTableShd);
 			}
 			oBinary_tblPrReader.bCellShd = false;
-			pCStringWriter->WriteString(CString(_T("</w:tcPr>")));
+            pCStringWriter->WriteString(std::wstring(_T("</w:tcPr>")));
 		}
 		else if( c_oSerDocTableType::Cell_Content == type )
 		{
@@ -6490,13 +6469,13 @@ public:
 			//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 			if(c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
 			{
-				m_oDocumentWriter.m_oContent.WriteString(CString(_T("<w:p />")));
+                m_oDocumentWriter.m_oContent.WriteString(std::wstring(_T("<w:p />")));
 			}
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+    }
 	int ReadCellContent(BYTE type, long length, void* poResult)
 	{
 		Binary_DocumentTableReader* pBinary_DocumentTableReader = static_cast<Binary_DocumentTableReader*>(poResult);
@@ -6545,6 +6524,40 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	}
+    int Read_Background(BYTE type, long length, void* poResult)
+    {
+		m_oFileWriter.m_oSettingWriter.AddSetting(L"<w:displayBackgroundShape/>");
+		
+		int res = c_oSerConstants::ReadOk;
+        Background* pBackground = static_cast<Background*>(poResult);
+
+        if( c_oSerBackgroundType::Color == type )
+        {
+            pBackground->bColor = true;
+            pBackground->Color = oBinary_CommonReader2.ReadColor();
+        }
+        else if( c_oSerBackgroundType::ColorTheme == type )
+        {
+            pBackground->bThemeColor = true;
+            oBinary_CommonReader2.ReadThemeColor(length, pBackground->ThemeColor);
+        }
+        else if( c_oSerBackgroundType::pptxDrawing == type )
+        {
+			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
+			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
+
+			if (oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				pBackground->sObject = m_oFileWriter.m_pDrawingConverter->SaveObjectBackground(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength);
+				m_oBufferedStream.Seek(nCurPos);
+			}
+        }
+        else
+            res = c_oSerConstants::ReadUnknown;
+        return res;
+    }
+
 	int ReadPptxDrawing(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -6576,12 +6589,15 @@ public:
 				OOX::CPath pathChartsWorksheetDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("embeddings");
 				OOX::CSystemUtility::CreateDirectories(pathChartsWorksheetDir.GetPath());
 
+                bool oldValueType = m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord;
+
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = false;
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 
-				CString sThemeDir;
-				int nIndex = m_oFileWriter.m_sThemePath.ReverseFind(FILE_SEPARATOR_CHAR);
+                std::wstring sThemeDir;
+                int nIndex = (int)m_oFileWriter.m_sThemePath.rfind(FILE_SEPARATOR_CHAR);
 				if(-1 != nIndex)
-					sThemeDir = m_oFileWriter.m_sThemePath.Left(nIndex);
+                    sThemeDir = m_oFileWriter.m_sThemePath.substr(0, nIndex);
 				
 				BinXlsxRW::SaveParams			oSaveParams(sThemeDir);
 				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
@@ -6591,14 +6607,14 @@ public:
 
 				//save xlsx
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(m_oFileWriter.m_oChartWriter.getChartCount() + 1) + L".xlsx";
-				std::wstring sXlsxPath = string2std_string(pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR) + sXlsxFilename;
+				std::wstring sXlsxPath = pathChartsWorksheetDir.GetPath() + FILE_SEPARATOR_STR + sXlsxFilename;
 				BinXlsxRW::CXlsxSerializer oXlsxSerializer;
 				oXlsxSerializer.writeChartXlsx(sXlsxPath, *pChartSpace);
 
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rIdXlsx;
-				CString bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, std_string2string(sChartsWorksheetRelsName), CString(), &rIdXlsx);
+                std::wstring bstrChartsWorksheetRelType = OOX::Spreadsheet::FileTypes::ChartsWorksheet.RelationType();
+                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
 
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -6611,21 +6627,24 @@ public:
 				NSStringUtils::CStringBuilder sw;
 				pChartSpace->toXML(sw);
 			
-				CString sFilename;
-				CString sRelsName;
+				std::wstring sFilename;
+				std::wstring sRelsName;
 				int nChartIndex;
                 std::wstring sContent = sw.GetData();
-                m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
+                
+				m_oFileWriter.m_oChartWriter.AddChart(sContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
+                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + L".rels";
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rIdChart;
-				CString bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, CString(), &rIdChart);
+                std::wstring bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
+                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartRelType, sRelsName, std::wstring(), &rIdChart);
 
-				pDrawingProperty->sChartRels.Format(_T("rId%d"), rIdChart);
+                pDrawingProperty->sChartRels = L"rId" + std::to_wstring( rIdChart);
+
+                m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_bIsWord = oldValueType;
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -6675,7 +6694,7 @@ public:
 		else if ( c_oSerImageType2::RelativeHeight == type )
 		{
 			pDrawingProperty->bRelativeHeight = true;
-			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetLong();
+			pDrawingProperty->RelativeHeight = m_oBufferedStream.GetULong();
 		}
 		else if ( c_oSerImageType2::BSimplePos == type )
 		{
@@ -6756,6 +6775,13 @@ public:
 			oGraphicFramePr.m_oGraphicFrameLocks.reset(pLocking);
 			pDrawingProperty->sGraphicFramePr = oGraphicFramePr.toXML();
 		}
+		else if ( c_oSerImageType2::DocPr == type )
+		{
+			OOX::Drawing::CNonVisualDrawingProps pNonVisualDrawingProps;
+			pNonVisualDrawingProps.m_eType = OOX::et_wp_docPr;
+			res = Read1(length, &Binary_DocumentTableReader::ReadDocPr, this, &pNonVisualDrawingProps);
+			pDrawingProperty->sDocPr = pNonVisualDrawingProps.toXML();
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -6793,6 +6819,39 @@ public:
 		{
 			pLocking->m_oNoSelect.Init();
 			pLocking->m_oNoSelect->FromBool(m_oBufferedStream.GetBool());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadDocPr(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		OOX::Drawing::CNonVisualDrawingProps* pNonVisualDrawingProps = static_cast<OOX::Drawing::CNonVisualDrawingProps*>(poResult);
+		if ( c_oSerDocPr::Id == type )
+		{
+			pNonVisualDrawingProps->m_oId.Init();
+			pNonVisualDrawingProps->m_oId->SetValue(m_oBufferedStream.GetLong());
+		}
+		else if ( c_oSerDocPr::Name == type )
+		{
+			pNonVisualDrawingProps->m_sName.Init();
+            pNonVisualDrawingProps->m_sName->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Hidden == type )
+		{
+			pNonVisualDrawingProps->m_oHidden.Init();
+			pNonVisualDrawingProps->m_oHidden->FromBool(m_oBufferedStream.GetBool());
+		}
+		else if ( c_oSerDocPr::Title == type )
+		{
+			pNonVisualDrawingProps->m_sTitle.Init();
+            pNonVisualDrawingProps->m_sTitle->append(m_oBufferedStream.GetString3(length));
+		}
+		else if ( c_oSerDocPr::Descr == type )
+		{
+			pNonVisualDrawingProps->m_sDescr.Init();
+            pNonVisualDrawingProps->m_sDescr->append(m_oBufferedStream.GetString3(length));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -7035,7 +7094,7 @@ Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReade
 int Binary_HdrFtrTableReader::Read()
 {
 	return ReadTable(&Binary_HdrFtrTableReader::ReadHdrFtrContent, this);
-};
+}
 int Binary_HdrFtrTableReader::ReadHdrFtrContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -7077,12 +7136,12 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			if(nCurType == c_oSerHdrFtrTypes::Header)
 			{
 				m_oHeaderFooterWriter.m_aHeaders.push_back(poHdrFtrItem);
-				poHdrFtrItem->m_sFilename.Format(_T("header%d.xml"), m_oHeaderFooterWriter.m_aHeaders.size());
+                poHdrFtrItem->m_sFilename = L"header" + std::to_wstring((int)m_oHeaderFooterWriter.m_aHeaders.size()) + L".xml";
 			}
 			else
 			{
 				m_oHeaderFooterWriter.m_aFooters.push_back(poHdrFtrItem);
-				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), m_oHeaderFooterWriter.m_aFooters.size());
+                poHdrFtrItem->m_sFilename = L"footer" + std::to_wstring((int)m_oHeaderFooterWriter.m_aFooters.size()) + L".xml";
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
@@ -7119,7 +7178,7 @@ public:
 	int Read()
 	{
 		m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-		CString sFilename;
+        std::wstring sFilename;
 		Writers::ContentWriter* pContentWriter = NULL;
 		if(m_bIsFootnote)
 		{
@@ -7218,8 +7277,8 @@ class BinaryFileReader
 private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter& m_oFileWriter;
-	CString m_sFileInDir;
-public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
+    std::wstring m_sFileInDir;
+public: BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter):m_sFileInDir(sFileInDir),m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
 		{
 		}
 		int ReadFile()
@@ -7295,7 +7354,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 			else
 			{
 				m_oFileWriter.m_oSettingWriter.AddSetting(_T("<w:defaultTabStop w:val=\"708\"/>"));
-				CString sClrMap(_T("<w:clrSchemeMapping w:bg1=\"light1\" w:t1=\"dark1\" w:bg2=\"light2\" w:t2=\"dark2\" w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:hyperlink=\"hyperlink\" w:followedHyperlink=\"followedHyperlink\"/>"));
+                std::wstring sClrMap(_T("<w:clrSchemeMapping w:bg1=\"light1\" w:t1=\"dark1\" w:bg2=\"light2\" w:t2=\"dark2\" w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:hyperlink=\"hyperlink\" w:followedHyperlink=\"followedHyperlink\"/>"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sClrMap);
 				m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 			}
@@ -7319,7 +7378,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					return res;
 			}
 			
-			for(int i = 0, length = aTypes.size(); i < length; ++i)
+			for(size_t i = 0; i < aTypes.size(); ++i)
 			{
 				BYTE mtiType = aTypes[i];
 				long mtiOffBits = aOffBits[i];
@@ -7365,44 +7424,44 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 				long stamdartRId;
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles")), CString(_T("styles.xml")), CString(), &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings")), CString(_T("settings.xml")), CString(), &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings")), CString(_T("webSettings.xml")), CString(), &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable")), CString(_T("fontTable.xml")), CString(), &stamdartRId);
-				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme")), CString(_T("theme/theme1.xml")), CString(), &stamdartRId);
-				if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles")), std::wstring(_T("styles.xml")), std::wstring(), &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings")), std::wstring(_T("settings.xml")), std::wstring(), &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings")), std::wstring(_T("webSettings.xml")), std::wstring(), &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable")), std::wstring(_T("fontTable.xml")), std::wstring(), &stamdartRId);
+                m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme")), std::wstring(_T("theme/theme1.xml")), std::wstring(), &stamdartRId);
+                if(false == m_oFileWriter.m_oNumberingWriter.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), CString(_T("numbering.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering")), std::wstring(_T("numbering.xml")), std::wstring(), &rId);
 				}
-				if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
+                if(false == m_oFileWriter.m_oFootnotesWriter.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes")), CString(_T("footnotes.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes")), std::wstring(_T("footnotes.xml")), std::wstring(), &rId);
 				}
-				if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
+                if(false == m_oFileWriter.m_oEndnotesWriter.IsEmpty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes")), CString(_T("endnotes.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes")), std::wstring(_T("endnotes.xml")), std::wstring(), &rId);
 				}
-				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
+				for(size_t i = 0; i < m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders.size(); ++i)
 				{
 					Writers::HdrFtrItem* pHeader = m_oFileWriter.m_oHeaderFooterWriter.m_aHeaders[i];
 					if(false == pHeader->IsEmpty())
 					{
 						long rId;
-						m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header")), pHeader->m_sFilename, CString(), &rId);
-						pHeader->rId.Format(_T("rId%d"), rId);
+                        m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/header")), pHeader->m_sFilename, std::wstring(), &rId);
+                        pHeader->rId = L"rId" + std::to_wstring( rId );
 					}
 				}
-				for(int i = 0, length = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.size(); i < length; ++i)
+				for(size_t i = 0; i < m_oFileWriter.m_oHeaderFooterWriter.m_aFooters.size(); ++i)
 				{
 					Writers::HdrFtrItem* pFooter = m_oFileWriter.m_oHeaderFooterWriter.m_aFooters[i];
 					if(false == pFooter->IsEmpty())
 					{
 						long rId;
-						m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer")), pFooter->m_sFilename, CString(), &rId);
-						pFooter->rId.Format(_T("rId%d"), rId);
+                        m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer")), pFooter->m_sFilename, std::wstring(), &rId);
+                        pFooter->rId = L"rId" + std::to_wstring( rId );
 					}
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
@@ -7413,24 +7472,24 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 
                 CComments& oComments = oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;
-				CString sContent = oComments.writeContent();
-				CString sContentEx = oComments.writeContentExt();//важно чтобы writeContentExt вызывался после writeContent
-				CString sPeople = oComments.writePeople();
+                std::wstring sContent = oComments.writeContent();
+                std::wstring sContentEx = oComments.writeContentExt();//важно чтобы writeContentExt вызывался после writeContent
+                std::wstring sPeople = oComments.writePeople();
 				oCommentsWriter.setElements(sContent, sContentEx, sPeople);
-				if(false == oCommentsWriter.m_sComment.IsEmpty())
+                if(false == oCommentsWriter.m_sComment.empty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments")), CString(_T("comments.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments")), std::wstring(_T("comments.xml")), std::wstring(), &rId);
 				}
-				if(false == oCommentsWriter.m_sCommentExt.IsEmpty())
+                if(false == oCommentsWriter.m_sCommentExt.empty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended")), CString(_T("commentsExtended.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/commentsExtended")), std::wstring(_T("commentsExtended.xml")), std::wstring(), &rId);
 				}
-				if(false == oCommentsWriter.m_sPeople.IsEmpty())
+                if(false == oCommentsWriter.m_sPeople.empty())
 				{
 					long rId;
-					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/people")), CString(_T("people.xml")), CString(), &rId);
+                    m_oFileWriter.m_pDrawingConverter->WriteRels(std::wstring(_T("http://schemas.microsoft.com/office/2011/relationships/people")), std::wstring(_T("people.xml")), std::wstring(), &rId);
 				}
 
                 m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());

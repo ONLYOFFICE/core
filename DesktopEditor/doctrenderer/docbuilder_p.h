@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,6 +83,9 @@ public:
     v8::Local<v8::Context> m_context;
 
     int m_nFileType;
+    std::string m_sUtf8ArgumentJSON;
+
+    std::string m_sGlobalVariable;
 
 public:
 
@@ -171,7 +174,52 @@ public:
         return true;
     }
 
-    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString)
+    std::string GetGlobalVariable()
+    {
+        std::string commandA = "JSON.stringify(GlobalVariable);";
+
+        v8::Context::Scope context_scope(m_context);
+
+        v8::TryCatch try_catch;
+
+        v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
+        v8::Local<v8::Script> script = v8::Script::Compile(source);
+
+        std::string sReturn = "{}";
+
+        if (try_catch.HasCaught())
+        {
+            std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+            std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+            _LOGGING_ERROR_(L"execute_compile_code", strCode);
+            _LOGGING_ERROR_(L"execute_compile", strException);
+
+            return false;
+        }
+        else
+        {
+            v8::Local<v8::Value> _value = script->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"execute_run_code", strCode);
+                _LOGGING_ERROR_(L"execute_run", strException);
+
+                return false;
+            }
+
+            if (_value->IsString())
+                sReturn = to_cstringA(_value);
+        }
+
+        return sReturn;
+    }
+
+    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
     {
         LOGGER_SPEED_START
 
@@ -180,7 +228,15 @@ public:
         v8::TryCatch try_catch;
 
         v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
-        v8::Local<v8::Script> script = v8::Script::Compile(source);
+        v8::Local<v8::Script> script;
+
+        CCacheDataScript oCachedScript(sCachePath);
+        if (sCachePath.empty())
+            script = v8::Script::Compile(source);
+        else
+        {
+            script = oCachedScript.Compile(m_context, source);
+        }
 
         LOGGER_SPEED_LAP("compile")
 
@@ -210,6 +266,57 @@ public:
             }
         }
         LOGGER_SPEED_LAP("run")
+
+        if (true)
+        {
+            std::string sArg = m_sUtf8ArgumentJSON;
+            if (sArg.empty())
+                sArg = "{}";
+            NSCommon::string_replaceA(sArg, "\\", "\\\\");
+            NSCommon::string_replaceA(sArg, "\"", "\\\"");
+            std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
+
+            v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sArgument.c_str());
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
+            _scriptArg->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"sdk_argument_code", strCode);
+                _LOGGING_ERROR_(L"sdk_argument", strException);
+
+                return false;
+            }
+        }
+
+        if (true)
+        {
+            std::string sArg = m_sGlobalVariable;
+            if (sArg.empty())
+                sArg = "{}";
+            NSCommon::string_replaceA(sArg, "\\", "\\\\");
+            NSCommon::string_replaceA(sArg, "\"", "\\\"");
+
+            std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
+
+            v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str());
+            v8::Local<v8::Script> _scriptArg = v8::Script::Compile(_sourceArg);
+            _scriptArg->Run();
+
+            if (try_catch.HasCaught())
+            {
+                std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                _LOGGING_ERROR_(L"sdk_global_var_code", strCode);
+                _LOGGING_ERROR_(L"sdk_global_var", strException);
+
+                return false;
+            }
+        }
 
         CNativeControl* pNative = NULL;
         bool bIsBreak = false;
@@ -316,7 +423,7 @@ public:
             _formatDst = NSDoctRenderer::DoctRendererFormat::PPTT;
         else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
             _formatDst = NSDoctRenderer::DoctRendererFormat::XLST;
-        else if (type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM)
+        else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
             _formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 
         v8::Context::Scope context_scope(m_context);
@@ -401,12 +508,14 @@ namespace NSDoctRenderer
             m_bCheckFonts = false;
             m_sWorkDir = L"";
             m_bSaveWithDoctrendererMode = false;
+            m_sArgumentJSON = "";
         }
 
     public:
         bool m_bCheckFonts;
         std::wstring m_sWorkDir;
         bool m_bSaveWithDoctrendererMode;
+        std::string m_sArgumentJSON;
     };
 
     class CDocBuilder_Private
@@ -435,6 +544,11 @@ namespace NSDoctRenderer
 
         CDocBuilderParams m_oParams;
         bool m_bIsInit;
+
+        bool m_bIsCacheScript;
+
+        std::string m_sGlobalVariable;
+        bool m_bIsGlobalVariableUse;
     public:
         CDocBuilder_Private()
         {
@@ -450,6 +564,10 @@ namespace NSDoctRenderer
 
             m_pAdditionalData = NULL;
             m_bIsInit = false;
+            m_bIsCacheScript = true;
+
+            m_sGlobalVariable = "";
+            m_bIsGlobalVariableUse = false;
         }
 
         void Init()
@@ -572,7 +690,7 @@ namespace NSDoctRenderer
 
         void CheckFonts(bool bIsCheckSystemFonts)
         {
-            CArray<std::string> strFonts;
+            std::vector<std::string> strFonts;
             std::wstring strDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
 
             std::wstring strAllFontsJSPath = strDirectory + L"/AllFonts.js";
@@ -599,7 +717,7 @@ namespace NSDoctRenderer
                             if (nEnd > nStart)
                             {
                                 std::string s(pBuffer + nStart, nEnd - nStart + 1);
-                                strFonts.Add(s);
+                                strFonts.push_back(s);
                             }
                             nStart = nCur + 1;
                         }
@@ -614,14 +732,14 @@ namespace NSDoctRenderer
             if (!bIsEqual || bIsCheckSystemFonts)
             {
                 CApplicationFonts oApplicationF;
-                CArray<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
+                std::vector<std::wstring> strFontsW_Cur = oApplicationF.GetSetupFontFiles();
 
-                if (strFonts.GetCount() != strFontsW_Cur.GetCount())
+                if (strFonts.size() != strFontsW_Cur.size())
                     bIsEqual = false;
 
                 if (bIsEqual)
                 {
-                    int nCount = strFonts.GetCount();
+                    int nCount = (int)strFonts.size();
                     for (int i = 0; i < nCount; ++i)
                     {
                         if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
@@ -639,12 +757,12 @@ namespace NSDoctRenderer
                     if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
                         NSFile::CFileBinary::Remove(strFontsSelectionBin);
 
-                    if (strFonts.GetCount() != 0)
+                    if (strFonts.size() != 0)
                         NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
 
                     NSFile::CFileBinary oFile;
                     oFile.CreateFileW(strDirectory + L"/fonts.log");
-                    int nCount = strFontsW_Cur.GetCount();
+                    int nCount = (int)strFontsW_Cur.size();
                     for (int i = 0; i < nCount; ++i)
                     {
                         oFile.WriteStringUTF8(strFontsW_Cur[i]);
@@ -722,7 +840,7 @@ namespace NSDoctRenderer
 #endif
         }
 
-        bool OpenFile(const std::wstring& path, const std::wstring& params)
+        int OpenFile(const std::wstring& path, const std::wstring& params)
         {
             Init();
 
@@ -875,14 +993,15 @@ namespace NSDoctRenderer
             LOGGER_SPEED_LAP("open_convert")
 
             if (0 == nReturnCode)
-                return true;
+                return 0;
 
             NSDirectory::DeleteDirectory(m_sFileDir);
             m_sFileDir = L"";
             m_nFileType = -1;
 
-            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"open file error");
-            return false;
+            std::wstring sErrorLog = L"open file error (" + std::to_wstring(nReturnCode) + L")";
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+            return nReturnCode;
         }
 
         void CloseFile()
@@ -895,10 +1014,12 @@ namespace NSDoctRenderer
             m_sFileDir = L"";
             m_nFileType = -1;
 
+            if (m_pWorker)
+                m_sGlobalVariable = m_pWorker->GetGlobalVariable();
             RELEASEOBJECT(m_pWorker);
         }
 
-        bool SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
+        int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
         {
             Init();
 
@@ -1075,10 +1196,11 @@ namespace NSDoctRenderer
             LOGGER_SPEED_LAP("save_convert")
 
             if (0 == nReturnCode)
-                return true;
+                return 0;
 
-            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save file error");
-            return false;
+            std::wstring sErrorLog = L"save file error (" + std::to_wstring(nReturnCode) + L")";
+            CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+            return nReturnCode;
         }
 
         bool ExecuteCommand(const std::wstring& command)
@@ -1095,8 +1217,14 @@ namespace NSDoctRenderer
             {
                 m_pWorker = new CV8RealTimeWorker();
                 m_pWorker->m_nFileType = m_nFileType;
+                m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
+                m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
 
-                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript());
+                std::wstring sCachePath = L"";
+                if (m_bIsCacheScript)
+                    sCachePath = GetScriptCache();
+
+                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath);
                 if (!bOpen)
                     return false;
             }
@@ -1150,6 +1278,37 @@ namespace NSDoctRenderer
                 strScript += "\n$.ready();";
 
             return strScript;
+        }
+
+        std::wstring GetScriptCache()
+        {
+            std::vector<std::wstring>* arSdkFiles = NULL;
+            switch (m_nFileType)
+            {
+            case 0:
+                {
+                    arSdkFiles = &m_arDoctSDK;
+                    break;
+                }
+            case 1:
+                {
+                    arSdkFiles = &m_arPpttSDK;
+                    break;
+                }
+            case 2:
+                {
+                    arSdkFiles = &m_arXlstSDK;
+                    break;
+                }
+            default:
+                return L"";
+            }
+
+            if (0 < arSdkFiles->size())
+            {
+                return NSCommon::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
+            }
+            return L"";
         }
 
         std::string ReadScriptFile(const std::wstring& strFile)
@@ -1339,7 +1498,7 @@ namespace NSDoctRenderer
                 ParceParameters(command, _builder_params, nCountParameters);
 
                 if ("OpenFile" == sFuncNum)
-                    bIsNoError = this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str());
+                    bIsNoError = (0 == this->OpenFile(_builder_params[0].c_str(), _builder_params[1].c_str()));
                 else if ("CreateFile" == sFuncNum)
                 {
                     if (L"docx" == _builder_params[0])
@@ -1379,10 +1538,12 @@ namespace NSDoctRenderer
                         nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
                     else if (L"pdf" == _builder_params[0])
                         nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+                    else if (L"image" == _builder_params[0])
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
                     else if (L"jpg" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
                     else if (L"png" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
 
                     if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
                     {
@@ -1401,6 +1562,7 @@ namespace NSDoctRenderer
             {
                 //bIsNoError = this->m_pInternal->ExecuteCommand(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)_data, (LONG)_len));
                 sJsCommands += command;
+                sJsCommands += "\n";
             }
 
             if (!bIsNoError)
@@ -1419,6 +1581,13 @@ namespace NSDoctRenderer
             m_pInternal->m_oParams.m_bCheckFonts = true;
         else if (sParam == "--work-directory")
             m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
+        else if (sParam == "--cache-scripts")
+            m_pInternal->m_bIsCacheScript = (std::wstring(value) == L"true");
+        else if (sParam == "--argument")
+        {
+            std::wstring sArg(value);
+            m_pInternal->m_oParams.m_sArgumentJSON = U_TO_UTF8(sArg);
+        }
     }
     void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
     {

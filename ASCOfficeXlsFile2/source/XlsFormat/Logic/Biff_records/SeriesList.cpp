@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,13 +50,6 @@ BaseObjectPtr SeriesList::clone()
 	return BaseObjectPtr(new SeriesList(*this));
 }
 
-
-void SeriesList::writeFields(CFRecord& record)
-{
-	rgiser.store(record);
-}
-
-
 void SeriesList::readFields(CFRecord& record)
 {
 	rgiser.load(record);
@@ -81,14 +74,6 @@ void RGISeriesListSpecial::load(CFRecord& record)
 		series.push_back(rgi);
 	}
 }
-
-
-void RGISeriesListSpecial::store(CFRecord& record)
-{
-	unsigned short cser = series.size();
-	record >> cser >> series;
-}
-
 
 
 } // namespace XLS

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class AlphaRepl : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(AlphaRepl)
+			WritingElement_AdditionConstructors(AlphaRepl)
+			PPTX_LOGIC_BASE2(AlphaRepl)
 
 			AlphaRepl& operator=(const AlphaRepl& oSrc)
 			{
@@ -53,21 +54,34 @@ namespace PPTX
 				a = oSrc.a;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaRepl;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("a"), a)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"a", a);
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (!a.IsInit())
 					return _T("<a:alphaRepl/>");
 				
-				CString str = _T("");
-				str.Format(_T("<a:alphaRepl a=\"%d\" />"), *a);
+                std::wstring str = L"<a:alphaRepl a=\"" + std::to_wstring(*a) + L"\" />";
 				return str;
 			}
 
@@ -85,7 +99,7 @@ namespace PPTX
 		public:
 			nullable_int a;
 		protected:
-			virtual void FillParentPointersForChilds(){};
+            virtual void FillParentPointersForChilds(){}
 			AVSINLINE void Normalize()
 			{
 				a.normalize_positive();

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -170,6 +170,7 @@ private:
 
 	bool is_header_;
 	bool is_footer_;
+	bool is_background_;
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 

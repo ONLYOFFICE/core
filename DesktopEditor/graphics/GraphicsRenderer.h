@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -246,6 +246,9 @@ public:
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
+
+	virtual HRESULT StartConvertCoordsToIdentity();
+	virtual HRESULT EndConvertCoordsToIdentity();
 
 	void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal);
 	inline void put_IntegerGrid(const bool& bEnabled)

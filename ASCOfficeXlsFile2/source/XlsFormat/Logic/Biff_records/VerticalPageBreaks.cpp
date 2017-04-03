@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,17 +49,6 @@ BaseObjectPtr VerticalPageBreaks::clone()
 {
 	return BaseObjectPtr(new VerticalPageBreaks(*this));
 }
-
-
-void VerticalPageBreaks::writeFields(CFRecord& record)
-{
-	record << cbrk;
-	for(BiffStructurePtrVector::const_iterator it = rgbrk.begin(), itEnd = rgbrk.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
-}
-
 
 void VerticalPageBreaks::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,8 +39,9 @@
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
-//#include <boost/locale.hpp>
-//#include <boost/locale/conversion.hpp>
+#if !defined(_WIN32) && !defined(_WIN64)
+    #include <string.h>
+#endif
 
 #include <locale>
 

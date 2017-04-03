@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,6 +52,8 @@ struct drawing_object_description
 	oox::RelsType							type_;
 
 	std::wstring							name_;	
+	std::wstring							descriptor_;	
+
 	_CP_OPT(_rect)							svg_rect_;
 
 	std::wstring							anchor_;
@@ -66,7 +68,6 @@ struct drawing_object_description
 
 	_oox_fill								fill_;
 
-	bool									use_image_replace_;
 	bool									in_group_;
 
 	int										shape_type_;	//default - frame

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,8 @@
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+
+#include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "odf_drawing_context.h"
 
@@ -87,14 +88,15 @@ namespace utils {
     static int getColAddressInv(const std::wstring & a_)
 	{
 		std::wstring a = a_;
-		::boost::algorithm::to_upper(a);
+        XmlUtils::GetUpper(a);
 		static const size_t r = (L'Z' - L'A' + 1);
 		size_t mul = 1;
 		bool f = true;
         int res = 0;
-		BOOST_REVERSE_FOREACH(const wchar_t c, a)
+
+        for (int i = (int)a.length() - 1; i >= 0; i--)
 		{
-			size_t v = c - L'A';
+            size_t v = a[i] - L'A';
 			if (f)
 				f = false;
 			else
@@ -106,10 +108,9 @@ namespace utils {
 	}
     static int getRowAdderssInv(const std::wstring & a_)
 	{
-		int sz = a_.length();
-		if (a_.length()>0)
+		if (!a_.empty())
 		{
-           return boost::lexical_cast<int>(a_)-1;
+           return boost::lexical_cast<int>(a_) - 1;
 		}
 		else
 			return 0;
@@ -119,29 +120,27 @@ namespace utils {
 		std::wstring a = a_;
 
 		std::reverse(a.begin(), a.end());
-		::boost::algorithm::replace_all(a, L"$", L"");
-		//::boost::algorithm::replace_all(a, L"'", L"");
-		::boost::algorithm::to_upper(a);
+		XmlUtils::replace_all( a, L"$", L"");
+        XmlUtils::GetUpper(a);
 		
-
-		BOOST_FOREACH(wchar_t c, a)
+        for (size_t i = 0; i < a.length(); i++)
 		{
-			if (c >= L'0' && c <= L'9')
-				row +=c;
+            if (a[i] >= L'0' && a[i] <= L'9')
+                row += a[i];
 			else
-				col += c;
+                col += a[i];
 		}
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());
 	}
     static void parsing_ref (std::wstring ref, int & col,int & row)
 	{
-		int pos = ref.rfind(L"!");//oox table name
+		int pos = (int)ref.rfind(L"!");//oox table name
 		if (pos >= 0)
 			ref = ref.substr(pos + 1);
 		else
 		{
-			pos = ref.rfind(L".");//odf table name
+			pos = (int)ref.rfind(L".");//odf table name
 			if (pos >= 0)
 				ref = ref.substr(pos + 1);
 		}
@@ -241,7 +240,7 @@ public:
 	void start_group(office_element_ptr & elm);
 	void end_group();
 		
-    int current_level() {return current_level_.size()-1;}
+    int current_level() {return (int)current_level_.size()-1;}
 
 	void start_headers(office_element_ptr & elm);
 	void end_headers();

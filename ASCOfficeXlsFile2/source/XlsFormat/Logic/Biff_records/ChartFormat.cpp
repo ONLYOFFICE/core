@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,15 +48,6 @@ ChartFormat::~ChartFormat()
 BaseObjectPtr ChartFormat::clone()
 {
 	return BaseObjectPtr(new ChartFormat(*this));
-}
-
-
-void ChartFormat::writeFields(CFRecord& record)
-{
-	record.reserveNunBytes(16); // reserved
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fVaried);
-	record << flags << icrt;
 }
 
 

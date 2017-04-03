@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,6 +40,10 @@
 #include "../DocxFormat/Drawing/DrawingEffects.h"
 #include "../DocxFormat/Drawing/DrawingTextProperties.h"
 #include "../DocxFormat/Drawing/DrawingParagraph.h"
+
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpPr.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/ClrMap.h"
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"

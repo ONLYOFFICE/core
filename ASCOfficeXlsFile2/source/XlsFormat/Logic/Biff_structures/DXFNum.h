@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,12 +49,8 @@ public:
 	static const ElementType	type = typeDXFNum;
 	
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
 
 	int serialize(std::wostream & stream);
-
-	void		setIsUserDefined(const bool is_user_defined); 
-	const bool	getIsUserDefined() const; 
 
 	_CP_OPT(bool)	is_user_defined_;
 	

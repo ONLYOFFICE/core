@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,9 +45,36 @@ namespace PPTX
 		class Path : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Path)
+			WritingElement_AdditionConstructors(Path)
+			PPTX_LOGIC_BASE2(Path)
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_path;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					
+					if (_T("fillToRect") == strName)
+						rect = oReader;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_ReadSingle    ( oReader, _T("path"), path )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"path", path);
@@ -55,7 +82,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.WriteLimitNullable(_T("path"), path);
@@ -118,8 +145,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");

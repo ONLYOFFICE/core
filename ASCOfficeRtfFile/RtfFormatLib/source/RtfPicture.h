@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,10 +57,12 @@ public:
 	int m_nCropR;
 	int m_nCropB;
 
-	bool m_bIsCopy; // true - надо удалять m_sPicFilename, false - не надо удалять
-	CString m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
+	bool			m_bIsCopy;		// true - надо удалять m_sPicFilename, false - не надо удалять
+    std::wstring	m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
 
-	std::vector<CString> m_aTempFiles;
+    std::vector<std::wstring> m_aTempFiles;
+	
+	std::wstring dump_shape_properties;
 
 	RtfPicture()
 	{
@@ -70,7 +72,7 @@ public:
 	~RtfPicture()
 	{
 		SetDefault();
-		for( int i = 0; i < (int)m_aTempFiles.size(); i++ ) 
+		for (size_t i = 0; i < m_aTempFiles.size(); i++ ) 
 			Utils::RemoveDirOrFile( m_aTempFiles[i] );
 	}
 	int GetType()
@@ -79,7 +81,7 @@ public:
 	}
 	bool IsValid()
 	{
-		return !m_sPicFilename.IsEmpty() && dt_none != eDataType;
+        return !m_sPicFilename.empty() && dt_none != eDataType;
 	}
 	void SetDefaultRtf()
 	{
@@ -93,33 +95,33 @@ public:
 	{
 		eDataType = dt_none;
 		DEFAULT_PROPERTY( m_nWidth )
-			DEFAULT_PROPERTY( m_nWidthGoal )
-			DEFAULT_PROPERTY( m_nHeight )
-			DEFAULT_PROPERTY( m_nHeightGoal )
+		DEFAULT_PROPERTY( m_nWidthGoal )
+		DEFAULT_PROPERTY( m_nHeight )
+		DEFAULT_PROPERTY( m_nHeightGoal )
 
-			DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
-			DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
-			DEFAULT_PROPERTY( m_bScaled )
+		DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
+		DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
+		DEFAULT_PROPERTY( m_bScaled )
 
-			DEFAULT_PROPERTY( m_nCropL )
-			DEFAULT_PROPERTY( m_nCropT )
-			DEFAULT_PROPERTY( m_nCropR )
-			DEFAULT_PROPERTY( m_nCropB )
-			
-			if( true == m_bIsCopy && !m_sPicFilename.IsEmpty() )
-			{
-				Utils::RemoveDirOrFile( m_sPicFilename );
-			}
+		DEFAULT_PROPERTY( m_nCropL )
+		DEFAULT_PROPERTY( m_nCropT )
+		DEFAULT_PROPERTY( m_nCropR )
+		DEFAULT_PROPERTY( m_nCropB )
+		
+        if( true == m_bIsCopy && !m_sPicFilename.empty() )
+		{
+			Utils::RemoveDirOrFile( m_sPicFilename );
+		}
 		m_sPicFilename = L"";
 	}
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
-	CString GenerateWMF(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+    std::wstring GenerateWMF(RenderParameter oRenderParameter);
 	
-	//static bool LoadPicture( IUnknown** piImage, CString sPath );
-	//static bool SavePicture( IUnknown* piImage, CString sPath, long nFormat );
+    //static bool LoadPicture( IUnknown** piImage, std::wstring sPath );
+    //static bool SavePicture( IUnknown* piImage, std::wstring sPath, long nFormat );
 	
-	static DataType GetPictureType( CString sFilename )
+    static DataType GetPictureType( std::wstring sFilename )
 	{
 		BYTE	pBuffer[ 16 ];
 		DWORD	dwBytesRead = 0;
@@ -128,7 +130,7 @@ public:
 		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
 		file.ReadFile(pBuffer, 16);
-		dwBytesRead = file.GetPosition();
+		dwBytesRead = (DWORD)file.GetPosition();
 		file.CloseFile();
 
 		//jpeg	

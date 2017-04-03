@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 #include <string>
 #include <fstream>
 #include <time.h>
-#include "Array.h"
 #include "errno.h"
 #include "Base64.h"
 #include <time.h>
@@ -50,6 +49,7 @@
 
 #if defined(__linux__) || defined(_MAC) && !defined(_IOS)
 #include <unistd.h>
+#include <string.h>
 #endif
 
 #ifdef _IOS
@@ -466,7 +466,7 @@ namespace NSFile
 
         static std::string GetUtf8StringFromUnicode(const std::wstring& sData)
         {
-                return GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.length());
+            return GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.length());
         }
 
 		// utf16
@@ -620,7 +620,8 @@ namespace NSFile
 		bool OpenFile(const std::wstring& sFileName, bool bRewrite = false)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			m_pFile = _wfopen(sFileName.c_str(), bRewrite ? L"rb+" : L"rb");
+			if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), bRewrite ? L"rb+" : L"rb")) 
+				return false;
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -658,7 +659,8 @@ namespace NSFile
 		bool CreateFileW(const std::wstring& sFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			m_pFile = _wfopen(sFileName.c_str(), L"wb");
+			 if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), L"wb"))
+				 return false;
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -674,10 +676,14 @@ namespace NSFile
 		}
 		bool CreateTempFile()
 		{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			if (0 != tmpfile_s(&m_pFile))
+				return false;
+#else
 			m_pFile = tmpfile();
 			if (NULL == m_pFile)
 				return false;
-
+#endif		
 			m_lFilePosition = 0;
 			return true;
 		}
@@ -767,7 +773,7 @@ namespace NSFile
 			{
 				//remove BOM if exist
 				BYTE* pDataStart = pData;
-				int nBOMSize = 3;
+				DWORD nBOMSize = 3;
 				if (nDataSize > nBOMSize && 0xef == pDataStart[0] && 0xbb == pDataStart[1] && 0xbf == pDataStart[2])
 				{
 					pDataStart += nBOMSize;
@@ -788,7 +794,7 @@ namespace NSFile
 			{
 				//remove BOM if exist
 				BYTE* pDataStart = pData;
-				int nBOMSize = 3;
+				DWORD nBOMSize = 3;
 				if (nDataSize > nBOMSize && 0xef == pDataStart[0] && 0xbb == pDataStart[1] && 0xbf == pDataStart[2])
 				{
 					pDataStart += nBOMSize;
@@ -811,7 +817,9 @@ namespace NSFile
 		static bool Exists(const std::wstring&  strFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			FILE* pFile = _wfopen(strFileName.c_str(), L"rb");
+			FILE* pFile = NULL;
+			if ( 0 != _wfopen_s( &pFile, strFileName.c_str(), L"rb"))
+				return false;
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -1005,10 +1013,11 @@ namespace NSFile
 			std::wstring wsTemp, wsFileName;
 			FILE *pTempFile = NULL;
 #if defined(_WIN32) || defined (_WIN64)
-			wchar_t *wsTempDir;
-			if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
+			wchar_t *wsTempDir = NULL;
+			size_t sz = 0;
+			if ( (0 == _wdupenv_s(&wsTempDir, &sz, L"TEMP")) && (wsFolder == NULL))
 			{
-				wsTemp = std::wstring(wsTempDir);
+				wsTemp = std::wstring(wsTempDir, sz-1);
 #else
 			char *wsTempDirA;
 			if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))
@@ -1016,37 +1025,32 @@ namespace NSFile
 				std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
 				wsTemp = wsTempDir.c_str();
 #endif
-				wsTemp.append(L"/");
+				wsTemp += L"/";
 			}
 			else if (wsFolder != NULL)
 			{
 				wsTemp = std::wstring(wsFolder);
-				wsTemp.append(L"/");
+				wsTemp += L"/";
 			}
 			else
 			{
 				wsTemp = L"";
 			}
-			wsTemp.append(L"x");
+			wsTemp += L"x";
 			int nTime = (int)time(NULL);
 			for (int nIndex = 0; nIndex < 1000; ++nIndex)
 			{
 				wsFileName = wsTemp;
-#if defined(_WIN32) || defined (_WIN64)
-				wchar_t buff[32] ={};
-				_itow(nTime + nIndex, buff, 10);
-				wsFileName.append(buff, wcslen(buff));
-#else
 				wsFileName.append(std::to_wstring(nTime + nIndex));
-#endif
+
 				if (wsExt)
 				{
 					wsFileName.append(wsExt);
 				}
 #if defined (_WIN32) || defined (_WIN64)
-				if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
+				if ( 0 != _wfopen_s(&pTempFile, wsFileName.c_str(), L"r") )
 				{
-					if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))
+					if (0 != _wfopen_s(&pTempFile, wsFileName.c_str(), wsMode))
 #else
 				std::string sFileName = U_TO_UTF8(wsFileName);
 				if (!(pTempFile = fopen(sFileName.c_str(), "r")))
@@ -1071,7 +1075,10 @@ namespace NSFile
 		static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			return _wfopen(sFileName.c_str(), sMode.c_str());
+			FILE* pFile = NULL;
+			_wfopen_s(&pFile, sFileName.c_str(), sMode.c_str());
+
+			return pFile;
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
@@ -1184,6 +1191,53 @@ namespace NSFile
             sPath = sPath.substr(0, pos);
         }
         return sPath;
+    }
+
+    // CommonFunctions
+    static std::wstring GetFileExtention(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos = sPath.rfind('.');
+        if (nPos != std::wstring::npos)
+            return sPath.substr(nPos + 1);
+        return sPath;
+    }
+    static std::wstring GetFileName(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos1 = sPath.rfind('\\');
+        std::wstring::size_type nPos2 = sPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return sPath;
+        return sPath.substr(nPos + 1);
+    }
+    static std::wstring GetDirectoryName(const std::wstring& sPath)
+    {
+        std::wstring::size_type nPos1 = sPath.rfind('\\');
+        std::wstring::size_type nPos2 = sPath.rfind('/');
+        std::wstring::size_type nPos = std::wstring::npos;
+
+        if (nPos1 != std::wstring::npos)
+        {
+            nPos = nPos1;
+            if (nPos2 != std::wstring::npos && nPos2 > nPos)
+                nPos = nPos2;
+        }
+        else
+            nPos = nPos2;
+
+        if (nPos == std::wstring::npos)
+            return sPath;
+        return sPath.substr(0, nPos);
     }
 }
 

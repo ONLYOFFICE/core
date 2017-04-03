@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -68,7 +68,8 @@ namespace DocFileFormat
         static std::wstring mapHorizontalPosition		(PositionHorizontal hPos );
         static std::wstring mapHorizontalPositionRelative(int hRel );
 
-		bool m_isBullete;
+		bool			m_isBullete;
+		std::wstring	m_shapeId;
 	private:
 
 		void ApplyPrimitives	(DrawingPrimitives	* primitives );
@@ -129,14 +130,14 @@ namespace DocFileFormat
 		BlipStoreContainer*				m_pBlipStore;
 		int								m_nImageId;
 		std::wstring					m_textPathStyle;
-		ConversionContext*				m_ctx;
+		ConversionContext*				m_context;
 		PictureDescriptor*				m_pict;
 
-		XMLTools::XMLElement<wchar_t>	m_fill; 
-		XMLTools::XMLElement<wchar_t>	m_stroke;
-		XMLTools::XMLElement<wchar_t>	m_shadow; 
-		XMLTools::XMLElement<wchar_t>	m_imagedata;
-		XMLTools::XMLElement<wchar_t>	m_3dstyle; 
-		XMLTools::XMLElement<wchar_t>	m_textpath;
+        XMLTools::XMLElement        m_fill;
+        XMLTools::XMLElement        m_stroke;
+        XMLTools::XMLElement        m_shadow;
+        XMLTools::XMLElement        m_imagedata;
+        XMLTools::XMLElement        m_3dstyle;
+        XMLTools::XMLElement        m_textpath;
 	};
 }

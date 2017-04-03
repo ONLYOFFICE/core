@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "TransitionBase.h"
 #include "EmptyTransition.h"
@@ -68,7 +68,7 @@ namespace PPTX
 
 		void TransitionBase::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("random"))
 				base.reset(new Logic::EmptyTransition(node));
@@ -163,7 +163,7 @@ namespace PPTX
 			else base.reset();
 		}
 
-		CString TransitionBase::toXML() const
+		std::wstring TransitionBase::toXML() const
 		{
 			if (base.IsInit())
 				return base->toXML();
@@ -208,7 +208,7 @@ namespace PPTX
 			}
 		}
 
-		CString TransitionSerialize::toXML() const
+		std::wstring TransitionSerialize::toXML() const
 		{	
 			return _T("");
 		}

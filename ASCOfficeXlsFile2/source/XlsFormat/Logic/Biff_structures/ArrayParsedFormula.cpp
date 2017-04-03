@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -58,16 +58,6 @@ void ArrayParsedFormula::load(CFRecord& record)
 	rgce.load(record, cce);
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }
-
-
-void ArrayParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_Array);
-	rgcb.store(record);
-}
-
 
 } // namespace XLS
 

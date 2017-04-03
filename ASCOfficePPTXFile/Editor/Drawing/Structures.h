@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,315 +39,315 @@ typedef std::vector<std::wstring> vector_string;
 
 namespace NSPresentationEditor
 {
-	static void CorrectColorPPT(LONG& lSchemeIndex)
-	{
-//0x00 //Background color
-//0x01 //Text color
-//0x02 //Shadow color
-//0x03 //Title text color
-//0x04 //Fill color
-//0x05 //Accent 1 color
-//0x06 //Accent 2 color
-//0x07 //Accent 3 color
+    static void CorrectColorPPT(LONG& lSchemeIndex)
+    {
+        //0x00 //Background color
+        //0x01 //Text color
+        //0x02 //Shadow color
+        //0x03 //Title text color
+        //0x04 //Fill color
+        //0x05 //Accent 1 color
+        //0x06 //Accent 2 color
+        //0x07 //Accent 3 color
 
-// [0]);//0
-// [1]);//1
-// [2]);//2
-// [3]);//3
-// [0]);//4
-// [4]);//5 //accent1
-// [5]);//6 //accent2
-// [0]);//7 //accent3
-// [5]);//8 //accent4
-// [4]);//9 //accent5
-// [7]);//10 //accent6
-// [6]);//11 //hlink
-// [7]);//12 //folHlink
-// [0]);//13 //lt1
-// [1]);//14 //dk1
-// [2]);//15 //lt2
-// [3]);//16 //dk2
+        // [0]);//0
+        // [1]);//1
+        // [2]);//2
+        // [3]);//3
+        // [0]);//4
+        // [4]);//5 //accent1
+        // [5]);//6 //accent2
+        // [0]);//7 //accent3
+        // [5]);//8 //accent4
+        // [4]);//9 //accent5
+        // [7]);//10 //accent6
+        // [6]);//11 //hlink
+        // [7]);//12 //folHlink
+        // [0]);//13 //lt1
+        // [1]);//14 //dk1
+        // [2]);//15 //lt2
+        // [3]);//16 //dk2
 
-		switch (lSchemeIndex)
-		{
-		case 0:
-			lSchemeIndex = 13;
-			break;
-		case 1:
-			lSchemeIndex = 14;
-			break;
-		case 2:
-			lSchemeIndex = 15;
-			break;
-		case 3:
-			lSchemeIndex = 16;
-			break;
-		case 4:
-			lSchemeIndex = 5;
-			break;
-		case 5:
-			lSchemeIndex = 6;
-			break;
-		case 6:
-			lSchemeIndex = 11;
-			break;
-		case 7:
-			lSchemeIndex = 12;
-			break;
-		default:
-			lSchemeIndex = -1;
-			break;
-		}
-	}
+        switch (lSchemeIndex)
+        {
+        case 0:
+            lSchemeIndex = 13;
+            break;
+        case 1:
+            lSchemeIndex = 14;
+            break;
+        case 2:
+            lSchemeIndex = 15;
+            break;
+        case 3:
+            lSchemeIndex = 16;
+            break;
+        case 4:
+            lSchemeIndex = 5;
+            break;
+        case 5:
+            lSchemeIndex = 6;
+            break;
+        case 6:
+            lSchemeIndex = 11;
+            break;
+        case 7:
+            lSchemeIndex = 12;
+            break;
+        default:
+            lSchemeIndex = -1;
+            break;
+        }
+    }
 
-	struct SPointAtom 
-	{
-		LONG X; 
-		LONG Y; 
+    struct SPointAtom
+    {
+        LONG X;
+        LONG Y;
 
-		CString ToString()
-		{
-			CString str = _T("");
-			str.Format(_T("<Point info='(%d,%d)' />"), X, Y);
-			return str;
-		}
-	}; 
+//        std::wstring ToString()
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T("<Point info='(%d,%d)' />"), X, Y);
+//            return str;
+//        }
+    };
 
-	struct SRectAtom 
-	{
-		LONG Left; 
-		LONG Top; 
-		LONG Right; 
-		LONG Bottom;
+    struct SRectAtom
+    {
+        LONG Left;
+        LONG Top;
+        LONG Right;
+        LONG Bottom;
 
-		CString ToString()
-		{
-			CString str = _T("");
-			str.Format(_T("<Rect info='(%d,%d,%d,%d)' />"), Left, Top, Right, Bottom);
-			return str;
-		}
-	};
+//        std::wstring ToString()
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T("<Rect info='(%d,%d,%d,%d)' />"), Left, Top, Right, Bottom);
+//            return str;
+//        }
+    };
 
-	struct SSmallRectAtom 
-	{
-		SHORT Left; 
-		SHORT Top; 
-		SHORT Right; 
-		SHORT Bottom;
+    struct SSmallRectAtom
+    {
+        SHORT Left;
+        SHORT Top;
+        SHORT Right;
+        SHORT Bottom;
 
-		CString ToString()
-		{
-			CString str = _T("");
-			str.Format(_T("Rect(%d,%d,%d,%d)"), Left, Top, Right, Bottom);
-			return str;
-		}
-	};
-	 
-	struct SColorAtom 
-	{ 
-		BYTE R; 
-		BYTE G; 
-		BYTE B; 
-		BYTE Index; 
+//        std::wstring ToString()
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T("Rect(%d,%d,%d,%d)"), Left, Top, Right, Bottom);
+//            return str;
+//        }
+    };
 
-		bool bPaletteIndex;
-		bool bPaletteRGB;
-		bool bSystemRGB;
-		bool bSchemeIndex;
-		bool bSysIndex;
+    struct SColorAtom
+    {
+        BYTE R;
+        BYTE G;
+        BYTE B;
+        BYTE Index;
 
-		SColorAtom()
-		{
-			R = 0;
-			G = 0;
-			B = 0; 
-			Index = -1;
+        bool bPaletteIndex;
+        bool bPaletteRGB;
+        bool bSystemRGB;
+        bool bSchemeIndex;
+        bool bSysIndex;
 
-			bPaletteIndex	= false;
-			bPaletteRGB		= false;
-			bSystemRGB		= false;
-			bSchemeIndex	= false;
-			bSysIndex		= false;
-		}
+        SColorAtom()
+        {
+            R = 0;
+            G = 0;
+            B = 0;
+            Index = -1;
 
-		SColorAtom(const SColorAtom& oSrc)
-		{
-			*this = oSrc;
-		}
+            bPaletteIndex	= false;
+            bPaletteRGB		= false;
+            bSystemRGB		= false;
+            bSchemeIndex	= false;
+            bSysIndex		= false;
+        }
 
-		SColorAtom& operator=(const SColorAtom& oSrc)
-		{
-			R = oSrc.R;
-			G = oSrc.G;
-			B = oSrc.B;
+        SColorAtom(const SColorAtom& oSrc)
+        {
+            *this = oSrc;
+        }
 
-			Index = oSrc.Index;
+        SColorAtom& operator=(const SColorAtom& oSrc)
+        {
+            R = oSrc.R;
+            G = oSrc.G;
+            B = oSrc.B;
 
-			bPaletteIndex	= oSrc.bPaletteIndex;
-			bPaletteRGB		= oSrc.bPaletteRGB;
-			bSystemRGB		= oSrc.bSystemRGB;
-			bSchemeIndex	= oSrc.bSchemeIndex;
-			bSysIndex		= oSrc.bSysIndex;
+            Index = oSrc.Index;
 
-			return *this;
-		}
-		SColorAtom& operator=(const CColor& oSrc)
-		{
-			R = oSrc.R;
-			G = oSrc.G;
-			B = oSrc.B;
+            bPaletteIndex	= oSrc.bPaletteIndex;
+            bPaletteRGB		= oSrc.bPaletteRGB;
+            bSystemRGB		= oSrc.bSystemRGB;
+            bSchemeIndex	= oSrc.bSchemeIndex;
+            bSysIndex		= oSrc.bSysIndex;
 
-			return *this;
-		}
+            return *this;
+        }
+        SColorAtom& operator=(const CColor& oSrc)
+        {
+            R = oSrc.R;
+            G = oSrc.G;
+            B = oSrc.B;
 
-		CString ToString()
-		{
-			CString str = _T("");
-			str.Format(_T("<Color R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
-			return str;
-		}
+            return *this;
+        }
 
-		CString ToString(CString name)
-		{
-			CString str = _T("");
-			str.Format(_T(" R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
-			str = _T("<Color_") + name + str;
-			return str;
-		}
+//        std::wstring ToString()
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T("<Color R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
+//            return str;
+//        }
 
-		DWORD ToValue()
-		{
-			DWORD dwVal = (R | (G << 8) | (B << 16));
-			return dwVal;
-		}
-		DWORD ToValue_RGB()
-		{
-			DWORD dwVal = (B | (G << 8) | (R << 16));
-			return dwVal;
-		}
+//        std::wstring ToString(std::wstring name)
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T(" R='%d' G='%d' B='%d' index='%d' />"), R, G, B, Index);
+//            str = _T("<Color_") + name + str;
+//            return str;
+//        }
 
-		DWORD ToValueProperty()
-		{
-			DWORD dwVal = 0;
-			if (!bSchemeIndex)
-			{
-				dwVal = (R | (G << 8) | (B << 16));
-			}
-			else
-			{
-				dwVal = (R | 0x01000000);
-			}
-			return dwVal;
-		}
+        DWORD ToValue()
+        {
+            DWORD dwVal = (R | (G << 8) | (B << 16));
+            return dwVal;
+        }
+        DWORD ToValue_RGB()
+        {
+            DWORD dwVal = (B | (G << 8) | (R << 16));
+            return dwVal;
+        }
 
-		void FromValue(BYTE _R, BYTE _G, BYTE _B)
-		{
-			R = _R;
-			G = _G;
-			B = _B;
-			Index = -1;
-		}
+        DWORD ToValueProperty()
+        {
+            DWORD dwVal = 0;
+            if (!bSchemeIndex)
+            {
+                dwVal = (R | (G << 8) | (B << 16));
+            }
+            else
+            {
+                dwVal = (R | 0x01000000);
+            }
+            return dwVal;
+        }
 
-		void FromValue(DWORD dwValue)
-		{
-			//R = (BYTE)(dwValue);
-			//G = (BYTE)(dwValue >> 8);
-			//B = (BYTE)(dwValue >> 16);
-			//Index = (BYTE)(dwValue >> 24);
+        void FromValue(BYTE _R, BYTE _G, BYTE _B)
+        {
+            R = _R;
+            G = _G;
+            B = _B;
+            Index = -1;
+        }
 
-			//bPaletteIndex = (0x01 == (Index & 0x01));
-			//bPaletteRGB = (0x02 == (Index & 0x02));
-			//bSystemRGB = (0x04 == (Index & 0x04));
-			//bSchemeIndex = (0x08 == (Index & 0x08));
-			//bSysIndex = (0x10 == (Index & 0x10));
+        void FromValue(DWORD dwValue)
+        {
+            //R = (BYTE)(dwValue);
+            //G = (BYTE)(dwValue >> 8);
+            //B = (BYTE)(dwValue >> 16);
+            //Index = (BYTE)(dwValue >> 24);
 
-			R	= static_cast<unsigned char>(GETBITS(dwValue, 0, 7));
-			G	= static_cast<unsigned char>(GETBITS(dwValue, 8, 15));
-			B	= static_cast<unsigned char>(GETBITS(dwValue, 16, 23));
+            //bPaletteIndex = (0x01 == (Index & 0x01));
+            //bPaletteRGB = (0x02 == (Index & 0x02));
+            //bSystemRGB = (0x04 == (Index & 0x04));
+            //bSchemeIndex = (0x08 == (Index & 0x08));
+            //bSysIndex = (0x10 == (Index & 0x10));
 
-			Index = -1;
+            R	= static_cast<unsigned char>(GETBITS(dwValue, 0, 7));
+            G	= static_cast<unsigned char>(GETBITS(dwValue, 8, 15));
+            B	= static_cast<unsigned char>(GETBITS(dwValue, 16, 23));
 
-			bPaletteIndex	= GETBIT(dwValue, 24);
-			bPaletteRGB		= GETBIT(dwValue, 25);
-			bSystemRGB		= GETBIT(dwValue, 26);
-			bSchemeIndex	= GETBIT(dwValue, 27);
-			bSysIndex		= GETBIT(dwValue, 28);
+            Index = -1;
 
-			/*if(!bSchemeIndex && !bPaletteIndex && !bSysIndex)
-			{
-				colorRGB = STR::toRGB(red, green, blue);
-			}
-			else */
-			if(bSchemeIndex)
-			{
-				Index = R;
-			}
-			else if(bPaletteIndex)
-			{
-				Index = ((G) << 8) + R;
-			}
-			else if(bSysIndex)
-			{
-				Index = ((G) << 8) + R;
-			}
-		}
+            bPaletteIndex	= GETBIT(dwValue, 24);
+            bPaletteRGB		= GETBIT(dwValue, 25);
+            bSystemRGB		= GETBIT(dwValue, 26);
+            bSchemeIndex	= GETBIT(dwValue, 27);
+            bSysIndex		= GETBIT(dwValue, 28);
 
-		void ToColor(CColor* pColor)
-		{
-			pColor->R = R;
-			pColor->G = G;
-			pColor->B = B;
+            /*if(!bSchemeIndex && !bPaletteIndex && !bSysIndex)
+                            {
+                                    colorRGB = STR::toRGB(red, green, blue);
+                            }
+                            else */
+            if(bSchemeIndex)
+            {
+                Index = R;
+            }
+            else if(bPaletteIndex)
+            {
+                Index = ((G) << 8) + R;
+            }
+            else if(bSysIndex)
+            {
+                Index = ((G) << 8) + R;
+            }
+        }
 
-			pColor->m_lSchemeIndex = -1;
+        void ToColor(CColor* pColor)
+        {
+            pColor->R = R;
+            pColor->G = G;
+            pColor->B = B;
 
-			if (bSchemeIndex || bSysIndex)
-			{
-				pColor->m_lSchemeIndex = R;
-				CorrectColorPPT(pColor->m_lSchemeIndex);
-			}
-		}
-	};
+            pColor->m_lSchemeIndex = -1;
 
-	struct STextRange
-	{
-		UINT Begin;
-		UINT End;
+            if (bSchemeIndex || bSysIndex)
+            {
+                pColor->m_lSchemeIndex = R;
+                CorrectColorPPT(pColor->m_lSchemeIndex);
+            }
+        }
+    };
 
-		CString ToString()
-		{
-			CString str = _T("");
-			str.Format(_T("TextRange(%d,%d)"), Begin, End);
-			return str;
-		}
-	};
+    struct STextRange
+    {
+        UINT Begin;
+        UINT End;
 
-	class CElemInfo
-	{
-	public:
-		bool m_bIsBackground;
-		bool m_bIsChangeable;
+//        std::wstring ToString()
+//        {
+//            std::wstring str = _T("");
+//            str.Format(_T("TextRange(%d,%d)"), Begin, End);
+//            return str;
+//        }
+    };
 
-		LONG m_lID;
+    class CElemInfo
+    {
+    public:
+        bool m_bIsBackground;
+        bool m_bIsChangeable;
 
-	public:
-		CElemInfo()
-		{
-			m_bIsBackground = false;
-			m_bIsChangeable	= false;
+        LONG m_lID;
 
-			m_lID = 0;
-		}
-		CElemInfo(const CElemInfo& oSrc)
-		{
-			*this = oSrc;
-		}
-		CElemInfo& operator=(const CElemInfo& oSrc)
-		{
-			m_bIsBackground = oSrc.m_bIsBackground;
-			m_bIsChangeable	= oSrc.m_bIsChangeable;
-			m_lID			= oSrc.m_lID;
+    public:
+        CElemInfo()
+        {
+            m_bIsBackground = false;
+            m_bIsChangeable	= false;
 
-			return *this;
-		}
-	};
+            m_lID = 0;
+        }
+        CElemInfo(const CElemInfo& oSrc)
+        {
+            *this = oSrc;
+        }
+        CElemInfo& operator=(const CElemInfo& oSrc)
+        {
+            m_bIsBackground = oSrc.m_bIsBackground;
+            m_bIsChangeable	= oSrc.m_bIsChangeable;
+            m_lID			= oSrc.m_lID;
+
+            return *this;
+        }
+    };
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -140,9 +140,9 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -150,17 +150,17 @@ namespace OOX
 		{
 			return et_w_comment;
 		}
-		CString getText() const
+		std::wstring getText() const
 		{
 			bool bFirstPar = true;
-			CString sRes = getTextArr(m_arrItems, bFirstPar);
+			std::wstring sRes = getTextArr(m_arrItems, bFirstPar);
 			return sRes;
 		}
 	private:
-		CString getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
+		std::wstring getTextArr(const std::vector<WritingElement* > & arrItems, bool& bFirstPar) const
 		{
-			CString sRes;
-			for(unsigned int i = 0, length = arrItems.size(); i < length; ++i)
+			std::wstring sRes;
+			for(size_t i = 0, length = arrItems.size(); i < length; ++i)
 			{
 				WritingElement* item = arrItems[i];
 				if (item == NULL) continue;
@@ -238,7 +238,7 @@ namespace OOX
 					break;
 				case OOX::et_w_nonBreakHyphen:
 					{
-						TCHAR oNewChar = 0x2013;
+                        wchar_t oNewChar = 0x2013;
 						sRes += oNewChar;
 						break;
 					}
@@ -248,20 +248,22 @@ namespace OOX
 				case OOX::et_w_sym:
 					{
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
-                        TCHAR oNewChar = 0x0FFF & oSym->m_oChar->GetValue();
+                        wchar_t oNewChar = 0x0FFF & oSym->m_oChar->GetValue();
                         sRes += oNewChar;
                         //sRes.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
 					}
 					break;
 				case OOX::et_w_t:
 					{
-						CString& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
-						if(!sText.IsEmpty())
+						std::wstring& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
+						if(!sText.empty())
 						{
 							sRes += sText;
 						}
 					}
 					break;
+                default:
+                    break;
 				}
 			}
 			return sRes;
@@ -282,10 +284,10 @@ namespace OOX
 
 		// Attributes
 
-		nullable<CString > m_oAuthor;
+		nullable<std::wstring > m_oAuthor;
 		nullable<SimpleTypes::CDateTime > m_oDate;
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-		nullable<CString > m_oInitials;
+		nullable<std::wstring > m_oInitials;
 
 		// Childs
 	};
@@ -302,7 +304,7 @@ namespace OOX
 		}
 		virtual ~CComments()
 		{
-			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
@@ -380,9 +382,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -422,7 +424,7 @@ namespace OOX
 		}
 		virtual ~CCommentsExt()
 		{
-			for(unsigned int i = 0, length = m_arrComments.size(); i < length; ++i)
+			for(size_t i = 0, length = m_arrComments.size(); i < length; ++i)
 				if (m_arrComments[i]) delete m_arrComments[i];
 			m_arrComments.clear();
 		}
@@ -501,9 +503,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -525,8 +527,8 @@ namespace OOX
 
 		// Attributes
 
-		nullable<CString > m_oProviderId;
-		nullable<CString > m_oUserId;
+		nullable<std::wstring > m_oProviderId;
+		nullable<std::wstring > m_oUserId;
 	};
 
 	class CPerson : public WritingElement
@@ -559,9 +561,9 @@ namespace OOX
 					m_oPresenceInfo = oReader;
 			}
 		}
-		virtual CString      toXML() const
+		virtual std::wstring      toXML() const
 		{
-			CString sResult = _T("");
+			std::wstring sResult = _T("");
 			return sResult;
 		}
 
@@ -581,7 +583,7 @@ namespace OOX
 	public:
 
 		// Attributes
-		nullable<CString > m_oAuthor;
+		nullable<std::wstring > m_oAuthor;
 
 		nullable<CPresenceInfo> m_oPresenceInfo;
 	};
@@ -597,7 +599,7 @@ namespace OOX
 		}
 		virtual ~CPeople()
 		{
-			for(unsigned int i = 0, length = m_arrPeoples.size() ; i < length; ++i)
+			for(size_t i = 0, length = m_arrPeoples.size() ; i < length; ++i)
 				if (m_arrPeoples[i]) delete m_arrPeoples[i];
 			m_arrPeoples.clear();
 		}

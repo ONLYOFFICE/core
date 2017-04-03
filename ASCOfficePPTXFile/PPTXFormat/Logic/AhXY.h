@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,9 +43,9 @@ namespace PPTX
 		class AhXY : public Ah
 		{
 		public:
-			PPTX_LOGIC_BASE(AhXY)
+			WritingElement_AdditionConstructors(AhXY)
+			PPTX_LOGIC_BASE2(AhXY)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oPos = node.ReadNode(_T("a:pos"));
@@ -60,8 +60,47 @@ namespace PPTX
 				node.ReadAttributeBase(L"minX", minX);
 				node.ReadAttributeBase(L"minY", minY);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_ahXY;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-			virtual CString toXML() const
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (sName == L"a:pos")
+					{
+						ReadAttributes2(oReader);
+					}
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("gdRefX"), gdRefX )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minX"), minX )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxX"), maxX )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("gdRefY"), gdRefY )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minY"), minY )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxY"), maxY )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("gdRefX"), gdRefX);
@@ -121,8 +160,8 @@ namespace PPTX
 			}
 
 		public:
-			CString								x;
-			CString								y;
+			std::wstring								x;
+			std::wstring								y;
 
 			nullable_string					gdRefX;
 			nullable_string					gdRefY;
@@ -134,7 +173,7 @@ namespace PPTX
 			virtual void FillParentPointersForChilds(){};
 		public:
 			
-			CString GetODString()const
+			std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr1;
 				oAttr1.Write(_T("gdRefX"), gdRefX);

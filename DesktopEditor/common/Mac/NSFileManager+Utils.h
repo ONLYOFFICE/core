@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,17 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//
-//  NSFileManager+Utils.h
-//  UTILS
-//
-//  Created by alexey.musinov on 21.09.15.
-//  Copyright © 2015 Ascensio System SIA. All rights reserved.
-//
 
 #import <Foundation/Foundation.h>
 
 @interface NSFileManager (Utils)
 - (BOOL)copyFolderAtPath:(NSString *)sourceFolder toDestinationFolderAtPath:(NSString*)destinationFolder;
 - (NSString*)createTemporaryDirectory;
+- (void)createDirectory:(NSString*)directory;
 @end

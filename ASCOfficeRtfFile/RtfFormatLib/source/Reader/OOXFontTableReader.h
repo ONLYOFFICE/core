@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,7 @@ public:
 	}
 	bool Parse( ReaderParameter oParam )
 	{
-		for (long i = 0; i < m_fontTable->m_arrFonts.size(); i++)
+		for (size_t i = 0; i < m_fontTable->m_arrFonts.size(); i++)
 		{
 			OOXFontReader oFontReader(m_fontTable->m_arrFonts[i]);
 			RtfFont oNewFont;

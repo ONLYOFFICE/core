@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,11 +48,6 @@ ContinueFrt11::~ContinueFrt11()
 BaseObjectPtr ContinueFrt11::clone()
 {
 	return BaseObjectPtr(new ContinueFrt11(*this));
-}
-
-
-void ContinueFrt11::writeFields(CFRecord& record)
-{
 }
 
 

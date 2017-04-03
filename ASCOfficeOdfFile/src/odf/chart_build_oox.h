@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,6 @@
 #include <vector>
 
 #include <boost/regex.hpp>
-#include <boost/algorithm/string.hpp>
 //
 #include <cpdoccore/CPString.h>
 #include <cpdoccore/xml/xmlchar.h>
@@ -52,6 +51,7 @@
 #include "office_body.h"
 #include "office_chart.h"
 #include "office_text.h"
+#include "office_spreadsheet.h"
 #include "math_elements.h"
 #include "table.h"
 #include "odfcontext.h"
@@ -118,6 +118,7 @@ public:
 		object_type_			(0),
 		office_text_			(NULL),
 		office_math_			(NULL),
+		office_spreadsheet_		(NULL),
 		baseRef_				(ref),
 		baseFontHeight_			(12)
     {
@@ -159,6 +160,7 @@ public:
 	int							object_type_;
 	office_text					*office_text_;
  	office_math					*office_math_;
+ 	office_spreadsheet			*office_spreadsheet_;
 
 	int							baseFontHeight_;
 	std::wstring				baseRef_; 
@@ -211,7 +213,6 @@ public:
 ///////////////////////////////////////////
 
 };
-// Класс для обхода всех элеменов office:object для построения диаграммы
 
 class process_build_object 
 	:	public base_visitor,
@@ -222,7 +223,8 @@ class process_build_object
 		public visitor<office_chart>,    
 		public visitor<office_text>,
 		public visitor<office_math>,
-	 
+		public visitor<office_spreadsheet>,
+
 		public const_visitor<chart_chart>,
 
 		public const_visitor<chart_title>,
@@ -283,47 +285,48 @@ private:
 public:
 
 	virtual void visit(const office_document_content& val);
-	virtual void visit(office_document_content& val);
+	virtual void visit(office_document_content		& val);
 	
-	virtual void visit(office_body	& val);
-    virtual void visit(office_chart	& val);
-    virtual void visit(office_text	& val);   
-	virtual void visit(office_math	& val);
+	virtual void visit(office_body					& val);
+    virtual void visit(office_chart					& val);
+    virtual void visit(office_text					& val);   
+	virtual void visit(office_math					& val);
+    virtual void visit(office_spreadsheet			& val);   
 
-	virtual void visit(const chart_chart& val);
-	virtual void visit(const chart_title& val);
-    virtual void visit(const chart_subtitle& val);
-    virtual void visit(const chart_footer& val);
-    virtual void visit(const chart_legend& val);
+	virtual void visit(const chart_chart			& val);
+	virtual void visit(const chart_title			& val);
+    virtual void visit(const chart_subtitle			& val);
+    virtual void visit(const chart_footer			& val);
+    virtual void visit(const chart_legend			& val);
     virtual void visit(const chart_plot_area& val);
-    virtual void visit(const chart_axis& val);
-	virtual void visit(const chart_series& val);
-    virtual void visit(const chart_domain& val);
-	virtual void visit(const chart_data_point & val);
-	virtual void visit(const chart_mean_value & val);
-	virtual void visit(const chart_error_indicator & val);
+    virtual void visit(const chart_axis				& val);
+	virtual void visit(const chart_series			& val);
+    virtual void visit(const chart_domain			& val);
+	virtual void visit(const chart_data_point		& val);
+	virtual void visit(const chart_mean_value		& val);
+	virtual void visit(const chart_error_indicator	& val);
 	virtual void visit(const chart_regression_curve & val);
- 	virtual void visit(const chart_equation & val);
-	virtual void visit(const chart_categories& val);
-	virtual void visit(const chart_grid& val);
-    virtual void visit(const chart_wall& val);
-    virtual void visit(const chart_floor& val);   
-	virtual void visit(const table_table& val);
+ 	virtual void visit(const chart_equation			& val);
+	virtual void visit(const chart_categories		& val);
+	virtual void visit(const chart_grid				& val);
+    virtual void visit(const chart_wall				& val);
+    virtual void visit(const chart_floor			& val);   
+	virtual void visit(const table_table			& val);
 
-	virtual void visit(const table_table_rows& val);
-	virtual void visit(const table_rows_no_group& val);
- 	virtual void visit(const table_table_row_group& val);
+	virtual void visit(const table_table_rows		& val);
+	virtual void visit(const table_rows_no_group	& val);
+ 	virtual void visit(const table_table_row_group	& val);
 	virtual void visit(const table_table_header_rows& val);
-	virtual void visit(table_table_header_rows& val);
+	virtual void visit(table_table_header_rows		& val);
 
-	virtual void visit(table_table_rows& val);
-	virtual void visit(const table_table_row& val);
+	virtual void visit(table_table_rows				& val);
+	virtual void visit(const table_table_row		& val);
 
-	virtual void visit(const table_columns_no_group& val);
-	virtual void visit(table_table_header_columns& val);
-	virtual void visit(table_table_columns& val);
+	virtual void visit(const table_columns_no_group	& val);
+	virtual void visit(table_table_header_columns	& val);
+	virtual void visit(table_table_columns			& val);
 	virtual void visit(const table_table_column_group& val);
-    virtual void visit(const table_table_column& val);   
+    virtual void visit(const table_table_column		& val);   
 	
  
 	virtual void visit(const table_table_cell& val);
@@ -336,7 +339,7 @@ private:
 
 	styles_container		& styles_;
 	
-	styles_lite_container	& settings_;
+	settings_container		& settings_;
 	styles_lite_container	& draw_styles_;
 	styles_lite_container	& number_styles_;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,11 @@ namespace PPTX
 		class TableRow : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(TableRow)
+			WritingElement_AdditionConstructors(TableRow)
+
+			TableRow()
+			{
+			}
 
 			TableRow& operator=(const TableRow& oSrc)
 			{
@@ -56,14 +60,39 @@ namespace PPTX
 				return *this;
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (strName == L"tc")
+					{
+						TableCell c;
+						Cells.push_back(c);
+						Cells.back().fromXML(oReader);
+					}			
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle( oReader, _T("h"),	Height)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				Height = node.ReadAttributeInt(L"h");
 				node.LoadArray(_T("a:tc"), Cells);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("h"), Height);
@@ -92,7 +121,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, Height);
+				pWriter->WriteInt2(0, Height);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecordArray(0, 1, Cells);
@@ -146,8 +175,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 			
-		public:
-			int							Height;
+			nullable_int				Height;
 			std::vector<TableCell>		Cells;
 		protected:
 			virtual void FillParentPointersForChilds()

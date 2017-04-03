@@ -24,7 +24,8 @@ DEFINES +=  UNICODE \
             _USE_LIBXML2_READER_ \
             _USE_XMLLITE_READER_ \
             USE_LITE_READER \
-            LIBXML_READER_ENABLED
+            LIBXML_READER_ENABLED \
+            DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../../DesktopEditor/freetype-2.5.2/include
 INCLUDEPATH += ../../ASCOfficeOdfFile/include
@@ -35,10 +36,12 @@ CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
-build_fast {
+core_release {
 SOURCES += \
-    odffilewriterlib_all.cpp
-} else {
+    odffilewriterlib_odf.cpp
+}
+
+core_debug {
 SOURCES += \
     ../source/OdfFormat/abstract_xml.cpp \
     ../source/OdfFormat/calcext_elements.cpp \
@@ -48,7 +51,6 @@ SOURCES += \
     ../source/OdfFormat/header_footer.cpp \
     ../source/OdfFormat/list.cpp \
     ../source/OdfFormat/mediaitems.cpp \
-    ../source/OdfFormat/mediaitems_utils.cpp \
     ../source/OdfFormat/number_style.cpp \
     ../source/OdfFormat/object_package.cpp \
     ../source/OdfFormat/odf_chart_context.cpp \
@@ -94,14 +96,18 @@ SOURCES += \
     ../source/OdfFormat/table_database_ranges.cpp \
     ../source/OdfFormat/table_named_expressions.cpp \
     ../source/OdfFormat/text_elements.cpp \
+    ../source/OdfFormat/odf_settings_context.cpp \
+    ../source/OdfFormat/office_settings.cpp \
+    ../source/OdfFormat/mediaitems_utils.cpp
+}
+
+SOURCES += \
     ../source/Oox2OdfConverter/ConvertDiagram.cpp \
     ../source/Oox2OdfConverter/Converter.cpp \
     ../source/Oox2OdfConverter/ConverterChart.cpp \
     ../source/Oox2OdfConverter/ConvertVml.cpp \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
     ../source/Oox2OdfConverter/XlsxConverter.cpp
-}
-
 
 HEADERS += \
     ../source/OdfFormat/abstract_xml.h \
@@ -112,7 +118,6 @@ HEADERS += \
     ../source/OdfFormat/header_footer.h \
     ../source/OdfFormat/list.h \
     ../source/OdfFormat/mediaitems.h \
-    ../source/OdfFormat/mediaitems_utils.h \
     ../source/OdfFormat/number_style.h \
     ../source/OdfFormat/object_package.h \
     ../source/OdfFormat/odf_chart_context.h \
@@ -185,7 +190,3 @@ HEADERS += \
     ../source/OdfFormat/Shapes/oox_shapeWordArt.h \
     ../source/OdfFormat/odf_settings_context.h \
     ../source/OdfFormat/office_settings.h
-
-SOURCES += \
-    ../source/OdfFormat/odf_settings_context.cpp \
-    ../source/OdfFormat/office_settings.cpp

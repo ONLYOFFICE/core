@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,13 +50,6 @@ BaseObjectPtr DXF::clone()
 	return BaseObjectPtr(new DXF(*this));
 }
 
-
-void DXF::writeFields(CFRecord& record)
-{
-
-}
-
-
 void DXF::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;
@@ -73,7 +66,7 @@ int DXF::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"dxf")
 		{
-			xfprops.serialize(CP_XML_STREAM());
+			xfprops.serialize(CP_XML_STREAM(), true);
 		}
 	}
 	return 0;

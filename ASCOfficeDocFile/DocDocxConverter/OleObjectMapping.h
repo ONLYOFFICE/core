@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -65,16 +65,15 @@ namespace DocFileFormat
 
 					ole->Program			= L"Word.Document";
 				}
-				m_pXmlWriter->WriteNodeBegin( _T( "o:OLEObject" ), TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"o:OLEObject", TRUE );
 
-				//type
 				if ( ole->bLinked )
 				{
 					int relID = m_context->_docx->RegisterExternalOLEObject(_caller, ole->ClipboardFormat, ole->Link);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
-					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Link" ) );
-					m_pXmlWriter->WriteAttribute( _T( "UpdateMode" ), ole->UpdateMode.c_str() );
+                    m_pXmlWriter->WriteAttribute( L"r:id", ( std::wstring( L"rId" ) + FormatUtils::IntToWideString( relID ) ));
+                    m_pXmlWriter->WriteAttribute( L"Type", L"Link" );
+                    m_pXmlWriter->WriteAttribute( L"UpdateMode", ole->UpdateMode);
 				}
 				else
 				{
@@ -85,54 +84,45 @@ namespace DocFileFormat
 					else
 						relID = m_context->_docx->RegisterOLEObject(_caller, ole->ClipboardFormat);
 
-					m_pXmlWriter->WriteAttribute( _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString( relID ) ).c_str() );
-					m_pXmlWriter->WriteAttribute( _T( "Type" ), _T( "Embed" ) );
+                    m_pXmlWriter->WriteAttribute( L"r:id", L"rId"+ FormatUtils::IntToWideString( relID ) );
+                    m_pXmlWriter->WriteAttribute( L"Type", L"Embed" );
 
-					//copy the object
 					copyEmbeddedObject( ole );
 				}
 
-				//ProgID
-				m_pXmlWriter->WriteAttribute( _T( "ProgID" ), ole->Program.c_str() );
+                m_pXmlWriter->WriteAttribute( L"ProgID", ole->Program);
+                m_pXmlWriter->WriteAttribute( L"ShapeID", _shapeId);
+                m_pXmlWriter->WriteAttribute( L"DrawAspect", L"Content" );
+                m_pXmlWriter->WriteAttribute( L"ObjectID", ole->ObjectId);
+                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				//ShapeId
-				m_pXmlWriter->WriteAttribute( _T( "ShapeID" ), _shapeId.c_str() );
-
-				//DrawAspect
-				m_pXmlWriter->WriteAttribute( _T( "DrawAspect" ), _T( "Content" ) );
-
-				//ObjectID
-				m_pXmlWriter->WriteAttribute( _T( "ObjectID" ), ole->ObjectId.c_str() );
-
-				m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
-
-				m_pXmlWriter->WriteNodeEnd( _T( "o:OLEObject" ) );
+                m_pXmlWriter->WriteNodeEnd( L"o:OLEObject" );
 			}
 		}
 
 		static std::wstring GetTargetExt(const std::wstring& objectType)
 		{
-			std::wstring objectExt = _T( ".bin" );
+            std::wstring objectExt = L".bin";
 
-			if ( objectType == _T( "Biff8" ) )
+            if ( objectType == L"Biff8" )
 			{
-				objectExt = _T( ".xls" );
+                objectExt = L".xls";
 			}
-			else if ( objectType == _T( "MSWordDoc" ) )
+            else if ( objectType == L"MSWordDoc" )
 			{
-				objectExt = _T( ".doc" );
+                objectExt = L".doc";
 			}
-			else if ( objectType == _T( "MSPresentation" ) )
+            else if ( objectType == L"MSPresentation" )
 			{
-				objectExt = _T( ".ppt" );
+                objectExt = L".ppt";
 			}
-			else if ( objectType == _T( "MSWordDocx" ) )
+            else if ( objectType == L"MSWordDocx" )
 			{
-				objectExt = _T( ".docx" );
+                objectExt = L".docx";
 			}
-			else if ( objectType == _T( "Equation" ) ) 
+            else if ( objectType == L"Equation" )
 			{
-				objectExt = _T( ".xml" );
+                objectExt = L".xml";
 			}
 			return objectExt;
 		}
@@ -141,23 +131,23 @@ namespace DocFileFormat
 		{
 			std::wstring objectContentType = OpenXmlContentTypes::OleObject;
 
-			if ( objectType == _T( "Biff8" ) )
+            if ( objectType == L"Biff8" )
 			{
 				objectContentType = OpenXmlContentTypes::MSExcel;
 			}
-			else if ( objectType == _T( "MSWordDoc" ) )
+            else if ( objectType == L"MSWordDoc" )
 			{
 				objectContentType = OpenXmlContentTypes::MSWord;
 			}
-			else if ( objectType == _T( "MSPresentation" ) )
+            else if ( objectType == L"MSPresentation" )
 			{
 				objectContentType = OpenXmlContentTypes::MSPowerpoint;
 			}
-			else if ( objectType == _T( "MSWordDocx" ) )
+            else if ( objectType == L"MSWordDocx" )
 			{
 				objectContentType = OpenXmlContentTypes::MSWordDocx;
 			}
-			else if ( objectType == _T( "Equation" ) )
+            else if ( objectType == L"Equation" )
 			{
 				objectContentType = OpenXmlContentTypes::Xml;
 			}
@@ -165,20 +155,15 @@ namespace DocFileFormat
 		}
 
 	private:
-		// Writes the embedded OLE object from the ObjectPool of the binary file to the OpenXml Package.
-
 		inline void copyEmbeddedObject( const OleObject* ole )
 		{
 			if ( ole != NULL )
 			{
-				//!!!TODO: There is issue with some Office OLE Objects. Word can't open *.xls object (Excel.Chart) with set CLSID and
-				//some Power Point Presentations, and Word Documents. Open Office CAN start this objects!!!
-
 				std::wstring clsid;
-				std::wstring exelChart = _T( "Excel.Chart" );
+                std::wstring exelChart = L"Excel.Chart";
 
 				if ( std::search( ole->Program.begin(), ole->Program.end(), exelChart.begin(), exelChart.end() ) == ole->Program.end() )
-				{//??
+				{
 					clsid = ole->ClassId;
 				}
 				OleObjectFileStructure object_descr(OleObjectMapping::GetTargetExt( ole->ClipboardFormat ), ole->ObjectId, clsid); 

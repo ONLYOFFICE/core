@@ -338,6 +338,58 @@
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="Common"
+			>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Common\Common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj&#x0D;&#x0A;"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\DocFormatTest.cpp"
 			>
@@ -383,11 +435,15 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+			RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\UnicodeConverter\UnicodeConverter.cpp"
+			RelativePath="..\..\DesktopEditor\xml\src\xmldom.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\DesktopEditor\xml\src\xmllight.cpp"
 			>
 		</File>
 	</Files>

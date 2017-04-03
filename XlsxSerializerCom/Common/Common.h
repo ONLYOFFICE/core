@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,14 +32,8 @@
 #ifndef SERIALIZER_COMMON
 #define SERIALIZER_COMMON
 
-#if defined(_WIN32) || defined (_WIN64)
-    #include <atlbase.h>
-    #include <atlstr.h>
-#else
-    #include "../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
-
 #include "../../DesktopEditor/common/File.h"
+#include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include <string>
 #include <vector>
@@ -48,10 +42,10 @@
 
 namespace SerializeCommon
 {
-	CString DownloadImage(const CString& strFile);
-	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64);
+    std::wstring DownloadImage(const std::wstring& strFile);
+    VOID convertBase64ToImage (NSFile::CFileBinary& oFile, std::wstring &pBase64);
 	long Round(double val);
-	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt);
+    std::wstring changeExtention(const std::wstring& sSourcePath, const std::wstring& sTargetExt);
 	class CommentData
 	{
 	public :
@@ -73,12 +67,12 @@ namespace SerializeCommon
 		}
 		~CommentData()
 		{
-			for(int i = 0, length = aReplies.size(); i < length; ++i)
+			for(size_t i = 0, length = aReplies.size(); i < length; ++i)
 				delete aReplies[i];
 			aReplies.clear();
 		}
 	};
-    void ReadFileType(const CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
+    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
 }
 
 #endif //SERIALIZER_COMMON

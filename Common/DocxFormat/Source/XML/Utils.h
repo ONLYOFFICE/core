@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,23 +34,22 @@
 #include "../Base/Base.h"
 #include "../Base/SmartPtr.h"
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include <atlenc.h>
-	#include <comutil.h>
-#endif
-
 #include <algorithm>
+#include <sstream>
 
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
 #endif
+
+#include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
+
 namespace XmlUtils
 {
-	static CString strInvalidValue		= _T("x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc");
-    //static _bstr_t g_cpszXML_TextExt	= L"./text()";
+    static std::wstring strInvalidValue = L"x(-Jdl%^8sFGs@gkp14jJU(90dyjhjnb*EcfFf%#2124sf98hc";
 
 	// common
-	AVSINLINE static int     GetDigit   (TCHAR c)
+    AVSINLINE static int     GetDigit   (wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return (int)(c - '0');
@@ -61,39 +60,37 @@ namespace XmlUtils
 
 		return 0;
 	}
-	AVSINLINE static bool     IsDigit   (TCHAR c)
+    AVSINLINE static bool     IsDigit   (wchar_t c)
 	{
 		if (c >= '0' && c <= '9')
 			return true;
 		return false;
 	}
-	AVSINLINE static __int64 GetHex     (const CString& string)
+    AVSINLINE static __int64 GetHex (const std::wstring& string)
 	{
 		__int64 nResult = 0;
-		int nLen = string.GetLength();
-		for ( int nIndex = 0; nIndex < nLen; ++nIndex )
+        size_t nLen = string.length();
+		for (size_t nIndex = 0; nIndex < nLen; ++nIndex )
 		{
 			nResult += GetDigit( string[nIndex] ) << ( 4 * ( nLen - 1 - nIndex ) );
 		}
 
 		return nResult;
 	}
-	AVSINLINE static int	GetColorBGR   (const CString& string)
+    AVSINLINE static int	GetColorBGR   (const std::wstring& string)
 	{
 		// variables
 		int blue = 0;
 		int green = 0;
 		int red = 0;
 
-		CString color = string; color = color.Trim();
+        std::wstring color = string; //boost::algorithm::trim(color);
 				
-		if (color.Find(_T("0x"))!=-1)
-			color.Delete(0,2);
-		if (color.Find(_T("#"))!=-1)
-			color.Delete(0,1);
+        if (color.find(L"0x") != -1)    color.erase(0, 2);
+        if (color.find(L"#") != -1)     color.erase(0, 1);
 
-		while (color.GetLength() < 6)
-			color = _T("0") + color;
+        while (color.length() < 6)
+			color = L"0" + color;
 
 		red		= 16*GetDigit(color[0]) + GetDigit(color[1]);
 		green	= 16*GetDigit(color[2]) + GetDigit(color[3]);
@@ -101,45 +98,62 @@ namespace XmlUtils
 
 		return ((int)(((BYTE)(red)|((WORD)((BYTE)(green))<<8))|(((DWORD)(BYTE)(blue))<<16)));	//RGB(red, green, blue);
 	}
-        AVSINLINE static bool    GetBoolean (const CString& string)
-	{
-		CString s = string; s.MakeLower();
-
-		return (s == _T("true"));
-	}
-	AVSINLINE static bool    GetBoolean2(const CString& string)
-	{
-		CString sTemp = string; sTemp.MakeLower();
-
-		return ( _T("true") == sTemp || _T("1") == sTemp || _T("t") == sTemp || _T("on") == sTemp );
-	}
-	AVSINLINE static int     GetInteger (const CString& string)
-	{
-        if (string.GetLength() <1) return 0;
-
-        try
-        {
-            return _wtoi(string);
-        }
-        catch(...)
-        {
-        }
-
-        try
-        {
-            return static_cast<int>(_wtoi64(string));
-        }
-        catch(...)
-        {
-            return 0;
-        }
-    }
-    AVSINLINE static size_t  GetUInteger(const CString& string)
+    AVSINLINE static std::wstring GetLower(const std::wstring& string)
     {
-        if (string.GetLength() <1) return 0;
+        std::wstring sResult;
+
+        for( size_t nIndex = 0; nIndex < string.length(); nIndex++)
+            sResult += wchar_t( towlower(string[nIndex]) );
+
+        return sResult;
+    }
+	AVSINLINE static void replace_all(std::wstring& subject, const std::wstring& search, const std::wstring& replace)
+	{
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::wstring::npos) 
+		{
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
+	AVSINLINE static void replace_all(std::string& subject, const std::string& search, const std::string& replace)
+	{
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::string::npos) 
+		{
+			 subject.replace(pos, search.length(), replace);
+			 pos += replace.length();
+		}
+	}
+	AVSINLINE static std::wstring GetUpper(const std::wstring& string)
+    {
+        std::wstring sResult;
+
+        for( size_t nIndex = 0; nIndex < string.length(); nIndex++)
+            sResult += wchar_t( towupper(string[nIndex]) );
+
+        return sResult;
+    }
+
+    AVSINLINE static bool    GetBoolean (const std::wstring& string)
+	{
+        std::wstring s = XmlUtils::GetLower(string);
+
+		return (s == L"true");
+	}
+    AVSINLINE static bool    GetBoolean2(const std::wstring& string)
+	{
+        std::wstring sTemp = XmlUtils::GetLower(string);
+
+		return ( L"true" == sTemp || L"1" == sTemp || L"t" == sTemp || L"on" == sTemp );
+	}
+    AVSINLINE static int     GetInteger (const std::wstring& string)
+	{
+        if (string.empty()) return 0;
+
         try
         {
-            return (size_t) _wtoi(string);
+            return _wtoi(string.c_str());
         }
         catch(...)
         {
@@ -147,116 +161,87 @@ namespace XmlUtils
 
         try
         {
-            return (size_t) _wtoi64(string);
+            return static_cast<int>(_wtoi64(string.c_str()));
         }
         catch(...)
         {
             return 0;
         }
     }
-	AVSINLINE static double  GetDouble  (const CString& string)
+    AVSINLINE static size_t  GetUInteger(const std::wstring& string)
+    {
+        if (string.empty()) return 0;
+        try
+        {
+            return (size_t) _wtoi(string.c_str());
+        }
+        catch(...)
+        {
+        }
+
+        try
+        {
+            return (size_t) _wtoi64(string.c_str());
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
+    AVSINLINE static double  GetDouble  (const std::wstring& string)
 	{
-        if (string.GetLength() <1) return 0;
+        if (string.empty()) return 0;
 
         double d = 0;
-		_stscanf(string, _T("%lf"), &d);
+#if defined (_WIN32) || defined (_WIN64)
+		swscanf_s(string.c_str(), L"%lf", &d);
+#else
+		_stscanf(string.c_str(), L"%lf", &d);
+#endif
 		return d;
 	}
-	AVSINLINE static float   GetFloat   (const CString& string)
+    AVSINLINE static float   GetFloat   (const std::wstring& string)
 	{
-        if (string.GetLength() <1) return 0;
+        if (string.empty()) return 0;
 
         float f = 0;
-		_stscanf(string, _T("%f"), &f);
-		return f;
-	}
-#if defined(_WIN32) || defined (_WIN64)
-	AVSINLINE static int     GetInteger (BSTR string)
-	{
-		return _wtoi(string);
-	}
-	AVSINLINE static size_t  GetUInteger(BSTR string)
-	{
-		return (size_t)_wtoi(string);
-	}
-	AVSINLINE static double  GetDouble  (BSTR string)
-	{
-		double d = 0;
-		swscanf(string, _T("%lf"), &d);
-		return d;
-	}
-	AVSINLINE static float   GetFloat   (BSTR string)
-	{
-		float f = 0;
-		swscanf(string, _T("%f"), &f);
-		return f;
-	}
-	AVSINLINE static void    GetDouble  (BSTR string, double* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%lf"), *p);
-	}
-	AVSINLINE static void    GetFloat   (BSTR string, float* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%f"), *p);
-	}
-	AVSINLINE static void    GetInteger (BSTR string, int* p)
-	{
-		*p = 0;
-		swscanf(string, _T("%d"), *p);
-	}
+#if defined (_WIN32) || defined (_WIN64)
+		swscanf_s(string.c_str(), L"%f", &f);
+#else
+        _stscanf(string.c_str(), L"%f", &f);
 #endif
+		return f;
+	}
+    AVSINLINE static std::wstring BoolToString  (const bool  & value)
+	{
+		return ( value ? L"true" : L"false" );
+	}
+    AVSINLINE static std::wstring FloatToString (const float & value)
+	{
+		return boost::lexical_cast<std::wstring>( value);
+	}
 
-	AVSINLINE CString BoolToString  (const bool  & value)
+    AVSINLINE static std::wstring DoubleToString(const double& value)
 	{
-		CString sResult = ( value ? _T("true") : _T("false") );
-		return sResult;
+		return boost::lexical_cast<std::wstring>( value);
 	}
-	AVSINLINE CString IntToString   (const int   & value)
-	{
-		CString str = _T("");
-		str.Format(_T("%d"), value);
-		return str;
-	}
-	AVSINLINE CString UIntToString  (const size_t   & value)
-	{
-		CString str = _T("");
-		str.Format(_T("%u"), value);
-		return str;
-	}
-	AVSINLINE CString FloatToString (const float & value)
-	{
-		CString str = _T("");
-		str.Format(_T("%f"), value);
-		return str;
-	}
-	AVSINLINE CString DoubleToString(const double& value)
-	{
-		CString str = _T("");
-		str.Format(_T("%lf"), value);
-		return str;
-	}
-	AVSINLINE static CString GetLower(const CString& string)
-	{
-		//CString s = string; s.MakeLower();
-		//return s;
-		CString sResult;
 
-		for( int nIndex = 0; nIndex < string.GetLength(); nIndex++)
-			sResult += wchar_t( towlower(string[nIndex]) );
+    AVSINLINE static std::wstring IntToString( int value, const wchar_t* format )
+    {
+        if ( format == NULL ) return L"";
+        std::wstringstream sstream;
+        sstream << boost::wformat(format) % value;
+        return sstream.str();
+    }
 
-		return sResult;
-	}
-	AVSINLINE static CString GetUpper(const CString& string)
-	{
-		CString sResult;
+    AVSINLINE static std::wstring DoubleToString( double value, wchar_t* format )
+    {
+        if ( format == NULL ) return L"";
 
-		for( int nIndex = 0; nIndex < string.GetLength(); nIndex++)
-			sResult += wchar_t( towupper(string[nIndex]) );
-
-		return sResult;
-	}
+        std::wstringstream sstream;
+        sstream << boost::wformat(format) % value;
+        return sstream.str();
+    }
 	AVSINLINE static bool IsUnicodeSymbol( WCHAR symbol )
 	{
 		bool result = false;
@@ -270,61 +255,119 @@ namespace XmlUtils
 
 		return result;		  
 	}
-	AVSINLINE static CString EncodeXmlString(const CString& string, bool bDeleteNoUnicode = false)
+    AVSINLINE static std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode = false)
 	{
-		CString sResult;
-		if(bDeleteNoUnicode)
-		{
-			sResult = _T("");
-			for (unsigned int i = 0, length = string.GetLength(); i < length; ++i )
-			{
-				WCHAR symbol = string.GetAt(i);
-				if ( false == IsUnicodeSymbol( symbol ) )
-				{
-					if(0xD800 <= symbol && symbol <= 0xDFFF && i + 1 < length)
-					{
-						i++;
-						WCHAR symbol2 = string.GetAt(i);
-						if (symbol < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
-						{
-							sResult.AppendChar(symbol);
-							sResult.AppendChar(symbol2);
-						}
-					}
-				}
-				else
-					sResult.AppendChar(symbol);
-			}
-		}
-		else
-		{
-			sResult = string;
-			for (unsigned int i = 0, length = string.GetLength(); i < length; ++i )
-			{
-				WCHAR symbol = string.GetAt(i);
-				if ( false == IsUnicodeSymbol( symbol ) )
-				{
-					if(0xD800 <= symbol && symbol <= 0xDFFF && i + 1 < length)
-					{
-						i++;
-						WCHAR symbol2 = string.GetAt(i);
-						if (!(symbol < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF))
-						{
-							sResult.SetAt(i - 1, ' ');
-							sResult.SetAt(i, ' ');
-						}
-					}
-					else
-						sResult.SetAt(i, ' ');
-				}
-			}
-		}
-		sResult.Replace(_T("&"),	_T("&amp;"));			
-		sResult.Replace(_T("'"),	_T("&apos;"));
-		sResult.Replace(_T("<"),	_T("&lt;"));
-		sResult.Replace(_T(">"),	_T("&gt;"));
-		sResult.Replace(_T("\""),	_T("&quot;"));
-		return sResult;
+        std::string buffer;
+        buffer.reserve(data.size());
+
+        if(bDeleteNoUnicode)
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append("&amp;");      break;
+                    case '\"': buffer.append("&quot;");     break;
+                    case '\'': buffer.append("&apos;");     break;
+                    case '<':  buffer.append("&lt;");       break;
+                    case '>':  buffer.append("&gt;");       break;
+                    default:
+                    {
+                        if ( false == IsUnicodeSymbol( data[pos] ) )
+                        {
+                            wchar_t symbol1 = data[pos];
+                            if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+                            {
+                                pos++;
+                                wchar_t symbol2 = data[pos];
+                                if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+                                {
+                                    buffer.append(&data[pos-1], 2);
+                                }
+                            }
+                        }
+                        else
+                            buffer.append(&data[pos], 1);
+                    }break;
+                }
+            }
+        }
+        else
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append("&amp;");      break;
+                    case '\"': buffer.append("&quot;");     break;
+                    case '\'': buffer.append("&apos;");     break;
+                    case '<':  buffer.append("&lt;");       break;
+                    case '>':  buffer.append("&gt;");       break;
+                    case '\0':
+                        return buffer;
+                    default:   buffer.append(&data[pos], 1);	break;
+                }
+            }
+        }
+
+        return buffer;
+	}
+    AVSINLINE static std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode = false)
+	{
+        std::wstring buffer;
+        buffer.reserve(data.size());
+
+        if(bDeleteNoUnicode)
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append(L"&amp;");      break;
+                    case '\"': buffer.append(L"&quot;");     break;
+                    case '\'': buffer.append(L"&apos;");     break;
+                    case '<':  buffer.append(L"&lt;");       break;
+                    case '>':  buffer.append(L"&gt;");       break;
+                    default:
+                    {
+                        if ( false == IsUnicodeSymbol( data[pos] ) )
+                        {
+                            wchar_t symbol1 = data[pos];
+                            if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+                            {
+                                pos++;
+                                wchar_t symbol2 = data[pos];
+                                if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+                                {
+                                    buffer.append(&data[pos-1], 2);
+                                }
+                            }
+                        }
+                        else
+                            buffer.append(&data[pos], 1);
+                    }break;
+                }
+            }
+        }
+        else
+        {
+            for(size_t pos = 0; pos < data.size(); ++pos)
+            {
+                switch(data[pos])
+                {
+                    case '&':  buffer.append(L"&amp;");      break;
+                    case '\"': buffer.append(L"&quot;");     break;
+                    case '\'': buffer.append(L"&apos;");     break;
+                    case '<':  buffer.append(L"&lt;");       break;
+                    case '>':  buffer.append(L"&gt;");       break;
+                    case '\0':
+                        return buffer;
+                    default:   buffer.append(&data[pos], 1);	break;
+                }
+            }
+        }
+
+        return buffer;
 	}
 //#ifndef _USE_LIBXML2_READER_
 	class CStringWriter
@@ -354,6 +397,8 @@ namespace XmlUtils
 
         AVSINLINE void AddSize(size_t nSize)
 		{
+			if (nSize < 1) return;
+
 			if (NULL == m_pData)
 			{
                 m_lSize = (std::max)((int) nSize, 1000);
@@ -394,6 +439,8 @@ namespace XmlUtils
 
         AVSINLINE void WriteString(const wchar_t* pString, size_t nLen)
 		{
+			if (nLen < 1) return;
+
 			AddSize(nLen);
 
             memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -401,33 +448,22 @@ namespace XmlUtils
             m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-#if defined(_WIN32) || defined (_WIN64)
-        AVSINLINE void WriteString(_bstr_t& bsString)
-		{
-			size_t nLen = bsString.length();
-			WriteString(bsString.GetBSTR(), nLen);
-		}
-#endif
-        AVSINLINE void WriteString(const CString& sString)
-		{
-			size_t nLen = (size_t)sString.GetLength();
 
-#ifdef _UNICODE
-			CString str = sString;
-			WriteString(str.GetBuffer(), nLen);
-#else
-			CStringW str = (CStringW)sString;
-			WriteString(str.GetBuffer(), nLen);
-#endif
+        AVSINLINE void WriteString(const std::wstring& sString)
+		{
+			if (sString.empty()) return;
+
+            WriteString(sString.c_str(), sString.length());
+
 		}
 
-        AVSINLINE void AddCharSafe(const TCHAR& _c)
+        AVSINLINE void AddCharSafe(const wchar_t& _c)
 		{
 			AddSize(1);
 			*m_pDataCur++ = _c;
 			++m_lSizeCur;
 		}
-        AVSINLINE void AddChar2Safe(const TCHAR _c1, const TCHAR& _c2)
+        AVSINLINE void AddChar2Safe(const wchar_t _c1, const wchar_t& _c2)
 		{
 			AddSize(2);
 			*m_pDataCur++ = _c1;
@@ -435,16 +471,19 @@ namespace XmlUtils
 			m_lSizeCur += 2;
 		}
 
-		inline void WriteEncodeXmlString(const wchar_t* pString)
+        inline void WriteEncodeXmlString(const std::wstring & pString)
 		{
-			const wchar_t* pData = pString;
-			bool isUtf16 = sizeof(wchar_t) == 2;
+			if (pString.empty()) return;
+
+            const wchar_t* pData = pString.c_str();
+
+            bool isUtf16 = sizeof(wchar_t) == 2;
 			bool skipNext = false;
 			while (*pData != 0)
 			{
 				wchar_t code = *pData;
 				BYTE _code;
-				//todo replace CString with std::wstring and choose one writer
+                //todo replace std::wstring with std::wstring and choose one writer
 				if (isUtf16)
 				{
 					if (skipNext)
@@ -555,17 +594,15 @@ namespace XmlUtils
 			m_lSizeCur	= 0;
 		}
 
-		CString GetData()
+        std::wstring GetData()
 		{
-			CString str(m_pData, (int)m_lSizeCur);
-			return str;
+            return std::wstring(m_pData, m_lSizeCur);
 		}
 
 	protected:
 		BYTE m_arTableUnicodes[65536];
-                bool m_bInitTable;
+        bool m_bInitTable;
 
-	protected:
 		BYTE CheckCode(const WCHAR& c)
 		{
 			if (!m_bInitTable)

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,11 +32,7 @@
 
 #include "text_content.h"
 
-#include <string>
 #include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
-
-#include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
 
@@ -56,9 +52,9 @@ void paragraph_attrs::add_attributes( const xml::attributes_wc_ptr & Attributes 
         std::vector< std::wstring > classNamesArray;
         boost::algorithm::split(classNamesArray, classNames, boost::algorithm::is_any_of(L" "));
 
-        BOOST_FOREACH(const std::wstring & name, classNamesArray)
+		for (size_t i = 0; i < classNamesArray.size(); i++)
         {
-            text_class_names_.push_back( style_ref(name) );        
+            text_class_names_.push_back( style_ref(classNamesArray[i]) );        
         }
     }
 

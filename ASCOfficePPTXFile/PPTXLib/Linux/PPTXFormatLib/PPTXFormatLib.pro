@@ -32,10 +32,8 @@ DEFINES += UNICODE \
     PPT_DEF\
     ENABLE_PPT_TO_PPTX_CONVERT \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
-    NODOCX \
     #DISABLE_FILE_DOWNLOADER \
     CXIMAGE_DONT_DECLARE_TCHAR \
-    BUILD_CONFIG_FULL_VERSION \
     DONT_WRITE_EMBEDDED_FONTS \
     CXIMAGE_DONT_DECLARE_TCHAR \
     LIBXML_READER_ENABLED
@@ -53,16 +51,13 @@ INCLUDEPATH += \
 
 SOURCES += pptxformatlib.cpp
 
-build_fast {
+core_release {
 SOURCES += \
-    pptxformatlib_logic.cpp \
-    pptxformatlib_converter.cpp
-} else {
+    pptxformatlib_logic.cpp
+}
+
+core_debug {
 SOURCES += \
-    ../../../ASCOfficeDrawingConverter.cpp \
-    ../../../ASCOfficePPTXFileRealization.cpp \
-    ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
-    ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
     ../../../PPTXFormat/Logic/Table/TableCell.cpp \
@@ -91,59 +86,32 @@ SOURCES += \
     ../../../PPTXFormat/Logic/SpPr.cpp \
     ../../../PPTXFormat/Logic/SpTree.cpp \
     ../../../PPTXFormat/Logic/SpTreeElem.cpp \
-    #../../../PPTXFormat/Logic/Timing.cpp \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
-	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
+    ../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
+    ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \
-    ../../../PPTXFormat/Folder.cpp \
-    ../../../Editor/BinaryFileReaderWriter.cpp \
-    ../../../Editor/FontPicker.cpp \
-    ../../../Editor/Drawing/Layout.cpp \
-    ../../../Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Editor/Drawing/Elements.cpp \
-    ../../../PPTXFormat/Logic/Controls.cpp \
-    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+    ../../../PPTXFormat/Folder.cpp
 }
 
+SOURCES += \
+    ../../../ASCOfficeDrawingConverter.cpp \
+    ../../../ASCOfficePPTXFileRealization.cpp \
+    ../../../Editor/BinaryFileReaderWriter.cpp \
+    ../../../Editor/FontPicker.cpp \
+    ../../../Editor/Drawing/TextAttributesEx.cpp \
+    ../../../Editor/Drawing/Elements.cpp \
+    ../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+
 HEADERS += pptxformatlib.h \
-../../../ASCOfficeDrawingConverter.h \
-../../../ASCOfficePPTXFile.h \
-../../../../Common/DocxFormat/Source/XML/stringcommon.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/DefaultTable.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/ExtensionTable.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/File.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/Override.h \
-    ../../../PPTXFormat/DocxFormat/ContentTypes/OverrideTable.h \
-    ../../../PPTXFormat/DocxFormat/External/External.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalAudio.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalImage.h \
-    ../../../PPTXFormat/DocxFormat/External/ExternalVideo.h \
-    ../../../PPTXFormat/DocxFormat/External/HyperLink.h \
-    ../../../PPTXFormat/DocxFormat/Media/Audio.h \
-    ../../../PPTXFormat/DocxFormat/Media/Image.h \
-    ../../../PPTXFormat/DocxFormat/Media/Media.h \
-    ../../../PPTXFormat/DocxFormat/Media/OleObject.h \
-    ../../../PPTXFormat/DocxFormat/Media/Video.h \
-    ../../../PPTXFormat/DocxFormat/Rels/File.h \
-    ../../../PPTXFormat/DocxFormat/Rels/RelationShip.h \
-    ../../../PPTXFormat/DocxFormat/Rels/RelationTable.h \
-    ../../../PPTXFormat/DocxFormat/DateTime.h \
-    ../../../PPTXFormat/DocxFormat/File.h \
-    ../../../PPTXFormat/DocxFormat/FileType.h \
-    ../../../PPTXFormat/DocxFormat/FileTypes.h \
-    ../../../PPTXFormat/DocxFormat/IFileBuilder.h \
-    ../../../PPTXFormat/DocxFormat/IFileContainer.h \
-    ../../../PPTXFormat/DocxFormat/NamespaceOwn.h \
-    ../../../PPTXFormat/DocxFormat/Namespaces.h \
-    ../../../PPTXFormat/DocxFormat/RId.h \
-    ../../../PPTXFormat/DocxFormat/UnknowTypeFile.h \
-    ../../../PPTXFormat/DocxFormat/WritingElement.h \
-    ../../../PPTXFormat/DocxFormat/WritingVector.h \
+    ../../../ASCOfficeDrawingConverter.h \
+    ../../../ASCOfficePPTXFile.h \
+    ../../../PPTXFormat/FileTypes.h \
+    ../../../PPTXFormat/Namespaces.h \
+    ../../../PPTXFormat/WritingVector.h \
     ../../../PPTXFormat/Limit/AlbumLayout.h \
     ../../../PPTXFormat/Limit/AnimationDgmBuild.h \
     ../../../PPTXFormat/Limit/BaseLimit.h \
@@ -363,6 +331,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/Logic/Transitions/TransitionBase.h \
     ../../../PPTXFormat/Logic/Transitions/WheelTransition.h \
     ../../../PPTXFormat/Logic/Transitions/ZoomTransition.h \
+    ../../../PPTXFormat/Logic/Controls.h \
     ../../../PPTXFormat/Logic/Ah.h \
     ../../../PPTXFormat/Logic/AhBase.h \
     ../../../PPTXFormat/Logic/AhPolar.h \
@@ -492,6 +461,7 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/App.h \
     ../../../PPTXFormat/CommentAuthors.h \
     ../../../PPTXFormat/Comments.h \
+    ../../../PPTXFormat/LegacyDiagramText.h \
     ../../../PPTXFormat/Core.h \
     ../../../PPTXFormat/FileContainer.h \
     ../../../PPTXFormat/FileFactory.h \
@@ -512,9 +482,6 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ViewProps.h \
     ../../../PPTXFormat/WrapperFile.h \
     ../../../PPTXFormat/WrapperWritingElement.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h \
     ../../../Editor/BinaryFileReaderWriter.h \
     ../../../Editor/BinReaderWriterDefines.h \
     ../../../Editor/BinWriters.h \
@@ -529,7 +496,6 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/PresentationDrawingsDef.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
-    ../../Settings.h \
     ../../../../Common/DocxFormat/Source/Base/Nullable.h \
     ../../../../Common/DocxFormat/Source/XML/xmlutils.h \
     ../../../../HtmlRenderer/include/ASCSVGWriter.h \

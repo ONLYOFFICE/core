@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,6 +32,9 @@
 
 #include "logging.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time.hpp>
+
 #include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
 #include "ods_table_state.h"
@@ -47,8 +50,6 @@
 #include "style_text_properties.h"
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
-
-#include <boost/date_time.hpp>
 
 namespace cpdoccore {
 
@@ -282,7 +283,7 @@ std::wstring ods_table_state::get_column_default_cell_style(int column)
 {
     int curr=0;
 
-    for (int i=0; i < columns_.size(); i++)
+    for (size_t i=0; i < columns_.size(); i++)
 	{
 		if (curr + columns_[i].repeated < column + 1)continue;
 		else
@@ -399,7 +400,7 @@ bool ods_table_state::is_cell_comment()
 
 int ods_table_state::is_cell_hyperlink(int col, int row)
 {
-	for (long i=0; i< hyperlinks_.size();i++)
+	for (size_t i=0; i < hyperlinks_.size();i++)
 	{
 		if (hyperlinks_[i].col == col && hyperlinks_[i].row == row)
 		{
@@ -410,7 +411,7 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 }
 int ods_table_state::is_cell_comment(int col, int row, short repeate_col)
 {
-	for (long i=0; i< comments_.size();i++)
+	for (size_t i = 0; i < comments_.size(); i++)
 	{
 		if ((comments_[i].col < col+repeate_col && comments_[i].col >= col) && comments_[i].row == row)
 		{
@@ -589,7 +590,7 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 {
 	if (text_context == NULL || comments_.size() <1 )return;
 
-	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
 		if (text_context->text_elements_list_[i].level ==0 && comments_.back().elm)
 		{
@@ -738,7 +739,7 @@ void ods_table_state::add_or_find_cell_shared_formula(std::wstring & formula, st
 	}
 	else
 	{
-        for (int i=0; i<shared_formulas_.size() ;i++)
+        for (size_t i = 0; i < shared_formulas_.size() ;i++)
 		{
 			if (shared_formulas_[i].index == ind)
 			{
@@ -824,7 +825,7 @@ void ods_table_state::add_child_element( const office_element_ptr & child_elemen
 void ods_table_state::convert_position(oox_table_position & oox_pos, double & x, double & y)//c 0 отсчет
 {
 	double sz_col=0;
-    int curr_col = 0,i;
+    size_t curr_col = 0, i;
 	
 	for (i = 0; i < columns_.size(); i++)
 	{
@@ -849,7 +850,8 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	x = sz_col + oox_pos.col_off;
 
 	double sz_row=0;
-    int curr_row =0;
+   
+	size_t curr_row =0 ;
 	for (i = 0; i < rows_.size(); i++)
 	{
 		if (oox_pos.row > rows_[i].repeated + curr_row)
@@ -879,7 +881,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 {
 	if (text_context == NULL)return;
 
-	for (long i=0; i< text_context->text_elements_list_.size(); i++)
+	for (size_t i = 0; i< text_context->text_elements_list_.size(); i++)
 	{
 		if (text_context->text_elements_list_[i].level ==0)
 		{
@@ -1084,8 +1086,8 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 	{
 		formulasconvert::oox2odf_converter converter;
 		std::wstring out = converter.convert_ref(ref);
-		boost::algorithm::replace_all(out,L"[",L"");
-		boost::algorithm::replace_all(out,L"]",L"");
+		XmlUtils::replace_all( out,L"[",L"");
+		XmlUtils::replace_all( out,L"]",L"");
 		cond_format->calcext_target_range_address_ = out;
 		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
 	}

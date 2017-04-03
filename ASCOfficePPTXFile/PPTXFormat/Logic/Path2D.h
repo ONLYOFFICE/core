@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -45,7 +45,8 @@ namespace PPTX
 		class Path2D : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Path2D)
+			WritingElement_AdditionConstructors(Path2D)
+			PPTX_LOGIC_BASE2(Path2D)
 
 			Path2D& operator=(const Path2D& oSrc)
 			{
@@ -62,8 +63,40 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_path;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				Paths.clear();
+				if ( oReader.IsEmptyNode() )
+					return;
+					
+				int nParentDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				{
+					std::wstring sName = oReader.GetName();
+
+					UniPath2D p;
+					Paths.push_back(p);
+					Paths.back().fromXML(oReader);
+				}
+			
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("extrusionOk"), extrusionOk)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fill"), fill )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("h"), h )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("stroke"), stroke )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"), w )
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"extrusionOk", extrusionOk);
@@ -77,7 +110,7 @@ namespace PPTX
 				
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -197,7 +230,7 @@ namespace PPTX
 
 								pReader->Skip(1);
 
-								CString arr[6];
+								std::wstring arr[6];
 
 								while (true)
 								{
@@ -229,12 +262,12 @@ namespace PPTX
 								case GEOMETRY_TYPE_PATH_CUBICBEZTO:
 									{
 										Logic::CubicBezTo* p = new Logic::CubicBezTo();
-										p->x1 = arr[0];
-										p->y1 = arr[1];
-										p->x2 = arr[2];
-										p->y2 = arr[3];
-										p->x3 = arr[4];
-										p->y3 = arr[5];
+										p->x[0] = arr[0];
+										p->y[0] = arr[1];
+										p->x[1] = arr[2];
+										p->y[1] = arr[3];
+										p->x[2] = arr[4];
+										p->y[2] = arr[5];
 										oPath.Path2D.reset(p);
 										break;
 									}
@@ -251,10 +284,10 @@ namespace PPTX
 								case GEOMETRY_TYPE_PATH_QUADBEZTO:
 									{
 										Logic::QuadBezTo* p = new Logic::QuadBezTo();
-										p->x1 = arr[0];
-										p->y1 = arr[1];
-										p->x2 = arr[2];
-										p->y2 = arr[3];
+										p->x[0] = arr[0];
+										p->y[0] = arr[1];
+										p->x[1] = arr[2];
+										p->y[1] = arr[3];
 										oPath.Path2D.reset(p);
 										break;
 									}
@@ -291,7 +324,7 @@ namespace PPTX
 					Paths[i].SetParentPointer(this);
 			}
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("w"), w);
@@ -300,7 +333,7 @@ namespace PPTX
 				oAttr.Write(_T("stroke"), stroke);
 				oAttr.Write(_T("extrusionOk"), extrusionOk);
 
-				CString strXml = _T("");
+				std::wstring strXml = _T("");
 				size_t nCount = Paths.size();
 				for (size_t i = 0; i < nCount; ++i)
 					strXml += Paths[i].GetODString();

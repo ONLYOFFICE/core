@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,17 +49,6 @@ Bar::~Bar()
 BaseObjectPtr Bar::clone()
 {
 	return BaseObjectPtr(new Bar(*this));
-}
-
-
-void Bar::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fTranspose);
-	SETBIT(flags, 1, fStacked);
-	SETBIT(flags, 2, f100);
-	SETBIT(flags, 3, fHasShadow);
-	record >> pcOverlap >> pcGap >> flags;
 }
 
 

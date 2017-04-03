@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -71,8 +71,14 @@ namespace OOX
 
 				XmlUtils::CXmlLiteReader oReader;
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+				if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
+				{
+					//test un-upper(lower)case open - CALACATA GREECE.xlsx
+					if (!m_oReadPath.FileInDirectoryCorrect())
+						return;
+					if ( !oReader.FromFile( m_oReadPath.GetPath() ) )
+						return;
+				}
 
 				if ( !oReader.ReadNextNode() )
 					return;
@@ -108,14 +114,14 @@ namespace OOX
 				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
 				writer.WriteString(_T(">"));
 
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
 
 				writer.WriteString(_T("</sst>"));
-				CString sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), writer.GetData());
-				sPath.ReleaseBuffer();
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
+                std::wstring sPath = oPath.GetPath();
+                NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+
+                oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
 			virtual const OOX::FileType type() const
 			{
@@ -135,15 +141,16 @@ namespace OOX
 			}
 			const int AddSi(CSi* pSi)
 			{
-				int nIndex = m_arrItems.size();
+				int nIndex = (int)m_arrItems.size();
 				m_arrItems.push_back( pSi );
 				return nIndex;
 			}
 		private:
-			CPath									m_oReadPath;
+			CPath m_oReadPath;
+
 			void ClearItems()
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
+				for (size_t nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 				{
 					if ( m_arrItems[nIndex] )delete m_arrItems[nIndex];
 

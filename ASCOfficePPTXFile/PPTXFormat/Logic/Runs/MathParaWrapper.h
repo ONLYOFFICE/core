@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,24 +50,30 @@ namespace PPTX
 		class MathParaWrapper : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(MathParaWrapper)
+			WritingElement_AdditionConstructors(MathParaWrapper)
 
+			MathParaWrapper() {}
 			MathParaWrapper& operator=(const MathParaWrapper& oSrc);
 
-		public:
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_p_MathPara;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual CString toXML() const;
+			virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(BYTE type, NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual CString GetText() const;
-		public:
-			nullable<OOX::Logic::COMathPara> m_oMathPara;
-			nullable<OOX::Logic::COMath> m_oMath;
-			nullable_string m_oXml;
+			virtual std::wstring GetText() const;
+
+			nullable<OOX::Logic::COMathPara>	m_oMathPara;
+			nullable<OOX::Logic::COMath>		m_oMath;
+			nullable_string						m_oXml;
 		protected:
 			virtual void FillParentPointersForChilds(){}
 		};

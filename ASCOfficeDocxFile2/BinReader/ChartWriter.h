@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,22 +42,22 @@ namespace Writers
 		{
 		public:
 			std::wstring content;
-			CString filename;
+            std::wstring filename;
 			int index;
 		};
 		std::vector<ChartElem*> m_aCharts;
-		ContentTypesWriter& m_oContentTypesWriter;
+        ContentTypesWriter&     m_oContentTypesWriter;
 		int nChartCount;
 	public:
-		CString m_sDir;
+        std::wstring m_sDir;
 	public:
-		ChartWriter(CString sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
+        ChartWriter(std::wstring sDir, ContentTypesWriter& oContentTypesWriter):m_sDir(sDir),m_oContentTypesWriter(oContentTypesWriter)
 		{
 			nChartCount = 0;
 		}
 		~ChartWriter()
 		{
-			for(int i = 0, length = m_aCharts.size(); i < length; ++i)
+			for(size_t i = 0, length = m_aCharts.size(); i < length; ++i)
 			{
 				delete m_aCharts[i];
 			}
@@ -71,34 +71,35 @@ namespace Writers
 			if(false == IsEmpty())
 			{
                 OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("charts");
-				FileSystem::Directory::CreateDirectory(string2std_string(pathChartDir.GetPath()));
+                NSDirectory::CreateDirectory(pathChartDir.GetPath());
 
-                for(int i = 0, length = m_aCharts.size(); i < length; ++i)
+                for(size_t i = 0, length = m_aCharts.size(); i < length; ++i)
 				{
 					ChartElem* elem = m_aCharts[i];
 
                     OOX::CPath filePath = pathChartDir + FILE_SEPARATOR_STR + elem->filename;
 
 					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(string2std_string(filePath.GetPath()));
+					oFile.CreateFileW(filePath.GetPath());
 					oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 					oFile.WriteStringUTF8(elem->content);
 					oFile.CloseFile();
 
 					//Content_Types
-                    CString sRelPath = _T("/word/charts/") + elem->filename;
-                    m_oContentTypesWriter.AddOverride(sRelPath, CString(_T("application/vnd.openxmlformats-officedocument.drawingml.chart+xml")));
+                    std::wstring sRelPath = L"/word/charts/" + elem->filename;
+                    m_oContentTypesWriter.AddOverride(sRelPath, L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml");
 				}
 			}
 		}
-		void AddChart(std::wstring& content, CString& sRelsName, CString& sFileName, int& index)
+		void AddChart(std::wstring& content, std::wstring& sRelsName, std::wstring& sFileName, int& index)
 		{
 			ChartElem* pChartElem = new ChartElem();
 			pChartElem->content = content;
 			pChartElem->index = nChartCount + 1;
 			nChartCount++;
-			pChartElem->filename.Format(_T("chart%d.xml"), pChartElem->index);
-			sRelsName = _T("charts/") + pChartElem->filename;
+            pChartElem->filename = L"chart" + std::to_wstring(pChartElem->index) + L".xml";
+			
+			sRelsName = L"charts/" + pChartElem->filename;
 			sFileName = pChartElem->filename;
 			index = pChartElem->index;
 

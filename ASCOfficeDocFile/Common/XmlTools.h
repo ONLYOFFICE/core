@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -57,11 +57,11 @@ namespace XMLTools
 	class XMLAttribute
 	========================================================================================================*/
 
-	template <class T> class XMLAttribute
+    class XMLAttribute
 	{
 	private:
-		std::basic_string<T> m_Name;
-		std::basic_string<T> m_Value;
+        std::wstring m_Name;
+        std::wstring m_Value;
 
 	public:
 
@@ -69,56 +69,40 @@ namespace XMLTools
 		{
 
 		}
-
-		/*========================================================================================================*/
-
-		XMLAttribute( const T* name ) : m_Name(name)
+        XMLAttribute( const std::wstring & name ) : m_Name(name)
 		{
 		}
-
-		/*========================================================================================================*/
-
-		XMLAttribute( const T* name, const T* value ) :	m_Name(name), m_Value(value)
+        XMLAttribute( const std::wstring & name, const std::wstring & value ) :	m_Name(name), m_Value(value)
+		{
+        }
+        ~XMLAttribute()
 		{
 		}
-
-		/*========================================================================================================*/
-
-		~XMLAttribute()
+        void SetValue( const std::wstring & value )
 		{
+            m_Value = std::wstring( value );
 		}
-
-		/*========================================================================================================*/
-
-		void SetValue( const T* value )
-		{
-			m_Value = std::basic_string<T>( value );
-		}
-
-		/*========================================================================================================*/
-
-		std::basic_string<T> GetName() const
+        std::wstring GetName() const
 		{
 			return m_Name;
 		}
-
 		/*========================================================================================================*/
 
-		std::basic_string<T> GetValue() const
+        std::wstring GetValue() const
 		{
 			return m_Value;
 		}
 
 		/*========================================================================================================*/
 
-		std::basic_string<T> GetXMLString()
+        std::wstring GetXMLString()
 		{
-			std::basic_string<T> xmlString( L"" );
+            std::wstring xmlString( L"" );
 
 			xmlString += m_Name;
-			xmlString += std::basic_string<T>( L"=\"" );
+            xmlString += std::wstring( L"=\"" );
 			xmlString += m_Value;
-			xmlString += std::basic_string<T>( L"\"" );
+            xmlString += std::wstring( L"\"" );
 
 			return xmlString;
 		}
@@ -128,86 +112,63 @@ namespace XMLTools
 	class XMLElement
     ========================================================================================================*/
 
-	template <class T> class XMLElement
+    class XMLElement
 	{
-		typedef std::pair< std::basic_string<T>, std::basic_string<T> > AttributeValuePair;
+        typedef std::pair< std::wstring, std::wstring> AttributeValuePair;
 
 	private:
-		std::basic_string<T>									m_Name;
-		std::basic_string<T>									m_ElementText;
-		std::map<std::basic_string<T>, std::basic_string<T>>	m_AttributeMap;
-		std::map<std::basic_string<T>, int>						m_ChildMap; //for uniq
-        std::list<XMLElement<T>>								m_Elements;
+        std::wstring									m_Name;
+        std::wstring									m_ElementText;
+        std::map<std::wstring, std::wstring>            m_AttributeMap;
+        std::map<std::wstring, int>						m_ChildMap; //for uniq
+        std::list<XMLElement>                           m_Elements;
 
-        typedef typename std::list<XMLElement<T>>::iterator          ElementsIterator;
-        typedef typename std::list<XMLElement<T>>::const_iterator    ElementsIteratorConst;
+        typedef std::list<XMLElement>::iterator          ElementsIterator;
+        typedef std::list<XMLElement>::const_iterator    ElementsIteratorConst;
 
-        typedef typename std::map<std::basic_string<T>, std::basic_string<T>>::iterator            AttMapIterator;
-        typedef typename std::map<std::basic_string<T>, std::basic_string<T>>::const_iterator      AttMapIteratorConst;
+        typedef std::map<std::wstring, std::wstring>::iterator            AttMapIterator;
+        typedef std::map<std::wstring, std::wstring>::const_iterator      AttMapIteratorConst;
 
     public:
 
-		XMLElement()
+        XMLElement() {}
+
+        XMLElement( const std::wstring & name ) : m_Name(name)
 		{
 
 		}
-
-		/*========================================================================================================*/
-
-		XMLElement( const T* name ) : m_Name(name)
+        XMLElement( const std::wstring & prefix, const std::wstring & localName ) :
+            m_Name( std::wstring( prefix ) + std::wstring( L":" ) + std::wstring( localName ) ), m_ElementText( L"" )
 		{
 
 		}
+        ~XMLElement() {}
 
-		/*========================================================================================================*/
-
-		XMLElement( const T* prefix, const T* localName ) : m_Name( std::basic_string<T>( prefix ) + std::basic_string<T>( L":" ) + std::basic_string<T>( localName ) ), m_ElementText( L"" )
+        void AppendText( const std::wstring & text )
 		{
-
+            m_ElementText = std::wstring( text );
 		}
 
-		/*========================================================================================================*/
-
-		~XMLElement()
+        void AppendTextSymbol( const wchar_t symbol )
 		{
-
+            m_ElementText += std::wstring( &symbol );
 		}
 
-		/*========================================================================================================*/
-
-		void AppendText( const T* text )
-		{
-			m_ElementText = std::basic_string<T>( text );
-		}
-
-		/*========================================================================================================*/
-
-		void AppendTextSymbol( const T symbol )
-		{
-			m_ElementText += std::basic_string<T>( &symbol );
-		}
-
-		/*========================================================================================================*/
-
-		void AppendAttribute( const XMLAttribute<T>& attribute )
+        void AppendAttribute( const XMLAttribute& attribute )
 		{
 			AttributeValuePair p( attribute.GetName(), attribute.GetValue() );
 
 			m_AttributeMap.insert( p );
 		}
 
-		/*========================================================================================================*/
-
-		void AppendAttribute( const T* name, const T* value )
+        void AppendAttribute( const std::wstring & name, const std::wstring & value )
 		{
-			AttributeValuePair p( std::basic_string<T>( const_cast<T*>( name ) ), std::basic_string<T>( const_cast<T*>( value ) ) );
+            AttributeValuePair p(  name , value  );
 
 			m_AttributeMap.insert( p );
 		}
 
-		/*========================================================================================================*/
-
-		void AppendChild( const XMLElement<T>& element, bool uniq = false)
+        void AppendChild( const XMLElement& element, bool uniq = false)
 		{
 			if (m_ChildMap.find(element.GetName()) != m_ChildMap.end())
 			{
@@ -215,21 +176,17 @@ namespace XMLTools
 			}
 			else
 			{
-				m_ChildMap.insert(m_ChildMap.end(), std::pair<std::basic_string<T>, int>(element.GetName(), 0));
+                m_ChildMap.insert(m_ChildMap.end(), std::pair<std::wstring, int>(element.GetName(), 0));
 			}
 			m_Elements.push_back( element );
 		}
 
-		/*========================================================================================================*/
-
-		void RemoveChild( const XMLElement<T>& element )
+        void RemoveChild( const XMLElement& element )
 		{
 			m_Elements.remove( element );
 		}
 
-		/*========================================================================================================*/
-
-		bool FindChild( const XMLElement<T>& element )
+        bool FindChild( const XMLElement& element )
 		{
 			bool result = false;
 
@@ -246,15 +203,13 @@ namespace XMLTools
 			return result;
 		}
 
-		/*========================================================================================================*/
-
-		bool FindChildByName( const T* elementName ) const
+        bool FindChildByName( const std::wstring & elementName ) const
 		{
 			bool result = false;
 
-            for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
+            for ( ElementsIteratorConst iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
 			{
-				if ( iter->m_Name == std::basic_string<T>( elementName ) )
+                if ( iter->m_Name == std::wstring( elementName ) )
 				{
 					result = true;
 
@@ -265,9 +220,7 @@ namespace XMLTools
 			return result;
 		}
 
-		/*========================================================================================================*/
-
-		bool RemoveChildByName( const std::basic_string<T>& elementName )
+        bool RemoveChildByName( const std::wstring& elementName )
 		{
 			bool result = false;
 
@@ -286,9 +239,7 @@ namespace XMLTools
 			return result;  
 		}
 
-		/*========================================================================================================*/
-
-		bool operator == ( const XMLElement<T>& element ) const
+        bool operator == ( const XMLElement& element ) const
 		{
 			bool result = false;
 
@@ -319,7 +270,7 @@ namespace XMLTools
 			}
 			else
 			{
-				ElementsIteratorConst        thisIter    = m_Elements.begin();
+                ElementsIteratorConst  thisIter    = m_Elements.begin();
 				ElementsIteratorConst  elementIter = element.m_Elements.begin();
 
 				for ( ; thisIter != m_Elements.end(); thisIter++, elementIter++ )
@@ -336,34 +287,34 @@ namespace XMLTools
 
 		/*========================================================================================================*/
 
-        std::basic_string<T> GetName() const
+        std::wstring GetName() const
 		{
 			return m_Name;
 		}
 
 		/*========================================================================================================*/
 
-        std::basic_string<T> GetXMLString()
+        std::wstring GetXMLString()
 		{
-			std::basic_string<T> xmlString( L"");
+            std::wstring xmlString( L"");
 
-            bool bIsNameExists = ( m_Name != std::basic_string<T>( L"") );
-            bool bIsTextExists = ( m_ElementText != std::basic_string<T>( L"") );
+            bool bIsNameExists = ( m_Name != std::wstring( L"") );
+            bool bIsTextExists = ( m_ElementText != std::wstring( L"") );
 
 			if ( bIsNameExists )
 			{
-                xmlString += std::basic_string<T>( L"<" ) + m_Name;
+                xmlString += std::wstring( L"<" ) + m_Name;
 			}
 
             if ( ( bIsNameExists ) && ( m_AttributeMap.size() > 0 ) )
 			{
                 for ( AttMapIterator iter = m_AttributeMap.begin(); iter != m_AttributeMap.end(); iter++ )
 				{
-					xmlString += std::basic_string<T>( L" " );
+                    xmlString += std::wstring( L" " );
 					xmlString += iter->first;
-					xmlString += std::basic_string<T>( L"=\"" );
+                    xmlString += std::wstring( L"=\"" );
 					xmlString += iter->second;
-					xmlString += std::basic_string<T>( L"\"" );
+                    xmlString += std::wstring( L"\"" );
 				}
 			}
 
@@ -371,7 +322,7 @@ namespace XMLTools
 			{
 				if ( bIsNameExists )
 				{
-					xmlString += std::basic_string<T>( L">" );
+                    xmlString += std::wstring( L">" );
 				}
 
                 for ( ElementsIterator iter = m_Elements.begin(); iter != m_Elements.end(); iter++ )
@@ -386,16 +337,16 @@ namespace XMLTools
 
 				if ( bIsNameExists )
 				{
-                    xmlString += std::basic_string<T>( L"</" );
+                    xmlString += std::wstring( L"</" );
 					xmlString += m_Name;
-					xmlString += std::basic_string<T>( L">" );
+                    xmlString += std::wstring( L">" );
 				}
 			}
 			else
 			{
 				if ( bIsNameExists )
 				{
-					xmlString += std::basic_string<T>( L"/>" );
+                    xmlString += std::wstring( L"/>" );
 				}
 			}
 
@@ -455,34 +406,12 @@ namespace XMLTools
 
 		void WriteInteger(int Value, int Base = 10)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            wchar_t buff[33] ={};
-            _itow(Value, buff, Base);
-            m_str += std::wstring(buff);
-#else
             m_str += std::to_wstring(Value);
-#endif
 		}
 
 		void WriteDouble(double Value)
 		{
-#if defined(_WIN32) || defined (_WIN64)
-            int *dec = NULL, *sign = NULL;
-			char *str = _fcvt( Value , 4, dec, sign);
-
-			if (str)
-			{
-				std::string sA(str);
-				delete []str;	
-				m_str += std::wstring(sA.begin(), sA.end());
-			}
-			else
-			{
-				m_str += L"0";
-			}
-#else
             m_str += std::to_wstring(Value);
-#endif
         }
 		void WriteBoolean(bool Value)
 		{

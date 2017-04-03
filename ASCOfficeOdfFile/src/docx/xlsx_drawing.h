@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,16 +46,16 @@ namespace oox {
 
 struct xlsx_drawing_position
 {
-    enum type_t {from, to};
-    type_t type; 
-    xlsx_table_position position;
+    enum type_t {from, to}	type;
+    xlsx_table_position		position;
 
-    friend void xlsx_serialize(std::wostream & _Wostream, xlsx_drawing_position const & val);
+	void serialize(std::wostream & _Wostream, std::wstring ns = L"xdr:");
 };
 
 
-struct _xlsx_drawing : _oox_drawing
+class _xlsx_drawing : public _oox_drawing
 {
+public:
 	_xlsx_drawing() : _oox_drawing(), type_anchor(1) {}
 	
 	int type_anchor;
@@ -65,8 +65,8 @@ struct _xlsx_drawing : _oox_drawing
 
 	std::wstring			content_group_;
 
-    
-    friend void xlsx_serialize(std::wostream & _Wostream, _xlsx_drawing & val);    
+    void serialize			(std::wostream & strm);    
+    void serialize_object	(std::wostream & strm);    
 };
 }
 }

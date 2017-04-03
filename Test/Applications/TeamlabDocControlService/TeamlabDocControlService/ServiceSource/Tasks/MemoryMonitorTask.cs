@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -82,7 +82,7 @@ namespace TeamlabDocControlService.ServiceSource.Monitors
                     float delta = Math.Abs(value - nMidValue);
                     float proc = (nMidValue > 0) ? delta/nMidValue : 1.0F;   // procent of var
                     
-                    if (proc > 0.1F && delta > 50.0F) // 10% relative and 50ла absolute value of memory usage delta
+                    if (proc > 0.1F && delta > 50.0F) // 10% relative and 50О©╫О©╫ absolute value of memory usage delta
                     {
                         nMidValue = 0.5F * (nMidValue + value);  // tune mid value;
                         

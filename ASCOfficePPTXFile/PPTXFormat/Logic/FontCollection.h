@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -56,7 +56,7 @@ namespace PPTX
 				ea		= oSrc.ea;
 				cs		= oSrc.cs;
 				
-				for (int i=0; i < oSrc.Fonts.size(); i++)
+				for (size_t i=0; i < oSrc.Fonts.size(); i++)
 					Fonts.push_back(oSrc.Fonts[i]);
 
 				m_name	= oSrc.m_name;
@@ -78,7 +78,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("latin") == strName)
 							latin = oNode;
@@ -93,7 +93,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(latin);
@@ -186,7 +186,7 @@ namespace PPTX
 			std::vector<SupplementalFont> Fonts;
 		//private:
 		public:
-			CString m_name;
+			std::wstring m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		{
 		public:
 			
-			PPTX_LOGIC_BASE(BiLevel)
+			WritingElement_AdditionConstructors(BiLevel)
+			PPTX_LOGIC_BASE2(BiLevel)
 
 			BiLevel& operator=(const BiLevel& oSrc)
 			{
@@ -54,15 +55,29 @@ namespace PPTX
 				thresh = oSrc.thresh;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_biLevel;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("thresh"), thresh)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"thresh", thresh);
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("thresh"), thresh);

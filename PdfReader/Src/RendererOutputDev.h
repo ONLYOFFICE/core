@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -240,6 +240,7 @@ namespace PdfReader
 		virtual void ClipToStrokePath(GrState *pGState);
 		virtual void ClipToPath(GrState *pGState, GrPath *pPath, double *pMatrix, bool bEO);
 		//----- Вывод текста
+        virtual void EndTextObject(GrState *pGState);
 		virtual void BeginStringOperator(GrState *pGState);
 		virtual void EndStringOperator(GrState *pGState);
 		virtual void DrawString(GrState *pGState, StringExt *seString);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,73 +41,6 @@ BiffStructurePtr DXFN::clone()
 {
 	return BiffStructurePtr(new DXFN(*this));
 }
-
-void DXFN::store(CFRecord& record)
-{
-	_UINT32 flags = 0;
-	
-	SETBIT(flags, 0, alchNinch);
-	SETBIT(flags, 1, alcvNinch);
-	SETBIT(flags, 2, wrapNinch);
-	SETBIT(flags, 3, trotNinch);
-	SETBIT(flags, 4, kintoNinch);
-	SETBIT(flags, 5, cIndentNinch);
-	SETBIT(flags, 6, fShrinkNinch);
-	SETBIT(flags, 7, fMergeCellNinch);
-	SETBIT(flags, 8, lockedNinch);
-	SETBIT(flags, 9, hiddenNinch);
-	SETBIT(flags, 10, glLeftNinch);
-	SETBIT(flags, 11, glRightNinch);
-	SETBIT(flags, 12, glTopNinch);
-	SETBIT(flags, 13, glBottomNinch);
-	SETBIT(flags, 14, glDiagDownNinch);
-	SETBIT(flags, 15, glDiagUpNinch);
-	SETBIT(flags, 16, flsNinch);
-	SETBIT(flags, 17, icvFNinch);
-	SETBIT(flags, 18, icvBNinch);
-	SETBIT(flags, 19, ifmtNinch);
-	SETBIT(flags, 20, fIfntNinch);
-	SETBIT(flags, 25, ibitAtrNum);
-	SETBIT(flags, 26, ibitAtrFnt);
-	SETBIT(flags, 27, ibitAtrAlc);
-	SETBIT(flags, 28, ibitAtrBdr);
-	SETBIT(flags, 29, ibitAtrPat);
-	SETBIT(flags, 30, ibitAtrProt);
-	SETBIT(flags, 31, iReadingOrderNinch);
-	record << flags;
-	
-	_UINT16 flags2 = 0;
-	SETBIT(flags2, 0, fIfmtUser);
-	SETBIT(flags2, 2, fNewBorder);
-	SETBIT(flags2, 15, fZeroInited);
-	record << flags2;
-
-	if(ibitAtrNum)
-	{
-		record << dxfnum;
-	}
-	if(ibitAtrFnt)
-	{
-		record << dxffntd;
-	}
-	if(ibitAtrAlc)
-	{
-		record << dxfalc;
-	}
-	if(ibitAtrBdr)
-	{
-		record << dxfbdr;
-	}
-	if(ibitAtrPat)
-	{
-		record << dxfpat;
-	}
-	if(ibitAtrProt)
-	{
-		record << dxfprot;
-	}
-}
-
 
 void DXFN::load(CFRecord& record)
 {
@@ -160,7 +93,6 @@ void DXFN::load(CFRecord& record)
 
 	if(ibitAtrNum)
 	{
-		dxfnum.setIsUserDefined(fIfmtUser);
 		record >> dxfnum;
 	}
 	if(ibitAtrFnt)

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,13 +42,6 @@ BiffStructurePtr PtgMemAreaN::clone()
 {
 	return BiffStructurePtr(new PtgMemAreaN(*this));
 }
-
-
-void PtgMemAreaN::storeFields(CFRecord& record)
-{
-	record << cce;
-}
-
 
 void PtgMemAreaN::loadFields(CFRecord& record)
 {

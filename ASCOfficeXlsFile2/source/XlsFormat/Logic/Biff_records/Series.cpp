@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,12 +48,6 @@ Series::~Series()
 BaseObjectPtr Series::clone()
 {
 	return BaseObjectPtr(new Series(*this));
-}
-
-
-void Series::writeFields(CFRecord& record)
-{
-	record << sdtX << sdtY << cValx << cValy << sdtBSize << cValBSize;
 }
 
 

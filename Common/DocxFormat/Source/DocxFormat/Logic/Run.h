@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -288,9 +288,9 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:r ");
+				std::wstring sResult = _T("<w:r ");
 
 				ComplexTypes_WriteAttribute( _T("w:rsidDel=\""), m_oRsidDel );
 				ComplexTypes_WriteAttribute( _T("w:rsidR=\""),   m_oRsidR );

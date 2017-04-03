@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,11 +48,6 @@ AutoFilter12::~AutoFilter12()
 BaseObjectPtr AutoFilter12::clone()
 {
 	return BaseObjectPtr(new AutoFilter12(*this));
-}
-
-
-void AutoFilter12::writeFields(CFRecord& record)
-{
 }
 
 

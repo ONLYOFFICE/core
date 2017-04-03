@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,8 @@ namespace PPTX
 		class EffectStyle : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(EffectStyle)
+			WritingElement_AdditionConstructors(EffectStyle)
+			PPTX_LOGIC_BASE2(EffectStyle)
 
 			EffectStyle& operator=(const EffectStyle& oSrc)
 			{
@@ -58,11 +59,14 @@ namespace PPTX
 				sp3d = oSrc.sp3d;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_effectStyle;
+			}	
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual void fromXML(XmlUtils::CXmlNode& node);
 
-            virtual CString toXML() const;
+            virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

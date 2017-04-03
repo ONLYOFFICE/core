@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "SchemeClr.h"
 #include "./../../Slide.h"
@@ -49,8 +49,25 @@ namespace PPTX
 			Modifiers.clear();
 			node.LoadArray(_T("*"), Modifiers);
 		}
+		void SchemeClr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
 
-		CString SchemeClr::toXML() const
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+                std::wstring strName = oReader.GetName();
+
+				ColorModifier m;
+				Modifiers.push_back(m);
+				Modifiers.back().fromXML(oReader);
+			}
+		}
+
+		std::wstring SchemeClr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("val"), val.get());
@@ -106,7 +123,7 @@ namespace PPTX
 		{
 			DWORD RGB = 0;
 			
-			CString str = val.get();
+			std::wstring str = val.get();
 			if (str == _T("phClr"))
 				RGB = ARGB;
 			else 
@@ -135,7 +152,7 @@ namespace PPTX
 		{
 			DWORD RGB = 0;
 			
-			CString str = val.get();
+			std::wstring str = val.get();
 			if(str == _T("phClr"))
 				RGB = rgb;
 			else

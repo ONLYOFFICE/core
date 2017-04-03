@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,16 +41,6 @@ XLS::BiffStructurePtr PropertyBagStore::clone()
 {
 	return XLS::BiffStructurePtr(new PropertyBagStore(*this));
 }
-
-
-
-void PropertyBagStore::store(XLS::CFRecord& record)
-{
-#pragma message("####################### PropertyBagStore record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PropertyBagStore record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void PropertyBagStore::load(XLS::CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,18 +42,26 @@ namespace PPTX
 		class CNvGrpSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(CNvGrpSpPr)
+			WritingElement_AdditionConstructors(CNvGrpSpPr)
 
-            CNvGrpSpPr&         operator=(const CNvGrpSpPr& oSrc);
+			CNvGrpSpPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
-        public:
+            CNvGrpSpPr& operator=(const CNvGrpSpPr& oSrc);
+
             virtual void fromXML(XmlUtils::CXmlNode& node);
+            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-            virtual CString toXML() const;
-
+            virtual std::wstring toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				std::wstring ns = m_namespace;
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+					ns = L"xdr";
+
 				if (!noChangeAspect.is_init() &&
 					!noGrp.is_init() &&
 					!noMove.is_init() &&
@@ -62,17 +70,11 @@ namespace PPTX
 					!noSelect.is_init() &&
 					!noUngrp.is_init())
 				{
-					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-						pWriter->WriteString(_T("<xdr:cNvGrpSpPr/>"));
-					else
-						pWriter->WriteString(_T("<p:cNvGrpSpPr/>"));
+					pWriter->WriteString(L"<" + ns + L":cNvGrpSpPr/>");
 					return;
 				}
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->WriteString(_T("<xdr:cNvGrpSpPr>"));
-				else
-					pWriter->WriteString(_T("<p:cNvGrpSpPr>"));
+				pWriter->WriteString(L"<" + ns + L":cNvGrpSpPr>");
 
 				pWriter->StartNode(_T("a:grpSpLocks"));
 
@@ -88,13 +90,10 @@ namespace PPTX
 				
 				pWriter->EndNode(_T("a:grpSpLocks"));
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->WriteString(_T("</xdr:cNvGrpSpPr>"));
-				else
-					pWriter->WriteString(_T("</p:cNvGrpSpPr>"));
+				pWriter->WriteString(L"</" + ns + L":cNvGrpSpPr>");
 			}
 
-			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (!noChangeAspect.is_init() &&
 					!noGrp.is_init() &&
@@ -104,25 +103,26 @@ namespace PPTX
 					!noSelect.is_init() &&
 					!noUngrp.is_init())
 				{
-					pWriter->WriteString(_T("<") + strNS + _T(":cNvGrpSpPr/>"));
+					pWriter->WriteString(L"<" + strNS + L":cNvGrpSpPr/>");
 					return;
 				}
 
-				pWriter->StartNode(strNS + _T(":cNvGrpSpPr"));
-				pWriter->StartNode(_T("a:grpSpLocks"));
+				pWriter->StartNode(strNS + L":cNvGrpSpPr");
+					pWriter->EndAttributes();
+				pWriter->StartNode(L"a:grpSpLocks");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("noChangeAspect"), noChangeAspect);
-				pWriter->WriteAttribute(_T("noGrp"), noGrp);
-				pWriter->WriteAttribute(_T("noMove"), noMove);
-				pWriter->WriteAttribute(_T("noResize"), noResize);
-				pWriter->WriteAttribute(_T("noRot"), noRot);
-				pWriter->WriteAttribute(_T("noSelect"), noSelect);
-				pWriter->WriteAttribute(_T("noUngrp"), noUngrp);
+				pWriter->WriteAttribute(L"noChangeAspect", noChangeAspect);
+				pWriter->WriteAttribute(L"noGrp", noGrp);
+				pWriter->WriteAttribute(L"noMove", noMove);
+				pWriter->WriteAttribute(L"noResize", noResize);
+				pWriter->WriteAttribute(L"noRot", noRot);
+				pWriter->WriteAttribute(L"noSelect", noSelect);
+				pWriter->WriteAttribute(L"noUngrp", noUngrp);
 				pWriter->EndAttributes();
 				
-				pWriter->EndNode(_T("a:grpSpLocks"));
-				pWriter->EndNode(strNS + _T(":cNvGrpSpPr"));
+				pWriter->EndNode(L"a:grpSpLocks");
+				pWriter->EndNode(strNS + L":cNvGrpSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -191,8 +191,8 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
+			std::wstring		m_namespace;
 
-		public:
 			nullable_bool		noChangeAspect;
 			nullable_bool		noGrp;
 			nullable_bool		noMove;
@@ -201,6 +201,7 @@ namespace PPTX
 			nullable_bool		noSelect;
 			nullable_bool		noUngrp;
 		protected:
+			void ReadAttributesLocks(XmlUtils::CXmlLiteReader& oReader);
 			virtual void FillParentPointersForChilds(){};
 		};
 	} // namespace Logic

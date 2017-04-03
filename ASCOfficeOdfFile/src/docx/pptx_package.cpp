@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,13 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <boost/ref.hpp>
 
 #include "pptx_package.h"
 #include "pptx_output_xml.h"
-
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/ref.hpp>
 
 #include <cpdoccore/utf8cpp/utf8.h>
 
@@ -99,11 +96,13 @@ void slide_content::add_rel(relationship const & r)
     rels_->get_rels().add(r);
 }
 
-void slide_content::add_rels(rels & r)
+void slide_content::add_rels(rels & _r)
 {
-    BOOST_FOREACH(relationship & item, r.relationships())
+	std::vector<relationship> & r =  _r.relationships();
+	
+	for (int i = 0; i < r.size(); i++)
 	{
-		rels_->get_rels().add(item);
+		rels_->get_rels().add(r[i]);
 	}
 }
 ////////////
@@ -119,38 +118,34 @@ void slides_files::add_slide(slide_content_ptr slide)
 void slides_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slides" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
     
-	size_t count = 0;
-
-    BOOST_FOREACH(const slide_content_ptr & item, slides_)
+    for (int i = 0; i < slides_.size(); i++)
     {
-        if (item)
+        if (!slides_[i]) continue;
+
+        const std::wstring fileName = std::wstring(L"slide") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+       
+		contentTypes->add_override(std::wstring(L"/ppt/slides/") + fileName, kWSConType);
+
+        if (rels_)
         {
-            count++;
-            const std::wstring fileName = std::wstring(L"slide") + boost::lexical_cast<std::wstring>(count) + L".xml";
-           
-			contentTypes->add_override(std::wstring(L"/ppt/slides/") + fileName, kWSConType);
-
-            if (rels_)
-            {
-                const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>(count);
-                static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
-                const std::wstring fileRef = std::wstring(L"slides/") + fileName;
-                rels_->add(id, kWSRel, fileRef);
-            }
-
-            item->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
-            
-			rels_files relFiles;
-            relFiles.add_rel_file(item->get_rel_file());
-            relFiles.write(path);           
-
-            package::simple_element(fileName, item->str()).write(path);
+            const std::wstring id = std::wstring(L"sId") + boost::lexical_cast<std::wstring>( i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+            const std::wstring fileRef = std::wstring(L"slides/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
         }
+
+        slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(slides_[i]->get_rel_file());
+        relFiles.write(path);           
+
+        package::simple_element(fileName, slides_[i]->str()).write(path);
     }
 }
 
@@ -166,37 +161,33 @@ void slideMasters_files::add_slide(slide_content_ptr slide)
 void slideMasters_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideMasters" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
 	content_type_content * contentTypes = this->get_main_document()->get_content_types_file().content();
 	static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml";
    
-	size_t count = 0;
-
-    BOOST_FOREACH(const slide_content_ptr & item, slides_)
+    for (int i = 0; i < slides_.size(); i++)
     {
-        if (item)
+        if (!slides_[i]) continue;
+
+        const std::wstring fileName = std::wstring(L"slideMaster") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+        contentTypes->add_override(std::wstring(L"/ppt/slideMasters/") + fileName, kWSConType);
+
+        if (rels_)
         {
-            count++;
-            const std::wstring fileName = std::wstring(L"slideMaster") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            contentTypes->add_override(std::wstring(L"/ppt/slideMasters/") + fileName, kWSConType);
-
-            if (rels_)
-            {
-                const std::wstring id = std::wstring(L"smId") + boost::lexical_cast<std::wstring>(count);
-                static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
-                const std::wstring fileRef = std::wstring(L"slideMasters/") + fileName;
-                rels_->add(id, kWSRel, fileRef);
-            }
-
-            item->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
-            
-			rels_files relFiles;
-            relFiles.add_rel_file(item->get_rel_file());
-            relFiles.write(path);           
-
-            package::simple_element(fileName, item->str()).write(path);
+            const std::wstring id = std::wstring(L"smId") + boost::lexical_cast<std::wstring>( i + 1);
+            static const std::wstring kWSRel = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
+            const std::wstring fileRef = std::wstring(L"slideMasters/") + fileName;
+            rels_->add(id, kWSRel, fileRef);
         }
+
+        slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(slides_[i]->get_rel_file());
+        relFiles.write(path);           
+
+        package::simple_element(fileName, slides_[i]->str()).write(path);
     }
 }
 
@@ -212,29 +203,25 @@ void slideLayouts_files::add_slide(slide_content_ptr slide)
 void slideLayouts_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"slideLayouts" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
-    BOOST_FOREACH(const slide_content_ptr & item, slides_)
+    for (int i = 0; i < slides_.size(); i++)
     {
-        if (item)
-        {
-            count++;
-            const std::wstring fileName		= std::wstring(L"slideLayout") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
-           
-			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
-            contentTypes->add_override(std::wstring(L"/ppt/slideLayouts/") + fileName, kWSConType);
+        if (!slides_[i]) continue;
 
-            item->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
-            
-			rels_files relFiles;
-            relFiles.add_rel_file(item->get_rel_file());
-            relFiles.write(path);           
+        const std::wstring fileName		= std::wstring(L"slideLayout") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+        const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml";
+       
+		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+        contentTypes->add_override(std::wstring(L"/ppt/slideLayouts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, item->str()).write(path);
-        }
+        slides_[i]->get_rel_file()->set_file_name(fileName + L".rels");//внитренние релсы
+        
+		rels_files relFiles;
+        relFiles.add_rel_file(slides_[i]->get_rel_file());
+        relFiles.write(path);           
+
+        package::simple_element(fileName, slides_[i]->str()).write(path);
     }
 }
 
@@ -268,30 +255,26 @@ void ppt_charts_files::add_chart(chart_content_ptr chart)
 void ppt_charts_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
-    BOOST_FOREACH(const chart_content_ptr & item, charts_)
+    for (int i = 0; i < charts_.size(); i++)
     {
-        if (item)
-        {
-            count++;
-            const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>(count) + L".xml";
-            content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
-           
-			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
-            contentTypes->add_override(std::wstring(L"/ppt/charts/") + fileName, kWSConType);
+        if (!charts_[i]) continue;
+		
+		const std::wstring fileName = std::wstring(L"chart") + boost::lexical_cast<std::wstring>( i + 1 ) + L".xml";
+        content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+       
+		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
+        contentTypes->add_override(std::wstring(L"/ppt/charts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, item->str()).write(path);
-			
-			rels_files relFiles;
+        package::simple_element(fileName, charts_[i]->str()).write(path);
+		
+		rels_files relFiles;
 
-			item->get_rel_file()->set_file_name(fileName + L".rels");
-			    
-			relFiles.add_rel_file(item->get_rel_file());
-			relFiles.write(path);
-        }
+		charts_[i]->get_rel_file()->set_file_name(fileName + L".rels");
+		    
+		relFiles.add_rel_file(charts_[i]->get_rel_file());
+		relFiles.write(path);
     }
 }
 ///////////////////////////////////
@@ -302,26 +285,21 @@ void ppt_themes_files::add_theme(pptx_xml_theme_ptr theme)
 void ppt_themes_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"theme" ;
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
-    size_t count = 0;
-
-    BOOST_FOREACH(const pptx_xml_theme_ptr & item, themes_)
+    for (int i = 0; i < themes_.size(); i++)
     {
-        if (item)
-        {
-            count++;
+        if (!themes_[i]) continue;
             
-			const std::wstring fileName		= std::wstring(L"theme") + boost::lexical_cast<std::wstring>(count) + L".xml";
-			const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.theme+xml";
-           
-			content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
-            contentTypes->add_override(std::wstring(L"/ppt/theme/") + fileName, kWSConType);
+		const std::wstring fileName		= std::wstring(L"theme") + boost::lexical_cast<std::wstring>( i + 1) + L".xml";
+		const std::wstring kWSConType	= L"application/vnd.openxmlformats-officedocument.theme+xml";
+       
+		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
+        contentTypes->add_override(std::wstring(L"/ppt/theme/") + fileName, kWSConType);
 
-			std::wstringstream content;
-			item->write_to(content);
-            package::simple_element(fileName, content.str()).write(path);
-        }
+		std::wstringstream content;
+		themes_[i]->write_to(content);
+        package::simple_element(fileName, content.str()).write(path);
     }
 }
 //////////////////////////////
@@ -333,16 +311,16 @@ ppt_comments_files_ptr ppt_comments_files::create(const std::vector<pptx_comment
 void ppt_comments_files::write(const std::wstring & RootPath)
 {
 	std::wstring comm_path = RootPath + FILE_SEPARATOR_STR +  L"comments";
-	FileSystem::Directory::CreateDirectory(comm_path.c_str());
+    NSDirectory::CreateDirectory(comm_path.c_str());
    
-	BOOST_FOREACH(pptx_comment_elm const & e, comments_)
+	for (int i = 0; i < comments_.size(); i++)
     {
 		content_type_content * contentTypes = get_main_document()->get_content_types_file().content();
 
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml";
-        contentTypes->add_override(std::wstring(L"/ppt/comments/") + e.filename, kWSConType);
+        contentTypes->add_override(std::wstring(L"/ppt/comments/") + comments_[i].filename, kWSConType);
 			
-		package::simple_element(e.filename, e.content).write( comm_path);        
+		package::simple_element(comments_[i].filename, comments_[i].content).write( comm_path);        
 	}
 }
 ////////////////////////////////////////////
@@ -354,7 +332,7 @@ ppt_files::ppt_files()
 void ppt_files::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"ppt";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+    NSDirectory::CreateDirectory(path.c_str());
 
     slides_files_.set_rels(&rels_files_);
     slides_files_.set_main_document( this->get_main_document() );
@@ -386,7 +364,12 @@ void ppt_files::write(const std::wstring & RootPath)
         media_->set_main_document(get_main_document());
         media_->write(path);
     }
+	if (embeddings_)
     {
+		embeddings_->set_main_document(get_main_document());
+        embeddings_->write(path);
+    }
+	{
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
@@ -440,7 +423,14 @@ void ppt_files::add_slideMaster(slide_content_ptr slide)
 
 void ppt_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	if (_Mediaitems.count_image + _Mediaitems.count_media > 0)
+	{
+		media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
+	}
+	if (_Mediaitems.count_object > 0)
+	{
+		embeddings_ = element_ptr( new embeddings(_Mediaitems) );
+	}
 }
 void ppt_files::set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,111 @@
 
 #include "SvmObjects.h"
 #include "../../../common/String.h"
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
 
-
+static const char* CodingCharsets[95] =
+{
+	"", 				// 	0
+	"windows-1252",		// 	1	MS_1252
+	"", 				// 	2	APPLE_ROMAN
+	"IBM437", 			// 	3	IBM_437
+	"IBM850", 			// 	4	IBM_850
+	"IBM860",			// 	5	IBM_860
+	"IBM861", 			// 	6	IBM_861
+	"IBM863", 			// 	7	IBM_863
+	"IBM865",			// 	8	IBM_865
+	"", 				// 	9	Reserved
+	"", 				// 	10	SYMBOL
+	"", 				// 	11	ASCII_US
+	"ISO-8859-1", 		// 	12	ISO_8859_1
+	"ISO-8859-2", 		// 	13	ISO_8859_2
+	"ISO-8859-3", 		// 	14	ISO_8859_3
+	"ISO-8859-4", 		// 	15	ISO_8859_4
+	"ISO-8859-5", 		// 	16	ISO_8859_5
+	"ISO-8859-6", 		// 	17	ISO_8859_6
+	"ISO-8859-7", 		// 	18	ISO_8859_7
+	"ISO-8859-8", 		// 	19	ISO_8859_8
+	"ISO-8859-9", 		// 	20	ISO_8859_9
+	"ISO-8859-14", 		// 	21	ISO_8859_14
+	"ISO-8859-15", 		// 	22	ISO_8859_15
+	"IBM737", 			// 	23	IBM_737
+	"IBM775", 			// 	24	IBM_775
+	"IBM852", 			// 	25	IBM_852
+	"IBM855", 			// 	26	IBM_855
+	"IBM857", 			// 	27	IBM_857
+	"IBM862", 			// 	28	IBM_862
+	"IBM864", 			// 	29	IBM_864
+	"IBM866", 			// 	30	IBM_866
+	"IBM869", 			// 	31	IBM_869
+	"windows-874", 		// 	32	MS_874
+	"windows-1250", 	// 	33	MS_1250
+	"windows-1251", 	// 	34	MS_1251
+	"windows-1253", 	// 	35	MS_1253
+	"windows-1254", 	// 	36	MS_1254
+	"windows-1255", 	// 	37	MS_1255
+	"windows-1256", 	// 	38	MS_1256
+	"windows-1257", 	// 	39	MS_1257
+	"windows-1258", 	// 	40	MS_1258
+	"", 				// 	41	APPLE_ARABIC
+	"", 				// 	42	APPLE_CENTEURO
+	"", 				// 	43	APPLE_CROATIAN
+	"x-mac-cyrillic", 	// 	44	APPLE_CYRILLIC
+	"", 				// 	45	APPLE_DEVANAGARI
+	"", 				// 	46	APPLE_FARSI
+	"", 				// 	47	APPLE_GREEK
+	"", 				// 	48	APPLE_GUJARATI
+	"", 				// 	49	APPLE_GURMUKHI
+	"", 				// 	50	APPLE_HEBREW
+	"", 				// 	51	APPLE_ICELAND
+	"", 				// 	52	APPLE_ROMANIAN
+	"", 				// 	53	APPLE_THAI
+	"", 				// 	54	APPLE_TURKISH
+	"", 				// 	55	APPLE_UKRAINIAN
+	"", 				// 	56	APPLE_CHINSIMP
+	"", 				// 	57	APPLE_CHINTRAD
+	"", 				// 	58	APPLE_JAPANESE
+	"", 				// 	59	APPLE_KOREAN
+	"windows-932", 		// 	60	MS_932
+	"windows-936", 		// 	61	MS_936
+	"windows-949", 		// 	62	MS_949
+	"windows-950", 		// 	63	MS_950
+	"", 				// 	64	SHIFT_JIS
+	"GB2312", 			// 	65	GB_2312
+	"", 				// 	66	GBT_12345
+	"", 				// 	67	GBK
+	"Big5", 			// 	68	BIG5
+	"", 				// 	69	EUC_JP
+	"", 				// 	70	EUC_CN
+	"", 				// 	71	EUC_TW
+	"", 				// 	72	ISO_2022_JP
+	"", 				// 	73	ISO_2022_CN
+	"", 				// 	74	KOI8_R
+	"UTF-7", 			// 	75	UTF7
+	"UTF-8", 			// 	76	UTF8
+	"ISO-8859-10", 	// 	77	ISO_8859_10
+	"ISO-8859-13", 	// 	78	ISO_8859_13
+	"EUC-KR",			// 	79	EUC_KR
+	"", 				// 	80	ISO_2022_KR
+	"", 				// 	81	JIS_X_0201
+	"", 				// 	82	JIS_X_0208
+	"", 				// 	83	JIS_X_0212
+	"windows-1361", 	// 	84	MS_1361
+	"", 				// 	85	GB_18030
+	"", 				// 	86	BIG5_HKSCS
+	"", 				// 	87	TIS_620
+	"KOI8-U", 			// 	88	KOI8_U
+	"", 				// 	89	ISCII_DEVANAGARI
+	"", 				// 	90	JAVA_UTF8
+	"", 				// 	91	ADOBE_STANDARD
+	"", 				// 	92	ADOBE_SYMBOL
+	"", 				// 	93	PT154
+	"" 					// 	94	ADOBE_DINGBATS
+};
 namespace MetaFile
 {
-	void parseString(CDataStream &stream, std::wstring &string, unsigned short version, unsigned short charset)
+	int parseString(CDataStream &stream, std::wstring &string, unsigned short version, unsigned short charset)
 	{
-
+		int nRead = 0;
 		if (charset == 0xffff)//RTL_UNICODE
 		{
 			unsigned int length;
@@ -46,7 +144,8 @@ namespace MetaFile
 			
 			string = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)stream.GetCurPtr(), length);
 	
-			stream.Skip(length*2);
+			stream.Skip(length * 2);
+			nRead = length * 2 + 4;
 		}
 		else
 		{
@@ -57,11 +156,29 @@ namespace MetaFile
 			{
 				std::string ansiString = std::string((char*)stream.GetCurPtr(),length);
 				string = std::wstring(ansiString.begin(), ansiString.end());
-			}else
-				string = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)stream.GetCurPtr(), length,
-																			(NSStringExt::CConverter::ESingleByteEncoding)charset);
+			}
+			else
+			{
+				std::string coding_name;
+				if (charset < 95) 
+					coding_name = std::string(CodingCharsets[charset]);
+
+				if (!coding_name.empty())
+				{
+					NSUnicodeConverter::CUnicodeConverter converter;
+					string = converter.toUnicode((char*)stream.GetCurPtr(), length,coding_name.c_str());
+				}
+				else
+				{
+					string = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)stream.GetCurPtr(), length,
+																			(NSStringExt::CConverter::ESingleByteEncoding)charset); //не все
+				}
+			}
 			stream.Skip(length);
+			
+			nRead = length + 2;
 		}
+		return nRead;
 	}
 
 VersionCompat::VersionCompat()
@@ -326,31 +443,32 @@ CDataStream& operator>>(CDataStream &stream, CSvmFont *font)
 {
 	unsigned short  version;
 	unsigned int	totalSize;
+	unsigned int	totalRead = 0;
 
-	stream >> version;
+	stream >> version;			
 	stream >> totalSize;
 
-	parseString(stream, font->sFamilyName, version);
-	parseString(stream, font->sStyle, version);
+	totalRead += parseString(stream, font->sFamilyName, version);
+	totalRead += parseString(stream, font->sStyle, version);
 
-	stream >> font->SizeWidth;
-	stream >> font->SizeHeight;
+	stream >> font->SizeWidth;		totalRead += 4;
+	stream >> font->SizeHeight;		totalRead += 4;
 	
-	stream >> font->CharSet;    
-	stream >> font->Family;
-	stream >> font->Pitch;
-	stream >> font->Weight;    
-	stream >> font->Underline;  
-	stream >> font->StrikeOut; 
-	stream >> font->Italic; 
-	stream >> font->Language;
-	stream >> font->Width;
+	stream >> font->CharSet;		totalRead += 2;  
+	stream >> font->Family;			totalRead += 2; 
+	stream >> font->Pitch;			totalRead += 2; 
+	stream >> font->Weight;  		totalRead += 2;   
+	stream >> font->Underline;  	totalRead += 2; 
+	stream >> font->StrikeOut; 		totalRead += 2; 
+	stream >> font->Italic; 		totalRead += 2; 
+	stream >> font->Language;		totalRead += 2; 
+	stream >> font->Width;			totalRead += 2; 
 
-	stream >> font->Orientation;
-	stream >> font->bWordline;   
-	stream >> font->bOutline;
-	stream >> font->bShadow;
-	stream >> font->Kerning;
+	stream >> font->Orientation;	totalRead += 2; 
+	stream >> font->bWordline;  	totalRead += 1; 
+	stream >> font->bOutline;		totalRead += 1; 
+	stream >> font->bShadow;		totalRead += 1; 
+	stream >> font->Kerning;		totalRead += 1; 
 
 	char   temp8;
 	bool    tempbool;
@@ -358,17 +476,17 @@ CDataStream& operator>>(CDataStream &stream, CSvmFont *font)
 
 	if (version > 1) 
 	{
-		stream >> temp8;        // relief
-		stream >> tempu16;      // language
-		stream >> tempbool;     // vertical
+		stream >> temp8;        totalRead += 1;// relief
+		stream >> tempu16;      totalRead += 2;// language
+		stream >> tempbool;     totalRead += 1;// vertical
 		if (tempbool)
 			font->Orientation = 2;
-		stream >> tempu16;      // emphasis
+		stream >> tempu16;      totalRead += 2;// emphasis
 	}
 
 	if (version > 2) 
 	{
-		stream >> tempu16;      // overline
+		stream >> tempu16;      totalRead += 2;// overline
 	}
 	return stream;
 }

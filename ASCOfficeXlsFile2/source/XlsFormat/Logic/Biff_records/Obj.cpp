@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -76,85 +76,6 @@ BaseObjectPtr Obj::clone()
 {
 	return BaseObjectPtr(new Obj(*this));
 }
-
-
-void Obj::writeFields(CFRecord& record)
-{
-	record << cmo;
-	if(0 == cmo.ot)
-	{
-		// FtGmo
-		unsigned short ft = 0x06;
-		unsigned short cb = 0x02;
-		record << ft << cb; // reserved
-		record.reserveNunBytes(2); // unused
-	}
-	if(OBJ_Picture == cmo.ot)
-	{
-		record << pictFormat << pictFlags;
-	}
-	if(0x0B == cmo.ot || 0x0C == cmo.ot)
-	{
-		// FtCbls
-		unsigned short ft = 0x0A;
-		unsigned short cb = 0x0C;
-		record << ft << cb; // reserved
-		record.reserveNunBytes(cb); // unused
-	}
-	if(0x0C == cmo.ot)
-	{
-		// FtRbo
-		unsigned short ft = 0x0B;
-		unsigned short cb = 0x06;
-		record << ft << cb; // reserved
-		record.reserveNunBytes(cb); // unused
-	}
-	if(0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot || 0x14 == cmo.ot)
-	{
-		record << sbs;
-	}
-	if(0x19 == cmo.ot)
-	{
-		record << nts;
-	}
-	if(false) // TODO: Find out the condition
-	{
-		macro.store(record);
-	}
-	if(OBJ_Picture != cmo.ot)
-	{
-		pictFmla.store(record, pictFlags);
-	}
-	if(0x0B == cmo.ot || 0x0C == cmo.ot || 0x10 == cmo.ot || 0x11 == cmo.ot || 0x12 == cmo.ot || 0x14 == cmo.ot)
-	{
-		linkFmla.store(record, cmo.ot);
-	}
-	if(0x0B == cmo.ot || 0x0C == cmo.ot)
-	{
-		checkBox.store(record);
-	}
-	if(0x0C == cmo.ot)
-	{
-		radioButton.store(record);
-	}
-	if(0x0D == cmo.ot)
-	{
-		edit.store(record);
-	}
-	if(0x12 == cmo.ot || 0x14 == cmo.ot)
-	{
-		list.store(record, cmo.ot);
-	}
-	if(0x13 == cmo.ot)
-	{
-		gbo.store(record);
-	}
-	if(0x12 != cmo.ot && 0x14 != cmo.ot)
-	{
-		record.reserveNunBytes(4); // reserved
-	}
-}
-
 
 void Obj::readFields(CFRecord& record)
 {

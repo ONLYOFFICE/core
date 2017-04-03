@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,15 +41,6 @@ BiffStructurePtr CFExNonCF12::clone()
 {
 	return BiffStructurePtr(new CFExNonCF12(*this));
 }
-
-
-void CFExNonCF12::store(CFRecord& record)
-{
-#pragma message("####################### CFExNonCF12 record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CFExNonCF12 record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void CFExNonCF12::load(CFRecord& record)
 {

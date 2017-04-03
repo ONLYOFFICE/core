@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -531,6 +531,7 @@ namespace NSEditorApi
     private:
         js_wrapper<CAscImageRaw>	m_oRaw;
         js_wrapper<std::wstring>	m_sPath;
+        js_wrapper<std::wstring>	m_sUploadPath;
         js_wrapper<std::string>		m_sBase64;	
         js_wrapper<CAscBinaryData>	m_oBinaryData;
         
@@ -544,6 +545,7 @@ namespace NSEditorApi
         
         LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
         LINK_PROPERTY_STRING_JS(Path)
+        LINK_PROPERTY_STRING_JS(UploadPath)
         LINK_PROPERTY_STRINGA_JS(Base64)
         LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
     };

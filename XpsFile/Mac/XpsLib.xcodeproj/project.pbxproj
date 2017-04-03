@@ -1,0 +1,328 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6967B2D31E27BEEA00A129E2 /* ContextState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2C61E27BEEA00A129E2 /* ContextState.cpp */; };
+		6967B2D41E27BEEA00A129E2 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2C81E27BEEA00A129E2 /* Document.cpp */; };
+		6967B2D51E27BEEA00A129E2 /* Page.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2CB1E27BEEA00A129E2 /* Page.cpp */; };
+		6967B2D61E27BEEA00A129E2 /* StaticResources.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2CD1E27BEEA00A129E2 /* StaticResources.cpp */; };
+		6967B2D71E27BEEA00A129E2 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2CF1E27BEEA00A129E2 /* Utils.cpp */; };
+		6967B2D81E27BEEA00A129E2 /* WString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967B2D11E27BEEA00A129E2 /* WString.cpp */; };
+		6967BEB61E27DDBC00A129E2 /* XpsFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6967BEB41E27DDBC00A129E2 /* XpsFile.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6967B2B81E27BEC200A129E2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		6967B2BA1E27BEC200A129E2 /* libXpsLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXpsLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6967B2C61E27BEEA00A129E2 /* ContextState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ContextState.cpp; path = ../../XpsLib/ContextState.cpp; sourceTree = "<group>"; };
+		6967B2C71E27BEEA00A129E2 /* ContextState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextState.h; path = ../../XpsLib/ContextState.h; sourceTree = "<group>"; };
+		6967B2C81E27BEEA00A129E2 /* Document.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Document.cpp; path = ../../XpsLib/Document.cpp; sourceTree = "<group>"; };
+		6967B2C91E27BEEA00A129E2 /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../../XpsLib/Document.h; sourceTree = "<group>"; };
+		6967B2CA1E27BEEA00A129E2 /* FontList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontList.h; path = ../../XpsLib/FontList.h; sourceTree = "<group>"; };
+		6967B2CB1E27BEEA00A129E2 /* Page.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Page.cpp; path = ../../XpsLib/Page.cpp; sourceTree = "<group>"; };
+		6967B2CC1E27BEEA00A129E2 /* Page.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Page.h; path = ../../XpsLib/Page.h; sourceTree = "<group>"; };
+		6967B2CD1E27BEEA00A129E2 /* StaticResources.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StaticResources.cpp; path = ../../XpsLib/StaticResources.cpp; sourceTree = "<group>"; };
+		6967B2CE1E27BEEA00A129E2 /* StaticResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StaticResources.h; path = ../../XpsLib/StaticResources.h; sourceTree = "<group>"; };
+		6967B2CF1E27BEEA00A129E2 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../XpsLib/Utils.cpp; sourceTree = "<group>"; };
+		6967B2D01E27BEEA00A129E2 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../../XpsLib/Utils.h; sourceTree = "<group>"; };
+		6967B2D11E27BEEA00A129E2 /* WString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WString.cpp; path = ../../XpsLib/WString.cpp; sourceTree = "<group>"; };
+		6967B2D21E27BEEA00A129E2 /* WString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WString.h; path = ../../XpsLib/WString.h; sourceTree = "<group>"; };
+		6967BEB41E27DDBC00A129E2 /* XpsFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XpsFile.cpp; path = ../../XpsFile.cpp; sourceTree = "<group>"; };
+		6967BEB51E27DDBC00A129E2 /* XpsFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XpsFile.h; path = ../../XpsFile.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6967B2B71E27BEC200A129E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6967B2B11E27BEC200A129E2 = {
+			isa = PBXGroup;
+			children = (
+				6967B2BC1E27BEC200A129E2 /* XpsLib */,
+				6967B2BB1E27BEC200A129E2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6967B2BB1E27BEC200A129E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6967B2BA1E27BEC200A129E2 /* libXpsLib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6967B2BC1E27BEC200A129E2 /* XpsLib */ = {
+			isa = PBXGroup;
+			children = (
+				6967BEB41E27DDBC00A129E2 /* XpsFile.cpp */,
+				6967BEB51E27DDBC00A129E2 /* XpsFile.h */,
+				6967BEB71E27DDBF00A129E2 /* src */,
+			);
+			path = XpsLib;
+			sourceTree = "<group>";
+		};
+		6967BEB71E27DDBF00A129E2 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				6967B2C61E27BEEA00A129E2 /* ContextState.cpp */,
+				6967B2C71E27BEEA00A129E2 /* ContextState.h */,
+				6967B2C81E27BEEA00A129E2 /* Document.cpp */,
+				6967B2C91E27BEEA00A129E2 /* Document.h */,
+				6967B2CA1E27BEEA00A129E2 /* FontList.h */,
+				6967B2CB1E27BEEA00A129E2 /* Page.cpp */,
+				6967B2CC1E27BEEA00A129E2 /* Page.h */,
+				6967B2CD1E27BEEA00A129E2 /* StaticResources.cpp */,
+				6967B2CE1E27BEEA00A129E2 /* StaticResources.h */,
+				6967B2CF1E27BEEA00A129E2 /* Utils.cpp */,
+				6967B2D01E27BEEA00A129E2 /* Utils.h */,
+				6967B2D11E27BEEA00A129E2 /* WString.cpp */,
+				6967B2D21E27BEEA00A129E2 /* WString.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6967B2B91E27BEC200A129E2 /* XpsLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6967B2C31E27BEC200A129E2 /* Build configuration list for PBXNativeTarget "XpsLib" */;
+			buildPhases = (
+				6967B2B61E27BEC200A129E2 /* Sources */,
+				6967B2B71E27BEC200A129E2 /* Frameworks */,
+				6967B2B81E27BEC200A129E2 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XpsLib;
+			productName = XpsLib;
+			productReference = 6967B2BA1E27BEC200A129E2 /* libXpsLib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6967B2B21E27BEC200A129E2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = OnlyOffce;
+				TargetAttributes = {
+					6967B2B91E27BEC200A129E2 = {
+						CreatedOnToolsVersion = 8.2;
+						DevelopmentTeam = 2WH24U26GJ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 6967B2B51E27BEC200A129E2 /* Build configuration list for PBXProject "XpsLib" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 6967B2B11E27BEC200A129E2;
+			productRefGroup = 6967B2BB1E27BEC200A129E2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6967B2B91E27BEC200A129E2 /* XpsLib */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6967B2B61E27BEC200A129E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6967B2D51E27BEEA00A129E2 /* Page.cpp in Sources */,
+				6967BEB61E27DDBC00A129E2 /* XpsFile.cpp in Sources */,
+				6967B2D41E27BEEA00A129E2 /* Document.cpp in Sources */,
+				6967B2D81E27BEEA00A129E2 /* WString.cpp in Sources */,
+				6967B2D31E27BEEA00A129E2 /* ContextState.cpp in Sources */,
+				6967B2D71E27BEEA00A129E2 /* Utils.cpp in Sources */,
+				6967B2D61E27BEEA00A129E2 /* StaticResources.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6967B2C11E27BEC200A129E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		6967B2C21E27BEC200A129E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6967B2C41E27BEC200A129E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					LINUX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					_IOS,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6967B2C51E27BEC200A129E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 2WH24U26GJ;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					_USE_LIBXML2_READER_,
+					LINUX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					_IOS,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6967B2B51E27BEC200A129E2 /* Build configuration list for PBXProject "XpsLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6967B2C11E27BEC200A129E2 /* Debug */,
+				6967B2C21E27BEC200A129E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6967B2C31E27BEC200A129E2 /* Build configuration list for PBXNativeTarget "XpsLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6967B2C41E27BEC200A129E2 /* Debug */,
+				6967B2C51E27BEC200A129E2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6967B2B21E27BEC200A129E2 /* Project object */;
+}

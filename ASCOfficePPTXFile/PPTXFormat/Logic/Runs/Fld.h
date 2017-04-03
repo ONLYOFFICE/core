@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,7 +36,6 @@
 #include "RunBase.h"
 #include "./../RunProperties.h"
 #include "./../TextParagraphPr.h"
-//#include "../../../../Common/DocxFormat/Source/Utility/Encoding.h"
 
 namespace PPTX
 {
@@ -45,7 +44,8 @@ namespace PPTX
 		class Fld : public RunBase
 		{
 		public:
-			PPTX_LOGIC_BASE(Fld)
+			WritingElement_AdditionConstructors(Fld)			
+			PPTX_LOGIC_BASE2(Fld)
 
 			Fld& operator=(const Fld& oSrc)
 			{
@@ -60,11 +60,50 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_fld;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (_T("rPr") == strName)
+					{
+						if (!rPr.IsInit())
+							rPr = oReader;
+					}
+					else if (_T("pPr") == strName)
+					{
+						if (!pPr.IsInit())
+							pPr = oReader;
+					}
+					else if (_T("t") == strName)
+					{
+						if (!text.IsInit())
+							text = oReader.GetText2();
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("id"), id)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				id		= node.GetAttribute(_T("id"));
+				id = node.GetAttribute(_T("id"));
 				node.ReadAttributeBase(L"type", type);
 
 				XmlUtils::CXmlNodes oNodes;
@@ -76,7 +115,7 @@ namespace PPTX
 						XmlUtils::CXmlNode oNode;
 						oNodes.GetAt(i, oNode);
 
-						CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
 						if (_T("rPr") == strName)
 						{
@@ -98,7 +137,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("id"), id);
@@ -110,12 +149,7 @@ namespace PPTX
 				
 				if (text.IsInit())
                 {
-                    CString s = *text;
-                    s.Replace(_T("&"),	_T("&amp;"));
-                    s.Replace(_T("'"),	_T("&apos;"));
-                    s.Replace(_T("<"),	_T("&lt;"));
-                    s.Replace(_T(">"),	_T("&gt;"));
-                    s.Replace(_T("\""),	_T("&quot;"));
+                    std::wstring s = XmlUtils::EncodeXmlString(*text);
 
                     oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
                 }
@@ -166,14 +200,14 @@ namespace PPTX
 
 			}
 
-			void SetText(const CString& src)
+			void SetText(const std::wstring& src)
 			{
 				text = src;
 			}
 
-			virtual CString GetText()const{return text.get_value_or(_T(""));};
+			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
 		public:
-			CString						id;
+			std::wstring						id;
 			
 			nullable_string				type;
 

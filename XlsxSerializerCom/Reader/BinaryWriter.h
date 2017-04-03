@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,8 +55,8 @@
 
 namespace BinXlsxRW {
 
-	static TCHAR* gc_sMediaDirName = _T("media");
-	static TCHAR* gc_sMimeName = _T("mimetype");
+    static wchar_t* gc_sMediaDirName    = _T("media");
+    static wchar_t* gc_sMimeName        = _T("mimetype");
 
 	class BinaryTableWriter
 	{
@@ -69,7 +69,7 @@ namespace BinXlsxRW {
 		void Write(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTableParts& oTableParts)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oTableParts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oTableParts.m_arrItems.size(); i < length; ++i)
 				WriteTablePart(oWorksheet, *oTableParts.m_arrItems[i]);
 		};
 		void WriteTablePart(const OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CTablePart& oTablePart)
@@ -113,7 +113,7 @@ namespace BinXlsxRW {
 			if(oTable.m_oDisplayName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TablePart::DisplayName);
-				m_oBcw.m_oStream.WriteStringWStd(oTable.m_oDisplayName.get2());
+				m_oBcw.m_oStream.WriteStringW(oTable.m_oDisplayName.get2());
 			}
 			if(oTable.m_oAutoFilter.IsInit())
 			{
@@ -145,6 +145,33 @@ namespace BinXlsxRW {
 				WriteTableStyleInfo(oTable.m_oTableStyleInfo.get());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
+			if(oTable.m_oExtLst.IsInit())
+			{
+				for(size_t i = 0; i < oTable.m_oExtLst->m_arrExt.size(); ++i)
+				{
+					OOX::Drawing::COfficeArtExtension* pExt = oTable.m_oExtLst->m_arrExt[i];
+					if(pExt->m_oAltTextTable.IsInit())
+					{
+						nCurPos = m_oBcw.WriteItemStart(c_oSer_TablePart::AltTextTable);
+						WriteAltTextTable(pExt->m_oAltTextTable.get());
+						m_oBcw.WriteItemWithLengthEnd(nCurPos);
+					}
+				}
+			}
+		}
+		void WriteAltTextTable(const OOX::Spreadsheet::CAltTextTable& oAltTextTable)
+		{
+			int nCurPos = 0;
+			if(oAltTextTable.m_oAltText.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltText);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltText.get());
+			}
+			if(oAltTextTable.m_oAltTextSummary.IsInit())
+			{
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_AltTextTable::AltTextSummary);
+				m_oBcw.m_oStream.WriteStringW(oAltTextTable.m_oAltTextSummary.get());
+			}
 		}
 		void WriteAutoFilter(const OOX::Spreadsheet::CAutofilter& oAutofilter)
 		{
@@ -170,7 +197,7 @@ namespace BinXlsxRW {
 		void WriteFilterColumns(const std::vector<OOX::Spreadsheet::CFilterColumn *>& aFilterColumn)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aFilterColumn.size(); i < length; ++i)
+			for(size_t i = 0, length = aFilterColumn.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_AutoFilter::FilterColumn);
 				WriteFilterColumn(*aFilterColumn[i]);
@@ -238,7 +265,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBOOL(oFilters.m_oBlank->ToBool());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
-			for(int i = 0, length = oFilters.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oFilters.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = oFilters.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Filter == we->getType())
@@ -261,7 +288,7 @@ namespace BinXlsxRW {
 			if(oFilter.m_oVal.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_Filter::Val);
-				m_oBcw.m_oStream.WriteStringWStd(oFilter.m_oVal.get2());
+				m_oBcw.m_oStream.WriteStringW(oFilter.m_oVal.get2());
 			}
 		}
 		void WriteDateGroupItem(OOX::Spreadsheet::CDateGroupItem& oDateGroupItem)
@@ -329,7 +356,7 @@ namespace BinXlsxRW {
 		void WriteCustomFiltersItems(const std::vector<OOX::Spreadsheet::CCustomFilter *>& aCustomFilters)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aCustomFilters.size(); i < length; ++i)
+			for(size_t i = 0, length = aCustomFilters.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CustomFilters::CustomFilter);
 				WriteCustomFiltersItem(*aCustomFilters[i]);
@@ -349,7 +376,7 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CustomFilters::Val);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oCustomFilter.m_oVal.get2());
+				m_oBcw.m_oStream.WriteStringW(oCustomFilter.m_oVal.get2());
 			}
 		}
 		void WriteDynamicFilter(const OOX::Spreadsheet::CDynamicFilter& oDynamicFilter)
@@ -460,7 +487,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 			int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_SortState::SortConditions);
-			for(int i = 0, length = oSortState.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oSortState.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_SortState::SortCondition);
 				WriteSortCondition(*oSortState.m_arrItems[i]);
@@ -474,12 +501,12 @@ namespace BinXlsxRW {
 			if(oTableColumn.m_oName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::Name);
-				m_oBcw.m_oStream.WriteStringWStd(oTableColumn.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oName.get2());
 			}
 			if(oTableColumn.m_oTotalsRowLabel.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::TotalsRowLabel);
-				m_oBcw.m_oStream.WriteStringWStd(oTableColumn.m_oTotalsRowLabel.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oTotalsRowLabel.get2());
 			}
 			if(oTableColumn.m_oTotalsRowFunction.IsInit())
 			{
@@ -490,7 +517,7 @@ namespace BinXlsxRW {
 			if(oTableColumn.m_oTotalsRowFormula.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::TotalsRowFormula);
-				m_oBcw.m_oStream.WriteStringWStd(oTableColumn.m_oTotalsRowFormula.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oTotalsRowFormula.get2());
 			}
 			if(oTableColumn.m_oDataDxfId.IsInit())
 			{
@@ -501,13 +528,13 @@ namespace BinXlsxRW {
 			if(oTableColumn.m_oCalculatedColumnFormula.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::CalculatedColumnFormula);
-				m_oBcw.m_oStream.WriteStringWStd(oTableColumn.m_oCalculatedColumnFormula.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableColumn.m_oCalculatedColumnFormula.get2());
 			}
 		}
 		void WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oTableColumns.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oTableColumns.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::TableColumn);
 				WriteTableColumn(*oTableColumns.m_arrItems[i]);
@@ -520,7 +547,7 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyleInfo::Name);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oTableStyleInfo.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableStyleInfo.m_oName.get2());
 			}
 			if(oTableStyleInfo.m_oShowColumnStripes.IsInit())
 			{
@@ -635,7 +662,7 @@ namespace BinXlsxRW {
 		void WriteBorders(const OOX::Spreadsheet::CBorders& borders, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = borders.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = borders.m_arrItems.size(); i < length; ++i)
 			{
 					OOX::Spreadsheet::CBorder* pBorder = borders.m_arrItems[i];
 					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Border);
@@ -740,7 +767,7 @@ namespace BinXlsxRW {
 		void WriteCellStyleXfs(const OOX::Spreadsheet::CCellStyleXfs& cellStyleXfs)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = cellStyleXfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = cellStyleXfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = cellStyleXfs.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Xfs == we->getType())
@@ -755,7 +782,7 @@ namespace BinXlsxRW {
 		void WriteCellXfs(const OOX::Spreadsheet::CCellXfs& cellXfs)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = cellXfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = cellXfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = cellXfs.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Xfs == we->getType())
@@ -913,7 +940,7 @@ namespace BinXlsxRW {
 		void WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = fills.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = fills.m_arrItems.size(); i < length; ++i)
 			{
 					OOX::Spreadsheet::CFill* pFill = fills.m_arrItems[i];
 					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Fill);
@@ -974,12 +1001,12 @@ namespace BinXlsxRW {
 		void WriteFonts(const OOX::Spreadsheet::CFonts& fonts, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = fonts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = fonts.m_arrItems.size(); i < length; ++i)
 			{
-					OOX::Spreadsheet::CFont* pFont = fonts.m_arrItems[i];
-					nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Font);
-					WriteFont(*pFont, pIndexedColors, pTheme, oFontProcessor);
-					m_oBcw.WriteItemEnd(nCurPos);
+				OOX::Spreadsheet::CFont* pFont = fonts.m_arrItems[i];
+				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Font);
+				WriteFont(*pFont, pIndexedColors, pTheme, oFontProcessor);
+				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		};
 		void WriteFont(const OOX::Spreadsheet::CFont& font, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* theme, DocWrapper::FontProcessor& oFontProcessor)
@@ -1012,7 +1039,7 @@ namespace BinXlsxRW {
 			if(font.m_oRFont.IsInit() && font.m_oRFont->m_sVal.IsInit())
 			{
 				//подбираем шрифт
-				CString sFont = oFontProcessor.getFont(font.m_oScheme, font.m_oRFont, font.m_oCharset, font.m_oFamily, theme);
+                std::wstring sFont = oFontProcessor.getFont(font.m_oScheme, font.m_oRFont, font.m_oCharset, font.m_oFamily, theme);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				m_oBcw.m_oStream.WriteStringW(sFont);
@@ -1063,7 +1090,7 @@ namespace BinXlsxRW {
 		void WriteNumFmts(const OOX::Spreadsheet::CNumFmts& numFmts)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = numFmts.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = numFmts.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CNumFmt* pNumFmt = numFmts.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::NumFmt);
@@ -1080,10 +1107,10 @@ namespace BinXlsxRW {
 				std::wstring& sFormatCode = numFmt.m_oFormatCode.get2();
 				m_oBcw.m_oStream.WriteBYTE(c_oSerNumFmtTypes::FormatCode);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(sFormatCode);
+				m_oBcw.m_oStream.WriteStringW(sFormatCode);
 
 				if(NULL != m_pEmbeddedFontsManager)
-					m_pEmbeddedFontsManager->CheckString(std_string2string(sFormatCode));
+					m_pEmbeddedFontsManager->CheckString(sFormatCode);
 			}
 			//NumFmtId
 			if(numFmt.m_oNumFmtId.IsInit())
@@ -1096,7 +1123,7 @@ namespace BinXlsxRW {
 		void WriteCellStyles(const OOX::Spreadsheet::CCellStyles& oCellStyles)
 		{
 			int nCurPos = 0;
-			for (int i = 0, nLength = oCellStyles.m_arrItems.size(); i < nLength; ++i)
+			for (size_t i = 0, nLength = oCellStyles.m_arrItems.size(); i < nLength; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = oCellStyles.m_arrItems[i];
 				if (OOX::Spreadsheet::et_CellStyle == we->getType())
@@ -1138,7 +1165,7 @@ namespace BinXlsxRW {
 			if (oCellStyle.m_oName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CellStyle::Name);
-				m_oBcw.m_oStream.WriteStringWStd(oCellStyle.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(oCellStyle.m_oName.get2());
 			}
 			if (oCellStyle.m_oXfId.IsInit())
 			{
@@ -1150,7 +1177,7 @@ namespace BinXlsxRW {
 		void WriteDxfs(const OOX::Spreadsheet::CDxfs& oDxfs, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = oDxfs.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oDxfs.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CDxf* pDxf = oDxfs.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerStylesTypes::Dxf);
@@ -1198,12 +1225,12 @@ namespace BinXlsxRW {
 			if(oTableStyles.m_oDefaultTableStyle.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyles::DefaultTableStyle);
-				m_oBcw.m_oStream.WriteStringWStd(oTableStyles.m_oDefaultTableStyle.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableStyles.m_oDefaultTableStyle.get2());
 			}
 			if(oTableStyles.m_oDefaultPivotStyle.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyles::DefaultPivotStyle);
-				m_oBcw.m_oStream.WriteStringWStd(oTableStyles.m_oDefaultPivotStyle.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableStyles.m_oDefaultPivotStyle.get2());
 			}
 			if(oTableStyles.m_arrItems.size() > 0)
 			{
@@ -1215,7 +1242,7 @@ namespace BinXlsxRW {
 		void WriteTableCustomStyles(const std::vector<OOX::Spreadsheet::CTableStyle *>& aTableStyles)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aTableStyles.size(); i < length; ++i)
+			for(size_t i = 0, length = aTableStyles.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CTableStyle* pTableStyle = aTableStyles[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableStyles::TableStyle);
@@ -1229,7 +1256,7 @@ namespace BinXlsxRW {
 			if(oTableStyle.m_oName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyle::Name);
-				m_oBcw.m_oStream.WriteStringWStd(oTableStyle.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableStyle.m_oName.get2());
 			}
 			if(oTableStyle.m_oPivot.IsInit())
 			{
@@ -1252,13 +1279,13 @@ namespace BinXlsxRW {
 			if(oTableStyle.m_oDisplayName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyle::DisplayName);
-				m_oBcw.m_oStream.WriteStringWStd(oTableStyle.m_oDisplayName.get2());
+				m_oBcw.m_oStream.WriteStringW(oTableStyle.m_oDisplayName.get2());
 			}
 		}
 		void WriteTableStyleElements(const std::vector<OOX::Spreadsheet::CTableStyleElement *>& aTableStyles)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aTableStyles.size(); i < length; ++i)
+			for(size_t i = 0, length = aTableStyles.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableStyle::Element);
 				WriteTableStyleElement(*aTableStyles[i]);
@@ -1305,7 +1332,7 @@ namespace BinXlsxRW {
 		void WriteSharedStrings(OOX::Spreadsheet::CSharedStrings& sharedString, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			for(int i = 0, length = sharedString.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = sharedString.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = sharedString.m_arrItems[i];
 				if(OOX::Spreadsheet::et_Si == we->getType())
@@ -1320,48 +1347,48 @@ namespace BinXlsxRW {
 		void WriteSharedString(OOX::Spreadsheet::CSi& si, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			for(int i = 0, length = si.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = si.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = si.m_arrItems[i];
 				if(OOX::Spreadsheet::et_r == we->getType())
 				{
 					OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::Run);
-					WriteRun(*pRun, pIndexedColors, pTheme, oFontProcessor);
+						WriteRun(*pRun, pIndexedColors, pTheme, oFontProcessor);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 				else if(OOX::Spreadsheet::et_t == we->getType())
 				{
 					OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(we);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerSharedStringTypes::Text);
-					m_oBcw.m_oStream.WriteStringWStd(pText->m_sText);
+					m_oBcw.m_oStream.WriteStringW(pText->m_sText);
 
 					if(NULL != m_pEmbeddedFontsManager)
-						m_pEmbeddedFontsManager->CheckString(std_string2string(pText->m_sText));
+						m_pEmbeddedFontsManager->CheckString(pText->m_sText);
 				}
 			}
 		};
 		void WriteRun(OOX::Spreadsheet::CRun& run, OOX::Spreadsheet::CIndexedColors* pIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			int nCurPos;
-			//rPr
+	//rPr
 			if(run.m_oRPr.IsInit())
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerSharedStringTypes::RPr);
 				WriteRPr(run.m_oRPr.get(), pIndexedColors, pTheme, oFontProcessor);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
-			for(int i = 0, length = run.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = run.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::WritingElement* we = run.m_arrItems[i];
 				if(OOX::Spreadsheet::et_t == we->getType())
 				{
 					OOX::Spreadsheet::CText* pText = static_cast<OOX::Spreadsheet::CText*>(we);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerSharedStringTypes::Text);
-					m_oBcw.m_oStream.WriteStringWStd(pText->m_sText);
+					m_oBcw.m_oStream.WriteStringW(pText->m_sText);
 
 					if(NULL != m_pEmbeddedFontsManager)
-						m_pEmbeddedFontsManager->CheckString(std_string2string(pText->m_sText));
+						m_pEmbeddedFontsManager->CheckString(pText->m_sText);
 				}
 			}
 		};
@@ -1394,7 +1421,7 @@ namespace BinXlsxRW {
 			//RFont
 			if(false != rPr.m_oRFont.IsInit() && rPr.m_oRFont->m_sVal.IsInit())
 			{
-				CString sFont = oFontProcessor.getFont(rPr.m_oScheme, rPr.m_oRFont, rPr.m_oCharset, rPr.m_oFamily, pTheme);
+                std::wstring sFont = oFontProcessor.getFont(rPr.m_oScheme, rPr.m_oRFont, rPr.m_oCharset, rPr.m_oFamily, pTheme);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 				m_oBcw.m_oStream.WriteStringW(sFont);
@@ -1531,7 +1558,7 @@ namespace BinXlsxRW {
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames)
 		{
 			int nCurPos;
-			for(int i = 0, length = definedNames.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = definedNames.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CDefinedName* pDefinedName = definedNames.m_arrItems[i];
 				//DefinedName
@@ -1543,7 +1570,7 @@ namespace BinXlsxRW {
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook)
 		{
 			int nCurPos;
-			for(int i = 0, length = externalReferences.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = externalReferences.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CExternalReference* pExternalReference = externalReferences.m_arrItems[i];
 				//ExternalReference
@@ -1557,7 +1584,7 @@ namespace BinXlsxRW {
 						OOX::Spreadsheet::CExternalLink* pExternalLink = static_cast<OOX::Spreadsheet::CExternalLink*>(pFile.operator ->());
 						if ((pExternalLink) && (pExternalLink->m_oExternalBook.IsInit()))
 						{
-							CString sLink;
+                            std::wstring sLink;
 							if (pExternalLink->m_oExternalBook->m_oRid.IsInit())
 							{
 								smart_ptr<OOX::File> pFile = pExternalLink->Find( OOX::RId(pExternalLink->m_oExternalBook->m_oRid.get().GetValue()));
@@ -1567,7 +1594,7 @@ namespace BinXlsxRW {
 									sLink = pLinkFile->Uri().GetPath();
 								}						
 							}
-							if(!sLink.IsEmpty())
+                            if(!sLink.empty())
 							{
 								nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalReference);
 									m_oBcw.m_oStream.WriteStringW3(sLink);
@@ -1586,13 +1613,13 @@ namespace BinXlsxRW {
 			if(definedName.m_oName.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Name);
-				m_oBcw.m_oStream.WriteStringWStd(definedName.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(definedName.m_oName.get2());
 			}
 			//Ref
 			if(definedName.m_oRef.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Ref);
-				m_oBcw.m_oStream.WriteStringWStd(definedName.m_oRef.get2());
+				m_oBcw.m_oStream.WriteStringW(definedName.m_oRef.get2());
 			}
 			//LocalSheetId
 			if(definedName.m_oLocalSheetId.IsInit())
@@ -1612,7 +1639,7 @@ namespace BinXlsxRW {
 			if (definedName.m_oComment.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerDefinedNameTypes::Comment);
-				m_oBcw.m_oStream.WriteStringWStd(definedName.m_oComment.get2());
+				m_oBcw.m_oStream.WriteStringW(definedName.m_oComment.get2());
 			}
 		};
 	};
@@ -1642,12 +1669,12 @@ namespace BinXlsxRW {
 			if(workbook.m_oSheets.IsInit())
 			{
 				std::vector<OOX::Spreadsheet::CSheet*>& aWs = workbook.m_oSheets->m_arrItems;
-				for(int i = 0, length = aWs.size(); i < length; ++i)
+				for(size_t i = 0, length = aWs.size(); i < length; ++i)
 				{
 					OOX::Spreadsheet::CSheet* pSheet = aWs[i];
 					if(pSheet->m_oRid.IsInit())
 					{
-						std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(string2std_string(pSheet->m_oRid->GetValue()));
+						std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>::const_iterator pair = aWorksheets.find(pSheet->m_oRid->GetValue());
 						if(aWorksheets.end() != pair)
 						{
 							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Worksheet);
@@ -1677,7 +1704,7 @@ namespace BinXlsxRW {
 			if(oWorksheet.m_oDimension.IsInit() && oWorksheet.m_oDimension->m_oRef.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetsTypes::Dimension);
-				m_oBcw.m_oStream.WriteStringWStd(oWorksheet.m_oDimension->m_oRef.get2());
+				m_oBcw.m_oStream.WriteStringW(oWorksheet.m_oDimension->m_oRef.get2());
 			}
 			//SheetViews
 			if(oWorksheet.m_oSheetViews.IsInit())
@@ -1762,8 +1789,8 @@ namespace BinXlsxRW {
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
 					
-					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
-					CString sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
+                    std::wstring sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
+                    std::wstring sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
 					
 					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
@@ -1838,7 +1865,7 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetPropTypes::Name);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oSheet.m_oName.get2());
+				m_oBcw.m_oStream.WriteStringW(oSheet.m_oName.get2());
 			}
 			//SheetId
 			if(oSheet.m_oSheetId.IsInit())
@@ -1858,7 +1885,7 @@ namespace BinXlsxRW {
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols)
 		{
 			int nCurPos;
-			for(int i = 0, length = oCols.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oCols.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CCol* pCol = oCols.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Col);
@@ -1910,19 +1937,25 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oCol.m_oWidth->GetValue());
 			}
-			//CustomWidth
-			if(oCol.m_oCustomWidth.IsInit())
-			{
-				m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::CustomWidth);
-				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE(oCol.m_oCustomWidth->ToBool());
-			}
-		}
+            //CustomWidth
+            if(oCol.m_oCustomWidth.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::CustomWidth);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+                m_oBcw.m_oStream.WriteBYTE(oCol.m_oCustomWidth->ToBool());
+            }
+            if(oCol.m_oOutlineLevel.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetColTypes::OutLevel);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+                m_oBcw.m_oStream.WriteLONG(oCol.m_oOutlineLevel->GetValue());
+            }
+        }
 
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews)
 		{
 			int nCurPos = 0;
-			for (int nIndex = 0, nLength = oSheetViews.m_arrItems.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0, nLength = oSheetViews.m_arrItems.size(); nIndex < nLength; ++nIndex)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetView);
 				WriteSheetView(*oSheetViews.m_arrItems[nIndex]);
@@ -2082,7 +2115,7 @@ namespace BinXlsxRW {
 			if (oPane.m_oTopLeftCell.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_Pane::TopLeftCell);
-				m_oBcw.m_oStream.WriteStringWStd(oPane.m_oTopLeftCell.get2());
+				m_oBcw.m_oStream.WriteStringW(oPane.m_oTopLeftCell.get2());
 			}
 			//XSplit
 			if (oPane.m_oXSplit.IsInit())
@@ -2248,7 +2281,7 @@ namespace BinXlsxRW {
 		void WriteHyperlinks(const OOX::Spreadsheet::CHyperlinks& oHyperlinks, OOX::Spreadsheet::CWorksheet& oWorksheet)
 		{
 			int nCurPos;
-			for(int i = 0, length = oHyperlinks.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oHyperlinks.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CHyperlink* pHyperlink = oHyperlinks.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Hyperlink);
@@ -2287,49 +2320,49 @@ namespace BinXlsxRW {
 			{
 				//Ref
 				m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Ref);
-				m_oBcw.m_oStream.WriteStringWStd(sRef);
+				m_oBcw.m_oStream.WriteStringW(sRef);
 				//Hyperlink
 				if (!sHyperlink.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Hyperlink);
-					m_oBcw.m_oStream.WriteStringWStd(sHyperlink);
+					m_oBcw.m_oStream.WriteStringW(sHyperlink);
 				}
 				//Location
 				if (!sLocation.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Location);
-					m_oBcw.m_oStream.WriteStringWStd(sLocation);
+					m_oBcw.m_oStream.WriteStringW(sLocation);
 				}
 				//Tooltip
 				if(oHyperlink.m_oTooltip.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Tooltip);
-					m_oBcw.m_oStream.WriteStringWStd(oHyperlink.m_oTooltip.get2());
+					m_oBcw.m_oStream.WriteStringW(oHyperlink.m_oTooltip.get2());
 				}
 				//Display
 				if(oHyperlink.m_oDisplay.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerHyperlinkTypes::Display);
-					m_oBcw.m_oStream.WriteStringWStd(oHyperlink.m_oDisplay.get2());
+					m_oBcw.m_oStream.WriteStringW(oHyperlink.m_oDisplay.get2());
 				}
 			}
 		};
 		void WriteMergeCells(const OOX::Spreadsheet::CMergeCells& oMergeCells)
 		{
-			for(int i = 0, length = oMergeCells.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oMergeCells.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CMergeCell* pMergeCell = oMergeCells.m_arrItems[i];
 				if(pMergeCell->m_oRef.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetsTypes::MergeCell);
-					m_oBcw.m_oStream.WriteStringWStd(pMergeCell->m_oRef.get2());
+					m_oBcw.m_oStream.WriteStringW(pMergeCell->m_oRef.get2());
 				}
 			}
 		};
 		void WriteSheetData(const OOX::Spreadsheet::CSheetData& oSheetData)
 		{
 			int nCurPos;
-			for(int i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oSheetData.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CRow* pRow = oSheetData.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
@@ -2375,7 +2408,13 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(oRows.m_oCustomHeight->ToBool());
 			}
-			if(oRows.m_arrItems.size() > 0)
+            if(oRows.m_oOutlineLevel.IsInit())
+            {
+                m_oBcw.m_oStream.WriteBYTE(c_oSerRowTypes::OutLevel);
+                m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+                m_oBcw.m_oStream.WriteLONG(oRows.m_oOutlineLevel->GetValue());
+            }
+            if(oRows.m_arrItems.size() > 0)
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerRowTypes::Cells);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -2387,7 +2426,7 @@ namespace BinXlsxRW {
 		void WriteCells(const OOX::Spreadsheet::CRow& oRows)
 		{
 			int nCurPos;
-			for(int i = 0, length = oRows.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = oRows.m_arrItems.size(); i < length; ++i)
 			{
 				OOX::Spreadsheet::CCell* oCell =oRows.m_arrItems[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSerRowTypes::Cell);
@@ -2412,7 +2451,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 
 				//m_oBcw.m_oStream.WriteBYTE(c_oSerCellTypes::Ref);
-				//m_oBcw.m_oStream.WriteStringWStd(oCell.m_oRef.get2());
+				//m_oBcw.m_oStream.WriteStringW(oCell.m_oRef.get2());
 			}
 			//Style
 			if(oCell.m_oStyle.IsInit())
@@ -2510,21 +2549,21 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFormulaTypes::R1);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oFormula.m_oR1.get2());
+				m_oBcw.m_oStream.WriteStringW(oFormula.m_oR1.get2());
 			}
 			//R2
 			if(oFormula.m_oR2.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFormulaTypes::R2);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oFormula.m_oR2.get2());
+				m_oBcw.m_oStream.WriteStringW(oFormula.m_oR2.get2());
 			}
 			//Ref
 			if(oFormula.m_oRef.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFormulaTypes::Ref);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oFormula.m_oRef.get2());
+				m_oBcw.m_oStream.WriteStringW(oFormula.m_oRef.get2());
 			}
 			//Si
 			if(oFormula.m_oSi.IsInit())
@@ -2545,20 +2584,20 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFormulaTypes::Text);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oFormula.m_sText);
+				m_oBcw.m_oStream.WriteStringW(oFormula.m_sText);
 
 				if(NULL != m_pEmbeddedFontsManager)
-					m_pEmbeddedFontsManager->CheckString(std_string2string(oFormula.m_sText));
+					m_pEmbeddedFontsManager->CheckString(oFormula.m_sText);
 			}
 		};
 
-		void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
+        void WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL)
 		{
 			int nCurPos;
-			for(int i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
+			for(size_t i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
 			{
 				OOX::Spreadsheet::CCellAnchor& pCellAnchor = *pDrawing->m_arrItems[i];
-				//OleObject пишутся в новом drawing и старом legacyDrawing, мы используем legacyDrawing, поэтому пропускаем shape из drawing
+				//we use legacyDrawing or objectPr in OleObject so skip shape in drawing
 				bool bShapeOle = false;
 				if(oWorksheet.m_oOleObjects.IsInit() && pCellAnchor.m_oShape.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr.IsInit() &&
 						pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr.IsInit() && pCellAnchor.m_oShape->m_oNvSpPr->m_oCNvPr->m_oId.IsInit() )
@@ -2579,82 +2618,180 @@ namespace BinXlsxRW {
 				}
 			}
 			//OleObjects
-			if(NULL != pVmlDrawing && oWorksheet.m_oOleObjects.IsInit())
+			if(oWorksheet.m_oOleObjects.IsInit())
 			{
 				for (std::map<int, COleObject*>::const_iterator it = oWorksheet.m_oOleObjects->m_mapOleObjects.begin(); it != oWorksheet.m_oOleObjects->m_mapOleObjects.end(); ++it)
 				{
 					OOX::Spreadsheet::COleObject* pOleObject = it->second;
-					if(pOleObject->m_oShapeId.IsInit())
+					if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 					{
-						CString sShapeId = _T("");
-						sShapeId.Format(_T("_x0000_s%04d"), pOleObject->m_oShapeId->GetValue());
-						std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(sShapeId);
-						if (pFind != pVmlDrawing->m_mapShapesXml.end())
+						const OOX::Spreadsheet::COleObjectAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
+						if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 						{
-							//ищем shape как обьект, чтобы обработать ClientData
-							for(size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+							SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+							if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
 							{
-								OOX::WritingElement* pElem = pVmlDrawing->m_arrItems[i];
-								if(OOX::et_v_shape == pElem->getType())
-								{
-									OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
-									if((pShape->m_sSpId.IsInit() && sShapeId == pShape->m_sSpId.get()) ||
-									   (pShape->m_sId.IsInit() && sShapeId == pShape->m_sId.get()))
-									{
-										for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
-										{
-											OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
-											if(OOX::et_v_ClientData == pElemShape->getType())
-											{
-												//преобразуем ClientData в CellAnchor
-												OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
-												std::vector<int> m_aAnchor;
-												pClientData->getAnchorArray(m_aAnchor);
-												if(8 == m_aAnchor.size())
-												{
-													SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-													eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-													OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
-													oCellAnchor.m_sSpId.Init();
-													oCellAnchor.m_sSpId->append(string2std_string(sShapeId));
-													oCellAnchor.m_oFrom.Init();
-													oCellAnchor.m_oFrom->m_oCol.Init();
-													oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
-													oCellAnchor.m_oFrom->m_oColOff.Init();
-													oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
-													oCellAnchor.m_oFrom->m_oRow.Init();
-													oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
-													oCellAnchor.m_oFrom->m_oRowOff.Init();
-													oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
-													oCellAnchor.m_oTo.Init();
-													oCellAnchor.m_oTo->m_oCol.Init();
-													oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
-													oCellAnchor.m_oTo->m_oColOff.Init();
-													oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
-													oCellAnchor.m_oTo->m_oRow.Init();
-													oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
-													oCellAnchor.m_oTo->m_oRowOff.Init();
-													oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
+							}
+							else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+							{
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+							}
+							else
+							{
+								eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
+							}
+							OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
 
-													nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
-													WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
-													m_oBcw.WriteItemEnd(nCurPos);
-												}
-												break;
-											}
+							oCellAnchor.m_oFrom = oAnchor.m_oFrom.get();
+							oCellAnchor.m_oTo = oAnchor.m_oTo.get();
+							oCellAnchor.m_oXml.Init();
+							oCellAnchor.m_oXml->append(L"<p:oleObj");
+
+							if (pOleObject->m_oRid.IsInit())
+							{
+								oCellAnchor.m_oXml->append(L" r:id=\"");
+                                oCellAnchor.m_oXml->append(pOleObject->m_oRid->ToString());
+								oCellAnchor.m_oXml->append(L"\"");
+							}
+							if (pOleObject->m_oProgId.IsInit())
+							{
+								oCellAnchor.m_oXml->append(L" progId=\"");
+								oCellAnchor.m_oXml->append(pOleObject->m_oProgId.get());
+								oCellAnchor.m_oXml->append(L"\"");
+							}
+							oCellAnchor.m_oXml->append(L"><p:embed/><p:pic><p:nvPicPr><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed=\"");
+                            oCellAnchor.m_oXml->append(pOleObject->m_oObjectPr->m_oRid->ToString());
+							oCellAnchor.m_oXml->append(L"\"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:oleObj>");
+
+                            std::wstring keepRels = m_pOfficeDrawingConverter->GetRelsPath();
+							m_pOfficeDrawingConverter->SetRelsPath(oWorksheet.GetReadPath().GetPath());
+
+							nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+							WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+							m_oBcw.WriteItemEnd(nCurPos);
+
+							m_pOfficeDrawingConverter->SetRelsPath(keepRels);
+						}
+					}
+					else if (NULL != pVmlDrawing && pOleObject->m_oShapeId.IsInit())
+					{
+                        std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pOleObject->m_oShapeId->GetValue());
+						std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+						if (pFind != pVmlDrawing->m_mapShapes.end())
+						{
+							pFind->second.bUsed			= true;
+							OOX::WritingElement* pElem	= pFind->second.pElement;
+							
+							if(OOX::et_v_shapetype != pElem->getType()) //shape, rect, ...
+							{
+								OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+								for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+								{
+									OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+									if(OOX::et_v_ClientData == pElemShape->getType())
+									{
+										//преобразуем ClientData в CellAnchor
+										OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+										std::vector<int> m_aAnchor;
+										pClientData->getAnchorArray(m_aAnchor);
+										if(8 == m_aAnchor.size())
+										{
+											SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+											eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+											OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+											oCellAnchor.m_sSpId.Init();
+											oCellAnchor.m_sSpId->append(sShapeId);
+											oCellAnchor.m_oFrom.Init();
+											oCellAnchor.m_oFrom->m_oCol.Init();
+											oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+											oCellAnchor.m_oFrom->m_oColOff.Init();
+											oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+											oCellAnchor.m_oFrom->m_oRow.Init();
+											oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+											oCellAnchor.m_oFrom->m_oRowOff.Init();
+											oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+											oCellAnchor.m_oTo.Init();
+											oCellAnchor.m_oTo->m_oCol.Init();
+											oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+											oCellAnchor.m_oTo->m_oColOff.Init();
+											oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+											oCellAnchor.m_oTo->m_oRow.Init();
+											oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+											oCellAnchor.m_oTo->m_oRowOff.Init();
+											oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+
+											nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+											WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, pOleObject);
+											m_oBcw.WriteItemEnd(nCurPos);
 										}
-										break;
 									}
 								}
 							}
-
 						}
 					}
-
 				}
 			}
-		};
-		void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor& pCellAnchor, CString& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
+
+			if (NULL != pVmlDrawing)
+			{
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator it = pVmlDrawing->m_mapShapes.begin();
+				for (; it != pVmlDrawing->m_mapShapes.end(); it++)
+				{
+					if (it->second.bUsed == false)
+					{//Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx						
+						it->second.bUsed = true;
+						OOX::WritingElement* pElem = it->second.pElement;
+						if(OOX::et_v_shapetype != pElem->getType())
+						{
+							OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pElem);
+							for(size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+							{
+								OOX::WritingElement* pElemShape = pShape->m_arrItems[j];
+								if(OOX::et_v_ClientData == pElemShape->getType())
+								{
+									//преобразуем ClientData в CellAnchor
+									OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
+									std::vector<int> m_aAnchor;
+									pClientData->getAnchorArray(m_aAnchor);
+									if(8 == m_aAnchor.size())
+									{
+										SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+										eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
+										OOX::Spreadsheet::CCellAnchor oCellAnchor = OOX::Spreadsheet::CCellAnchor(eAnchorType);
+										oCellAnchor.m_sSpId.Init();
+										oCellAnchor.m_sSpId->append(it->first);
+										oCellAnchor.m_oFrom.Init();
+										oCellAnchor.m_oFrom->m_oCol.Init();
+										oCellAnchor.m_oFrom->m_oCol->SetValue(m_aAnchor[0]);
+										oCellAnchor.m_oFrom->m_oColOff.Init();
+										oCellAnchor.m_oFrom->m_oColOff->FromPx(m_aAnchor[1]);
+										oCellAnchor.m_oFrom->m_oRow.Init();
+										oCellAnchor.m_oFrom->m_oRow->SetValue(m_aAnchor[2]);
+										oCellAnchor.m_oFrom->m_oRowOff.Init();
+										oCellAnchor.m_oFrom->m_oRowOff->FromPx(m_aAnchor[3]);
+										oCellAnchor.m_oTo.Init();
+										oCellAnchor.m_oTo->m_oCol.Init();
+										oCellAnchor.m_oTo->m_oCol->SetValue(m_aAnchor[4]);
+										oCellAnchor.m_oTo->m_oColOff.Init();
+										oCellAnchor.m_oTo->m_oColOff->FromPx(m_aAnchor[5]);
+										oCellAnchor.m_oTo->m_oRow.Init();
+										oCellAnchor.m_oTo->m_oRow->SetValue(m_aAnchor[6]);
+										oCellAnchor.m_oTo->m_oRowOff.Init();
+										oCellAnchor.m_oTo->m_oRowOff->FromPx(m_aAnchor[7]);
+
+										nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
+										WriteDrawing(oWorksheet, pDrawing, oCellAnchor, sDrawingRelsPath, pVmlDrawing, NULL);
+										m_oBcw.WriteItemEnd(nCurPos);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+        void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor& pCellAnchor, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
 		{
 			//Type
 			int nCurPos;
@@ -2697,15 +2834,16 @@ namespace BinXlsxRW {
 			}
 			else if (pCellAnchor.m_sSpId.IsInit() && pVmlDrawing)
 			{
-				std::map<CString, CString>::iterator pFind = pVmlDrawing->m_mapShapesXml.find(std_string2string(pCellAnchor.m_sSpId.get2()));
-				if (pFind != pVmlDrawing->m_mapShapesXml.end())
+				std::map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pCellAnchor.m_sSpId.get2());
+				if (pFind != pVmlDrawing->m_mapShapes.end())
 				{
-					CString* bstrOutputXml = NULL;
+                    std::wstring* bstrOutputXml = NULL;
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 					int nCurPos = m_oBcw.WriteItemWithLengthStart();
 
-					std::wstring temp = _T("<v:object>");
-					temp.append(string2std_string(pFind->second));
+					std::wstring temp = L"<v:object>" + pFind->second.sXml;
+					pFind->second.bUsed = true;
+
 					if (NULL != pOleObject)
 					{
 						//ищем физический файл, потому что rId относительно sheet.xml, а SetRelsPath(pVmlDrawing
@@ -2722,29 +2860,35 @@ namespace BinXlsxRW {
 					}
 					temp.append(_T("</v:object>"));
 
-					CString keepRels = m_pOfficeDrawingConverter->GetRelsPath();
+                    std::wstring keepRels = m_pOfficeDrawingConverter->GetRelsPath();
 					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->GetReadPath().GetPath());
 
-					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(std_string2string(temp), &bstrOutputXml);
+					HRESULT hRes = m_pOfficeDrawingConverter->AddObject(temp, &bstrOutputXml);
 					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 					RELEASEOBJECT(bstrOutputXml);
 					m_pOfficeDrawingConverter->SetRelsPath(keepRels);
 				}
 			}
-			else if(pCellAnchor.m_oGraphicFrame.IsInit() && pCellAnchor.m_oGraphicFrame->m_sXml.IsInit())
+			else if(pCellAnchor.m_oGraphicFrame.IsInit())
 			{
-				bstrXml = *pCellAnchor.m_oGraphicFrame->m_sXml;
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
+				int nCurPos = m_oBcw.WriteItemWithLengthStart();
+				//pCellAnchor.m_oGraphicFrame->toPPTY(&m_oBcw.m_oStream);
+				m_oBcw.m_oStream.StartRecord(0);
+				m_oBcw.m_oStream.WriteRecord2(1, pCellAnchor.m_oGraphicFrame);
+				m_oBcw.m_oStream.EndRecord();
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
 			if(!bstrXml.empty())
 			{
-				CString* bstrOutputXml = NULL;
+                std::wstring* bstrOutputXml = NULL;
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 				int nCurPos = m_oBcw.WriteItemWithLengthStart();
-				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(std_string2string(bstrXml), &bstrOutputXml);
+				HRESULT hRes = m_pOfficeDrawingConverter->AddObject(bstrXml, &bstrOutputXml);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				RELEASEOBJECT(bstrOutputXml);
 			}
-		};
+		}
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo)
 		{
 			//Col
@@ -2775,7 +2919,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oFromTo.m_oRowOff->ToMm());
 			}
-		};
+		}
 		void WritePos(const OOX::Spreadsheet::CPos& oPos)
 		{
 			//X
@@ -2792,7 +2936,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oPos.m_oY->ToMm());
 			}
-		};
+		}
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt)
 		{
 			//Cx
@@ -2809,7 +2953,7 @@ namespace BinXlsxRW {
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 				m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCy->ToMm());
 			}
-		};
+		}
 		void WriteComments(std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments)
 		{
 			int nCurPos = 0;
@@ -2826,30 +2970,30 @@ namespace BinXlsxRW {
 					WriteComment(oComment, aCommentDatas, oComment.m_oText);
 					m_oBcw.WriteItemEnd(nCurPos);
 
-					for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
+					for(size_t i = 0, length = aCommentDatas.size(); i < length; ++i)
 					{
 						RELEASEOBJECT(aCommentDatas[i]);
 					}
 					aCommentDatas.clear();
 				}
 			}
-		};
+		}
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas)
 		{
 			if(oComment.m_sGfxdata.IsInit())
 			{
-				const CString& sGfxData = oComment.m_sGfxdata.get2();
-				CString sSignatureBase64(_T("WExTV"));
-				if(sSignatureBase64 == sGfxData.Left(sSignatureBase64.GetLength()))
+                const std::wstring& sGfxData = oComment.m_sGfxdata.get2();
+                std::wstring sSignatureBase64(_T("WExTV"));
+                if(sSignatureBase64 == sGfxData.substr(0, sSignatureBase64.length()))
 				{
-					CStringA sSignature(_T("XLST"));
-					int nSignatureSize = sSignature.GetLength();
+                    std::string sSignature("XLST");
+                    int nSignatureSize = (int)sSignature.length();
 					int nDataLengthSize = sizeof(long);
 					int nJunkSize = 2;
-					CStringA sGfxDataA = (CStringA)sGfxData;
-					int nDataSize = sGfxDataA.GetLength();
+                    std::string sGfxDataA = std::string(sGfxData.begin(), sGfxData.end());
+                    int nDataSize = (int)sGfxDataA.length();
 					BYTE* pBuffer = new BYTE[nDataSize];
-                    if(false != Base64::Base64Decode((LPCSTR)sGfxDataA.GetBuffer(), sGfxDataA.GetLength(), pBuffer, &nDataSize))
+                    if(false != Base64::Base64Decode((const char*)sGfxDataA.c_str(), (int)sGfxDataA.length(), pBuffer, &nDataSize))
 					{
 						int nLength = *((long*)(pBuffer + nSignatureSize));
 						NSBinPptxRW::CBinaryFileReader oBufferedStream;
@@ -2858,7 +3002,6 @@ namespace BinXlsxRW {
 						BinaryCommentReader oBinaryCommentReader(oBufferedStream, NULL);
 						oBinaryCommentReader.ReadExternal(nLength, &aDatas);
 					}
-					sGfxDataA.ReleaseBuffer();
 					RELEASEARRAYOBJECTS(pBuffer);
 				}
 			}
@@ -2978,7 +3121,7 @@ namespace BinXlsxRW {
 			int nCurPos = 0;
 			if(aCommentDatas.size() > 0)
 			{
-				for(int i = 0, length = aCommentDatas.size(); i < length; ++i)
+				for(size_t i = 0, length = aCommentDatas.size(); i < length; ++i)
 				{
 					nCurPos = m_oBcw.WriteItemStart(c_oSer_Comments::CommentData);
 					if(0 == i)
@@ -3001,39 +3144,39 @@ namespace BinXlsxRW {
 			if(NULL != pCommentText && pCommentText->IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
-				m_oBcw.m_oStream.WriteStringWStd((*pCommentText)->ToString());
+				m_oBcw.m_oStream.WriteStringW((*pCommentText)->ToString());
 			}
 			else if(NULL != pCommentData && !pCommentData->sText.empty())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
-				m_oBcw.m_oStream.WriteStringWStd(pCommentData->sText);
+				m_oBcw.m_oStream.WriteStringW(pCommentData->sText);
 			}
 			if(NULL != pCommentData)
 			{
 				if(!pCommentData->sTime.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Time);
-					m_oBcw.m_oStream.WriteStringWStd(pCommentData->sTime);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sTime);
 				}
 				if (!pCommentData->sUserId.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserId);
-					m_oBcw.m_oStream.WriteStringWStd(pCommentData->sUserId);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sUserId);
 				}
 				if (!pCommentData->sUserName.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
-					m_oBcw.m_oStream.WriteStringWStd(pCommentData->sUserName);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sUserName);
 				}
 				if (!pCommentData->sUserName.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
-					m_oBcw.m_oStream.WriteStringWStd(pCommentData->sUserName);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sUserName);
 				}
 				if (!pCommentData->sQuoteText.empty())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::QuoteText);
-					m_oBcw.m_oStream.WriteStringWStd(pCommentData->sQuoteText);
+					m_oBcw.m_oStream.WriteStringW(pCommentData->sQuoteText);
 				}
 				if(pCommentData->bSolved)
 				{
@@ -3059,14 +3202,14 @@ namespace BinXlsxRW {
 				if(pComment->m_sAuthor.IsInit())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::UserName);
-					m_oBcw.m_oStream.WriteStringWStd(pComment->m_sAuthor.get2());
+					m_oBcw.m_oStream.WriteStringW(pComment->m_sAuthor.get2());
 				}
 			}
 		}
 		void WriteCommentReplies(std::vector<SerializeCommon::CommentData*>& aReplies)
 		{
 			int nCurPos = 0;
-			for(int i = 0, length = aReplies.size(); i < length; i++)
+			for(size_t i = 0, length = aReplies.size(); i < length; i++)
 			{
 				SerializeCommon::CommentData* pReply = aReplies[i];
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CommentData::Reply);
@@ -3142,7 +3285,7 @@ namespace BinXlsxRW {
 		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting)
 		{
 			int nCurPos = 0;
-			for (int nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
+			for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ConditionalFormatting);
 				WriteConditionalFormatting(*arrConditionalFormatting[nIndex]);
@@ -3162,7 +3305,7 @@ namespace BinXlsxRW {
 			if (oConditionalFormatting.m_oSqRef.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormatting::SqRef);
-				m_oBcw.m_oStream.WriteStringW(oConditionalFormatting.m_oSqRef->ToString());
+				m_oBcw.m_oStream.WriteStringW(oConditionalFormatting.m_oSqRef.get());
 			}
 
 			if (0 < oConditionalFormatting.m_arrItems.size())
@@ -3173,7 +3316,7 @@ namespace BinXlsxRW {
 		void WriteConditionalFormattingRules(const std::vector<OOX::Spreadsheet::CConditionalFormattingRule *>& aConditionalFormattingRules)
 		{
 			int nCurPos = 0;
-			for (int i = 0, length = aConditionalFormattingRules.size(); i < length; ++i)
+			for (size_t i = 0, length = aConditionalFormattingRules.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
 				WriteConditionalFormattingRule(*aConditionalFormattingRules[i]);
@@ -3198,7 +3341,7 @@ namespace BinXlsxRW {
 			}
 			if (oConditionalFormattingRule.m_oDxfId.IsInit())
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::DataDxfId);
+				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::DxfId);
 				m_oBcw.m_oStream.WriteLONG(oConditionalFormattingRule.m_oDxfId->GetValue());
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
@@ -3247,12 +3390,12 @@ namespace BinXlsxRW {
 			if (oConditionalFormattingRule.m_oText.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::Text);
-				m_oBcw.m_oStream.WriteStringWStd(oConditionalFormattingRule.m_oText.get2());
+				m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oText.get2());
 			}
 			if (oConditionalFormattingRule.m_oTimePeriod.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
-				m_oBcw.m_oStream.WriteStringWStd(oConditionalFormattingRule.m_oTimePeriod.get2());
+				m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod.get2());
 			}
 			if (oConditionalFormattingRule.m_oType.IsInit())
 			{
@@ -3274,7 +3417,7 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CIconSet* pIconSet = NULL;
 
 			int nCurPos = 0;
-			for (int i = 0, length = aConditionalFormattingRuleElements.size(); i < length; ++i)
+			for (size_t i = 0, length = aConditionalFormattingRuleElements.size(); i < length; ++i)
 			{
 				switch (aConditionalFormattingRuleElements[i]->getType())
 				{
@@ -3293,7 +3436,7 @@ namespace BinXlsxRW {
 				case OOX::Spreadsheet::et_FormulaCF:
 					pFormulaCF = static_cast<OOX::Spreadsheet::CFormulaCF*>(aConditionalFormattingRuleElements[i]);
 					m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::FormulaCF);
-					m_oBcw.m_oStream.WriteStringWStd(pFormulaCF->m_sText);
+					m_oBcw.m_oStream.WriteStringW(pFormulaCF->m_sText);
 					break;
 				case OOX::Spreadsheet::et_IconSet:
 					pIconSet = static_cast<OOX::Spreadsheet::CIconSet*>(aConditionalFormattingRuleElements[i]);
@@ -3312,7 +3455,7 @@ namespace BinXlsxRW {
 			// ToDo более правильно заделать виртуальную функцию, которая будет писать без привидения типов
 			int nCurPos = 0;
 
-			for (int i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
 			{
 				pCFVO = dynamic_cast<OOX::Spreadsheet::CConditionalFormatValueObject*>(oColorScale.m_arrItems[i]);
 				if (NULL != pCFVO)
@@ -3361,7 +3504,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (int i = 0, length = oDataBar.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oDataBar.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingDataBar::CFVO);
 				WriteCFVO(*oDataBar.m_arrItems[i]);
@@ -3397,7 +3540,7 @@ namespace BinXlsxRW {
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 
-			for (int i = 0, length = oIconSet.m_arrItems.size(); i < length; ++i)
+			for (size_t i = 0, length = oIconSet.m_arrItems.size(); i < length; ++i)
 			{
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingIconSet::CFVO);
 				WriteCFVO(*oIconSet.m_arrItems[i]);
@@ -3422,7 +3565,7 @@ namespace BinXlsxRW {
 			if (oCFVO.m_oVal.IsInit())
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingValueObject::Val);
-				m_oBcw.m_oStream.WriteStringWStd(oCFVO.m_oVal.get2());
+				m_oBcw.m_oStream.WriteStringW(oCFVO.m_oVal.get2());
 			}
 		}
         void WriteSparklineGroups(const OOX::Spreadsheet::CSparklineGroups& oSparklineGroups)
@@ -3593,7 +3736,7 @@ namespace BinXlsxRW {
             if (oSparklineGroup.m_oRef.IsInit())
             {
                 m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::Ref);
-				m_oBcw.m_oStream.WriteStringWStd(oSparklineGroup.m_oRef.get());
+				m_oBcw.m_oStream.WriteStringW(oSparklineGroup.m_oRef.get());
             }
             if (oSparklineGroup.m_oSparklines.IsInit())
             {
@@ -3617,13 +3760,13 @@ namespace BinXlsxRW {
             int nCurPos = 0;
             if (oSparkline.m_oRef.IsInit())
             {
-				m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::SparklineRef);
-				m_oBcw.m_oStream.WriteStringWStd(oSparkline.m_oRef.get());
+				m_oBcw.m_oStream.WriteBYTE		(c_oSer_Sparkline::SparklineRef);
+				m_oBcw.m_oStream.WriteStringW	(oSparkline.m_oRef.get());
             }
             if (oSparkline.m_oSqRef.IsInit())
             {
-				m_oBcw.m_oStream.WriteBYTE(c_oSer_Sparkline::SparklineSqRef);
-				m_oBcw.m_oStream.WriteStringWStd(oSparkline.m_oSqRef.get());
+				m_oBcw.m_oStream.WriteBYTE		(c_oSer_Sparkline::SparklineSqRef);
+				m_oBcw.m_oStream.WriteStringW	(oSparkline.m_oSqRef.get());
             }
         }
 	};
@@ -3643,7 +3786,7 @@ namespace BinXlsxRW {
 		void WriteCalcChainTableContent(OOX::Spreadsheet::CCalcChain& pCalcChain)
 		{
 			int nCurPos;
-			for(int i = 0, length = pCalcChain.m_arrItems.size(); i < length; ++i)
+			for(size_t i = 0, length = pCalcChain.m_arrItems.size(); i < length; ++i)
 			{
 				//media
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_CalcChainType::CalcChainItem);
@@ -3679,7 +3822,7 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CalcChainType::Ref);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-				m_oBcw.m_oStream.WriteStringWStd(oCalcCell.m_oRef.get2());
+				m_oBcw.m_oStream.WriteStringW(oCalcCell.m_oRef.get2());
 			}
 			//ChildChain
 			if(oCalcCell.m_oChildChain.IsInit())
@@ -3709,7 +3852,7 @@ namespace BinXlsxRW {
 			{
 				m_oStream.WriteBYTE(btVal);
 			}
-		public: void WriteString(CString& sVal)
+        public: void WriteString(std::wstring& sVal)
 			{
 				m_oStream.WriteStringW2(sVal);
 			}
@@ -3769,21 +3912,21 @@ namespace BinXlsxRW {
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-        void Open(const CString& sInputDir, const CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
+        void Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);
 			//создаем папку для media
-			CString mediaDir = path.GetDirectory() + gc_sMediaDirName;
-			NSDirectory::CreateDirectory(string2std_string(mediaDir));
+            std::wstring mediaDir = path.GetDirectory() + gc_sMediaDirName;
+			NSDirectory::CreateDirectory(mediaDir);
 
 			pOfficeDrawingConverter->SetMediaDstPath(mediaDir);
 
 			//mime-type
-			CString mimePath = path.GetDirectory() + gc_sMimeName;
+            std::wstring mimePath = path.GetDirectory() + gc_sMimeName;
 			//CFile oMimeFile;
 			//oMimeFile.CreateFileW(mimePath);
-			//oMimeFile.WriteStringUTF8(CString(_T("application/x-asc-spreadsheet")));
+            //oMimeFile.WriteStringUTF8(std::wstring(_T("application/x-asc-spreadsheet")));
 			//oMimeFile.CloseFile();
 
 			long nGrowSize = 1 * 1024 * 1024;//1мб
@@ -3858,9 +4001,9 @@ namespace BinXlsxRW {
 				pOfficeDrawingConverter->GetThemeBinary(&pThemeData, nThemeDataSize, oXlsx.GetTheme()->m_oReadPath.GetPath());
 
 #ifdef DEFAULT_TABLE_STYLES
-			writeTheme(pThemeData, nThemeDataSize, CString(_T("c:\\defaultTheme.bin")));
-			getDefaultCellStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetCellStylesNew.xml")), CString(_T("C:\\presetCellStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
-			getDefaultTableStyles(CString(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetTableStyles.xml")), CString(_T("C:\\presetTableStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+            writeTheme(pThemeData, nThemeDataSize, std::wstring(_T("c:\\defaultTheme.bin")));
+            getDefaultCellStyles(std::wstring(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetCellStylesNew.xml")), std::wstring(_T("C:\\presetCellStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
+            getDefaultTableStyles(std::wstring(_T("D:\\Projects\\AVS\\Sources\\TeamlabOffice\\trunk\\ServerComponents\\XlsxSerializerCom\\XlsxDefaults\\presetTableStyles.xml")), std::wstring(_T("C:\\presetTableStyles_output.bin")), pEmbeddedFontsManager, pIndexedColors, oXlsx.GetTheme(), m_oFontProcessor);
 #endif
 			if(NULL != pSharedStrings)
 			{
@@ -3912,10 +4055,9 @@ namespace BinXlsxRW {
 			WriteMainTableEnd();
 			RELEASEARRAYOBJECTS(pThemeData);
 		}
-		CString WriteFileHeader(int nDataSize)
+        std::wstring WriteFileHeader(int nDataSize)
 		{
-			CString sHeader;
-			sHeader.Format(_T("%ls;v%d;%d;"), g_sFormatSignature, g_nFormatVersion, nDataSize);
+            std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(g_nFormatVersion)+ L";" + std::to_wstring(nDataSize) + L";";
 			return sHeader;
 		}
 		void WriteMainTableStart()
@@ -3964,13 +4106,13 @@ namespace BinXlsxRW {
 			m_oBcw->m_oStream.SetPosition(nCurPos);
 		}
 #ifdef DEFAULT_TABLE_STYLES
-		CString WriteDefaultFileHeader(int nDataSize)
+        std::wstring WriteDefaultFileHeader(int nDataSize)
 		{
-			CString sHeader;
+            std::wstring sHeader;
 			sHeader.Format(_T("%ls;;%d;"), g_sFormatSignature, nDataSize);
 			return sHeader;
 		}
-		void writeTheme(BYTE* pData, long nLength, CString& sFileOutput)
+        void writeTheme(BYTE* pData, long nLength, std::wstring& sFileOutput)
 		{
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
@@ -3984,7 +4126,7 @@ namespace BinXlsxRW {
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		void getDefaultCellStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
+        void getDefaultCellStyles(std::wstring& sFileInput, std::wstring& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			enum Types
 			{
@@ -4015,7 +4157,7 @@ namespace BinXlsxRW {
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				CString sName = oReader.GetName(); //name of cell style
+                std::wstring sName = oReader.GetName(); //name of cell style
 
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	oBuiltinId;
 				nullable<SimpleTypes::COnOff<>>					oHidden;
@@ -4078,7 +4220,7 @@ namespace BinXlsxRW {
 					oBinaryCommonWriter.WriteItemEnd(nCurPos);
 				}
 
-				for (int i = 0, nLength = oCellStyles->m_arrItems.size(); i < nLength; ++i)
+				for (size_t i = 0, nLength = oCellStyles->m_arrItems.size(); i < nLength; ++i)
 				{
 					OOX::Spreadsheet::WritingElement* we = oCellStyles->m_arrItems[i];
 					if (OOX::Spreadsheet::et_CellStyle == we->getType())
@@ -4169,7 +4311,7 @@ namespace BinXlsxRW {
 			}
 			RELEASEARRAYOBJECTS(pbBase64Buffer);
 		}
-		void getDefaultTableStyles(CString& sFileInput, CString& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
+        void getDefaultTableStyles(std::wstring& sFileInput, std::wstring& sFileOutput, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* oIndexedColors, OOX::CTheme* pTheme, DocWrapper::FontProcessor& oFontProcessor)
 		{
 			enum Types
 			{
@@ -4192,7 +4334,7 @@ namespace BinXlsxRW {
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				CString sName = oReader.GetName();
+                std::wstring sName = oReader.GetName();
 				int nStylePos = oBinaryCommonWriter.WriteItemStart(Types::Style);
 
 				//dxfs

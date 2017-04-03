@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1206,6 +1206,21 @@ namespace NSHtmlRenderer
         return S_OK;
     }
 
+    HRESULT CASCHTMLRenderer3::StartConvertCoordsToIdentity()
+    {
+        m_bUseTransformCoordsToIdentity = true;
+        if (m_pInternal->m_bIsGraphicsDumperMode)
+            return m_pInternal->m_oDumper.StartConvertCoordsToIdentity();
+        return S_OK;
+    }
+    HRESULT CASCHTMLRenderer3::EndConvertCoordsToIdentity()
+    {
+        m_bUseTransformCoordsToIdentity = false;
+        if (m_pInternal->m_bIsGraphicsDumperMode)
+            return m_pInternal->m_oDumper.EndConvertCoordsToIdentity();
+        return S_OK;
+    }
+
     // owner params ----------------------------------------------------------------------
     HRESULT CASCHTMLRenderer3::get_Mode(LONG *plMode)
     {
@@ -1261,6 +1276,10 @@ namespace NSHtmlRenderer
         m_pInternal->m_bPageOpened = false;
 
         m_pInternal->m_pFontManager = m_pInternal->m_oApplicationFonts.GenerateFontManager();
+        CFontsCache* pGraphicsFontCache = new CFontsCache();
+        pGraphicsFontCache->SetStreams(m_pInternal->m_oApplicationFonts.GetStreams());
+        pGraphicsFontCache->SetCacheSize(16);
+        m_pInternal->m_pFontManager->SetOwnerCache(pGraphicsFontCache);
 
         m_pInternal->m_oFont.SetDefaultParams();
         m_pInternal->m_oInstalledFont.SetDefaultParams();

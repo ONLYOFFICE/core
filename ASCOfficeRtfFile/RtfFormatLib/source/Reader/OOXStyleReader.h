@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -155,7 +155,7 @@ public:
 		}
 		if (m_ooxStyle->m_arrTblStylePr.size() > 0  && RtfStyle::stTable == eStyleType )
 		{
-			for (long i = 0; i < m_ooxStyle->m_arrTblStylePr.size(); i++)
+			for (size_t i = 0; i < m_ooxStyle->m_arrTblStylePr.size(); i++)
 			{
 				RtfTableStylePtr oTableStyle =boost::static_pointer_cast<RtfTableStyle, RtfStyle>(oNewStyle);
 
@@ -330,7 +330,7 @@ public:
 		if (m_ooxStyle->m_sStyleId.IsInit() == false) return false;
 
 		RtfStylePtr oCurStyle ;
-		CString sStyleName = m_ooxStyle->m_sStyleId.get2();
+		std::wstring sStyleName = m_ooxStyle->m_sStyleId.get2();
 
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{

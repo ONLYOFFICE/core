@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,8 @@ namespace PPTX
 		class BuFontTx : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuFontTx)
+			WritingElement_AdditionConstructors(BuFontTx)
+			PPTX_LOGIC_BASE2(BuFontTx)
 
 			BuFontTx& operator=(const BuFontTx& oSrc)
 			{
@@ -50,12 +51,35 @@ namespace PPTX
 				parentElement	= oSrc.parentElement;
 				return *this;
 			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+
+				}
+			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_buFontTx;
+			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:buFontTx/>");
 			}

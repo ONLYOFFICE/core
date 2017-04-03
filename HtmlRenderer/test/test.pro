@@ -25,39 +25,20 @@ INCLUDEPATH += \
 
 TEMPLATE = app
 
-############### destination path ###############
-DESTINATION_SDK_PATH = $$PWD/../../build/lib
+CORE_ROOT_DIR = $$PWD/../..
+PWD_ROOT_DIR = $$PWD
+include($$CORE_ROOT_DIR/Common/base.pri)
 
-# WINDOWS
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_64
-}
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-CONFIG(debug, debug|release) {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32/DEBUG
-} else {
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/win_32
-}
-}
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lgraphics
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOfficeUtils
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDjVuFile
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXpsFile
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfWriter
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_64
-}
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    DESTINATION_SDK_PATH = $$DESTINATION_SDK_PATH/linux_32
-}
-
-LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
-LIBS += -L$$DESTINATION_SDK_PATH -lOfficeUtils
-LIBS += -L$$DESTINATION_SDK_PATH -lHtmlRenderer
-LIBS += -L$$DESTINATION_SDK_PATH -lPdfReader
-LIBS += -L$$DESTINATION_SDK_PATH -lDjVuFile
-LIBS += -L$$DESTINATION_SDK_PATH -lXpsFile
-LIBS += -L$$DESTINATION_SDK_PATH -lPdfWriter
+include($$PWD/../../Common/3dParty/icu/icu.pri)
 
 win32 {
 LIBS += -lgdi32 \

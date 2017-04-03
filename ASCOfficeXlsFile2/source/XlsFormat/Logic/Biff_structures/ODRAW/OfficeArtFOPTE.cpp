@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -113,13 +113,6 @@ XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 {
 	return XLS::BiffStructurePtr(new OfficeArtFOPTE(*this));
 }
-
-
-void OfficeArtFOPTE::store(XLS::CFRecord& record)
-{
-	// We don't support xlsx to xls conversion
-}
-
 
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {

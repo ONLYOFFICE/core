@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,15 +41,6 @@ BiffStructurePtr ExternOleDdeLink::clone()
 {
 	return BiffStructurePtr(new ExternOleDdeLink(*this));
 }
-
-
-void ExternOleDdeLink::store(CFRecord& record)
-{
-#pragma message("####################### ExternOleDdeLink record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExternOleDdeLink record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void ExternOleDdeLink::load(CFRecord& record)
 {

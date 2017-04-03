@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -79,9 +79,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:commentRangeEnd ");
+                std::wstring sResult = _T("<w:commentRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
@@ -140,9 +140,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:commentRangeStart ");
+                std::wstring sResult = _T("<w:commentRangeStart ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
@@ -204,9 +204,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlDelRangeEnd ");
+                std::wstring sResult = _T("<w:customXmlDelRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
 
@@ -265,35 +265,35 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlDelRangeStart ");
+                std::wstring sResult = _T("<w:customXmlDelRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
 					sResult += _T("w:date=\"");
-					sResult += m_oDate->ToString();
+                    sResult += m_oDate->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
 					sResult += _T("w:id=\"");
-					sResult += m_oID->ToString();
+                    sResult += m_oID->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -321,10 +321,10 @@ namespace OOX
 
 		public:
 
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
-			nullable<CString					   > m_sUserId;
+            nullable<std::wstring                   >   m_sAuthor;
+            nullable<SimpleTypes::CDateTime         >   m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>  >   m_oID;
+            nullable<std::wstring                   >   m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -353,9 +353,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlInsRangeEnd ");
+                std::wstring sResult = _T("<w:customXmlInsRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
 
@@ -414,35 +414,35 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlInsRangeStart ");
+                std::wstring sResult = _T("<w:customXmlInsRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
 					sResult += _T("w:date=\"");
-					sResult += m_oDate->ToString();
+                    sResult += m_oDate->GetValue();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
 					sResult += _T("w:id=\"");
-					sResult += m_oID->ToString();
-					sResult += _T("\" ");
+                    sResult += m_oID->ToString();
+                    sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -464,16 +464,16 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),	 m_sUserId )
+                WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
-			nullable<CString                       > m_sUserId;
+            nullable<std::wstring                   > m_sAuthor;
+            nullable<SimpleTypes::CDateTime         > m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>  > m_oID;
+            nullable<std::wstring                   > m_sUserId;
 		};
 		//--------------------------------------------------------------------------------
 		// CCustomXmlMoveFromRangeEnd 17.13.5.8 (Part 1)
@@ -501,9 +501,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlMoveFromRangeEnd ");
+                std::wstring sResult = _T("<w:customXmlMoveFromRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
 
@@ -561,35 +561,35 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlMoveFromRangeStart ");
+                std::wstring sResult = _T("<w:customXmlMoveFromRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
 					sResult += _T("w:date=\"");
-					sResult += m_oDate->ToString();
+                    sResult += m_oDate->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
 					sResult += _T("w:id=\"");
-					sResult += m_oID->ToString();
+                    sResult += m_oID->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -608,19 +608,19 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),	 m_sUserId )
+                WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),    m_sAuthor )
+                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),      m_oDate )
+                WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),        m_oID )
+                WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),    m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
-			nullable<CString                       > m_sUserId;
+            nullable<std::wstring                   > m_sAuthor;
+            nullable<SimpleTypes::CDateTime         > m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<>  > m_oID;
+            nullable<std::wstring                   > m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -649,9 +649,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlMoveToRangeEnd ");
+                std::wstring sResult = _T("<w:customXmlMoveToRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:id=\""), m_oId );
 
@@ -710,35 +710,35 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:customXmlMoveToRangeStart ");
+                std::wstring sResult = _T("<w:customXmlMoveToRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oDate.IsInit() )
 				{
 					sResult += _T("w:date=\"");
-					sResult += m_oDate->ToString();
+                    sResult += m_oDate->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_oID.IsInit() )
 				{
 					sResult += _T("w:id=\"");
-					sResult += m_oID->ToString();
+                    sResult += m_oID->ToString();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -765,10 +765,10 @@ namespace OOX
 			}
 		public:
 
-			nullable<CString                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oID;
-			nullable<CString                       > m_sUserId;
+            nullable<std::wstring                       >   m_sAuthor;
+            nullable<SimpleTypes::CDateTime        >        m_oDate;
+            nullable<SimpleTypes::CDecimalNumber<> >        m_oID;
+            nullable<std::wstring                       >   m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -798,9 +798,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:moveFromRangeEnd ");
+                std::wstring sResult = _T("<w:moveFromRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
@@ -864,14 +864,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:moveFromRangeStart ");
+                std::wstring sResult = _T("<w:moveFromRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
@@ -884,14 +884,14 @@ namespace OOX
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-					sResult += m_sName->GetString();
+                    sResult += m_sName.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -923,14 +923,14 @@ namespace OOX
 
 		public:
 
-			nullable<CString                              > m_sAuthor;
+            nullable<std::wstring                              > m_sAuthor;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
 			nullable<SimpleTypes::CDateTime               > m_oDate;
 			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-			nullable<CString                              > m_sName;
-			nullable<CString                              > m_sUserId;
+            nullable<std::wstring                              > m_sName;
+            nullable<std::wstring                              > m_sUserId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -960,9 +960,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:moveToRangeEnd ");
+                std::wstring sResult = _T("<w:moveToRangeEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
@@ -1025,14 +1025,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:moveToRangeStart ");
+                std::wstring sResult = _T("<w:moveToRangeStart ");
 
 				if ( m_sAuthor.IsInit() )
 				{
 					sResult += _T("w:author=\"");
-					sResult += m_sAuthor->GetString();
+                    sResult += m_sAuthor.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1045,14 +1045,14 @@ namespace OOX
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-					sResult += m_sName->GetString();
+                    sResult += m_sName.get2();
 					sResult += _T("\" ");
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
 					sResult += _T("oouserid=\"");
-					sResult += m_sUserId->GetString();
+                    sResult += m_sUserId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1084,14 +1084,14 @@ namespace OOX
 
 		public:
 
-			nullable<CString                              > m_sAuthor;
+            nullable<std::wstring                              > m_sAuthor;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
 			nullable<SimpleTypes::CDateTime               > m_oDate;
 			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-			nullable<CString                              > m_sName;
-			nullable<CString                              > m_sUserId;
+            nullable<std::wstring                              > m_sName;
+            nullable<std::wstring                              > m_sUserId;
 		};
 
 	} // Logic
@@ -1130,9 +1130,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:bookmarkEnd ");
+                std::wstring sResult = _T("<w:bookmarkEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 				ComplexTypes_WriteAttribute( _T("w:id=\""),                   m_oId );
@@ -1201,9 +1201,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:bookmarkStart ");
+                std::wstring sResult = _T("<w:bookmarkStart ");
 
 				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),             m_oColFirst );
 				ComplexTypes_WriteAttribute( _T("w:colLast=\""),              m_oColLast );
@@ -1213,7 +1213,7 @@ namespace OOX
 				if ( m_sName.IsInit() )
 				{
 					sResult += _T("w:name=\"");
-					sResult += m_sName->GetString();
+                    sResult += m_sName.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1246,7 +1246,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
 			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oId;
-			nullable<CString                              > m_sName;
+            nullable<std::wstring                              > m_sName;
 		};
 
 	} // Logic
@@ -1280,16 +1280,16 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:permEnd ");
+                std::wstring sResult = _T("<w:permEnd ");
 
 				ComplexTypes_WriteAttribute( _T("w:displacedbyCustomXml=\""), m_oDisplacedByCustomXml );
 
 				if ( m_sId.IsInit() )
 				{
 					sResult += _T("w:id=\"");
-					sResult += m_sId->GetString();
+                    sResult += m_sId.get2();
 					sResult += _T("\" ");
 				}
 
@@ -1316,7 +1316,7 @@ namespace OOX
 		public:
 
 			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<CString                              > m_sId;
+            nullable<std::wstring                              > m_sId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1350,9 +1350,9 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:permStart ");
+                std::wstring sResult = _T("<w:permStart ");
 
 				ComplexTypes_WriteAttribute( _T("w:colFirst=\""),				m_oColFirst );
 				ComplexTypes_WriteAttribute( _T("w:colLast=\""),				m_oColLast );
@@ -1390,9 +1390,9 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber<>        > m_oColLast;
 			nullable<SimpleTypes::CDisplacedByCustomXml<> > m_oDisplacedByCustomXml;
-			nullable<CString                              > m_sEd;
+            nullable<std::wstring                              > m_sEd;
 			nullable<SimpleTypes::CEdGrp<>                > m_oEdGrp;
-			nullable<CString                              > m_sId;
+            nullable<std::wstring                              > m_sId;
 		};
 
 	} // Logic
@@ -1425,14 +1425,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<w:proofErr ");
+                std::wstring sResult = _T("<w:proofErr ");
 
 				if ( m_oType.IsInit() )
 				{
 					sResult += _T("w:type=\"");
-					sResult += m_oType->ToString();
+                    sResult += m_oType->ToString();
 					sResult += _T("\" ");
 				}
 
@@ -1498,7 +1498,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_ins;
@@ -1520,10 +1520,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString > m_sAuthor;
+            nullable<std::wstring > m_sAuthor;
 			nullable<SimpleTypes::CDateTime > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString > m_sUserId;
+            nullable<std::wstring > m_sUserId;
 
 			// Childs
 		};
@@ -1563,7 +1563,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring      toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_del;
@@ -1585,10 +1585,10 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<CString > m_sAuthor;
+            nullable<std::wstring > m_sAuthor;
 			nullable<SimpleTypes::CDateTime > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<CString > m_sUserId;
+            nullable<std::wstring > m_sUserId;
 
 			// Childs
 		};

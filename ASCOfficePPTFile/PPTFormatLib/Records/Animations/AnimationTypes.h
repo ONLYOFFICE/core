@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,28 +39,7 @@
 
 #define __USE_ANIMATION__
 
-#define CHECK_RECORD_3X(VER,INSTANCE,TYPE) ATLASSERT(m_oHeader.RecVersion==##VER&&m_oHeader.RecInstance==##INSTANCE&&m_oHeader.RecType==##TYPE);
-
 inline int sort (const long* a, const long* b) { return *a > *b ? 1 : -1; }
-
-namespace debug
-{
-	inline static void tracearrf (std::vector<double>& arr)
-	{
-#if defined(_WIN32) || defined (_WIN64)
-        for ( int i = 0; i < (int)arr.size(); ++i )
-			ATLTRACE ( _T("%f, "), arr [i] );
-
-        ATLTRACE ( _T("\n") );
-#endif
-	}
-	inline static void trace (CString& str)
-	{
-#if defined(_WIN32) || defined (_WIN64)
-        ATLTRACE (_T("%ls\n"), str);
-#endif
-	}
-};
 
 #if !defined(_WIN32) && !defined (_WIN64)
 
@@ -215,20 +194,22 @@ namespace Animations
 
 			double	X[3];
 			double	Y[3];
-			WCHAR	TYPE;	// // M = move to // L = line to // C = curve to // Z = close loop // E = end 
+            wchar_t	TYPE;	// // M = move to // L = line to // C = curve to // Z = close loop // E = end
 		};
 
 	public:
 
-		inline bool Create ( CStringW MovePath )
+        inline bool Create ( std::wstring MovePath )
 		{
 			m_Points.clear ();
 
-			int Pos = 0;
-			while ( Pos < MovePath.GetLength () )
+            std::vector<std::wstring> arMovePath;
+            boost::algorithm::split(arMovePath, MovePath, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+            for (int i = 0 ; i < arMovePath.size(); i++)
 			{
 				ActionPoint	aPoint;
-				aPoint.TYPE		=	MovePath.Tokenize ( L" ", Pos )[0];
+                aPoint.TYPE		=	arMovePath[i++][0];
 
 				if ( L'm' == aPoint.TYPE )	aPoint.TYPE =	MOVE_TO;
 				if ( L'l' == aPoint.TYPE )	aPoint.TYPE =	LINE_TO;
@@ -238,20 +219,20 @@ namespace Animations
 
 				if ( MOVE_TO == aPoint.TYPE || LINE_TO == aPoint.TYPE )
 				{
-					aPoint.X[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[0]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[0]	=	_wtof (	arMovePath[i++].c_str() );
 				}
 
 				if ( CURVE_TO == aPoint.TYPE )
 				{
-					aPoint.X[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[0]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[0]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[0]	=	_wtof (	arMovePath[i++].c_str() );
 
-					aPoint.X[1]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[1]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[1]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[1]	=	_wtof (	arMovePath[i++].c_str() );
 
-					aPoint.X[2]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
-					aPoint.Y[2]	=	_wtof (	MovePath.Tokenize ( L" ", Pos ) );
+                    aPoint.X[2]	=	_wtof (	arMovePath[i++].c_str() );
+                    aPoint.Y[2]	=	_wtof (	arMovePath[i++].c_str() );
 				}
 
 				m_Points.push_back ( aPoint ); 
@@ -260,52 +241,37 @@ namespace Animations
 			return ( m_Points.size() >= 2 );
 		}
 
-		inline CStringW Recalculate ( double ScaleX, double ScaleY )
+        inline std::wstring Recalculate ( double ScaleX, double ScaleY )
 		{
-			CStringW	MovePath;
+            std::wstring	MovePath;
 
 			for ( int i = 0; i < m_Points.size(); ++i )
 			{
-				CStringW NextPoint;
+                std::wstring NextPoint;
 
-				if ( MOVE_TO ==	m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"M %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY );
+                if ( MOVE_TO ==	m_Points[i].TYPE )      NextPoint = L"M";
+                if ( LINE_TO ==	m_Points[i].TYPE )      NextPoint = L"L";
+                if ( CURVE_TO   == m_Points[i].TYPE )   NextPoint = L"C";
+                if ( CLOSE_LOOP == m_Points[i].TYPE )	NextPoint = L"Z";
+                if ( END        == m_Points[i].TYPE )   NextPoint = L"E";
 
-					MovePath += NextPoint;
-				}
+                if ( CURVE_TO   == m_Points[i].TYPE ||
+                     MOVE_TO    ==	m_Points[i].TYPE ||
+                     LINE_TO    ==	m_Points[i].TYPE)
+                {
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[0] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[0] * ScaleY);
+                }
 
-				if ( LINE_TO ==	m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"L %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY );
+                if ( CURVE_TO == m_Points[i].TYPE )
+                {
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[1] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[1] * ScaleY);
+                    NextPoint += L" " + std::to_wstring(m_Points[i].X[2] * ScaleX) + L" " + std::to_wstring(m_Points[i].Y[2] * ScaleY);
+                }
+                MovePath += NextPoint;
 
-					MovePath += NextPoint;
-				}
-
-				if ( CURVE_TO == m_Points[i].TYPE )
-				{
-					NextPoint.Format ( L"C %f %f %f %f %f %f", 
-						m_Points[i].X[0] * ScaleX, m_Points[i].Y[0] * ScaleY,
-						m_Points[i].X[1] * ScaleX, m_Points[i].Y[1] * ScaleY,
-						m_Points[i].X[2] * ScaleX, m_Points[i].Y[2] * ScaleY );
-
-					MovePath += NextPoint;
-				}
-
-				if ( CLOSE_LOOP == m_Points[i].TYPE )
-				{
-					MovePath	+=	CStringW ( L"Z" );
-				}
-
-				if ( END == m_Points[i].TYPE )
-				{
-					MovePath	+=	CStringW ( L"E" );
-				}
 
 				if ( i != m_Points.size() - 1 ) 
-					MovePath += CStringW ( L" ");
+                    MovePath += std::wstring ( L" ");
 			}
 
 			return MovePath;
@@ -326,27 +292,24 @@ namespace Animations
 	class Helpers
 	{
 	public:
-		static CString GetTimePropertyID4TimeNode			( TimePropertyID4TimeNode Value );
-		static CString GetTimeVariantTypeEnum				( TimeVariantTypeEnum Value );
-		static CString GetTimeNodeTypeEnum					( TimeNodeTypeEnum Value );
-		static CString GetTriggerObjectEnum					( TriggerObjectEnum Value );
-		static CString GetTimeVisualElementEnum				( TimeVisualElementEnum Value );
-		static CString GetElementTypeEnum					( ElementTypeEnum Value );
-		static CString GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
-		static CString IntToHexString						( DWORD Value );
-        static CString DoubleToString						( double Value );
-		static CString IntToString							( int Value );
-		static CString GetAnimationClassName				( AnimationsClassType Value );
+        static std::wstring GetTimePropertyID4TimeNode			( TimePropertyID4TimeNode Value );
+        static std::wstring GetTimeVariantTypeEnum				( TimeVariantTypeEnum Value );
+        static std::wstring GetTimeNodeTypeEnum					( TimeNodeTypeEnum Value );
+        static std::wstring GetTriggerObjectEnum				( TriggerObjectEnum Value );
+        static std::wstring GetTimeVisualElementEnum			( TimeVisualElementEnum Value );
+        static std::wstring GetElementTypeEnum					( ElementTypeEnum Value );
+        static std::wstring GetTimeAnimateBehaviorValueTypeEnum	( TimeAnimateBehaviorValueTypeEnum Value );
+        static std::wstring GetAnimationClassName				( AnimationsClassType Value );
 
-		static CString GetEffectTypeOfGroup					( DWORD Value );
+        static std::wstring GetEffectTypeOfGroup				( DWORD Value );
 		//	the corresponding effect type is an entrance or an exit effect
-		static CString GetEffectEntranceOrExitNameByID		( DWORD EffectID );
+        static std::wstring GetEffectEntranceOrExitNameByID		( DWORD EffectID );
 		//	the corresponding effect type is an emphasis effect
-		static CString GetEffectEmphasisNameByID			( DWORD EffectID );
+        static std::wstring GetEffectEmphasisNameByID			( DWORD EffectID );
 		//	the corresponding effect type is a motion path effect
-		static CString GetEffectMotionPathNameByID			( DWORD EffectID );
+        static std::wstring GetEffectMotionPathNameByID			( DWORD EffectID );
 
-		static CString GetEffectNameByID					( DWORD EffectType, DWORD EffectID );
+        static std::wstring GetEffectNameByID					( DWORD EffectType, DWORD EffectID );
 	};
 }
 
@@ -479,9 +442,6 @@ namespace Animations
 		{
 			m_oHeader			=	thisHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X(0xF,0x0,RT_ParaBuild);
-#endif
 			SRecordHeader oHeader;
 			UINT res = 0;
 			
@@ -552,9 +512,6 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X(0xF,0x0,RT_BuildList);
-#endif
 			LONG lPos		=	0;
 			StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -726,7 +683,7 @@ namespace Animations
 						//todoooo
 					}
 					else
-						stringValue		=	CStringW ( pString );
+                        stringValue		=	std::wstring ( pString );
 				}
 
 				RELEASEARRAYOBJECTS ( pString ); 
@@ -743,7 +700,7 @@ namespace Animations
 	public:
 
 		TimeVariantTypeEnum		m_Type;
-		CStringW				stringValue;
+        std::wstring				stringValue;
 	};
 
 	struct TimeStringListContainer : public IRecord
@@ -1014,8 +971,6 @@ namespace Animations
 					break;
 
 				TimeVariant* pRecord = NULL;
-
-				// ATLTRACE ("%x\n",ReadHeader.RecType);
 
 				TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) ReadHeader.RecInstance;
 
@@ -1973,7 +1928,6 @@ namespace Animations
 		virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
 			m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
-			//	ATLTRACE(_T("Time : %d\n"), m_oTimeAnimationValueAtom.m_nTime );
 
 			UINT res = 0;
 			SRecordHeader ReadHeader;
@@ -1981,13 +1935,6 @@ namespace Animations
 			if ( ReadHeader.ReadFromStream(pStream) )	
 			{
 				m_VarValue.ReadFromStream ( ReadHeader, pStream );
-				//if ( m_VarValue.m_Value.GetLength () > 1 )
-				//{
-
-				//	ATLTRACE(_T("VarValue : ") );
-				//	ATLTRACE(CW2A (m_VarValue.m_Value));
-				//	ATLTRACE(_T("\n"));
-				//}
 			}
 
 			CurLen += 8 + ReadHeader.RecLen;
@@ -1995,12 +1942,6 @@ namespace Animations
 			if ( ReadHeader.ReadFromStream(pStream) )	
 			{
 				m_VarFormula.ReadFromStream ( ReadHeader, pStream );
-				//if ( m_VarFormula.m_Value.GetLength () > 1 )
-				//{
-				//	ATLTRACE(_T("Formula : ") );
-				//	ATLTRACE(CW2A (m_VarFormula.m_Value));
-				//	ATLTRACE(_T("\n"));
-				//}
 			}
 
 			CurLen += 8 + ReadHeader.RecLen;
@@ -2491,10 +2432,6 @@ namespace Animations
 						continue;
 					}
 				}
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE ( _T("SlaveContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
-#endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 		}
@@ -2587,9 +2524,6 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			CHECK_RECORD_3X (0xF,0x01,RT_TimeExtTimeNodeContainer);
-#endif
 			LONG lPos = 0;
 			StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2798,13 +2732,9 @@ namespace Animations
 						continue;
 					}
 				}
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE ( _T("ExtTimeNodeContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
-#endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 
-			//ATLTRACE ("ExtTimeNodeContainer : %d\n"), rgExtTimeNodeChildren.size() );
 
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
@@ -3031,17 +2961,10 @@ namespace Animations
 			m_arrEffects.push_back ( m_oTop );
 
             m_nDuration			=	(std::max) ( m_nDuration, m_oTop.dTime + m_oTop.dDuration );
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			ATLTRACE ( _T("Push : %d, begin : %d, duration : %d\n"), nType, (int)m_oTop.dTime, (int)m_oTop.dDuration );
-#endif
 		}
 
 		inline void Pop ()
 		{
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			ATLTRACE ( _T("Pop \n") );	
-#endif
 			if ( (int)m_arrEffects.size() )
 				m_arrEffects.pop_back ();						
 
@@ -3186,10 +3109,6 @@ namespace Animations
 
 				UpdateParagraph ();
 
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-				ATLTRACE(_T("duration : %f,\n"), GetTime () );
-				ATLTRACE(_T("=======================================================================================\n"));
-#endif
 				return (0 != m_oAnimation.size());
 			}
 
@@ -3294,11 +3213,6 @@ namespace Animations
 
                     m_bSaveEffect	=	true;
 				}
-
-#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
-                // ATLTRACE ( _T("idObj : %d, effect : %ls\t\t"), nID, Helpers::GetEffectNameByID ( m_oTopEffect.m_nEffectType, m_oTopEffect.m_nEffectID ) );
-				// ATLTRACE ( _T("dbg - NodeType : %d, count : %d\n"), nNodeType, (int)pNode->rgExtTimeNodeChildren.size() );
-#endif
 			}				
 
 			for ( int i = 0; i < (int)pContainer->rgExtTimeNodeChildren.size(); ++i )
@@ -3343,10 +3257,10 @@ namespace Animations
 			if (pTimeNode->haveSetBehavior)
 			{
 				if (9 == oEffect.m_nEffectID)		//	TransparencyEffect	=	9,	// временная прозрачность
-					oEffect.m_dTransparency		=	_tstof (pTimeNode->timeSetBehavior->varTo.stringValue);
+                    oEffect.m_dTransparency		=	_tstof (pTimeNode->timeSetBehavior->varTo.stringValue.c_str());
 			}
 
-			if (m_ComposeEffectMothionPath.GetLength())
+            if (m_ComposeEffectMothionPath.length())
 			{
 				oEffect.m_MotionPath			=	m_ComposeEffectMothionPath;		//	составной эффект может иметь траекторию для движения
 			}
@@ -3414,12 +3328,6 @@ namespace Animations
             oEffect.m_bRemoveEmptyBlocks	=	true;	//	ALWAYS
 
 			EffectToMap (oEffect);
-
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-			//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
-			//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
-			ATLTRACE (_T("REF : %d, [ %f, %f ]\n"), oEffect.m_nRefID, oEffect.m_nBeginTime, oEffect.m_nDuration);
-#endif
 		}
 		inline void EffectToMap (const Effect& oEffect)
 		{
@@ -3724,10 +3632,6 @@ namespace Animations
 									{
 										oEffect.m_nTextSequence = ind;
 
-#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
-										//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
-										//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
-#endif
 										break;
 									}
 								}
@@ -3834,7 +3738,7 @@ namespace Animations
 		TimeArray			m_arDurations;
 		TimeArray			m_arBeginTimes;
 
-		CString				m_ComposeEffectMothionPath;
+        std::wstring				m_ComposeEffectMothionPath;
         bool				m_HaveAfterEffect;
 
 		EffectsMap			m_oAnimation;
@@ -3957,9 +3861,9 @@ public:
 			pStream->read ((unsigned char*) Name, 16 );
 			Name[8]	=	L'\0';
 
-			tagName	=	CStringW ( Name );
+            tagName	=	std::wstring ( Name );
 
-			if ( CStringW ( L"___PPT10" ) == tagName )
+            if ( std::wstring ( L"___PPT10" ) == tagName )
 			{
 				SRecordHeader rhData;
 				rhData.ReadFromStream(pStream) ;	
@@ -3995,7 +3899,7 @@ public:
 
 public:
 
-	CStringW					tagName;
+    std::wstring					tagName;
 
 	PP10SlideBinaryTagExtension	m_PP10SlideBinaryTagExtension;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -262,12 +262,28 @@ int AXES::serialize(std::wostream & _stream, bool secondary)
 			}
 			CP_XML_NODE(node_ax_type)
 			{
-				if (i < m_arATTACHEDLABEL.size())
+				ATTACHEDLABEL	*label = NULL;
+				for ( int h = 0 ; h < m_arATTACHEDLABEL.size(); h++)
+				{
+					ATTACHEDLABEL	*l_= dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[h].get() );
+					
+					if (l_->m_iLinkObject == 2 && l_->m_bUsed == false && (dv || ser))
+					{
+						label = l_;
+						l_->m_bUsed = true;
+						break;
+					}
+					if (l_->m_iLinkObject == 3 && l_->m_bUsed == false && iv)
+					{
+						label = l_;
+						l_->m_bUsed = true;
+						break;
+					}
+				}
+				if (label)
 				{
 					CP_XML_NODE(L"c:title")
 					{
-						ATTACHEDLABEL	*label = dynamic_cast<ATTACHEDLABEL *>	(m_arATTACHEDLABEL[i].get() );
-						
 						label->serialize(CP_XML_STREAM());
 
 					}

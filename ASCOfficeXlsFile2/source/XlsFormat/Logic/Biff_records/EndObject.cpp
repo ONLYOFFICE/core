@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,16 +50,6 @@ BaseObjectPtr EndObject::clone()
 {
 	return BaseObjectPtr(new EndObject(*this));
 }
-
-
-void EndObject::writeFields(CFRecord& record)
-{
-	FrtHeaderOld rt(rt_EndObject);
-	record >> rt;
-	unsigned short unused1 = 0, unused2 = 0, unused3 = 0;
-	record << iObjectKind << unused1 << unused2 << unused3;
-}
-
 
 void EndObject::readFields(CFRecord& record)
 {

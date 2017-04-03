@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,21 +49,6 @@ BaseObjectPtr ColInfo::clone()
 {
 	return BaseObjectPtr(new ColInfo(*this));
 }
-
-
-void ColInfo::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fHidden);
-	SETBIT(flags, 1, fUserSet);
-	SETBIT(flags, 2, fBestFit);
-	SETBIT(flags, 3, fPhonetic);
-	SETBITS(flags, 8, 10, iOutLevel);
-	SETBIT(flags, 12, fCollapsed);
-	record << colFirst << colLast << coldx << ixfe << flags;
-	record.reserveNunBytes(2); // unused
-}
-
 
 void ColInfo::readFields(CFRecord& record)
 {

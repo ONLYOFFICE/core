@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,7 +44,8 @@ namespace PPTX
 		class Stretch : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Stretch)
+			WritingElement_AdditionConstructors(Stretch)
+			PPTX_LOGIC_BASE2(Stretch)
 
 			Stretch& operator=(const Stretch& oSrc)
 			{
@@ -54,8 +55,19 @@ namespace PPTX
 				fillRect = oSrc.fillRect;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_stretch;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					if (_T("fillRect") == XmlUtils::GetNameNoNS(oReader.GetName()))
+						fillRect = oReader;
+				}
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;
@@ -73,7 +85,7 @@ namespace PPTX
 				}
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(fillRect);

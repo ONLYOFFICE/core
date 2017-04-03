@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,10 +34,10 @@
 #define PPTX_CORE_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
-#include "DocxFormat/WritingElement.h"
-//#include "DocxFormat/DateTime.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
+
 #include "Limit/ContentStatus.h"
-#include "DocxFormat/FileTypes.h"
+#include "FileTypes.h"
 
 using namespace NSBinPptxRW;
 
@@ -61,7 +61,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			oNode.ReadNodeValueBase(_T("dc:title"), title);
 			oNode.ReadNodeValueBase(_T("dc:creator"), creator);
@@ -84,7 +84,7 @@ namespace PPTX
 			version = document.Root.element("version").text();
 	*/
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns:dc"), PPTX::g_Namespaces.dc.m_strLink);
@@ -138,15 +138,15 @@ namespace PPTX
 			if(version.is_init())
 				root.push_back(XML::XElement("version", XML::XText(version)));
 	*/
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 			m_WrittenFileName = filename.GetFilename();
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::Core;
+			return OOX::Presentation::FileTypes::Core;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

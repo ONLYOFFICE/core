@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,14 +48,27 @@ namespace PPTX
 			m_oMath = oSrc.m_oMath;
 			return *this;
 		}
+		void MathParaWrapper::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring name = oReader.GetName();
+			
+			if(L"oMathPara" == name)
+			{
+				m_oMathPara = oReader;
+			}
+			else if(L"oMath" == name)
+			{
+				m_oMath = oReader;
+			}
+		}
 		void MathParaWrapper::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">"));
-			CString sEnd(_T("</root>"));
-			CString sXml = sBegin + node.GetXml() + sEnd;
+			std::wstring sBegin(_T("<root xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">"));
+			std::wstring sEnd(_T("</root>"));
+			std::wstring sXml = sBegin + node.GetXml() + sEnd;
 			XmlUtils::CXmlLiteReader oReader;
-			oReader.FromString(sXml.GetBuffer());
-			sXml.ReleaseBuffer();
+            oReader.FromString(sXml);
+
 			oReader.ReadNextNode();//root
 			oReader.ReadNextNode();//a14:m
 			oReader.ReadNextNode();//oMath oMathPara
@@ -73,11 +86,11 @@ namespace PPTX
 			FillParentPointersForChilds();
 		}
 
-		CString MathParaWrapper::toXML() const
+		std::wstring MathParaWrapper::toXML() const
 		{
 			if(m_oMathPara.IsInit() || m_oMath.IsInit() || m_oXml.IsInit())
 			{
-				CString sXml = L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\"><a14:m>";
+				std::wstring sXml = L"<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"><mc:Choice xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" Requires=\"a14\"><a14:m>";
 				if(m_oMathPara.IsInit())
 				{
 					sXml += m_oMathPara->toXML();
@@ -161,7 +174,7 @@ namespace PPTX
 				eType = OOX::et_m_oMath;
 			}
 			LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
-			CString sXml;
+			std::wstring sXml;
 			if(NULL != pReader->m_pMainDocument)
 			{
 				pReader->m_pMainDocument->getXmlContentElem(eType, *pReader, m_oXml.get());
@@ -186,7 +199,7 @@ namespace PPTX
 			pReader->Seek(_end);
 		}
 
-		CString MathParaWrapper::GetText() const
+		std::wstring MathParaWrapper::GetText() const
 		{
 			//todo
 			return _T("");

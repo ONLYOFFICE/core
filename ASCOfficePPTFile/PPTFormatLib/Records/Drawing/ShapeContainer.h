@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -1081,7 +1081,7 @@ public:
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
 					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
-					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
+					pParentShape->m_oText.m_oAttributes.m_oFont.Name = str;
 				}				
 			}break;
 		case NSOfficeDrawing::gtextSize:
@@ -1867,12 +1867,12 @@ public:
 		return etShape;
 	}
 
-	AVSINLINE CString GetFileName(CString strFilePath)
+    AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
 	{
-		int nIndex = strFilePath.ReverseFind(TCHAR('\\'));
+        int nIndex = strFilePath.rfind(wchar_t('\\'));
 		if (-1 != nIndex)
 		{
-			return strFilePath.Mid(nIndex + 1);
+            return strFilePath.substr(nIndex + 1);
 		}
 		return strFilePath;
 	}

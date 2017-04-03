@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -428,7 +428,7 @@ public:
 	TSvmColor		Color;
 };
 
-void parseString(CDataStream &stream, std::wstring &string, unsigned short version = 0, unsigned short charset = 0);
+int parseString(CDataStream &stream, std::wstring &string, unsigned short version = 0, unsigned short charset = 0);
 
 CDataStream& operator>>(CDataStream &stream, VersionCompat &compat);
 CDataStream& operator>>(CDataStream &stream, Fraction &fract);

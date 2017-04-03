@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,22 +43,17 @@
 
 #include "OfficeUtilsCommon.h"
 #include "../../DesktopEditor/common/Types.h"
+
 using namespace std;
 
-//#define ZLIB_WINAPI
-//#define CODEPAGE_ISSUE_FIX
+#include "zlib-1.2.3/contrib/minizip/unzip.h"
+#include "zlib-1.2.3/contrib/minizip/zip.h"
 
-//#pragma comment(lib, "zlibstat.lib")
+#include <zlib.h>
 
-//#if defined(_WIN32) || defined (_WIN64)
-    #include "zlib-1.2.3/contrib/minizip/unzip.h"
-    #include "zlib-1.2.3/contrib/minizip/zip.h"
-//#else
-   #include <zlib.h>
-//#endif
 namespace ZLibZipUtils
 {
-  int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, int compressionLevel = -1 );
+  int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted = false , int compressionLevel = -1);
   int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int compressionLevel = -1 );
   bool ClearDirectory( const WCHAR* dir, bool delDir = false );
   int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password = NULL, bool opt_extract_without_path = false, bool clearOutputDirectory = false );

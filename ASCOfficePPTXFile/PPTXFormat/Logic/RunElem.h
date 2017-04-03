@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,12 +47,35 @@ namespace PPTX
 		class RunElem : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(RunElem)
+			WritingElement_AdditionConstructors(RunElem)
 
-		public:
+			RunElem() {}
+
+			virtual OOX::EElementType getType () const
+			{
+				if (Elem.IsInit())
+					return Elem->getType();
+				return OOX::et_Unknown;
+			}		
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if(name == _T("r"))
+					Elem.reset(new Logic::Run(oReader));
+				else if(name == _T("fld"))
+					Elem.reset(new Logic::Fld(oReader));
+				else if(name == _T("br"))
+					Elem.reset(new Logic::Br(oReader));
+				else if(name == _T("m"))
+					Elem.reset(new Logic::MathParaWrapper(oReader));
+				else
+					Elem.reset();
+			}
+
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CString name = XmlUtils::GetNameNoNS(node.GetName());
+				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 				if(name == _T("r"))
 					Elem.reset(new Logic::Run(node));
@@ -62,15 +85,15 @@ namespace PPTX
 					Elem.reset(new Logic::Br(node));
 				else if(name == _T("m"))
 					Elem.reset(new Logic::MathParaWrapper(node));
-				else Elem.reset();
+				else 
+					Elem.reset();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (is_init())
 					return Elem->toXML();
 				return _T("");
 			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				if (is_init())
@@ -89,13 +112,15 @@ namespace PPTX
 			}
 
 			virtual bool is_init() const {return (Elem.IsInit());};
-			virtual CString GetText() const{return Elem->GetText();}
-
+			virtual std::wstring GetText() const{return Elem->GetText();}
+			smart_ptr<RunBase> GetElem()
+			{
+				return Elem;
+			}
 			template<class T> AVSINLINE const bool	is() const	{ return Elem.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Elem.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return Elem.as<T>(); }
 
-		//public:
 		private:
 			smart_ptr<RunBase> Elem;
 		protected:

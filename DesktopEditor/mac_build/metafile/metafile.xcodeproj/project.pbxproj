@@ -173,6 +173,7 @@
 		17A7F0291B13154500760AFB /* SvmObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0201B13154500760AFB /* SvmObjects.cpp */; };
 		17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
 		17DD67B71B7E2778000F800F /* lepton_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD67B51B7E2778000F800F /* lepton_utils.cpp */; };
+		697B72D41E3B78D90054C17C /* EmfFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 697B72D31E3B78D90054C17C /* EmfFile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -435,6 +436,7 @@
 		17A7F0221B13154500760AFB /* SvmPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmPlayer.cpp; sourceTree = "<group>"; };
 		17A7F0231B13154500760AFB /* SvmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmPlayer.h; sourceTree = "<group>"; };
 		17DD67B51B7E2778000F800F /* lepton_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lepton_utils.cpp; sourceTree = "<group>"; };
+		697B72D31E3B78D90054C17C /* EmfFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmfFile.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -500,6 +502,7 @@
 			children = (
 				17A762FF1B0F38480046BC0B /* EmfClip.cpp */,
 				17A763001B0F38480046BC0B /* EmfClip.h */,
+				697B72D31E3B78D90054C17C /* EmfFile.cpp */,
 				17A763011B0F38480046BC0B /* EmfFile.h */,
 				17A763021B0F38480046BC0B /* EmfObjects.cpp */,
 				17A763031B0F38480046BC0B /* EmfObjects.h */,
@@ -905,6 +908,7 @@
 				17A764CD1B0F39370046BC0B /* rotateamlow.cpp in Sources */,
 				17A763F31B0F39370046BC0B /* bbuffer.cpp in Sources */,
 				17A762FD1B0F36790046BC0B /* WmfPlayer.cpp in Sources */,
+				697B72D41E3B78D90054C17C /* EmfFile.cpp in Sources */,
 				17A764811B0F39370046BC0B /* parseprotos.cpp in Sources */,
 				17A764131B0F39370046BC0B /* ccthin.cpp in Sources */,
 				17A764091B0F39370046BC0B /* boxbasic.cpp in Sources */,
@@ -1049,7 +1053,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1087,7 +1091,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -1105,7 +1109,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = metafile_ios;
 				SKIP_INSTALL = YES;
@@ -1123,7 +1127,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = metafile_ios;
 				SKIP_INSTALL = YES;

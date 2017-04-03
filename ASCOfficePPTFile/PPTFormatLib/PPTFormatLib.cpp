@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -60,7 +60,7 @@ bool COfficePPTFile::OpenFile(std::wstring sFileName)
 	
 	pStgFrom->open(false,false);
 
-	m_pReader = new CPPTFileReader(pStgFrom, std_string2string(m_strTempDirectory));
+	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
     ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_strFileDirectory = GetDirectory(sFileName.c_str());
 	
 	if	(!((CPPTFileReader*)m_pReader)->IsPowerPoint()) 
@@ -85,11 +85,12 @@ bool COfficePPTFile::CloseFile()
 	m_pReader = NULL;
 	return S_OK;
 }
+
 HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath)
 {
     if (m_strTempDirectory.length() < 1)
     {
-        m_strTempDirectory = FileSystem::Directory::GetTempPath().GetBuffer();
+        m_strTempDirectory = NSDirectory::GetTempPath();
     }
 
     bool bRes = OpenFile(sSrcFileName);
@@ -102,7 +103,7 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
 		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
-        oPPTXWriter.m_strTempDirectory = std_string2string(sDstPath);
+        oPPTXWriter.m_strTempDirectory = sDstPath;
 		
 		
 		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
@@ -112,20 +113,12 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	return S_OK;
 }
 
-HRESULT COfficePPTFile::GetAdditionalParam (CString sParamName, VARIANT* ParamValue)
+std::wstring COfficePPTFile::GetDirectory(std::wstring strFileName)
 {
-	if (NULL == ParamValue)
-		return S_FALSE;
-
-	return S_OK;
-}
-
-CString COfficePPTFile::GetDirectory(CString strFileName)
-{
-	int nIndex = strFileName.ReverseFind(FILE_SEPARATOR_CHAR);
+    int nIndex = strFileName.rfind(FILE_SEPARATOR_CHAR);
 	if (-1 != nIndex)
 	{
-		return strFileName.Mid(0, nIndex + 1);
+        return strFileName.substr(0, nIndex + 1);
 	}
 	return strFileName;
 }

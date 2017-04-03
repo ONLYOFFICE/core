@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -64,8 +64,10 @@ public:
 	void clear				();
 	void set_styles_context	(odf_style_context*  styles_context);//для embedded 
 
-	void set_header_state	(bool Val);
-	void set_footer_state	(bool Val);
+	void set_header_state		(bool Val);
+	void set_footer_state		(bool Val);
+	void set_background_state	(bool Val);
+	
 	void check_anchor		();
 
 	void set_margin_left	(double valPt);
@@ -142,7 +144,7 @@ public:
 	bool is_exist_content();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_path			(std::wstring path_string);
-	void add_path_element	(std::wstring command, std::wstring & elm);
+	void add_path_element	(std::wstring command, const std::wstring & elm);
 	void add_modifier		(std::wstring modifier);
 	
 	void set_viewBox		(double W, double H);
@@ -151,14 +153,17 @@ public:
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 	
+	void get_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position		(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt);
 	void set_position_line	(_CP_OPT(double) & x_pt, _CP_OPT(double) & y_pt, _CP_OPT(double) & x1_pt, _CP_OPT(double) & y1_pt); 
 	
-	void get_size			( double & width_pt, double & height_pt);
+	void get_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
+	void set_size			( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt);
 	
-	void set_name			(std::wstring  name);
+	void set_name			(const std::wstring & name);
+	void set_description	(const std::wstring & descr);
+	void set_hidden			(bool bVal);
 	void set_z_order		(int id);
 	
 	void set_flip_H			(bool bVal);
@@ -170,6 +175,7 @@ public:
 	void set_type_fill		(int type);//for area - temp for objects
 	void set_solid_fill		(std::wstring hexColor);
 	void set_opacity		(double percent);
+
 //////////////////////////////////////////////////////////////
 	void start_area_properties();
 	void end_area_properties();
@@ -184,6 +190,8 @@ public:
 		std::wstring add_marker_style(int type);
 	void end_line_properties		();
 	
+	_CP_OPT(unsigned int)	get_fill_color ();
+	void					set_fill_color (unsigned int color);
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..
@@ -191,7 +199,7 @@ public:
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);
-	void set_textarea_padding		(double left,double top,double right,double bottom);//in cm
+	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in cm
 	void set_textarea_writing_mode	(int mode);
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);

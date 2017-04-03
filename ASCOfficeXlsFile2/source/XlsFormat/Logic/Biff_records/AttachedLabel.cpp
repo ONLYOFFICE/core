@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,19 +49,6 @@ AttachedLabel::~AttachedLabel()
 BaseObjectPtr AttachedLabel::clone()
 {
 	return BaseObjectPtr(new AttachedLabel(*this));
-}
-
-
-void AttachedLabel::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fShowValue);
-	SETBIT(flags, 1, fShowPercent);
-	SETBIT(flags, 2, fShowLabelAndPerc);
-	SETBIT(flags, 4, fShowLabel);
-	SETBIT(flags, 5, fShowBubbleSizes);
-	SETBIT(flags, 6, fShowSeriesName);
-	record << flags;
 }
 
 

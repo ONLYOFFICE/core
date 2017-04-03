@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -48,20 +48,6 @@ Pane::~Pane()
 BaseObjectPtr Pane::clone()
 {
 	return BaseObjectPtr(new Pane(*this));
-}
-
-
-void Pane::writeFields(CFRecord& record)
-{
-	record << x << y;
-	
-	CellRef topLeftCell_ref(topLeftCell);
-	
-	rwTop	= static_cast<unsigned short>(topLeftCell_ref.getRow());
-	colLeft = static_cast<unsigned short>(topLeftCell_ref.getColumn());
-	
-	record << rwTop << colLeft << pnnAcct;
-	record.reserveNunBytes(1); // reserved
 }
 
 

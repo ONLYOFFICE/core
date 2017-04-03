@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,8 +39,6 @@
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
 #include "style_text_properties.h"
-
-#include "office_settings.h"
 
 #include "draw_common.h"
 
@@ -137,11 +135,12 @@ void object_odf_context::add_grid(std::wstring const & className, std::wstring c
         _CP_LOG << "[warning] unexpected chart:grid" << std::endl;
     }
 }
-void object_odf_context::add_series(std::wstring const & cellRangeAddress,
-        std::wstring const & labelCell,
-        class_type classType,
-        std::wstring const & attachedAxis,
-        std::wstring const & styleName)
+void object_odf_context::add_series(
+		std::wstring const &	cellRangeAddress,
+        std::wstring const &	labelCell,
+        class_type				classType,
+        std::wstring const &	attachedAxis,
+        std::wstring const &	styleName)
 {
 	if (class_ == chart_ring) classType = chart_ring; 
 	//if (class_ == chart_stock) classType = chart_stock; 
@@ -175,13 +174,17 @@ void object_odf_context::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->xlsx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
+	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//embedded
 	}
 }
 void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
@@ -199,7 +202,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->docx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
@@ -225,6 +228,10 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 		Context.set_run_state		(runState);
 		Context.set_paragraph_state	(pState);	
 	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//embedded
+	}
 }
 void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -240,13 +247,17 @@ void object_odf_context::pptx_convert(oox::pptx_conversion_context & Context)
 	}
 	else if (object_type_ == 2 && office_text_)
 	{
-		office_text_->pptx_convert(Context);
+		//embedded
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().start();
 		office_math_->oox_convert(Context.get_math_context());
+	}
+	else if(object_type_ == 4 && office_spreadsheet_)
+	{
+		//embedded
 	}
 }
 void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash)
@@ -447,13 +458,13 @@ process_build_object::process_build_object(object_odf_context & object_odf, odf_
 						,number_styles_		(context.numberStyles())
 						,num_format_context_(context)
 {
-	office_element_ptr		sett_elm	= settings_.find_by_style_name(L"BaseFontHeight");
-	settings_config_item*	sett		= dynamic_cast<settings_config_item*>(sett_elm.get());
-	if (sett)
+	_CP_OPT(std::wstring) sFontHeight	= settings_.find_by_name(L"BaseFontHeight");
+	
+	if (sFontHeight)
 	{
 		try
 		{
-			object_odf_context_.baseFontHeight_ =  boost::lexical_cast<int>(sett->content_);
+			object_odf_context_.baseFontHeight_ =  boost::lexical_cast<int>(*sFontHeight);
 		}
 		catch(...)
 		{
@@ -544,7 +555,7 @@ bool process_build_object::visit_rows(unsigned int repeated)
 //////////////////////////////////////////////////
 void process_build_object::on_not_impl(std::string const & message)
 {
-    _CP_LOG << L"[process_draw_chart visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
+    _CP_LOG << L"[process_object visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -570,14 +581,18 @@ void process_build_object::visit(office_chart& val)
 void process_build_object::visit(office_text& val)
 {
 	object_odf_context_.object_type_ = 2;
-	object_odf_context_.office_text_ = &val;//конвертация будет уровнем выше
+	object_odf_context_.office_text_ = &val;	//конвертация будет уровнем выше
 }
 void process_build_object::visit(office_math& val)
 {
-	object_odf_context_.object_type_ = 3; //0;//временно замещающая картинка
-	object_odf_context_.office_math_ = &val;//конвертация будет уровнем выше
+	object_odf_context_.object_type_ = 3;		//= 0 - временно замещающая картинка
+	object_odf_context_.office_math_ = &val;	//конвертация будет уровнем выше
 }
-
+void process_build_object::visit(office_spreadsheet& val)
+{
+	object_odf_context_.object_type_		= 4;	
+	object_odf_context_.office_spreadsheet_ = &val;	//конвертация будет уровнем выше
+}
 void process_build_object::visit(const chart_chart& val)
 {
 	object_odf_context_.object_type_ = 1;

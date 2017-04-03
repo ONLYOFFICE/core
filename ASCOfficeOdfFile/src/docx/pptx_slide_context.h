@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,38 +50,40 @@ public:
     pptx_slide_context(pptx_conversion_context & Context);
 	
     void start_slide();
-	void end_slide(){}
+	void end_slide	(){}
 ////////////////////////////////////////////////////////////////////////////////////////
-	void start_slide_animation();
-	void end_slide_animation(){}
+	void start_slide_animation	();
+	void end_slide_animation	(){}
 	
-	void set_transitionFilter(std::wstring & type,_CP_OPT(std::wstring) & dir, _CP_OPT(std::wstring) & dop, _CP_OPT(int) & time);
-	void set_transitionAction(bool val);
-	void set_transitionSpeed(std::wstring val);
+	void set_transitionFilter	(std::wstring & type,_CP_OPT(std::wstring) & dir, _CP_OPT(std::wstring) & dop, _CP_OPT(int) & time);
+	void set_transitionAction	(bool val);
+	void set_transitionSpeed	(std::wstring val);
 ///////////////////////////////////////////////////////////////////////////////////////////
-	void set_rect(double width_pt, double height_pt, double x_pt, double y_pt);
+	void set_rect		(double width_pt, double height_pt, double x_pt, double y_pt);
 
-	void set_translate(double x_pt, double y_pt);
-	void set_scale(double cx_pt, double cy_pt);
-	void set_rotate(double angle);
+	void set_translate	(double x_pt, double y_pt);
+	void set_scale		(double cx_pt, double cy_pt);
+	void set_rotate		(double angle);
 
-	void set_name(std::wstring const & name);
-	void set_anchor(std::wstring anchor, double x_pt, double y_pt);
-	void set_property(odf_reader::_property p);
+	void set_name		(std::wstring const & name);
+	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
+	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
-    void set_clipping(const std::wstring & str );
-	void set_fill(_oox_fill & fill);
+    void set_clipping	(const std::wstring & str );
+	void set_fill		(_oox_fill & fill);
 	
-	void set_placeHolder_type(std::wstring typeHolder);
-	void set_placeHolder_idx(int idx);
+	void set_placeHolder_type	(std::wstring typeHolder);
+	void set_placeHolder_idx	(int idx);
 
 	std::wstring add_hyperlink(std::wstring const & ref, bool object);
 
-    void start_image(std::wstring const & path);
-    void end_image();
-   
-	void start_chart(std::wstring const & path);
-    void end_chart();
+	void start_frame();
+		void set_image		(const std::wstring & path);
+		void set_chart		(const std::wstring & path);
+		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
+		void set_ole_object	(const std::wstring & path, const std::wstring & progId);
+		void set_text_box	();
+	void end_frame();
 
  	void start_table();
     void end_table();
@@ -89,9 +91,6 @@ public:
 	void start_shape(int type);
     void end_shape();
 	
- 	void start_object_ole();
-    void end_object_ole();
-
 	void set_use_image_replacement();
 
 	bool empty() const;
@@ -109,7 +108,6 @@ public:
 
 	void add_background(_oox_fill & fill);
 
-
 	void add_rels( bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
@@ -121,13 +119,7 @@ public:
 	void set_page_number();
 	void set_date_time();
 private:
-	void process_common_properties(drawing_object_description& pic,_pptx_drawing & drawing);
 	void default_set();
-    
-	void process_shapes();
-    void process_images();
-	void process_charts();
-	void process_tables();
 
 	int hlinks_size_;
 	

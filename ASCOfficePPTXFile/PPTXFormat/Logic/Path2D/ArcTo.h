@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,8 @@ namespace PPTX
 		class ArcTo : public PathBase
 		{
 		public:
-			PPTX_LOGIC_BASE(ArcTo)
+			WritingElement_AdditionConstructors(ArcTo)
+			PPTX_LOGIC_BASE2(ArcTo)
 
 			ArcTo& operator=(const ArcTo& oSrc)
 			{
@@ -56,8 +57,23 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_arcTo;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, _T("wR"), wR )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hR"), hR)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("stAng"), stAng)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("swAng"), swAng)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				wR		= node.GetAttribute(_T("wR"));
@@ -66,7 +82,7 @@ namespace PPTX
 				swAng	= node.GetAttribute(_T("swAng"));
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("wR"), wR);
@@ -104,14 +120,14 @@ namespace PPTX
 			}
 
 		public:
-			CString wR;
-			CString hR;
-			CString stAng;
-			CString swAng;
+			std::wstring wR;
+			std::wstring hR;
+			std::wstring stAng;
+			std::wstring swAng;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 		public:
-			virtual CString GetODString()const
+			virtual std::wstring GetODString()const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("wR"), wR);

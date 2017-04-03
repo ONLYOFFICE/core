@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -37,7 +37,9 @@
     #include <shellapi.h>
     #include <shlobj.h>
     #include <shlwapi.h>
+    #pragma comment( lib, "Rpcrt4.lib" )
     #pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
+    #pragma comment( lib, "Shlwapi.lib" )
 #else
 #endif
 
@@ -51,16 +53,15 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
 #if defined(_WIN32) || defined (_WIN64)
     WCHAR buffer[4096];
     GetTempPathW(4096, buffer);
-    m_strTempDir = CStringW(buffer);
+    m_strTempDir = std::wstring(buffer);
 
-    GetLongPathName(m_strTempDir.GetString(), buffer, 4096);
-	m_strTempDir = CStringW(buffer) + CStringW("_PPTX\\");
+    GetLongPathName(m_strTempDir.c_str(), buffer, 4096);
+    m_strTempDir = std::wstring(buffer) + std::wstring(L"_PPTX\\");
 #else
-    m_strTempDir = FileSystem::Directory::GetTempPath();
-    m_strTempDir = FileSystem::Directory::GetLongPathName_(m_strTempDir) + CString("_PPTX/");
+    m_strTempDir = NSDirectory::GetTempPath() + L"_PPTX/";
 #endif
 	//
-	m_strFontDirectory = _T("");
+    m_strFontDirectory  = _T("");
 	m_strMediaDirectory = _T("");
     m_bIsUseSystemFonts = false;
 	m_strEmbeddedFontsDirectory = _T("");
@@ -68,57 +69,36 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
     m_strFolderThemes = _T("");
 
 	//m_fCallbackResource = fCallbackResource;
-	m_fCallbackExtract = fCallbackExtract;
+    m_fCallbackExtract  = fCallbackExtract;
 	m_fCallbackCompress = fCallbackCompress;
 	m_fCallbackProgress = fCallbackProgress;
-	m_pCallbackArg = pCallbackArg;
+    m_pCallbackArg      = pCallbackArg;
 
 	m_pFolder		= NULL;
-	//m_pOfficeUtils	= NULL;
-
-	//if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&m_pOfficeUtils))
-	//	return S_FALSE;
-
 }
+
 CPPTXFile::~CPPTXFile()
 {
 	RELEASEOBJECT(m_pFolder);
 }
-HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
+HRESULT CPPTXFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions)
 {
-	CStringW localTempDir(sDstPath);
-    if((sDstPath != NULL) || (localTempDir != _T("")))
+	std::wstring localTempDir(sDstPath);
+    if(!localTempDir.empty())
 	{
-        bool res = FileSystem::Directory::CreateDirectory(localTempDir);
+        bool res = NSDirectory::CreateDirectory(localTempDir);
         if (res == false) return S_FALSE;
-        //int res = SHCreateDirectoryExW(NULL, localTempDir.GetString(), NULL);
-        //if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-        //	return S_FALSE;
+
 		put_TempDirectory(sDstPath);
 	}
 	else
 	{
-        bool res = FileSystem::Directory::CreateDirectory(m_strTempDir);
+        bool res = NSDirectory::CreateDirectory(m_strTempDir);
         if (res == false) return S_FALSE;
-    //	int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-    //	if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-    //		return S_FALSE;
 	}
 	localTempDir = m_strTempDir;
 
-	/*
-	SHFILEOPSTRUCTW shfos;
-	ZeroMemory(&shfos, sizeof(shfos));
-	shfos.wFunc = FO_DELETE;
-	CStringW _local = localTempDir + CStringW(L"*.*");
-	_local.AppendChar(0);
-	_local.AppendChar(0);
-	shfos.pFrom = _local.GetString();
-	shfos.fFlags = FOF_SILENT + FOF_NOCONFIRMATION;
-	if(SHFileOperationW(&shfos) != 0)
-	return S_FALSE;
-	*/
-    CString srcFileName = sSrcFileName;
+	std::wstring srcFileName = sSrcFileName;
 	if (m_pCallbackArg)
 	{
 		if(!m_fCallbackExtract(m_pCallbackArg, srcFileName , localTempDir))
@@ -143,73 +123,69 @@ HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptio
 		RELEASEOBJECT(m_pFolder);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
-		FileSystem::Directory::DeleteDirectory(m_strTempDir, false);
+        NSDirectory::DeleteDirectory(m_strTempDir, false);
 		return S_FALSE;
 	}
 
-	m_strDirectory = (CString)sSrcFileName;
-	int nIndex = m_strDirectory.ReverseFind(FILE_SEPARATOR_CHAR);
+    m_strDirectory = sSrcFileName;
+    int nIndex = m_strDirectory.rfind(FILE_SEPARATOR_CHAR);
 	if (-1 != nIndex)
-		m_strDirectory = m_strDirectory.Mid(0, nIndex);
+		m_strDirectory = m_strDirectory.substr(0, nIndex);
 
 	return S_OK;
 }
-HRESULT CPPTXFile::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
+HRESULT CPPTXFile::SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions)
 {
 	if (NULL == m_pFolder)
 		return S_FALSE;
 
 	OOX::CPath oPath;
-	oPath.m_strFilename = CString(sSrcPath);
+	oPath.m_strFilename = std::wstring(sSrcPath);
 	m_pFolder->write(oPath);
 
-    CString srcFilePath = sSrcPath;
-    CString dstFileName = sDstFileName;
+    std::wstring srcFilePath = sSrcPath;
+    std::wstring dstFileName = sDstFileName;
 	return m_fCallbackCompress ? (m_fCallbackCompress(m_pCallbackArg, srcFilePath, dstFileName) ? S_OK : S_FALSE) : S_OK;
 }
-HRESULT CPPTXFile::get_TempDirectory(BSTR* pVal)
+HRESULT CPPTXFile::get_TempDirectory(std::wstring* pVal)
 {
-#if defined(_WIN32) || defined (_WIN64)
-    *pVal = m_strTempDir.AllocSysString();
-#else
     *pVal = m_strTempDir;
-#endif
 	return S_OK;
 }
-HRESULT CPPTXFile::put_TempDirectory(BSTR newVal)
+HRESULT CPPTXFile::put_TempDirectory(std::wstring newVal)
 {
-	CStringW TempStr(newVal);
+    std::wstring TempStr(newVal);
 
 #if defined(_WIN32) || defined (_WIN64)
-	if(PathIsDirectoryW(TempStr.GetString()))
+    if(PathIsDirectoryW(TempStr.c_str()))
 	{
-		if(TempStr.Right(1) != L"\\")
+        if(TempStr.substr(TempStr.length() - 2, 1) != L"\\")
 			TempStr += L"\\";
 		m_strTempDir = TempStr;
 		return S_OK;
 	}
 #else
-    if(FileSystem::Directory::PathIsDirectory(TempStr))
+    if(NSDirectory::PathIsDirectory(TempStr))
     {
-        if(TempStr.Right(1) != _T("/"))
-            TempStr += _T("/");
+        if(TempStr[TempStr.length() - 1] != L'/')
+            TempStr += L"/";
         m_strTempDir = TempStr;
     }
 #endif
 	return S_FALSE;
 }
-HRESULT CPPTXFile::GetDVDXml(BSTR* pbstrPTTXml)
+HRESULT CPPTXFile::GetDVDXml(std::wstring* pbstrPTTXml)
 {
 	return S_OK;
 }
-HRESULT CPPTXFile::GetBluRayXml(BSTR* pbstrDVDXml)
+HRESULT CPPTXFile::GetBluRayXml(std::wstring* pbstrDVDXml)
 {
 	return S_OK;
 }
-HRESULT CPPTXFile::get_DrawingXml(BSTR* pVal)
+HRESULT CPPTXFile::get_DrawingXml(std::wstring* pVal)
 {
 	if ((NULL == m_pFolder) || (NULL == pVal))
 		return S_FALSE;
@@ -217,24 +193,11 @@ HRESULT CPPTXFile::get_DrawingXml(BSTR* pVal)
 	return S_OK;
 }
 
-HRESULT CPPTXFile::SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
+void CPPTXFile::SetEmbeddedFontsDirectory(std::wstring val)
 {
-	CString sParamName; sParamName = ParamName;
-	if (_T("EmbeddedFontsDirectory") == sParamName && ParamValue.vt == VT_BSTR)
-	{		
-		m_strEmbeddedFontsDirectory = ParamValue.bstrVal;
-		return S_OK;
-	}		
-	return S_OK;
+    m_strEmbeddedFontsDirectory = val;
 }
 
-HRESULT CPPTXFile::GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
-{
-	if (NULL == ParamValue)
-		return S_FALSE;
-
-	return S_OK;
-}
 
 bool CPPTXFile::Progress(long ID, long Percent)
 {
@@ -249,43 +212,43 @@ bool CPPTXFile::Progress(long ID, long Percent)
 }
 
 // to PPTY
-HRESULT CPPTXFile::SetMediaDir(BSTR bsMediaDir) 
+HRESULT CPPTXFile::SetMediaDir(std::wstring bsMediaDir) 
 {
 	m_strMediaDirectory = bsMediaDir;
 	return S_OK;
 }
-HRESULT CPPTXFile::SetFontDir(BSTR bsFontDir)
+HRESULT CPPTXFile::SetFontDir(std::wstring bsFontDir)
 {
 	m_strFontDirectory = bsFontDir;
 	return S_OK;
 }
-HRESULT CPPTXFile::SetThemesDir(BSTR bsDir)
+HRESULT CPPTXFile::SetThemesDir(std::wstring bsDir)
 {
 	m_strFolderThemes = bsDir;
 	return S_OK;
 }
-HRESULT CPPTXFile::SetUseSystemFonts(VARIANT_BOOL useSystemFonts) 
+HRESULT CPPTXFile::SetUseSystemFonts(bool val)
 {
-	m_bIsUseSystemFonts = (VARIANT_TRUE == useSystemFonts);
+    m_bIsUseSystemFonts = val;
 	return S_OK;
 }
-HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
+HRESULT CPPTXFile::OpenFileToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
-	if (m_strTempDir.GetLength() < 1)
+    if (m_strTempDir.empty())
 	{
-        m_strTempDir = FileSystem::Directory::GetTempPath();
+        m_strTempDir = NSDirectory::GetTempPath();
 	}
 
-	FileSystem::Directory::CreateDirectory(m_strTempDir);
+    NSDirectory::CreateDirectory(m_strTempDir);
 
-	OOX::CPath pathLocalInputTemp = FileSystem::Directory::CreateDirectoryWithUniqueName(m_strTempDir);
+    OOX::CPath pathLocalInputTemp = NSDirectory::CreateDirectoryWithUniqueName(m_strTempDir);
 
 	bool notDeleteInput = false;
 
 	if (m_fCallbackExtract)
 	{
-        CString strInput = bsInput;
-        CString strOutput = pathLocalInputTemp.GetPath();
+        std::wstring strInput = bsInput;
+        std::wstring strOutput = pathLocalInputTemp.GetPath();
 
         if(!m_fCallbackExtract(m_pCallbackArg, strInput , strOutput))
 		{
@@ -298,25 +261,16 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 		pathLocalInputTemp = bsInput;
 		notDeleteInput = true;
 	}
-	BSTR bsLocalInputTemp;
-	
-#if defined(_WIN32) || defined (_WIN64)
-	bsLocalInputTemp= pathLocalInputTemp.GetPath().AllocSysString();
-#else
-	bsLocalInputTemp= pathLocalInputTemp.GetPath();
-#endif
+	std::wstring bsLocalInputTemp= pathLocalInputTemp.GetPath();
 
 	HRESULT hr = OpenDirectoryToPPTY(bsLocalInputTemp, bsOutput);
 
 	if (notDeleteInput == false)
-		FileSystem::Directory::DeleteDirectory(pathLocalInputTemp.GetPath());
+        NSDirectory::DeleteDirectory(pathLocalInputTemp.GetPath());
 	
-#if defined(_WIN32) || defined (_WIN64)
-	if (bsLocalInputTemp)SysFreeString(bsLocalInputTemp);
-#endif
 	return hr;
 }
-HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
+HRESULT CPPTXFile::OpenDirectoryToPPTY(std::wstring bsInput, std::wstring bsOutput)
 {
 	OOX::CPath pathInputDirectory = bsInput;
 
@@ -335,10 +289,10 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 		RELEASEOBJECT(m_pFolder);
 		return S_FALSE;
 	}
-	smart_ptr<PPTX::Presentation> presentation = m_pFolder->get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
+	smart_ptr<PPTX::Presentation> presentation = m_pFolder->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation.is_init())
 	{
-		FileSystem::Directory::DeleteDirectory(m_strTempDir, false);
+        NSDirectory::DeleteDirectory(m_strTempDir, false);
 		return S_FALSE;
 	}
 
@@ -358,11 +312,11 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
  	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 	oBinaryWriter.m_pCommon->m_pImageManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
 
-    FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
+    NSDirectory::CreateDirectory(m_strMediaDirectory);
 
-	if (_T("") != m_strEmbeddedFontsDirectory)
+    if (!m_strEmbeddedFontsDirectory.empty())
 	{
-        FileSystem::Directory::CreateDirectory(m_strEmbeddedFontsDirectory);
+        NSDirectory::CreateDirectory(m_strEmbeddedFontsDirectory);
 
 		if (NULL != oBinaryWriter.m_pCommon->m_pFontPicker)
 		{
@@ -376,7 +330,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 	return S_OK;
 }
 
-HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder)//bsOutput и файл и директория может быть 
+HRESULT CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder)//bsOutput и файл и директория может быть 
 {
 	OOX::CPath pathLocalTempDirectory;
 	
@@ -397,14 +351,14 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesF
 	oWriter.Init(pathLocalTempDirectory.GetPath());
 
 	CFile oFileBinary;
-	oFileBinary.OpenFile((CString)bsInput);	
+	oFileBinary.OpenFile((std::wstring)bsInput);	
 		LONG lFileSize = (LONG)oFileBinary.GetFileSize();
 		BYTE* pSrcBuffer = new BYTE[lFileSize];
 		oFileBinary.ReadFile(pSrcBuffer, (DWORD)lFileSize);
 	oFileBinary.CloseFile();
 	
-	CString strBsInput = bsInput;
-    CString srcFolder = FileSystem::Directory::GetFolderPath(strBsInput);
+	std::wstring strBsInput = bsInput;
+    std::wstring srcFolder = NSDirectory::GetFolderPath(strBsInput);
 
     oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
 	
@@ -413,12 +367,12 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesF
 
 	if (m_fCallbackCompress)
 	{
-        CString strOutput = bsOutput;
-        CString strInput = pathLocalTempDirectory.GetPath();
+        std::wstring strOutput = bsOutput;
+        std::wstring strInput = pathLocalTempDirectory.GetPath();
 
         hRes = m_fCallbackCompress(m_pCallbackArg, strInput, strOutput) ? S_OK : S_FALSE;
 
-        FileSystem::Directory::DeleteDirectory(strInput);
+        NSDirectory::DeleteDirectory(strInput);
 	}
 	return hRes;
 }

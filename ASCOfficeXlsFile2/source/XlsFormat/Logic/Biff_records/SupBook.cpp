@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,22 +49,6 @@ BaseObjectPtr SupBook::clone()
 {
 	return BaseObjectPtr(new SupBook(*this));
 }
-
-
-void SupBook::writeFields(CFRecord& record)
-{
-	record << ctab << cch;
-	if(0x0001 <= cch && 0x00ff >= cch)
-	{
-		virtPath.setSize(cch);
-		record << virtPath;
-		//if(virtPath.isConformToVirtPath() && !virtPath.isConformToOleLink())
-		{
-			record << rgst;
-		}
-	}
-}
-
 
 void SupBook::readFields(CFRecord& record)
 {

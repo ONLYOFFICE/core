@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -552,6 +552,11 @@ HRESULT CPdfRenderer::NewPage()
 	m_oBrush.Reset();
 	m_oFont.Reset();
 	m_oPath.Clear();
+
+    // clear font!!!
+    m_oFont.SetName(L"");
+    m_oFont.SetSize(-1);
+    m_oFont.SetStyle(1 << 5);
 
 	m_lClipDepth = 0;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "ShapeProperties.h"
 #include "Fills/SolidFill.h"
@@ -65,7 +65,9 @@ namespace PPTX
 		{
 			if(Src.IsInit())
 			{
-				Src->bodyPr.Merge(bodyPr);
+				if (Src->bodyPr.IsInit())
+					Src->bodyPr->Merge(bodyPr);
+				
 				if(Src->lstStyle.IsInit())
 				{
 					for(int i = 0; i < 10; i++)
@@ -118,7 +120,7 @@ namespace PPTX
 			}
 		}
 
-		CString ShapeProperties::GetParagraphAlgn(int level, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetParagraphAlgn(int level, const nullable<TextParagraphPr>& pParagraph)const
 		{
 			if(pParagraph.IsInit())
 				if(pParagraph->algn.IsInit())
@@ -182,7 +184,7 @@ namespace PPTX
 			return 376300;
 		}
 
-		CString ShapeProperties::GetParagraphFontAlgn(int level, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetParagraphFontAlgn(int level, const nullable<TextParagraphPr>& pParagraph)const
 		{
 			if(pParagraph.IsInit())
 				if(pParagraph->fontAlgn.IsInit())
@@ -321,7 +323,7 @@ namespace PPTX
 			return false;
 		}
 
-		CString ShapeProperties::GetRunUnderline(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetRunUnderline(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
 			if(pRun.IsInit())
 				if(pRun->u.IsInit())
@@ -340,7 +342,7 @@ namespace PPTX
 			return _T("none");
 		}
 
-		CString ShapeProperties::GetRunStrike(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetRunStrike(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
 			if(pRun.IsInit())
 				if(pRun->strike.IsInit())
@@ -359,7 +361,7 @@ namespace PPTX
 			return _T("noStrike");
 		}
 
-		CString ShapeProperties::GetRunCap(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetRunCap(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
 			if(pRun.is_init())
 				if(pRun->cap.is_init())
@@ -429,9 +431,9 @@ namespace PPTX
 			return 1800;
 		}
 
-		CString ShapeProperties::GetRunFont(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph, LONG& lFontIndex)const
+		std::wstring ShapeProperties::GetRunFont(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph, LONG& lFontIndex)const
 		{
-			CString strFontName = _T("");
+			std::wstring strFontName = _T("");
 			if((pRun.is_init()) && (pRun->latin.is_init()))
 				strFontName = pRun->latin->typeface;
 			else if((pParagraph.is_init()) && (pParagraph->defRPr.is_init()) && (pParagraph->defRPr->latin.is_init()))
@@ -464,10 +466,10 @@ namespace PPTX
 			return strFontName;
 		}
 
-		CString ShapeProperties::GetRunPanose(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+		std::wstring ShapeProperties::GetRunPanose(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			CString panose = _T("");
-			CString style = _T("");
+			std::wstring panose = _T("");
+			std::wstring style = _T("");
 			if((pRun.is_init()) && (pRun->latin.is_init()))
 				panose = pRun->latin->panose.get_value_or(_T(""));
 			else if((pParagraph.is_init()) && (pParagraph->defRPr.is_init()) && (pParagraph->defRPr->latin.is_init()))
@@ -491,8 +493,8 @@ namespace PPTX
 
 		BYTE ShapeProperties::GetRunCharset(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			CString charset = _T("");
-			CString style = _T("");
+			std::wstring charset = _T("");
+			std::wstring style = _T("");
 			if((pRun.is_init()) && (pRun->latin.is_init()))
 				charset = pRun->latin->charset.get_value_or(_T(""));
 			else if((pParagraph.is_init()) && (pParagraph->defRPr.is_init()) && (pParagraph->defRPr->latin.is_init()))
@@ -519,8 +521,8 @@ namespace PPTX
 
 		BYTE ShapeProperties::GetRunPitchFamily(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			CString pitchFamily = _T("");
-			CString style = _T("");
+			std::wstring pitchFamily = _T("");
+			std::wstring style = _T("");
 			if((pRun.is_init()) && (pRun->latin.is_init()))
 				pitchFamily = pRun->latin->pitchFamily.get_value_or(_T(""));
 			else if((pParagraph.is_init()) && (pParagraph->defRPr.is_init()) && (pParagraph->defRPr->latin.is_init()))
@@ -753,7 +755,9 @@ namespace PPTX
 
 		void ShapeProperties::SetParentFilePointer(const WrapperFile* pFile)
 		{
-			bodyPr.SetParentFilePointer(pFile);
+			if (bodyPr.IsInit())
+				bodyPr->SetParentFilePointer(pFile);
+			
 			for(int i = 0; i < 10; i ++)
 			{
 				levels[i]->SetParentFilePointer(pFile);
@@ -766,45 +770,53 @@ namespace PPTX
 
 		DWORD ShapeProperties::GetHyperlinkRGBA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetRGBAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetRGBAFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkARGB()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetARGBFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetARGBFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkBGRA()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetBGRAFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetBGRAFromMap(_T("hlink"));
 			else return 0;
 		}
 
 		DWORD ShapeProperties::GetHyperlinkABGR()const
 		{
-			if(bodyPr.parentFileIs<Slide>())
-				return bodyPr.parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideLayout>())
-				return bodyPr.parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
-			else if(bodyPr.parentFileIs<SlideMaster>())
-				return bodyPr.parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
+			if (!bodyPr.IsInit()) return 0;
+
+			if(bodyPr->parentFileIs<Slide>())
+				return bodyPr->parentFileAs<Slide>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideLayout>())
+				return bodyPr->parentFileAs<SlideLayout>().GetABGRFromMap(_T("hlink"));
+			else if(bodyPr->parentFileIs<SlideMaster>())
+				return bodyPr->parentFileAs<SlideMaster>().GetABGRFromMap(_T("hlink"));
 			else return 0;
 		}
 

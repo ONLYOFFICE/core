@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -55,7 +55,7 @@ namespace DocFileFormat
 	{
 	public:
 		CharacterPropertiesMapping( XMLTools::CStringXmlWriter* writer, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
-		CharacterPropertiesMapping( XMLTools::XMLElement<wchar_t>* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
+        CharacterPropertiesMapping( XMLTools::XMLElement* rPr, WordDocument* doc, RevisionData* rev, ParagraphPropertyExceptions* currentPapx, bool styleChpx, bool isRunStyleNeeded = true );
 		virtual ~CharacterPropertiesMapping();
 		void Apply( IVisitable* chpx );
 		bool CheckIsSymbolFont();
@@ -63,7 +63,7 @@ namespace DocFileFormat
 		bool	_webHidden;
 		bool	_isRTL;
 	private:
-		void convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement<wchar_t>* parent );
+        void convertSprms( std::list<SinglePropertyModifier>* sprms, XMLTools::XMLElement* parent );
 		std::list<CharacterPropertyExceptions*> buildHierarchy( const StyleSheet* styleSheet, unsigned short istdStart );
 		bool applyToggleHierachy( const SinglePropertyModifier& sprm );
 		bool toogleValue( bool currentValue, unsigned char toggle );
@@ -71,13 +71,13 @@ namespace DocFileFormat
 	protected:
 		/// CHPX flags are special flags because the can be 0,1,128 and 129,
 		/// so this method overrides the appendFlagElement method.
-		virtual void appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
+        virtual void appendFlagElement( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
 
 	private:
 		XMLTools::CStringXmlWriter			pRunPr;
 
 		WordDocument*					_doc;
-		XMLTools::XMLElement<wchar_t>*	_rPr; 
+        XMLTools::XMLElement*           _rPr;
 		unsigned short					_currentIstd;
 		RevisionData*					_revisionData;
 		bool							_styleChpx;

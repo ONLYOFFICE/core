@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,22 +49,6 @@ BaseObjectPtr ValueRange::clone()
 {
 	return BaseObjectPtr(new ValueRange(*this));
 }
-
-
-void ValueRange::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fAutoMin);
-	SETBIT(flags, 1, fAutoMax);
-	SETBIT(flags, 2, fAutoMajor);
-	SETBIT(flags, 3, fAutoMinor);
-	SETBIT(flags, 4, fAutoCross);
-	SETBIT(flags, 5, fLog);
-	SETBIT(flags, 6, fReversed);
-	SETBIT(flags, 7, fMaxCross);
-	record << numMin << numMax << numMajor << numMinor << numCross << flags;
-}
-
 
 void ValueRange::readFields(CFRecord& record)
 {

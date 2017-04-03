@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,12 +42,12 @@ SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
 	*this = oSrc;
 }
 
-CString SSlidePersist::ToString()
-{
-	CString str = _T("");
-	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
-	return str;
-}
+//std::wstring SSlidePersist::ToString()
+//{
+//    std::wstring str = _T("");
+//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
+//	return str;
+//}
 
 SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
 {

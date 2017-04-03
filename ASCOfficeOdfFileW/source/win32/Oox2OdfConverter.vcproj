@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
-				PreprocessorDefinitions="NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -296,42 +296,6 @@
 			<File
 				RelativePath="..\Oox2OdfConverter\DocxConverter.cpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\Oox2OdfConverter\XlsxConverter.cpp"

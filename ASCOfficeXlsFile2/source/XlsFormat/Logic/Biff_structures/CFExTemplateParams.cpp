@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,14 +40,6 @@ namespace XLS
 BiffStructurePtr CFExTemplateParams::clone()
 {
 	return BiffStructurePtr(new CFExTemplateParams(*this));
-}
-
-
-void CFExTemplateParams::store(CFRecord& record)
-{
-#pragma message("####################### CFExTemplateParams record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! CFExTemplateParams record has no BiffStructure::store() implemented.");
-	//record << something;
 }
 
 

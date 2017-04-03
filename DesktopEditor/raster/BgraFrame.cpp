@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,6 +39,8 @@
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
+	m_nFileType = nFileType;
+
     if (CXIMAGE_FORMAT_JP2 == nFileType)
     {
         Jpeg2000::CJ2kFile oJ2;
@@ -49,7 +51,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 		if (nFileType == 0)
 		{
 			CImageFileFormatChecker checker(strFileName);
-			nFileType = checker.eFileType;
+			m_nFileType = checker.eFileType;
 		}
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(strFileName))
@@ -57,7 +59,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 		CxImage img;
 
-		if (!img.Decode(oFile.GetFileNative(), nFileType))
+		if (!img.Decode(oFile.GetFileNative(), m_nFileType))
 			return false;
 
 		CxImageToMediaFrame(img);
@@ -116,7 +118,44 @@ bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight, bool bDes
 	CxImageToMediaFrame( imgDst );
 	return true;
 }
+bool CBgraFrame::ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore)
+{
+	if (OpenFile(strFileName))
+	{
+		int smpl = abs(get_Stride() / get_Width());
 
+		BYTE * rgb = get_Data();
+		
+		BYTE R1 = (BYTE)(rgbColorBack);
+		BYTE G1 = (BYTE)(rgbColorBack >> 8);
+		BYTE B1 = (BYTE)(rgbColorBack >> 16);
+
+		BYTE R2 = (BYTE)(rgbColorFore);
+		BYTE G2 = (BYTE)(rgbColorFore >> 8);
+		BYTE B2 = (BYTE)(rgbColorFore >> 16);
+
+		for (int i = 0 ; i < get_Width() * get_Height(); i++)
+		{
+			if (rgb[i * smpl + 0 ] == 0x00 && rgb[i * smpl + 1 ] == 0x00 && rgb[i * smpl + 2 ] == 0x00)
+			{
+				rgb[i * smpl + 0 ] = R1;
+				rgb[i * smpl + 1 ] = G1;
+				rgb[i * smpl + 2 ] = B1;
+			}
+			else
+			{
+				rgb[i * smpl + 0 ] = R2;
+				rgb[i * smpl + 1 ] = G2;
+				rgb[i * smpl + 2 ] = B2;
+			}
+		}
+		if (m_nFileType == 0) m_nFileType = 1;
+
+		SaveFile(strFileName, m_nFileType); 
+		return true;
+	}
+	return false;
+}
 void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 {
 	if( !img.IsValid() )

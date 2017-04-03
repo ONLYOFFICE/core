@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr CellWatch::clone()
 {
 	return BaseObjectPtr(new CellWatch(*this));
 }
-
-
-void CellWatch::writeFields(CFRecord& record)
-{
-#pragma message("####################### CellWatch record is not implemented")
-	Log::error("CellWatch record is not implemented.");
-	//record << some_value;
-}
-
 
 void CellWatch::readFields(CFRecord& record)
 {

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -94,9 +94,9 @@ namespace OOX
 						m_oOff = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				
 				switch ( m_eType )
@@ -109,9 +109,7 @@ namespace OOX
 						+ _T("\">");
 
 					break;
-
 				default:
-
 					return _T("");
 				}
 
@@ -130,7 +128,9 @@ namespace OOX
 				switch ( m_eType )
 				{
 				case et_a_xfrm: sResult = _T("</a:xfrm>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}
@@ -216,9 +216,9 @@ namespace OOX
 						m_oOff = oReader;
 				}
 			}
-			virtual CString      toXML() const
+			virtual std::wstring      toXML() const
 			{
-				CString sResult;
+				std::wstring sResult;
 				
 				
 				switch ( m_eType )
@@ -233,7 +233,6 @@ namespace OOX
 					break;
 
 				default:
-
 					return _T("");
 				}
 
@@ -246,7 +245,9 @@ namespace OOX
 				switch ( m_eType )
 				{
 				case et_a_xfrm: sResult = _T("</a:xfrm>"); break;
-				}
+                default:
+                    break;
+                }
 
 				return sResult;
 			}

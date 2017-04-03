@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@
 #include "SinglePropertyModifier.h"
 
 
-#include "../Win32/ASCOfficeCriticalSection.h" //for linux make inside
+#include "../../OfficeUtils/src/ASCOfficeCriticalSection.h" //for linux make inside
 
 namespace DocFileFormat
 {
@@ -51,29 +51,31 @@ namespace DocFileFormat
 
 	protected:
 		static void init();
-		void appendFlagAttribute( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* attributeName );
-		virtual void appendFlagElement( XMLTools::XMLElement<wchar_t>* node, const SinglePropertyModifier& sprm, const wchar_t* elementName, bool unique );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, const wchar_t* attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, int attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, short attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned short attributeValue );
-		void appendValueAttribute( XMLTools::XMLElement<wchar_t>* node, const wchar_t* attributeName, unsigned char attributeValue );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, short elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned short elementValue, bool unique );
-		void appendValueElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, unsigned char elementValue, bool unique );
-		void appendBorderAttributes( BorderCode* brc, XMLTools::XMLElement<wchar_t>* border );
-		void appendShading( XMLTools::XMLElement<wchar_t>* parent, const ShadingDescriptor& desc );
-		std::wstring getBorderType( unsigned char type );
-		std::wstring getShadingPattern( const ShadingDescriptor& shd );
-		void appendDxaElement( XMLTools::XMLElement<wchar_t>* node, const wchar_t* elementName, const wchar_t* elementValue, bool unique );
-		void addOrSetBorder( XMLTools::XMLElement<wchar_t>* pBdr, const XMLTools::XMLElement<wchar_t>* border );
+        virtual void appendFlagElement( XMLTools::XMLElement* node, const SinglePropertyModifier& sprm, const std::wstring & elementName, bool unique );
+        void appendFlagAttribute	( XMLTools::XMLElement* node,	const SinglePropertyModifier& sprm, const std::wstring & attributeName );
 
+        void appendValueAttribute	( XMLTools::XMLElement* node,	const std::wstring & attributeName, const std::wstring & attributeValue );
+        void appendValueAttribute	( XMLTools::XMLElement* node,	const std::wstring & attributeName, int attributeValue );
+        void appendValueAttribute	( XMLTools::XMLElement* node,	const std::wstring & ttributeName,	short attributeValue );
+        void appendValueAttribute	( XMLTools::XMLElement* node,	const std::wstring & attributeName, unsigned short attributeValue );
+        void appendValueAttribute	( XMLTools::XMLElement* node,	const std::wstring & attributeName, unsigned char attributeValue );
+        void appendValueElement		( XMLTools::XMLElement* node,	const std::wstring & elementName,	const std::wstring & elementValue, bool unique );
+        void appendValueElement		( XMLTools::XMLElement* node,	const std::wstring & elementName,	short elementValue, bool unique );
+        void appendValueElement		( XMLTools::XMLElement* node,	const std::wstring & elementName,	unsigned short elementValue, bool unique );
+        void appendValueElement		( XMLTools::XMLElement* node,	const std::wstring & elementName,	unsigned char elementValue, bool unique );
+        void appendShading			( XMLTools::XMLElement* parent, const ShadingDescriptor& desc );
+        void appendDxaElement		( XMLTools::XMLElement* node,	const std::wstring & elementName, const std::wstring & elementValue, bool unique );
+        void addOrSetBorder			( XMLTools::XMLElement* pBdr,	const XMLTools::XMLElement* border );
+       
+		void appendBorderAttributes	( BorderCode* brc, XMLTools::XMLElement* border );
+
+		std::wstring getBorderType		( unsigned char type );
+		std::wstring getShadingPattern	( const ShadingDescriptor& shd );
 	protected:
 
 		XMLTools::CStringXmlWriter* m_pXmlWriter;
 
 		static std::map<unsigned char, std::wstring>	brcTypeMap;		
-		static ASCOfficeCriticalSection					brcTypeMapLock;
+		static OfficeCriticalSection					brcTypeMapLock;
 	};
 }

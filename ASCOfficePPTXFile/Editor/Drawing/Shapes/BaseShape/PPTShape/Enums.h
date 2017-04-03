@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,138 +35,138 @@ namespace NSOfficePPT
 {
 	enum SlideSizeType
 	{
-		OnScreen		 = 0,
+                OnScreen	 = 0,
 		LetterSizedPaper = 1,
 		A4Paper          = 2,
 		Size35mm         = 3,
-		Overhead		 = 4,
-		Banner			 = 5,
+                Overhead	 = 4,
+                Banner		 = 5,
 		Custom           = 6
 	};
 
 	enum StyleMask
 	{
-		None					=	   0,
+                None				= 0,
 
-		IsBold					= 1 << 0,
-		IsItalic				= 1 << 1,
+                IsBold				= 1 << 0,
+                IsItalic			= 1 << 1,
 		IsUnderlined			= 1 << 2,
 
-		HasShadow				= 1 << 4,
+                HasShadow			= 1 << 4,
 		HasAsianSmartQuotes		= 1 << 5,
 
-		HasHorizonNumRendering	= 1 << 7,
+                HasHorizonNumRendering          = 1 << 7,
 
-		IsEmbossed				= 1 << 9,
+                IsEmbossed			= 1 << 9,
 
 		ExtensionNibble			= 0xF << 10 
 	};
 
 	enum CharacterMask
 	{
-		_None						= 0,
+                _None				= 0,
 
 		StyleFlagsFieldPresent		= 0xFFFF,
 
-		TypefacePresent				= 1 << 16,
-		SizePresent					= 1 << 17,
-		ColorPresent				= 1 << 18,
-		PositionPresent				= 1 << 19,
+                TypefacePresent			= 1 << 16,
+                SizePresent			= 1 << 17,
+                ColorPresent			= 1 << 18,
+                PositionPresent			= 1 << 19,
 
 		FEOldTypefacePresent		= 1 << 21,
-		ANSITypefacePresent			= 1 << 22,
+                ANSITypefacePresent		= 1 << 22,
 		SymbolTypefacePresent		= 1 << 23
 	};
 
 	enum PlaceholderEnum
 	{
-		__None						= 0,
-		MasterTitle					= 1,
-		MasterBody					= 2,
-		MasterCenteredTitle			= 3,
-		MasterSubtitle				= 4,
+                __None				= 0,
+                MasterTitle			= 1,
+                MasterBody			= 2,
+                MasterCenteredTitle		= 3,
+                MasterSubtitle			= 4,
 		MasterNotesSlideImage		= 5,
-		MasterNotesBody				= 6,
-		MasterDate					= 7,
-		MasterSlideNumber			= 8,
-		MasterFooter				= 9,
-		MasterHeader				= 10,
-		NotesSlideImage				= 11,
-		NotesBody					= 12,
-		Title						= 13,
-		Body						= 14,
-		CenteredTitle				= 15,
-		Subtitle					= 16,
-		VerticalTextTitle			= 17,
-		VerticalTextBody			= 18,
-		Object						= 19,
-		Graph						= 20,
-		Table						= 21,
-		ClipArt						= 22,
-		OrganizationChart			= 23,
-		MediaClip					= 24
+                MasterNotesBody			= 6,
+                MasterDate			= 7,
+                MasterSlideNumber		= 8,
+                MasterFooter			= 9,
+                MasterHeader			= 10,
+                NotesSlideImage			= 11,
+                NotesBody			= 12,
+                Title				= 13,
+                Body				= 14,
+                CenteredTitle			= 15,
+                Subtitle			= 16,
+                VerticalTextTitle		= 17,
+                VerticalTextBody		= 18,
+                Object				= 19,
+                Graph				= 20,
+                Table				= 21,
+                ClipArt				= 22,
+                OrganizationChart		= 23,
+                MediaClip			= 24
 	};
 
 	enum ParagraphMask
 	{
-		___None						= 0,
-		HasBullet					= 1 << 0,
-		BulletHasFont				= 1 << 1,
-		BulletHasColor				= 1 << 2,
-		BulletHasSize				= 1 << 3,
+                ___None				= 0,
+                HasBullet			= 1 << 0,
+                BulletHasFont			= 1 << 1,
+                BulletHasColor			= 1 << 2,
+                BulletHasSize			= 1 << 3,
 		BulletFlagsFieldExists		= HasBullet | BulletHasFont | BulletHasColor | BulletHasSize,
 
-		BulletFont					= 1 << 4,
-		BulletColor					= 1 << 5,
-		BulletSize					= 1 << 6,
-		BulletChar					= 1 << 7,
-		LeftMargin					= 1 << 8,
-		Indent						= 1 << 10,
-		Align						= 1 << 11,
-		LineSpacing					= 1 << 12,
-		SpaceBefore					= 1 << 13,
-		SpaceAfter					= 1 << 14,
-		DefaultTabSize				= 1 << 15,
-		FontAlign					= 1 << 16,
-		CharWrap					= 1 << 17,
-		WordWrap					= 1 << 18,
-		Overflow					= 1 << 19,
+                BulletFont			= 1 << 4,
+                BulletColor			= 1 << 5,
+                BulletSize			= 1 << 6,
+                BulletChar			= 1 << 7,
+                LeftMargin			= 1 << 8,
+                Indent				= 1 << 10,
+                Align				= 1 << 11,
+                LineSpacing			= 1 << 12,
+                SpaceBefore			= 1 << 13,
+                SpaceAfter			= 1 << 14,
+                DefaultTabSize			= 1 << 15,
+                FontAlign			= 1 << 16,
+                CharWrap			= 1 << 17,
+                WordWrap			= 1 << 18,
+                Overflow			= 1 << 19,
 		WrapFlagsFieldExists		= CharWrap | WordWrap | Overflow,
-		TabStops					= 1 << 20,
-		TextDirection				= 1 << 21,
-		BulletBlip					= 1 << 23,
-		BulletScheme				= 1 << 24,
-		BulletHasScheme				= 1 << 25
+                TabStops			= 1 << 20,
+                TextDirection			= 1 << 21,
+                BulletBlip			= 1 << 23,
+                BulletScheme			= 1 << 24,
+                BulletHasScheme			= 1 << 25
 	};
 
 	enum Instances
 	{
-		CollectionOfSlides			= 0,
+                CollectionOfSlides		= 0,
 		CollectionOfMasterSlides	= 1,
 		CollectionOfNotesSlides		= 2
 	};
 
 	enum SlideLayoutType
 	{
-		TitleSlide							= 0,
-		TitleAndBody						= 1,
-		TitleMaster							= 2,
+                TitleSlide			= 0,
+		TitleAndBody			= 1,
+		TitleMaster			= 2,
 	    
-		MasterNotes							= 4,
-		NotesTitleAndBody					= 5,
-		Handout								= 6,
-		TitleOnly							= 7,
-		TwoColumnsAndTitle					= 8,
-		TwoRowsAndTitle						= 9,
-		TwoColumnsRightTwoRows				= 10,
-		TwoColumnsLeftTwoRows				= 11,
-		TwoRowsBottomTwoColumns				= 12,
-		TwoRowsTopTwoColumns				= 13,
-		FourObjects							= 14,
-		BigObject							= 15,
-		Blank								= 16,
-		VerticalTitleRightBodyLeft			= 17,
-		VerticalTitleRightBodyLeftTwoRows	= 18
+                MasterNotes			= 4,
+                NotesTitleAndBody		= 5,
+                Handout				= 6,
+                TitleOnly			= 7,
+                TwoColumnsAndTitle		= 8,
+                TwoRowsAndTitle			= 9,
+                TwoColumnsRightTwoRows		= 10,
+                TwoColumnsLeftTwoRows		= 11,
+                TwoRowsBottomTwoColumns		= 12,
+                TwoRowsTopTwoColumns		= 13,
+                FourObjects			= 14,
+                BigObject			= 15,
+                Blank				= 16,
+                VerticalTitleRightBodyLeft	= 17,
+                VerticalTitleRightBodyLeftTwoRows= 18
 	};
 
 	enum TextType

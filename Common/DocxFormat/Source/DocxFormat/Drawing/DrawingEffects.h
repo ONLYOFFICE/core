@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -89,7 +89,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return m_eType;
@@ -125,10 +125,10 @@ namespace OOX
 		public:
 
 			// Type 
-			EElementType m_eType;
+			EElementType						m_eType;
 
 			// Attributes
-			nullable<CString>                   m_sName;
+            nullable<std::wstring>				m_sName;
 			SimpleTypes::CEffectContainerType<> m_oType;
 
 			// Childs
@@ -157,7 +157,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_effectLst;
@@ -181,7 +181,7 @@ namespace OOX
 		public:
 
 			// Childs
-            std::vector<WritingElement*>       m_arrEffects;
+            std::vector<WritingElement*> m_arrEffects;
 
 		};
 
@@ -209,11 +209,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("thresh"), m_oTresh );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -221,9 +221,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaBiLevel tresh=\"") + m_oTresh.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:alphaBiLevel tresh=\"") + m_oTresh.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -264,16 +264,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<a:alphaCeiling/>");
 			}
@@ -300,16 +300,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<a:alphaFloor/>");
 			}
@@ -336,18 +336,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaInv>");
+                std::wstring sResult = _T("<a:alphaInv>");
 
 				sResult += CColor::toXML();
 
@@ -377,11 +377,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Релизовать CAlphaModulateEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -395,9 +395,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaMod>");
+                std::wstring sResult = _T("<a:alphaMod>");
 				sResult += m_oCont.toXML();
 				sResult += _T("</a:alphaMod>");
 
@@ -430,11 +430,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("amt"), m_oAmt );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -442,9 +442,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaModFix amt=\"") + m_oAmt.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:alphaModFix amt=\"") + m_oAmt.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -483,11 +483,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("rad"), m_oRad );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -495,9 +495,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaOutset rad=\"") + m_oRad.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:alphaOutset rad=\"") + m_oRad.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -536,7 +536,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("a"), m_oA );
 			}
@@ -548,9 +548,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:alphaRepl a=\"") + m_oA.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:alphaRepl a=\"") + m_oA.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -590,16 +590,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<a:bevel/>");
 			}
@@ -624,18 +624,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:bgClr>");
+                std::wstring sResult = _T("<a:bgClr>");
 
 				sResult += CColor::toXML();
 
@@ -665,11 +665,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("thresh"), m_oTresh );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -677,9 +677,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:biLevel tresh=\"") + m_oTresh.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:biLevel tresh=\"") + m_oTresh.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -720,11 +720,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Релизовать CBlendEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -740,9 +740,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:blend blend=\"");
+                std::wstring sResult = _T("<a:blend blend=\"");
 				sResult += m_oBlend.ToString() + _T("\">");
 				sResult += m_oCont.toXML();
 				sResult += _T("</a:blend>");
@@ -790,10 +790,10 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
-			virtual EElementType getType() const
+			virtual void			fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual std::wstring	toXML() const;
+			virtual EElementType	getType() const
 			{
 				return OOX::et_a_blip;
 			}
@@ -866,7 +866,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return m_eType;
@@ -920,12 +920,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("grow"), m_oGrow );
 				oNode.ReadAttributeBase( _T("rad"),  m_oRad );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -933,9 +933,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:blur grow=\"") + m_oGrow.ToString() + _T("\" ") + _T("rad=\"") + m_oRad.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:blur grow=\"") + m_oGrow.ToString() + _T("\" ") + _T("rad=\"") + m_oRad.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -975,18 +975,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:clrFrom>");
+                std::wstring sResult = _T("<a:clrFrom>");
 
 				sResult += CColor::toXML();
 
@@ -1015,18 +1015,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:clrTo>");
+                std::wstring sResult = _T("<a:clrTo>");
 
 				sResult += CColor::toXML();
 
@@ -1055,11 +1055,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CColorChangeEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1077,9 +1077,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:clrChange useA=\"") + m_oUseA.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:clrChange useA=\"") + m_oUseA.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -1121,18 +1121,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:clrRepl>");
+                std::wstring sResult = _T("<a:clrRepl>");
 
 				sResult += CColor::toXML();
 
@@ -1161,11 +1161,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Сделать CDashStop::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1173,9 +1173,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:ds d=\"") + m_oD.ToString() + _T("\" sp=\"") + m_oSp.ToString() + _T("\"/>");
+                std::wstring sResult = _T("<a:ds d=\"") + m_oD.ToString() + _T("\" sp=\"") + m_oSp.ToString() + _T("\"/>");
 
 				return sResult;
 			}
@@ -1223,11 +1223,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CDashStopList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1244,9 +1244,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:custDash>");
+                std::wstring sResult = _T("<a:custDash>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrDs.size(); nIndex++ )
 				{
@@ -1285,11 +1285,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Сделать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1350,13 +1350,13 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				OOX::Drawing::CSRgbColor oColor1, oColor2;
 				oColor1.SetRGBA( m_oColor1.Get_R(), m_oColor1.Get_G(), m_oColor1.Get_B(), m_oColor1.Get_A() );
 				oColor2.SetRGBA( m_oColor2.Get_R(), m_oColor2.Get_G(), m_oColor2.Get_B(), m_oColor2.Get_A() );
 
-				CString sResult = _T("<a:duotone>");
+                std::wstring sResult = _T("<a:duotone>");
 
 				sResult += oColor1.toXML();
 				sResult += oColor2.toXML();
@@ -1403,11 +1403,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Сделать
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -1415,9 +1415,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:effect ref=\"") + m_sRef + _T("\"/>");
+                std::wstring sResult = _T("<a:effect ref=\"") + m_sRef + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1438,7 +1438,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			CString m_sRef;
+            std::wstring m_sRef;
 		};
         //-----------------------------------------------------------------------
         // ForegroundColor 20.1.8.27
@@ -1456,18 +1456,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:fgClr>");
+                std::wstring sResult = _T("<a:fgClr>");
 
 				sResult += CColor::toXML();
 
@@ -1498,12 +1498,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Сделать CRelativeRect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
 				
@@ -1527,9 +1527,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( et_a_fillRect == m_eType )
 					sResult = _T("<a:fillRect l=\"") + m_oL.ToString()
@@ -1609,20 +1609,20 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:glow rad=\"") + m_oRad.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:glow rad=\"") + m_oRad.ToString() + _T("\">");
 
 				sResult += CColor::toXML();
 
@@ -1679,7 +1679,7 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual CString      toXML() const;
+            virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_gradFill;
@@ -1735,16 +1735,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<a:grayscl/>");
 			}
@@ -1771,17 +1771,17 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CGroupFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<a:grpFill/>");
 			}
@@ -1807,21 +1807,21 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CGradientStop::fromXML(XmlUtils::CXmlNode& oNode)
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:gs pos=\"") + m_oPos.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:gs pos=\"") + m_oPos.ToString() + _T("\">");
 				sResult += CColor::toXML();
 				sResult += _T("</a:gs>");
 				return sResult;
@@ -1868,11 +1868,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CGradientStopList::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -1891,9 +1891,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:gsLst>");
+                std::wstring sResult = _T("<a:gsLst>");
 
                 for ( unsigned int nIndex = 0; nIndex < m_arrGs.size(); nIndex++ )
 				{
@@ -1933,12 +1933,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
 				// TO DO: Сделать CLineEndProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
@@ -1955,9 +1955,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 					
 				if ( et_a_tailEnd == m_eType )
 					sResult = _T("<a:tailEnd ");
@@ -2033,13 +2033,13 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("hue"), m_oHue );
 				oNode.ReadAttributeBase( _T("lum"), m_oLum );
 				oNode.ReadAttributeBase( _T("sat"), m_oSat );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2047,9 +2047,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:hsl hue=\"") + m_oHue.ToString() + _T("\" lum=\"") + m_oLum.ToString() + _T("\" sat=\"") + m_oSat.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:hsl hue=\"") + m_oHue.ToString() + _T("\" lum=\"") + m_oLum.ToString() + _T("\" sat=\"") + m_oSat.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -2093,20 +2093,20 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:innerShdw blurRad=\"") + m_oBlurRad.ToString() + _T("\" dir=\"") + m_oDir.ToString() + _T("\" dist=\"") + m_oDist.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:innerShdw blurRad=\"") + m_oBlurRad.ToString() + _T("\" dir=\"") + m_oDir.ToString() + _T("\" dist=\"") + m_oDist.ToString() + _T("\">");
 				sResult += CColor::toXML();
 				sResult += _T("</a:innerShdw>");
 				return sResult;
@@ -2152,12 +2152,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("ang"),    m_oAng );
 				oNode.ReadAttributeBase( _T("scaled"), m_oScaled );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2165,9 +2165,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:lin ");
+                std::wstring sResult = _T("<a:lin ");
 
 				if ( m_oAng.IsInit() )
 				{
@@ -2226,11 +2226,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("bright"), m_oBright );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2238,9 +2238,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:lum bright=\"") + m_oBright.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:lum bright=\"") + m_oBright.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -2281,11 +2281,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("lim"), m_oLim );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2293,9 +2293,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oLim.IsInit() )
 					sResult = _T("<a:miter lim=\"") + m_oLim->ToString() + _T("\">");
@@ -2341,16 +2341,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("<a:noFill/>");
 			}
@@ -2376,20 +2376,20 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:outerShdw blurRad=\"")      + m_oBlurRad.ToString() 
+                std::wstring sResult = _T("<a:outerShdw blurRad=\"")      + m_oBlurRad.ToString()
 					                      + _T("\" dir=\"")          + m_oDir.ToString()     
 										  + _T("\" dist=\"")         + m_oDist.ToString() 
 										  + _T("\" kx=\"")           + m_oKx.ToString() 
@@ -2458,12 +2458,12 @@ namespace OOX
 			}
 
 		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+ 
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CPathShadeProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2481,9 +2481,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:path ");
+                std::wstring sResult = _T("<a:path ");
 
 				if ( m_oPath.IsInit() )
 				{
@@ -2541,11 +2541,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CPatternFillProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2563,9 +2563,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:pattFill ");
+                std::wstring sResult = _T("<a:pattFill ");
 
 				if ( m_oPrst.IsInit() )
 				{
@@ -2627,11 +2627,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("val"), m_oVal );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2639,9 +2639,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult;
+                std::wstring sResult;
 				
 				if ( m_oVal.IsInit() )
 					sResult = _T("<a:prstDash val=\"") + m_oVal->ToString() + _T("\"/>");
@@ -2687,20 +2687,20 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:prstShdw dir=\"")  + m_oDir.ToString()     
+                std::wstring sResult = _T("<a:prstShdw dir=\"")  + m_oDir.ToString()
 										 + _T("\" dist=\"") + m_oDist.ToString() 
 										 + _T("\" prst=\"") + m_oPrst.ToString() 
 										 + _T("\">");
@@ -2749,11 +2749,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CReflectionEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2761,9 +2761,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:reflection blurRad=\"")     + m_oBlurRad.ToString() 
+                std::wstring sResult = _T("<a:reflection blurRad=\"")     + m_oBlurRad.ToString()
 					                      + _T("\" dir=\"")          + m_oDir.ToString()     
 										  + _T("\" dist=\"")         + m_oDist.ToString() 
 										  + _T("\" endA=\"")         + m_oEndA.ToString() 
@@ -2851,11 +2851,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRelativeOffsetEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2863,9 +2863,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:relOff tx=\"") + m_oTx.ToString() + _T("\" ty=\"") + m_oTy.ToString() + _T("\"/>");
+                std::wstring sResult = _T("<a:relOff tx=\"") + m_oTx.ToString() + _T("\" ty=\"") + m_oTy.ToString() + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -2911,16 +2911,16 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("<a:round/>");
 			}
@@ -2945,11 +2945,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSoftEdgesEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -2957,9 +2957,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:softEdge rad=\"") + m_oRad.ToString() + _T("\"/>");
+                std::wstring sResult = _T("<a:softEdge rad=\"") + m_oRad.ToString() + _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -2999,18 +2999,18 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				CColor::fromXML( oNode );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				CColor::fromXML( oReader );
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
-				CString sResult = _T("<a:solidFill>");
+                std::wstring sResult = _T("<a:solidFill>");
 
 				sResult += CColor::toXML();
 
@@ -3040,11 +3040,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CStretchInfoProperties::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -3058,9 +3058,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:stretch>");
+                std::wstring sResult = _T("<a:stretch>");
 
 				if ( m_oFillRect.IsInit() )
 					sResult += m_oFillRect->toXML();
@@ -3096,7 +3096,7 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("algn"), m_oAlgn );
 				oNode.ReadAttributeBase( _T("flip"), m_oFlip );
@@ -3105,7 +3105,7 @@ namespace OOX
 				oNode.ReadAttributeBase( _T("tx"),   m_oTx );
 				oNode.ReadAttributeBase( _T("ty"),   m_oTy );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -3113,9 +3113,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:tile ");
+                std::wstring sResult = _T("<a:tile ");
 				
 				if ( m_oAlgn.IsInit() )
 				{
@@ -3212,12 +3212,12 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				oNode.ReadAttributeBase( _T("amt"), m_oAmt );
 				oNode.ReadAttributeBase( _T("hue"), m_oHue );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -3225,9 +3225,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:tint amt=\"") + m_oAmt.ToString() + _T("\" hue=\"") + m_oHue.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:tint amt=\"") + m_oAmt.ToString() + _T("\" hue=\"") + m_oHue.ToString() + _T("\">");
 
 				return sResult;
 			}
@@ -3270,11 +3270,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CTransformEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -3282,9 +3282,9 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:xfrm sx=\"") + m_oSx.ToString() 
+                std::wstring sResult = _T("<a:xfrm sx=\"") + m_oSx.ToString()
 									 + _T("\" sy=\"") + m_oSy.ToString() 
 									 + _T("\" kx=\"") + m_oKx.ToString() 
 									 + _T("\" ky=\"") + m_oKy.ToString() 
@@ -3365,11 +3365,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -3411,9 +3411,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:fill>");
+                std::wstring sResult = _T("<a:fill>");
 
 				switch ( m_eFillType )
 				{
@@ -3469,11 +3469,11 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: реализовать CFillEffect::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -3517,9 +3517,9 @@ namespace OOX
 				}
 			}
 
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
-				CString sResult = _T("<a:fillOverlay blend=\"") + m_oBlend.ToString() + _T("\">");
+                std::wstring sResult = _T("<a:fillOverlay blend=\"") + m_oBlend.ToString() + _T("\">");
 
 				switch ( m_eFillType )
 				{

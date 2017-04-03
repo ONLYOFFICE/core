@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -51,15 +51,6 @@ BaseObjectPtr FeatHdr::clone()
 {
 	return BaseObjectPtr(new FeatHdr(*this));
 }
-
-
-void FeatHdr::writeFields(CFRecord& record)
-{
-#pragma message("####################### FeatHdr record is not implemented")
-	Log::error("FeatHdr record is not implemented.");
-	//record << some_value;
-}
-
 
 void FeatHdr::readFields(CFRecord& record)
 {

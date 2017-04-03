@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -265,9 +265,9 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
 				sResult = _T("<w:footnote ");
@@ -384,9 +384,9 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-        virtual CString      toXML() const
+        virtual std::wstring      toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
 				sResult = _T("<w:footnote ");

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,13 +53,12 @@ public:
 	OfficeArtRecord(const unsigned char recVer, const unsigned short recType);
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void store(XLS::CFRecord& record);
+
 	bool IsThisHeaderMine(const OfficeArtRecordHeader& rh);
 
 	// For overriding:
 	virtual const unsigned short GetInstanceToStore();
 	virtual void loadFields(XLS::CFRecord& record) = 0;
-	virtual void storeFields(XLS::CFRecord& record) = 0;
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 	OfficeArtRecordHeader rh_own;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -52,14 +52,14 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+                        virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<externalReference"));
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString2());
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				writer.WriteString(_T("/>"));
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -102,18 +102,20 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(_T("<externalReferences>"));
-				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+				
+				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(writer);
+				
 				writer.WriteString(_T("</externalReferences>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,7 +69,34 @@ namespace DocFileFormat
 			}
 			return 0;
 		}
+		bool isBackground()
+		{
+			int ret = 0;
 
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			{
+				Shape* sh = dynamic_cast<Shape*>( *iter );
+				if (sh)
+				{
+					return sh->fBackground;
+				}
+			}
+			return false;
+		}
+		bool isOLE()
+		{
+			int ret = 0;
+
+			for ( std::vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			{
+				Shape* sh = dynamic_cast<Shape*>( *iter );
+				if (sh)
+				{
+					return sh->fOleShape;
+				}
+			}
+			return false;
+		}
 		virtual ~ShapeContainer()
 		{
 		}
@@ -79,7 +106,6 @@ namespace DocFileFormat
 			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
 		}
 
-		/// Searches all OptionEntry in the ShapeContainer and puts them into a list.
 		std::list<OptionEntry> ExtractOptions() const
 		{
 			std::list<OptionEntry> ret;

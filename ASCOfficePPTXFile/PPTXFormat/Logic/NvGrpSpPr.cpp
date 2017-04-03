@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,45 +38,45 @@ namespace PPTX
 
 		void NvGrpSpPr::fromXML(XmlUtils::CXmlNode& node)
 		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
 			cNvPr		= node.ReadNode(_T("p:cNvPr"));
 			cNvGrpSpPr	= node.ReadNode(_T("p:cNvGrpSpPr"));
 			nvPr		= node.ReadNode(_T("p:nvPr"));
 
 			FillParentPointersForChilds();
-   /*
-            XmlUtils::CXmlNodes oNodes;
-            if (node.GetNodes(_T("*"), oNodes))
-            {
-                int nCount = oNodes.GetCount();
-                for (int i = 0; i < nCount; ++i)
-                {
-                    XmlUtils::CXmlNode oNode;
-                    oNodes.GetAt(i, oNode);
+ 		}
+		void NvGrpSpPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
-                    CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
+			if ( oReader.IsEmptyNode() )
+				return;
+				
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-                    if (_T("cNvPr") == strName)
-                        cNvPr = oNode;
-                    else if (_T("cNvGrpSpPr") == strName)
-                        cNvGrpSpPr = oNode;
-                    else if (_T("nvPr") == strName)
-                        nvPr = oNode;
-                }
-            }
-
-            FillParentPointersForChilds();
-      from header (old)*/
-		}
-
-
-		CString NvGrpSpPr::toXML() const
+				if (sName == L"cNvPr")
+					cNvPr = oReader;
+				else if (sName == L"cNvGrpSpPr")
+					cNvGrpSpPr = oReader;
+				else if (sName == L"nvPr")
+					nvPr = oReader;
+			}
+	
+			FillParentPointersForChilds();
+ 		}
+		std::wstring NvGrpSpPr::toXML() const
 		{
 			XmlUtils::CNodeValue oValue;
+			
 			oValue.Write(cNvPr);
 			oValue.Write(cNvGrpSpPr);
 			oValue.Write(nvPr);
 
-			return XmlUtils::CreateNode(_T("p:nvGrpSpPr"), oValue);
+			return XmlUtils::CreateNode(m_namespace + L":nvGrpSpPr", oValue);
 		}
 
 		void NvGrpSpPr::FillParentPointersForChilds()

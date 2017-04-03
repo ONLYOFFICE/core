@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,14 +43,6 @@ BiffStructurePtr XFProps::clone()
 	return BiffStructurePtr(new XFProps(*this));
 }
 
-
-
-void XFProps::store(CFRecord& record)
-{
-#pragma message("####################### XFProps record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! XFProps record has no BiffStructure::store() implemented.");
-	//record << something;
-}
 
 
 void XFProps::load(CFRecord& record)
@@ -118,7 +110,7 @@ void XFProps::load(CFRecord& record)
 		}
 	}
 }
-int XFProps::serialize(std::wostream & stream)
+int XFProps::serialize(std::wostream & stream, bool dxf)
 {
 	CP_XML_WRITER(stream)    
     {
@@ -138,7 +130,14 @@ int XFProps::serialize(std::wostream & stream)
 			{	
 				for (int i = 0; i < arXFPropNumFmt.size(); i++)
 				{
-					arXFPropNumFmt[i].serialize(CP_XML_STREAM());
+					if (dxf)
+					{
+						arXFPropNumFmt[i].serialize_attr(CP_GET_XML_NODE());
+					}
+					else
+					{
+						arXFPropNumFmt[i].serialize(CP_XML_STREAM());
+					}
 				}
 			}
 		}

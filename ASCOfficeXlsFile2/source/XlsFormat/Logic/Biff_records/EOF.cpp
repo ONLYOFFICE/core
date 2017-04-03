@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,12 +49,6 @@ EOF_T::~EOF_T()
 BaseObjectPtr EOF_T::clone()
 {
 	return BaseObjectPtr(new EOF_T(*this));
-}
-
-
-void EOF_T::writeFields(CFRecord& record)
-{
-	// No data in this record
 }
 
 

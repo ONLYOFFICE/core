@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -83,12 +83,6 @@ BiffStructurePtr BiffString::clone()
 	return BiffStructurePtr(new BiffString(*this));
 }
 
-void BiffString::store(CFRecord& record)
-{
-	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. The function must not be called.", __FUNCTION__);
-}
-
-
 void BiffString::load(CFRecord& record)
 {
 	// EXCEPT::LE::WhatIsTheFuck("Wrong usage of BiffString. Stack overflow stopped.", __FUNCTION__);
@@ -154,33 +148,6 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 	record.skipNunBytes(raw_length);
 }
 
-
-void BiffString::store(CFRecord& record, const bool is_wide)
-{
-	size_t raw_length = getSize() << (is_wide ? 1 : 0);
-	record.checkFitWrite(raw_length);
-
-	if(is_wide)
-	{
-		std::wstring int_str = str_;
-		for(std::wstring::iterator it = int_str.begin(), itEnd = int_str.end(); it != itEnd; ++it)
-		{
-			record << *it;
-		}
-		// no trailing zero - it is OK
-	}
-	else
-	{
-		std::string int_str = STR::toStdString(str_, record.getGlobalWorkbookInfo()->CodePage);
-		for(std::string::iterator it = int_str.begin(), itEnd = int_str.end(); it != itEnd; ++it)
-		{
-			record << *it;
-		}
-		// no trailing zero - it is OK
-	}
-}
-
-
 const size_t BiffString::getSize() const
 {
 	if(!cch_)
@@ -207,27 +174,6 @@ const size_t BiffString::getStructSize() const
 void BiffString::setStructSize(const size_t size)
 {
 	struct_size = size;
-}
-
-
-const bool BiffString::isConformToOleLink() const
-{
-#pragma message("####################### BiffString::isConformToOleLink is not implemented")
-	Log::info("BiffString::isConformToOleLink is not implemented.");
-	size_t len = str_.length();
-	for(size_t i = 0; i < len; ++i)
-	{
-		
-	}
-	return true;
-}
-
-
-const bool BiffString::isConformToVirtPath() const
-{
-#pragma message("####################### BiffString::isConformToVirtPath is not implemented")
-	Log::info("BiffString::isConformToVirtPath is not implemented.");
-	return true;
 }
 
 const std::wstring  BiffString::getEscaped_ST_Xstring() const

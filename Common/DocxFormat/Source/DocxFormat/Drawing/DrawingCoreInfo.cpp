@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -73,9 +73,9 @@ namespace OOX
 					m_oExtLst = oReader;
 			}
 		}
-		CString CNonVisualPictureProperties::toXML() const
+		std::wstring CNonVisualPictureProperties::toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			if ( et_a_cNvPicPr == m_eType )
 				sResult = _T("<a:cNvPicPr ");
@@ -151,12 +151,12 @@ namespace OOX
 		}
 		void CNonVisualDrawingProps::toXML(XmlUtils::CStringWriter& writer) const
 		{
-			CString sResult = toXML();
+			std::wstring sResult = toXML();
 			writer.WriteString(sResult);
 		}
-		CString CNonVisualDrawingProps::toXML() const
+		std::wstring CNonVisualDrawingProps::toXML() const
 		{
-			CString sResult = _T("<wp:docPr ");
+			std::wstring sResult = _T("<wp:docPr ");
 
 			if ( et_wp_docPr == m_eType )
 				sResult = _T("<wp:docPr ");
@@ -176,7 +176,9 @@ namespace OOX
 			if ( m_sDescr.IsInit()  )
 			{
 				sResult += _T("descr=\"");
-				sResult += m_sDescr->GetString();
+                std::wstring d = XmlUtils::EncodeXmlString(m_sDescr.get());
+                XmlUtils::replace_all(d, L"\n", L"&#xA;");
+                sResult += d;
 				sResult += _T("\" ");
 			}
 			if ( m_oHidden.IsInit() ) sResult += _T("hidden=\"") + m_oHidden->ToString() + _T("\" ");
@@ -184,13 +186,13 @@ namespace OOX
 			if ( m_sName.IsInit()   )
 			{
 				sResult += _T("name=\"");
-				sResult += m_sName->GetString();
+                sResult += m_sName.get2();
 				sResult += _T("\" ");
 			}
 			if ( m_sTitle.IsInit()  )
 			{
 				sResult += _T("title=\"");
-				sResult += m_sTitle->GetString();
+                sResult += m_sTitle.get2();
 				sResult += _T("\" ");
 			}
 
@@ -249,9 +251,9 @@ namespace OOX
 					m_oSnd = oReader;
 			}
 		}
-		CString CHyperlink::toXML() const
+		std::wstring CHyperlink::toXML() const
 		{
-			CString sResult;
+			std::wstring sResult;
 
 			if ( et_a_hlinkClick == m_eType )
 				sResult = _T("<a:hlinkClick ");
@@ -263,7 +265,7 @@ namespace OOX
 			if ( m_sAction.IsInit()         )
 			{
 				sResult += _T("action=\"");
-				sResult += m_sAction->GetString();
+                sResult += m_sAction.get2();
 				sResult += _T("\" ");
 			}
 
@@ -275,19 +277,19 @@ namespace OOX
 			if ( m_sInvalidUrl.IsInit()     )
 			{
 				sResult += _T("invalidUrl=\"");
-				sResult += m_sInvalidUrl->GetString();
+                sResult += m_sInvalidUrl.get2();
 				sResult += _T("\" ");
 			}
 			if ( m_sTgtFrame.IsInit()       )
 			{
 				sResult += _T("tgtFrame=\"");
-				sResult += m_sTgtFrame->GetString();
+                sResult += m_sTgtFrame.get2();
 				sResult += _T("\" ");
 			}
 			if ( m_sTooltip.IsInit()        )
 			{
 				sResult += _T("tooltip=\"");
-				sResult += m_sTooltip->GetString();
+                sResult += m_sTooltip.get2();
 				sResult += _T("\" ");
 			}
 

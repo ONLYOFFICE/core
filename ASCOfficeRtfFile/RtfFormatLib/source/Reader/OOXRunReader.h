@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -44,16 +44,23 @@
 class OOXRunReader
 {
 private:
+	OOX::Drawing::CRun*	m_drawingRun;
 	OOX::Logic::CRun*	m_ooxRun;
 public:
 	RtfCharProperty		m_oCharProperty;
 	
 	OOXRunReader(OOX::Logic::CRun *ooxRun)
 	{
-		m_ooxRun = ooxRun;
+		m_drawingRun	= NULL;
+		m_ooxRun		= ooxRun;
 		m_oCharProperty.SetDefault();
 	}
-
+	OOXRunReader(OOX::Drawing::CRun *ooxRun)
+	{
+		m_drawingRun	= ooxRun;
+		m_ooxRun		= NULL;
+		m_oCharProperty.SetDefault();
+	}
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle );
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle, RtfCharProperty& oNewProperty, OOX::WritingElement* ooxItem );
 };

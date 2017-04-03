@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,15 +53,6 @@ BiffStructurePtr PtgExtraElf::clone()
 {
 	return BiffStructurePtr(new PtgExtraElf(*this));
 }
-
-
-void PtgExtraElf::store(CFRecord& record)
-{
-#pragma message("####################### PtgExtraElf record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! PtgExtraElf record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void PtgExtraElf::load(CFRecord& record)
 {

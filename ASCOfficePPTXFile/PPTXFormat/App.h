@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,9 +34,10 @@
 #define PPTX_APP_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
+#include "FileTypes.h"
+
 #include "Logic/PartTitle.h"
 #include "Logic/HeadingVariant.h"
-#include "DocxFormat/FileTypes.h"
 
 using namespace NSBinPptxRW;
 
@@ -63,7 +64,7 @@ namespace PPTX
 			TitlesOfParts.clear();
 
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			oNode.ReadNodeValueBase(L"Template", Template);
 			oNode.ReadNodeValueBase(L"TotalTime", TotalTime);
@@ -111,7 +112,7 @@ namespace PPTX
 
 			Normalize();
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("xmlns"), PPTX::g_Namespaces.xmlns.m_strLink);
@@ -168,16 +169,16 @@ namespace PPTX
 			//DigSig (Digital Signature)
 			//HLinks
 			
-			content.registration(type().OverrideType(), directory, filename);
+			content.Registration(type().OverrideType(), directory, filename);
 			m_written = true;
 
 			m_WrittenFileName.m_strFilename = filename.GetFilename();
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::App;
+			return OOX::Presentation::FileTypes::App;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -246,7 +247,7 @@ namespace PPTX
 			pWriter->StartNode(_T("vt:vector"));
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("size"), (int)HeadingPairs.size());
-			pWriter->WriteAttribute(_T("baseType"), (CString)_T("variant"));
+			pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("variant"));
 			pWriter->EndAttributes();
 
 			pWriter->WriteArray2(HeadingPairs);
@@ -260,7 +261,7 @@ namespace PPTX
 			pWriter->StartNode(_T("vt:vector"));
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute(_T("size"), (int)TitlesOfParts.size());
-			pWriter->WriteAttribute(_T("baseType"), (CString)_T("lpstr"));
+			pWriter->WriteAttribute(_T("baseType"), (std::wstring)_T("lpstr"));
 			pWriter->EndAttributes();
 
 			pWriter->WriteArray2(TitlesOfParts);

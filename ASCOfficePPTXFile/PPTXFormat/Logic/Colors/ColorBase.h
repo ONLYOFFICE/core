@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -116,16 +116,6 @@ namespace PPTX
 			//Надо сделать примерно также для "origin color" и setter'ы
 			//Нет, нет и нет!!! Setter'ы делать только в УниКолор, т.к. при установке цвета меняется его тип!
 
-		protected:
-			//origin color
-			unsigned char alpha;
-			unsigned char red;
-			unsigned char green;
-			unsigned char blue;
-			unsigned char hue;
-			unsigned char saturation;
-			unsigned char luminance;
-
 			enum ColorType {ctRGBA, ctARGB, ctBGRA, ctABGR};
 			virtual DWORD ApplyModifiers(const ColorType ct)const
 			{
@@ -144,7 +134,7 @@ namespace PPTX
 					const Logic::ColorModifier* colorMod = &Modifiers[i];
 					double val = colorMod->val.get_value_or(0)/100000.0;
 
-					CString name = XmlUtils::GetNameNoNS(colorMod->name);
+					std::wstring name = XmlUtils::GetNameNoNS(colorMod->name);
 					if (_T("") == name)
 						continue;
 
@@ -389,6 +379,15 @@ namespace PPTX
 				return 0;
 			}
 
+		protected:
+			//origin color
+			unsigned char alpha;
+			unsigned char red;
+			unsigned char green;
+			unsigned char blue;
+			unsigned char hue;
+			unsigned char saturation;
+			unsigned char luminance;
 			//Эти функции использовать для заполнения "origin color"
 			void SetRGB2HSL()
 			{
@@ -538,19 +537,19 @@ namespace PPTX
 					return 10 + value - 'A';
 				return 0;
 			}
-			const int HexString2Int(const CString& value)
+			const int HexString2Int(const std::wstring& value)
 			{
 				int summa = 0;
-				for (int i = 0; i != value.GetLength(); ++i)
-					summa += HexChar2Int((char)value[i]) << (4 * (value.GetLength() - i - 1));
+				for (int i = 0; i != value.length(); ++i)
+					summa += HexChar2Int((char)value[i]) << (4 * (value.length() - i - 1));
 				return summa;
 			}
 		public:
-			void SetHexString(const CString& val)
+			void SetHexString(const std::wstring& val)
 			{
-				red		= HexString2Int(val.Mid(0, 2));
-				green	= HexString2Int(val.Mid(2, 2));
-				blue	= HexString2Int(val.Mid(4, 2));
+				red		= HexString2Int(val.substr(0, 2));
+				green	= HexString2Int(val.substr(2, 2));
+				blue	= HexString2Int(val.substr(4, 2));
 			}
 
 			std::vector<ColorModifier> Modifiers;
@@ -584,10 +583,10 @@ namespace PPTX
 
 							if (0 == _type)
 							{
-								CString _name = pReader->GetString2();
-								int _find = _name.Find(_T(":"));
-								if (_find >= 0 && _find < (_name.GetLength() - 1))
-									_name = _name.Mid(_find + 1);
+								std::wstring _name = pReader->GetString2();
+								int _find = (int)_name.find(_T(":"));
+								if (_find >= 0 && _find < (int)(_name.length() - 1))
+									_name = _name.substr(_find + 1);
 
 								_mod.name = _T("a:") + _name;
 							}

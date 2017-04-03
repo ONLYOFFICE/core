@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,7 +33,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
@@ -53,6 +52,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace _image_file_
 {
@@ -216,10 +216,10 @@ int Compute_BorderWidth(const graphic_format_properties & graphicProperties, Bor
 
     switch(borderSide)
     {
-    case sideTop:       borderValue = graphicProperties.common_border_attlist_.fo_border_top_; break;
-    case sideBottom:    borderValue = graphicProperties.common_border_attlist_.fo_border_bottom_; break;
-    case sideLeft:      borderValue = graphicProperties.common_border_attlist_.fo_border_left_; break;
-    case sideRight:     borderValue = graphicProperties.common_border_attlist_.fo_border_right_; break;    
+		case sideTop:       borderValue = graphicProperties.common_border_attlist_.fo_border_top_; break;
+		case sideBottom:    borderValue = graphicProperties.common_border_attlist_.fo_border_bottom_; break;
+		case sideLeft:      borderValue = graphicProperties.common_border_attlist_.fo_border_left_; break;
+		case sideRight:     borderValue = graphicProperties.common_border_attlist_.fo_border_right_; break;    
     }
 
     if (!borderValue)
@@ -281,14 +281,14 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 			fill->style = 0;
 		
 			point.pos = 0;
-			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
-			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+			if (image_style->draw_start_color_)		point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
 
 			fill->colors.push_back(point);
 
 			point.pos = 100;
-			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 		}break;
@@ -297,20 +297,20 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 			fill->style = 0;
 			
 			point.pos = 0;
-			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 
 			point.pos = 50;
-			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
-			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+			if (image_style->draw_start_color_)		point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
 
 			fill->colors.push_back(point);
 
 			point.pos = 100;
-			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
+			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 		}break;
@@ -319,41 +319,35 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 	case gradient_style::square:
 	case gradient_style::rectangular:
 		{
-			if (style == gradient_style::radial || style == gradient_style::ellipsoid)	fill->style = 2;
+			if (style == gradient_style::radial ||
+				style == gradient_style::ellipsoid)		fill->style = 2;
 			if (style == gradient_style::square )		fill->style = 1;
 			if (style == gradient_style::rectangular)	fill->style = 3;
 			
 			point.pos = 0;
-			if (image_style->draw_end_color_)point.color_ref = image_style->draw_end_color_->get_hex_value();
-			if (image_style->draw_end_intensity_)point.opacity = image_style->draw_end_intensity_->get_value();
-
-			fill->colors.push_back(point);
-
-			point.pos = 100;
-			if (image_style->draw_start_color_)point.color_ref = image_style->draw_start_color_->get_hex_value();
-			if (image_style->draw_start_intensity_)point.opacity = image_style->draw_start_intensity_->get_value();
+			if (image_style->draw_start_color_)		point.color_ref = image_style->draw_start_color_->get_hex_value();
+			if (image_style->draw_start_intensity_)	point.opacity	= image_style->draw_start_intensity_->get_value();
 	
 			fill->colors.push_back(point);
 
-			if (image_style->draw_cx_)//хохма - у мс в конвертилке из open-office перепутаны l & r !!!
+			point.pos = 100;
+			if (image_style->draw_end_color_)		point.color_ref = image_style->draw_end_color_->get_hex_value();
+			if (image_style->draw_end_intensity_)	point.opacity	= image_style->draw_end_intensity_->get_value();
+
+			fill->colors.push_back(point);
+
+			fill->rect[0] = fill->rect[1] = 0;
+			fill->rect[2] = fill->rect[3] = 100;
+		
+			if (image_style->draw_cx_)
 			{
-				fill->rect[0]=image_style->draw_cx_->get_value();
-				fill->rect[2]=100-image_style->draw_cx_->get_value();
-			}
-			else
-			{
-				fill->rect[0]=0;
-				fill->rect[2]=100;
+				fill->rect[0] = 100 - image_style->draw_cx_->get_value();
+				fill->rect[2] = image_style->draw_cx_->get_value();
 			}
 			if (image_style->draw_cy_)
 			{
-				fill->rect[1]=image_style->draw_cy_->get_value();
-				fill->rect[3]=100-image_style->draw_cy_->get_value();
-			}
-			else
-			{
-				fill->rect[1]=0;
-				fill->rect[3]=100;
+				fill->rect[1] = 100 - image_style->draw_cy_->get_value();
+				fill->rect[3] = image_style->draw_cy_->get_value();
 			}
 		}break;
 	}
@@ -427,8 +421,14 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				{
 					switch(image->style_repeat_->get_type())
 					{
-						case style_repeat::Repeat	:	fill.bitmap->bTile = true;		break;
-						case style_repeat::Stretch	:	fill.bitmap->bStretch = true;	break;
+						case style_repeat::Repeat	:	
+							fill.bitmap->bTile		= true;		
+							fill.bitmap->bStretch	= false;	
+						break;
+						case style_repeat::Stretch	:	
+							fill.bitmap->bStretch	= true;	
+							fill.bitmap->bTile		= false;  //?? для background точно выключать
+						break;
 					}
 				}
 				if (image->draw_opacity_) 
@@ -445,8 +445,14 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 		{
 			switch(props.style_repeat_->get_type())
 			{
-				case style_repeat::Repeat	:	fill.bitmap->bTile = true;		break;
-				case style_repeat::Stretch	:	fill.bitmap->bStretch = true;	break;
+				case style_repeat::Repeat	:	
+					fill.bitmap->bTile		= true;		
+					fill.bitmap->bStretch	= false;	
+				break;
+				case style_repeat::Stretch	:	
+					fill.bitmap->bStretch	= true;	
+					fill.bitmap->bTile		= false;
+				break;
 			}
 		}
 		else
@@ -660,11 +666,10 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 	
 	boost::algorithm::split(transforms,transformStr, boost::algorithm::is_any_of(L")"), boost::algorithm::token_compress_on);
 	
-	BOOST_FOREACH(std::wstring const & t, transforms)
+	for (size_t i = 0; i < transforms.size(); i++)
 	{			
-        //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
-		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
+		boost::algorithm::split(transform, transforms[i], boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
 		if (transform.size()>1)//тока с аргументами
 		{

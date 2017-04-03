@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -34,6 +34,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/shared_ptr.hpp>
+
 namespace CRYPT_METHOD
 {
 	enum _hashAlgorithm
@@ -60,7 +62,11 @@ class Decryptor
 {
 	public:
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos) = 0;
+		virtual bool SetPassword(std::wstring password) = 0;
+		virtual bool IsVerify() = 0;
+
 };
+typedef boost::shared_ptr<Decryptor> DecryptorPtr;
 
 class ECMADecryptor : public Decryptor
 {
@@ -102,16 +108,18 @@ public:
 	ECMADecryptor();
 	virtual ~ECMADecryptor(){}
 
-	void Decrypt(unsigned char* data, int  size, unsigned char*& data_out);
-	virtual void Decrypt(char* data	, const size_t size, const unsigned long stream_pos);
-
-	bool SetPassword(std::wstring password);
+	void Decrypt (unsigned char* data, int  size, unsigned char*& data_out);
+	
+	virtual void Decrypt (char* data	, const size_t size, const unsigned long stream_pos);
+	virtual bool SetPassword (std::wstring password);
+	virtual bool IsVerify();
 
 	void SetCryptData(_cryptData	&data);
 	
 private:
-	_cryptData		cryptData;
 	std::wstring	password;
+	_cryptData		cryptData;
+	bool			bVerify;
 };
 
 }

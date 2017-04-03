@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -74,10 +74,6 @@ public:
 		version = record.getGlobalWorkbookInfo()->Version;
 		record >> val;
     }
-	virtual void store(CFRecord& record)
-	{
-		record << val;
-    }
 
     operator Type () const { return (val ? static_cast<Type>(*val) : (Type)0); }
 	
@@ -93,8 +89,6 @@ public:
 		 return *this;
     }
 
-    //const bool operator== (const Type & F2){return (val == F2);}
-
     bool operator==(const Type & F2){return (val == F2);}
 
 protected:
@@ -102,8 +96,6 @@ protected:
 	int						version;
 
 };
-
-//BiffAttributeSimple<std::wstring>::operator ==(const Type &F2)
 
 template<class Type>
 class ForwardOnlyParam : public BiffAttributeSimple<Type>

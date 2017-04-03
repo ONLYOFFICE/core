@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,8 @@ namespace PPTX
 		class BuSzPts : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuSzPts)
+			WritingElement_AdditionConstructors(BuSzPts)
+			PPTX_LOGIC_BASE2(BuSzPts)
 
 			BuSzPts& operator=(const BuSzPts& oSrc)
 			{
@@ -52,13 +53,25 @@ namespace PPTX
 				val = oSrc.val;
 				return *this;
 			}
-
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_buSzPts;
+			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_End( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				val = node.ReadAttributeInt(_T("val"));
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("val"), val);
@@ -79,18 +92,23 @@ namespace PPTX
 				pWriter->StartRecord(BULLET_TYPE_SIZE_PTS);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, val);
+				pWriter->WriteInt1(0, val.get_value_or(0));
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->EndRecord();
 			}
 		public:
-			int val;
+			nullable_int val;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 			AVSINLINE void Normalize()
 			{
-				normalize_value(val, 100, 400000);
+				if (val.IsInit())
+				{
+					int tmp = *val;
+					normalize_value(tmp, 100, 400000);
+					val = tmp;
+				}
 			}
 		};
 	} // namespace Logic

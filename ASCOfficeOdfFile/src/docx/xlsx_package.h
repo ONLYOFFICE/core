@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -169,18 +169,20 @@ public:
     void add_charts(chart_content_ptr chart);
 
 private:
-    rels_files rels_files_;
-    sheets_files sheets_files_;
+    rels_files		rels_files_;
+    sheets_files	sheets_files_;
     xl_charts_files charts_files_;
-    element_ptr theme_;
-    element_ptr workbook_;
+    
+	element_ptr		theme_;
+    element_ptr		workbook_;
 
-    element_ptr styles_;
-    element_ptr sharedStrings_;
-    element_ptr media_;
-    element_ptr drawings_;
-	element_ptr vml_drawings_;
-	element_ptr comments_;
+    element_ptr		styles_;
+    element_ptr		sharedStrings_;
+    element_ptr		media_;
+	element_ptr		embeddings_;
+	element_ptr		drawings_;
+	element_ptr		vml_drawings_;
+	element_ptr		comments_;
 
 };
 
@@ -191,7 +193,7 @@ public:
     xlsx_document();
 
 public:
-    virtual void					write(const std::wstring & RootPath);
+    virtual void write(const std::wstring & RootPath);
 
     virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
     xl_files					& get_xl_files()			{ return xl_files_; }

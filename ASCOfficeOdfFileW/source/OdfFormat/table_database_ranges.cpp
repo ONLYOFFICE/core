@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -80,9 +80,9 @@ void table_database_ranges::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			BOOST_FOREACH(const office_element_ptr & elm, database_ranges_)
+			for (size_t i = 0; i < database_ranges_.size(); i++)
 			{
-				elm->serialize(CP_XML_STREAM());
+				database_ranges_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}

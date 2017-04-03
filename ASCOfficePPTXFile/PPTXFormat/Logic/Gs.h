@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,7 +43,8 @@ namespace PPTX
 		class Gs : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Gs)
+			WritingElement_AdditionConstructors(Gs)
+			PPTX_LOGIC_BASE2(Gs)
 
 			Gs& operator=(const Gs& oSrc)
 			{
@@ -55,8 +56,34 @@ namespace PPTX
 				
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_gs;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					color.fromXML(oReader);
+					break;
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				nullable_int tmp;
+				WritingElement_ReadAttributes_Start_No_NS	( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("pos"), tmp)
+				WritingElement_ReadAttributes_End	( oReader )
+
+				pos = tmp.get_value_or(0);
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				pos		= node.ReadAttributeInt(L"pos");
@@ -64,7 +91,7 @@ namespace PPTX
 
 				FillParentPointersForChilds();
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("pos"), pos);
@@ -74,8 +101,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString sNodeNamespace;
-				CString sAttrNamespace;
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
 				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
 				{
 					sNodeNamespace = _T("w14:");

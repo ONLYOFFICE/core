@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,6 +46,7 @@
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -101,7 +102,7 @@ void xlsx_table_context::start_database_range(std::wstring tableName, std::wstri
 
 	if (!xlsx_table_name.empty())
 	{
-		boost::algorithm::replace_all(xlsx_table_name, L"'", L"");
+		XmlUtils::replace_all( xlsx_table_name, L"'", L"");
 		xlsx_data_ranges_map_.insert(std::pair<std::wstring, int> (xlsx_table_name, xlsx_data_ranges_.size() - 1));
 	}
 
@@ -320,9 +321,17 @@ void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
 {
     return state()->serialize_hyperlinks(_Wostream);
 }
+void xlsx_table_context::serialize_ole_objects(std::wostream & _Wostream)
+{
+    return state()->serialize_ole_objects(_Wostream);
+}
 void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {
 	return state()->dump_rels_hyperlinks(Rels);
+}
+void xlsx_table_context::dump_rels_ole_objects(rels & Rels)
+{
+	return state()->dump_rels_ole_objects(Rels);
 }
 
 xlsx_table_metrics & xlsx_table_context::get_table_metrics()

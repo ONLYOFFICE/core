@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="X2tTest"
 	ProjectGUID="{355A22F4-1394-4B82-B2F1-FF0ECFB9E3EF}"
 	RootNamespace="X2tTest"
@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/agg-2.4/include&quot;;&quot;C:\__Work\core\DesktopEditor\agg-2.4\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;__WORDSIZE=32;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -357,7 +357,35 @@
 				Name="Common"
 				>
 				<File
+					RelativePath="..\..\..\XlsxSerializerCom\Writer\BinaryReader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.h"
 					>
 				</File>
 				<File
@@ -398,10 +426,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\XlsxSerializerCom\Writer\BinaryReader.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
 					>
 					<FileConfiguration
@@ -431,30 +455,6 @@
 				>
 				<File
 					RelativePath="..\..\..\XlsxSerializerCom\Reader\BinaryWriter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|x64"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.h"
 					>
 				</File>
 				<File
@@ -570,6 +570,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
@@ -665,6 +666,14 @@
 				<File
 					RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalOptions="/bigobj"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.h"
@@ -678,10 +687,6 @@
 		</File>
 		<File
 			RelativePath="..\..\src\ASCConverters.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\build\lib\win_32\ascdocumentscore.lib"
 			>
 		</File>
 		<File
@@ -730,6 +735,14 @@
 		</File>
 		<File
 			RelativePath="..\..\..\build\lib\win_32\UnicodeConverter.lib"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\DesktopEditor\xml\src\xmldom.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\DesktopEditor\xml\src\xmllight.cpp"
 			>
 		</File>
 		<File

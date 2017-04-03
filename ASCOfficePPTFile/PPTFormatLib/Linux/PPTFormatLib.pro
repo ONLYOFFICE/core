@@ -21,7 +21,6 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
         _UNICODE \
-         USE_ATL_CSTRING \
         PPTX_DEF \
         PPT_DEF \
         ENABLE_PPT_TO_PPTX_CONVERT \
@@ -31,7 +30,6 @@ DEFINES +=  UNICODE \
         _USE_XMLLITE_READER_ \
         _PRESENTATION_WRITER_ \
         _SVG_CONVERT_TO_IMAGE_  \
-        BUILD_CONFIG_FULL_VERSION \
         DONT_WRITE_EMBEDDED_FONTS
         #DISABLE_FILE_DOWNLOADER
 
@@ -46,7 +44,6 @@ core_windows {
 
 HEADERS += \
     ../PPTFormatLib.h \
-    ../Reader/AudioOverlay.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \
@@ -170,12 +167,13 @@ HEADERS += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h \
     ../../../Common/3dParty/pole/pole.h 
 
-build_fast {
+core_release {
 SOURCES += \
     pptformatlib_logic.cpp
-} else {
+}
+
+core_debug {
 SOURCES += \
-    ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
@@ -183,13 +181,13 @@ SOURCES += \
     ../Records/Animations/AnimationTypes.cpp \
     ../Records/Drawing/ArtBlip.cpp \
     ../PPTXWriter/Converter.cpp \
-    ../PPTXWriter/ShapeWriter.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Layout.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp
+    ../PPTXWriter/ShapeWriter.cpp
 }
 
 SOURCES += \
+    ../PPTFormatLib.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp
 
 core_windows {

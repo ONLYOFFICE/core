@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -40,7 +40,7 @@ namespace DocFileFormat
 		_type = type;
 	}
 
-	LanguageIdMapping::LanguageIdMapping (XMLTools::XMLElement<wchar_t>* parentElement, LanguageType type) : PropertiesMapping(NULL)
+    LanguageIdMapping::LanguageIdMapping (XMLTools::XMLElement* parentElement, LanguageType type) : PropertiesMapping(NULL)
 	{
 		_parent = parentElement;
 		_type = type;
@@ -59,31 +59,31 @@ namespace DocFileFormat
 		{
 			std::wstring langcode = getLanguageCode( dynamic_cast<LanguageId*>( lid ) );
 
-			XMLTools::XMLAttribute<wchar_t>* att = NULL;
+            XMLTools::XMLAttribute* att = NULL;
 
 			switch ( _type )
 			{
 			case Default:
 				{
-                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:val", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
 				}
 				break;
 
 			case EastAsian:
 				{                    
-                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:eastAsia", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:eastAsia", langcode);
 				}
 				break;
 
 			case Complex:
 				{
-                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:bidi", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:bidi", langcode);
 				}
 				break;
 
 			default:
 				{    
-                    att = new XMLTools::XMLAttribute<wchar_t>( L"w:val", langcode.c_str() );
+                    att = new XMLTools::XMLAttribute( L"w:val", langcode);
 				}
 				break;
 			}
@@ -91,7 +91,7 @@ namespace DocFileFormat
 			if (m_pXmlWriter)
 			{
 				// !!!TODO!!!
-				m_pXmlWriter->WriteString( att->GetXMLString().c_str() );
+				m_pXmlWriter->WriteString( att->GetXMLString());
 			}
 			else if ( _parent != NULL )
 			{

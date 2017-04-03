@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,6 +33,7 @@
 
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPScopedPtr.h>
+#include <cpdoccore/CPOptional.h>
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -45,14 +46,42 @@ class styles_lite_container
 public:
     styles_lite_container();
     ~styles_lite_container();
-public:
-    void add(const std::wstring & style_name, office_element_ptr content);
+
+	void add(const std::wstring & style_name, office_element_ptr content);
     office_element_ptr find_by_style_name(const std::wstring & style_name);
     
 private:
     struct Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 
+};
+
+class settings_container
+{
+public:
+	settings_container();
+	~settings_container();
+
+	_CP_OPT(std::wstring) find_by_name				(const std::wstring & name);
+    _CP_OPT(std::wstring) find_view_by_name			(const std::wstring & name, int index = -1); //"-1" - common
+    
+	std::pair<std::wstring, std::wstring> get_table_view (int index_view, const std::wstring & table_name, int index);
+
+	int	get_views_count		();
+	int get_table_view_count(int ind, std::wstring name);
+
+	void add (const std::wstring & name, const std::wstring & value);
+
+	void start_view	();
+	void end_view ();
+
+	void start_table_view (const std::wstring & name);
+	void end_table_view ();
+	
+	void add_view (const std::wstring & name, const std::wstring & value);
+private:
+    class Impl;
+    _CP_SCOPED_PTR(Impl) impl_;
 };
 
 }

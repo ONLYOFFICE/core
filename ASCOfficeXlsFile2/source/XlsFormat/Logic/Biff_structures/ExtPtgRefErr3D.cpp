@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,15 +41,6 @@ BiffStructurePtr ExtPtgRefErr3D::clone()
 {
 	return BiffStructurePtr(new ExtPtgRefErr3D(*this));
 }
-
-
-void ExtPtgRefErr3D::store(CFRecord& record)
-{
-#pragma message("####################### ExtPtgRefErr3D record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtPtgRefErr3D record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void ExtPtgRefErr3D::load(CFRecord& record)
 {

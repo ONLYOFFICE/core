@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -47,17 +47,6 @@ XLS::BiffStructurePtr OfficeArtClientAnchorChart::clone()
 {
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorChart(*this));
 }
-
-
-
-void OfficeArtClientAnchorChart::storeFields(XLS::CFRecord& record)
-{
-	unsigned short flags = 0;
-// 	SETBIT(flags, 0, fMove);
-	SETBIT(flags, 1, fSize);
-	record << flags << lx1 << ly1 << lx2 << ly2;
-}
-
 
 void OfficeArtClientAnchorChart::loadFields(XLS::CFRecord& record)
 {

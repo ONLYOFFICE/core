@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -464,6 +464,20 @@ namespace XmlUtils
 			return _default;
 
 		return atoi(pFind->second.c_str());
+	}
+	bool CXmlNode::SetAttributeInt(const std::wstring& sName, const int& value)
+	{
+		if (!IsValid())
+			return false;
+
+		std::map<std::string, std::string>::iterator pFind = m_pBase->m_attributes.find(U_TO_UTF8(sName));
+
+		if (pFind == m_pBase->m_attributes.end())
+			return false;
+
+		pFind->second = std::to_string(value);
+
+		return true;
 	}
 	int CXmlNode::GetAttributeInt(const std::wstring& sName, const int& _default)
 	{

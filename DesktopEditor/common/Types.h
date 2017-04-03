@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -116,7 +116,7 @@ typedef double T_ULONG64;
 #endif
 
 #ifndef VOID
-typedef void			VOID, *LPVOID;
+    typedef void			VOID, *LPVOID;
 #endif
 
 #ifndef FLT_EPSILON
@@ -134,12 +134,6 @@ typedef long HRESULT;
         #define S_OK                                   ((HRESULT)0x00000000L)
         #define S_FALSE                                ((HRESULT)0x00000001L)
     #endif
-#endif
-
-
-#ifndef RGB
-    typedef int RGB;
-    #define RGB(r,g,b) ((r)<<16|(g)<<8|(b))
 #endif
 
 

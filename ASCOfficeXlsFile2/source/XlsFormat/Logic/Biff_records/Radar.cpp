@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,17 +49,6 @@ BaseObjectPtr Radar::clone()
 {
 	return BaseObjectPtr(new Radar(*this));
 }
-
-
-void Radar::writeFields(CFRecord& record)
-{
-	unsigned short flags = 0;
-	SETBIT(flags, 0, fRdrAxLab);
-	SETBIT(flags, 1, fHasShadow);
-	record << flags;
-	record.reserveNunBytes(2); // unused
-}
-
 
 void Radar::readFields(CFRecord& record)
 {

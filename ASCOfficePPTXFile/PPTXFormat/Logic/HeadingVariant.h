@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,11 +61,11 @@ namespace PPTX
 					m_strContent =	 node.ReadNodeNoNS(_T("lpstr")).GetTextExt();
 				}
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (m_type.IsInit() && (m_type->get() == _T("i4")))
 				{
-					return _T("<vt:variant><vt:i4>") + XmlUtils::IntToString(*m_iContent) + _T("</vt:i4></vt:variant>");
+                    return _T("<vt:variant><vt:i4>") + std::to_wstring(*m_iContent) + _T("</vt:i4></vt:variant>");
 				}
 				return _T("<vt:variant><vt:lpstr>") + *m_strContent + _T("</vt:lpstr></vt:variant>");
 			}

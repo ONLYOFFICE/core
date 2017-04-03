@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,12 @@ namespace PPTX
 		class NvGrpSpPr : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(NvGrpSpPr)
+			WritingElement_AdditionConstructors(NvGrpSpPr)
+
+			NvGrpSpPr(std::wstring ns = L"p")
+			{
+				m_namespace = ns;
+			}
 
 			NvGrpSpPr& operator=(const NvGrpSpPr& oSrc)
 			{
@@ -58,50 +63,24 @@ namespace PPTX
 				nvPr		= oSrc.nvPr;
 				return *this;
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			//{
-			//	XmlUtils::CXmlNodes oNodes;
-			//	if (node.GetNodes(_T("*"), oNodes))
-			//	{
-			//		int nCount = oNodes.GetCount();
-			//		for (int i = 0; i < nCount; ++i)
-			//		{
-			//			XmlUtils::CXmlNode oNode;
-			//			oNodes.GetAt(i, oNode);
-			//virtual void fromXML(XmlUtils::CXmlNode& node);
-            virtual CString toXML() const;
-			//			CString strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-			//			if (_T("cNvPr") == strName)
-			//				cNvPr = oNode;
-			//			else if (_T("cNvGrpSpPr") == strName)
-			//				cNvGrpSpPr = oNode;
-			//			else if (_T("nvPr") == strName)
-			//				nvPr = oNode;
-			//		}
-			//	}
-
-			//	FillParentPointersForChilds();
-			//}
-
-			//virtual CString toXML() const;
-			//{
-			//	XmlUtils::CNodeValue oValue;
-			//	oValue.Write(cNvPr);
-			//	oValue.Write(cNvGrpSpPr);
-			//	oValue.Write(nvPr);
-
-			//	return XmlUtils::CreateNode(_T("p:nvGrpSpPr"), oValue);
-			//}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			virtual OOX::EElementType getType () const
 			{
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:nvGrpSpPr"));
-				else
-					pWriter->StartNode(_T("p:nvGrpSpPr"));
+				return OOX::et_p_NvGrpSpPr;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			
+            virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const 
+			{
+				std::wstring namespace_ = m_namespace;
+				
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)	namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	namespace_ = L"xdr";
+
+				pWriter->StartNode(namespace_ + L":nvGrpSpPr");
 				
 				pWriter->EndAttributes();
 
@@ -109,12 +88,11 @@ namespace PPTX
 				cNvGrpSpPr.toXmlWriter(pWriter);
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)
+				{
 					nvPr.toXmlWriter(pWriter);
+				}
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:nvGrpSpPr"));
-				else
-					pWriter->EndNode(_T("p:nvGrpSpPr"));
+				pWriter->EndNode(namespace_ + L":nvGrpSpPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -156,17 +134,14 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
+			std::wstring m_namespace;
+
 			CNvPr		cNvPr;
 			CNvGrpSpPr	cNvGrpSpPr;
 			NvPr		nvPr;
 		protected:
 			virtual void FillParentPointersForChilds();
-			//{
-			//	cNvPr.SetParentPointer(this);
-			//	cNvGrpSpPr.SetParentPointer(this);
-			//	nvPr.SetParentPointer(this);
-			//}
+
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,17 +50,6 @@ ExternSheet::~ExternSheet()
 BaseObjectPtr ExternSheet::clone()
 {
 	return BaseObjectPtr(new ExternSheet(*this));
-}
-
-
-void ExternSheet::writeFields(CFRecord& record)
-{
-	cXTI = rgXTI.size();
-	record << cXTI;
-	for(BiffStructurePtrVector::const_iterator it = rgXTI.begin(), itEnd = rgXTI.end(); it != itEnd; ++it)
-	{
-		record << **it;
-	}
 }
 
 

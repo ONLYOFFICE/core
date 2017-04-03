@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -69,6 +69,7 @@ namespace cpdoccore {
 namespace odf_reader {
 
 class style_instance;
+class fonts_container;
 
 // 15.4
 class text_format_properties_content : public oox::conversion_element
@@ -79,7 +80,8 @@ public:
     void docx_convert			(oox::docx_conversion_context & Context);
 	void pptx_convert			(oox::pptx_conversion_context & Context);
 	void pptx_convert_as_list	(oox::pptx_conversion_context & Context);
-	void oox_convert			(std::wostream & stream, bool graphic);
+	
+	void oox_convert			(std::wostream & stream, bool graphic, fonts_container & fonts);
 
     void apply_from			(const text_format_properties_content & Other);
 	void apply_to			(std::vector<_property> & properties);

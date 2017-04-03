@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,7 +46,7 @@
 //#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
 #define TO_HTML_RENDERER
-#define ONLY_TEXT
+//#define ONLY_TEXT
 
 int main(int argc, char *argv[])
 {
@@ -97,8 +97,18 @@ int main(int argc, char *argv[])
     //std::wstring sFile = L"D:\\bankomats.xps";
     //std::wstring sFile = L"\\\\kirillov8\\_Office\\DJVU\\Основы разработки приложений на платформе Microsoft .NET Framework. Учебный курс Microsoft экзамен 70-536.djvu";
     //std::wstring sFile = L"D:\\TESTFILES\\Алгоритмы - построение и анализ.djvu";
-    std::wstring sFile = L"D:\\TESTFILES\\PDF 1-7 (756p).pdf";
+#ifndef WIN32
+    std::wstring sFile = L"/home/oleg/GIT/ddd/ZfAvCwDsowJALpClgmE_/source/ZfAvCwDsowJALpClgmE_.pdf";
+#else
+    //std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
+    std::wstring sFile = L"D:\\ddd\\knopk5_0.pdf";
+#endif
+
+#ifdef WIN32
     std::wstring sDst = L"D:\\test\\Document";
+#else
+    std::wstring sDst = L"/home/oleg/test/Document";
+#endif
 
     //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
     //std::wstring sFile = L"/home/oleg/activex/Pi(1p).pdf";
@@ -113,6 +123,8 @@ int main(int argc, char *argv[])
 
     pReader->SetTempDirectory(sDst);
     pReader->LoadFromFile(sFile);
+
+    //pReader->ConvertToRaster(0, L"D:\\111.png", 4);
 
 #ifdef TO_HTML_RENDERER
     NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -46,6 +46,10 @@ const double g_cdMaxWriteOoxPercent = 0.30;
 
 //#define MEMORY_SAFE_CONVERTATION
 
+#if defined (_WIN32) || defined(_WIN64)
+    #pragma comment(lib, "Gdi32.lib")
+#endif
+
 HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
 {
     m_bParseFirstItem = true;
@@ -57,12 +61,12 @@ HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     OOXWriter oWriter( oDocument, sDstPath );
 
     if (m_sTempFolder.length()< 1)
-        m_sTempFolder = FileSystem::Directory::GetTempPath();
+        m_sTempFolder = NSDirectory::GetTempPath();
 
-	CString sTempFolder = std_string2string(m_sTempFolder);
+	std::wstring sTempFolder = m_sTempFolder;
 
-    oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
-    oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
+    oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
+    oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
 
     m_poRtfReader = &oReader;
     m_poOOXWriter = &oWriter;
@@ -81,8 +85,8 @@ HRESULT RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     m_poOOXWriter->SaveByItem();
     oWriter.SaveByItemEnd( );
 
-    FileSystem::Directory::DeleteDirectory(oReader.m_sTempFolder);
-    FileSystem::Directory::DeleteDirectory(oWriter.m_sTempFolder);
+    NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
+    NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
     if( true == succes )
         return S_OK;
@@ -100,12 +104,12 @@ HRESULT RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
     RtfWriter oWriter( oDocument, sDstFileName, sSrcPath );
 
     if (m_sTempFolder.length() < 1)
-        m_sTempFolder = FileSystem::Directory::GetTempPath();
+        m_sTempFolder = NSDirectory::GetTempPath();
 
-	CString sTempFolder = std_string2string(m_sTempFolder);
+	std::wstring sTempFolder = m_sTempFolder;
 
-    oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
-    oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(sTempFolder);
+    oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
+    oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
 
     m_poOOXReader = &oReader;
     m_poRtfWriter = &oWriter;
@@ -118,8 +122,8 @@ HRESULT RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
         succes = oWriter.Save( );
     }
 
-    FileSystem::Directory::DeleteDirectory(oReader.m_sTempFolder);
-    FileSystem::Directory::DeleteDirectory(oWriter.m_sTempFolder);
+    NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
+    NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
     if( true == succes) return S_OK;
     return S_FALSE;

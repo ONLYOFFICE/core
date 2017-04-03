@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-//#include "./stdafx.h"
+
 
 #include "UniColor.h"
 #include "Colors/SrgbClr.h"
@@ -44,6 +44,7 @@ namespace PPTX
 
 		UniColor::UniColor()
 		{
+			Color.reset();
 		}
 
 
@@ -64,11 +65,47 @@ namespace PPTX
 			fromXML(node);
 			return *this;
 		}
+		void UniColor::fromXMLParent(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
-
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				fromXML(oReader);
+				break;
+			}
+		}
+		void UniColor::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+			
+			if (name == _T("srgbClr"))
+				Color.reset(new Logic::SrgbClr(oReader));
+			else if (name == _T("scrgbClr"))
+			{
+				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(oReader);
+				pSrgbClr->fromXML(oReader);
+				Color.reset(pSrgbClr);
+			}
+			else if (name == _T("prstClr"))
+				Color.reset(new Logic::PrstClr(oReader));
+			else if (name == _T("schemeClr"))
+				Color.reset(new Logic::SchemeClr(oReader));
+			else if (name == _T("sysClr"))
+				Color.reset(new Logic::SysClr(oReader));
+			else Color.reset();		
+		}
+		OOX::EElementType UniColor::getType () const
+		{
+			if (Color.IsInit())
+				return Color->getType();
+			return OOX::et_Unknown;
+		}
 		void UniColor::fromXML(XmlUtils::CXmlNode& node)
 		{
-			CString name = XmlUtils::GetNameNoNS(node.GetName());
+			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("srgbClr"))
 				Color.reset(new Logic::SrgbClr(node));
@@ -252,7 +289,7 @@ namespace PPTX
 			}
 		}
 
-		CString UniColor::toXML() const
+		std::wstring UniColor::toXML() const
 		{
 			if (Color.IsInit())
 				return Color->toXML();

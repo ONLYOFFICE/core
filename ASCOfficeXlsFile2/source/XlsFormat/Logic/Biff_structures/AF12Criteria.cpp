@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -50,12 +50,6 @@ AF12Criteria::AF12Criteria()
 AF12Criteria::~AF12Criteria()
 {
 }
-
-
-void AF12Criteria::store(CFRecord& record)
-{	
-}
-
 
 void AF12Criteria::load(CFRecord& record)
 {	

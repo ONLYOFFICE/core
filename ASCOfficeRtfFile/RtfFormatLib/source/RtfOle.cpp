@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,11 +35,11 @@
 #include "RtfDocument.h"
 
 
-CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( false == IsValid() )	return L"";
 	
-	CString sResult;
+    std::wstring sResult;
 
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
@@ -60,8 +60,8 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauth);
-			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauth);
+            std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttm).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nRevised = PROP_DEF;
@@ -70,8 +70,8 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauthDel);
-			CString sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttmDel).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(pCharProps->m_nRevauthDel);
+            std::wstring sDate(RtfUtility::convertDateTime(pCharProps->m_nRevdttmDel).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			pCharProps->m_nDeleted = PROP_DEF;
@@ -79,16 +79,17 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 //----------
 		sResult += L"<w:r>";
 		
-		CString sCharProp = pCharProps->RenderToOOX(oRenderParameter);
+        std::wstring sCharProp = pCharProps->RenderToOOX(oRenderParameter);
 
-		if (!sCharProp .IsEmpty())
+        if (!sCharProp .empty())
 		{
 			sResult += L"<w:rPr>";
 				sResult += sCharProp;
 			sResult += L"</w:rPr>";
 		}
 		
-		sResult.AppendFormat( L"<w:object w:dxaOrig=\"%d\" w:dyaOrig=\"%d\">", m_nWidth, m_nHeight );
+        sResult += L"<w:object w:dxaOrig=\"" + std::to_wstring(m_nWidth) +
+                          L"\" w:dyaOrig=\"" + std::to_wstring(m_nHeight) + L"\">";
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
 		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
@@ -106,9 +107,9 @@ CString RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
+std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
 	OOXWriter		* poOOXWriter	= static_cast<OOXWriter*>		(oRenderParameter.poWriter);
 	OOXRelsWriter	* poRelsWriter	= static_cast<OOXRelsWriter*>	(oRenderParameter.poRels);
@@ -121,20 +122,20 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 		default: 		sResult += L" Type=\"Embed\"";	break;
 	}
     sResult += L" ProgID=\"" + m_sOleClass + L"\"";
-    sResult.AppendFormat( L" ShapeID=\"_x0000_s%d\"", poDocument->GetShapeId( oRenderParameter.nValue ) );
+    sResult += L" ShapeID=\"_x0000_s" + std::to_wstring(poDocument->GetShapeId( oRenderParameter.nValue )) + L"\"";
 	sResult += L" DrawAspect=\"Content\"";
     sResult += L" ObjectID=\"" + poDocument->m_oIdGenerator.Generate_OleId() + L"\"";
 
-	CString sExtension	= L"bin";
-	CString sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
+    std::wstring sExtension	= L"bin";
+    std::wstring sMime		= L"application/vnd.openxmlformats-officedocument.oleObject";
 	
-	CString sFilenameRels;
-    sFilenameRels.AppendFormat( L"oleObject%d.", poDocument->m_oIdGenerator.Generate_OleIndex());
+    std::wstring sFilenameRels;
+    sFilenameRels += L"oleObject" + std::to_wstring(poDocument->m_oIdGenerator.Generate_OleIndex()) + L".";
 	sFilenameRels += sExtension;
 	
-	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
+    std::wstring sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"embeddings";
 	
-	FileSystem::Directory::CreateDirectory( sFilenameFull );
+    NSDirectory::CreateDirectory( sFilenameFull );
 	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 	sFilenameRels = L"embeddings/" + sFilenameRels;
@@ -142,18 +143,18 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
-    CString srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", sFilenameRels);
+    std::wstring srId = poRelsWriter->AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject", sFilenameRels);
     
 	sResult += L" r:id=\"" + srId + L"\"";
 	sResult += L"/>";
 	return sResult;
 }
 
-CString RtfOle::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if( !IsValid() ) return L"";
 
-	CString sResult;
+    std::wstring sResult;
 	
 	sResult += m_oCharProperty.RenderToRtf( oRenderParameter );
 	sResult += L"{\\object";
@@ -169,17 +170,17 @@ CString RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nWidth, sResult, L"objw" );
 	RENDER_RTF_INT( m_nHeight, sResult, L"objh" );
 
-	if( !m_sOleClass.IsEmpty() )
+    if( !m_sOleClass.empty() )
         sResult += L"{\\*\\objclass " + m_sOleClass + L"}";
 	
-	if( !m_sOleFilename.IsEmpty() )
+    if( !m_sOleFilename.empty() )
     {
-        CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
+        std::wstring str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
         sResult += L"{\\*\\objdata " + str + L"}";
     }
 	if( NULL != m_oResultPic )
 	{
-        CString str = m_oResultPic->RenderToRtf( oRenderParameter );
+        std::wstring str = m_oResultPic->RenderToRtf( oRenderParameter );
         sResult += L"{\\result \\pard\\plain" + str + L"}";
 	}
 	sResult += L"}";
@@ -208,7 +209,7 @@ CString RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 	{
 		RtfOle2ToOle1Stream* piStream = static_cast<RtfOle2ToOle1Stream*>(oStream);
 		BYTE* pSource = (BYTE*)pTarget;
-		for( int i = 0; i < (int)dwWrite; i++ )
+		for( DWORD i = 0; i < dwWrite; i++ )
 			piStream->aBuffer.push_back( pSource[i] );
 		return dwWrite;
 	}

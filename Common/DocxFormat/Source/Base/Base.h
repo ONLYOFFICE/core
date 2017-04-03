@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,85 +31,40 @@
  */
 #pragma once
 
+#include <string>
+#include <stdlib.h>
+#include <string.h>
+
+#include "unicode_util.h"
+
+#include "../../../DesktopEditor/common/File.h"
+
+#define _T(x)       __T(x)
+#define __T(x)      L##x
+
 #if defined(_WIN32) || defined (_WIN64)
-#pragma warning( disable : 4996 )
+    #include <TCHAR.H>
+    // windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
 
-
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE	1
+    #ifndef FILE_SEPARATOR
+	#define FILE_SEPARATOR
+	#define FILE_SEPARATOR_CHAR '\\'
+	#define FILE_SEPARATOR_STR _T("\\")
 #endif
-
-#ifndef _CRT_NONSTDC_NO_DEPRECATE
-#define _CRT_NONSTDC_NO_DEPRECATE	1
-#endif
-
-#ifndef STRICT
-#define STRICT
-#endif
-
-// Modify the following defines if you have to target a platform prior to the ones specified below.
-// Refer to MSDN for the latest info on corresponding values for different platforms.
-#ifndef WINVER				// Allow use of features specific to Windows 95 and Windows NT 4 or later.
-#define WINVER 0x0501		// Change this to the appropriate value to target Windows 98 and Windows 2000 or later.
-#endif
-
-#ifndef _WIN32_WINNT		// Allow use of features specific to Windows NT 4 or later.
-#define _WIN32_WINNT 0x0500	// Change this to the appropriate value to target Windows 2000 or later.
-#endif						
-
-#ifndef _WIN32_WINDOWS		// Allow use of features specific to Windows 98 or later.
-#define _WIN32_WINDOWS 0x0410 // Change this to the appropriate value to target Windows Me or later.
-#endif
-
-#ifndef _WIN32_IE			// Allow use of features specific to IE 4.0 or later.
-#define _WIN32_IE 0x0400	// Change this to the appropriate value to target IE 5.0 or later.
-#endif
-
-#ifndef _ATL_APARTMENT_THREADED
-#define _ATL_APARTMENT_THREADED
-#endif
-
-#ifndef _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
-#endif
-
-#ifndef _ATL_ALL_WARNINGS
-// turns off ATL's hiding of some common and often safely ignored warning messages
-#define _ATL_ALL_WARNINGS
-#endif
-
-#include <windows.h>
-#include <atlbase.h>
-#include <atlstr.h>
-#include <atltypes.h>
-
-// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
-#ifndef FILE_SEPARATOR
-#define FILE_SEPARATOR
-#define FILE_SEPARATOR_CHAR '\\'
-#define FILE_SEPARATOR_STR _T("\\")
-#endif
-
-#include "../../../ASCUtils.h"
-
-using namespace ATL;
 
 #else
-#include "ASCString.h"
-#include "stdint.h"
+	#include "stdint.h"
 
-// linux-stype separator for paths i.e. '/home/documents/file.ext'
-#ifndef FILE_SEPARATOR
-#define FILE_SEPARATOR
-#define FILE_SEPARATOR_CHAR '/'
-#define FILE_SEPARATOR_STR _T("/")
+	// linux-stype separator for paths i.e. '/home/documents/file.ext'
+	#ifndef FILE_SEPARATOR
+	#define FILE_SEPARATOR
+	#define FILE_SEPARATOR_CHAR '/'
+	#define FILE_SEPARATOR_STR _T("/")
 #endif
 
-
 #ifndef _wtof
-    #define _wtof std::stod
-    //#define _wtoi std::stoi
-    #define _wtoi64(p) std::wcstoll((p),NULL,10)
+    #define _wtof       std::stod
+    #define _wtoi64(p)  std::wcstoll((p),NULL,10)
 
     static int _wtoi(std::wstring sVal)
     {

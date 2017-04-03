@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -111,7 +111,7 @@ void odf_comment_context::start_comment(office_element_ptr &elm, int oox_id)
 }
 void odf_comment_context::end_comment(office_element_ptr &elm, int oox_id)
 {
-	for(long i=0; i < impl_->comments_.size(); i++)
+	for (size_t i = 0; i < impl_->comments_.size(); i++)
 	{
 		if (impl_->comments_[i].oox_id == oox_id)
 		{
@@ -138,7 +138,7 @@ void odf_comment_context::end_comment_content()
 }
 int odf_comment_context::find_by_id(int oox_id)
 {
-	for(long i=0; i < impl_->comments_.size(); i++)
+	for (size_t i=0; i < impl_->comments_.size(); i++)
 	{
 		if (impl_->comments_[i].oox_id == oox_id)
 		{
@@ -150,7 +150,7 @@ int odf_comment_context::find_by_id(int oox_id)
 }
 std::wstring odf_comment_context::find_name_by_id(int oox_id)
 {
-	for(long i=0; i < impl_->comments_.size(); i++)
+	for (size_t i = 0; i < impl_->comments_.size(); i++)
 	{
 		if (impl_->comments_[i].oox_id == oox_id) return impl_->comments_[i].odf_name;
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,7 @@
 
 OOXReader::OOXReader( RtfDocument& oDocument, std::wstring  path ): m_oDocument(oDocument)
 {
-	m_sPath = std_string2string(path);
+	m_sPath = path;
 	m_nCurItap = 0;
 
 	m_convertationManager = NULL;
@@ -134,9 +134,9 @@ bool OOXReader::Parse()
 
 	return true;
 }
-CString OOXReader::GetFolder( CString sDocPath )
+std::wstring OOXReader::GetFolder( std::wstring sDocPath )
 {
-	int nLastSlash = sDocPath.ReverseFind('\\');
-	CString sLeft = sDocPath.Left(nLastSlash  );
+    int nLastSlash = sDocPath.rfind('\\');
+    std::wstring sLeft = sDocPath.substr(0, nLastSlash  );
 	return sLeft;
 }

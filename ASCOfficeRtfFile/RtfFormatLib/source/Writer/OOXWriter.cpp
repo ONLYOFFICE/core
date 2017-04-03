@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -119,10 +119,10 @@ bool OOXWriter::SaveByItemEnd()
 	OOX::CContentTypes oContentTypes;
 
 	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + L"word";
-    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+    NSDirectory::CreateDirectory(pathWord.GetPath());
 	
 	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + L"theme";
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
+    NSDirectory::CreateDirectory(pathTheme.GetPath()) ;
 	Writers::DefaultThemeWriter themeWriter;
 
 	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + L"theme1.xml");
@@ -141,7 +141,7 @@ bool OOXWriter::SaveByItemEnd()
 
 //-------------------------------------------------------------------------------------
 	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + L"docProps";
-    FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+    NSDirectory::CreateDirectory(pathDocProps.GetPath());
 	
 	if (m_poDocPropsApp)
 	{
@@ -167,7 +167,7 @@ bool OOXWriter::SaveByItemEnd()
 	nResult &= m_oRels.Save(m_sTargetFolder);
 	nResult &= m_oDocRels.Save(pathWord.GetPath());
 	
-	for( int i = 0; i < (int)m_oCustomRelsWriter.size(); i++ )
+	for (size_t i = 0; i < m_oCustomRelsWriter.size(); i++ )
 		m_oCustomRelsWriter[i]->Save(pathWord.GetPath());
 	return nResult;
 }

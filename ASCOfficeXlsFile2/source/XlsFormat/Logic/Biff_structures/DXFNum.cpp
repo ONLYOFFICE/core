@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -39,44 +39,20 @@ namespace XLS
 {
 
 
-void DXFNum::setIsUserDefined(const bool is_user_defined)
-{
-	is_user_defined_ = is_user_defined;
-}
-
-
-const bool DXFNum::getIsUserDefined() const
-{
-    return true == is_user_defined_;
-}
-
-
 BiffStructurePtr DXFNum::clone()
 {
 	return BiffStructurePtr(new DXFNum(*this));
 }
 
-
-void DXFNum::store(CFRecord& record)
-{
-	if(is_user_defined_)
-	{
-		record << user_defined;
-	}
-	else
-	{
-		record << fmt_id;
-	}
-}
-
-
 void DXFNum::load(CFRecord& record)
 {
-	if ((is_user_defined_) && (*is_user_defined_))
+	if (!parent) return;
+
+	if (parent->fIfmtUser)
 	{
 		record >> user_defined;
 	}
-	else
+	if (!parent->ifmtNinch)//else
 	{
 		record >> fmt_id;
 	}
@@ -85,7 +61,7 @@ void DXFNum::load(CFRecord& record)
 
 int DXFNum::serialize(std::wostream & stream)
 {
-	if (parent->ifmtNinch && parent->fIfmtUser) return 0;
+	if (!parent) return 0;
 
 	CP_XML_WRITER(stream)    
     {
@@ -93,7 +69,8 @@ int DXFNum::serialize(std::wostream & stream)
 		{	
 			if (!parent->ifmtNinch)
 				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
- 			if (!parent->fIfmtUser)
+ 			
+			if (parent->fIfmtUser)
  				CP_XML_ATTR(L"formatCode", /*xml::utils::replace_text_to_xml*/(user_defined.fmt.value()));
 		}
 	}

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -53,15 +53,6 @@ BiffStructurePtr ExtNameParsedFormula::clone()
 {
 	return BiffStructurePtr(new ExtNameParsedFormula(*this));
 }
-
-
-void ExtNameParsedFormula::store(CFRecord& record)
-{
-#pragma message("####################### ExtNameParsedFormula record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! ExtNameParsedFormula record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't be a ParsedFormulas's derived?
 {

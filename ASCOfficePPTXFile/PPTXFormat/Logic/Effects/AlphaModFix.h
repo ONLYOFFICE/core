@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -43,8 +43,8 @@ namespace PPTX
 		class AlphaModFix : public WrapperWritingElement
 		{
 		public:
-
-			PPTX_LOGIC_BASE(AlphaModFix)
+			WritingElement_AdditionConstructors(AlphaModFix)
+			PPTX_LOGIC_BASE2(AlphaModFix)
 
 			AlphaModFix& operator=(const AlphaModFix& oSrc)
 			{
@@ -53,22 +53,34 @@ namespace PPTX
 
 				amt = oSrc.amt;
 				return *this;
+			}			
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_a_alphaModFix;
+			}	
+			void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 			}
-			
-		public:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("amt"), amt)
+				WritingElement_ReadAttributes_End( oReader )
+				
+				Normalize();
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				node.ReadAttributeBase(L"amt", amt);
 				Normalize();
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				if (amt.IsInit())
 				{
-					CString strRes = _T("");
-					strRes.Format(_T("<a:alphaModFix amt=\"%d\" />"), *amt);
-					return strRes;
+					return L"<a:alphaModFix amt=\"" + std::to_wstring(*amt) + L"\"/>";
 				}
 
 				return _T("<a:alphaModFix/>");

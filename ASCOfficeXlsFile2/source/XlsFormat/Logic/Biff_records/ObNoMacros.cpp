@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -49,15 +49,6 @@ BaseObjectPtr ObNoMacros::clone()
 {
 	return BaseObjectPtr(new ObNoMacros(*this));
 }
-
-
-void ObNoMacros::writeFields(CFRecord& record)
-{
-#pragma message("####################### ObNoMacros record is not implemented")
-	Log::error("ObNoMacros record is not implemented.");
-	//record << some_value;
-}
-
 
 void ObNoMacros::readFields(CFRecord& record)
 {

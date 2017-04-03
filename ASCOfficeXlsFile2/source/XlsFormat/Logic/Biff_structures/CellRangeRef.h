@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -81,7 +81,6 @@ public:
 	void operator-=(const CellRef& subtracted_ref);
 
     virtual void load(CFRecord& record) {}
-    virtual void store(CFRecord& record) {}
 
     int		rowFirst;
     int		rowLast;
@@ -177,31 +176,6 @@ public:
 				break;
 		}
 	};
-
-	virtual void store(CFRecord& record)
-	{
-		RwType rwFirst(static_cast<RwType>(rowFirst));
-		RwType rwLast(static_cast<RwType>(rowLast));
-		ColType colFirst;
-		ColType colLast;
-		switch(rel_info)
-		{
-		case rel_Present:
-			colFirst = static_cast<ColType>(columnFirst) & ((1 << (sizeof(ColType) * 8 - 2)) - 1);
-			colLast = static_cast<ColType>(columnLast) & ((1 << (sizeof(ColType) * 8 - 2)) - 1);
-			colFirst |= rowFirstRelative ? (1 << (sizeof(ColType) * 8 - 1)) : 0;
-			colFirst |= columnFirstRelative ? (1 << (sizeof(ColType) * 8 - 2)) : 0;
-			colLast |= rowLastRelative ? (1 << (sizeof(ColType) * 8 - 1)) : 0;
-			colLast |= columnLastRelative ? (1 << (sizeof(ColType) * 8 - 2)) : 0;
-			break;
-		case rel_Absent:
-			colFirst = static_cast<ColType>(columnFirst);
-			colLast = static_cast<ColType>(columnLast);
-			break;
-		}
-		record << rwFirst << rwLast << colFirst << colLast;
-	};
-
 
 };
 

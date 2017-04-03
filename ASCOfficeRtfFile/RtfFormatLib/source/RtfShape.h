@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -32,13 +32,18 @@
 #pragma once
 #include "RtfPicture.h"
 
-class RtfShape: public IRenderableProperty
+class RtfShape;
+typedef boost::shared_ptr<RtfShape> RtfShapePtr;
+
+class RtfShape: public IRenderableProperty, public ItemContainer<RtfShapePtr>
 {
 private:
 	bool m_bInsert;
 	bool m_bDelete;
 	
 public: 
+	bool m_bBackground;
+	bool m_bIsGroup;
 	bool m_bIsOle;
 	bool m_bInGroup; //local anchor
 
@@ -64,8 +69,8 @@ public:
 
 	_AnchorTypeShape m_eAnchorTypeShape;
 
-    CString m_sName;
-    CString m_sDescription;
+    std::wstring m_sName;
+    std::wstring m_sDescription;
 
 	int m_nLeft;					//shpleftN	Specifies position of shape from the left of the anchor. The value N is in twips.
 	int m_nTop;						//shptopN	Specifies position of shape from the top of the anchor. The value N is in twips.
@@ -100,9 +105,9 @@ public:
 	int m_nColStart;				//colStart Starting column
 	int m_nColSpan;					//colSpan Number of columns to span
 //Rehydration
-	CString m_sMetroBlob;			// metroBlob Specifies application-specific data used to convert a shape to other formats. It is an encoded TBYTE stream.
-	CString m_sMetroBlobRels;
-	CString m_sMetroBlobData;
+    std::wstring m_sMetroBlob;			// metroBlob Specifies application-specific data used to convert a shape to other formats. It is an encoded TBYTE stream.
+    std::wstring m_sMetroBlobRels;
+    std::wstring m_sMetroBlobData;
 //Object Type
 	int m_bIsBullet;				//fIsBullet Indicates whether a picture was inserted as a picture bullet.
 	int m_nRotation;
@@ -164,8 +169,15 @@ public:
 	int m_nFillColor2;				//fillBackColor
 	int m_nFillType;
 	int m_nFillOpacity;
+	int m_nFillOpacity2;
 	int m_nFillFocus;
 	int m_nFillAngle;
+	int m_nFillToBottom;
+	int m_nFillToTop;
+	int m_nFillToRight;
+	int m_nFillToLeft;
+	int m_nFillShadeType;
+	std::vector< std::pair<int, int> >	m_aFillShadeColors;
 	//int m_bFillShape;				//есть копия заливки картинкой	
 //Line
 	int m_bLine;					//fLine Has a line
@@ -180,17 +192,25 @@ public:
 	int m_nLineDashing;
 
 //WordArt
-	CString m_sGtextUNICODE;
-	CString m_sGtextFont;
-	int		m_nGtextSize;
-	int		m_bGtext;
-	int		m_bGtextFVertical;
-	int		m_bGtextFKern;
-	int		m_bGtextFStretch;
-	int		m_bGtextFShrinkFit;
-	int		m_bGtextFBestFit;
+    std::wstring	m_sGtextUNICODE;
+    std::wstring	m_sGtextFont;
+	int				m_nGtextSize;
+	int				m_bGtext;
+	int				m_bGtextFVertical;
+	int				m_bGtextFKern;
+	int				m_bGtextFStretch;
+	int				m_bGtextFShrinkFit;
+	int				m_bGtextFBestFit;
 
-	RtfCharProperty			m_oCharProperty; // тут могут быть track changes ....
+	int				m_bIsSignatureLine;
+	int				m_bSigSetupAllowComments;
+	std::wstring	m_sSigSetupId;
+	std::wstring	m_sSigSetupProvId;
+	std::wstring	m_sSigSetupSuggSigner;
+	std::wstring	m_sSigSetupSuggSigner2;
+	std::wstring	m_sSigSetupSuggSignerEmail;
+
+	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	std::vector< std::pair<int, int> >	m_aWrapPoints;
@@ -217,11 +237,13 @@ public:
 	}
 	void SetDefault();
 
-	CString RenderToRtf		(RenderParameter oRenderParameter);
-	CString RenderToOOX		(RenderParameter oRenderParameter);
+	void SetNotSupportShape();
 
-	CString RenderToOOXBegin(RenderParameter oRenderParameter);
-	CString RenderToOOXEnd	(RenderParameter oRenderParameter);
+    std::wstring RenderToRtf		(RenderParameter oRenderParameter);
+    std::wstring RenderToOOX		(RenderParameter oRenderParameter);
+
+    std::wstring RenderToOOXBegin	(RenderParameter oRenderParameter);
+    std::wstring RenderToOOXEnd		(RenderParameter oRenderParameter);
 	
 	void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 	{
@@ -248,21 +270,10 @@ public:
 			nBottom = nCenterY + nWidth / 2;
 		}
 	}
-	CString RenderToRtfShapeProperty(RenderParameter oRenderParameter);
-	CString GetShapeNodeName(int type);
+    std::wstring RenderToRtfShapeProperty(RenderParameter oRenderParameter);
+    std::wstring GetShapeNodeName();
+   
+	std::wstring GroupRenderToRtf(RenderParameter oRenderParameter);
+    std::wstring GroupRenderToOOX(RenderParameter oRenderParameter);
 };
 
-
-typedef boost::shared_ptr<RtfShape> RtfShapePtr;
-
-class RtfShapeGroup : public RtfShape, public ItemContainer<RtfShapePtr>
-{
-public: 
-	CString RenderToRtf(RenderParameter oRenderParameter);
-	CString RenderToOOX(RenderParameter oRenderParameter);
-	bool IsValid()
-	{
-		return true;
-	}
-};
-typedef boost::shared_ptr<RtfShapeGroup> RtfShapeGroupPtr;

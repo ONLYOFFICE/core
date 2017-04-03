@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -38,11 +38,11 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 
-CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if ( IsValid() == false) return L"";
 
-	CString sResult;
+    std::wstring sResult;
 	if( RENDER_TO_RTF_PARAM_FONT_TBL == oRenderParameter.nType )
 	{
 		sResult += L"{";
@@ -57,7 +57,7 @@ CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 			case ft_fdbminor:	sResult += L"\\fdbminor";	break;
 			case ft_fbiminor:	sResult += L"\\fbiminor";	break;
 		}
-		sResult.AppendFormat(L"\\f%d",m_nID);
+        sResult += L"\\f" + std::to_wstring(m_nID);
 
 		switch( m_eFontFamily )
 		{
@@ -82,31 +82,31 @@ CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
         sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp );
 		
 //ALL FONTS NEW.docx
-//		if(!m_sAltName.IsEmpty() )
+//		if(!m_sAltName.empty() )
 //          sResult += L"{\\*\\falt " + RtfChar::renderRtfText( m_sAltName, oRenderParameter.poDocument, &oFontNameCharProp ) + L"}";
 
 		sResult += L";}";
 	}
 	else
-		sResult.AppendFormat(L"\\f%d",m_nID);
+        sResult += L"\\f" + std::to_wstring(m_nID);
 	return sResult;
 }
 
-CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( IsValid() == false) return L"";
 
-	CString sResult;
+    std::wstring sResult;
 	
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-	CString sFontName = m_sName;
+    std::wstring sFontName = m_sName;
 
-	if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 || sFontName[0] > 0xff00) )//fondj.rtf
+    if ((sFontName.length() > 0 ) && (sFontName[0] == 0x00b9 || sFontName[0] > 0xff00) )//fondj.rtf
 	{
-		if (m_sAltName.GetLength() > 0) sFontName = m_sAltName;
-		else sFontName.Empty();
+        if (m_sAltName.length() > 0) sFontName = m_sAltName;
+        else sFontName.clear();
 	}
-	if( sFontName.IsEmpty() )
+    if( sFontName.empty() )
 	{
 		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDeffFont )
 		{
@@ -114,12 +114,12 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDeffFont, oDefFont );
 			sFontName = oDefFont.m_sName;
 		}
-		if( sFontName.IsEmpty())
+        if( sFontName.empty())
 			sFontName = L"Arial";
 	}
 	if( RENDER_TO_OOX_PARAM_MINOR_FONT == oRenderParameter.nType )
 	{
-		CString sTag;
+        std::wstring sTag;
 		switch(m_eFontTheme)
 		{
 			case ft_flominor: 
@@ -127,18 +127,18 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ft_fdbminor: sTag = L"ea";		break;
 			case ft_fbiminor: sTag = L"cs";		break;
 		}
-		if( !sTag.IsEmpty() )
+        if( !sTag.empty() )
 		{
             sResult += L"<" ;
 			sResult += sTag;
 			sResult += L" typeface=\"";
-			sResult += Utils::PrepareToXML( sFontName );
+            sResult += XmlUtils::EncodeXmlString( sFontName );
 			sResult += L"\"/>";
 		}
 	}
 	else if( RENDER_TO_OOX_PARAM_MAJOR_FONT == oRenderParameter.nType )
 	{
-		CString sTag;
+        std::wstring sTag;
 		switch(m_eFontTheme)
 		{
 			case ft_flomajor: 
@@ -146,35 +146,35 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ft_fdbmajor: sTag = L"ea";		break;
 			case ft_fbimajor: sTag = L"cs";		break;
 		}
-		if( !sTag.IsEmpty() )
+        if( !sTag.empty() )
 		{
 			sResult += L"<";
 			sResult += sTag;
             sResult += L" typeface=\"";
-			sResult += Utils::PrepareToXML( sFontName );
+            sResult += XmlUtils::EncodeXmlString( sFontName );
 			sResult += L"\"/>";
 		}
 	}
 	else if( RENDER_TO_OOX_PARAM_FONTTABLE == oRenderParameter.nType )
 	{
         sResult += L"<w:font w:name=\"";
-		sResult += Utils::PrepareToXML( sFontName );
+        sResult += XmlUtils::EncodeXmlString( sFontName );
 		sResult += L"\">";
 		
-		if( !m_sAltName.IsEmpty() )
+        if( !m_sAltName.empty() )
 		{
             sResult += L"<w:altName w:val=\"";
-			sResult += Utils::PrepareToXML( m_sAltName );
-			sResult += L"\" />";
+            sResult += XmlUtils::EncodeXmlString( m_sAltName );
+			sResult += L"\"/>";
 		}
-		if( !m_sPanose.IsEmpty() )
+        if( !m_sPanose.empty() )
 		{
             sResult += L"<w:panose1 w:val=\"";
 			sResult += m_sPanose;
-			sResult += L"\" />";
+			sResult += L"\"/>";
 		}
 
-		CString sFamily = L"";
+        std::wstring sFamily = L"";
 		switch( m_eFontFamily )
 		{
 			case ff_fnil:		sFamily = L"auto";			break;
@@ -186,22 +186,22 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			case ff_ftech:		sFamily = L"auto";			break;
 			case ff_fbidi:		sFamily = L"auto";			break;
 		}
-		if( !sFamily.IsEmpty() )
+        if( !sFamily.empty() )
 		{
             sResult += L"<w:family w:val=\"";
 			sResult += sFamily;
-			sResult += L"\" />";
+			sResult += L"\"/>";
 		}
 		if( PROP_DEF != m_nCharset )
 		{
             sResult += L"<w:charset w:val=\"";
 			sResult += Convert::ToStringHex( m_nCharset, 2 );
-			sResult += L"\" />";
+			sResult += L"\"/>";
 		}
 
 		if( PROP_DEF != m_nPitch )
 		{
-			CString sPitch;
+            std::wstring sPitch;
 			switch( m_nPitch )
 			{
 				case 0: sPitch = L"default";	break;
@@ -221,7 +221,7 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 		RtfFont oCurFont;
 		if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
 		{
-			CString sHint;
+            std::wstring sHint;
 			switch(m_nCharset)
 			{
 				case 128://Japanese
@@ -261,53 +261,28 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
+std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 {
 	RtfWriter* poRtfWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-	CString sResult;
+    std::wstring sResult;
 	if( RENDER_TO_RTF_PARAM_COLOR_TBL == oRenderParameter.nType )
 	{
-		//CString sTheme;
-		//switch(m_eTheme)
-		//{
-		//	case cmaindarkone: sTheme = L"\\cmaindarkone";break;
-		//	case cmainlightone: sTheme = L"\\cmainlightone";break;
-		//	case cmaindarktwo: sTheme = L"\\cmaindarktwo";break;
-		//	case cmainlighttwo: sTheme = L"\\cmainlighttwo";break;
-		//	case caccentthree: sTheme = L"\\caccentthree";break;
-		//	case caccenttwo: sTheme = L"\\caccenttwo";break;
-		//	case caccentfour: sTheme = L"\\caccentfour";break;
-		//	case caccentfive: sTheme = L"\\caccentfive";break;
-		//	case caccentsix: sTheme = L"\\caccentsix";break;
-		//	case chyperlink: sTheme = L"\\chyperlink";break;
-		//	case cfollowedhyperlink: sTheme = L"\\cfollowedhyperlink";break;
-		//	case cbackgroundone: sTheme = L"\\cbackgroundone";break;
-		//	case ctextone: sTheme = L"\\ctextone";break;
-		//	case cbackgroundtwo: sTheme = L"\\cbackgroundtwo";break;
-		//	case ctexttwo: sTheme = L"\\ctexttwo";break;
-		//}
-		//if( L"" != sTheme )
-		//{
-		//	sResult += sTheme;
-		//	sResult.AppendFormat(L"\\ctint%d\\cshade%d", m_byteTint, m_byteShade);
-		//}
-		sResult.AppendFormat(L"\\red%d\\green%d\\blue%d", m_byteRed, m_byteGreen, m_byteBlue);
-		//важно
+		sResult	+= L"\\red" + std::to_wstring(m_byteRed) + L"\\green" + std::to_wstring(m_byteGreen) + L"\\blue" + std::to_wstring(m_byteBlue);
 		sResult += L";";
 	}
 	else
 	{
 		int nColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor(*this, nColor) )
-			sResult.AppendFormat(L"\\c%d",nColor); //todo
+            sResult += L"\\c" + std::to_wstring(nColor); //todo
 	}
 	return sResult;
 }
 
-CString RtfColor::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( RENDER_TO_OOX_PARAM_COLOR_VALUE == oRenderParameter.nType )
 	{
 		sResult +=  ToHexColor();
@@ -331,9 +306,9 @@ CString RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfShadingChar::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfShadingChar::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	RENDER_RTF_INT( m_nValue, sResult, L"chshdng" )
 	switch( m_eType )
 	{
@@ -355,9 +330,9 @@ CString RtfShadingChar::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfShadingPar::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfShadingPar::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	RENDER_RTF_INT( m_nValue, sResult, L"shading" )
 	switch( m_eType )
 	{
@@ -379,9 +354,9 @@ CString RtfShadingPar::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfShadingCell::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfShadingCell::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	RENDER_RTF_INT( m_nValue, sResult, L"clshdng" )
 	switch( m_eType )
 	{
@@ -401,13 +376,16 @@ CString RtfShadingCell::RenderToRtf(RenderParameter oRenderParameter)
 	}	
 	RENDER_RTF_INT( m_nForeColor, sResult, L"clcfpat" )
 	if( PROP_DEF != m_nBackColor )
-		sResult.AppendFormat(L"\\clcbpat%d\\clcfpatraw%d", m_nBackColor,m_nBackColor);
+    {
+        sResult += L"\\clcbpat" + std::to_wstring(m_nBackColor);
+        sResult += L"\\clcfpatraw" + std::to_wstring(m_nBackColor);
+    }
 	return sResult;
 }
 
-CString RtfShadingRow::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfShadingRow::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	RENDER_RTF_INT( m_nValue, sResult, L"trshdng" )
 	switch( m_eType )
 	{
@@ -429,9 +407,9 @@ CString RtfShadingRow::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfShadingTableStyle::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfShadingTableStyle::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	RENDER_RTF_INT( m_nValue, sResult, L"tscellpct" )
 	switch( m_eType )
 	{
@@ -453,18 +431,18 @@ CString RtfShadingTableStyle::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfWriter* poRtfWriter = static_cast<RtfWriter*>(oRenderParameter.poWriter);
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-	CString sResult;
+    std::wstring sResult;
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_COLOR_VALUE;
 
 	if(PROP_DEF != m_nBackColor && PROP_DEF == m_nValue && st_none == m_eType)
 		m_nValue = 0;
 
-	CString sShading;
+    std::wstring sShading;
 	if( PROP_DEF != m_nForeColor )
 	{
 		RtfColor oForeColor;
@@ -479,7 +457,7 @@ CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nValue )
 	{
-		CString sValue;
+        std::wstring sValue;
 		if( 0 <= m_nValue &&  m_nValue <= 2 )		sShading += L" w:val=\"clear\"";
 		else if( 2 < m_nValue && m_nValue <= 7 )	sShading += L" w:val=\"pct5\"";
 		else if( 7 < m_nValue && m_nValue <= 11 )	sShading += L" w:val=\"pct10\"";
@@ -523,13 +501,13 @@ CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 			case st_chbgdkdcross:	sShading += L" w:val=\"diagCross\"";				break;
 		}
 	}
-	if( false == sShading.IsEmpty() )
+    if( false == sShading.empty() )
 		sResult = L"<w:shd " + sShading + L"/>";
 	return sResult;
 }
-CString RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString  sResult;
+    std::wstring  sResult;
 	switch( m_eType )
 	{
 		case bt_brdrs:			sResult = L"\\brdrs";			break;
@@ -561,17 +539,17 @@ CString RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
 		case bt_brdrnone:		sResult = L"\\brdrnone";		break;
 	}
 	if( PROP_DEF != m_nWidth && m_nWidth > 0)
-		sResult.AppendFormat( L"\\brdrw%d", m_nWidth );
+        sResult += L"\\brdrw" + std::to_wstring(m_nWidth );
 	if( PROP_DEF != m_nSpace  && m_nSpace > 0)
-		sResult.AppendFormat( L"\\brsp%d",	m_nSpace );
+        sResult += L"\\brsp" + std::to_wstring(m_nSpace );
 	if( PROP_DEF != m_nColor )
-		sResult.AppendFormat( L"\\brdrcf%d", m_nColor );
+        sResult += L"\\brdrcf" + std::to_wstring(m_nColor );
 	return sResult;
 }
-CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-	CString  sResult;
+    std::wstring  sResult;
 	if( PROP_DEF != m_nColor )
 	{
 		RtfColor oColor;
@@ -581,9 +559,9 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
             sResult += L" w:color=\"" + oColor.RenderToOOX(oNewParam) + L"\"";
 	}
 	if( PROP_DEF != m_nWidth ) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
-		sResult.AppendFormat( L" w:sz=\"%d\"", 2 * m_nWidth / 5 );
+        sResult += L" w:sz=\"" + std::to_wstring(2 * m_nWidth / 5 ) + L"\"";
 	if( PROP_DEF != m_nSpace )
-		sResult.AppendFormat( L" w:space=\"%d\"", (int)RtfUtility::Twip2pt( m_nSpace ) );
+        sResult += L" w:space=\"" + std::to_wstring((int)RtfUtility::Twip2pt( m_nSpace )) + L"\"";
 
 	switch( m_eType )
 	{
@@ -616,7 +594,7 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 		case bt_brdremboss:		sResult += L" w:val=\"threeDEmboss\"";			break;
 		case bt_brdrengrave:	sResult += L" w:val=\"threeDEngrave\"";			break;
 	}
-	if( false == sResult.IsEmpty() )
+    if( false == sResult.empty() )
 	{
 		if( RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE == oRenderParameter.nType )
 			;
@@ -627,9 +605,9 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	RENDER_RTF_INT( m_nAnimated,	sResult, L"animtext" )
 	RENDER_RTF_BOOL( m_bBold,		sResult, L"b" )
 	RENDER_RTF_BOOL( m_bCaps,		sResult, L"caps" )
@@ -640,9 +618,9 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nCharacterSpacing, sResult, L"expndtw" )
 	
 	if( PROP_DEF != m_nCharacterSpacing )
-		sResult.AppendFormat( L"\\expnd%d", m_nCharacterSpacing / 5  );
+        sResult += L"\\expnd" + std::to_wstring( m_nCharacterSpacing / 5  );
 	if( PROP_DEF != m_nFitText )
-		sResult.AppendFormat( L"\\fittext%d", m_nFitText / 5  );
+        sResult += L"\\fittext" + std::to_wstring( m_nFitText / 5  );
 	
 	RENDER_RTF_INT( m_nFont,		sResult, L"f" )
 	//RENDER_RTF_INT( m_nFont2,		sResult, L"fittext" )
@@ -659,7 +637,7 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 
 	if( PROP_DEF != m_nComplexScript )
-		sResult.AppendFormat(L"\\fcs%d", m_nComplexScript);
+        sResult += L"\\fcs" + std::to_wstring( m_nComplexScript);
 
 	RENDER_RTF_BOOL	( m_bOutline, sResult, L"outl" )
 	RENDER_RTF_BOOL	( m_bScaps	, sResult, L"scaps" )
@@ -724,7 +702,7 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nCrAuth,		sResult, L"crauth" )
 		RENDER_RTF_INT( m_nCrDate,		sResult, L"crdate" )
 
-		sResult += "{\\*\\oldcprops";
+        sResult += L"{\\*\\oldcprops";
 		sResult += L"\\plain";
 		sResult += m_pOldCharProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
@@ -732,9 +710,9 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	RtfDocument	* poRtfDocument = static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
@@ -747,8 +725,8 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bInsert = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
-			CString sDate(RtfUtility::convertDateTime( m_nRevdttm ).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
+            std::wstring sDate(RtfUtility::convertDateTime( m_nRevdttm ).c_str());
 			
 			sResult += L"<w:ins w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_nRevised = PROP_DEF;
@@ -757,8 +735,8 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		{
 			bDelete = true;
 			
-			CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
-			CString sDate(RtfUtility::convertDateTime( m_nRevdttmDel ).c_str());
+            std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
+            std::wstring sDate(RtfUtility::convertDateTime( m_nRevdttmDel ).c_str());
 			
 			sResult += L"<w:del w:date=\"" + sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\">";
 			m_nDeleted = PROP_DEF;
@@ -768,15 +746,15 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if ( PROP_DEF != m_nDeleted )//для rPr в pPr
 	{
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
-		CString sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauthDel);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nRevdttmDel).c_str());
 
 		sResult += L"<w:del w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
 	if ( PROP_DEF != m_nRevised )
 	{
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
-		CString sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nRevauth);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nRevdttm).c_str());
 		
 		sResult += L"<w:ins w:date=\"" + sDate + L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 	}
@@ -808,7 +786,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
 	if( PROP_DEF != m_nDown )
 	{
-		sResult.AppendFormat(L"<w:position w:val=\"-%d\" />",m_nDown);
+        sResult += L"<w:position w:val=\"-" + std::to_wstring(m_nDown) + L"\"/>";
 	}
 	RENDER_OOX_BOOL( m_bEmbo, sResult, L"w:emboss" )
 	RENDER_OOX_INT( m_nCharacterSpacing, sResult, L"w:spacing" )
@@ -817,13 +795,13 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if( -1 == m_nFitText )
 		{
-            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />", poOOXWriter->m_nCurFitId.GetBuffer(), poOOXWriter->m_nCurFitWidth);
+            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + std::to_wstring(poOOXWriter->m_nCurFitWidth) + L"\"/>";
 		}
 		else 
 		{
 			poOOXWriter->m_nCurFitId = poRtfDocument->m_oIdGenerator.Generate_FitTextId();
 			poOOXWriter->m_nCurFitWidth = m_nFitText;
-            sResult.AppendFormat(L"<w:fitText w:id=\"%d\" w:val=\"%d\" />", poOOXWriter->m_nCurFitId.GetBuffer(), poOOXWriter->m_nCurFitWidth);
+            sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + std::to_wstring(poOOXWriter->m_nCurFitWidth) + L"\"/>";
 		}
 	}
 	if( PROP_DEF == m_nFont)
@@ -886,7 +864,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 
-	CString sUnderColor;
+    std::wstring sUnderColor;
 	if(  PROP_DEF != m_nUnderlineColor  )
 	{
 		RtfColor oCurColor;
@@ -944,7 +922,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		
         if (ccBuf > 0) str_lang.append(buf);
 #else
-        for (int i = 0; i < 136; i++)
+        for (size_t i = 0; i < 136; i++)
         {
             if (LCID_ms_convert[i].LCID_int == m_nLanguage)
             {
@@ -954,7 +932,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
         }
 #endif
         if (str_lang.length() > 0)
-            sResult += CString(L"<w:lang w:val=\"") + str_lang.c_str() + L"\"/>";
+            sResult += std::wstring(L"<w:lang w:val=\"") + str_lang.c_str() + L"\"/>";
     }
 
 	sResult +=  m_poBorder.RenderToOOX( oRenderParameter );
@@ -962,8 +940,8 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	if (m_pOldCharProp)
 	{
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nCrAuth);
-		CString sDate(RtfUtility::convertDateTime(m_nCrDate).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nCrAuth);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nCrDate).c_str());
 		
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -985,12 +963,12 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	RtfDocument	* poRtfDocument = static_cast<RtfDocument*>	( oRenderParameter.poDocument);
 	RtfWriter	* poRtfWriter	= static_cast<RtfWriter*>	( oRenderParameter.poWriter);
 	
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"{\\listlevel";
 
 	RENDER_RTF_INT( m_nNumberType, sResult, L"levelnfc" )
@@ -1012,7 +990,7 @@ CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nIndent, sResult, L"li" )
 	RENDER_RTF_INT( m_nIndentStart, sResult, L"lin" )
 
-	for( int i = 0 ; i < (int)m_oTabs.m_aTabs.size(); i++ )
+	for (size_t i = 0 ; i < m_oTabs.m_aTabs.size(); i++ )
 	{
 		sResult += L"\\jclisttab";
 		sResult +=  m_oTabs.m_aTabs[i].RenderToRtf( oRenderParameter );
@@ -1022,13 +1000,13 @@ CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-CString RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return RenderToOOX2(oRenderParameter);
 }
-CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int nLvl)
+std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int nLvl)
 {
-	CString sResult;
+    std::wstring sResult;
 	int nLevel = PROP_DEF;
 	
 	if		(PROP_DEF != nLvl)		nLevel = nLvl;
@@ -1036,7 +1014,7 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 	
 	if(PROP_DEF != nLevel)
 	{
-		sResult.AppendFormat( L"<w:lvl w:ilvl=\"%d\"", nLevel ); 
+        sResult += L"<w:lvl w:ilvl=\"" + std::to_wstring(nLevel) + L"\"";
 		RENDER_OOX_BOOL_ATTRIBUTE( m_bTentative, sResult, L"w:tentative")
 		sResult += L">"; 
 
@@ -1070,41 +1048,41 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 			}
 		}
 
-		CString spPr;
-		CString sIndent;
+        std::wstring spPr;
+        std::wstring sIndent;
 		if( PROP_DEF != m_nFirstIndent )
 		{
 			if( m_nFirstIndent >= 0 )
-				sIndent.AppendFormat( L" w:firstLine=\"%d\"", m_nFirstIndent );
+                sIndent += L" w:firstLine=\"" + std::to_wstring(m_nFirstIndent) + L"\"";
 			else
-				sIndent.AppendFormat( L" w:hanging=\"%d\"", -m_nFirstIndent );
+                sIndent += L" w:hanging=\"" + std::to_wstring(-m_nFirstIndent) + L"\"";
 		}
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndent,		sIndent, L"w:left" )
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart,	sIndent, L"w:start" )
 		
-		if( !sIndent.IsEmpty() )
+        if( !sIndent.empty() )
             spPr += L"<w:ind " + sIndent + L"/>";
 
 		spPr += m_oTabs.RenderToOOX( oRenderParameter );
 
-		if( !spPr.IsEmpty() )
+        if( !spPr.empty() )
             sResult += L"<w:pPr>" + spPr + L"</w:pPr>";
 
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		
-		CString srPr = m_oCharProp.RenderToOOX(oNewParam);
+        std::wstring srPr = m_oCharProp.RenderToOOX(oNewParam);
 
-		if( !srPr.IsEmpty() )
+        if( !srPr.empty() )
             sResult += L"<w:rPr>" + srPr + L"</w:rPr>";
 
 		sResult += L"</w:lvl>"; 
 	}
 	return sResult;		
 }
-CString RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"\\list";
 
 	RENDER_RTF_INT( m_nTemplateId, sResult, L"listtemplateid" )
@@ -1113,9 +1091,9 @@ CString RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( 1 == m_bListHybrid )
 		sResult += L"\\listhybrid";
 	else if( 1 == m_nListSimple )
-		sResult.AppendFormat(L"\\listsimple%d" ,m_nListSimple);
+        sResult += L"\\listsimple" + std::to_wstring(m_nListSimple);
 
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	for (size_t i = 0; i < (int)m_aArray.size(); i++ )
 	{
 		sResult +=  m_aArray[i].RenderToRtf( oRenderParameter );
 	}
@@ -1124,14 +1102,14 @@ CString RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nID, sResult, L"listid" )
 	return sResult;
 }
-CString RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
 	
-	CString sResult;
+    std::wstring sResult;
 	
-	sResult.AppendFormat( L"<w:abstractNum w:abstractNumId=\"%d\">", m_nID );
+    sResult += L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_nID) + L"\">";
 	
 	if( 1 == m_bListHybrid )
 		sResult += L"<w:multiLevelType w:val=\"hybridMultilevel\"/>";
@@ -1140,31 +1118,32 @@ CString RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 	else
 		sResult += L"<w:multiLevelType w:val=\"multilevel\"/>";
 
-	if( !m_sName.IsEmpty() )
-        sResult += L"<w:name w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>";
+    if( !m_sName.empty() )
+        sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 	//if( false == m_nStyleName )
 	//{
-	//	sResult += L"<w:name w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>";
+    //	sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 	//	if( PROP_DEF !=  m_nStyleID)
-	//		sResult += L"<w:styleLink w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>";
+    //		sResult += L"<w:styleLink w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 	//}
 	//else
-	//	sResult += L"<w:numStyleLink w:val=\"" + Utils::PrepareToXML( m_sName) + L"\"/>";
+    //	sResult += L"<w:numStyleLink w:val=\"" + XmlUtils::EncodeXmlString( m_sName) + L"\"/>";
 
 	if( PROP_DEF != m_nTemplateId )
-		sResult.AppendFormat(L"<w:tmpl w:val=\"%x\"/>" ,m_nTemplateId);
+        sResult += L"<w:tmpl w:val=\"" + XmlUtils::IntToString(m_nTemplateId, L"%x") + L"\"/>";
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	
+	for (size_t i = 0; i < m_aArray.size(); i++ )
 		sResult +=  m_aArray[i].RenderToOOX(oNewParam);
 
 	sResult += L"</w:abstractNum>";
 	return sResult;
 }
-CString RtfListOverrideProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfListOverrideProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( true == IsValid() )
 	{
 		sResult += L"\\listoverride";
@@ -1175,24 +1154,24 @@ CString RtfListOverrideProperty::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfListOverrideProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfListOverrideProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( true == IsValid() )
 	{
-		sResult.AppendFormat(L"<w:num w:numId=\"%d\">", m_nIndex);
-		sResult.AppendFormat(L"<w:abstractNumId w:val=\"%d\" />", m_nListID);
+        sResult += L"<w:num w:numId=\"" + std::to_wstring(m_nIndex) + L"\">";
+        sResult += L"<w:abstractNumId w:val=\"" + std::to_wstring(m_nListID) + L"\" />";
 		sResult += m_oOverrideLevels.RenderToOOX( oRenderParameter );
 		sResult += L"</w:num>";
 	}
 	return sResult;		
 }
 
-CString RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
+std::wstring RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 {
 	RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
-	CString sResult;
-	CString sType;
+    std::wstring sResult;
+    std::wstring sType;
 	switch( m_eType )
 	{
 		case stParagraph :	sType = L"paragraph";	break;
@@ -1200,75 +1179,75 @@ CString RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case stSection :	sType = L"numbering";	break;
 		case stTable :		sType = L"table";		break;
 	}
-    sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + Utils::PrepareToXML( m_sName ) + L"\">";
-    sResult += L"<w:name w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>";
+    sResult += L"<w:style w:type=\"" + sType + L"\" w:styleId=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\">";
+    sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>";
 
 	if( PROP_DEF != m_nBasedOn )
 	{
 		RtfStylePtr oBaseStyle;
 		if( true == poDocument->m_oStyleTable.GetStyle( m_nBasedOn, oBaseStyle ) )
-            sResult += L"<w:basedOn w:val=\"" + Utils::PrepareToXML( oBaseStyle->m_sName ) + L"\"/>";
+            sResult += L"<w:basedOn w:val=\"" + XmlUtils::EncodeXmlString( oBaseStyle->m_sName ) + L"\"/>";
 	}
 	//if( PROP_DEF != m_nNext )
-	//	sResult += L"<w:next w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>", );//Todo
+    //	sResult += L"<w:next w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>", );//Todo
 	//if( PROP_DEF != m_nLink )
-	//	sResult += L"<w:link w:val=\"" + Utils::PrepareToXML( m_sName ) + L"\"/>", );//Todo
+    //	sResult += L"<w:link w:val=\"" + XmlUtils::EncodeXmlString( m_sName ) + L"\"/>", );//Todo
 	if( PROP_DEF != m_bHidden )				sResult += L"<w:hidden/>";
 	if( PROP_DEF != m_bLocked )				sResult += L"<w:locked/>";
 	if( PROP_DEF != m_bPersonal )			sResult += L"<w:personal w:val=\"true\" />";
 	if( PROP_DEF != m_bCompose )			sResult += L"<w:personalCompose w:val=\"true\" />";
 	if( PROP_DEF != m_bReply )				sResult += L"<w:personalReply w:val=\"true\" />";
-	if( PROP_DEF == m_nSemiHidden )			sResult += L"<w:semiHidden/>";
+	if( 1		==	m_nSemiHidden )			sResult += L"<w:semiHidden/>";
 	if( PROP_DEF != m_bQFormat )			sResult += L"<w:qformat/>";
-	if( PROP_DEF != m_nPriority )			sResult.AppendFormat(L"<w:uiPriority w:val=\"%d\"/>",m_nPriority);
+    if( PROP_DEF != m_nPriority )			sResult += L"<w:uiPriority w:val=\"" + std::to_wstring(m_nPriority) + L"\"/>";
 	if( PROP_DEF != m_bUnhiddenWhenUse )	sResult += L"<w:unhideWhenUsed/>";
 
 	return sResult;
 }
 
-CString RtfStyle::RenderToOOXEnd(RenderParameter oRenderParameter)
+std::wstring RtfStyle::RenderToOOXEnd(RenderParameter oRenderParameter)
 {
 	//if( false == IsValid() )
 	//	return false;
-	CString sResult;
+    std::wstring sResult;
 	sResult += L"</w:style>";
 	return sResult;
 }
 
-CString RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
+std::wstring RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 {
 	if( false == IsValid() ) return L"";
 
-	CString sResult;
-	RENDER_RTF_INT( m_nBasedOn, sResult, L"sbasedon" )
-	RENDER_RTF_INT( m_nNext, sResult, L"snext" )
-	RENDER_RTF_BOOL( m_bHidden, sResult, L"shidden" )
-	RENDER_RTF_INT( m_nLink, sResult, L"slink" )
-	RENDER_RTF_BOOL( m_bLocked, sResult, L"slocked" )
-	RENDER_RTF_BOOL( m_bPersonal, sResult, L"spersonal" )
-	RENDER_RTF_BOOL( m_bCompose, sResult, L"scompose" )
-	RENDER_RTF_BOOL( m_bReply, sResult, L"sreply" )
-	RENDER_RTF_BOOL( m_nSemiHidden, sResult, L"ssemihidden" )
-	RENDER_RTF_BOOL( m_bQFormat, sResult, L"sqformat" )
-	RENDER_RTF_INT( m_nPriority, sResult, L"spriority" )
-	RENDER_RTF_BOOL( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
+    std::wstring sResult;
+	RENDER_RTF_INT	( m_nBasedOn,	sResult, L"sbasedon" )
+	RENDER_RTF_INT	( m_nNext,		sResult, L"snext" )
+	RENDER_RTF_BOOL	( m_bHidden,	sResult, L"shidden" )
+	RENDER_RTF_INT	( m_nLink,		sResult, L"slink" )
+	RENDER_RTF_BOOL	( m_bLocked,	sResult, L"slocked" )
+	RENDER_RTF_BOOL	( m_bPersonal,	sResult, L"spersonal" )
+	RENDER_RTF_BOOL	( m_bCompose,	sResult, L"scompose" )
+	RENDER_RTF_BOOL	( m_bReply,		sResult, L"sreply" )
+	RENDER_RTF_BOOL	( m_nSemiHidden, sResult, L"ssemihidden" )
+	RENDER_RTF_BOOL	( m_bQFormat,	sResult, L"sqformat" )
+	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
+	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
     sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ) + L";}";
 	return sResult;
 }
-CString RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult = RenderToRtfBegin( oRenderParameter ) ;
+    std::wstring sResult = RenderToRtfBegin( oRenderParameter ) ;
 	sResult +=  m_oCharProp.RenderToRtf(  oRenderParameter );
 	sResult +=  RenderToRtfEnd( oRenderParameter );
 	return sResult;
 }
-CString RtfCharStyle::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfCharStyle::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult = RenderToOOXBegin( oRenderParameter ) ;
+    std::wstring sResult = RenderToOOXBegin( oRenderParameter ) ;
 	
-	CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
-	if( false == sCharProp.IsEmpty() )
+    std::wstring sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
+    if( false == sCharProp.empty() )
 	{
         sResult += L"<w:rPr>";
 		sResult += sCharProp;
@@ -1277,9 +1256,9 @@ CString RtfCharStyle::RenderToOOX(RenderParameter oRenderParameter)
 	sResult += RenderToOOXEnd( oRenderParameter );
 	return sResult;
 }
-CString RtfParagraphStyle::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfParagraphStyle::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult = RenderToRtfBegin( oRenderParameter );
+    std::wstring sResult = RenderToRtfBegin( oRenderParameter );
 
 	sResult += m_oParProp.RenderToRtf(  oRenderParameter ) ;
 	sResult += m_oCharProp.RenderToRtf(  oRenderParameter );
@@ -1287,19 +1266,19 @@ CString RtfParagraphStyle::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult = RenderToOOXBegin( oRenderParameter );
+    std::wstring sResult = RenderToOOXBegin( oRenderParameter );
 	
-	CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
-	if( false == sParProp.IsEmpty() )
+    std::wstring sParProp = m_oParProp.RenderToOOX(oRenderParameter);
+    if( false == sParProp.empty() )
 	{
         sResult += L"<w:pPr>";
 			sResult += sParProp;
 		sResult += L"</w:pPr>";
 	}
-	CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
-	if( false == sCharProp.IsEmpty() )
+    std::wstring sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
+    if( false == sCharProp.empty() )
 	{
         sResult += L"<w:rPr>";
 			sResult += sCharProp;
@@ -1309,9 +1288,9 @@ CString RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-//CString RtfTableStyleProperty::RenderToRtf(RenderParameter oRenderParameter)
+//std::wstring RtfTableStyleProperty::RenderToRtf(RenderParameter oRenderParameter)
 //		{
-//			CString sResult;
+//			std::wstring sResult;
 //			if( m_oShading.IsValid() )
 //				sResult +=  m_oShading.RenderToRtf( oRenderParameter ) );
 //			RENDER_RTF_INT( m_nPaddingTop, sResult, L"tscellpaddt" )
@@ -1367,15 +1346,15 @@ CString RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 //
 //			return sResult;
 //		}
-//CString RtfTableStyleProperty::RenderToOOX(RenderParameter oRenderParameter)
+//std::wstring RtfTableStyleProperty::RenderToOOX(RenderParameter oRenderParameter)
 //		{
-//			CString sResult;
+//			std::wstring sResult;
 //			return sResult;
 //		}
 
-CString RtfTableStyle::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfTableStyle::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult = RenderToRtfBegin( oRenderParameter ) ;
+    std::wstring sResult = RenderToRtfBegin( oRenderParameter ) ;
 
 	RenderParameter oNewParameter = oRenderParameter;
 	oNewParameter.nType = RENDER_TO_RTF_PARAM_NO_WROWD;
@@ -1403,43 +1382,43 @@ CString RtfTableStyle::RenderToRtf(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( RENDER_TO_OOX_PARAM_NESTED != oRenderParameter.nType )
 	{
 		sResult += RenderToOOXBegin( oRenderParameter ) ;
 
-		CString sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
-		if( false == sTablProp.IsEmpty() )
+        std::wstring sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
+        if( false == sTablProp.empty() )
 		{
             sResult += L"<w:tblPr>";
 				sResult += sTablProp;
 			sResult += L"</w:tblPr>";
 		}
-		CString sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
-		if( false == sRowProp.IsEmpty() )
+        std::wstring sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
+        if( false == sRowProp.empty() )
 		{
             sResult += L"<w:trPr>";
 				sResult += sRowProp;
 			sResult += L"</w:trPr>";
 		}
-		CString sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
-		if( false == sCellProp.IsEmpty() )
+        std::wstring sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
+        if( false == sCellProp.empty() )
 		{
             sResult += L"<w:tcPr>";
 				sResult += sCellProp;
 			sResult += L"</w:tcPr>";
 		}
-		CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
-		if( false == sParProp.IsEmpty() )
+        std::wstring sParProp = m_oParProp.RenderToOOX(oRenderParameter);
+        if( false == sParProp.empty() )
 		{
             sResult += L"<w:pPr>";
 				sResult += sParProp;
 			sResult += L"</w:pPr>";
 		}
-		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
-		if( false == sCharProp.IsEmpty() )
+        std::wstring sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
+        if( false == sCharProp.empty() )
 		{
             sResult += L"<w:rPr>";
 				sResult += sCharProp;
@@ -1515,36 +1494,36 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		sResult += L"<w:tblStylePr w:type=\"" + oRenderParameter.sValue + L"\">";
 		
-		CString sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
-		if( false == sTablProp.IsEmpty() )
+        std::wstring sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
+        if( false == sTablProp.empty() )
 		{
             sResult += L"<w:tblPr>";
 			sResult += sTablProp;
 			sResult += L"</w:tblPr>";
 		}
-		CString sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
-		if( false == sRowProp.IsEmpty() )
+        std::wstring sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
+        if( false == sRowProp.empty() )
 		{
             sResult += L"<w:trPr>";
 			sResult += sRowProp;
 			sResult += L"</w:trPr>";
 		}
-		CString sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
-		if( false == sCellProp.IsEmpty() )
+        std::wstring sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
+        if( false == sCellProp.empty() )
 		{
             sResult += L"<w:tcPr>";
 			sResult += sCellProp;
 			sResult += L"</w:tcPr>";
 		}
-		CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
-		if( false == sParProp.IsEmpty() )
+        std::wstring sParProp = m_oParProp.RenderToOOX(oRenderParameter);
+        if( false == sParProp.empty() )
 		{
             sResult += L"<w:pPr>";
 				sResult += sParProp;
 			sResult += L"</w:pPr>";
 		}
-		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
-		if( false == sCharProp.IsEmpty() )
+        std::wstring sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
+        if( false == sCharProp.empty() )
 		{
             sResult += L"<w:rPr>";
 				sResult += sCharProp;
@@ -1555,9 +1534,9 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfTab::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( PROP_DEF != m_nTab )
 	{
 		if( tk_tqbar == m_eKind )
@@ -1569,7 +1548,7 @@ CString RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tl_hyph:	sResult += L"\\tlhyph";	break;
 				case tl_ul:		sResult += L"\\tlul";	break;
 			}
-			sResult.AppendFormat( L"\\tb%d", m_nTab );
+            sResult += L"\\tb" + std::to_wstring( m_nTab );
 		}
 		else
 		{
@@ -1586,41 +1565,41 @@ CString RtfTab::RenderToRtf(RenderParameter oRenderParameter)
 				case tk_tqc:	sResult += L"\\tqc";		break;
 				case tk_tqdec:	sResult += L"\\tqdec";	break;
 			}
-			sResult.AppendFormat( L"\\tx%d", m_nTab );
+            sResult += L"\\tx" + std::to_wstring( m_nTab );
 		}
 	}
 	return sResult;
 }
-CString RtfTab::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfTab::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
-	CString sTab;
+    std::wstring sTab;
 	switch( m_eLeader )
 	{
-		case tl_dot:	sTab += L" w:leader=\"dot\"";		break;
-		case tl_mdot:	sTab += L" w:leader=\"middleDot\"";	break;
+        case tl_dot:	sTab += L" w:leader=\"dot\"";           break;
+        case tl_mdot:	sTab += L" w:leader=\"middleDot\"";     break;
 		case tl_hyph:	sTab += L" w:leader=\"hyphen\"";		break;
 		case tl_ul:		sTab += L" w:leader=\"underscore\"";	break;
 	}
 	switch( m_eKind )
 	{
 		case tk_tql:	sTab += L" w:val=\"left\"";		break;
-		case tk_tqr:	sTab += L" w:val=\"right\"";		break;
+        case tk_tqr:	sTab += L" w:val=\"right\"";	break;
 		case tk_tqc:	sTab += L" w:val=\"center\"";	break;
 		case tk_tqdec:	sTab += L" w:val=\"decimal\"";	break;
 		case tk_tqbar:	sTab += L" w:val=\"bar\"";		break;
 	}
 	if( PROP_DEF != m_nTab )
-		sTab.AppendFormat( L" w:pos=\"%d\"", m_nTab );
+        sTab += L" w:pos=\"" + std::to_wstring(m_nTab) + L"\"";
 	
-	if( false == sTab.IsEmpty() )
+    if( false == sTab.empty() )
 		sResult = L"<w:tab " + sTab + L"/>";
 	return sResult;
 }
-CString RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	RENDER_RTF_INT( m_nWidth, sResult, L"absw" )
 	RENDER_RTF_INT( m_nHeight, sResult, L"absh" )
 	switch ( m_eHRef )
@@ -1632,9 +1611,9 @@ CString RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHPos )
 	{
 		if( m_nHPos > 0 )
-			sResult.AppendFormat(L"\\posx%d",m_nHPos);
+            sResult += L"\\posx" + std::to_wstring(m_nHPos);
 		else
-			sResult.AppendFormat(L"\\posnegx%d",m_nHPos);
+            sResult += L"\\posnegx" + std::to_wstring(m_nHPos);
 	}
 	switch ( m_eHPos )
 	{
@@ -1654,17 +1633,17 @@ CString RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nVPos )
 	{
 		if( m_nVPos > 0 )
-			sResult.AppendFormat(L"\\posy%d",m_nVPos);
+            sResult += L"\\posy" + std::to_wstring(m_nVPos);
 		else 
-			sResult.AppendFormat(L"\\posnegy%d",m_nVPos);
+            sResult += L"\\posnegy" + std::to_wstring(m_nVPos);
 	}
 	switch ( m_eVPos )
 	{
-		case vp_posyt:		sResult += L"\\posyt";	break;
-		case vp_posyil:		sResult += L"\\posyil";	break;
-		case vp_posyb:		sResult += L"\\posyb";	break;
-		case vp_posyc:		sResult += L"\\posyc";	break;
-		case vp_posyin:		sResult += L"\\posyin";	break;
+        case vp_posyt:		sResult += L"\\posyt";      break;
+        case vp_posyil:		sResult += L"\\posyil";     break;
+        case vp_posyb:		sResult += L"\\posyb";      break;
+        case vp_posyc:		sResult += L"\\posyc";      break;
+        case vp_posyin:		sResult += L"\\posyin";     break;
 		case vp_posyout:	sResult += L"\\posyout";	break;
 	}
 	RENDER_RTF_INT( m_bLockAnchor, sResult, L"abslock" )
@@ -1672,8 +1651,8 @@ CString RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 	switch ( m_eWrap )
 	{
 		case tw_wrapdefault:	sResult += L"\\wrapdefault";	break;
-		case tw_wraparound:		sResult += L"\\wraparound";	break;
-		case tw_wraptight:		sResult += L"\\wraptight";	break;
+        case tw_wraparound:		sResult += L"\\wraparound";     break;
+        case tw_wraptight:		sResult += L"\\wraptight";      break;
 		case tw_wrapthrough:	sResult += L"\\wrapthrough";	break;
 	}
 	RENDER_RTF_INT( m_DropcapType, sResult, L"dropcapt" )
@@ -1684,10 +1663,10 @@ CString RtfFrame::RenderToRtf(RenderParameter oRenderParameter)
 
 	return sResult;
 }
-CString RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
-	CString sFrame;
+    std::wstring sResult;
+    std::wstring sFrame;
 	RENDER_OOX_INT_ATTRIBUTE( m_nWidth, sFrame, L"w:w" )
 	if(PROP_DEF != m_nHeight)
 	{
@@ -1752,13 +1731,13 @@ CString RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 	
 	RENDER_OOX_INT_ATTRIBUTE( m_DropcapLines, sFrame, L"w:lines" )
 
-	if( PROP_DEF != m_nHorSpace )		sFrame.AppendFormat( L" w:hSpace=\"%d\"", m_nHorSpace );
-	else if( PROP_DEF != m_nAllSpace )	sFrame.AppendFormat( L" w:hSpace=\"%d\"", m_nAllSpace );
+    if( PROP_DEF != m_nHorSpace )		sFrame += L" w:hSpace=\"" + std::to_wstring(m_nHorSpace) + L"\"";
+    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:hSpace=\"" + std::to_wstring(m_nAllSpace) + L"\"";
 	
-	if( PROP_DEF != m_nVerSpace )		sFrame.AppendFormat( L" w:vSpace=\"%d\"", m_nVerSpace );
-	else if( PROP_DEF != m_nAllSpace )	sFrame.AppendFormat( L" w:vSpace=\"%d\"", m_nAllSpace );
+    if( PROP_DEF != m_nVerSpace )		sFrame += L" w:vSpace=\"" + std::to_wstring(m_nVerSpace) + L"\"";
+    else if( PROP_DEF != m_nAllSpace )	sFrame += L" w:vSpace=\"" + std::to_wstring(m_nAllSpace) + L"\"";
 
-	if( !sFrame.IsEmpty() )
+    if( !sFrame.empty() )
 	{
 		sResult = L"<w:framePr " + sFrame + L"/>";
 
@@ -1766,15 +1745,15 @@ CString RtfFrame::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	RENDER_RTF_INT	( m_nStyle				, sResult, L"s" ); //test
 	RENDER_RTF_BOOL	( m_bAutoHyphenation	, sResult, L"hyphpar" );
 	RENDER_RTF_BOOL	( m_bInTable			, sResult, L"intbl" );
 	
 	if( PROP_DEF != m_nItap && 1 != m_nItap )
-		sResult.AppendFormat( L"\\itap%d",m_nItap );
+        sResult += L"\\itap" + std::to_wstring(m_nItap );
 	
 	RENDER_RTF_BOOL	( m_bKeep			, sResult, L"keep" );
 	RENDER_RTF_BOOL	( m_bKeepNext		, sResult, L"keepn" );
@@ -1836,8 +1815,8 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
-		sResult.AppendFormat( L"\\ls%d", m_nListId );
-		sResult.AppendFormat( L"\\ilvl%d", m_nListLevel );
+        sResult += L"\\ls" + std::to_wstring( m_nListId );
+        sResult += L"\\ilvl" + std::to_wstring(m_nListLevel );
 	}
 
 	if( true == m_oShading.IsValid() )
@@ -1930,7 +1909,7 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 					sResult += L"{\\listtext\\pard\\plain";
 					sResult +=  poLevelProp.m_oCharProp.RenderToRtf( oRenderParameter );
 					//пишем текст 
-                    CString strLevelProp = poLevelProp.GenerateListText();
+                    std::wstring strLevelProp = poLevelProp.GenerateListText();
 
                     RtfCharProperty* pCharProperty = NULL;
                     sResult +=   RtfChar::renderRtfText( strLevelProp, oRenderParameter.poDocument, pCharProperty );
@@ -1967,19 +1946,19 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nPrAuth,		sResult, L"prauth" )
 		RENDER_RTF_INT( m_nPrDate,		sResult, L"prdate" )
 
-		sResult += "{\\*\\oldpprops\\pard";
+        sResult += L"{\\*\\oldpprops\\pard";
 		sResult += m_pOldParagraphProp->RenderToRtf(oRenderParameter);
 		sResult += L"}";
 	}
 
 	return sResult;
 }
-CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	poRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 	
-	CString sResult;
+    std::wstring sResult;
 	if( PROP_DEF != m_nStyle )
 	{
 		RtfStylePtr oCurStile;
@@ -2019,21 +1998,21 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case fa_favar:		sResult += L"<w:textAlignment w:val=\"bottom\" />";	break;
 		case fa_fafixed:	sResult += L"<w:textAlignment w:val=\"bottom\" />";	break;
 	}
-	CString sIndent;
+    std::wstring sIndent;
 	if( PROP_DEF != m_nIndFirstLine )
 	{
-		if( m_nIndFirstLine >= 0 )	sIndent.AppendFormat( L" w:firstLine=\"%d\"", m_nIndFirstLine );
-		else						sIndent.AppendFormat( L" w:hanging=\"%d\"", -m_nIndFirstLine );
+        if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + std::to_wstring(m_nIndFirstLine) + L"\"";
+        else						sIndent += L" w:hanging=\"" + std::to_wstring(-m_nIndFirstLine) + L"\"";
 	}
 	else if (m_bOldList && PROP_DEF != m_nIndLeft)
-		sIndent.AppendFormat( L" w:firstLine=\"%d\"", 0 );
+        sIndent += L" w:firstLine=\"0\"";
 
 	RENDER_OOX_INT_ATTRIBUTE	( m_nIndLeft,	sIndent, L"w:left" );
 	RENDER_OOX_INT_ATTRIBUTE	( m_nIndRight,	sIndent, L"w:right" );
 	//RENDER_OOX_INT_ATTRIBUTE	( m_nIndStart,	sIndent, L"w:start" );
 	//RENDER_OOX_INT_ATTRIBUTE	( m_nIndEnd,	sIndent, L"w:end" );
 	
-	if( !sIndent.IsEmpty() )
+    if( !sIndent.empty() )
 	{
         sResult += L"<w:ind ";
 		sResult += sIndent;
@@ -2043,7 +2022,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bIndRightAuto, sResult, L"w:adjustRightInd" );
 	RENDER_OOX_BOOL( m_bIndMirror, sResult, L"w:mirrorIndents" );
 
-	CString sSpacing;
+    std::wstring sSpacing;
 	if( PROP_DEF == m_nSpaceAfter )		m_nSpaceAfter = 0;
 	//if( PROP_DEF == m_nSpaceBefore )	m_nSpaceBefore = 0;
 
@@ -2057,9 +2036,9 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nSpaceBetween && 0 != m_nSpaceBetween )
 	{
 		if( m_nSpaceBetween > 0 )
-			sSpacing.AppendFormat(L" w:line=\"%d\"", m_nSpaceBetween);
+            sSpacing += L" w:line=\"" + std::to_wstring(m_nSpaceBetween) + L"\"";
 		else
-			sSpacing.AppendFormat(L" w:line=\"%d\"", -m_nSpaceBetween);
+            sSpacing += L" w:line=\"" + std::to_wstring(-m_nSpaceBetween) + L"\"";
 		if( 0 == m_nSpaceMultiLine )
 		{
 			if( m_nSpaceBetween > 0 )	sSpacing += L" w:lineRule=\"atLeast\"";
@@ -2067,8 +2046,8 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 	//else
-	//	sSpacing.AppendFormat(L" w:line=\"240\""); //по умолчанию - единичный
-	if( !sSpacing.IsEmpty() )
+    //	sSpacing += L" w:line=\"240\""); //по умолчанию - единичный
+    if( !sSpacing.empty() )
 	{
 		sResult += L"<w:spacing ";
 		sResult +=  sSpacing;
@@ -2087,11 +2066,11 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case tbw_txbxtwno:			sResult += L"<w:textboxTightWrap w:val=\"none\"/>";				break;
 		case tbw_txbxtwalways:		sResult += L"<w:textboxTightWrap w:val=\"allLines\"/>";			break;
 		case tbw_txbxtwfirstlast:	sResult += L"<w:textboxTightWrap w:val=\"firstAndLastLine\"/>";	break;
-		case tbw_txbxtwfirst:		sResult += L"<w:textboxTightWrap w:val=\"firstLineOnly\"/>";		break;
+		case tbw_txbxtwfirst:		sResult += L"<w:textboxTightWrap w:val=\"firstLineOnly\"/>";	break;
 		case tbw_txbxtwlast:		sResult += L"<w:textboxTightWrap w:val=\"lastLineOnly\"/>";		break;
 	}
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
-		sResult.AppendFormat( L"<w:numPr><w:ilvl w:val=\"%d\" /><w:numId w:val=\"%d\" /></w:numPr>", m_nListLevel, m_nListId );
+        sResult += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(m_nListLevel) + L"\" /><w:numId w:val=\"" + std::to_wstring(m_nListId) + L"\" /></w:numPr>";
 
 
 	if( true == m_oShading.IsValid() )
@@ -2099,10 +2078,10 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE;
-	CString sBorder;
+    std::wstring sBorder;
 	if( true == m_oBorderBox.IsValid() )
 	{
-		CString sBorderContent = m_oBorderBox.RenderToOOX(oNewParam);
+        std::wstring sBorderContent = m_oBorderBox.RenderToOOX(oNewParam);
         sBorder += L"<w:left ";		sBorder += sBorderContent;	sBorder += L" />";
         sBorder += L"<w:top ";		sBorder += sBorderContent;	sBorder += L" />";
         sBorder += L"<w:right ";	sBorder += sBorderContent;	sBorder += L" />";
@@ -2134,7 +2113,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sBorder += m_oBorderBar.RenderToOOX(oNewParam);
 		sBorder += L"/>";
 	}
-	if( false == sBorder.IsEmpty() )
+    if( false == sBorder.empty() )
 	{
         sResult += L"<w:pBdr>";
 		sResult += sBorder;
@@ -2158,9 +2137,9 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		sResult += m_oTabs.RenderToOOX( oRenderParameter );
 	}
-	CString sCharProp = m_oCharProperty.RenderToOOX( oRenderParameter );
+    std::wstring sCharProp = m_oCharProperty.RenderToOOX( oRenderParameter );
 	
-	if( !sCharProp.IsEmpty() )
+    if( !sCharProp.empty() )
 	{
         sResult += L"<w:rPr>";
 			sResult += sCharProp;
@@ -2168,8 +2147,8 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	if (m_pOldParagraphProp)
 	{
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nPrAuth);
-		CString sDate(RtfUtility::convertDateTime(m_nPrDate).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nPrAuth);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nPrDate).c_str());
 
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -2182,9 +2161,9 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
-CString RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	RENDER_RTF_BOOL( m_bMergeFirst,			sResult, L"clmgf" )
 	RENDER_RTF_BOOL( m_bMerge,				sResult, L"clmrg" )
 	RENDER_RTF_BOOL( m_bMergeFirstVertical, sResult, L"clvmgf" )
@@ -2269,14 +2248,14 @@ CString RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case mu_Percent:	sResult += L"\\clftsWidth2";	break;
 		case mu_Twips:		sResult += L"\\clftsWidth3";	break;
 	}
-	//ATLASSERT(PROP_DEF != m_nCellx );
-	sResult.AppendFormat(L"\\cellx%d",m_nCellx);
+
+    sResult += L"\\cellx" + std::to_wstring(m_nCellx);
 
 	return sResult;
 }
-CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( 1 == m_bMergeFirst )			sResult += L"<w:hMerge w:val=\"restart\"/>";
 	if( 1 == m_bMerge )					sResult += L"<w:hMerge w:val=\"continue\"/>";
 	if( 1 == m_bMergeFirstVertical )	sResult += L"<w:vMerge w:val=\"restart\"/>";
@@ -2285,17 +2264,17 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bFitText, sResult, L"w:tcFitText" )
 	RENDER_OOX_BOOL( m_bNoWrap, sResult, L"w:noWrap" )
 
-	CString sMargin;
+    std::wstring sMargin;
 	if( 3 == m_nIsPaddingLeft && PROP_DEF != m_nPaddingLeft)
-		sResult.AppendFormat(L"<w:left w:w=\"%d\" w:type=\"dxa\"/>",m_nPaddingLeft);
+        sResult += L"<w:left w:w=\"" + std::to_wstring(m_nPaddingLeft) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingRight && PROP_DEF != m_nPaddingRight)
-		sResult.AppendFormat(L"<w:right w:w=\"%d\" w:type=\"dxa\"/>",m_nPaddingRight);
+        sResult += L"<w:right w:w=\"" + std::to_wstring(m_nPaddingRight) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingTop && PROP_DEF != m_nPaddingTop)
-		sResult.AppendFormat(L"<w:top w:w=\"%d\" w:type=\"dxa\"/>",m_nPaddingTop);
+        sResult += L"<w:top w:w=\"" + std::to_wstring(m_nPaddingTop) + L"\" w:type=\"dxa\"/>";
 	if( 3 == m_nIsPaddingBottom && PROP_DEF != m_nPaddingBottom)
-		sResult.AppendFormat(L"<w:bottom w:w=\"%d\" w:type=\"dxa\"/>",m_nPaddingBottom);
+        sResult += L"<w:bottom w:w=\"" + std::to_wstring(m_nPaddingBottom) + L"\" w:type=\"dxa\"/>";
 	
-	if( !sMargin.IsEmpty() )
+    if( !sMargin.empty() )
 	{
         sResult += L"<w:tcMar>";
 		sResult += sMargin;
@@ -2307,39 +2286,39 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//else	
 	//	sResult += L"trspdl0");
 	//if( PROP_DEF != m_nSpacingLeft )
-	//	sResult.AppendFormat(L"trspdfl%d",m_nSpacingLeft);
+    //	sResult += L"trspdfl" + std::to_wstring(m_nSpacingLeft) + L"",);
 	//if( true == m_bIsSpacingRight )
 	//	sResult += L"trspdr3");
 	//else	
 	//	sResult += L"trspdr0");
 	//if( PROP_DEF != m_nSpacingRight )
-	//	sResult.AppendFormat(L"trspdfr%d",m_nSpacingRight);
+    //	sResult += L"trspdfr" + std::to_wstring(m_nSpacingRight) + L"",);
 	//if( true == m_bIsSpacingTop )
 	//	sResult += L"trspdt3");
 	//else	
 	//	sResult += L"trspdt0");
 	//if( PROP_DEF != m_nSpacingTop )
-	//	sResult.AppendFormat(L"trspdft%d",m_nSpacingTop);
+    //	sResult += L"trspdft" + std::to_wstring(m_nSpacingTop) + L"",);
 	//if( true == m_bIsSpacingBottom )
 	//	sResult += L"trspdb3");
 	//else	
 	//	sResult += L"trspdb0");
 	//if( PROP_DEF != m_nSpacingBottom )
-	//	sResult.AppendFormat(L"trspdfb%d",m_nSpacingBottom);
+    //	sResult += L"trspdfb" + std::to_wstring(m_nSpacingBottom) + L"",);
 
 	if( PROP_DEF != m_nWidth )
 	{
 		if( mu_Percent ==  m_eWidthUnits )
-			sResult.AppendFormat( L"<w:tcW w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidth);
+            sResult += L"<w:tcW w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidth) + L"%\"/>";
 		else if( mu_Twips ==  m_eWidthUnits )
-			sResult.AppendFormat( L"<w:tcW w:type=\"dxa\" w:w=\"%d\"/>", m_nWidth );
+            sResult += L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidth) + L"\"/>";
 	}
 	RENDER_OOX_BOOL( m_bHideMark, sResult, L"w:hideMark" )
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_TAG;
 	
-	CString sBorder;
+    std::wstring sBorder;
 	if( true == m_oBorderDiagonalLR.IsValid() )
 	{
 		oNewParam.sValue = L"w:tl2br";
@@ -2380,7 +2359,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.sValue = L"w:insideV";
 		sResult += m_oBorderInsideV.RenderToOOX(oNewParam);
 	}
-	if( false == sBorder.IsEmpty() )
+    if( false == sBorder.empty() )
 	{
         sResult += L"<w:tcBorders>";
 		sResult += sBorder;
@@ -2416,7 +2395,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	RENDER_OOX_INT( m_nSpan, sResult, L"w:gridSpan" );
 
-	//CString scnfStyle;
+    //std::wstring scnfStyle;
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstRow, scnfStyle, L"w:firstRow" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleLastRow, scnfStyle, L"w:lastRow" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstCol, scnfStyle, L"w:firstColumn" )
@@ -2429,7 +2408,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleNECell, scnfStyle, L"w:firstRowLastColumn" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleSWCell, scnfStyle, L"w:lastRowFirstColumn" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleSECell, scnfStyle, L"w:lastRowLastColumn" )
-	//if( !scnfStyle.IsEmpty() )
+    //if( !scnfStyle.empty() )
 	//	sResult += L"<w:cnfStyle " + scnfStyle + T("(/>";
 
 	//cellx
@@ -2437,9 +2416,9 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	
 	RENDER_RTF_BOOL( m_bBidi, sResult, L"taprtl" )
 	
@@ -2468,9 +2447,9 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHPos )
 	{
 		if( m_nHPos > 0 )
-			sResult.AppendFormat(L"\\tposx%d",m_nHPos);
+            sResult += L"\\tposx" + std::to_wstring(m_nHPos);
 		else
-			sResult.AppendFormat(L"\\tposnegx%d",m_nHPos);
+            sResult += L"\\tposnegx" + std::to_wstring(m_nHPos);
 	}
 	switch ( m_eHPos )
 	{
@@ -2490,9 +2469,9 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nVPos )
 	{
 		if( m_nVPos > 0 )
-			sResult.AppendFormat(L"\\tposy%d",m_nVPos);
+            sResult += L"\\tposy" + std::to_wstring(m_nVPos);
 		else 
-			sResult.AppendFormat(L"\\tposnegy%d",m_nVPos);
+            sResult += L"\\tposnegy" + std::to_wstring(m_nVPos);
 	}
 	switch ( m_eVPos )
 	{
@@ -2569,9 +2548,9 @@ CString RtfTableProperty::RenderToRtf(RenderParameter oRenderParameter)
 
 	return sResult;
 }
-CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( PROP_DEF != m_nStyle )
 	{
 		RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
@@ -2596,9 +2575,9 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		switch(nTableIndentUnits)
 		{
 			//case 0: sResult += L"<w:tblInd w:w=\"0\" w:type=\"dxa\"/>" );break;
-			//case 2: sResult.AppendFormat( L"<w:tblInd w:w=\"%d%%\" w:type=\"pct\"/>", nTableIndent );break;
-			case 3: sResult.AppendFormat( L"<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>", nTableIndent );break;
-			//default: sResult.AppendFormat( L"<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>", nTableIndent );break;
+            //case 2: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"%%\" w:type=\"pct\"/>",  );break;
+            case 3: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>";    break;
+            //default: sResult += L"<w:tblInd w:w=\"" + std::to_wstring(nTableIndent) + L"\" w:type=\"dxa\"/>", nTableIndent );break;
 		}
 	}
 
@@ -2612,54 +2591,54 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case rj_trqc : sResult += L"<w:jc w:val=\"center\"/>";	break;
 	}
 
-	CString sFloatingPosition;
+    std::wstring sFloatingPosition;
 	if( PROP_DEF != m_nWrapLeft )
-		sFloatingPosition.AppendFormat( L" w:leftFromText=\"%d\"", m_nWrapLeft );
+        sFloatingPosition += L" w:leftFromText=\"" + std::to_wstring(m_nWrapLeft) + L"\"";
 	if( PROP_DEF != m_nWrapRight )
-		sFloatingPosition.AppendFormat( L" w:rightFromText=\"%d\"", m_nWrapRight );
+        sFloatingPosition += L" w:rightFromText=\"" + std::to_wstring(m_nWrapRight) + L"\"";
 	if( PROP_DEF != m_nWrapTop )
-		sFloatingPosition.AppendFormat( L" w:topFromText=\"%d\"", m_nWrapTop );
+        sFloatingPosition += L" w:topFromText=\"" + std::to_wstring(m_nWrapTop) + L"\"";
 	if( PROP_DEF != m_nWrapBottom )
-		sFloatingPosition.AppendFormat( L" w:bottomFromText=\"%d\"", m_nWrapBottom );
+        sFloatingPosition += L" w:bottomFromText=\"" + std::to_wstring(m_nWrapBottom) + L"\"";
 
 	switch ( m_eHRef )
 	{
-		case hr_phmrg:	sFloatingPosition += L" w:horzAnchor=\"margin\"";break;
-		case hr_phpg:	sFloatingPosition += L" w:horzAnchor=\"page\"";	break;
-		case hr_phcol:	sFloatingPosition += L" w:horzAnchor=\"text\"";	break;
+        case hr_phmrg:	sFloatingPosition += L" w:horzAnchor=\"margin\"";   break;
+        case hr_phpg:	sFloatingPosition += L" w:horzAnchor=\"page\"";     break;
+        case hr_phcol:	sFloatingPosition += L" w:horzAnchor=\"text\"";     break;
 	}
 	if( PROP_DEF != m_nHPos )
-		sFloatingPosition.AppendFormat( L" w:tblpX=\"%d\"", m_nHPos );
+        sFloatingPosition += L" w:tblpX=\"" + std::to_wstring(m_nHPos) + L"\"";
 	//else
 	switch ( m_eHPos )
 	{
-		case hp_posxc: sFloatingPosition += L" w:tblpXSpec=\"center\"";	break;
-		case hp_posxi: sFloatingPosition += L" w:tblpXSpec=\"inside\"";	break;
+        case hp_posxc: sFloatingPosition += L" w:tblpXSpec=\"center\"";     break;
+        case hp_posxi: sFloatingPosition += L" w:tblpXSpec=\"inside\"";     break;
 		case hp_posxo: sFloatingPosition += L" w:tblpXSpec=\"outside\"";	break;
-		case hp_posxl: sFloatingPosition += L" w:tblpXSpec=\"left\"";	break;
-		case hp_posxr: sFloatingPosition += L" w:tblpXSpec=\"right\"";	break;
+        case hp_posxl: sFloatingPosition += L" w:tblpXSpec=\"left\"";       break;
+        case hp_posxr: sFloatingPosition += L" w:tblpXSpec=\"right\"";      break;
 	}
 
 	switch ( m_eVRef )
 	{	
-		case vr_pvmrg:	sFloatingPosition += L" w:vertAnchor=\"margin\"";break;
-		case vr_pvpg:	sFloatingPosition += L" w:vertAnchor=\"page\"";	break;
-		case vr_pvpara:	sFloatingPosition += L" w:vertAnchor=\"text\"";	break;
+        case vr_pvmrg:	sFloatingPosition += L" w:vertAnchor=\"margin\"";   break;
+        case vr_pvpg:	sFloatingPosition += L" w:vertAnchor=\"page\"";     break;
+        case vr_pvpara:	sFloatingPosition += L" w:vertAnchor=\"text\"";     break;
 	}
 
 	if( PROP_DEF != m_nVPos )
-		sFloatingPosition.AppendFormat( L" w:tblpY=\"%d\"", m_nVPos );
+        sFloatingPosition += L" w:tblpY=\"" + std::to_wstring(m_nVPos) + L"\"";
 	//else
 	switch ( m_eVPos )
 	{
 		case vp_posyt:		sFloatingPosition += L" w:tblpYSpec=\"top\"";		break;
-		case vp_posyil:		sFloatingPosition += L" w:tblpYSpec=\"inline\"";		break;
-		case vp_posyb:		sFloatingPosition += L" w:tblpYSpec=\"bottom\"";		break;
-		case vp_posyc:		sFloatingPosition += L" w:tblpYSpec=\"center\"";		break;
-		case vp_posyin:		sFloatingPosition += L" w:tblpYSpec=\"inside\"";		break;
+        case vp_posyil:		sFloatingPosition += L" w:tblpYSpec=\"inline\"";	break;
+        case vp_posyb:		sFloatingPosition += L" w:tblpYSpec=\"bottom\"";	break;
+        case vp_posyc:		sFloatingPosition += L" w:tblpYSpec=\"center\"";	break;
+        case vp_posyin:		sFloatingPosition += L" w:tblpYSpec=\"inside\"";	break;
 		case vp_posyout:	sFloatingPosition += L" w:tblpYSpec=\"outside\"";	break;
 	}
-	if( false == sFloatingPosition.IsEmpty() )
+    if( false == sFloatingPosition.empty() )
 	{
         sResult += L"<w:tblpPr ";
 		sResult += sFloatingPosition;
@@ -2669,43 +2648,43 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nWidth && ( 2 == m_eMUWidth || 3 == m_eMUWidth ))
 	{
 		if( 2 == m_eMUWidth )
-			sResult.AppendFormat( L"<w:tblW w:w=\"%d\" w:type=\"pct\"/>", m_nWidth );
+            sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"pct\"/>";
 		else
-			sResult.AppendFormat( L"<w:tblW w:w=\"%d\" w:type=\"dxa\"/>", m_nWidth );
+            sResult += L"<w:tblW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"dxa\"/>";
 	}
 	else
 		sResult += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
-	CString sDefCellMargins;
+    std::wstring sDefCellMargins;
 	if( PROP_DEF != m_nDefCellMarBottom && 3 == m_nDefCellMarBottomUnits )
-		sDefCellMargins.AppendFormat( L"<w:bottom w:w=\"%d\" w:type=\"dxa\"/>", m_nDefCellMarBottom );
+        sDefCellMargins += L"<w:bottom w:w=\"" + std::to_wstring(m_nDefCellMarBottom) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarLeft && 3 == m_nDefCellMarLeftUnits )
-		sDefCellMargins.AppendFormat( L"<w:left w:w=\"%d\" w:type=\"dxa\"/>", m_nDefCellMarLeft );
+        sDefCellMargins += L"<w:left w:w=\"" + std::to_wstring(m_nDefCellMarLeft) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarRight && 3 == m_nDefCellMarRightUnits )
-		sDefCellMargins.AppendFormat( L"<w:right w:w=\"%d\" w:type=\"dxa\"/>", m_nDefCellMarRight );
+        sDefCellMargins += L"<w:right w:w=\"" + std::to_wstring(m_nDefCellMarRight) + L"\" w:type=\"dxa\"/>";
 	if( PROP_DEF != m_nDefCellMarTop && 3 == m_nDefCellMarTopUnits )
-		sDefCellMargins.AppendFormat( L"<w:top w:w=\"%d\" w:type=\"dxa\"/>", m_nDefCellMarTop );
+        sDefCellMargins += L"<w:top w:w=\"" + std::to_wstring(m_nDefCellMarTop) + L"\" w:type=\"dxa\"/>";
 	
-	if( !sDefCellMargins.IsEmpty() )
+    if( !sDefCellMargins.empty() )
         sResult += L"<w:tblCellMar>" + sDefCellMargins + L"</w:tblCellMar>";
 	
 	if( PROP_DEF != m_nDefCellSpBottom && 3 == m_nDefCellSpBottomUnits ) 
-		sResult.AppendFormat( L"<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>", m_nDefCellSpBottom );
+        sResult += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_nDefCellSpBottom) + L"\" w:type=\"dxa\"/>";
 
 	//if( PROP_DEF != m_nLeft )
-	//	sResult.AppendFormat(L"<w:tblInd w:w=\"%d\" w:type=\"dxa\"/>", m_nLeft );
+    //	sResult += L"<w:tblInd w:w=\"" + std::to_wstring(m_nLeft) + L"\" w:type=\"dxa\"/>";
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE;
-	CString sBorders;
+    std::wstring sBorders;
 	if( m_oBorderLeft.IsValid() )	sBorders += L"<w:left "		+ m_oBorderLeft.RenderToOOX(oNewParam)	+ L"/>";
-	if( m_oBorderRight.IsValid() )	sBorders += L"<w:right "		+ m_oBorderRight.RenderToOOX(oNewParam)	+ L"/>";
+    if( m_oBorderRight.IsValid() )	sBorders += L"<w:right "	+ m_oBorderRight.RenderToOOX(oNewParam)	+ L"/>";
 	if( m_oBorderTop.IsValid() )	sBorders += L"<w:top "		+ m_oBorderTop.RenderToOOX(oNewParam)	+ L"/>";
 	if( m_oBorderBottom.IsValid() )	sBorders += L"<w:bottom "	+ m_oBorderBottom.RenderToOOX(oNewParam) + L"/>";
 	if( m_oBorderVert.IsValid() )	sBorders += L"<w:insideV "	+ m_oBorderVert.RenderToOOX(oNewParam)	+ L"/>";
 	if( m_oBorderHor.IsValid() )	sBorders += L"<w:insideH "	+ m_oBorderHor.RenderToOOX(oNewParam)	+ L"/>";
 	
-	if( !sBorders.IsEmpty() )
+    if( !sBorders.empty() )
 		sResult += L"<w:tblBorders>" + sBorders+ L"</w:tblBorders>";
 
 	if( m_oShading.IsValid() == true )
@@ -2719,7 +2698,7 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//}
 	//else
 	//{
-	//	CString sTableLook;
+    //	std::wstring sTableLook;
 	//	RENDER_OOX_BOOL_ATTRIBUTE( m_bAutoFirstRow, sTableLook, L"w:firstRow" )
 	//	RENDER_OOX_BOOL_ATTRIBUTE( m_bAutoLastRow, sTableLook, L"w:lastRow" )
 	//	RENDER_OOX_BOOL_ATTRIBUTE( m_bAutoFirstCol, sTableLook, L"w:firstColumn" )
@@ -2727,18 +2706,18 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//	RENDER_OOX_BOOL_ATTRIBUTE( m_bAutoNoRowBand, sTableLook, L"w:noHBand" )
 	//	RENDER_OOX_BOOL_ATTRIBUTE( m_bAutoNoColBand, sTableLook, L"w:noVBand" )
 
-	//	if( false == sTableLook.IsEmpty() )
+    //	if( false == sTableLook.empty() )
 	//		sResult += L"<w:tblLook " + sTableLook + L"/>");
 	//}
 
-	if( !sResult.IsEmpty() )
+    if( !sResult.empty() )
 		sResult = L"<w:tblPr>" + sResult + L"</w:tblPr>";
 	return sResult;
 }
 
-CString RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	
 	if( RENDER_TO_RTF_PARAM_NO_WROWD != oRenderParameter.nType )
 		sResult += L"\\trowd";
@@ -2781,21 +2760,21 @@ CString RtfRowProperty::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	sResult +=  RtfTableProperty::RenderToRtf(  oRenderParameter  );
 
-	for( int i = 0; i < (int)m_aArray.size(); i++ )
+	for (size_t i = 0; i < m_aArray.size(); i++ )
 		sResult +=  m_aArray[i].RenderToRtf(  oRenderParameter  );
 
 	if (m_pOldRowProperty)
 	{
-		sResult += "{\\*\\oldtprops";
+        sResult += L"{\\*\\oldtprops";
 		sResult += m_pOldRowProperty->RenderToRtf(oRenderParameter);
 		sResult += L"}";
 	}
 
 	return sResult;
 }
-CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	
 	RtfDocument	* poRtfDocument = static_cast<RtfDocument*>	(oRenderParameter.poDocument);
 	OOXWriter	* poOOXWriter	= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
@@ -2812,31 +2791,31 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nHeight )
 	{
 		if( m_nHeight > 0 )
-			sResult.AppendFormat(L"<w:trHeight w:val=\"%d\" w:hRule=\"atLeast\"/>", m_nHeight );
+            sResult += L"<w:trHeight w:val=\"" + std::to_wstring(m_nHeight) +L"\" w:hRule=\"atLeast\"/>";
 		else if( m_nHeight < 0 )
-			sResult.AppendFormat(L"<w:trHeight w:val=\"%d\" w:hRule=\"exact\"/>", -m_nHeight );
+            sResult += L"<w:trHeight w:val=\"" + std::to_wstring(-m_nHeight) +L"\" w:hRule=\"exact\"/>";
 	}
 
 	if( PROP_DEF != m_nWidthStartInvCell )
 	{
 		switch( m_eMUStartInvCell )
 		{
-			case mu_Percent:	sResult.AppendFormat(L"<w:wBefore w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthStartInvCell);	break;
-			case mu_Twips:		sResult.AppendFormat(L"<w:wBefore w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthStartInvCell);		break;
+        case mu_Percent:	sResult += L"<w:wBefore w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"%\"/>";  break;
+        case mu_Twips:		sResult += L"<w:wBefore w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthStartInvCell) + L"\"/>";	break;
 		}
 	}
 	if( PROP_DEF != m_nWidthEndInvCell )
 	{
 		switch( m_eMUEndInvCell )
 		{
-			case mu_Percent:	sResult.AppendFormat(L"<w:wAfter w:type=\"pct\" w:w=\"%d%%\"/>", m_nWidthEndInvCell);		break;
-			case mu_Twips:		sResult.AppendFormat(L"<w:wAfter w:type=\"dxa\" w:w=\"%d\"/>", m_nWidthEndInvCell);			break;
+        case mu_Percent:	sResult += L"<w:wAfter w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"%\"/>"; break;
+        case mu_Twips:		sResult += L"<w:wAfter w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidthEndInvCell) + L"\"/>";	break;
 		}
 	}
 	RENDER_OOX_INT( m_nGridBefore,	sResult, L"w:gridBefore" )
 	RENDER_OOX_INT( m_nGridAfter,	sResult, L"w:gridAfter" )
 
-	//CString scnfStyle;
+    //std::wstring scnfStyle;
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstRow, scnfStyle, L"w:firstRow" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleLastRow, scnfStyle, L"w:lastRow" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstCol, scnfStyle, L"w:firstColumn" )
@@ -2849,7 +2828,7 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleNECell, scnfStyle, L"w:firstRowLastColumn" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleSWCell, scnfStyle, L"w:lastRowFirstColumn" )
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleSECell, scnfStyle, L"w:lastRowLastColumn" )
-	//if(!scnfStyle.IsEmpty() )
+    //if(!scnfStyle.empty() )
 	//	sResult += L"<w:cnfStyle " + scnfStyle + L"/>" );
 
 //	_bstr_t hk;
@@ -2859,26 +2838,26 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 		m_pOldRowProperty;
 		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nDeleted )
 		//{
-		//	CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauthDel);
-		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttmDel).c_str());
+        //	std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauthDel);
+        //	std::wstring sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttmDel).c_str());
 
 		//	sResult += L"<w:del w:date=\""	+ sDate +  L"\" w:author=\"" + sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
 		//if ( PROP_DEF != oReader.m_oState->m_oCharProp.m_nRevised )
 		//{
-		//	CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauth);
-		//	CString sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttm).c_str());
+        //	std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(oReader.m_oState->m_oCharProp.m_nRevauth);
+        //	std::wstring sDate(RtfUtility::convertDateTime(oReader.m_oState->m_oCharProp.m_nRevdttm).c_str());
 		//	
 		//	sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		//}
-		CString sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nTrAuth);
-		CString sDate(RtfUtility::convertDateTime(m_nTrDate).c_str());
+        std::wstring sAuthor = poRtfDocument->m_oRevisionTable.GetAuthor(m_nTrAuth);
+        std::wstring sDate(RtfUtility::convertDateTime(m_nTrDate).c_str());
 		
 		RenderParameter oRenderParameterNew = oRenderParameter;
 		oRenderParameterNew.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		CString rowChangeProps = m_pOldRowProperty->RenderToOOX(oRenderParameterNew);
+        std::wstring rowChangeProps = m_pOldRowProperty->RenderToOOX(oRenderParameterNew);
 
-		if (rowChangeProps.IsEmpty())
+        if (rowChangeProps.empty())
 		{
 			sResult += L"<w:ins w:date=\""	+ sDate +  L"\" w:author=\""	+ sAuthor + L"\" w:id=\"" + std::to_wstring(poOOXWriter->m_nCurTrackChangesId++).c_str() + L"\"/>";
 		}
@@ -2894,133 +2873,133 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 
-	if( !m_sTitle.IsEmpty() )
+    if( !m_sTitle.empty() )
 	{
         sResult += L"{\\title ";	sResult += RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sSubject.IsEmpty() )
+    if( !m_sSubject.empty() )
 	{
         sResult += L"{\\subject ";	sResult += RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sAuthor.IsEmpty() )
+    if( !m_sAuthor.empty() )
 	{
         sResult += L"{\\author ";	sResult += RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sManager.IsEmpty() )
+    if( !m_sManager.empty() )
 	{
         sResult += L"{\\manager ";	sResult += RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sCompany.IsEmpty() )
+    if( !m_sCompany.empty() )
 	{
         sResult += L"{\\company ";	sResult += RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sOperator.IsEmpty() )
+    if( !m_sOperator.empty() )
 	{
         sResult += L"{\\operator ";	sResult += RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sCategory.IsEmpty() )
+    if( !m_sCategory.empty() )
 	{
         sResult += L"{\\category ";	sResult += RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sKeywords.IsEmpty() )
+    if( !m_sKeywords.empty() )
 	{
         sResult += L"{\\keywords ";	sResult += RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument );	sResult += L"}";
 	}
-	if( !m_sComment.IsEmpty() )
+    if( !m_sComment.empty() )
 	{
         sResult += L"{\\comment ";	sResult += RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument );	sResult += L"}";
 	}
 
 	if( PROP_DEF != m_nVersion )
-		sResult.AppendFormat( L"{\\version%d}",m_nVersion );
+        sResult += L"{\\version" + std::to_wstring(m_nVersion) + L"}";
 
-	if( !m_sDocCom.IsEmpty() )
+    if( !m_sDocCom.empty() )
 	{
         sResult += L"{\\doccomm ";	sResult += RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument );	sResult += L"}";
 	}
 	if( PROP_DEF != m_nInternalVersion )
 	{
-		sResult.AppendFormat( L"{\\vern%d}",m_nInternalVersion );
+        sResult += L"{\\vern" + std::to_wstring(m_nInternalVersion) + L"}";
 	}
-	if( !m_sLinkBase.IsEmpty() )
+    if( !m_sLinkBase.empty() )
 	{
         sResult += L"{\\hlinkbase ";	sResult += RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument );	sResult += L"}";
 	}
 
-	CString sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
-	if( !sCreateTime.IsEmpty() )
+    std::wstring sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
+    if( !sCreateTime.empty() )
 	{
         sResult += L"{\\creatim";	sResult += sCreateTime;	sResult += L"}";
 	}
-	CString sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
-	if( !sRevTime.IsEmpty() )
+    std::wstring sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
+    if( !sRevTime.empty() )
 	{
 		sResult += L"{\\revtim";	sResult += sRevTime;	sResult += L"}";
 	}
-	CString sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
-	if( !sPrintTime.IsEmpty() )
+    std::wstring sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
+    if( !sPrintTime.empty() )
 	{
         sResult += L"{\\printim";	sResult += sPrintTime;	sResult += L"}";
 	}
-	CString sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
-	if( !sBackupTime.IsEmpty() )
+    std::wstring sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
+    if( !sBackupTime.empty() )
 	{
         sResult += L"{\\buptim";	sResult += sBackupTime;	sResult += L"}";
 	}
 	if( PROP_DEF != m_nEndingTime )
 	{
-		sResult.AppendFormat( L"{\\edmins%d}",	m_nEndingTime );
+        sResult += L"{\\edmins" + std::to_wstring(m_nEndingTime) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfPages )
 	{
-		sResult.AppendFormat( L"{\\nofpages%d}",	m_nNumberOfPages );
+        sResult += L"{\\nofpages" + std::to_wstring(m_nNumberOfPages) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfWords )
 	{
-		sResult.AppendFormat( L"{\\nofwords%d}",m_nNumberOfWords );
+        sResult += L"{\\nofwords" + std::to_wstring(m_nNumberOfWords) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfCharactersWithSpace )
 	{
-		sResult.AppendFormat( L"{\\nofchars%d}",m_nNumberOfCharactersWithSpace );
+        sResult += L"{\\nofchars" + std::to_wstring(m_nNumberOfCharactersWithSpace) + L"}";
 	}
 	if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )
 	{
-		sResult.AppendFormat( L"{\\nofcharsws%d}",m_nNumberOfCharactersWithoutSpace );
+        sResult += L"{\\nofcharsws" + std::to_wstring(m_nNumberOfCharactersWithoutSpace) + L"}";
 	}
 
 	if( PROP_DEF != m_nInternalId )
-		sResult.AppendFormat( L"{\\id%d}",m_nInternalId );
+        sResult += L"{\\id" + std::to_wstring(m_nInternalId) + L"}";
 
-	if( !sResult.IsEmpty() )
+    if( !sResult.empty() )
 		sResult = L"{\\info" + sResult + L"}";
 	return sResult;
 }
-CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( RENDER_TO_OOX_PARAM_CORE == oRenderParameter.nType )
 	{
 		OOX::CCore *pCore = static_cast<OOX::CCore*>( oRenderParameter.poWriter );
 		
-		if( !m_sTitle.IsEmpty() )		pCore->m_sTitle			= Utils::PrepareToXML(m_sTitle);
-		if( !m_sSubject.IsEmpty() )		pCore->m_sSubject		= Utils::PrepareToXML(m_sSubject);
-		if( !m_sAuthor.IsEmpty() )		pCore->m_sCreator		= m_sAuthor;
-		if( !m_sKeywords.IsEmpty() )	pCore->m_sKeywords		= m_sKeywords;
-		if( !m_sComment.IsEmpty() )		pCore->m_sDescription	= Utils::PrepareToXML(m_sComment);
+        if( !m_sTitle.empty() )		pCore->m_sTitle			= XmlUtils::EncodeXmlString(m_sTitle);
+        if( !m_sSubject.empty() )		pCore->m_sSubject		= XmlUtils::EncodeXmlString(m_sSubject);
+        if( !m_sAuthor.empty() )		pCore->m_sCreator		= m_sAuthor;
+        if( !m_sKeywords.empty() )	pCore->m_sKeywords		= m_sKeywords;
+        if( !m_sComment.empty() )		pCore->m_sDescription	= XmlUtils::EncodeXmlString(m_sComment);
 
-		//CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
-		//if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;
+        //std::wstring sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
+        //if( false == sCreateTime.empty() ) pCore->m_sCreated		= sCreateTime;
 		//
-		//CString sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
-		//if( false == sRevTime.IsEmpty() )	pCore->m_sModified		= sRevTime;
+        //std::wstring sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
+        //if( false == sRevTime.empty() )	pCore->m_sModified		= sRevTime;
 
-		//CString sPrintTime = m_oPrintTime.RenderToOOX( oRenderParameter );
+        //std::wstring sPrintTime = m_oPrintTime.RenderToOOX( oRenderParameter );
 		//if( L"" != sPrintTime )
 		//	sResult += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">" + sCreateTime + L"</dcterms:created>";
-		//CString sBackupTime = m_oBackupTime.RenderToOOX( oRenderParameter );
+        //std::wstring sBackupTime = m_oBackupTime.RenderToOOX( oRenderParameter );
 		//if( L"" != sBackupTime )
 		//	sResult += L"<dcterms:created xsi:type=\"dcterms:W3CDTF\">" + sCreateTime + L"</dcterms:created>";
 	}
@@ -3034,24 +3013,24 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 		if( PROP_DEF != m_nNumberOfCharactersWithSpace )	pApp->m_nCharactersWithSpaces	= m_nNumberOfCharactersWithSpace;
 		
 		//if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )	
-		//	sResult.AppendFormat( L"<CharactersWithSpaces>%d</CharactersWithSpaces>",m_nNumberOfCharactersWithoutSpace );		
+        //	sResult += L"<CharactersWithSpaces>" + std::to_wstring() + L"</CharactersWithSpaces>",m_nNumberOfCharactersWithoutSpace );
 	}
 	return L"";
 }
-CString RtfTime::RenderToRtf(RenderParameter oRenderParameter)
+std::wstring RtfTime::RenderToRtf(RenderParameter oRenderParameter)
 {
-	CString sResult;
-	if( PROP_DEF != m_nYear )		sResult.AppendFormat(L"\\yr%d",m_nYear);
-	if( PROP_DEF != m_nMonth )		sResult.AppendFormat(L"\\mo%d",m_nMonth);
-	if( PROP_DEF != m_nDay )		sResult.AppendFormat(L"\\dy%d",m_nDay);
-	if( PROP_DEF != m_nHour )		sResult.AppendFormat(L"\\hr%d",m_nHour);
-	if( PROP_DEF != m_nMin )		sResult.AppendFormat(L"\\min%d",m_nMin);
-	if( PROP_DEF != m_nSecond )		sResult.AppendFormat(L"\\sec%d",m_nSecond);
+    std::wstring sResult;
+    if( PROP_DEF != m_nYear )		sResult += L"\\yr" + std::to_wstring(m_nYear);
+    if( PROP_DEF != m_nMonth )		sResult += L"\\mo" + std::to_wstring(m_nMonth);
+    if( PROP_DEF != m_nDay )		sResult += L"\\dy" + std::to_wstring(m_nDay);
+    if( PROP_DEF != m_nHour )		sResult += L"\\hr" + std::to_wstring(m_nHour);
+    if( PROP_DEF != m_nMin )		sResult += L"\\min" + std::to_wstring(m_nMin);
+    if( PROP_DEF != m_nSecond )		sResult += L"\\sec" + std::to_wstring(m_nSecond);
 	return sResult;
 }
-CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
+std::wstring RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
+    std::wstring sResult;
 	if( PROP_DEF != m_nYear || PROP_DEF != m_nMonth || PROP_DEF != m_nDay )
 	{
 		int nYear = 0;
@@ -3061,7 +3040,7 @@ CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 		int nDay = 0;
 		if( PROP_DEF != m_nDay )			nDay = m_nDay;
 
-		sResult.AppendFormat( L"%d-%d-%dT", nYear, nMonth, nDay );
+        sResult = std::to_wstring(nYear) + L"-" + std::to_wstring(nMonth) + L"-" + std::to_wstring(nDay) + L"T";
 	}
 	if( PROP_DEF != m_nHour || PROP_DEF != m_nMin || PROP_DEF != m_nSecond )
 	{
@@ -3072,7 +3051,7 @@ CString RtfTime::RenderToOOX(RenderParameter oRenderParameter)
 		int nSecond = 0;
 		if( PROP_DEF != m_nSecond )			nSecond = m_nSecond;
 		
-		sResult.AppendFormat( L"%d:%d:%dZ", nHour, nMin, nSecond );
+        sResult = std::to_wstring(nHour) + L":" + std::to_wstring(nMin) + L":" + std::to_wstring(nSecond) + L"Z";
 	}
 	return sResult;
 }

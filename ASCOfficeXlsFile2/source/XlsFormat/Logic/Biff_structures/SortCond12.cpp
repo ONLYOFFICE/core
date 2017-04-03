@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,14 +42,6 @@ BiffStructurePtr SortCond12::clone()
 {
 	return BiffStructurePtr(new SortCond12(*this));
 }
-
-void SortCond12::store(CFRecord& record)
-{
-#pragma message("####################### SortCond12 record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! SortCond12 record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void SortCond12::load(CFRecord& record)
 {

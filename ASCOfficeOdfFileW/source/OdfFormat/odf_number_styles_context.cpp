@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <boost/algorithm/string.hpp>
+#include"../../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "logging.h"
 
@@ -38,6 +38,7 @@
 
 #include "number_style.h"
 
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore {
 
@@ -361,7 +362,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 
 void odf_number_styles_context::process_styles(office_element_ptr root )
 {
-	for (long i=0; i< number_format_array_.size(); i++)
+	for (size_t i=0; i< number_format_array_.size(); i++)
 	{
 		create_style(number_format_array_[i]);
 
@@ -431,7 +432,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 
 			boost::algorithm::split(numbers, str1, boost::algorithm::is_any_of(L".,"), boost::algorithm::token_compress_on);
 			int ind=1;//
-			for (long i=0;i<numbers.size();i++)
+			for (size_t i = 0;i < numbers.size(); i++)
 			{
 				if (numbers[i].length()<1)continue;
 				if (ind==1)min_digit= numbers[i].length();
@@ -596,7 +597,7 @@ void odf_number_styles_context::create_date_style(number_format_state & state, o
 			if(sz>1) 
 			{
 				//выкинем "лишние" слэши
-				boost::algorithm::replace_all(s, L"\\", L"");
+				XmlUtils::replace_all( s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
@@ -617,7 +618,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 	
 	// state.language_code == L"F400")//System time format
 	std::wstring s = state.format_code[0];
-	boost::algorithm::to_lower(s);
+	XmlUtils::GetLower(s);
 	
 	boost::wregex re(L"([a-zA-Z]+)(\\W+)");//(L"(\\w+)");
 	std::list<std::wstring> result;
@@ -672,7 +673,7 @@ void odf_number_styles_context::create_time_style(number_format_state & state, o
 			if(sz>1) 
 			{
 				//выкинем "лишние" слэши
-				boost::algorithm::replace_all(s, L"\\", L"");
+				XmlUtils::replace_all( s, L"\\", L"");
 			}
 			create_element(L"number", L"text", elm, odf_context_);
 			number_text* number_text_ = dynamic_cast<number_text*>(elm.get());
@@ -725,7 +726,7 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 		return;
 	}
 	std::wstring tmp = state.format_code[0]; 
-	boost::algorithm::to_lower(tmp);
+	XmlUtils::GetLower(tmp);
 	if (state.format_code.size() == 1)//any
 	{
 		int res=0;

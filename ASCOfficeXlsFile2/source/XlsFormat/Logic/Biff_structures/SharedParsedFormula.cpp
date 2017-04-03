@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -59,14 +59,6 @@ void SharedParsedFormula::load(CFRecord& record)
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }
 
-
-void SharedParsedFormula::store(CFRecord& record)
-{
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
-	rgce.store(record);
-	record.registerDelayedDataSource(rgce.getCCE(), rt_ShrFmla);
-	rgcb.store(record);
-}
 
 
 } // namespace XLS

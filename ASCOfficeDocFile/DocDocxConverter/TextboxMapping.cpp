@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -88,21 +88,21 @@ namespace DocFileFormat
 			//if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size())
 			//	return;
 
-			m_pXmlWriter->WriteNodeBegin(_T("v:textbox"), true);
+            m_pXmlWriter->WriteNodeBegin(L"v:textbox", true);
 				if(m_dxTextLeft >= 0 && m_dyTextTop >= 0 && m_dxTextRight >= 0 && m_dyTextBottom >= 0)
 				{
-					m_pXmlWriter->WriteAttribute( _T( "inset" ), FormatUtils::DoubleToWideString(m_dxTextLeft) + 
-															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextTop) +
-															_T("pt,") +	FormatUtils::DoubleToWideString(m_dxTextRight) + 
-															_T("pt,") +	FormatUtils::DoubleToWideString(m_dyTextBottom) + _T("pt"));
+                    m_pXmlWriter->WriteAttribute( L"inset" , FormatUtils::DoubleToWideString(m_dxTextLeft)  + L"pt," +
+                                                            FormatUtils::DoubleToWideString(m_dyTextTop)    + L"pt," +
+                                                            FormatUtils::DoubleToWideString(m_dxTextRight)  + L"pt," +
+                                                            FormatUtils::DoubleToWideString(m_dyTextBottom) + L"pt");
 				}
 				if (!m_sTextBoxStyle.empty())
 				{
-					m_pXmlWriter->WriteAttribute( _T( "style" ), m_sTextBoxStyle);
+                    m_pXmlWriter->WriteAttribute( L"style", m_sTextBoxStyle);
 				}
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
+            m_pXmlWriter->WriteNodeEnd( L"", true, false );
 			
-			m_pXmlWriter->WriteNodeBegin( _T( "w:txbxContent" ) );
+            m_pXmlWriter->WriteNodeBegin( L"w:txbxContent" );
 
 			int cp		=	0;
 			int cpEnd	=	0;
@@ -178,8 +178,8 @@ namespace DocFileFormat
 			}
 			_isTextBoxContent = false;
 
-			m_pXmlWriter->WriteNodeEnd( _T( "w:txbxContent" ) );
-			m_pXmlWriter->WriteNodeEnd( _T( "v:textbox" ) );
+            m_pXmlWriter->WriteNodeEnd( L"w:txbxContent" );
+            m_pXmlWriter->WriteNodeEnd( L"v:textbox" );
 		}
 	}
 }

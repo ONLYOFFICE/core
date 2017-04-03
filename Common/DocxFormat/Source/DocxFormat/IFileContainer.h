@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -61,33 +61,24 @@ namespace OOX
 			m_lMaxRid = 0;
 		}
 	protected:
+        std::map<std::wstring, smart_ptr<OOX::File>>	m_mContainer;
+		size_t											m_lMaxRid;
 
-        std::map<CString, smart_ptr<OOX::File>> m_mContainer;
-		size_t                                m_lMaxRid;
-
-	protected:
-
-		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
-		void Write(const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
-		void Write(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
+		void Write (const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
+		void Write (OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
 
-	protected:
-		void Commit  (const CPath& oPath);
+		void Commit (const CPath& oPath);
 		void Finalize(const CPath& oFilefilename, const CPath& oDir, OOX::CContentTypes& oContent);
 		void Finalize(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent);
 
 	public:
-
+		void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
 		void ExtractPictures(const OOX::CPath& oPath) const;
-
-	public:
 
 		virtual smart_ptr<Image>     GetImage    (const RId& rId) const;
 		virtual smart_ptr<HyperLink> GetHyperlink(const RId& rId) const;
 		virtual smart_ptr<OleObject> GetOleObject(const RId& rId) const;
-
-	public:
 
 		template<typename T>
 		const bool IsExist() const;
@@ -95,25 +86,24 @@ namespace OOX
 		const bool IsExist(const OOX::RId& rId) const;
 		const bool IsExternal(const OOX::RId& rId) const;
 
-		smart_ptr<OOX::File> Get(const FileType& oType);
+		smart_ptr<OOX::File>	Get(const FileType& oType);
+		void					Get(const FileType& oType, std::vector<smart_ptr<OOX::File>> & files);
+
 		const RId Add(smart_ptr<OOX::File>& pFile);
 		void      Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile);
 
 		template<typename T> 
-		T&                   Find();
+        T&                   Find();
 		smart_ptr<OOX::File> Find(const FileType& type) const;
 		smart_ptr<OOX::File> Find(const OOX::RId& type) const;
 
 		smart_ptr<OOX::File> operator [](const OOX::RId rId);
 		smart_ptr<OOX::File> operator [](const FileType& oType);
-
-
 	protected:
 
 		static UnknowTypeFile Unknown;
 
 	private:
-
 		const RId GetMaxRId();
 	};
 

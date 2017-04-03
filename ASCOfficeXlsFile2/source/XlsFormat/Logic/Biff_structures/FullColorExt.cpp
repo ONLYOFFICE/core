@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,14 +41,6 @@ BiffStructurePtr FullColorExt::clone()
 {
 	return BiffStructurePtr(new FullColorExt(*this));
 }
-
-void FullColorExt::store(CFRecord& record)
-{
-#pragma message("####################### FullColorExt record has no BiffStructure::store() implemented")
-	Log::error(" Error!!! FullColorExt record has no BiffStructure::store() implemented.");
-	//record << something;
-}
-
 
 void FullColorExt::load(CFRecord& record)
 {

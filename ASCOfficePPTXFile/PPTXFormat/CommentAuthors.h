@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -63,7 +63,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"initials", initials);
 			}
 
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -157,7 +157,7 @@ namespace PPTX
 		virtual void read(const OOX::CPath& filename, FileMap& map)
 		{
 			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile2(filename.m_strFilename);
+			oNode.FromXmlFile(filename.m_strFilename);
 
 			XmlUtils::CXmlNodes oNodes;
 			oNode.GetNodes(_T("p:cmAuthor"), oNodes);
@@ -173,14 +173,14 @@ namespace PPTX
 				m_arAuthors.back().fromXML(oCm);
 			}		
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{			
 		}
 		
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const OOX::FileType type() const
 		{
-			return PPTX::FileTypes::CommentAuthors;
+			return OOX::Presentation::FileTypes::CommentAuthors;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{

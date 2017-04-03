@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -41,6 +41,57 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CAltTextTable : public WritingElement
+		{
+		public:
+			WritingElementSpreadsheet_AdditionConstructors(CAltTextTable)
+			CAltTextTable()
+			{
+			}
+			virtual ~CAltTextTable()
+			{
+			}
+
+		public:
+			virtual std::wstring      toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<x14:table");
+				WritingStringNullableAttrEncodeXmlString(L"altText", m_oAltText, m_oAltText.get());
+				WritingStringNullableAttrEncodeXmlString(L"altTextSummary", m_oAltTextSummary, m_oAltTextSummary.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_AltTextTable;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+
+						WritingElement_ReadAttributes_Read_if     ( oReader, _T("altText"),      m_oAltText )
+						WritingElement_ReadAttributes_Read_if     ( oReader, _T("altTextSummary"),      m_oAltTextSummary )
+
+						WritingElement_ReadAttributes_End( oReader )
+			}
+		public:
+			nullable<std::wstring > m_oAltText;
+			nullable<std::wstring > m_oAltTextSummary;
+		};
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
@@ -53,7 +104,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -126,13 +177,13 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				CString sRoot;
+                std::wstring sRoot;
 				writer.WriteString(L"<tableColumn");
 				WritingStringNullableAttrInt(L"id", m_oId, m_oId->GetValue());
 				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
@@ -219,7 +270,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -228,14 +279,16 @@ namespace OOX
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(L"<tableColumns");
-					WritingStringAttrInt(L"count", m_arrItems.size());
+					WritingStringAttrInt(L"count", (int)m_arrItems.size());
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(L"</tableColumns>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -282,7 +335,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -297,7 +350,7 @@ namespace OOX
 					WritingStringAttrInt(L"id", nIndex);
 					WritingStringAttrEncodeXmlString(L"name", m_oDisplayName.get());
 					WritingStringAttrEncodeXmlString(L"displayName", m_oDisplayName.get());
-					WritingStringAttrString(L"ref", m_oRef->ToString2());
+					WritingStringAttrString(L"ref", m_oRef->ToString());
 					if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 						writer.WriteString(L" headerRowCount=\"0\"");
 					if(m_oTotalsRowCount.IsInit() && m_oTotalsRowCount->GetValue() > 0)
@@ -315,7 +368,10 @@ namespace OOX
 						m_oTableColumns->toXML(writer);
 					if(m_oTableStyleInfo.IsInit())
 						m_oTableStyleInfo->toXML(writer);
-
+					if(m_oExtLst.IsInit())
+					{
+						writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+					}
 					writer.WriteString(L"</table>");
 				}
 			}
@@ -339,6 +395,8 @@ namespace OOX
 						m_oTableColumns = oReader;
 					else if ( _T("tableStyleInfo") == sName )
 						m_oTableStyleInfo = oReader;
+					else if (_T("extLst") == sName)
+						m_oExtLst = oReader;
 				}
 			}
 
@@ -372,6 +430,8 @@ namespace OOX
 			nullable<CSortState > m_oSortState;
 			nullable<CTableColumns > m_oTableColumns;
 			nullable<CTableStyleInfo > m_oTableStyleInfo;
+
+			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 		};
 		class CTablePart : public WritingElement
 		{
@@ -385,7 +445,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring      toXML() const
 			{
 				return _T("");
 			}
@@ -394,7 +454,7 @@ namespace OOX
 				if(m_oRId.IsInit())
 				{
 					writer.WriteString(L"<tablePart");
-					WritingStringAttrString(L"r:id", m_oRId->ToString2());
+					WritingStringAttrString(L"r:id", m_oRId->ToString());
 					writer.WriteString(L"/>");
 				}
 			}
@@ -436,7 +496,7 @@ namespace OOX
 			}
 
 		public:
-			virtual CString      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -445,14 +505,16 @@ namespace OOX
 				if(m_arrItems.size() > 0)
 				{
 					writer.WriteString(L"<tableParts");
-					WritingStringAttrInt(L"count", m_arrItems.size());
+					WritingStringAttrInt(L"count", (int)m_arrItems.size());
 					writer.WriteString(L">");
-					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
+					
+					for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);
+					
 					writer.WriteString(L"</tableParts>");	
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -534,9 +596,9 @@ namespace OOX
 
 					m_oTable->toXML2(sXml, nGlobalNumber);
 
-					CString sPath = oPath.GetPath();
-					NSFile::CFileBinary::SaveToFile(sPath.GetBuffer(), sXml.GetData());
-					sPath.ReleaseBuffer();
+                    std::wstring sPath = oPath.GetPath();
+                    NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
 					oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 					IFileContainer::Write( oPath, oDirectory, oContent );
 				}

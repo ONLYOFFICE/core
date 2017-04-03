@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -42,7 +42,8 @@ namespace PPTX
 		class BuClrTx : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(BuClrTx)
+			WritingElement_AdditionConstructors(BuClrTx)
+			PPTX_LOGIC_BASE2(BuClrTx)
 
 			BuClrTx& operator=(const BuClrTx& oSrc)
 			{
@@ -51,12 +52,33 @@ namespace PPTX
 
 				return *this;
 			}
+			virtual OOX::EElementType getType () const
+			{
+				return OOX::et_a_buClrTx;
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-		public:
+				if ( oReader.IsEmptyNode() )
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+                    std::wstring sName = oReader.GetName();
+
+				}
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start	( oReader )
+				WritingElement_ReadAttributes_End	( oReader )
+			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual CString toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("<a:buClrTx/>");
 			}

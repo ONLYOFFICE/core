@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2016
+ * (c) Copyright Ascensio System SIA 2010-2017
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -70,68 +70,70 @@ namespace DocFileFormat
 	public:
 		DocumentMapping(ConversionContext* context, IMapping* caller);
 		DocumentMapping(ConversionContext* context, XMLTools::CStringXmlWriter* writer, IMapping* caller);
+		
 		virtual ~DocumentMapping();
 		virtual void Apply( IVisitable* visited ) = 0;
 
+//--------------------------------- 4571833.doc
+		std::wstring	m_shapeIdOwner;
+		std::wstring	getOLEObject() { return _lastOLEObject; }
 	protected:
 
-		/// Looks into the section table to find out if this CP is the current of a section
-		int getCurrentSection(int cp);
-		/// Looks into the section table to find out if this CP is the end of a section
-		bool isSectionEnd( int cp );
-		/// Writes a Paragraph that starts at the given cp and 
-		/// ends at the next paragraph end mark or section end mark
+		int getListNumCache		(int fc, int fc_end);
+		int getCurrentSection	(int cp);
+//---------------------------------
+		bool isSectionEnd		( int cp );
+	// Writes a Paragraph that starts at the given cp and 
+	// ends at the next paragraph end mark or section end mark
 		int writeParagraph( int cp ); 
-		/// Writes a Paragraph that starts at the given cpStart and 
-		/// ends at the given cpEnd
+	// Writes a Paragraph that starts at the given cpStart and 
+	// ends at the given cpEnd
 		int writeParagraph( int initialCp, int cpEnd, bool sectionEnd, bool lastBad = false );
-		/// Writes a Paragraph RSID
+	// Writes a Paragraph RSID
 		void writeParagraphRsid( const ParagraphPropertyExceptions* papx );
-		/// Writes a run with the given characters and CHPX
+	// Writes a run with the given characters and CHPX
 		int writeRun( std::vector<wchar_t>* chars, CharacterPropertyExceptions* chpx, int initialCp );
-		/// Writes the given text to the document
+	// Writes the given text to the document	
+		int	 writeText			( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
+		void writeTextElement	( const std::wstring& text, const std::wstring& textType );
+        void writeTextStart		( const std::wstring& textType, bool preserve_space);
+		void writeTextEnd		( const std::wstring& textType );
 		
-		int	 writeText( std::vector<wchar_t>* chars, int initialCp, CharacterPropertyExceptions* chpx, bool writeDeletedText );
-		void writeTextElement( const std::wstring& text, const std::wstring& textType );
-        void writeTextStart( const std::wstring& textType, bool preserve_space);
-		void writeTextEnd( const std::wstring& textType );
-		
-		/// Searches for bookmarks in the list of characters.
+	// Searches for bookmarks in the list of characters.
 		std::vector<int> searchBookmarks( std::vector<wchar_t>* chars, int initialCp );
 		ParagraphPropertyExceptions* findValidPapx( int fc );
-		/// Splits a list of characters into several lists
+	// Splits a list of characters into several lists
 		std::list<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
-		/// Writes the table starts at the given cp value
-		int writeTable( int initialCp, unsigned int nestingLevel );
-		/// Builds a list that contains the width of the several columns of the table.
+	// Writes the table starts at the given cp value
+		int writeTable		( int initialCp, unsigned int nestingLevel );
+	// Builds a list that contains the width of the several columns of the table.
 		std::vector<short>* buildTableGrid( int initialCp, unsigned int nestingLevel );
-		/// Finds the FC of the next row end mark.
-		int findRowEndFc( int initialCp, int& rowEndCp, unsigned int nestingLevel );
-		/// Finds the FC of the next row end mark.
-		int findRowEndFc( int initialCp, unsigned int nestingLevel );
-		/// Writes the table row that starts at the given cp value and ends at the next row end mark
-		int writeTableRow( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
-		/// Writes the table cell that starts at the given cp value and ends at the next cell end mark
-		int writeTableCell( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
-		int findCellEndCp( int initialCp, unsigned int nestingLevel );
-		bool writeBookmarks( int cp );
-		bool writeBookmarkStart( short id );
-		bool writeBookmarkEnd( short id );
-		/// Checks if the CHPX is special
+	// Finds the FC of the next row end mark.
+		int findRowEndFc		( int initialCp, int& rowEndCp, unsigned int nestingLevel );
+	// Finds the FC of the next row end mark.
+		int findRowEndFc		( int initialCp, unsigned int nestingLevel );
+	// Writes the table row that starts at the given cp value and ends at the next row end mark
+		int writeTableRow		( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
+	// Writes the table cell that starts at the given cp value and ends at the next cell end mark
+		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
+		int findCellEndCp		( int initialCp, unsigned int nestingLevel );
+		
+		bool writeBookmarks		( int cp );
+		bool writeBookmarkStart	( short id );
+		bool writeBookmarkEnd	( short id );
+	// Checks if the CHPX is special
 		bool isSpecial( CharacterPropertyExceptions* chpx );
-		/// Finds the SEPX that is valid for the given CP.
+	// Finds the SEPX that is valid for the given CP.
 		SectionPropertyExceptions* findValidSepx( int cp );
-		/// Searches the given vector for the next FieldEnd character.
+	// Searches the given vector for the next FieldEnd character.
 		int searchNextTextMark( std::vector<wchar_t>* chars, int initialCp, wchar_t mark );
-
-	private:
-		Symbol getSymbol( const CharacterPropertyExceptions* chpx );
+		Symbol	getSymbol ( const CharacterPropertyExceptions* chpx );
+//----------------------------------------------------------------------------------------------------------------------
 		bool							m_bInternalXmlWriter; 
-
-	protected:
 
 		WordDocument*					m_document;
 		ConversionContext*				m_context;
+		
 		IMapping*						_caller;
 		
 		ParagraphPropertyExceptions*	_lastValidPapx;
@@ -149,5 +151,7 @@ namespace DocFileFormat
 		bool							_writeWebHidden;
 		unsigned int					_fldCharCounter;
 		std::wstring					_writeAfterRun;
+		std::wstring					_lastOLEObject;
+		int								_cacheListNum;
 	};
 }

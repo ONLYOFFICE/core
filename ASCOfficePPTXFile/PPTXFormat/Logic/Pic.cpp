@@ -41,8 +41,8 @@
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"
 
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
-#include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
+#include "../../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"

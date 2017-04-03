@@ -314,7 +314,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->drawing_context()->set_background_state(true);
 		if (oox_background->bgPr.IsInit())
 		{
-			convert(&oox_background->bgPr->Fill);
+			OoxConverter::convert(&oox_background->bgPr->Fill);
 	//EffectProperties		EffectList; 
 	//nullable_bool			shadeToTitle;
 		}

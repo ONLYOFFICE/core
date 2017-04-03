@@ -367,9 +367,9 @@ public:
 		void convert(PPTX::Logic::PrstGeom						*oox_geom);
 		void convert(PPTX::Logic::CustGeom						*oox_geom);
 		void convert(PPTX::Logic::BlipFill						*oox_fill);
-		void convert(PPTX::Logic::GradFill						*oox_fill);
-		void convert(PPTX::Logic::SolidFill						*oox_fill);
-		void convert(PPTX::Logic::PattFill						*oox_fill);
+        void convert(PPTX::Logic::GradFill						*oox_fill, DWORD ARGB = 0);
+        void convert(PPTX::Logic::SolidFill						*oox_fill, DWORD ARGB = 0);
+        void convert(PPTX::Logic::PattFill						*oox_fill, DWORD ARGB = 0);
 		void convert(PPTX::Logic::EffectLst						*oox_effect_lst);
 		void convert(PPTX::Logic::Ln							*oox_line);
 		void convert(PPTX::Logic::FontRef						*oox_fontRef);
@@ -377,8 +377,8 @@ public:
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
 		void convert(PPTX::Logic::PathBase						*oox_path);
 		void convert(PPTX::Logic::BodyPr						*oox_bodyPr);
-		void convert(PPTX::Logic::UniFill						*oox_fill,	PPTX::Logic::ShapeStyle* oox_style = NULL);
-		void convert(PPTX::Logic::UniColor						*color,		std::wstring & hexString, _CP_OPT(double) & opacity);
+        void convert(PPTX::Logic::UniFill						*oox_fill, DWORD ARGB = 0);
+        void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
 		void convert(PPTX::Logic::NvSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);

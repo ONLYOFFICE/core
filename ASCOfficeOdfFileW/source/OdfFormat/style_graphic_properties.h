@@ -147,8 +147,7 @@ public:
     office_element_ptr						style_background_image_;        
 };
 
-/// \class  style_graphic_properties
-///         style:graphic-properties
+
 class style_graphic_properties : public office_element_impl<style_graphic_properties>
 {
 public:
@@ -170,7 +169,26 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(style_graphic_properties);
 
+class loext_graphic_properties : public office_element_impl<loext_graphic_properties>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleGraphicPropertis;
 
+    CPDOCCORE_DEFINE_VISITABLE()
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child){}
+
+	virtual void serialize(std::wostream & strm);
+ 
+    graphic_format_properties content_;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(loext_graphic_properties);
 }
 }
 

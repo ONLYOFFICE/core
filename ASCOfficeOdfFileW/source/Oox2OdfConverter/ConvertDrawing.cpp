@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "Converter.h"
+#include "PptxConverter.h"
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
@@ -41,6 +41,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/PrstClr.h"
@@ -98,7 +99,9 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 	}
 	else if ( oox_graphic_frame->table.IsInit())
 	{
-		OoxConverter::convert(oox_graphic_frame->table.GetPointer());
+		PptxConverter *pptx_converter = dynamic_cast<PptxConverter *>(this);
+		if (pptx_converter)
+			pptx_converter->convert(oox_graphic_frame->table.GetPointer());
 	}
 	else if ( oox_graphic_frame->element.IsInit())
 	{
@@ -111,15 +114,7 @@ void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
 	if (oox_framePr == NULL) return;
 
 }
-void OoxConverter::convert(PPTX::Logic::Table *oox_table)
-{
-	if (oox_table == NULL) return;
 
-	odf_context()->drawing_context()->start_shape(0);//frame
-
-
-	odf_context()->drawing_context()->end_shape();
-}
 void OoxConverter::convert(PPTX::Logic::Xfrm *oox_xfrm)
 {
 	if (oox_xfrm == NULL) return;	//CTransform2D
@@ -280,7 +275,21 @@ void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 		convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
 	}
 }
+void OoxConverter::convert(PPTX::Logic::CxnSp *oox_connect)
+{
+	if (oox_connect == NULL) return;
 
+	odf_context()->drawing_context()->start_drawing();
+	
+	odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
+		
+		convert(&oox_connect->spPr, oox_connect->style.GetPointer());
+		convert(&oox_connect->nvCxnSpPr);
+
+	odf_context()->drawing_context()->end_shape();
+	
+	odf_context()->drawing_context()->end_drawing();
+}
 void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 {
 	if (oox_shape == NULL) return;
@@ -334,14 +343,19 @@ void OoxConverter::convert(PPTX::Logic::SpPr *oox_spPr, PPTX::Logic::ShapeStyle*
 	convert(prstGeom);
 	convert(custGeom);
 
-	odf_context()->drawing_context()->start_area_properties();
+	bool bLine = prstGeom ? (prstGeom->prst.get() == L"line") : false;
+
+	if (!bLine)
 	{
-        if (oox_spPr->Fill.is_init())
-            convert(&oox_spPr->Fill);
-        else if (oox_sp_style)
-            convert(&oox_sp_style->fillRef, 1);
+		odf_context()->drawing_context()->start_area_properties();
+		{
+			if (oox_spPr->Fill.is_init())
+				convert(&oox_spPr->Fill);
+			else if (oox_sp_style)
+				convert(&oox_sp_style->fillRef, 1);
+		}
+		odf_context()->drawing_context()->end_area_properties();
 	}
-	odf_context()->drawing_context()->end_area_properties();
 
 	odf_context()->drawing_context()->start_line_properties();
 	{
@@ -506,11 +520,11 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 			//	convert(oox_bitmap_fill->blip->m_arrEffects[i]);
 			//}
 		}
-		if (oox_bitmap_fill->srcRect.IsInit() && Width >0  && Height >0)//часть изображения
+		if (oox_bitmap_fill->srcRect.IsInit() && Width > 0  && Height > 0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
-				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 )  /100. * Width / currentSystemDPI,
-                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 )    /100. * Height/ currentSystemDPI,
+				(oox_bitmap_fill->srcRect->l.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->l.get()) : 0 ) /100. * Width / currentSystemDPI,
+                (oox_bitmap_fill->srcRect->t.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->t.get()) : 0 ) /100. * Height/ currentSystemDPI,
                 (oox_bitmap_fill->srcRect->r.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->r.get()) : 0 ) /100. * Width / currentSystemDPI,
                 (oox_bitmap_fill->srcRect->b.IsInit() ? XmlUtils::GetInteger(oox_bitmap_fill->srcRect->b.get()) : 0 ) /100. * Height/ currentSystemDPI);
 		}
@@ -523,21 +537,21 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 
 			if (oox_bitmap_fill->tile->flip.IsInit())	{}
 
-			if (oox_bitmap_fill->tile->sx.IsInit() && Width >0)	
+			if (oox_bitmap_fill->tile->sx.IsInit() && Width > 0)	
 			{
-				odf_context()->drawing_context()->set_bitmap_tile_scale_x(*oox_bitmap_fill->tile->sx / 100. * Width);
+				odf_context()->drawing_context()->set_bitmap_tile_scale_x(*oox_bitmap_fill->tile->sx / 100000. * Width);
 			}
-			if (oox_bitmap_fill->tile->sy.IsInit()&& Height >0)
+			if (oox_bitmap_fill->tile->sy.IsInit()&& Height > 0)
 			{
-				odf_context()->drawing_context()->set_bitmap_tile_scale_y(*oox_bitmap_fill->tile->sy / 100. * Height);
+				odf_context()->drawing_context()->set_bitmap_tile_scale_y(*oox_bitmap_fill->tile->sy / 100000. * Height);
 			}		
-			if (oox_bitmap_fill->tile->tx.IsInit() && Width >0)
+			if (oox_bitmap_fill->tile->tx.IsInit() && Width > 0)
 			{
-				odf_context()->drawing_context()->set_bitmap_tile_translate_x(*oox_bitmap_fill->tile->tx * 100. / Width );
+				odf_context()->drawing_context()->set_bitmap_tile_translate_x(*oox_bitmap_fill->tile->tx * 100000. / Width );
 			}
-			if (oox_bitmap_fill->tile->ty.IsInit() && Height >0)
+			if (oox_bitmap_fill->tile->ty.IsInit() && Height > 0)
 			{
-				odf_context()->drawing_context()->set_bitmap_tile_translate_y(*oox_bitmap_fill->tile->ty * 100. / Height );
+				odf_context()->drawing_context()->set_bitmap_tile_translate_y(*oox_bitmap_fill->tile->ty * 100000. / Height );
 			}
 		}
 		if (oox_bitmap_fill->stretch.IsInit())
@@ -667,11 +681,11 @@ void OoxConverter::convert(PPTX::Logic::EffectLst *oox_effect_lst)
 {
 	if (!oox_effect_lst) return;
 }
-void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop)
+void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB)
 {
 	if (!oox_line_prop) return;
 
-	convert (&oox_line_prop->Fill);
+	convert (&oox_line_prop->Fill, ARGB);
 
 	if (oox_line_prop->w.IsInit())
 	{
@@ -801,6 +815,20 @@ void OoxConverter::convert(PPTX::Logic::CNvSpPr *oox_cnvSpPr)
 	if (!oox_cnvSpPr) return;
 
 }
+void OoxConverter::convert(PPTX::Logic::CNvCxnSpPr *oox_cnvSpPr)
+{
+	if (!oox_cnvSpPr) return;
+
+}
+void OoxConverter::convert(PPTX::Logic::NvCxnSpPr *oox_nvSpPr)
+{
+	if (!oox_nvSpPr) return;
+
+	convert(&oox_nvSpPr->cNvPr);
+	convert(&oox_nvSpPr->cNvCxnSpPr);
+	convert(&oox_nvSpPr->nvPr);
+}
+
 void OoxConverter::convert(PPTX::Logic::NvPr *oox_nvPr)
 {
 	if (!oox_nvPr) return;
@@ -942,7 +970,9 @@ void OoxConverter::convert(PPTX::Logic::RunProperties *oox_run_pr, odf_writer::s
 		_CP_OPT(double) opacity;
 		convert(&solidFill->Color, hexColor, opacity);
 		
-		text_properties->content_.fo_color_ = odf_types::color(std::wstring(L"#") + hexColor);
+		int res = 0;
+		if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
+		text_properties->content_.fo_color_ = odf_types::color(hexColor);
 	}
 	if (oox_run_pr->i.IsInit())
 	{
@@ -1158,23 +1188,26 @@ void OoxConverter::convert(PPTX::Logic::Close *oox_geom_path)
 void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 {
 	if (!style_ref) return;
-
-	std::wstring hexColor;
-	_CP_OPT(double) opacity;
-
-	convert(&style_ref->Color, hexColor,  opacity);	
 	
-	if (type == 1)
+
+	if (style_ref->idx.IsInit() == false)
 	{
-		odf_context()->drawing_context()->set_solid_fill(hexColor);
-	
-		if (opacity)
-			odf_context()->drawing_context()->set_opacity(*opacity);
+		std::wstring hexColor;
+		_CP_OPT(double) opacity;
+
+		convert(&style_ref->Color, hexColor,  opacity);	
+		
+		if (type != 3) //?? todooo
+		{
+			odf_context()->drawing_context()->set_solid_fill(hexColor);
+		
+			if (opacity)
+				odf_context()->drawing_context()->set_opacity(*opacity);
+		}
+		return;
 	}
 
-	if (style_ref->idx.IsInit() == false) return;
-	
-	size_t index = *style_ref->idx;
+	int index = *style_ref->idx;
 
 	PPTX::Theme *theme = oox_theme();
 	if (!theme) return;
@@ -1206,14 +1239,15 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	}
 	else if (type == 2)
 	{
-		//index -= 1;
+		index -= 1;
 		if ((index >= 0) || (index < theme->themeElements.fmtScheme.lnStyleLst.size()))
 		{
-			convert(&theme->themeElements.fmtScheme.lnStyleLst[index]);		
+			convert(&theme->themeElements.fmtScheme.lnStyleLst[index], style_ref->Color.GetARGB());		
 		}
 	}
 	else if (type == 3)
 	{
+		index -= 1;
 		if ((index >= 0) || (index < theme->themeElements.fmtScheme.effectStyleLst.size()))
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index]);		
@@ -1249,4 +1283,5 @@ void OoxConverter::convert(PPTX::Logic::FontRef *style_font_ref)
 			odf_context()->drawing_context()->set_textarea_font(style_font->latin.typeface, style_font->ea.typeface, style_font->cs.typeface);
 	}
 }
+
 }

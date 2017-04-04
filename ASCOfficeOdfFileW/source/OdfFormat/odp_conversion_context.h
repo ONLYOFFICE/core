@@ -55,15 +55,16 @@ public:
 	void start_master_slide(std::wstring name);
 	void end_master_slide();
 
-///////////////////////////////////////////////////////
-	odp_page_state &		current_slide() { return slide_context_.state();}
+	odp_page_state & current_slide() { return slide_context_.state();}
+
 /////////////////////////////////////////////////////
 	virtual void start_text_context();
 	virtual void end_text_context();
 
 	virtual odf_drawing_context		* drawing_context()	{return current_slide().drawing_context();}
-	virtual odf_text_context		* text_context()	{return current_text_context_;}
-	
+	virtual odf_text_context		* text_context()	{return text_context_; }
+			odp_slide_context		* slide_context()	{return &slide_context_;}
+
 	void start_drawings();
 	void end_drawings();
 
@@ -72,7 +73,7 @@ public:
 private:
 	odp_slide_context			slide_context_;
 	
-	odf_text_context*			current_text_context_;
+	odf_text_context*			text_context_;
 	office_presentation*		root_presentation_;
 };
 

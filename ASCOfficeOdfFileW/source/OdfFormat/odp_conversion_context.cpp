@@ -53,8 +53,7 @@ namespace odf_writer {
 
 
 odp_conversion_context::odp_conversion_context(package::odf_document * outputDocument) 
-	:	odf_conversion_context		(PresentationDocument, outputDocument), slide_context_(*this)
-		//, current_text_context_(NULL)
+	:	odf_conversion_context (PresentationDocument, outputDocument), slide_context_(*this), text_context_(NULL)
 {
 }
 
@@ -102,14 +101,14 @@ void odp_conversion_context::end_slide()
 
 void odp_conversion_context::start_text_context()
 {
-	current_text_context_ = new odf_text_context(this);
+	text_context_ = new odf_text_context(this);
 
 }
 void odp_conversion_context::end_text_context()
 {
-	if (current_text_context_)
-		delete current_text_context_;
-	current_text_context_ = NULL;
+	if (text_context_)
+		delete text_context_;
+	text_context_ = NULL;
 }
 
 void odp_conversion_context::start_drawings()

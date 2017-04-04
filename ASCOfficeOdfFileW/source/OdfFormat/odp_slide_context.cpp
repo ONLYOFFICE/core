@@ -29,12 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
-#include "odp_slide_context.h"
+#include "logging.h"
 
 #include "odp_conversion_context.h"
-#include "logging.h"
+#include "odp_slide_context.h"
+#include "odf_text_context.h"
 
 #include <iostream>
 
@@ -45,7 +44,7 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-odp_slide_context::odp_slide_context(odp_conversion_context & Context): context_(Context)
+odp_slide_context::odp_slide_context(odp_conversion_context & Context): context_(Context), table_context_(&Context), comment_context_(&Context)
 {       
 	styles_context_ = Context.styles_context();
 }
@@ -80,6 +79,173 @@ void odp_slide_context::end_page()
 {
 	state().drawing_context()->finalize(state().page_elm_);
 }
+
+odf_table_context* odp_slide_context::table_context()
+{
+	return &table_context_;
+}
+
+void odp_slide_context::start_table()
+{
+	state().drawing_context()->start_frame();
+
+	office_element_ptr elm, style_elm, default_cell;
+	create_element(L"table", L"table", elm, &context_);
+
+//--------------------------------------------------------------------
+	odf_style_state_ptr style_state;
+
+//общие свойства ячеек
+	styles_context_->create_style(L"", odf_types::style_family::TableCell, true, false, -1);
+					//ради нормального задания дефолтовых свойств на cells
+	style_state = styles_context_->last_state(style_family::TableCell);
+	if (style_state)
+	{
+		default_cell = style_state->get_office_element();	
+		table_context()->set_default_cell_properties(style_state->get_name());
+	}
+
+//стиль создаем всегда	
+	styles_context_->create_style(L"", odf_types::style_family::Table, true, false, -1); 
+	
+	style_state = styles_context_->last_state(style_family::Table);
+	if (style_state)	style_elm = style_state->get_office_element();
+		
+//--------------------------------------------------------------------
+	
+	table_context()->start_table(elm, true);
+
+	state().drawing_context()->start_element(elm, default_cell);
+}
+void odp_slide_context::start_table_columns()
+{
+	office_element_ptr elm;
+	create_element(L"table", L"table-columns", elm, &context_);
+
+	state().drawing_context()->start_element(elm);
+}
+void odp_slide_context::add_table_column(double width)
+{
+	office_element_ptr elm;
+	create_element(L"table", L"table-column", elm, &context_);
+
+	styles_context_->create_style(L"", style_family::TableColumn, true, false, -1);
+
+	//не срабатывает ..
+	//std::wstring parent_name = table_context()->get_default_cell_properties();
+
+	//if (parent_name.length() > 0) 
+	//{
+	//	odf_writer::style_table_cell_properties * props = styles_context()->last_state().get_table_cell_properties();
+	//	style * style_ = NULL;
+	//	
+	//	if (styles_context()->find_odf_style(parent_name,style_family::TableCell,style_))
+	//	{
+	//		style_table_cell_properties * parent = style_->content_.get_style_table_cell_properties();
+	//		props->apply_from(parent);
+	//	}
+	//}
+
+	table_context()->add_column(elm, true);
+		table_context()->set_column_width(width);
+
+	state().drawing_context()->start_element(elm); // для связи элментов
+	state().drawing_context()->end_element();
+}
+void odp_slide_context::end_table_columns()
+{
+	state().drawing_context()->end_element();
+}
+void odp_slide_context::start_table_header_rows()
+{
+	office_element_ptr elm;
+	create_element(L"table", L"table-header-rows", elm, &context_);
+
+	state().drawing_context()->start_element(elm);
+}
+void odp_slide_context::end_table_header_rows()
+{
+	state().drawing_context()->end_element();
+}
+void odp_slide_context::start_table_row (bool styled)
+{
+	office_element_ptr elm, style_elm;
+	create_element(L"table", L"table-row", elm, &context_);
+
+	if (styled)
+	{
+		styles_context_->create_style(L"",odf_types::style_family::TableRow, true, false, -1);
+		
+		odf_style_state_ptr style_state = styles_context_->last_state(style_family::TableRow);
+		if (style_state)
+			style_elm = style_state->get_office_element();
+	}
+	state().drawing_context()->start_element(elm, style_elm);
+
+	table_context()->start_row(elm, styled);
+
+}
+void odp_slide_context::start_table_cell(int col, bool covered, bool styled)
+{
+	for (int i = table_context()->current_column() ; i < col;  i++)
+	{
+		add_default_cell();
+	}
+//-------------------------------------------------------
+	office_element_ptr elm, style_elm;
+	if (covered)
+		create_element(L"table", L"covered-table-cell", elm, &context_);
+	else
+		create_element(L"table", L"table-cell", elm, &context_);
+
+	if (styled)
+	{
+		styles_context_->create_style(L"", odf_types::style_family::TableCell, true, false, -1); 
+		
+		odf_style_state_ptr style_state = styles_context_->last_state(style_family::TableCell);
+		if (style_state)
+			style_elm = style_state->get_office_element();
+	}
+	
+	table_context()->start_cell(elm, style_elm ? true : false);
+
+	state().drawing_context()->start_element(elm, style_elm);
+}
+void odp_slide_context::end_table_cell()
+{
+	table_context()->end_cell();
+	state().drawing_context()->end_element();
+}
+void odp_slide_context::end_table_row()
+{
+	for (int i = table_context()->current_column() ; i < table_context()->count_columns(); i++)
+	{
+		add_default_cell();
+	}
+//---------------------------------------------
+	table_context()->end_row();
+	state().drawing_context()->end_element();
+}
+
+void odp_slide_context::add_default_cell()
+{
+	office_element_ptr elm;
+	create_element(L"table", L"covered-table-cell", elm, &context_);
+
+	table_context()->start_cell(elm, false);
+	state().drawing_context()->start_element(elm);
+
+	table_context()->end_cell();
+	state().drawing_context()->end_element();
+}
+void odp_slide_context::end_table()
+{
+	table_context()->end_table();
+	state().drawing_context()->end_element();
+	
+	state().drawing_context()->end_frame();	
+}
+
 
 }
 }

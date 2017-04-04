@@ -121,6 +121,9 @@ public:
 	void start_shape	(int type);
 	void end_shape		();
 
+	void start_frame	();
+	void end_frame		();
+
 	bool change_text_box_2_wordart();
 
 	void start_image	(std::wstring file_path);
@@ -249,9 +252,6 @@ public:
 
 private:
 	
-	void start_frame();
-	void end_frame();
-
     class Impl;
     _CP_PTR(Impl) impl_;
 

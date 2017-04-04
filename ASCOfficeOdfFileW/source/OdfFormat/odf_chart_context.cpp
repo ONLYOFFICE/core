@@ -109,7 +109,7 @@ namespace odf_writer
 	struct odf_chart_level_state
 	{
 		style_text_properties		*text_properties_;
-		style_graphic_properties	*graphic_properties_;
+		graphic_format_properties	*graphic_properties_;
 		style_paragraph_properties	*paragraph_properties_;
 		style_chart_properties		*chart_properties_;
 		
@@ -297,8 +297,8 @@ void odf_chart_context::Impl::set_default_series_color()
 
 	color col = color(default_MS_series_colors[current_series_count_]);
 	
-	current_level_.back().graphic_properties_->content_.common_draw_fill_attlist_.draw_fill_color_ = col;
-	current_level_.back().graphic_properties_->content_.svg_stroke_color_ = col;
+	current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_color_ = col;
+	current_level_.back().graphic_properties_->svg_stroke_color_ = col;
 }
 ////////////////////////////////////////////////////////////////////////////
 
@@ -641,7 +641,7 @@ void odf_chart_context::start_series(std::wstring type)
 
 	if (style_)
 	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 		impl_->set_default_series_color();
 	}
 
@@ -968,7 +968,7 @@ void odf_chart_context::start_floor()
 
 	if (style_)
 	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 	}
 }
 void odf_chart_context::start_wall()
@@ -993,9 +993,9 @@ void odf_chart_context::start_wall()
 
 	if (style_)
 	{
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 		if (impl_->current_level_.back().graphic_properties_)
-			impl_->current_level_.back().graphic_properties_->content_.common_draw_fill_attlist_.draw_fill_color_ = color(L"#ffffff");
+			impl_->current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_color_ = color(L"#ffffff");
 	}
 }
 void odf_chart_context::start_legend()
@@ -1036,7 +1036,7 @@ void odf_chart_context::start_stock_range_line()
 		style_name = style_->style_name_;
 		line->common_attlist_.chart_style_name_ = style_name;
 		
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 		impl_->set_default_series_color();
 	}
 	start_element(elm, style_elm, style_name);
@@ -1059,7 +1059,7 @@ void odf_chart_context::start_stock_gain_marker()
 		style_name = style_->style_name_;
 		marker->common_attlist_.chart_style_name_ = style_name;
 		
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 		impl_->set_default_series_color();
 	}
 	start_element(elm, style_elm, style_name);
@@ -1082,7 +1082,7 @@ void odf_chart_context::start_stock_loss_marker()
 		style_name = style_->style_name_;
 		marker->common_attlist_.chart_style_name_ = style_name;
 	
-		impl_->current_level_.back().graphic_properties_ = style_->content_.get_style_graphic_properties();
+		impl_->current_level_.back().graphic_properties_ = style_->content_.get_graphic_properties();
 		impl_->set_default_series_color();	
 	}
 	start_element(elm, style_elm, style_name);
@@ -1219,7 +1219,7 @@ void odf_chart_context::set_no_fill(bool Val)
 	if (Val == false)return;
 	if (!impl_->current_level_.back().graphic_properties_)return;
 
-	impl_->current_level_.back().graphic_properties_->content_.common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
+	impl_->current_level_.back().graphic_properties_->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
 
 }
 void odf_chart_context::set_axis_tick_major(int type)

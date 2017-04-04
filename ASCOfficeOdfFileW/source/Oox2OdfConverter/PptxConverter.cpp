@@ -35,6 +35,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Folder.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Presentation.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Table/Table.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -80,9 +81,10 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 	output_document = new odf_writer::package::odf_document(L"presentation");
     odp_context     = new odf_writer::odp_conversion_context(output_document);
 	
-	current_clrMap	= NULL;
-	current_slide	= NULL;
-	current_theme	= NULL;
+	current_clrMap		= NULL;
+	current_slide		= NULL;
+	current_theme		= NULL;
+	current_tableStyles	= NULL;
 
 	pCallBack		= CallBack;
 
@@ -90,10 +92,11 @@ PptxConverter::PptxConverter(const std::wstring & path, const ProgressCallback* 
 }
 PptxConverter::~PptxConverter()
 {
-	current_clrMap	= NULL;
-	current_slide	= NULL;
-	current_theme	= NULL;
-	presentation	= NULL;
+	current_tableStyles	= NULL;
+	current_clrMap		= NULL;
+	current_slide		= NULL;
+	current_theme		= NULL;
+	presentation		= NULL;
 
 	if (odp_context)		delete odp_context;		odp_context		= NULL;
 	if (pptx_document)		delete pptx_document;	pptx_document	= NULL;
@@ -230,8 +233,6 @@ void PptxConverter::convert_slides()
 
 		if (slide->Master.IsInit())
 		{
-			current_clrMap	= &slide->Master->clrMap;
-
 			// Master & Layout
 
 			std::wstring master_layout = slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename;
@@ -250,10 +251,13 @@ void PptxConverter::convert_slides()
 					master_style_name += std::to_wstring(m_mapMasters.size());
 				
 				odp_context->start_master_slide(master_style_name);
-					current_slide = slide->Master.operator->();
+					current_clrMap	= &slide->Master->clrMap;					
+					current_slide	= slide->Master.operator->();
 					convert(&slide->Master->cSld, false);//slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true);		
 					
-					current_slide = slide->Layout.operator->();
+					if (slide->Layout->clrMapOvr.IsInit())
+						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
+					current_slide	= slide->Layout.operator->();
 					convert(&slide->Layout->cSld, false);		
 				odp_context->end_master_slide();
 				
@@ -265,8 +269,10 @@ void PptxConverter::convert_slides()
 		
 		if (slide->clrMapOvr.IsInit())
 			current_clrMap	= slide->clrMapOvr->overrideClrMapping.GetPointer();
-		
-		current_slide = slide.operator->();
+
+		current_tableStyles	= slide->tableStyles_.operator->();
+		current_slide		= slide.operator->();
+
 		odp_context->start_slide();
 		
 		odp_context->current_slide().set_master_page(master_style_name);
@@ -305,6 +311,401 @@ void PptxConverter::convert(OOX::WritingElement  *oox_unknown)
 	}
 }
 
+void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
+{
+	if (!oox_table_pr) return;
+
+	odp_context->drawing_context()->start_area_properties();
+		odp_context->drawing_context()->set_no_fill();
+	odp_context->drawing_context()->end_area_properties();
+	
+	if (oox_table_pr->TableStyleId.IsInit() && current_tableStyles)
+	{
+		std::map<std::wstring, PPTX::Logic::TableStyle>::iterator pFind;
+		pFind = current_tableStyles->Styles.find(oox_table_pr->TableStyleId.get());
+		
+		if (pFind != current_tableStyles->Styles.end())
+		{
+			PPTX::Logic::TableStyle & table_style = pFind->second;
+
+			if (table_style.tblBg.IsInit())
+			{
+			}
+
+			convert(table_style.wholeTbl.GetPointer());
+		}
+	}
+
+	if (oox_table_pr->Fill.is_init())
+	{
+		odp_context->drawing_context()->start_area_properties();
+			OoxConverter::convert(&oox_table_pr->Fill);
+		odp_context->drawing_context()->end_area_properties();
+	}
+	//EffectProperties			Effects;
+	//nullable_bool				Rtl;
+	//nullable_bool				FirstRow;
+	//nullable_bool				FirstCol;
+	//nullable_bool				LastRow;
+	//nullable_bool				LastCol;
+	//nullable_bool				BandRow;
+	//nullable_bool				BandCol;
+}
+
+void PptxConverter::convert(PPTX::Logic::TablePartStyle *oox_table_part_style)
+{
+	if (!oox_table_part_style) return;
+
+	if (oox_table_part_style->tcStyle.IsInit())
+	{
+		odp_context->drawing_context()->start_area_properties();
+			if (oox_table_part_style->tcStyle->fill.IsInit())
+				OoxConverter::convert(&oox_table_part_style->tcStyle->fill->Fill);
+			else
+				OoxConverter::convert(oox_table_part_style->tcStyle->fillRef.GetPointer());
+		odp_context->drawing_context()->end_area_properties();
+		
+		odp_context->drawing_context()->start_line_properties();
+			convert(oox_table_part_style->tcStyle->tcBdr.GetPointer());
+		odp_context->drawing_context()->end_line_properties();
+	}
+
+	if (oox_table_part_style->tcTxStyle.IsInit())
+	{
+	}
+}
+
+
+void PptxConverter::convert(PPTX::Logic::Table *oox_table)
+{
+	if (!oox_table) return;
+
+	odp_context->slide_context()->start_table();
+	
+	convert(oox_table->tableProperties.GetPointer());
+
+	odp_context->slide_context()->start_table_columns();
+
+	for (size_t i = 0; i < oox_table->TableCols.size(); i++)
+	{
+		double width = -1;
+
+		if (oox_table->TableCols[i].Width.IsInit())
+			width = oox_table->TableCols[i].Width.get() / 127000.;
+
+		odp_context->slide_context()->add_table_column(width);
+
+	}
+	odp_context->slide_context()->end_table_columns();	
+
+	for (size_t i = 0; i < oox_table->TableRows.size(); i++)
+	{
+		convert(&oox_table->TableRows[i]);
+	}
+
+	odp_context->slide_context()->end_table();
+}
+void PptxConverter::convert(PPTX::Logic::TableRow *oox_table_row)
+{
+	odp_context->slide_context()->start_table_row(oox_table_row->Height.IsInit());
+	if (!oox_table_row) return;
+
+	if (oox_table_row->Height.IsInit())
+	{
+		odf_writer::style_table_row_properties	* table_row_properties = odp_context->styles_context()->last_state()->get_table_row_properties();
+		table_row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(oox_table_row->Height.get() / 127000., odf_types::length::pt); 
+//		table_row_properties->style_table_row_properties_attlist_.style_min_row_height_
+	}
+
+	for (size_t i = 0; i < oox_table_row->Cells.size(); i++)
+	{
+		convert(&oox_table_row->Cells[i], i);
+	}
+	odp_context->slide_context()->end_table_row();
+}
+void PptxConverter::convert(PPTX::Logic::TableCell *oox_table_cell, int numCol)
+{
+	if (!oox_table_cell) return;
+
+	bool covered = false, styled = false;
+
+	if (oox_table_cell->VMerge.IsInit() || oox_table_cell->HMerge.IsInit())
+		covered = true; 
+
+	if (oox_table_cell->CellProperties.IsInit())
+		styled = (oox_table_cell->CellProperties->is_empty == false);
+	
+	odp_context->slide_context()->start_table_cell(numCol, covered, styled);
+	
+	if (oox_table_cell->RowSpan.IsInit())
+		odp_context->slide_context()->table_context()->set_cell_row_span(oox_table_cell->RowSpan.get());
+
+	if (oox_table_cell->GridSpan.IsInit())
+		odp_context->slide_context()->table_context()->set_cell_column_span(oox_table_cell->GridSpan.get());
+	
+	convert(oox_table_cell->CellProperties.GetPointer(), numCol + 1);
+	OoxConverter::convert(oox_table_cell->txBody.GetPointer());
+
+	//nullable_string					Id;
+	odp_context->slide_context()->end_table_cell();
+}
+bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr, int col)
+{
+	if (!oox_table_cell_pr)				return false;
+	if (oox_table_cell_pr->is_empty)	return false;
+
+	bool is_base_styled = odp_context->slide_context()->table_context()->is_styled();
+	
+	if (col < 0)	col = odp_context->slide_context()->table_context()->current_column() + 1;
+	int				row = odp_context->slide_context()->table_context()->current_row();
+		
+	odf_writer::style_table_cell_properties * parent_cell_properties = NULL;
+
+	std::wstring parent_name = odp_context->slide_context()->table_context()->get_default_cell_properties();
+	
+	if (!parent_name.empty()) 
+	{
+		odf_writer::style * style_ = NULL;		
+		if (odp_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
+		{
+			parent_cell_properties = style_->content_.get_style_table_cell_properties();
+		}
+	}
+	
+	if (oox_table_cell_pr == NULL && is_base_styled == false && parent_cell_properties == NULL) return false;
+	
+
+	odf_writer::style_table_cell_properties *cell_properties = odp_context->styles_context()->last_state()->get_table_cell_properties();
+
+	if (cell_properties == NULL) return false;
+
+	//if (is_base_styled)
+	//{
+	//	odf_writer::style_text_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+	//	odf_writer::style_paragraph_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+	//	odf_writer::style_graphic_properties	* graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
+	//	
+	//	if (col < 0) 
+	//		col = odp_context->slide_context()->table_context()->current_column() + 1;
+	//	int row = odp_context->slide_context()->table_context()->current_row();
+	//	
+	//	odp_context->styles_context()->table_styles().get_table_cell_properties (col, row, cell_properties);
+	//	odp_context->styles_context()->table_styles().get_text_properties		(col, row, text_properties);
+	//	odp_context->styles_context()->table_styles().get_paragraph_properties	(col, row, paragraph_properties);
+	//	odp_context->styles_context()->table_styles().get_graphic_properties	(col, row, graphic_properties);
+	//}
+	cell_properties->apply_from(parent_cell_properties);
+
+//check for inside cell or not
+
+	_CP_OPT(std::wstring) border_inside_v = odp_context->slide_context()->table_context()->get_table_inside_v();
+	_CP_OPT(std::wstring) border_inside_h = odp_context->slide_context()->table_context()->get_table_inside_h();
+	
+	if ((border_inside_v || border_inside_h))
+	{
+		if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)//раскидаем по сторонам
+		{
+			if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_->is_none() == false)
+			{
+				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
+				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ =
+				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = 
+				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ =
+												cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+			}		
+			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+		}	
+		//если нет убрать, если да - добавить
+		if (border_inside_h)
+		{
+			int del_border = border_inside_h->find(L"none");
+			if (row != 1)
+			{
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border>=0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = boost::none;
+
+				else if (border_inside_h && del_border<0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = *border_inside_h;
+			}
+			if (row != odp_context->slide_context()->table_context()->count_rows())
+			{
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ && del_border>=0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = boost::none;
+
+				else if (border_inside_h && del_border<0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
+			}
+		}
+		if (border_inside_v)
+		{
+			int del_border = border_inside_v->find(L"none");
+			if (col != 1)
+			{
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border>=0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = boost::none;
+
+				else if (border_inside_h && del_border<0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = *border_inside_h;
+			}
+			if (col != odp_context->slide_context()->table_context()->count_columns())
+			{
+				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ && del_border>=0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
+
+				else if (border_inside_h && del_border<0)
+					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = *border_inside_h;
+			}
+		}
+	}
+	bool res = convert(oox_table_cell_pr); //last state
+
+	return true;
+}
+void PptxConverter::convert(PPTX::Logic::Ln *oox_border, std::wstring & odf_border_prop)
+{
+	odf_border_prop = L"";
+	if (!oox_border) return;
+
+	odp_context->drawing_context()->start_line_properties();
+	
+	std::wstringstream	border_style;
+	std::wstring		border_color;
+
+	odf_types::length length;
+	length = odf_types::length(oox_border->w.IsInit() ? oox_border->w.get() / 127000. : 1,  odf_types::length::pt);
+
+	length = odf_types::length( length.get_value_unit(odf_types::length::cm), odf_types::length::cm);
+	border_style << length;
+	
+	if (oox_border->prstDash.IsInit() && oox_border->prstDash->val.IsInit())
+	{
+		switch(oox_border->prstDash->val->GetBYTECode())
+		{
+			case 0:		border_style << L" dashed";	break;
+			case 1:		border_style << L" dashed";	break;
+			case 2:		border_style << L" dotted";	break;
+			default:
+				border_style << L" solid";
+		}
+	}else border_style << L" solid";
+///////////////////////////////////////////////////////////////////
+	_CP_OPT(odf_types::color) color;
+
+	if (oox_border->Fill.is_init())
+	{
+		OoxConverter::convert(&oox_border->Fill);
+	}
+	odp_context->drawing_context()->end_line_properties();
+
+	border_color = L"000000";
+	
+	odf_border_prop = border_style.str() + L" #" + border_color;
+
+}
+bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
+{
+	odf_writer::style_table_cell_properties *odf_cell_properties = odp_context->styles_context()->last_state()->get_table_cell_properties();
+
+	if (!oox_table_cell_pr)		return false;
+	if (!odf_cell_properties)	return false;
+
+	if (oox_table_cell_pr->Fill.is_init())
+	{
+		odp_context->drawing_context()->start_area_properties();
+			OoxConverter::convert(&oox_table_cell_pr->Fill);
+		odp_context->drawing_context()->end_area_properties();
+	}
+
+	if (oox_table_cell_pr->Vert.IsInit())
+	{
+		switch(oox_table_cell_pr->Vert->GetBYTECode())
+		{
+		case 1  :
+			odf_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ltr);break;
+		case 6 ://rtl vert
+			break;
+		default:
+			odf_cell_properties->style_table_cell_properties_attlist_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);break;
+		}
+	}
+	if (oox_table_cell_pr->MarL.IsInit())
+	{
+		odf_types::length length = oox_table_cell_pr->MarL.get() / 127000.;
+		odf_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_left_ = odf_types::length(length.get_value_unit(odf_types::length::cm), odf_types::length::cm);
+	}
+	if (oox_table_cell_pr->MarR.IsInit())
+	{
+		odf_types::length length = oox_table_cell_pr->MarR.get() / 127000.;
+		odf_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_right_ = odf_types::length(length.get_value_unit(odf_types::length::cm), odf_types::length::cm);
+	}
+	if (oox_table_cell_pr->MarT.IsInit())
+	{
+		odf_types::length length = oox_table_cell_pr->MarT.get() / 127000.;
+		odf_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_top_ = odf_types::length(length.get_value_unit(odf_types::length::cm),odf_types::length::cm);
+	}
+	if (oox_table_cell_pr->MarB.IsInit())
+	{
+		odf_types::length length = oox_table_cell_pr->MarB.get() / 127000.;
+		odf_cell_properties->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(length.get_value_unit(odf_types::length::cm),odf_types::length::cm);
+	}
+	if (oox_table_cell_pr->Vert.IsInit())
+	{
+		switch(oox_table_cell_pr->Vert->GetBYTECode())
+		{
+		//case SimpleTypes::verticaljcBoth   : //??????
+		//	odf_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify); break;
+		//case SimpleTypes::verticaljcBottom :
+		//	odf_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom); break;
+		//case SimpleTypes::verticaljcCenter :
+		//	odf_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle); break;
+		//case SimpleTypes::verticaljcTop    :
+		//	odf_cell_properties->style_table_cell_properties_attlist_.style_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top); break;
+		}
+	}
+//borders
+	std::wstring left, right, top, bottom, other;
+
+	convert(oox_table_cell_pr->LnB.GetPointer(), bottom);
+	convert(oox_table_cell_pr->LnT.GetPointer(), top);
+	convert(oox_table_cell_pr->LnL.GetPointer(), left);
+	convert(oox_table_cell_pr->LnR.GetPointer(), right);
+
+	if (bottom == top && top == left && left== right && bottom.length() > 0)
+	{
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = left;
+
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ =
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = 
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
+	}
+	else
+	{
+		if (odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)
+		{
+			odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= 
+			odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= 
+			odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_	= 
+			odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_	= odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+		}
+		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+
+		if ( !bottom.empty() )	odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_	= bottom;
+		if ( !top.empty() )		odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_		= top;
+		if ( !left.empty() )	odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_	= left;
+		if ( !right.empty() )	odf_cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_	= right;
+	}
+	//convert(oox_border->m_oTL2BR.GetPointer()	, other);
+	//if (other.length() >0 ) odf_cell_properties->style_table_cell_properties_attlist_.style_diagonal_tl_br_ = other;
+	//
+	//convert(oox_border->m_oTR2BL.GetPointer()	, other);
+	//if (other.length() >0 )
+	//{
+	//	odf_cell_properties->style_table_cell_properties_attlist_.style_diagonal_bl_tr_ = other;
+	//}	
+	return true;
+}
+
 void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 {
 	if (!oox_background) return;
@@ -333,6 +734,10 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 void PptxConverter::convert(PPTX::Logic::CSld *oox_slide, bool placeholders)
 {
 	if (oox_slide == NULL) return;
+
+	if (current_theme && current_clrMap)
+		current_theme->SetColorMap(*current_clrMap);
+
 
 	if (oox_slide->attrName.IsInit())
 		odp_context->current_slide().set_page_name(oox_slide->attrName.get());

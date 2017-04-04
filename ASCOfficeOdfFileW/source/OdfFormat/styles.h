@@ -72,9 +72,10 @@
 namespace cpdoccore { 
 namespace odf_writer { 
 
+class graphic_format_properties;
+
 class style_text_properties;
 class style_paragraph_properties;
-class style_graphic_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
@@ -88,13 +89,14 @@ class style_content : noncopyable
 public:
 	style_content(odf_conversion_context * _context){Context = _context;}
 
-	void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-    void add_child_element( const office_element_ptr & child);
-	void serialize(std::wostream & strm);
+	void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    void add_child_element		( const office_element_ptr & child);
+	void serialize				(std::wostream & strm);
   
-    style_text_properties *			get_style_text_properties();
+    graphic_format_properties *		get_graphic_properties() ;
+    
+	style_text_properties *			get_style_text_properties();
     style_paragraph_properties *	get_style_paragraph_properties() ;
-    style_graphic_properties *		get_style_graphic_properties() ;
     style_table_properties *		get_style_table_properties();
     style_section_properties *		get_style_section_properties();
     style_table_cell_properties *	get_style_table_cell_properties();
@@ -103,9 +105,9 @@ public:
     style_chart_properties *		get_style_chart_properties() ;
 	style_drawing_page_properties*	get_style_drawing_page_properties();
 
+    odf_types::style_family style_family_;
 private:
 	odf_conversion_context * Context;
-    odf_types::style_family style_family_;
 
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -349,7 +351,6 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    // attr
     std::wstring			style_name_;
     _CP_OPT( std::wstring ) style_display_name_; 
     odf_types::style_family	style_family_;
@@ -362,7 +363,6 @@ public:
     _CP_OPT( std::wstring ) style_data_style_name_; 
     _CP_OPT( std::wstring ) style_class_;
     _CP_OPT(std::wstring)	style_default_outline_level_; 
-
 
     style_content				content_;
     office_element_ptr_array	style_map_;

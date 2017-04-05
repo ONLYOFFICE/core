@@ -285,23 +285,23 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_p_r:
 			{
-				PPTX::Logic::Run* pRun= dynamic_cast<PPTX::Logic::Run*>(oox_unknown);
-				convert(pRun);
+				convert(dynamic_cast<PPTX::Logic::Run*>(oox_unknown));
 			}break;
 			case OOX::et_p_fld:
 			{
-				PPTX::Logic::Fld* pFld= dynamic_cast<PPTX::Logic::Fld*>(oox_unknown);
-				convert(pFld);
+				convert(dynamic_cast<PPTX::Logic::Fld*>(oox_unknown));
 			}break;
 			case OOX::et_p_br:
 			{
-				PPTX::Logic::Br* pBr= dynamic_cast<PPTX::Logic::Br*>(oox_unknown);
-				convert(pBr);
+				convert(dynamic_cast<PPTX::Logic::Br*>(oox_unknown));
 			}break;
 			case OOX::et_p_MathPara:
 			{
-				PPTX::Logic::MathParaWrapper* pMathPara= dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown);
-				convert(pMathPara);
+				convert(dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown));
+			}break;
+			case OOX::et_a_effectStyle:
+			{
+				convert(dynamic_cast<PPTX::Logic::EffectStyle*>(oox_unknown));
 			}break;
 			default:
 			{
@@ -334,119 +334,6 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 //			convert(oox_canvas->m_arrItems[i]);
 //		}
 //	odf_context()->drawing_context()->end_group();
-//}
-////-----------------------------------------------------------------------------------------------------------------
-//void OoxConverter::convert(OOX::Drawing::CEffectList *oox_effect_list, std::wstring *change_sheme_color)
-//{
-//	if (oox_effect_list == NULL) return;
-//
-//	for (size_t i = 0; i < oox_effect_list->m_arrEffects.size(); i++)
-//	{
-//		switch(oox_effect_list->m_arrEffects[i]->getType())
-//		{
-//		case OOX::et_a_outerShdw:
-//			{
-//				OOX::Drawing::COuterShadowEffect * shadow = dynamic_cast<OOX::Drawing::COuterShadowEffect *>(oox_effect_list->m_arrEffects[i]);
-//				convert(shadow, change_sheme_color);
-//			}break;
-//		case OOX::et_a_innerShdw:
-//			{
-//				OOX::Drawing::CInnerShadowEffect * shadow = dynamic_cast<OOX::Drawing::CInnerShadowEffect *>(oox_effect_list->m_arrEffects[i]);
-//				convert(shadow, change_sheme_color);
-//			}break;
-//		case OOX::et_a_prstShdw:
-//			{
-//				OOX::Drawing::CPresetShadowEffect * shadow = dynamic_cast<OOX::Drawing::CPresetShadowEffect *>(oox_effect_list->m_arrEffects[i]);
-//				//convert(shadow, change_sheme_color);
-//			}break;
-//		case OOX::et_a_reflection:
-//			{
-//				OOX::Drawing::CReflectionEffect * refelection = dynamic_cast<OOX::Drawing::CReflectionEffect *>(oox_effect_list->m_arrEffects[i]);
-//			}
-//			//CGlowEffect, CBlurEffect, CFillOverlayEffect, CSoftEdgesEffect
-//		}
-//	}
-//}
-//void OoxConverter::convert(OOX::Drawing::COuterShadowEffect *oox_shadow, std::wstring *change_sheme_color)
-//{
-//	if (oox_shadow == NULL) return; 
-//
-//	std::wstring hexColor;
-//	_CP_OPT(double) opacity;
-//
-//    std::wstring keep_sheme_color;
-//	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
-//	{
-//		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
-//		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-//	}
-//	convert(dynamic_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
-//    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
-//
-//	odf_context()->drawing_context()->set_shadow(1, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
-//
-//			//SimpleTypes::CPositiveFixedAngle<0>                      m_oDir;
-//			//SimpleTypes::CPositiveCoordinate<0>                      m_oBlurRad;
-////-------------
-//	//SimpleTypes::CRectAlignment<SimpleTypes::rectalignmentB> m_oAlgn;
-//	//SimpleTypes::CFixedAngle<>                               m_oKx;
-//	//SimpleTypes::CFixedAngle<>                               m_oKy;
-//	//SimpleTypes::COnOff<SimpleTypes::onoffTrue>              m_oRotWithShape;
-//	//SimpleTypes::CPercentage                                 m_oSx;
-//	//SimpleTypes::CPercentage                                 m_oSy;
-//
-//}
-//void OoxConverter::convert(OOX::Drawing::CInnerShadowEffect *oox_shadow, std::wstring *change_sheme_color)
-//{
-//	if (oox_shadow == NULL) return;
-//
-//	std::wstring hexColor;
-//	_CP_OPT(double) opacity;
-//
-//    std::wstring keep_sheme_color;
-//	if (oox_shadow->m_eType == OOX::Drawing::colorSheme && change_sheme_color)
-//	{
-//		keep_sheme_color = oox_shadow->m_oShemeClr.m_oVal.ToString();
-//		oox_shadow->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-//	}
-//	convert(dynamic_cast<OOX::Drawing::CColor*>(oox_shadow), hexColor, opacity);
-//    if (keep_sheme_color.length() > 0)	oox_shadow->m_oShemeClr.m_oVal.FromString(keep_sheme_color);
-//
-//	odf_context()->drawing_context()->set_shadow(2, hexColor, opacity, oox_shadow->m_oDist.ToPoints());
-//
-//}
-//void OoxConverter::convert(OOX::Drawing::CPatternFillProperties *oox_pattern_fill,	std::wstring *change_sheme_color)
-//{
-//	if (!oox_pattern_fill)return;
-//	
-//	odf_context()->drawing_context()->start_hatch_style();
-//	{
-//		if (oox_pattern_fill->m_oPrst.IsInit())
-//		{
-//			odf_context()->drawing_context()->set_hatch_type(oox_pattern_fill->m_oPrst->GetValue());
-//		}			
-//		if (oox_pattern_fill->m_oFgClr.IsInit())
-//		{
-//			std::wstring hexColor;
-//			_CP_OPT(double) opacity;
-//			convert((OOX::Drawing::CColor*)oox_pattern_fill->m_oFgClr.GetPointer(),hexColor, opacity);
-//
-//			odf_context()->drawing_context()->set_hatch_line_color(hexColor);
-//		}
-//		if (oox_pattern_fill->m_oBgClr.IsInit())
-//		{
-//			if (change_sheme_color && oox_pattern_fill->m_oBgClr.IsInit() && oox_pattern_fill->m_oBgClr->m_eType == OOX::Drawing::colorSheme)
-//				oox_pattern_fill->m_oBgClr->m_oShemeClr.m_oVal.FromString(*change_sheme_color);
-//
-//			std::wstring hexColor;
-//			_CP_OPT(double) opacity;
-//			convert((OOX::Drawing::CColor*)oox_pattern_fill->m_oBgClr.GetPointer(),hexColor, opacity);
-//
-//			odf_context()->drawing_context()->set_hatch_area_color(hexColor);
-//		}
-//	}
-//	odf_context()->drawing_context()->end_hatch_style();
-//
 //}
 
 bool OoxConverter::convert(std::wstring sSchemeColor, DWORD & argb)

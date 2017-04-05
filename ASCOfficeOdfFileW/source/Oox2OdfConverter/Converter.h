@@ -270,11 +270,6 @@ namespace PPTX
 		class Shape;
 		class CxnSp;
 		class Pic;
-		class Table;
-		class TableProperties;
-		class TableRow;
-		class TableCell;
-		class TableCellProperties;
 		class SmartArt;
 		class ChartRec;
 		class SpPr;
@@ -319,6 +314,10 @@ namespace PPTX
 		class QuadBezTo;
 		class CubicBezTo;
 		class Close;
+		class EffectStyle;
+		class InnerShdw;
+		class OuterShdw;
+		class PrstShdw;
 	}
 }
 
@@ -371,6 +370,7 @@ public:
 		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 		void convert(PPTX::Logic::Xfrm							*oox_xfrm);
+		void convert(PPTX::Logic::Xfrm							*oox_txbx, PPTX::Logic::Xfrm *oox_xfrm);
 		int	 convert(PPTX::Logic::PrstTxWarp					*oox_text_preset);
 		void convert(PPTX::Logic::PrstGeom						*oox_geom);
 		void convert(PPTX::Logic::CustGeom						*oox_geom);
@@ -378,8 +378,7 @@ public:
         void convert(PPTX::Logic::GradFill						*oox_fill, DWORD ARGB = 0);
         void convert(PPTX::Logic::SolidFill						*oox_fill, DWORD ARGB = 0);
         void convert(PPTX::Logic::PattFill						*oox_fill, DWORD ARGB = 0);
-		void convert(PPTX::Logic::EffectLst						*oox_effect_lst);
-		void convert(PPTX::Logic::Ln							*oox_line, DWORD ARGB = 0);
+		void convert(PPTX::Logic::Ln							*oox_line, DWORD ARGB = 0, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::FontRef						*oox_fontRef);
 		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
@@ -410,6 +409,11 @@ public:
 		void convert(PPTX::Logic::QuadBezTo						*oox_geom_path);
 		void convert(PPTX::Logic::CubicBezTo					*oox_geom_path);
 		void convert(PPTX::Logic::Close							*oox_geom_path);
+		void convert(PPTX::Logic::EffectStyle					*oox_effect);
+		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
+		void convert(PPTX::Logic::InnerShdw						*oox_effect);
+		void convert(PPTX::Logic::OuterShdw						*oox_effect);
+		void convert(PPTX::Logic::PrstShdw						*oox_effect);
 		
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);

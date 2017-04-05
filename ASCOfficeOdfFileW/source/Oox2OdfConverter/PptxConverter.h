@@ -57,6 +57,12 @@ namespace PPTX
 		class Transition;
 		class Timing;
 		class TablePartStyle;
+		class Table;
+		class TableProperties;
+		class TableRow;
+		class TableCell;
+		class TableCellProperties;
+		class TcBdr;
 	}
 }
 
@@ -109,10 +115,9 @@ namespace Oox2Odf
 		bool convert(PPTX::Logic::TableCellProperties	*oox_table_cell_pr); 
 		
 		void convert(PPTX::Logic::TableProperties		*oox_table_pr);
-		bool convert(PPTX::Logic::TableProperties		*oox_table_pr,		odf_writer::style_table_properties		*table_properties);
-		void convert(PPTX::Logic::TableProperties		*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
+		void convert(PPTX::Logic::TcBdr					*oox_table_borders);
 
-		void convert(PPTX::Logic::Ln *oox_ln_boreder, std::wstring & odf_border);
+		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
 private:
 		PPTX::Folder									*pptx_document;
 		PPTX::Presentation								*presentation;

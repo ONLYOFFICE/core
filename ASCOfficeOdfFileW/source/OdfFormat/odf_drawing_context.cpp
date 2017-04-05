@@ -725,7 +725,7 @@ void odf_drawing_context::start_shape(int type)
 bool odf_drawing_context::change_text_box_2_wordart()
 {
 	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
-		return false;	
+		return true;	
 
 	if (impl_->current_drawing_state_.text_box_tableframe)	return false;	
 	if (impl_->current_drawing_state_.elements_.empty())	return false;
@@ -1154,7 +1154,10 @@ _CP_OPT(unsigned int) odf_drawing_context::get_fill_color()
 {
 	return impl_->current_drawing_state_.fill_color_;
 }
-
+_CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
+{
+	return impl_->current_graphic_properties->svg_stroke_color_ ;
+}
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
@@ -1180,9 +1183,9 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 		case Line:
 			impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
 			if (!impl_->current_graphic_properties->draw_stroke_)
-				impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);//default
+				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
 			if (!impl_->current_graphic_properties->svg_stroke_width_)
-				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1,length::pt).get_value_unit(length::cm),length::cm);//default
+				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
 			break;
 	}
 }
@@ -1654,7 +1657,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			{
 				width_pt  = *width_pt * impl_->group_list_[i]->scale_cx;
 			}
-			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 		}
 		if (height_pt)
 		{
@@ -1662,21 +1665,21 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			{
 				height_pt = *height_pt * impl_->group_list_[i]->scale_cy;
 			}
-			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);	
 		}
 	}else
 	{
         if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
-			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 
         if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
-			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
 void odf_drawing_context::set_line_width(double pt)
 {
 	if (!impl_->current_graphic_properties)return;
-	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 
 void odf_drawing_context::set_line_tail(int type, int len, int width)
@@ -1688,11 +1691,11 @@ void odf_drawing_context::set_line_tail(int type, int len, int width)
 	switch(width)
 	{
 	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.4,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.4, length::cm); break;
 	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.3,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.3, length::cm); break;
 	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.2,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.2, length::cm); break;
 	}
 }
 void odf_drawing_context::set_line_head(int type, int len, int width)
@@ -1704,11 +1707,11 @@ void odf_drawing_context::set_line_head(int type, int len, int width)
 	switch(width)
 	{
 	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.4,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.4, length::cm); break;
 	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.3,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.3, length::cm); break;
 	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.2,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.2, length::cm); break;
 	}
 }
 
@@ -1931,14 +1934,18 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 
 }
 
-void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in cm
+void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
 {
 	if (!impl_->current_graphic_properties)return;
 
-	if (left)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_left_	= length(*left,	length::cm);
-	if (top)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_top_	= length(*top,	length::cm);
-	if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::cm);
-	if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::cm);
+	if (left)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_left_		= length(*left,	length::pt);
+	if (top)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_top_		= length(*top,	length::pt);
+	if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::pt);
+	if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::pt);
+}
+void odf_drawing_context::set_textarea_rotate (double dVal)
+{
+	if (!impl_->current_graphic_properties)return;
 }
 
 
@@ -2019,9 +2026,9 @@ void odf_drawing_context::start_text_box()
 	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
 	//	set_text_box_parent_style(L"Frame");
 
-	start_area_properties();
-		set_no_fill();
-	end_area_properties();
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+	//impl_->current_graphic_properties->draw_stroke_ = line_style (line_style::None);
+
 }
 
 void odf_drawing_context::set_text_box_min_size(bool val)

@@ -174,7 +174,7 @@ public:
 	void set_flip_H			(bool bVal);
 	void set_flip_V			(bool bVal);
 
-	void set_rotate			(double iVal);
+	void set_rotate			(double dVal);
 
 	void set_no_fill		();
 	void set_type_fill		(int type);//for area - temp for objects
@@ -197,6 +197,8 @@ public:
 	
 	_CP_OPT(unsigned int)	get_fill_color ();
 	void					set_fill_color (unsigned int color);
+
+	_CP_OPT(odf_types::color) get_line_color();
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..
@@ -204,11 +206,12 @@ public:
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);
-	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in cm
+	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in pt
 	void set_textarea_writing_mode	(int mode);
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);
 	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
+	void set_textarea_rotate		(double dVal);
 	void set_layer					(std::wstring val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();

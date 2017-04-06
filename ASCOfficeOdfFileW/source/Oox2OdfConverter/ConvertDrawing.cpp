@@ -948,7 +948,13 @@ void OoxConverter::convert(PPTX::Logic::NvPr *oox_nvPr)
 
 	if (oox_nvPr->ph.is_init())
 	{
-		odf_context()->drawing_context()->set_layer(L"backgroundobjects");
+		if (oox_nvPr->ph->type.IsInit())
+			odf_context()->drawing_context()->set_placeholder_type(oox_nvPr->ph->type->GetBYTECode());
+		if (oox_nvPr->ph->idx.IsInit())
+			odf_context()->drawing_context()->set_placeholder_id(oox_nvPr->ph->idx.get());
+	//nullable_bool								hasCustomPrompt;
+	//nullable_limit<Limit::Orient>				orient;
+	//nullable_limit<Limit::PlaceholderSize>	sz;
 	}
 }
 void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph)

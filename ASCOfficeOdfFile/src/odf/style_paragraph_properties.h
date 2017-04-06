@@ -58,7 +58,6 @@
 #include "datatypes/linestyle.h"
 #include "datatypes/linetype.h"
 #include "datatypes/styleleadercolor.h"
-#include "datatypes/style_ref.h"
 #include "datatypes/dropcaplength.h"
 #include "datatypes/fobreak.h"
 #include "datatypes/styleposition.h"
@@ -108,7 +107,7 @@ private:
     _CP_OPT(odf_types::style_leader_color)	style_leader_color_;
 
     _CP_OPT( std::wstring )					style_leader_text_;
-    _CP_OPT( odf_types::style_ref )			style_leader_text_style_;            
+    _CP_OPT( std::wstring )					style_leader_text_style_;            
 
 };
 
@@ -157,10 +156,10 @@ public:
 public:
     virtual std::wostream & text_to_stream(std::wostream & _Wostream) const;
     
-	odf_types::drop_cap_length style_length_;
-    unsigned int style_lines_;
-    _CP_OPT(odf_types::length) style_distance_;
-    _CP_OPT(odf_types::style_ref) style_style_name_;
+	odf_types::drop_cap_length		style_length_;
+    unsigned int					style_lines_;
+    _CP_OPT(odf_types::length)		style_distance_;
+    _CP_OPT(std::wstring)			style_style_name_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

@@ -46,7 +46,6 @@
 #include "office_elements_create.h"
 
 #include "datatypes/stylefamily.h"
-#include "datatypes/style_ref.h"
 #include "datatypes/textalign.h"
 #include "datatypes/lengthorpercent.h"
 #include "datatypes/styleverticalrel.h"
@@ -433,12 +432,12 @@ class style_master_page_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-    _CP_OPT(odf_types::style_ref)		style_name_;
-    _CP_OPT(std::wstring)				style_display_name_;
-    _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
+    _CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(std::wstring)	style_page_layout_name_;
     
-	_CP_OPT(std::wstring)				draw_style_name_;
-    _CP_OPT(odf_types::style_ref)		style_next_style_name_;
+	_CP_OPT(std::wstring)	draw_style_name_;
+    _CP_OPT(std::wstring)	style_next_style_name_;
 };
 
 //  style:master-page
@@ -895,7 +894,7 @@ public:
     odf_types::common_background_color_attlist	common_background_color_attlist_;
  	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
   
-	_CP_OPT(odf_types::style_ref)			style_register_truth_ref_style_name_;
+	_CP_OPT(std::wstring)					style_register_truth_ref_style_name_;
     _CP_OPT(std::wstring)					style_print_;
     _CP_OPT(odf_types::direction)			style_print_page_order_;
     _CP_OPT(std::wstring)					style_first_page_number_;

@@ -81,6 +81,16 @@ void odp_page_state::set_page_name(std::wstring name)
 	}
 }
 
+void odp_page_state::set_layout_page(std::wstring name)
+{
+	if (name.empty())return;
+	
+	draw_page* page = dynamic_cast<draw_page*>(page_elm_.get());
+	if (page == NULL)return;
+
+	page->draw_page_attr_.page_layout_name_ = name;
+}
+
 void odp_page_state::set_master_page(std::wstring name)
 {
 	if (name.empty())return;

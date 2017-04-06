@@ -41,7 +41,6 @@
 #include "common_attlists.h"
 
 #include "bool.h"
-#include "style_ref.h"
 #include "textdisplay.h"
 
 namespace cpdoccore { 
@@ -53,9 +52,9 @@ class paragraph_attrs
 {
 public:
 
-    _CP_OPT(odf_types::style_ref)		text_style_name_;
-    _CP_OPT(odf_types::style_ref)		text_cond_style_name_;
-    odf_types::style_ref_array			text_class_names_;
+    _CP_OPT(std::wstring)		text_style_name_;
+    _CP_OPT(std::wstring)		text_cond_style_name_;
+	std::vector<std::wstring>	text_class_names_;
 
 	void serialize(CP_ATTR_NODE);   
 
@@ -158,7 +157,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(odf_types::style_ref)			text_style_name_;
+	_CP_OPT(std::wstring)			text_style_name_;
     _CP_OPT(odf_types::Bool)				text_continue_numbering_;
 
     office_element_ptr          text_list_header_;
@@ -189,7 +188,7 @@ CP_REGISTER_OFFICE_ELEMENT2(text_soft_page_break);
 class text_section_attr
 {
 public:
-    _CP_OPT(odf_types::style_ref)	text_style_name_;
+    _CP_OPT(std::wstring)			text_style_name_;
     std::wstring					text_name_;
     _CP_OPT(bool)					text_protected_;
     _CP_OPT(std::wstring)			text_protection_key_;

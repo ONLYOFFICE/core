@@ -72,7 +72,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
 
     const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+        common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(L"");
 
  ///////////////////////////////////////////	
 	Context.get_slide_context().set_name(name);
@@ -110,8 +110,8 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
-	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
+	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
@@ -244,7 +244,7 @@ void draw_custom_shape::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_caption::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(L"");
 
 	Context.get_slide_context().start_shape(sub_type_);//rect с наваротами-атрибутами .. а-ля TextBox
 	

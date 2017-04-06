@@ -62,14 +62,14 @@ public:
 	}
     unsigned int table_number_columns_repeated_; // default 1
 
-    _CP_OPT(std::wstring)				table_name_;
-    _CP_OPT(odf_types::style_ref)		table_style_name_;
-	_CP_OPT(std::wstring)				table_template_name_;
+    _CP_OPT(std::wstring)		table_name_;
+    _CP_OPT(std::wstring)		table_style_name_;
+	_CP_OPT(std::wstring)		table_template_name_;
 
-    _CP_OPT(std::wstring)				table_protection_key_; 
-    _CP_OPT(std::wstring)				table_print_ranges_;
+    _CP_OPT(std::wstring)		table_protection_key_; 
+    _CP_OPT(std::wstring)		table_print_ranges_;
 
-   _CP_OPT(odf_types::Bool)				table_protected_; // default false
+   _CP_OPT(odf_types::Bool)		table_protected_; // default false
     
    bool table_print_;						// default true
 	
@@ -91,8 +91,8 @@ public:
 
 	unsigned int table_number_rows_repeated_; // default 1
     
-	_CP_OPT(odf_types::style_ref)			table_style_name_;
-    _CP_OPT(odf_types::style_ref)			table_default_cell_style_name_;
+	_CP_OPT(std::wstring)			table_style_name_;
+    _CP_OPT(std::wstring)			table_default_cell_style_name_;
     _CP_OPT(odf_types::table_visibility)	table_visibility_; // default Visible
 
 	void serialize(CP_ATTR_NODE);    
@@ -104,10 +104,10 @@ class table_table_cell_attlist
 public:
 	table_table_cell_attlist() : table_number_columns_repeated_(1) {}
 
-	unsigned int						table_number_columns_repeated_; // default 1
-    _CP_OPT(odf_types::style_ref)		table_style_name_;
-    _CP_OPT(std::wstring)				table_content_validation_name_;
-    _CP_OPT(std::wstring)				table_formula_;
+	unsigned int				table_number_columns_repeated_; // default 1
+    _CP_OPT(std::wstring)		table_style_name_;
+    _CP_OPT(std::wstring)		table_content_validation_name_;
+    _CP_OPT(std::wstring)		table_formula_;
 
     _CP_OPT(odf_types::common_value_and_type_attlist) common_value_and_type_attlist_;
 
@@ -247,12 +247,12 @@ public:
 class table_table_column_attlist
 {
 public:
-	table_table_column_attlist() : table_number_columns_repeated_(1){}
-    unsigned int table_number_columns_repeated_; // default 1
-    
-	_CP_OPT(odf_types::style_ref)		table_style_name_;
-    _CP_OPT(odf_types::table_visibility) table_visibility_;  // default Visible
-    _CP_OPT(odf_types::style_ref)		table_default_cell_style_name_;
+	table_table_column_attlist() :	table_number_columns_repeated_(1){}
+
+    unsigned int							table_number_columns_repeated_; // default 1    
+	_CP_OPT(std::wstring)					table_style_name_;
+    _CP_OPT(odf_types::table_visibility)	table_visibility_;  // default Visible
+    _CP_OPT(std::wstring)					table_default_cell_style_name_;
 
 	void serialize(CP_ATTR_NODE);    
 };

@@ -103,7 +103,9 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement *oox_unknown);
  		
-		void convert(PPTX::Logic::CSld					*oox_slide, bool placeholders = true);
+		void convert_slide	(PPTX::Logic::CSld					*oox_slide, bool bPlaceholders = true);
+		void convert_layout	(PPTX::Logic::CSld					*oox_slide);
+
 		void convert(PPTX::Logic::Bg					*oox_background);
 		
 		void convert(PPTX::Logic::Table					*oox_table);
@@ -132,11 +134,12 @@ private:
 		odf_writer::odp_conversion_context				*odp_context;
 
 		std::map<std::wstring, std::wstring>			m_mapMasters;
-		std::vector<std::wstring>						m_arLayouts;
+		std::map<std::wstring, std::wstring>			m_mapLayouts;
 		
 		void convert_slides			();
 		void convert_styles			();
 		void convert_settings		();
+		void convert_layouts		();
 
 		
 //--------------------------------------------------------------------------------

@@ -41,7 +41,6 @@
 
 #include "bool.h"
 #include "length.h"
-#include "style_ref.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -52,20 +51,19 @@ class office_annotation_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-public:
-	_CP_OPT(odf_types::length)		svg_y_;
-	_CP_OPT(odf_types::length)		svg_x_;
- 	_CP_OPT(odf_types::length)		svg_width_;
-	_CP_OPT(odf_types::length)		svg_height_;
+	_CP_OPT(odf_types::length)	svg_y_;
+	_CP_OPT(odf_types::length)	svg_x_;
+ 	_CP_OPT(odf_types::length)	svg_width_;
+	_CP_OPT(odf_types::length)	svg_height_;
 
-	_CP_OPT(odf_types::length)		caption_point_y_;
-	_CP_OPT(odf_types::length)		caption_point_x_;
+	_CP_OPT(odf_types::length)	caption_point_y_;
+	_CP_OPT(odf_types::length)	caption_point_x_;
 
-	_CP_OPT(std::wstring)			name_;
-	_CP_OPT(odf_types::Bool)		display_;
+	_CP_OPT(std::wstring)		name_;
+	_CP_OPT(odf_types::Bool)	display_;
 
-	_CP_OPT(odf_types::style_ref)	draw_text_style_name_;
-	_CP_OPT(odf_types::style_ref)	draw_style_name_;
+	_CP_OPT(std::wstring)		draw_text_style_name_;
+	_CP_OPT(std::wstring)		draw_style_name_;
 };
 
 class dc_date : public office_element_impl<dc_date>

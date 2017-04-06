@@ -204,11 +204,59 @@ void PptxConverter::convertDocument()
  	
 	if (UpdateProgress(850000))return;
 }
-
 void PptxConverter::convert_styles()
 {
+	if (presentation->sldIdLst.empty()) return;
+
+	std::wstring rId = presentation->sldIdLst[0].rid.get();
+	smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();
+
+	if (slide.IsInit() == false) return;
+
+	odp_context->styles_context()->create_default_style(odf_types::style_family::Graphic);					
+	
+	odf_writer::style_paragraph_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+	odf_writer::style_text_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+
+	if (text_properties)
+	{
+		text_properties->content_.fo_font_size_ = odf_types::font_size(odf_types::length(18, odf_types::length::pt));
+	}
+
+	if (slide->theme.IsInit() && text_properties)
+	{
+		if (slide->theme->themeElements.fontScheme.majorFont.latin.typeface.empty() == false)
+			text_properties->content_.fo_font_family_ = slide->theme->themeElements.fontScheme.majorFont.latin.typeface;
+
+		if (slide->theme->themeElements.fontScheme.majorFont.cs.typeface.empty() == false)
+			text_properties->content_.style_font_family_complex_ = slide->theme->themeElements.fontScheme.majorFont.cs.typeface;
+		
+		if (slide->theme->themeElements.fontScheme.majorFont.ea.typeface.empty() == false)
+			text_properties->content_.style_font_family_asian_ = slide->theme->themeElements.fontScheme.majorFont.ea.typeface;
+	}
+	convert(presentation->defaultTextStyle.GetPointer()); //стили дефалтовых списков
+
+///////////////////////////////////////////////////////////////////////////
+
+	odp_context->styles_context()->create_default_style(odf_types::style_family::Table);					
+	odf_writer::style_table_properties	* table_properties	= odp_context->styles_context()->last_state()->get_table_properties();
+	//для красивой отрисовки в редакторах - разрешим объеденить стили пересекающихся обрамлений 
+	table_properties->table_format_properties_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
+
+	odp_context->styles_context()->create_default_style(odf_types::style_family::TableRow);					
+	odf_writer::style_table_row_properties	* row_properties	= odp_context->styles_context()->last_state()->get_table_row_properties();
+	row_properties->style_table_row_properties_attlist_.fo_keep_together_ = odf_types::keep_together(odf_types::keep_together::Auto);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
+	odp_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false, true);		
+	odf_writer::graphic_format_properties	* frame_graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
+	odf_writer::style_text_properties		* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+
+	if (frame_text_properties && text_properties)
+		frame_text_properties->apply_from(text_properties);
+
 	odp_context->page_layout_context()->create_layer_sets();
-	//layouts
 }
 
 void PptxConverter::convert_settings()
@@ -235,11 +283,8 @@ void PptxConverter::convert_slides()
 		if (slide->Master.IsInit())
 		{
 			current_clrMap	= &slide->Master->clrMap;					
-			// Master & Layout
 
-			std::wstring master_layout = slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename;
-
-			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(master_layout);
+			std::map<std::wstring, std::wstring>::iterator pFind = m_mapMasters.find(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename);
 			if (pFind == m_mapMasters.end())
 			{
 				master_style_name = L"MasterPage";
@@ -254,21 +299,37 @@ void PptxConverter::convert_slides()
 				
 				odp_context->start_master_slide(master_style_name);
 					current_slide = slide->Master.operator->();
-					convert(&slide->Master->cSld, false);//slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true);		
+					convert_slide(&slide->Master->cSld, false);//slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true);		
 					
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
-					convert(&slide->Layout->cSld, false);		
+					convert_slide(&slide->Layout->cSld, false);		
 				odp_context->end_master_slide();
 				
-				m_mapMasters.insert(std::make_pair(master_layout, master_style_name));
+				m_mapMasters.insert(std::make_pair(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename, master_style_name));
 			}
 			else
 			{
 				master_style_name = pFind->second;
 			}
+			pFind = m_mapLayouts.find(slide->Layout->m_sOutputFilename);
+			if (pFind == m_mapLayouts.end())
+			{
+				odp_context->start_layout_slide();
+					convert_layout(&slide->Layout->cSld);
+				odp_context->end_layout_slide();
+
+				layout_style_name = odp_context->page_layout_context()->get_local_styles_context()->last_state(odf_types::style_family::PresentationPageLayout)->get_name();
+				
+				m_mapLayouts.insert(std::make_pair(slide->Layout->m_sOutputFilename, layout_style_name));
+			}
+			else
+			{
+				layout_style_name = pFind->second;
+			}
 		}
+//--------------------------------------------------------------------------------------------------------------------
 		current_clrMap	= &slide->Master->clrMap; //after layout					
 		
 		if (slide->clrMapOvr.IsInit() && slide->clrMapOvr->overrideClrMapping.IsInit())
@@ -279,23 +340,19 @@ void PptxConverter::convert_slides()
 
 		odp_context->start_slide();
 		
-		odp_context->current_slide().set_master_page(master_style_name);
-		//odp_context->current_slide().set_layout_style(layout_style_name);
+		odp_context->current_slide().set_master_page (master_style_name);
+		odp_context->current_slide().set_layout_page (layout_style_name);
 		//nullable_bool		show;
 		//nullable_bool		showMasterPhAnim;
 		//nullable_bool		showMasterSp;
 		
-		convert(slide->cSld.GetPointer(), true);
+		convert_slide(slide->cSld.GetPointer(), true);
 
 
 		//nullable<Logic::Transition>	transition;
 		//nullable<Logic::Timing>		timing;
 
-
 		//smart_ptr<NotesSlide>			Note;
-		//smart_ptr<Theme>				theme;
-		//smart_ptr<OOX::CVmlDrawing>	Vml;
-		//smart_ptr<TableStyles>		tableStyles_;
 
 		//smart_ptr<PPTX::Comments>		comments;
 
@@ -799,7 +856,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->end_drawings();
 }
 
-void PptxConverter::convert(PPTX::Logic::CSld *oox_slide, bool placeholders)
+void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholders)
 {
 	if (oox_slide == NULL) return;
 
@@ -819,7 +876,7 @@ void PptxConverter::convert(PPTX::Logic::CSld *oox_slide, bool placeholders)
 		
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
-			if (placeholders)
+			if (bPlaceholders)
 				convert(pElem.operator->());
 		}
 		else 
@@ -831,7 +888,38 @@ void PptxConverter::convert(PPTX::Logic::CSld *oox_slide, bool placeholders)
 	convert(oox_slide->controls.GetPointer());
 }
 
+void PptxConverter::convert_layout(PPTX::Logic::CSld *oox_slide)
+{
+	if (oox_slide == NULL) return;
 
+	for (size_t i = 0 ; i < oox_slide->spTree.SpTreeElems.size(); i++)
+	{
+		smart_ptr<PPTX::WrapperWritingElement>	pElem = oox_slide->spTree.SpTreeElems[i].GetElem();
+		smart_ptr<PPTX::Logic::Shape>			pShape = pElem.smart_dynamic_cast<PPTX::Logic::Shape>();
+		
+		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
+		{
+			int type = 0;
+			if (pShape->nvSpPr.nvPr.ph->type.IsInit())
+				type = pShape->nvSpPr.nvPr.ph->type->GetBYTECode();
+
+			if (type != 5 && type != 6 && type != 7 && type != 12)
+			{
+				odf_writer::office_element_ptr elm;
+				create_element(L"presentation", L"placeholder", elm, odp_context);
+
+				odf_context()->drawing_context()->start_drawing();			
+				odf_context()->drawing_context()->start_element(elm);
+					
+				OoxConverter::convert(&pShape->nvSpPr.nvPr);
+				OoxConverter::convert(pShape->spPr.xfrm.GetPointer());
+
+				odf_context()->drawing_context()->end_element();			
+				odf_context()->drawing_context()->end_drawing();
+			}
+		}
+	}
+}
 
 } 
 

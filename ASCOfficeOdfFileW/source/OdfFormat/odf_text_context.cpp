@@ -228,10 +228,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		}
 	
 		text_p* p = dynamic_cast<text_p*>(elm.get());
-		if (p)	p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		if (p)	p->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
 		
 		text_h* h = dynamic_cast<text_h*>(elm.get());
-		if (h)	h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		if (h)	h->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
 
 		style *style_ = dynamic_cast<style*>(style_elm.get());
 		if (style_)
@@ -244,10 +244,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 	else if (parent_paragraph_style_.length() >0)
 	{
 		text_p* p = dynamic_cast<text_p*>(elm.get());
-		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
+		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
 		
 		text_h* h = dynamic_cast<text_h*>(elm.get());
-		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(parent_paragraph_style_);	
+		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
 	}
 	if (paragraph_properties_ && need_break_)
 	{
@@ -324,7 +324,7 @@ void odf_text_context::start_span(bool styled)
 		style *style_ = dynamic_cast<style*>(style_elm.get());
 		
 		text_span* span = dynamic_cast<text_span*>(span_elm.get());
-		if (span) span->text_style_name_ = style_ref(style_name);
+		if (span) span->text_style_name_ = style_name;
 
 		if (style_)
 		{
@@ -411,7 +411,7 @@ void odf_text_context::start_list(std::wstring style_name) //todoooo add new_num
 		text_list* list = dynamic_cast<text_list*>(list_elm.get());
 		if (list)
 		{
-			list->text_style_name_ = style_ref(style_name);
+			list->text_style_name_ = style_name;
 			list->text_continue_numbering_ = true;
 		}
 		list_state_.style_name = style_name;
@@ -501,17 +501,17 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 	
 	if (text_span* span = dynamic_cast<text_span*>(current_level_.back().elm.get()))
 	{
-		span->text_style_name_ = style_ref(style_name);
+		span->text_style_name_ = style_name;
 	}
 	
 	if (text_p* p = dynamic_cast<text_p*>(current_level_.back().elm.get()))
 	{
-		p->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		p->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
 	}
 
 	if (text_h* h = dynamic_cast<text_h*>(current_level_.back().elm.get()))
 	{
-		h->paragraph_.paragraph_attrs_.text_style_name_ = style_ref(style_name);	
+		h->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
 	}
 }
 

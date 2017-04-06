@@ -879,6 +879,11 @@ void office_styles::serialize(std::wostream & strm)
 			
 			draw_styles_.serialize(CP_XML_STREAM());
 
+			for (size_t i = 0 ; i < style_presentation_page_layout_.size(); i++)
+			{
+				style_presentation_page_layout_[i]->serialize(CP_XML_STREAM());
+			}
+
 			templates_.serialize(CP_XML_STREAM());
 			
 			styles_.serialize(CP_XML_STREAM());
@@ -1349,5 +1354,25 @@ void style_presentation_page_layout::create_child_element( const std::wstring & 
     }
 }
 
+void style_presentation_page_layout::add_child_element( const office_element_ptr & child)
+{
+	content_.push_back(child);
+}
+
+void style_presentation_page_layout::serialize(std::wostream & strm)
+{
+    CP_XML_WRITER(strm)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			CP_XML_ATTR_OPT(L"style:name", style_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
 }
 }

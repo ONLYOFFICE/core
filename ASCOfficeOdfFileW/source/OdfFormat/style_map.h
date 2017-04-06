@@ -38,8 +38,6 @@
 
 #include "office_elements_create.h"
 
-#include "style_ref.h"
-
 namespace cpdoccore { 
 namespace odf_writer {
 
@@ -57,10 +55,10 @@ public:
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm){}
 
-	std::wstring			style_condition_;
-    odf_types::style_ref	style_name_;
-    std::wstring			style_base_cell_address_;
-    odf_types::style_ref	style_apply_style_name_;
+	std::wstring	style_condition_;
+    std::wstring	style_name_;
+    std::wstring	style_base_cell_address_;
+    std::wstring	style_apply_style_name_;
 
 };
 

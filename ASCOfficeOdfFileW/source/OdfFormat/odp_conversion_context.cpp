@@ -78,7 +78,10 @@ void odp_conversion_context::start_slide()
 	
 	drawing_context()->set_presentation(false);
 }
-
+void odp_conversion_context::end_slide()
+{
+	slide_context_.end_page();
+}
 void odp_conversion_context::start_master_slide(std::wstring name)
 {
 	slide_context_.set_styles_context(page_layout_context()->get_local_styles_context());
@@ -88,17 +91,24 @@ void odp_conversion_context::start_master_slide(std::wstring name)
 	
 	drawing_context()->set_presentation(true);	
 }
-
 void odp_conversion_context::end_master_slide()
 {
 	slide_context_.end_page();
 }
-
-void odp_conversion_context::end_slide()
+void odp_conversion_context::start_layout_slide()
+{
+	slide_context_.set_styles_context(page_layout_context()->get_local_styles_context());
+	
+	office_element_ptr elm = page_layout_context()->add_presentation_layout_page();	
+	
+	slide_context_.start_page(elm);
+	
+	drawing_context()->set_presentation(true);	
+}
+void odp_conversion_context::end_layout_slide()
 {
 	slide_context_.end_page();
 }
-
 void odp_conversion_context::start_text_context()
 {
 	text_context_ = new odf_text_context(this);

@@ -56,6 +56,7 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 #include "style_page_layout_properties.h"
+#include "style_presentation.h"
 
 namespace cpdoccore 
 {
@@ -180,7 +181,8 @@ struct odf_drawing_state
 		description_		= L"";
 		hidden_				= false;
 		z_order_			= -1;
-		draw_layer_			= boost::none;
+		
+		presentation_class_	= boost::none;
 
 		rotateAngle			= boost::none;
 		
@@ -211,7 +213,8 @@ struct odf_drawing_state
 
 	_CP_OPT(double)			rotateAngle;
 	_CP_OPT(unsigned int)	fill_color_;
-	_CP_OPT(std::wstring)	draw_layer_;
+	
+	_CP_OPT(presentation_class)	presentation_class_;
 
 	bool flipH;
 	bool flipV;
@@ -388,7 +391,7 @@ void odf_drawing_context::start_group()
 		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_name;
 
 	impl_->current_graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
 	impl_->current_graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;	
@@ -479,9 +482,25 @@ void odf_drawing_context::end_drawing()
 	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
-
 	if (draw)
 	{
+		if (impl_->is_presentation_)
+		{
+			_CP_OPT(std::wstring) draw_layer;
+			if (impl_->is_presentation_.get() == true)
+			{//master				
+				if (impl_->current_drawing_state_.presentation_class_)	
+						draw_layer = L"backgroundobjects";
+				else	draw_layer = L"layout";
+			}
+			else
+			{//slide
+				if (impl_->current_drawing_state_.presentation_class_)	
+						draw_layer = L"layout";
+			}
+			draw->common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_layer_name_attlist_.draw_layer_ = draw_layer;
+		}
 		if (impl_->current_drawing_state_.name_.length() > 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 		if (impl_->current_drawing_state_.z_order_ >= 0)
@@ -536,7 +555,7 @@ void odf_drawing_context::end_drawing()
 
 		}
 
-		if (strTransform.length()>0)
+		if (strTransform.empty() == false)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
 
 		draw->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
@@ -546,6 +565,16 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
+	presentation_placeholder * placeholder = dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	if (placeholder)
+	{
+		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;
+		placeholder->svg_x_					= impl_->current_drawing_state_.svg_x_;
+		placeholder->svg_y_					= impl_->current_drawing_state_.svg_y_;
+
+		placeholder->svg_height_			= impl_->current_drawing_state_.svg_height_;
+		placeholder->svg_width_				= impl_->current_drawing_state_.svg_width_;
+	}
 	if (impl_->current_drawing_state_.in_group)
 	{
 		odf_group_state_ptr gr = impl_->current_group_;
@@ -572,24 +601,25 @@ void odf_drawing_context::end_drawing()
 		//не поддерживается :( - нужно считать искажения на простейшие фигуры - линии, ректы, эллипсы 
 	}
 
+	if (impl_->current_graphic_properties)
+	{
+		impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
+		impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
 
-	impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
-	impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+		impl_->current_graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
+		impl_->current_graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
 
-	impl_->current_graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
-	impl_->current_graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
+		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
+		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
+		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
+		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
-	impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
-	impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
-	impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
-	impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
+		if (draw && !impl_->current_drawing_state_.in_group)
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
-	if (draw && !impl_->current_drawing_state_.in_group)
-		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
-
-	impl_->current_graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
-	impl_->current_graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;
-
+		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
+		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;
+	}
 	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
 	//{
 	//	draw->common_draw_attlists_.position_.svg_x_ = boost::none;
@@ -676,7 +706,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 		current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int level = current_level_.size();
@@ -690,8 +720,8 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	current_drawing_state_.elements_.push_back(state);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 }
+
 void odf_drawing_context::start_shape(int type)
 {
 	impl_->current_drawing_state_.oox_shape_preset = type;
@@ -758,7 +788,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	state.elm = draw_elm;
 
 	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ 
-		= style_ref(state.style_name);
+		= state.style_name;
 
 	impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
 	impl_->current_level_.push_back(draw_elm);
@@ -991,17 +1021,6 @@ void odf_drawing_context::start_frame()
 
 void odf_drawing_context::end_frame()
 {
-	if (impl_->is_presentation_ && impl_->current_drawing_state_.draw_layer_)
-	{
-		draw_frame* frame = dynamic_cast<draw_frame*>(impl_->current_level_.back().get());
-		if (frame)
-		{
-			if (*impl_->is_presentation_ == false)
-				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_layer_name_attlist_.draw_layer_ = L"layout";
-			else
-				frame->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_layer_name_attlist_.draw_layer_ = impl_->current_drawing_state_.draw_layer_;
-		}
-	}
 	end_element();
 }
 /////////////////////
@@ -1106,16 +1125,35 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 
 	impl_->current_graphic_properties->draw_shadow_color_ = hexColor;
 }
-void odf_drawing_context::set_layer (std::wstring val)
-{
-	//placeholder defaults
-	start_area_properties();
-		set_no_fill();	
-	start_line_properties();
-		set_no_fill();	
-	end_line_properties();
 
-	impl_->current_drawing_state_.draw_layer_ = val;
+void odf_drawing_context::set_placeholder_id (std::wstring val)
+{
+	//impl_->current_drawing_state_.draw_layer_ = val;
+}
+void odf_drawing_context::set_placeholder_type (int val)
+{
+	switch(val)
+	{
+		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 		break;
+		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 	break;
+		case 2:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic; 	break;
+		case 3:		impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		case 4:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 5:		impl_->current_drawing_state_.presentation_class_ = presentation_class::date_time;	break;
+		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;	break;
+		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;	break;
+		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 10:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 12:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page_number;break;
+		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
+		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
+		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		default:		
+			impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 				break;
+	}
+	//todooo draw_layer for master for sldnum, datetime ...
 }
 void odf_drawing_context::set_no_fill()
 {
@@ -1900,7 +1938,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		}
 		else
 		{
-			std::wstring style_name = draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_->style_name();
+			std::wstring style_name = *draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_;
 			//найти
 		}
 		if (style_ && !paragraph_properties)
@@ -1943,11 +1981,6 @@ void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(d
 	if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::pt);
 	if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::pt);
 }
-void odf_drawing_context::set_textarea_rotate (double dVal)
-{
-	if (!impl_->current_graphic_properties)return;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы

@@ -112,6 +112,23 @@ void odf_page_layout_context::create_layer_sets()
 
 	master_state_list_.push_back( odf_master_state(sets_elm) ); 
 }
+office_element_ptr odf_page_layout_context::add_presentation_layout_page()
+{
+	office_element_ptr elm;
+	create_element(L"style", L"presentation-page-layout", elm, odf_context_);
+
+	style_presentation_page_layout* style_ = dynamic_cast<style_presentation_page_layout*>(elm.get());
+	if (style_)
+	{
+		std::wstring style_name = local_style_context_->find_free_name(style_family::PresentationPageLayout);
+		style_->style_name_ = style_name;
+		
+		local_style_context_->add_style(elm, false, true, style_family::PresentationPageLayout);
+		local_style_context_->last_state()->set_name(style_name);
+	}
+
+	return elm;
+}
 void odf_page_layout_context::add_master_page(std::wstring page_name)
 {
 	office_element_ptr elm;
@@ -167,7 +184,6 @@ void odf_page_layout_context::set_styles_context(odf_style_context * Context)
 {
 	style_context_	= Context;       
 }
-
 void odf_page_layout_context::create_layout_page()
 {
 	office_element_ptr elm;

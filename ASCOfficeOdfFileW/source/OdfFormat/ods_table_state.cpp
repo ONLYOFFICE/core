@@ -264,7 +264,7 @@ void ods_table_state::add_column(office_element_ptr & elm, short repeated,office
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_ref(style_name);
+	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_name;
 	column->table_table_column_attlist_.table_number_columns_repeated_ = repeated;
 	
 }
@@ -275,7 +275,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
+	column->table_table_column_attlist_.table_default_cell_style_name_ = style_name;
 
 	columns_.back().cell_style_name = style_name;
 }
@@ -350,7 +350,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_ref(style_name);
+	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_name;
 	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";
@@ -440,7 +440,7 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 	//table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	//if (row == NULL)return;
 
-	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_ref(style_name);
+	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_name;
 }
 
 office_element_ptr  & ods_table_state::current_row_element()
@@ -1185,8 +1185,8 @@ void ods_table_state::set_conditional_style_name(std::wstring style_name)
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
-	if (condition)condition->calcext_condition_attr_.calcext_apply_style_name_= style_ref(style_name);
-	if (date_is) date_is->calcext_date_is_attr_.calcext_style_ = style_ref(style_name);
+	if (condition)	condition->calcext_condition_attr_.calcext_apply_style_name_= style_name;
+	if (date_is)	date_is->calcext_date_is_attr_.calcext_style_				= style_name;
 }
 void ods_table_state::set_conditional_operator(int _operator)
 {

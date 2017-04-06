@@ -765,10 +765,8 @@ int ComputeMarginY(const style_page_layout_properties_attlist		& pageProperties,
 
 void common_draw_docx_convert(oox::docx_conversion_context & Context, const union_common_draw_attlists & attlists_, oox::_docx_drawing *drawing) 
 {
-	const _CP_OPT(style_ref) & styleRef = attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_;
-
-    const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
+	const std::wstring styleName = attlists_.shape_with_text_and_styles_.
+					common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
 
 	std::vector<const odf_reader::style_instance *> instances;
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
@@ -1138,12 +1136,8 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
     drawing->fill.bitmap->rId = Context.add_mediaitem(href, oox::typeImage, drawing->fill.bitmap->isInternal,href);
 	drawing->fill.bitmap->bStretch = true;
 
-    const _CP_OPT(style_ref) & styleRef = frame->common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_shape_with_styles_attlist_.
-        common_draw_style_name_attlist_.
-        draw_style_name_;
-
-    const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
+    const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
+									common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	

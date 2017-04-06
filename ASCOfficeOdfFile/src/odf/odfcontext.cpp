@@ -353,7 +353,9 @@ void page_layout_instance::docx_convert_serialize(std::wostream & strm, oox::doc
 }
 void page_layout_instance::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    properties()->pptx_convert(Context);   
+	style_page_layout_properties * props = properties();
+    if (props)
+		props->pptx_convert(Context);   
 }
 
 void page_layout_container::add_page_layout(const style_page_layout * StylePageLayout)

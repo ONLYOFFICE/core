@@ -95,9 +95,9 @@ void paragraph_attrs::serialize(CP_ATTR_NODE)
    
 	std::wstring text_class_names_all;
 
-	BOOST_FOREACH(const style_ref & elm, text_class_names_)
+	BOOST_FOREACH(const std::wstring & elm, text_class_names_)
 	{    
-		text_class_names_all = elm.style_name() + std::wstring(L" ");
+		text_class_names_all = elm + std::wstring(L" ");
 	}
 	
 	if (!text_class_names_all.empty())

@@ -476,12 +476,12 @@ class style_master_page_attlist
 public:
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(odf_types::style_ref)		style_name_;
-    _CP_OPT(std::wstring)				style_display_name_;
-    _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
+    _CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(std::wstring)	style_display_name_;
+    _CP_OPT(std::wstring)	style_page_layout_name_;
     
-	_CP_OPT(std::wstring)				draw_style_name_;
-    _CP_OPT(odf_types::style_ref)		style_next_style_name_;
+	_CP_OPT(std::wstring)	draw_style_name_;
+    _CP_OPT(std::wstring)	style_next_style_name_;
 };
 
 
@@ -851,13 +851,15 @@ public:
     static const ElementType type = typeStylePresentationPageLayout;
     CPDOCCORE_DEFINE_VISITABLE()
 
-	virtual void serialize(std::wostream & strm){}
-    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+	virtual void serialize(std::wostream & strm);
+    virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element		( const office_element_ptr & child);
+
 
 	_CP_OPT(std::wstring) style_name_;
 
 	office_element_ptr_array content_;
-    };
+};
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout)
 

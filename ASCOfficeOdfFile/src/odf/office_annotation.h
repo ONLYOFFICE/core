@@ -37,8 +37,6 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "datatypes/style_ref.h"
-
 namespace cpdoccore { 
 namespace odf_reader {
 
@@ -59,8 +57,8 @@ public:
 
 	_CP_OPT(bool) display_;
 
-	 _CP_OPT(odf_types::style_ref) draw_text_style_name_;
-	 _CP_OPT(odf_types::style_ref) draw_style_name_;
+	_CP_OPT(std::wstring) draw_text_style_name_;
+	_CP_OPT(std::wstring) draw_style_name_;
 };
 
 //  dc:date

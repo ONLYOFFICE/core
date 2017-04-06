@@ -55,14 +55,11 @@ namespace odf_writer {
 
 std::wstring number_style_base::get_style_name() const
 {
-    if (common_data_style_attlist_.style_name_)
-        return common_data_style_attlist_.style_name_->style_name();
-    else
-        return L"";
+	return common_data_style_attlist_.style_name_.get_value_or(L"");
 }
 void number_style_base::set_style_name(std::wstring & name) 
 {
-    common_data_style_attlist_.style_name_ = style_ref(name);
+    common_data_style_attlist_.style_name_ = name;
 }
 
 void number_style_base::serialize(std::wostream & strm)

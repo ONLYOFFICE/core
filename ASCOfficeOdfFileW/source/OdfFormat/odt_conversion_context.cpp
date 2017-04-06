@@ -465,7 +465,7 @@ void odt_conversion_context::add_section(bool continuous)
 	state.style_name	= styles_context()->last_state()->get_name();
 	
 	text_section* section = dynamic_cast<text_section*>(state.elm.get());
-	if (section)section->text_section_attr_.text_style_name_ = style_ref(state.style_name);	
+	if (section)section->text_section_attr_.text_style_name_ = state.style_name;	
 
 	sections_.push_back(state);
 }

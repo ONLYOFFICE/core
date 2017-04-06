@@ -128,7 +128,7 @@ public:
 
 	void start_image	(std::wstring file_path);
 	void end_image		();
-		
+	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
@@ -211,8 +211,9 @@ public:
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);
 	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
-	void set_textarea_rotate		(double dVal);
-	void set_layer					(std::wstring val);
+
+	void set_placeholder_id			(std::wstring val);
+	void set_placeholder_type		(int val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);

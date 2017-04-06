@@ -55,6 +55,9 @@ public:
 	void start_master_slide(std::wstring name);
 	void end_master_slide();
 
+	void start_layout_slide();
+	void end_layout_slide();
+
 	odp_page_state & current_slide() { return slide_context_.state();}
 
 /////////////////////////////////////////////////////

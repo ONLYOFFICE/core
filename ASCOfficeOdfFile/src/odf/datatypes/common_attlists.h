@@ -51,7 +51,6 @@
 #include "stylehorizontalrel.h"
 #include "percentorscale.h"
 #include "anchortype.h"
-#include "style_ref.h"
 #include "linewidth.h"
 #include "presentationclass.h"
 #include "xlink.h"
@@ -477,9 +476,9 @@ public:
     void apply_from(const common_draw_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref)		draw_style_name_;
+    _CP_OPT(std::wstring)	draw_style_name_;
     _CP_OPT(std::wstring)	draw_class_names_;
-    _CP_OPT(style_ref)		presentation_style_name_;
+    _CP_OPT(std::wstring)	presentation_style_name_;
     _CP_OPT(std::wstring)	presentation_class_names_;
 
 };
@@ -577,7 +576,7 @@ public:
     void apply_from(const common_draw_text_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref) draw_text_style_name_;
+    _CP_OPT(std::wstring) draw_text_style_name_;
 };
 
 class common_draw_position_attlist
@@ -609,7 +608,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref)		style_name_;
+    _CP_OPT(std::wstring)	style_name_;
     _CP_OPT(std::wstring)	number_language_;
     _CP_OPT(std::wstring)	number_country_;
     _CP_OPT(std::wstring)	number_title_;

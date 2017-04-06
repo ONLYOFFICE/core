@@ -46,6 +46,7 @@ namespace OOX
 }
 namespace PPTX
 {
+	class TableStyles;
 	class Presentation;
 	class Folder;
 
@@ -55,6 +56,13 @@ namespace PPTX
 		class Bg;
 		class Transition;
 		class Timing;
+		class TablePartStyle;
+		class Table;
+		class TableProperties;
+		class TableRow;
+		class TableCell;
+		class TableCellProperties;
+		class TcBdr;
 	}
 }
 
@@ -95,15 +103,29 @@ namespace Oox2Odf
 
 		void convert(OOX::WritingElement *oox_unknown);
  		
-		void convert(PPTX::Logic::CSld		*oox_slide, bool placeholders = true);
-		void convert(PPTX::Logic::Bg		*oox_background);
-  private:
+		void convert(PPTX::Logic::CSld					*oox_slide, bool placeholders = true);
+		void convert(PPTX::Logic::Bg					*oox_background);
+		
+		void convert(PPTX::Logic::Table					*oox_table);
+		void convert(PPTX::Logic::TableRow				*oox_table_row);
+		void convert(PPTX::Logic::TableCell				*oox_table_cell, int numCol);
+		
+ 		void convert(PPTX::Logic::TablePartStyle		*oox_table_part_style);
+		bool convert(PPTX::Logic::TableCellProperties	*oox_table_cell_pr, int col);
+		bool convert(PPTX::Logic::TableCellProperties	*oox_table_cell_pr); 
+		
+		void convert(PPTX::Logic::TableProperties		*oox_table_pr);
+		void convert(PPTX::Logic::TcBdr					*oox_table_borders);
+
+		void convert(PPTX::Logic::Ln *oox_ln_border, std::wstring & odf_border);
+private:
 		PPTX::Folder									*pptx_document;
 		PPTX::Presentation								*presentation;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
-		PPTX::Theme										*current_theme;
-		
+		PPTX::Theme										*current_theme;		
+		PPTX::TableStyles								*current_tableStyles;
+
 		OOX::IFileContainer								*current_slide;
 		PPTX::Logic::ClrMap								*current_clrMap;
 		

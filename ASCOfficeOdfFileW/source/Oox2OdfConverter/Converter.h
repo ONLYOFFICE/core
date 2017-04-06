@@ -268,8 +268,8 @@ namespace PPTX
 		class GraphicFrame;
 		class SpTree;
 		class Shape;
+		class CxnSp;
 		class Pic;
-		class Table;
 		class SmartArt;
 		class ChartRec;
 		class SpPr;
@@ -295,6 +295,8 @@ namespace PPTX
 		class NvSpPr;
 		class CNvPr;
 		class CNvSpPr;
+		class CNvCxnSpPr;
+		class NvCxnSpPr;
 		class NvPr;
 		class Paragraph;
 		class TxBody;
@@ -312,6 +314,10 @@ namespace PPTX
 		class QuadBezTo;
 		class CubicBezTo;
 		class Close;
+		class EffectStyle;
+		class InnerShdw;
+		class OuterShdw;
+		class PrstShdw;
 	}
 }
 
@@ -359,10 +365,12 @@ public:
 		void convert(PPTX::Logic::GraphicFrame					*oox_graphicFrame);
 		void convert(PPTX::Logic::SpTree						*oox_shape_tree);
 		void convert(PPTX::Logic::Shape							*oox_shape);
+		void convert(PPTX::Logic::CxnSp							*oox_connect);
 		void convert(PPTX::Logic::Pic							*oox_pic);
 		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 		void convert(PPTX::Logic::Xfrm							*oox_xfrm);
+		void convert(PPTX::Logic::Xfrm							*oox_txbx, PPTX::Logic::Xfrm *oox_xfrm);
 		int	 convert(PPTX::Logic::PrstTxWarp					*oox_text_preset);
 		void convert(PPTX::Logic::PrstGeom						*oox_geom);
 		void convert(PPTX::Logic::CustGeom						*oox_geom);
@@ -370,8 +378,7 @@ public:
         void convert(PPTX::Logic::GradFill						*oox_fill, DWORD ARGB = 0);
         void convert(PPTX::Logic::SolidFill						*oox_fill, DWORD ARGB = 0);
         void convert(PPTX::Logic::PattFill						*oox_fill, DWORD ARGB = 0);
-		void convert(PPTX::Logic::EffectLst						*oox_effect_lst);
-		void convert(PPTX::Logic::Ln							*oox_line);
+		void convert(PPTX::Logic::Ln							*oox_line, DWORD ARGB = 0, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::FontRef						*oox_fontRef);
 		void convert(PPTX::Logic::StyleRef						*oox_styleRef, int type);
 		void convert(PPTX::Logic::Path2D						*oox_path2D);
@@ -381,7 +388,9 @@ public:
         void convert(PPTX::Logic::UniColor						*color, std::wstring & hexString, _CP_OPT(double) & opacity, DWORD ARGB = 0);
 		void convert(PPTX::Logic::NvSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
+		void convert(PPTX::Logic::CNvCxnSpPr					*oox_cnvPr);
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);
+		void convert(PPTX::Logic::NvCxnSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para);
 		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
@@ -394,13 +403,18 @@ public:
 		void convert(PPTX::Logic::NvGraphicFramePr				*oox_framePr);
 		void convert(PPTX::Logic::ChartRec						*oox_chart);
 		void convert(PPTX::Logic::SmartArt						*oox_smart_art);
-		void convert(PPTX::Logic::Table							*oox_table);
 		void convert(PPTX::Logic::LineTo						*oox_geom_path);
 		void convert(PPTX::Logic::MoveTo						*oox_geom_path);
 		void convert(PPTX::Logic::ArcTo							*oox_geom_path);
 		void convert(PPTX::Logic::QuadBezTo						*oox_geom_path);
 		void convert(PPTX::Logic::CubicBezTo					*oox_geom_path);
 		void convert(PPTX::Logic::Close							*oox_geom_path);
+		void convert(PPTX::Logic::EffectStyle					*oox_effect);
+		void convert(PPTX::Logic::EffectLst						*oox_effect_list);
+		void convert(PPTX::Logic::InnerShdw						*oox_effect);
+		void convert(PPTX::Logic::OuterShdw						*oox_effect);
+		void convert(PPTX::Logic::PrstShdw						*oox_effect);
+		
 //.chart............................................................................................................................
 		void convert(OOX::Spreadsheet::CT_ChartSpace			*oox_chart);
 		void convert(OOX::Spreadsheet::CT_Title					*ct_title);

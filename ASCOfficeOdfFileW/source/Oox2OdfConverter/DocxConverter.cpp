@@ -3011,8 +3011,8 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
-	odt_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false,true);		
-	odf_writer::style_graphic_properties	* graphic_properties	= odt_context->styles_context()->last_state()->get_graphic_properties();
+	odt_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false, true);		
+	odf_writer::graphic_format_properties	* graphic_properties	= odt_context->styles_context()->last_state()->get_graphic_properties();
 	//if (graphic_properties)graphic_properties->content_.common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
 
 }
@@ -3876,7 +3876,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 		}
 	}
 
-	odt_context->start_table_cell( oox_table_cell->m_nNumCol,covered, convert(oox_table_cell->m_oTableCellProperties, oox_table_cell->m_nNumCol+1));
+	odt_context->start_table_cell( oox_table_cell->m_nNumCol, covered, convert(oox_table_cell->m_oTableCellProperties, oox_table_cell->m_nNumCol + 1));
 	
 	if (oox_table_cell->m_oTableCellProperties)
 	{
@@ -3909,7 +3909,7 @@ void DocxConverter::convert(OOX::Logic::CTc	*oox_table_cell)
 	if (id_change_properties >= 0)
 		odt_context->end_change(id_change_properties, 3);
 }
-bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_properties	* table_properties )
+bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_properties * table_properties )
 {
 	if (oox_table_pr == NULL) return false;
 	if (table_properties == NULL) return false;

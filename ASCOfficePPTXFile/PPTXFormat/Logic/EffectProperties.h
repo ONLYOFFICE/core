@@ -122,8 +122,6 @@ namespace PPTX
 					List->toXmlWriter(pWriter);
 			}
 
-		//public:
-		private:
 			nullable<WrapperWritingElement> List;
 		protected:
 			virtual void FillParentPointersForChilds(){};

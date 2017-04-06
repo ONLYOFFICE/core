@@ -44,8 +44,8 @@ class office_text;
 
 class odf_text_context;
 
-typedef shared_ptr<odf_text_context>::Type odf_text_context_ptr;
-typedef shared_ptr<odf_drawing_context>::Type odf_drawing_context_ptr;
+typedef shared_ptr<odf_text_context>::Type		odf_text_context_ptr;
+typedef shared_ptr<odf_drawing_context>::Type	odf_drawing_context_ptr;
 
 struct odt_section_state
 {

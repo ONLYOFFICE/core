@@ -102,9 +102,9 @@ void odf_style_context::create_style(std::wstring oox_name, style_family::type f
 	style_state_list_.push_back( state ); 
 
 ///////////////////////////////////////	
-	style_state_list_.back()->set_name(odf_name);
-	style_state_list_.back()->set_automatic(automatic);
-	style_state_list_.back()->set_root(root);
+	style_state_list_.back()->set_name		(odf_name);
+	style_state_list_.back()->set_automatic	(automatic);
+	style_state_list_.back()->set_root		(root);
 
 	style_state_list_.back()->style_oox_id_ = oox_id;
 

@@ -208,6 +208,8 @@ namespace XmlUtils
 
 		std::wstring ReadAttributeBase(const wchar_t* bstrName);		
 		std::wstring ReadAttribute(const std::wstring& strAttibuteName);
+
+		int GetAttributesCount();
 		
 		std::string GetAttributeA(const std::string& sName, const std::string& _default = "");
 		std::string GetAttributeA(const std::wstring& sName, const std::string& _default = "");

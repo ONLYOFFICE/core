@@ -31,8 +31,10 @@
  */
 #pragma once
 
-#include <string>
 #include "odp_page_state.h"
+
+#include "odf_table_context.h"
+#include "odf_comment_context.h"
 
 namespace cpdoccore {
 
@@ -55,11 +57,29 @@ public:
 
     odp_page_state & state();
 
+	odf_comment_context				* comment_context(); 
+	odf_table_context				* table_context();
 
+	void start_table				();
+		void start_table_columns	();
+			void add_table_column	(double width = -1);
+		void end_table_columns		();
+		void start_table_header_rows();
+		void end_table_header_rows	();
+		void start_table_row		(bool styled = false);
+			void add_default_cell	();
+			void start_table_cell	(int col, bool covered, bool styled = true);
+			void end_table_cell		();
+		void end_table_row			();
+	void end_table					();
 private:
 
     odp_conversion_context&		context_;
 	odf_style_context*			styles_context_;
+	
+	odf_table_context			table_context_;
+	odf_comment_context			comment_context_;
+	
 	std::list<odp_page_state>	page_state_list_;
 
 	friend class odp_conversion_context;

@@ -75,17 +75,33 @@ style_paragraph_properties * style_content::get_style_paragraph_properties()
 	return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
 }
 
-style_graphic_properties * style_content::get_style_graphic_properties() 
+graphic_format_properties * style_content::get_graphic_properties() 
 {
-  	if (!style_graphic_properties_)
-		create_element(L"style", L"graphic-properties",style_graphic_properties_, Context);
+	if (!style_graphic_properties_)
+	{
+		if (style_family_ == odf_types::style_family::TableCell)
+			create_element(L"loext", L"graphic-properties", style_graphic_properties_, Context);
+		else
+			create_element(L"style", L"graphic-properties", style_graphic_properties_, Context);
+	}
+	style_graphic_properties * style_gr = dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());
+	loext_graphic_properties * loext_gr = dynamic_cast<loext_graphic_properties *>(style_graphic_properties_.get());
+	
+	if (style_gr)
+	{
+		return &style_gr->content_;    
+	}
+	else if (loext_gr)
+	{
+		return &loext_gr->content_;
+	}
+	return NULL;
 
-	return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
 }
 style_table_properties * style_content::get_style_table_properties()
 {
   	if (!style_table_properties_)
-		create_element(L"style", L"table-properties",style_table_properties_, Context);
+		create_element(L"style", L"table-properties", style_table_properties_, Context);
 
     return dynamic_cast<style_table_properties *>(style_table_properties_.get());    
 }

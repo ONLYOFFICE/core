@@ -70,6 +70,10 @@
     if (Other.A) \
         A = Other.A;
 
+#define _CP_APPLY_PROP3(A) \
+    if (Other->A) \
+        A = Other->A;
+
 namespace cpdoccore { 
 namespace odf_types {
 

@@ -79,24 +79,24 @@ text_format_properties_content calc_text_properties_content(const std::vector<co
 }
 
 //////////////
-graphic_format_properties calc_graphic_properties_content(const std::vector<const style_graphic_properties*> & graphicProps)
+graphic_format_properties calc_graphic_properties_content(const std::vector<const graphic_format_properties*> & graphicProps)
 {
     graphic_format_properties result;
-    BOOST_FOREACH(const style_graphic_properties* v, graphicProps)
+    BOOST_FOREACH(const graphic_format_properties* v, graphicProps)
     {
         if (v)
-            result.apply_from(v->content());
+            result.apply_from(v);
     }
     return result;
 }
 
 graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance)
 {
-    std::vector<const style_graphic_properties*> graphicProps;
+    std::vector<const graphic_format_properties*> graphicProps;
     while (styleInstance)
     {
         if (const style_content * content = styleInstance->content())
-            if (const style_graphic_properties * graphicProp = content->get_style_graphic_properties())
+            if (const graphic_format_properties * graphicProp = content->get_graphic_properties())
                 graphicProps.push_back(graphicProp);
 		
         styleInstance = styleInstance->parent();
@@ -110,7 +110,8 @@ graphic_format_properties calc_graphic_properties_content(const std::vector<cons
     graphic_format_properties result;
     BOOST_FOREACH(const style_instance * inst, styleInstances)
     {
-        result.apply_from(calc_graphic_properties_content(inst));
+		graphic_format_properties f = calc_graphic_properties_content(inst);
+        result.apply_from(&f);
     }
     return result;
 }

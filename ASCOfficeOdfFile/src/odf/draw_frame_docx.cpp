@@ -1141,17 +1141,17 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	
-	odf_reader::style_graphic_properties *properties = NULL;
-	if (styleInst) properties = styleInst->content()->get_style_graphic_properties();
+	odf_reader::graphic_format_properties *properties = NULL;
+	if (styleInst) properties = styleInst->content()->get_graphic_properties();
 ////////////////
 	if (properties)
 	{
-		if (properties->content().fo_clip_ && drawing->fill.bitmap)
+		if (properties->fo_clip_ && drawing->fill.bitmap)
 		{
-			std::wstring strRectClip = properties->content().fo_clip_.get();
-			strRectClip = strRectClip.substr(5,strRectClip.length()-6);
+			std::wstring strRectClip = properties->fo_clip_.get();
+			strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
 			
-			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR+ href;
+			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + href;
 			
 			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, NULL/*Context.applicationFonts_*/);
 		}        

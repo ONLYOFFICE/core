@@ -70,9 +70,10 @@
 
 namespace cpdoccore { namespace odf_reader { 
 
+class graphic_format_properties;
+
 class style_text_properties;
 class style_paragraph_properties;
-class style_graphic_properties;
 class style_section_properties;
 class style_table_cell_properties;
 class style_table_row_properties;
@@ -89,15 +90,16 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
    
-    style_text_properties *			get_style_text_properties() const;
-    style_paragraph_properties *	get_style_paragraph_properties() const;
-    style_graphic_properties *		get_style_graphic_properties() const;
-    style_table_properties *		get_style_table_properties() const;
-    style_section_properties *		get_style_section_properties() const;
-    style_table_cell_properties *	get_style_table_cell_properties() const;
-    style_table_row_properties *	get_style_table_row_properties() const;
+	graphic_format_properties *		get_graphic_properties()			const;
+  
+	style_text_properties *			get_style_text_properties()			const;
+    style_paragraph_properties *	get_style_paragraph_properties()	const;
+    style_table_properties *		get_style_table_properties()		const;
+    style_section_properties *		get_style_section_properties()		const;
+    style_table_cell_properties *	get_style_table_cell_properties()	const;
+    style_table_row_properties *	get_style_table_row_properties()	const;
     style_table_column_properties * get_style_table_column_properties() const;
-    style_chart_properties *		get_style_chart_properties() const;
+    style_chart_properties *		get_style_chart_properties()		const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
 
 private:

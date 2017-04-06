@@ -199,13 +199,14 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 
     if ((inst) && (inst->content()))
 	{
-		//table_properties
-		if (inst->content()->get_style_graphic_properties())
+		if (inst->content()->get_graphic_properties())
 		{
-			const graphic_format_properties & style_graphic = inst->content()->get_style_graphic_properties()->content();
 			oox::_oox_fill fill;
-			Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, style_graphic.style_background_image_, 
-																				Context.root()->odf_context().drawStyles() ,fill);	
+			
+			graphic_format_properties * graphic_props = inst->content()->get_graphic_properties();
+			if (graphic_props)
+				Compute_GraphicFill(graphic_props->common_draw_fill_attlist_, graphic_props->style_background_image_, 
+																				Context.root()->odf_context().drawStyles(), fill);	
 
 			if (fill.bitmap)
 			{
@@ -231,9 +232,9 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////////	
 	std::wstring table_content_ = Context.get_table_context().tableData().str();
 
-	if (table_content_.length()>0)
+	if (!table_content_.empty())
 	{
-		Context.get_slide_context().set_property(_property(L"table-content",table_content_));
+		Context.get_slide_context().set_property(_property(L"table-content", table_content_));
 	}
     Context.get_slide_context().end_table();    
 }

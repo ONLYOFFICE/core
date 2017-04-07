@@ -300,6 +300,7 @@ namespace PPTX
 		class NvPr;
 		class Paragraph;
 		class TxBody;
+		class TextListStyle;
 		class TextParagraphPr;
 		class TextSpacing;
 		class RunProperties;
@@ -392,7 +393,8 @@ public:
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);
 		void convert(PPTX::Logic::NvCxnSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
-		void convert(PPTX::Logic::Paragraph						*oox_para);
+		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);
+		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
 		void convert(PPTX::Logic::TextParagraphPr				*oox_para_props, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
 		void convert(PPTX::Logic::RunProperties					*oox_run_props, cpdoccore::odf_writer::style_text_properties * text_properties);
 		void convert(PPTX::Logic::Run							*oox_run);

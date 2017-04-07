@@ -118,21 +118,22 @@ void pptx_conversion_context::process_layouts()
 		{
 			for (size_t i = 0; i < master->content_.size(); i++)			
 			{
-				odf_reader::office_element_ptr elm = master->content_[i];
-				if (elm->get_type() == odf_reader::typeDrawFrame)
+				odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame*>(master->content_[i].get());
+				if (frame)
 				{
-					odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame *>(elm.get());
-
-					if ((frame) && (frame->common_presentation_attlist_.presentation_class_))
+					odf_types::common_presentation_attlist	&common_presentation_attlist_= frame->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
+					
+					if (common_presentation_attlist_.presentation_class_)
 					{
-						odf_types::presentation_class::type type = frame->common_presentation_attlist_.presentation_class_->get_type();
+						odf_types::presentation_class::type type = common_presentation_attlist_.presentation_class_->get_type();
 
-						if (type==odf_types::presentation_class::footer ||
-							type==odf_types::presentation_class::date_time ||
-							type==odf_types::presentation_class::header ||
-							type==odf_types::presentation_class::page_number)
+						if (type == odf_types::presentation_class::footer		||
+							type == odf_types::presentation_class::date_time	||
+							type == odf_types::presentation_class::header		||
+							type == odf_types::presentation_class::page_number)
 						{
-							if (frame->idx_in_owner <0)frame->idx_in_owner = last_idx_placeHolder++;
+							if (frame->idx_in_owner <0)
+								frame->idx_in_owner = last_idx_placeHolder++;
 
 							frame->pptx_convert_placeHolder(*this);
 						}

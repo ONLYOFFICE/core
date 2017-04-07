@@ -308,31 +308,43 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 
 	odf_context()->drawing_context()->start_drawing();
 	
-		int type = 1000;
+		int type = 1000; //custom
 
-		PPTX::Logic::PrstGeom* prstGeom = &oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
-
-		if ( prstGeom )
+		if (oox_shape->spPr.Geometry.is_init())
 		{
-			SimpleTypes::CShapeType<> preset;
-			preset.FromString(prstGeom->prst.get());
-			type = preset.GetValue();
+
+			if ( oox_shape->spPr.Geometry.is<PPTX::Logic::PrstGeom>() )
+			{
+				const PPTX::Logic::PrstGeom& prstGeom = oox_shape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
+				
+				SimpleTypes::CShapeType<> preset;
+				preset.FromString(prstGeom.prst.get());
+				type = preset.GetValue();
+			}
+
+			if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) type = 2000;
+
+			if (type == 2000 && oox_shape->txBody->bodyPr.IsInit() 
+				&& oox_shape->txBody->bodyPr->fromWordArt.get_value_or(false))
+			{
+				int wordart_type = convert(oox_shape->txBody->bodyPr->prstTxWarp.GetPointer());
+
+				if (wordart_type > 0) type = wordart_type;
+			}
 		}
-
-		if (type == SimpleTypes::shapetypeRect && oox_shape->txBody.IsInit()) type = 2000;
-
-		if (type == 2000 && oox_shape->txBody->bodyPr.IsInit() 
-			&& oox_shape->txBody->bodyPr->fromWordArt.get_value_or(false))
+		else if (oox_shape->nvSpPr.nvPr.ph.is_init())
 		{
-			int wordart_type = convert(oox_shape->txBody->bodyPr->prstTxWarp.GetPointer());
-
-			if (wordart_type > 0) type = wordart_type;
+			type = 2000;
 		}
 
 		if (type < 0)return;
 	/////////////////////////////////////////////////////////////////////////////////
 		odf_context()->drawing_context()->start_shape(type);
 		
+		//if (oox_shape->levelUp)
+		//{
+		//	convert((PPTX::Logic::SpPr *)&oox_shape->levelUp->spPr, oox_shape->levelUp->style.GetPointer());
+		//}
 		convert(&oox_shape->spPr, oox_shape->style.GetPointer());
 	//имя, описалово, номер ...	
 		convert(&oox_shape->nvSpPr);	
@@ -957,24 +969,75 @@ void OoxConverter::convert(PPTX::Logic::NvPr *oox_nvPr)
 	//nullable_limit<Limit::PlaceholderSize>	sz;
 	}
 }
-void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph)
+void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::TextListStyle *oox_list_style)
 {
 	if (!oox_paragraph)return;
 
-	bool styled = false;
+	bool		 styled			= false;
+
+	bool		 list_present	= false;
+	std::wstring list_style_name;
+
+	int			 list_level		= 0;
+
 	if (oox_paragraph->pPr.IsInit())
 	{
+		if (oox_paragraph->pPr->lvl.IsInit() || oox_paragraph->pPr->ParagraphBullet.is_init())
+		{
+			list_present = true;
+		
+			list_level = 1;
+			if (oox_paragraph->pPr->lvl.IsInit())
+				list_level = *oox_paragraph->pPr->lvl;		
+		}
+
 		odf_writer::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
 													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		if (!paragraph_properties)
 		{
-			odf_context()->styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	
+			odf_context()->styles_context()->create_style(L"", odf_types::style_family::Paragraph, true, false, -1);	
 			paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
+
+			//if(list_present && oox_list_style)
+			//{
+			//	list_style_name = odf_context->styles_context()->lists_styles().get_style_name(list_style_id); 
+			//	odf_context->styles_context()->last_state()->set_list_style_name(list_style_name);
+			//}
 			styled = true;
 		}
+		convert(oox_list_style, list_level, paragraph_properties);
 		convert(oox_paragraph->pPr.GetPointer(), paragraph_properties);
 	}
 	
+	if(list_present)
+	{
+		while (odf_context()->text_context()->list_state_.levels.size() > list_level)
+		{
+			odf_context()->text_context()->end_list();
+		}
+
+		if (odf_context()->text_context()->list_state_.levels.size() < 1)
+		{
+			odf_context()->text_context()->list_state_.started_list = false;
+			odf_context()->text_context()->list_state_.style_name = L"";
+		}
+
+		if (odf_context()->text_context()->list_state_.started_list == false)
+		{
+			odf_context()->text_context()->start_list(list_style_name);
+			//text_context()->set_list_continue(true); //??? держать в памяти все списки????
+		}
+		odf_context()->text_context()->start_list_item();
+
+		if (odf_context()->text_context()->list_state_.style_name == list_style_name)
+			list_style_name = L"";
+
+		while (odf_context()->text_context()->list_state_.levels.size() < list_level)
+		{
+			odf_context()->text_context()->start_list(list_style_name);
+			odf_context()->text_context()->start_list_item();
+		}
+	}	
 	odf_context()->text_context()->start_paragraph(styled);
 
 	for (size_t i=0; i< oox_paragraph->RunElems.size();i++)
@@ -982,6 +1045,21 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph)
 		convert(&oox_paragraph->RunElems[i].as<OOX::WritingElement>());
 	}
 	odf_context()->text_context()->end_paragraph();
+
+	if(list_present)
+	{
+		odf_context()->text_context()->end_list_item();
+	}
+}
+void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style, int level, odf_writer::style_paragraph_properties * paragraph_properties)
+{
+	if (!oox_list_style)		return;
+	if (!paragraph_properties)	return;
+
+	if (level < 0 || level > 9) return;
+
+	convert(oox_list_style->levels[level].GetPointer(), paragraph_properties);
+	
 }
 void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr, odf_writer::style_paragraph_properties * paragraph_properties)
 {
@@ -1252,6 +1330,7 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 void OoxConverter::convert(PPTX::Logic::Br *oox_br)
 {
 	if (!oox_br) return;
+	odf_context()->text_context()->set_type_break(2, true);
 }
 void OoxConverter::convert(PPTX::Logic::MathParaWrapper *oox_math)
 {
@@ -1273,6 +1352,7 @@ void OoxConverter::convert(PPTX::Logic::MoveTo *oox_geom_path)
 
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"M"), path_elm);
 }
+
 void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeStyle* oox_style)
 {
 	if (!oox_txBody) return;
@@ -1280,9 +1360,9 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 
 	odf_context()->start_text_context();	
 		
-	for (size_t i = 0; i < oox_txBody->Paragrs.size();i++)
+	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
 	{
-		convert(&oox_txBody->Paragrs[i]);
+		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
 	}
 	odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	

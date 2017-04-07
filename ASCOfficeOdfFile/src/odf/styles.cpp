@@ -1417,26 +1417,40 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 {
 	int idx = -1;
 
-	int i=0;
-	int size = content_.size();
-	
-	while(true)
+	for (size_t i = 0; i <  content_.size(); i++)
     {
-		if (i>=size)break;
 		if (content_[i]->get_type() == odf_reader::typeDrawFrame)
 		{
 			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
-
-			if (frame->idx_in_owner<0)frame->idx_in_owner = last_idx++;
-
-			if ((frame) && (frame->common_presentation_attlist_.presentation_class_) && 
-						   (frame->common_presentation_attlist_.presentation_class_->get_type()== placeHolder))
+			if (frame)
 			{
-				idx = frame->idx_in_owner;
-				break;
+				odf_types::common_presentation_attlist	&common_presentation_attlist_ = frame->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
+				if (frame->idx_in_owner < 0)
+					frame->idx_in_owner = last_idx++;
+
+				if ((common_presentation_attlist_.presentation_class_) && 
+							   (common_presentation_attlist_.presentation_class_->get_type()== placeHolder))
+				{
+					idx = frame->idx_in_owner;
+					break;
+				}
 			}
+			draw_shape* shape = dynamic_cast<draw_shape *>(content_[i].get());
+			if (shape)
+			{
+				odf_types::common_presentation_attlist	&common_presentation_attlist_ = shape->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_;
+				if (shape->idx_in_owner < 0)
+					shape->idx_in_owner = last_idx++;
+
+				if ((common_presentation_attlist_.presentation_class_) && 
+							   (common_presentation_attlist_.presentation_class_->get_type()== placeHolder))
+				{
+					idx = shape->idx_in_owner;
+					break;
+				}
+			}
+
 		}
-		i++;
     }
 	return idx;
 }

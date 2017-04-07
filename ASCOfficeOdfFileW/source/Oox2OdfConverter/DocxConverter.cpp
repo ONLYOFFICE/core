@@ -420,8 +420,8 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	bool		 list_present = false;
 	std::wstring list_style_name;
 
-	int			 list_level = -1;
-	int			 list_style_id = -1;
+	int			 list_level		= -1;
+	int			 list_style_id	= -1;
 
 //---------------------------------------------------------------------------------------------------------------------
 	std::vector<std::pair<int, int>> id_change_properties;
@@ -1091,7 +1091,7 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 		/////////////////////////find parent properties 
 
 		odf_writer::style_paragraph_properties  parent_paragraph_properties;
-		odt_context->styles_context()->calc_paragraph_properties(style_name,odf_types::style_family::Paragraph, &parent_paragraph_properties.content_);
+		odt_context->styles_context()->calc_paragraph_properties(style_name, odf_types::style_family::Paragraph, &parent_paragraph_properties.content_);
 		
 		if (parent_paragraph_properties.content_.outline_level_)
 		{
@@ -3323,7 +3323,7 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 
 	std::wstring oox_name = oox_style->m_sStyleId.IsInit() ? *oox_style->m_sStyleId : L"";
 
-	odt_context->styles_context()->create_style(oox_name,family, false, true, -1); 
+	odt_context->styles_context()->create_style(oox_name, family, false, true, -1); 
 
 
 	if (oox_style->m_oName.IsInit() && oox_style->m_oName->m_sVal.IsInit()) 
@@ -3331,7 +3331,7 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 
 	if (oox_style->m_oRunPr.IsInit())
 	{
-		odf_writer::style_text_properties	* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
+		odf_writer::style_text_properties* text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 	
 		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
 		{
@@ -3366,25 +3366,27 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		{
 			int level = (oox_style->m_oParPr->m_oNumPr->m_oIlvl.IsInit() && oox_style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal.IsInit()) ? 
 				oox_style->m_oParPr->m_oNumPr->m_oIlvl->m_oVal->GetValue() : -1;
+			
 			int id	  = (oox_style->m_oParPr->m_oNumPr->m_oNumID.IsInit() && oox_style->m_oParPr->m_oNumPr->m_oNumID->m_oVal.IsInit()) ? 
 				oox_style->m_oParPr->m_oNumPr->m_oNumID->m_oVal->GetValue() : -1;
 
-			if (level<0 && id >=0) level =0;
-			if (level >=0 && id >=0)
+			if (level < 0 && id >= 0) level =0;
+			if (level >= 0 && id >= 0)
 			{
 				odt_context->styles_context()->last_state()->set_list_style_level(level);
 				odt_context->styles_context()->last_state()->set_list_style_id(id);
 				odt_context->styles_context()->last_state()->set_list_style_exist(true);
 		
 				std::wstring list_style_name = odt_context->styles_context()->lists_styles().get_style_name(id); 
-				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);			}
+				odt_context->styles_context()->last_state()->set_list_style_name(list_style_name);			
+			}
 		}
 	}
 	if (oox_style->m_oBasedOn.IsInit() && oox_style->m_oBasedOn->m_sVal.IsInit())
 		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_style->m_oBasedOn->m_sVal);
 
 		//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
-        //nullable<ComplexTypes::Word::std::wstring_                       > m_oAliases;
+        //nullable<ComplexTypes::Word::std::wstring_>					m_oAliases;
 
 }
 

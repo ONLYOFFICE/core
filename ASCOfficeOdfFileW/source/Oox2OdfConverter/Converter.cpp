@@ -175,48 +175,58 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_a_prstGeom:
 			{
-				PPTX::Logic::PrstGeom* pPresetGeom = dynamic_cast<PPTX::Logic::PrstGeom*>(oox_unknown);
-				convert(pPresetGeom);
+				convert(dynamic_cast<PPTX::Logic::PrstGeom*>(oox_unknown));
 			}break;
 			case OOX::et_a_custGeom:
 			{
-				PPTX::Logic::CustGeom* pCustomGeom = dynamic_cast<PPTX::Logic::CustGeom*>(oox_unknown);
-				convert(pCustomGeom);
+				convert(dynamic_cast<PPTX::Logic::CustGeom*>(oox_unknown));
 			}break;
 			case OOX::et_a_lnTo:
 			{
-				PPTX::Logic::LineTo* pLineTo = dynamic_cast<PPTX::Logic::LineTo*>(oox_unknown);
-				convert(pLineTo);
+				convert(dynamic_cast<PPTX::Logic::LineTo*>(oox_unknown));
 			}break;
 			case OOX::et_a_moveTo:
 			{
-				PPTX::Logic::MoveTo* pMoveTo = dynamic_cast<PPTX::Logic::MoveTo*>(oox_unknown);
-				convert(pMoveTo);
+				convert(dynamic_cast<PPTX::Logic::MoveTo*>(oox_unknown));
 			}break;
 			case OOX::et_a_arcTo:
 			{
-				PPTX::Logic::ArcTo* pArcTo = dynamic_cast<PPTX::Logic::ArcTo*>(oox_unknown);
-				convert(pArcTo);
+				convert(dynamic_cast<PPTX::Logic::ArcTo*>(oox_unknown));
 			}break;
 			case OOX::et_a_quadBezTo:
 			{
-				PPTX::Logic::QuadBezTo* pQuadBezierTo = dynamic_cast<PPTX::Logic::QuadBezTo*>(oox_unknown);
-				convert(pQuadBezierTo);
+				convert(dynamic_cast<PPTX::Logic::QuadBezTo*>(oox_unknown));
 			}break;
 			case OOX::et_a_cubicBezTo:
 			{
-				PPTX::Logic::CubicBezTo* pCubicBezierT = dynamic_cast<PPTX::Logic::CubicBezTo*>(oox_unknown);
-				convert(pCubicBezierT);
+				convert(dynamic_cast<PPTX::Logic::CubicBezTo*>(oox_unknown));
 			}break;
 			case OOX::et_a_close:
 			{
-				PPTX::Logic::Close* pClose= dynamic_cast<PPTX::Logic::Close*>(oox_unknown);
-				convert(pClose);
+				convert(dynamic_cast<PPTX::Logic::Close*>(oox_unknown));
 			}break;
+			case OOX::et_p_r:
 			case OOX::et_a_r:
 			{
-				PPTX::Logic::Run* pRun= dynamic_cast<PPTX::Logic::Run*>(oox_unknown);
-				convert(pRun);
+				convert(dynamic_cast<PPTX::Logic::Run*>(oox_unknown));
+			}break;
+			case OOX::et_p_br:
+			case OOX::et_a_br:
+			{
+				convert(dynamic_cast<PPTX::Logic::Br*>(oox_unknown));
+			}break;
+			case OOX::et_a_fld:
+			case OOX::et_p_fld:
+			{
+				convert(dynamic_cast<PPTX::Logic::Fld*>(oox_unknown));
+			}break;
+			case OOX::et_p_MathPara:
+			{
+				convert(dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown));
+			}break;
+			case OOX::et_a_effectStyle:
+			{
+				convert(dynamic_cast<PPTX::Logic::EffectStyle*>(oox_unknown));
 			}break;
 			//case OOX::et_a_alphaModFix:
 			//{
@@ -228,28 +238,23 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			//}break;
 			case OOX::et_v_imagedata:
 			{
-				OOX::Vml::CImageData *vml = dynamic_cast<OOX::Vml::CImageData*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CImageData*>(oox_unknown));
 			}break;
 			case OOX::et_v_textbox:
 			{
-				OOX::Vml::CTextbox *vml = dynamic_cast<OOX::Vml::CTextbox*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CTextbox*>(oox_unknown));
 			}break;
 			case OOX::et_v_background:
 			{
-				OOX::Vml::CBackground *vml = dynamic_cast<OOX::Vml::CBackground*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CBackground*>(oox_unknown));
 			}break;
 			case OOX::et_v_path:
 			{
-				OOX::Vml::CPath *vml = dynamic_cast<OOX::Vml::CPath*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CPath*>(oox_unknown));
 			}break;	
 				case OOX::et_v_textpath:
 			{
-				OOX::Vml::CTextPath *vml = dynamic_cast<OOX::Vml::CTextPath*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CTextPath*>(oox_unknown));
 			}break;	
 			case OOX::et_v_fill:
 			{
@@ -268,13 +273,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			}break;
 			case OOX::et_v_image:
 			{
-				OOX::Vml::CImage *vml = dynamic_cast<OOX::Vml::CImage*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::Vml::CImage*>(oox_unknown));
 			}break;
 			case OOX::et_wd_wrap:
 			{
-				OOX::VmlWord::CWrap *vml = dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown);
-				convert(vml);
+				convert(dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown));
 			}break;
 			// "ненужные" элементы
 			case OOX::et_w_softHyphen:
@@ -282,26 +285,6 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			case OOX::et_w_proofState:
 			{
 				//бяка
-			}break;
-			case OOX::et_p_r:
-			{
-				convert(dynamic_cast<PPTX::Logic::Run*>(oox_unknown));
-			}break;
-			case OOX::et_p_fld:
-			{
-				convert(dynamic_cast<PPTX::Logic::Fld*>(oox_unknown));
-			}break;
-			case OOX::et_p_br:
-			{
-				convert(dynamic_cast<PPTX::Logic::Br*>(oox_unknown));
-			}break;
-			case OOX::et_p_MathPara:
-			{
-				convert(dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_unknown));
-			}break;
-			case OOX::et_a_effectStyle:
-			{
-				convert(dynamic_cast<PPTX::Logic::EffectStyle*>(oox_unknown));
 			}break;
 			default:
 			{

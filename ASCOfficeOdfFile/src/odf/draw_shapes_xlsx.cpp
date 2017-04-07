@@ -65,16 +65,12 @@ namespace odf_reader {
 
 void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	common_draw_shape_with_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_;
+	common_draw_shape_with_text_and_styles_attlist common_draw_attlist_ = common_draw_attlists_.shape_with_text_and_styles_;
 
-    const int z_index = common_draw_attlist_.common_draw_z_index_attlist_.draw_z_index_.get_value_or(0);
-
-    const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
-
-    const std::wstring styleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
-    
-    const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(L"");
+    const int z_index				= common_draw_attlist_.common_shape_draw_attlist_.draw_z_index_.get_value_or(0);
+    const std::wstring name			= common_draw_attlist_.common_shape_draw_attlist_.draw_name_.get_value_or(L"");
+    const std::wstring styleName	= common_draw_attlist_.common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");    
+    const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
  ///////////////////////////////////////////	
 	Context.get_drawing_context().start_drawing(name);
@@ -93,19 +89,19 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	}
 ////////////////////////////////////////////////////////////
-	if (common_draw_attlist_.common_draw_transform_attlist_.draw_transform_)
+	if (common_draw_attlist_.common_shape_draw_attlist_.draw_transform_)
 	{
-		std::wstring transformStr = common_draw_attlist_.common_draw_transform_attlist_.draw_transform_.get();
+		std::wstring transformStr = common_draw_attlist_.common_shape_draw_attlist_.draw_transform_.get();
 		xlsx_convert_transforms(transformStr,Context);
 		//oox_convert_transforms(transformStr, additional_);
 	}
 ////////////////////////////////////////
 	std::wstring Anchor;
-	if (common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_)
+	if (common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_)
 	{
-		Anchor = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_cell_address_.get();
-		const double a_x_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double a_y_pt = common_draw_attlist_.common_text_spreadsheet_shape_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
+		const double a_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double a_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
 		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt);
 	}
@@ -247,7 +243,7 @@ void draw_custom_shape::xlsx_convert(oox::xlsx_conversion_context & Context)
 }
 void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	//const std::wstring style = common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(L"");
+	//const std::wstring style = common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
 	Context.get_drawing_context().start_shape(1);//rect с наваротами-атрибутами .. а-ля TextBox
 	

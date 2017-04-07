@@ -56,6 +56,7 @@
 #include "style_paragraph_properties.h"
 #include "style_graphic_properties.h"
 #include "style_page_layout_properties.h"
+#include "style_presentation.h"
 
 namespace cpdoccore 
 {
@@ -181,6 +182,8 @@ struct odf_drawing_state
 		hidden_				= false;
 		z_order_			= -1;
 		
+		presentation_class_	= boost::none;
+
 		rotateAngle			= boost::none;
 		
 		path_				= L"";
@@ -210,6 +213,8 @@ struct odf_drawing_state
 
 	_CP_OPT(double)			rotateAngle;
 	_CP_OPT(unsigned int)	fill_color_;
+	
+	_CP_OPT(presentation_class)	presentation_class_;
 
 	bool flipH;
 	bool flipV;
@@ -254,14 +259,15 @@ public:
 	odf_style_context				*styles_context_;
 	odf_conversion_context			*odf_context_;
 
-	bool is_footer_;
-	bool is_header_;
-	bool is_background_;
+	bool			is_footer_;
+	bool			is_header_;
+	bool			is_background_;
+	_CP_OPT(bool)	is_presentation_;
 
 	void				create_draw_base(int type);
 	office_element_ptr	create_draw_element(int type);
 
-	style_graphic_properties		*current_graphic_properties;
+	graphic_format_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
 	style_text_properties			*current_text_properties;
 
@@ -304,6 +310,11 @@ void odf_drawing_context::set_styles_context(odf_style_context*  styles_context)
 	impl_->styles_context_ = styles_context;
 }
 
+void odf_drawing_context::set_presentation (bool bMaster)
+{
+	impl_->is_presentation_ = bMaster;
+}
+
 void odf_drawing_context::set_footer_state(bool Val)
 {
 	impl_->is_footer_ = Val;
@@ -317,7 +328,7 @@ void odf_drawing_context::set_background_state(bool Val)
 {
 	impl_->is_background_ = Val;
 
-	impl_->current_graphic_properties = new style_graphic_properties();
+	impl_->current_graphic_properties = new graphic_format_properties();
 }
 
 void odf_drawing_context::check_anchor()
@@ -377,24 +388,24 @@ void odf_drawing_context::start_group()
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+	group->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_name;
 
-	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
-	impl_->current_graphic_properties->content().style_run_through_ = impl_->anchor_settings_.run_through_;	
+	impl_->current_graphic_properties->style_wrap_ = impl_->anchor_settings_.style_wrap_;
+	impl_->current_graphic_properties->style_run_through_ = impl_->anchor_settings_.run_through_;	
 
-	impl_->current_graphic_properties->content().common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
-	impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+	impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
+	impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
 
-	impl_->current_graphic_properties->content().common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
-	impl_->current_graphic_properties->content().common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
+	impl_->current_graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
+	impl_->current_graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
 
-	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
-	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
-	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
-	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
+	impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
+	impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
+	impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
+	impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
 	if (group)
 	{
@@ -453,25 +464,43 @@ void odf_drawing_context::start_drawing()
 	}
 
 }
+void odf_drawing_context::end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist)
+{
+	if (impl_->current_drawing_state_.elements_.empty() == false) return;
+
+	if (!impl_->is_background_ || !impl_->current_graphic_properties) return;
+
+	common_draw_attlist.apply_from(impl_->current_graphic_properties->common_draw_fill_attlist_);
+	
+	delete impl_->current_graphic_properties;
+	
+	impl_->current_graphic_properties	= NULL;
+	impl_->current_drawing_state_.clear();
+}
 void odf_drawing_context::end_drawing()
 {
-	if (impl_->current_drawing_state_.elements_.empty())
-	{
-		if (impl_->is_background_ && impl_->current_graphic_properties)
-		{
-			style_page_layout_properties * current_layout_properties = impl_->odf_context_->page_layout_context()->last_layout()->get_properties();
-			current_layout_properties->style_page_layout_properties_attlist_.common_draw_fill_attlist_.apply_from(impl_->current_graphic_properties->content().common_draw_fill_attlist_);
-			delete impl_->current_graphic_properties;
-			impl_->current_graphic_properties	= NULL;
-			impl_->current_drawing_state_.clear();
-		}
-		return;
-	}
+	if (impl_->current_drawing_state_.elements_.empty()) return;
 
 	draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
-
 	if (draw)
 	{
+		if (impl_->is_presentation_)
+		{
+			_CP_OPT(std::wstring) draw_layer;
+			if (impl_->is_presentation_.get() == true)
+			{//master				
+				if (impl_->current_drawing_state_.presentation_class_)	
+						draw_layer = L"backgroundobjects";
+				else	draw_layer = L"layout";
+			}
+			else
+			{//slide
+				if (impl_->current_drawing_state_.presentation_class_)	
+						draw_layer = L"layout";
+			}
+			draw->common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_layer_name_attlist_.draw_layer_ = draw_layer;
+		}
 		if (impl_->current_drawing_state_.name_.length() > 0)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_name_attlist_.draw_name_ = impl_->current_drawing_state_.name_;
 		if (impl_->current_drawing_state_.z_order_ >= 0)
@@ -526,7 +555,7 @@ void odf_drawing_context::end_drawing()
 
 		}
 
-		if (strTransform.length()>0)
+		if (strTransform.empty() == false)
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_transform_attlist_.draw_transform_ = strTransform;
 
 		draw->common_draw_attlists_.position_.svg_x_ = impl_->current_drawing_state_.svg_x_;
@@ -536,6 +565,16 @@ void odf_drawing_context::end_drawing()
 		draw->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_		= impl_->current_drawing_state_.svg_width_;
 	}
 ///////////////////////////////////////////////////////
+	presentation_placeholder * placeholder = dynamic_cast<presentation_placeholder*>(impl_->current_drawing_state_.elements_[0].elm.get());
+	if (placeholder)
+	{
+		placeholder->presentation_object_	= impl_->current_drawing_state_.presentation_class_;
+		placeholder->svg_x_					= impl_->current_drawing_state_.svg_x_;
+		placeholder->svg_y_					= impl_->current_drawing_state_.svg_y_;
+
+		placeholder->svg_height_			= impl_->current_drawing_state_.svg_height_;
+		placeholder->svg_width_				= impl_->current_drawing_state_.svg_width_;
+	}
 	if (impl_->current_drawing_state_.in_group)
 	{
 		odf_group_state_ptr gr = impl_->current_group_;
@@ -562,24 +601,25 @@ void odf_drawing_context::end_drawing()
 		//не поддерживается :( - нужно считать искажения на простейшие фигуры - линии, ректы, эллипсы 
 	}
 
+	if (impl_->current_graphic_properties)
+	{
+		impl_->current_graphic_properties->common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
+		impl_->current_graphic_properties->common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
 
-	impl_->current_graphic_properties->content().common_vertical_pos_attlist_.style_vertical_pos_		= impl_->anchor_settings_.style_vertical_pos_;
-	impl_->current_graphic_properties->content().common_horizontal_pos_attlist_.style_horizontal_pos_	= impl_->anchor_settings_.style_horizontal_pos_;
+		impl_->current_graphic_properties->common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
+		impl_->current_graphic_properties->common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
 
-	impl_->current_graphic_properties->content().common_vertical_rel_attlist_.style_vertical_rel_		= impl_->anchor_settings_.style_vertical_rel_;
-	impl_->current_graphic_properties->content().common_horizontal_rel_attlist_.style_horizontal_rel_	= impl_->anchor_settings_.style_horizontal_rel_;
+		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
+		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
+		impl_->current_graphic_properties->common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
+		impl_->current_graphic_properties->common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
 
-	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_left_	= impl_->anchor_settings_.fo_margin_left_; 
-	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_top_		= impl_->anchor_settings_.fo_margin_top_; 
-	impl_->current_graphic_properties->content().common_horizontal_margin_attlist_.fo_margin_right_	= impl_->anchor_settings_.fo_margin_right_; 
-	impl_->current_graphic_properties->content().common_vertical_margin_attlist_.fo_margin_bottom_	= impl_->anchor_settings_.fo_margin_bottom_; 
+		if (draw && !impl_->current_drawing_state_.in_group)
+			draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
 
-	if (draw && !impl_->current_drawing_state_.in_group)
-		draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_text_spreadsheet_shape_attlist_.common_text_anchor_attlist_.type_ = impl_->anchor_settings_.anchor_type_;
-
-	impl_->current_graphic_properties->content().style_wrap_ = impl_->anchor_settings_.style_wrap_;
-	impl_->current_graphic_properties->content().style_run_through_ = impl_->anchor_settings_.run_through_;
-
+		impl_->current_graphic_properties->style_wrap_			= impl_->anchor_settings_.style_wrap_;
+		impl_->current_graphic_properties->style_run_through_	= impl_->anchor_settings_.run_through_;
+	}
 	//if (impl_->anchor_settings_.anchor_type_ && impl_->anchor_settings_.anchor_type_->get_type()== anchor_type::AsChar)
 	//{
 	//	draw->common_draw_attlists_.position_.svg_x_ = boost::none;
@@ -588,7 +628,9 @@ void odf_drawing_context::end_drawing()
 ///////////////////////////////////////////////////		
 	impl_->drawing_list_.push_back(impl_->current_drawing_state_);
 	
-	if (impl_->current_drawing_state_.elements_.size() > 0 && impl_->current_drawing_state_.elements_[0].level == 0 )
+	if (	impl_->current_drawing_state_.elements_.empty() == false 
+		&&	impl_->current_drawing_state_.elements_[0].level == 0 
+		&&	impl_->current_drawing_state_.elements_[0].elm )
 	{
 		impl_->tops_elements_.push_back(impl_->current_drawing_state_.elements_[0].elm);
 	}
@@ -661,10 +703,10 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	if (style_)
 	{
         style_name = style_->style_name_;
-		current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+		current_graphic_properties = style_->content_.get_graphic_properties();
 	}
 
-	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_ref(style_name);
+	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ = style_name;
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int level = current_level_.size();
@@ -678,8 +720,8 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	current_drawing_state_.elements_.push_back(state);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 }
+
 void odf_drawing_context::start_shape(int type)
 {
 	impl_->current_drawing_state_.oox_shape_preset = type;
@@ -713,7 +755,7 @@ void odf_drawing_context::start_shape(int type)
 bool odf_drawing_context::change_text_box_2_wordart()
 {
 	if (impl_->current_drawing_state_.oox_shape_preset > 2000 && impl_->current_drawing_state_.oox_shape_preset < 3000)
-		return false;	
+		return true;	
 
 	if (impl_->current_drawing_state_.text_box_tableframe)	return false;	
 	if (impl_->current_drawing_state_.elements_.empty())	return false;
@@ -746,7 +788,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	state.elm = draw_elm;
 
 	draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_ 
-		= style_ref(state.style_name);
+		= state.style_name;
 
 	impl_->current_level_.erase (impl_->current_level_.end() - 2, impl_->current_level_.end());
 	impl_->current_level_.push_back(draw_elm);
@@ -949,18 +991,18 @@ void odf_drawing_context::corrected_line_fill()
 {
 	if (!impl_->current_graphic_properties)return;
 	
-	if ( !impl_->current_graphic_properties->content().draw_stroke_ &&
-			 !impl_->current_graphic_properties->content().svg_stroke_color_ &&
-			 !impl_->current_graphic_properties->content().draw_stroke_dash_ &&
-			 !impl_->current_graphic_properties->content().svg_stroke_width_ && 
-			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ &&
-			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ && 
-			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_name_ &&
-			!impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_name_ &&
-			!impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_gradient_name_)
+	if ( !impl_->current_graphic_properties->draw_stroke_ &&
+			 !impl_->current_graphic_properties->svg_stroke_color_ &&
+			 !impl_->current_graphic_properties->draw_stroke_dash_ &&
+			 !impl_->current_graphic_properties->svg_stroke_width_ && 
+			 !impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ &&
+			 !impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ && 
+			 !impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ &&
+			!impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ &&
+			!impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_)
 	{
-		impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1. ,length::pt).get_value_unit(length::cm),length::cm);
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;;
+		impl_->current_graphic_properties->svg_stroke_width_ = length(length(1. ,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;;
 	}
 }
 void odf_drawing_context::start_frame()
@@ -973,7 +1015,7 @@ void odf_drawing_context::start_frame()
 		{
 			impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 		}
-		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
+		impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
 	}
 }
 
@@ -982,11 +1024,11 @@ void odf_drawing_context::end_frame()
 	end_element();
 }
 /////////////////////
-void odf_drawing_context::start_element(office_element_ptr & elm, office_element_ptr  style_elm)
+void odf_drawing_context::start_element(office_element_ptr elm, office_element_ptr  style_elm)
 {
 	int level = (int)impl_->current_level_.size();
 	
-	if (impl_->current_level_.size() > 0)
+	if (impl_->current_level_.size() > 0 && elm)
 		impl_->current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
@@ -994,7 +1036,7 @@ void odf_drawing_context::start_element(office_element_ptr & elm, office_element
 	if (style_)
 	{
 		style_name = style_->style_name_;
-		impl_->current_graphic_properties = style_->style_content_.get_style_graphic_properties();
+		impl_->current_graphic_properties = style_->content_.get_graphic_properties();
 
 		if (impl_->current_drawing_state_.name_.empty())
 		{
@@ -1057,10 +1099,10 @@ void odf_drawing_context::set_opacity(double percent_)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
+		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
 		break;
 	case Line:
-		impl_->current_graphic_properties->content().svg_stroke_opacity_ = percent(percent_);
+		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
 		break;
 	}
 }
@@ -1071,19 +1113,48 @@ void odf_drawing_context::set_shadow(int type, std::wstring hexColor, _CP_OPT(do
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_graphic_properties->content().draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_graphic_properties->draw_shadow_offset_x_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 	
 	if (dist_pt_y > 0)
-		impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt_y,length::pt).get_value_unit(length::cm),length::cm);
 	else
-		impl_->current_graphic_properties->content().draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->draw_shadow_offset_y_ = length(length(dist_pt,length::pt).get_value_unit(length::cm),length::cm);
 	
-	impl_->current_graphic_properties->content().draw_shadow_ = shadow_type1(shadow_type1::Visible);
-	if (opacity) impl_->current_graphic_properties->content().draw_shadow_opacity_ = *opacity;
+	impl_->current_graphic_properties->draw_shadow_ = shadow_type1(shadow_type1::Visible);
+	if (opacity) impl_->current_graphic_properties->draw_shadow_opacity_ = *opacity;
 
-	impl_->current_graphic_properties->content().draw_shadow_color_ = hexColor;
+	impl_->current_graphic_properties->draw_shadow_color_ = hexColor;
 }
 
+void odf_drawing_context::set_placeholder_id (std::wstring val)
+{
+	//impl_->current_drawing_state_.draw_layer_ = val;
+}
+void odf_drawing_context::set_placeholder_type (int val)
+{
+	switch(val)
+	{
+		case 0:		impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 		break;
+		case 1:		impl_->current_drawing_state_.presentation_class_ = presentation_class::chart; 	break;
+		case 2:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic; 	break;
+		case 3:		impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		case 4:		impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 5:		impl_->current_drawing_state_.presentation_class_ = presentation_class::date_time;	break;
+		case 6:		impl_->current_drawing_state_.presentation_class_ = presentation_class::footer;	break;
+		case 7:		impl_->current_drawing_state_.presentation_class_ = presentation_class::header;	break;
+		case 8:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 9:		impl_->current_drawing_state_.presentation_class_ = presentation_class::object;	break;
+		case 10:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 11:	impl_->current_drawing_state_.presentation_class_ = presentation_class::graphic;	break;
+		case 12:	impl_->current_drawing_state_.presentation_class_ = presentation_class::page_number;break;
+		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
+		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
+		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		default:		
+			impl_->current_drawing_state_.presentation_class_ = presentation_class::text; 				break;
+	}
+	//todooo draw_layer for master for sldnum, datetime ...
+}
 void odf_drawing_context::set_no_fill()
 {
 	if (!impl_->current_graphic_properties)return;
@@ -1092,16 +1163,16 @@ void odf_drawing_context::set_no_fill()
 	{
 	case Area:
 		if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
-			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
-			(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
+			(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_) && 
+			(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
 		{
 		}
 		else
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
 		break;
 	case Line:
-		//impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;??????
-		impl_->current_graphic_properties->content().draw_stroke_ = line_style (line_style::None);
+		//impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;??????
+		impl_->current_graphic_properties->draw_stroke_ = line_style (line_style::None);
 		break;
 	}
 }
@@ -1109,7 +1180,7 @@ void odf_drawing_context::set_type_fill(int type)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = (draw_fill::type)type;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = (draw_fill::type)type;
 }
 
 void odf_drawing_context::set_fill_color(unsigned int Color)
@@ -1121,7 +1192,10 @@ _CP_OPT(unsigned int) odf_drawing_context::get_fill_color()
 {
 	return impl_->current_drawing_state_.fill_color_;
 }
-
+_CP_OPT(odf_types::color) odf_drawing_context::get_line_color()
+{
+	return impl_->current_graphic_properties->svg_stroke_color_ ;
+}
 void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
@@ -1132,24 +1206,24 @@ void odf_drawing_context::set_solid_fill(std::wstring hexColor)
 	switch(impl_->current_drawing_part_)
 	{
 		case Area:
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_				= hexColor;
-			impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_	= color(hexColor);
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_				= hexColor;
+			impl_->current_graphic_properties->common_background_color_attlist_.fo_background_color_	= color(hexColor);
 			//последнее нужно - что если будут вводить текст - под текстом будет цвет фона (или он поменяется в полях текста)
 			
 			if ((impl_->is_footer_ || impl_->is_header_ || impl_->is_background_) && 
-				(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_) && 
-				(impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
+				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_) && 
+				(impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_->get_type() == draw_fill::bitmap))
 			{
 			}
 			else
-				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
+				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::solid;
 			break;
 		case Line:
-			impl_->current_graphic_properties->content().svg_stroke_color_ =  hexColor;
-			if (!impl_->current_graphic_properties->content().draw_stroke_)
-				impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
-			if (!impl_->current_graphic_properties->content().svg_stroke_width_)
-				impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1,length::pt).get_value_unit(length::cm),length::cm);//default
+			impl_->current_graphic_properties->svg_stroke_color_ =  hexColor;
+			if (!impl_->current_graphic_properties->draw_stroke_)
+				impl_->current_graphic_properties->draw_stroke_ = line_style(line_style::Solid);//default
+			if (!impl_->current_graphic_properties->svg_stroke_width_)
+				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
 			break;
 	}
 }
@@ -1216,10 +1290,10 @@ void odf_drawing_context::set_flip_H(bool bVal)
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
 //for image 
-	if (impl_->current_graphic_properties->content().style_mirror_)
-		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" horizontal");
+	if (impl_->current_graphic_properties->style_mirror_)
+		impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" horizontal");
 	else
-		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"horizontal");
+		impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
 }
 void odf_drawing_context::set_flip_V(bool bVal)
 {
@@ -1228,10 +1302,10 @@ void odf_drawing_context::set_flip_V(bool bVal)
 	if (impl_->current_graphic_properties == NULL) return;
 	if (bVal == false)return;
 //for image 
-	if (impl_->current_graphic_properties->content().style_mirror_)
-		impl_->current_graphic_properties->content().style_mirror_ = *impl_->current_graphic_properties->content().style_mirror_ + std::wstring(L" vertical");
+	if (impl_->current_graphic_properties->style_mirror_)
+		impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" vertical");
 	else
-		impl_->current_graphic_properties->content().style_mirror_ = std::wstring(L"vertical");
+		impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
 }
 
 void odf_drawing_context::set_rotate(double dVal)
@@ -1621,7 +1695,7 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			{
 				width_pt  = *width_pt * impl_->group_list_[i]->scale_cx;
 			}
-			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 		}
 		if (height_pt)
 		{
@@ -1629,53 +1703,53 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			{
 				height_pt = *height_pt * impl_->group_list_[i]->scale_cy;
 			}
-			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);	
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);	
 		}
 	}else
 	{
         if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
-			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 
         if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
-			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm),length::cm);
+			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
 void odf_drawing_context::set_line_width(double pt)
 {
 	if (!impl_->current_graphic_properties)return;
-	impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm),length::cm);
+	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 
 void odf_drawing_context::set_line_tail(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->content().draw_marker_end_ = add_marker_style(type);
+	impl_->current_graphic_properties->draw_marker_end_ = add_marker_style(type);
 
 	switch(width)
 	{
 	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.4,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.4, length::cm); break;
 	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.3,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.3, length::cm); break;
 	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->content().draw_marker_end_width_ = length(0.2,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_end_width_ = length(0.2, length::cm); break;
 	}
 }
 void odf_drawing_context::set_line_head(int type, int len, int width)
 {
 	if (!impl_->current_graphic_properties)return;
 	
-	impl_->current_graphic_properties->content().draw_marker_start_ = add_marker_style(type);
+	impl_->current_graphic_properties->draw_marker_start_ = add_marker_style(type);
 
 	switch(width)
 	{
 	case 0://lineendwidthLarge
-		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.4,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.4, length::cm); break;
 	case 1://lineendwidthMedium
-		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.3,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.3, length::cm); break;
 	case 2://lineendwidthSmall
-		impl_->current_graphic_properties->content().draw_marker_start_width_ = length(0.2,length::cm); break;
+		impl_->current_graphic_properties->draw_marker_start_width_ = length(0.2, length::cm); break;
 	}
 }
 
@@ -1745,28 +1819,28 @@ void odf_drawing_context::set_line_dash_preset(int style)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	if ((impl_->current_graphic_properties->content().draw_stroke_) && 
-		(impl_->current_graphic_properties->content().draw_stroke_->get_type() == line_style::None))	return;
+	if ((impl_->current_graphic_properties->draw_stroke_) && 
+		(impl_->current_graphic_properties->draw_stroke_->get_type() == line_style::None))	return;
 
 	switch(style)	//+создать стиль, привзать имена
 	{
 		case 0://presetlinedashvalDash    
 		case 7://presetlinedashvalSysDash     
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Dash);		break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Dash);		break;
 		case 1://presetlinedashvalDashDot    
 		case 8://presetlinedashvalSysDashDot  
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::DotDash);	break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::DotDash);	break;
 		case 2://presetlinedashvalDot       
 		case 10://presetlinedashvalSysDot        
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Dotted);	break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Dotted);	break;
 		case 3://presetlinedashvalLgDash  
 		case 4://presetlinedashvalLgDashDot  
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::LongDash);	break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::LongDash);	break;
 		case 5://presetlinedashvalLgDashDotDot 
 		case 9://presetlinedashvalSysDashDotDot 
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::DotDotDash);break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::DotDotDash);break;
 		case 6://presetlinedashvalSolid      
-			impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);	 break;
+			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);	 break;
 	}
 }
 
@@ -1776,15 +1850,15 @@ void odf_drawing_context::set_textarea_vertical_align(int align)
 	switch(align)
 	{
 	case 0://SimpleTypes::textanchoringtypeB: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom);	break;
+			impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom);	break;
 	case 1://SimpleTypes::textanchoringtypeCtr: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle);	break;
+			impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle);	break;
 	case 2://SimpleTypes::textanchoringtypeDist: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Baseline);break;
+			impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Baseline);break;
 	case 3://SimpleTypes::textanchoringtypeJust: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify);	break;
+			impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify);	break;
 	case 4://SimpleTypes::textanchoringtypeT: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);		break;
+			impl_->current_graphic_properties->draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);		break;
 	}
 }
 void odf_drawing_context::set_textarea_wrap(bool Val)
@@ -1792,14 +1866,13 @@ void odf_drawing_context::set_textarea_wrap(bool Val)
 	if (!impl_->current_graphic_properties)return;
 
 	if (Val)
-		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::Wrap);
+		impl_->current_graphic_properties->fo_wrap_option_ = wrap_option(wrap_option::Wrap);
 	else
-		impl_->current_graphic_properties->content().fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
+		impl_->current_graphic_properties->fo_wrap_option_ = wrap_option(wrap_option::NoWrap);
 
 }
-void odf_drawing_context::set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea)
+void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring & cs, std::wstring & ea)
 {
-	if (!latin && !cs && !ea)return;
 	if (impl_->current_drawing_state_.elements_.empty())return;
 
 	if (!impl_->current_text_properties)
@@ -1813,9 +1886,9 @@ void odf_drawing_context::set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_O
 
 	if (!impl_->current_text_properties) return;
 
-	if (ea)		impl_->current_text_properties->content().fo_font_family_			= *ea;
-	if (cs)		impl_->current_text_properties->content().style_font_family_complex_= *cs;
-	if (latin)	impl_->current_text_properties->content().style_font_family_asian_	= *latin;
+	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
+	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_= cs;
+	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
@@ -1836,7 +1909,7 @@ void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_text_properties->content().fo_color_ = hexColor;
+	impl_->current_text_properties->content_.fo_color_ = hexColor;
 }
 void odf_drawing_context::set_textarea_writing_mode(int mode)
 {
@@ -1846,7 +1919,7 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 	if (!impl_->current_paragraph_properties)
 	{
 		style* style_ = dynamic_cast<style*>(impl_->current_drawing_state_.elements_[0].style_elm.get());
-		if (style_)impl_->current_paragraph_properties = style_->style_content_.get_style_paragraph_properties();
+		if (style_)impl_->current_paragraph_properties = style_->content_.get_style_paragraph_properties();
 	}
 	
 	style_paragraph_properties	* paragraph_properties = impl_->odf_context_->text_context()->get_paragraph_properties();
@@ -1865,12 +1938,12 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		}
 		else
 		{
-			std::wstring style_name = draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_->style_name();
+			std::wstring style_name = *draw->common_draw_attlists_.shape_with_text_and_styles_.common_draw_text_style_name_attlist_.draw_text_style_name_;
 			//найти
 		}
 		if (style_ && !paragraph_properties)
 		{
-			paragraph_properties = style_->style_content_.get_style_paragraph_properties();
+			paragraph_properties = style_->content_.get_style_paragraph_properties();
 		}
 	}
 	if (paragraph_properties == NULL && impl_->current_paragraph_properties == NULL)return;	
@@ -1882,33 +1955,32 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 		case 3://SimpleTypes::textverticaltypeVert: 
 		case 2://SimpleTypes::textverticaltypeMongolianVert:
-			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 			break;
 		case 0://SimpleTypes::textverticaltypeEaVert: 
-			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 			break;
 		case 1://SimpleTypes::textverticaltypeHorz: 
 		default:
-			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+			paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+			impl_->current_paragraph_properties->content_.style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 			break;
 	}
 
 
 }
 
-void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in cm
+void odf_drawing_context::set_textarea_padding(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom)//in pt
 {
 	if (!impl_->current_graphic_properties)return;
 
-	if (left)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_left_	= length(*left,	length::cm);
-	if (top)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_top_	= length(*top,	length::cm);
-	if (right)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_right_	= length(*right,length::cm);
-	if (bottom)	impl_->current_graphic_properties->content().common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::cm);
+	if (left)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_left_		= length(*left,	length::pt);
+	if (top)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_top_		= length(*top,	length::pt);
+	if (right)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_right_	= length(*right,length::pt);
+	if (bottom)	impl_->current_graphic_properties->common_padding_attlist_.fo_padding_bottom_	= length(*bottom,length::pt);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //вложенные элементы
@@ -1987,9 +2059,9 @@ void odf_drawing_context::start_text_box()
 	//if (impl_->is_footer_ ==false && impl_->is_header_ ==false)
 	//	set_text_box_parent_style(L"Frame");
 
-	start_area_properties();
-		set_no_fill();
-	end_area_properties();
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill::none;
+	//impl_->current_graphic_properties->draw_stroke_ = line_style (line_style::None);
+
 }
 
 void odf_drawing_context::set_text_box_min_size(bool val)
@@ -2072,46 +2144,47 @@ void odf_drawing_context::end_text_box()
 	
 	end_element();
 
-	if (impl_->current_graphic_properties->content().svg_stroke_width_ || 
-		(impl_->current_graphic_properties->content().draw_stroke_ && impl_->current_graphic_properties->content().draw_stroke_->get_type() != line_style::None))
+	if (impl_->current_graphic_properties->svg_stroke_width_ || 
+		(impl_->current_graphic_properties->draw_stroke_ && impl_->current_graphic_properties->draw_stroke_->get_type() != line_style::None))
 	{
 		std::wstringstream ss;
-		ss << impl_->current_graphic_properties->content().svg_stroke_width_->get_length();
+		ss << impl_->current_graphic_properties->svg_stroke_width_->get_length();
 
-		if (impl_->current_graphic_properties->content().draw_stroke_) 
-			ss << L" " << *impl_->current_graphic_properties->content().draw_stroke_;
+		if (impl_->current_graphic_properties->draw_stroke_) 
+			ss << L" " << *impl_->current_graphic_properties->draw_stroke_;
 		else ss << L" solid";
 
-		if (impl_->current_graphic_properties->content().svg_stroke_color_) 
-			ss << L" " << *impl_->current_graphic_properties->content().svg_stroke_color_;
+		if (impl_->current_graphic_properties->svg_stroke_color_) 
+			ss << L" " << *impl_->current_graphic_properties->svg_stroke_color_;
 		else ss << L" #000000";
 
-		impl_->current_graphic_properties->content().common_border_attlist_.fo_border_ = ss.str();
+		impl_->current_graphic_properties->common_border_attlist_.fo_border_ = ss.str();
 	}
 	
-	if (impl_->current_graphic_properties->content().draw_shadow_)
+	if (impl_->current_graphic_properties->draw_shadow_)
 	{
 		std::wstringstream shadow_style;
 		
-		if (impl_->current_graphic_properties->content().draw_shadow_color_)
-			shadow_style << *impl_->current_graphic_properties->content().draw_shadow_color_;
+		if (impl_->current_graphic_properties->draw_shadow_color_)
+			shadow_style << *impl_->current_graphic_properties->draw_shadow_color_;
 		else shadow_style << L"#000000";
 
 		shadow_style << L" ";	
-		shadow_style << *impl_->current_graphic_properties->content().draw_shadow_offset_x_;
+		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_x_;
 		shadow_style << L" ";
-		shadow_style << *impl_->current_graphic_properties->content().draw_shadow_offset_y_;
+		shadow_style << *impl_->current_graphic_properties->draw_shadow_offset_y_;
 
-		impl_->current_graphic_properties->content().common_shadow_attlist_.style_shadow_ = shadow_style.str();
+		impl_->current_graphic_properties->common_shadow_attlist_.style_shadow_ = shadow_style.str();
 
-		impl_->current_graphic_properties->content().draw_shadow_offset_x_	= boost::none;
-		impl_->current_graphic_properties->content().draw_shadow_offset_y_	= boost::none;
-		impl_->current_graphic_properties->content().draw_shadow_color_		= boost::none;
-		impl_->current_graphic_properties->content().draw_shadow_			= boost::none;
+		impl_->current_graphic_properties->draw_shadow_offset_x_	= boost::none;
+		impl_->current_graphic_properties->draw_shadow_offset_y_	= boost::none;
+		impl_->current_graphic_properties->draw_shadow_color_		= boost::none;
+		impl_->current_graphic_properties->draw_shadow_			= boost::none;
 
-		if (!impl_->current_graphic_properties->content().common_border_attlist_.fo_border_)
-			impl_->current_graphic_properties->content().common_border_attlist_.fo_border_ = std::wstring(L"#000000 solid 0.06pt");
+		if (!impl_->current_graphic_properties->common_border_attlist_.fo_border_)
+			impl_->current_graphic_properties->common_border_attlist_.fo_border_ = std::wstring(L"#000000 solid 0.06pt");
 	}
+
 	end_frame();
 }
 void odf_drawing_context::end_object()
@@ -2155,9 +2228,9 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 	if (impl_->current_graphic_properties)
 	{
 		//автоувеличение при добавлении текста
-		impl_->current_graphic_properties->content().draw_auto_grow_height_ = false;
-		impl_->current_graphic_properties->content().draw_auto_grow_width_ = false;
-		//impl_->current_graphic_properties->content().draw_fit_to_size_ = false;//???
+		impl_->current_graphic_properties->draw_auto_grow_height_ = false;
+		impl_->current_graphic_properties->draw_auto_grow_width_ = false;
+		//impl_->current_graphic_properties->draw_fit_to_size_ = false;//???
 
 	}
 
@@ -2168,23 +2241,23 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 		
 		if (text_properties_)
 		{
-			color color_ = text_properties_->content().fo_color_.get_value_or(color(L"#000000"));
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = color_;			
+			color color_ = text_properties_->content_.fo_color_.get_value_or(color(L"#000000"));
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = color_;			
 			
-			if (text_properties_->content().style_text_outline_)
+			if (text_properties_->content_.style_text_outline_)
 			{
 				//line
-				impl_->current_graphic_properties->content().svg_stroke_color_	= color_;
-				if (!impl_->current_graphic_properties->content().draw_stroke_)
-					impl_->current_graphic_properties->content().draw_stroke_		= line_style(line_style::Solid);
-				if (!impl_->current_graphic_properties->content().svg_stroke_width_)
-					impl_->current_graphic_properties->content().svg_stroke_width_	= length(1,length::pt);
+				impl_->current_graphic_properties->svg_stroke_color_	= color_;
+				if (!impl_->current_graphic_properties->draw_stroke_)
+					impl_->current_graphic_properties->draw_stroke_		= line_style(line_style::Solid);
+				if (!impl_->current_graphic_properties->svg_stroke_width_)
+					impl_->current_graphic_properties->svg_stroke_width_	= length(1,length::pt);
 				
-				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
+				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::none);
 			}
 			else
 			{
-				impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::solid);			
+				impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::solid);			
 			}
 		}
 		//text_context->text_elements_list_[0].style_elm.get()
@@ -2200,6 +2273,8 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_gradient_style()
 {
+	if (!impl_->current_graphic_properties) return;
+
 	odf_writer::office_element_ptr gradient_element;
 
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
@@ -2211,12 +2286,12 @@ void odf_drawing_context::start_gradient_style()
 	gradient->draw_name_ = impl_->styles_context_->find_free_name(style_family::Gradient);
 	gradient->draw_display_name_ = std::wstring(L"User") + gradient->draw_name_.get() ;
 
-	gradient->draw_start_color_ = impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_;
+	gradient->draw_start_color_ = impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_;
 	if (gradient->draw_start_color_) gradient->draw_start_intensity_ = 100.;
 	
 	gradient->draw_border_ = 0;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_gradient_name_ = gradient->draw_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::gradient);
 
 
 }
@@ -2285,6 +2360,8 @@ void odf_drawing_context::end_gradient_style()
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_opacity_style()
 {
+	if (!impl_->current_graphic_properties) return;
+
 	odf_writer::office_element_ptr opacity_element;
 	odf_writer::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
@@ -2295,7 +2372,7 @@ void odf_drawing_context::start_opacity_style()
 	opacity->draw_name_ = impl_->styles_context_->find_free_name(style_family::Opacity);
 	opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
 	
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
 }
 void odf_drawing_context::set_opacity_start(double val)
 {
@@ -2339,6 +2416,8 @@ void odf_drawing_context::end_opacity_style()
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_hatch_style()
 {
+	if (!impl_->current_graphic_properties) return;
+
 	odf_writer::office_element_ptr hatch_element;
 
 	odf_writer::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
@@ -2350,15 +2429,15 @@ void odf_drawing_context::start_hatch_style()
 	hatch->draw_name_ = impl_->styles_context_->find_free_name(style_family::Hatch);
 	hatch->draw_display_name_ = std::wstring(L"User") + hatch->draw_name_.get() ;
 	
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
 }
 void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 {
 	if (!impl_->current_graphic_properties)return;
 
-	//impl_->current_graphic_properties->content().svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
-	//impl_->current_graphic_properties->content().draw_stroke_=line_style(line_style::Solid);//default
+	//impl_->current_graphic_properties->svg_stroke_color_ = color(std::wstring(L"#") + hexColor);
+	//impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);//default
 
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(impl_->styles_context_->last_state()->get_office_element().get());
 	if (!hatch) return;
@@ -2375,8 +2454,8 @@ void odf_drawing_context::set_hatch_area_color(std::wstring hexColor)
 	int res = 0;
 	if ((res = hexColor.find(L"#")) < 0) hexColor = std::wstring(L"#") + hexColor;
 
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ = hexColor;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_color_ = hexColor;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_solid_ = true;
 }
 void odf_drawing_context::set_hatch_type(int type)
 {
@@ -2664,6 +2743,7 @@ void odf_drawing_context::end_hatch_style()
 
 void odf_drawing_context::start_bitmap_style()
 {
+	if (!impl_->current_graphic_properties) return;
 	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return;
 
 	odf_writer::office_element_ptr fill_image_element;
@@ -2680,8 +2760,8 @@ void odf_drawing_context::start_bitmap_style()
 	fill_image->xlink_attlist_.show_	= xlink_show::Embed;
 	fill_image->xlink_attlist_.actuate_	= xlink_actuate::OnLoad;
 	
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
 	
 	set_image_style_repeat(0);
 
@@ -2695,23 +2775,23 @@ void odf_drawing_context::set_bitmap_tile_align(int align)
 	switch (align)
 	{
 		case 0: //	rectalignmentB   = 0,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom);break;
 		case 1: //	rectalignmentBL  = 1,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_left);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_left);break;
 		case 2: //	rectalignmentBR  = 2,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_right);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::bottom_right);break;
 		case 3: //	rectalignmentCtr = 3,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::center);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::center);break;
 		case 4: //	rectalignmentL   = 4,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::left);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::left);break;
 		case 5: //	rectalignmentR   = 5,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::right);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::right);break;
 		case 6: //	rectalignmentT   = 6,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top);break;
 		case 7: //	rectalignmentTL  = 7,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_left);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_left);break;
 		case 8: //	rectalignmentTR  = 8,
-			impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_right);break;
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_ = fill_image_ref_point(fill_image_ref_point::top_right);break;
 	}
 }
 void odf_drawing_context::set_image_style_repeat(int style)
@@ -2719,11 +2799,11 @@ void odf_drawing_context::set_image_style_repeat(int style)
 	if (!impl_->current_graphic_properties)		return;
 
 	if (style == 1)
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Stretch);
+		impl_->current_graphic_properties->common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Stretch);
 	else if (style ==2)
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Repeat);
+		impl_->current_graphic_properties->common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::Repeat);
 	else
-		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::NoRepeat);//default
+		impl_->current_graphic_properties->common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::NoRepeat);//default
 }
 void odf_drawing_context::set_image_client_rect_pt(double l, double t, double r, double b)
 {
@@ -2737,7 +2817,7 @@ void odf_drawing_context::set_image_client_rect_pt(double l, double t, double r,
 							<< length(length(b, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
 							<< length(length(l, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L")");
 
-	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
+	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
 void odf_drawing_context::set_image_client_rect_inch(double l, double t, double r, double b)
@@ -2752,7 +2832,7 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 				<< b << std::wstring(L"in, ")
 				<< l << std::wstring(L"in)");
 
-	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
+	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
 void odf_drawing_context::set_bitmap_link(std::wstring file_path)
@@ -2781,7 +2861,7 @@ void odf_drawing_context::set_bitmap_tile_scale_x(double scale_x)
 {
 	if (!impl_->current_graphic_properties)return;
 	
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_width_ = 
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_width_ = 
 				length(length(scale_x,length::pt).get_value_unit(length::cm),length::cm);
 
 }
@@ -2789,20 +2869,20 @@ void odf_drawing_context::set_bitmap_tile_scale_y(double scale_y)
 {
 	if (!impl_->current_graphic_properties)return;
 	
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_height_ = 
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_height_ = 
 				length(length(scale_y,length::pt).get_value_unit(length::cm),length::cm);
 
 }
 void odf_drawing_context::set_bitmap_tile_translate_y(double y)
 {
 	if (!impl_->current_graphic_properties)return;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_y_ = percent(y);
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_y_ = percent(y);
 
 }
 void odf_drawing_context::set_bitmap_tile_translate_x(double x)
 {
 	if (!impl_->current_graphic_properties)return;
-	impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_ref_point_x_ = percent(x);
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_ref_point_x_ = percent(x);
 }
 
 office_element_ptr & odf_drawing_context::get_root_element()

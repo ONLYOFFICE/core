@@ -44,15 +44,12 @@ namespace PPTX
 		Folder();
 		Folder(const OOX::CPath& path, IPPTXEvent* Event);
 
-	public:
 		void read(const OOX::CPath& path, IPPTXEvent* Event);
 		void write(const OOX::CPath& path);
 		void createFromTemplate(const OOX::CPath& path);
 
-	public:
 		const bool isValid(const OOX::CPath& path) const;
 
-	public:
 		void extractPictures(const OOX::CPath& path);
 		void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
 	private:

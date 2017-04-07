@@ -80,24 +80,24 @@ namespace DocWrapper {
 		return fontName;
 	}
 	
-    std::wstring FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme)
+	std::wstring FontProcessor::getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::String>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, PPTX::Theme* pTheme)
 	{
 		CFontSelectFormat oFontSelectFormat;
         std::wstring sFontName;
 		if(NULL != pTheme && oScheme.IsInit() && oScheme->m_oFontScheme.IsInit())
 		{
-			//берем шрифт из темы
+	//берем шрифт из темы
 			const SimpleTypes::Spreadsheet::EFontScheme eFontScheme = oScheme->m_oFontScheme->GetValue();
 			if(SimpleTypes::Spreadsheet::fontschemeMajor == eFontScheme)
-				sFontName = pTheme->GetMajorFont();
+				sFontName = pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 			else if(SimpleTypes::Spreadsheet::fontschemeMinor == eFontScheme)
-				sFontName = pTheme->GetMinorFont();
+				sFontName = pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 		}
         if(sFontName.empty() && oRFont.IsInit() && oRFont->m_sVal.IsInit())
 			sFontName = oRFont->ToString2();
         if(sFontName.empty())
             sFontName = std::wstring(gc_sNoNameFont);
-		//подбор перенесен в js
+	//подбор перенесен в js
 		return  sFontName;
 		
 		oFontSelectFormat.wsName = new std::wstring(sFontName);

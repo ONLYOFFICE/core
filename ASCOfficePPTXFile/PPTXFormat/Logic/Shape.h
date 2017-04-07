@@ -45,6 +45,7 @@
 
 #include "../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Vml.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Sdt.h"
 
 namespace OOX
 {
@@ -318,28 +319,31 @@ namespace PPTX
 			void SetLevelUpElement(const Shape& p)const{levelUp = &p;};
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::WrapperFile>& oTheme, smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group = false);
-			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap);
+			void toXmlWriterVML				(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
+			void toXmlWriterVMLBackground	(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap);
 
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;			
 			virtual void fromPPTY		(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			std::wstring			m_name;
+//-------------------------------------------------------------------------------------------------
+			std::wstring						m_name;
+			bool								m_bOleShape;
 
-			NvSpPr					nvSpPr;
-			SpPr					spPr;
-			nullable<ShapeStyle>	style;
-			nullable<TxBody>		txBody;
-			nullable<Xfrm>			txXfrm;
+			NvSpPr								nvSpPr;
+			SpPr								spPr;
+			nullable<ShapeStyle>				style;
+			nullable<TxBody>					txBody;
+			nullable<Xfrm>						txXfrm;
 
-			nullable_string			TextBoxShape;
-			nullable<BodyPr>		TextBoxBodyPr;
+			nullable_string						strTextBoxShape;
+			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
+			nullable<BodyPr>					oTextBoxBodyPr;
 
 			bool								isFontRefInSlide;
 			mutable nullable<TextParagraphPr>	body[10];
  
 	// Attributes
-			nullable_bool			attrUseBgFill;
+			nullable_bool						attrUseBgFill;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

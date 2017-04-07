@@ -54,7 +54,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	HRESULT hr = S_OK;
 //////////////////////////////////////////////////////////////////////////
 	std::wstring srcFileName	= argv[1];
-	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.xlsx"; //xlsx pptx docx
+	std::wstring dstPath		= argc > 2 ? argv[2] : srcFileName + L"-my.pptx"; //xlsx pptx docx
 	
 	std::wstring outputDir		= NSDirectory::GetFolderPath(dstPath);
 	

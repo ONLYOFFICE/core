@@ -189,6 +189,11 @@ void odf_conversion_context::start_text()
 	create_object();
 	create_element(L"office", L"text", objects_.back().content, this, true);
 }
+void odf_conversion_context::start_presentation()
+{
+	create_object();
+	create_element(L"office", L"presentation", objects_.back().content, this, true);
+}
 void odf_conversion_context::create_object()
 {
 	_object obj;
@@ -220,6 +225,10 @@ void odf_conversion_context::end_spreadsheet()
 {
 	end_object();
 }
+void odf_conversion_context::end_presentation()
+{
+	end_object();
+}
 void odf_conversion_context::end_object()
 {
 	current_object_ = 0;//main
@@ -227,6 +236,11 @@ void odf_conversion_context::end_object()
 
 office_element_ptr & odf_conversion_context::get_current_object_element()
 {
+	if (objects_.empty())
+	{
+		create_object();
+	}
+
 	return objects_[current_object_].content;
 }
 

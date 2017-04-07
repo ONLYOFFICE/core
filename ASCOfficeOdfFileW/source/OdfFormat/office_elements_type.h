@@ -119,6 +119,7 @@ enum ElementType
     typeStyleMasterPage,
     typeStyleHandoutMasterPage,
 	typeStyleDrawLayerSet,
+	typeStyleDrawLayer,
     typeOfficeStyles,
     typeStyleDefaultStyle,
     typeStyleStyle,

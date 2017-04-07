@@ -87,7 +87,7 @@ void dc_creator::serialize(std::wostream & _Wostream)
 
 void office_annotation_attr::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"draw:style-name",		draw_style_name_); 
+	CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_); 
 	CP_XML_ATTR_OPT(L"draw:text-style-name",	draw_text_style_name_); 
 	
 	CP_XML_ATTR_OPT(L"draw:caption-point-x",	caption_point_x_); 
@@ -96,7 +96,7 @@ void office_annotation_attr::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"svg:y", svg_y_);
 	CP_XML_ATTR_OPT(L"svg:x", svg_x_);
 	CP_XML_ATTR_OPT(L"svg:width",		svg_width_); 
-	CP_XML_ATTR_OPT(L"svg:height",	svg_height_); 
+	CP_XML_ATTR_OPT(L"svg:height",		svg_height_); 
 	
 	CP_XML_ATTR_OPT(L"office:display",display_);
 	CP_XML_ATTR_OPT(L"office:name",name_);

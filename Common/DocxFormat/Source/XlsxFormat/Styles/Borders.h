@@ -44,16 +44,17 @@ namespace OOX
 		class CBorderProp : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CBorderProp)
+			WritingElement_AdditionConstructors(CBorderProp)
 			CBorderProp()
 			{
 			}
 			virtual ~CBorderProp()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -72,7 +73,7 @@ namespace OOX
 				writer.WriteString(sName);
 				writer.WriteString(_T(">"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -91,7 +92,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_BorderProp;
+				return et_x_BorderProp;
 			}
 			bool IsEmpty()
 			{
@@ -116,16 +117,17 @@ namespace OOX
 		class CBorder : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CBorder)
+			WritingElement_AdditionConstructors(CBorder)
 			CBorder()
 			{
 			}
 			virtual ~CBorder()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -199,7 +201,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Border;
+				return et_x_Border;
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -230,16 +232,17 @@ namespace OOX
 		class CBorders : public WritingElementWithChilds<CBorder>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CBorders)
+			WritingElement_AdditionConstructors(CBorders)
 			CBorders()
 			{
 			}
 			virtual ~CBorders()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -273,7 +276,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Borders;
+				return et_x_Borders;
 			}
 
 		private:

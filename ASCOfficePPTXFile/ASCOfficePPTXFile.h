@@ -51,19 +51,17 @@ namespace PPTX
 class CPPTXFile : public PPTX::IPPTXEvent
 {
 private:
-	PPTX::Folder*					m_pFolder;
-    std::wstring                    m_strTempDir;
-    std::wstring					m_strDirectory;
+	PPTX::Folder*		m_pFolder;
+    std::wstring		m_strTempDir;
+    std::wstring		m_strDirectory;
 
-	// writer to ppty
 	std::wstring		m_strFontDirectory;
 	std::wstring		m_strMediaDirectory;
-    bool		m_bIsUseSystemFonts;
+    bool				m_bIsUseSystemFonts;
 	std::wstring		m_strEmbeddedFontsDirectory;
 
 	std::wstring		m_strFolderThemes;
 
-	//load_from_resource m_fCallbackResource;
     extract_to_directory    m_fCallbackExtract;
 	compress_from_directory m_fCallbackCompress;
     progress_operation      m_fCallbackProgress;

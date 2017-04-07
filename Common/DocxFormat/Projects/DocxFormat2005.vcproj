@@ -1229,38 +1229,18 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="DrawingML"
+			Name="Drawing"
 			>
 			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramData.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
+				>
+			</File>
+			<File
 				RelativePath="..\Source\DocxFormat\Drawing\Drawing.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\Drawing3D.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingBody.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingColors.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingCoreInfo.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingCoreInfo.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingEffects.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingEffects.h"
 				>
 			</File>
 			<File
@@ -1269,62 +1249,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Drawing\DrawingExt.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingGraphic.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingParagraph.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingParagraphElements.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingPicture.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingRun.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingShape.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingShapeElements.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingShared.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingStyles.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingStyles2.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingTables.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingText.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingTextProperties.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Drawing\DrawingTransform.h"
 				>
 			</File>
 		</Filter>
@@ -1532,19 +1456,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Source\XlsxFormat\IFileContainer_Spreadsheet.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\XlsxFormat\IFileContainer_Spreadsheet.h"
-				>
-			</File>
-			<File
 				RelativePath="..\Source\XlsxFormat\SimpleTypes_Spreadsheet.h"
 				>
 			</File>
 			<File
 				RelativePath="..\Source\XlsxFormat\Workbook.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h"
 				>
 			</File>
 			<File
@@ -1603,19 +1523,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\Image.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\Pic.h"
+					RelativePath="..\Source\XlsxFormat\Ole\oleobjects.h"
 					>
 				</File>
 				<File
 					RelativePath="..\Source\XlsxFormat\Drawing\Pos.h"
-					>
-				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Drawing\Shape.h"
 					>
 				</File>
 			</Filter>
@@ -1762,10 +1674,6 @@
 					RelativePath="..\Source\XlsxFormat\Worksheets\Worksheet.h"
 					>
 				</File>
-				<File
-					RelativePath="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="ExternalLinks"
@@ -1849,18 +1757,6 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Math\oMathPara.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="DiagramML"
-			>
-			<File
-				RelativePath="..\Source\DocxFormat\Diagram\DiagramData.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Source\DocxFormat\Diagram\DiagramDrawing.h"
 				>
 			</File>
 		</Filter>
@@ -1977,6 +1873,100 @@
 			</File>
 			<File
 				RelativePath="..\Source\DocxFormat\Logic\VmlWord.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="PPTX"
+			>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\Core.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileContainer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileContainer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileFactory.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseOpenSource|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseOpenSource|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileMap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.h"
 				>
 			</File>
 		</Filter>

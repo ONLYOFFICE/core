@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "OOXDrawingGraphicReader.h"
-#include "OOXPictureGraphicReader.h"
 #include "OOXReaderBasic.h"
 
 class OOXDrawingAnchorReader
@@ -297,13 +296,9 @@ public:
 		if(m_ooxAnchor->m_oWrapTopAndBottom.IsInit())
 			pOutput->m_nWrapType = 1;
 		
-		int result = 0;
-		if( m_ooxAnchor->m_oGraphic.IsInit() )
-		{
-			OOXGraphicReader oGraphicReader(m_ooxAnchor->m_oGraphic.GetPointer());
+		OOXGraphicReader oGraphicReader(&m_ooxAnchor->m_oGraphic);
 
-			result = oGraphicReader.Parse( oParam, pOutput);			
-		}
+		int result = oGraphicReader.Parse( oParam, pOutput);			
 		if( PROP_DEF == pOutput->m_nBottom && pOutput->m_nTop !=PROP_DEF )
 		{
 			pOutput->m_nBottom	= pOutput->m_nTop	+ nHeight;

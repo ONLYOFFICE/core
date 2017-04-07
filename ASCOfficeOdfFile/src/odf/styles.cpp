@@ -158,9 +158,15 @@ style_paragraph_properties * style_content::get_style_paragraph_properties() con
     return dynamic_cast<style_paragraph_properties *>(style_paragraph_properties_.get());    
 }
 
-style_graphic_properties * style_content::get_style_graphic_properties() const
+graphic_format_properties * style_content::get_graphic_properties() const
 {
-    return dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
+    style_graphic_properties *style_ =  dynamic_cast<style_graphic_properties *>(style_graphic_properties_.get());    
+    loext_graphic_properties *loext_ =  dynamic_cast<loext_graphic_properties *>(style_graphic_properties_.get());   
+
+	if (style_) return &style_->content_;
+	if (loext_) return &loext_->content_;
+
+	return NULL;
 }
 style_table_properties * style_content::get_style_table_properties() const
 {
@@ -264,7 +270,7 @@ void style_content::add_child_element( xml::sax * Reader, const std::wstring & N
     {
         CP_CREATE_ELEMENT_SIMPLE(style_section_properties_);
     } 
-    else if CP_CHECK_NAME(L"style", L"graphic-properties")
+    else if (CP_CHECK_NAME(L"style", L"graphic-properties") || CP_CHECK_NAME(L"loext", L"graphic-properties"))
     {
         CP_CREATE_ELEMENT_SIMPLE(style_graphic_properties_);    
     }

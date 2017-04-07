@@ -166,12 +166,12 @@ const wchar_t * style_page_layout_properties::name	= L"page-layout-properties";
 
 void style_page_layout_properties::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    style_page_layout_properties_elements_.create_child_element( Ns, Name, getContext());
+    elements_.create_child_element( Ns, Name, getContext());
 }
 
 void style_page_layout_properties::add_child_element( const office_element_ptr & child)
 {
-	style_page_layout_properties_elements_.add_child_element(child);
+	elements_.add_child_element(child);
 }
 
 void style_page_layout_properties::serialize(std::wostream & strm)
@@ -180,8 +180,8 @@ void style_page_layout_properties::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			style_page_layout_properties_attlist_.serialize( CP_GET_XML_NODE());
-			style_page_layout_properties_elements_.serialize(CP_XML_STREAM());
+			attlist_.serialize( CP_GET_XML_NODE());
+			elements_.serialize(CP_XML_STREAM());
 		}
 	}
 }

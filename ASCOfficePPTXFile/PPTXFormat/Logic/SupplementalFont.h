@@ -53,14 +53,6 @@ namespace PPTX
 				node.ReadAttributeBase(L"script", script);
 				node.ReadAttributeBase(L"typeface", typeface);
 			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("script"), script);
-				oAttr.Write(_T("typeface"), typeface);
-
-				return XmlUtils::CreateNode(m_name, oAttr);
-			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

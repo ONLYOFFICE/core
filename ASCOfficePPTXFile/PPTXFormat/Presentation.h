@@ -172,49 +172,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			oAttr.Write(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			oAttr.Write(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-
-			oAttr.Write(_T("autoCompressPictures"), attrAutoCompressPictures);
-			oAttr.Write(_T("bookmarkIdSeed"), attrBookmarkIdSeed);
-			oAttr.Write(_T("compatMode"), attrCompatMode);
-			oAttr.WriteLimitNullable(_T("conformance"), attrConformance);
-			oAttr.Write(_T("embedTrueTypeFonts"), attrEmbedTrueTypeFonts);
-			oAttr.Write(_T("firstSlideNum"), attrFirstSlideNum);
-			oAttr.Write(_T("removePersonalInfoOnSave"), attrRemovePersonalInfoOnSave);
-			oAttr.Write(_T("rtl"), attrRtl);
-			oAttr.Write(_T("saveSubsetFonts"), attrSaveSubsetFonts);
-			oAttr.Write(_T("serverZoom"), attrServerZoom);
-			oAttr.Write(_T("showSpecialPlsOnTitleSld"), attrShowSpecialPlsOnTitleSld);
-			oAttr.Write(_T("strictFirstAndLastChars"), attrStrictFirstAndLastChars);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.WriteArray(_T("p:sldMasterIdLst"), sldMasterIdLst);
-
-			if (!notesMasterIdLst.empty())
-				oValue.WriteArray(_T("p:notesMasterIdLst"), notesMasterIdLst);
-			if (!handoutMasterIdLst.empty())
-				oValue.WriteArray(_T("p:handoutMasterIdLst"), handoutMasterIdLst);
-			if (!handoutMasterIdLst.empty())
-				oValue.WriteArray(_T("p:embeddedFontLst"), embeddedFontLst);
-
-			oValue.WriteArray(_T("p:sldIdLst"), sldIdLst);
-			oValue.WriteNullable(sldSz);
-			oValue.WriteNullable(notesSz);
-
-			oValue.WriteNullable(photoAlbum);
-			oValue.WriteNullable(kinsoku);
-			oValue.WriteNullable(defaultTextStyle);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:presentation"), oAttr, oValue));
-
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);
 			FileContainer::write(filename, directory, content);
 		}
 
@@ -425,20 +383,20 @@ namespace PPTX
 		//Childs
 		//custDataLst (Customer Data List)
 		//property<std::list<Presentation::CustShow> > custShowLst (List of Custom Shows)
-		nullable<Logic::TextListStyle>			defaultTextStyle;
-		std::vector<nsPresentation::EmbeddedFont> embeddedFontLst;
+		nullable<Logic::TextListStyle>				defaultTextStyle;
+		std::vector<nsPresentation::EmbeddedFont>	embeddedFontLst;
 		std::vector<Logic::XmlId>					handoutMasterIdLst;
-		nullable<nsPresentation::Kinsoku>		kinsoku;
+		nullable<nsPresentation::Kinsoku>			kinsoku;
 		//modifyVerifier (Modification Verifier)
 		std::vector<Logic::XmlId>					notesMasterIdLst;
-		nullable<nsPresentation::NotesSz>		notesSz;
-		nullable<nsPresentation::PhotoAlbum>	photoAlbum;
+		nullable<nsPresentation::NotesSz>			notesSz;
+		nullable<nsPresentation::PhotoAlbum>		photoAlbum;
 		std::vector<Logic::XmlId>					sldIdLst;
 		std::vector<Logic::XmlId>					sldMasterIdLst;
-		nullable<nsPresentation::SldSz>			sldSz;
+		nullable<nsPresentation::SldSz>				sldSz;
 		//smartTags (Smart Tags)
 
-		// Attrs
+	// Attrs
 		nullable_bool							attrAutoCompressPictures;
 		nullable_int							attrBookmarkIdSeed;
 		nullable_bool							attrCompatMode;

@@ -49,16 +49,16 @@ const int TxtFile::getLinesCount()
 const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref также
 {
 	std::list<std::string> result;
-	CFile file_binary;
+	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
-	long file_size	= file_binary.GetFileSize();
+	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
 
 	if (file_data == NULL) return result;
 
-	file_binary.ReadFile((BYTE*)file_data, file_size);
+	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
 	long start_pos = 0;
 
@@ -116,16 +116,16 @@ const std::list<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, lon
 const std::list<std::wstring> TxtFile::readUnicode()
 {
     std::list<std::wstring> result;
-	CFile file_binary;
+	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
-	long file_size	= file_binary.GetFileSize();
+	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
 
 	if (file_data == NULL) return result;
 
-	file_binary.ReadFile((BYTE*)file_data, file_size);
+	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
     return readUnicodeFromBytes(file_data, file_size);
 }
@@ -133,16 +133,16 @@ const std::list<std::wstring> TxtFile::readUnicode()
 const std::list<std::wstring> TxtFile::readBigEndian()
 {
     std::list<std::wstring> result;
-	CFile file_binary;
+	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
-	long file_size	= file_binary.GetFileSize();
+	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
 
 	if (file_data == NULL) return result;
 
-	file_binary.ReadFile((BYTE*)file_data, file_size);
+	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
     //swap bytes
     for (long i = 0; i < file_size; i+=2)
@@ -158,16 +158,16 @@ const std::list<std::wstring> TxtFile::readBigEndian()
 const std::list<std::string> TxtFile::readUtf8()
 {
 	std::list<std::string> result;
-	CFile file_binary;
+	NSFile::CFileBinary file_binary;
 
 	if (file_binary.OpenFile(m_path) != S_OK) return result;
 
-	long file_size	= file_binary.GetFileSize();
+	DWORD file_size	= file_binary.GetFileSize();
 	char *file_data	= new char[file_size];
 
 	if (file_data == NULL) return result;
 
-	file_binary.ReadFile((BYTE*)file_data, file_size);
+	file_binary.ReadFile((BYTE*)file_data, file_size, file_size);
 
 	long start_pos = 3; //skip header
 
@@ -197,13 +197,13 @@ const std::list<std::string> TxtFile::readUtf8()
 
 void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref также
 {
-	CFile file;
-    if (file.CreateFile(m_path) == S_OK)
+	NSFile::CFileBinary file;
+    if (file.CreateFileW(m_path) == S_OK)
 	{
 		BYTE endLine[2] = {0x0d, 0x0a};
 		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
 		{
-			file.WriteFile((void*)(*iter).c_str(), (*iter).length());
+			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
 			file.WriteFile(endLine, 2);
 
 			m_linesCount++;
@@ -213,8 +213,8 @@ void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === 
 
 void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 {
-	CFile file;
-    if (file.CreateFile(m_path) == S_OK)
+	NSFile::CFileBinary file;
+    if (file.CreateFileW(m_path) == S_OK)
 	{
 		BYTE Header[2]	= {0xff, 0xfe};
 		BYTE EndLine[4] = {0x0d, 0x00, 0x0a, 0x00};
@@ -228,7 +228,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 
 			if(sizeof(wchar_t) == 2)
 			{
-				file.WriteFile((void*)data, size << 1);
+				file.WriteFile((BYTE*)data, size << 1);
 			}
 			else
 			{
@@ -243,8 +243,8 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 
 void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 {
-	CFile file;
-    if (file.CreateFile(m_path) == S_OK)
+	NSFile::CFileBinary file;
+    if (file.CreateFileW(m_path) == S_OK)
 	{
 		BYTE Header[2]	= {0xfe,	0xff};
 		BYTE EndLine[4] = {0x00, 0x0d, 0x00, 0x0a};
@@ -264,7 +264,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 					data[i]		= data[i+1];
 					data[i+1]	= v;
 				}
-				file.WriteFile((void*)(*iter).c_str(), size << 1);
+				file.WriteFile((BYTE*)(*iter).c_str(), size << 1);
 			}
 			else
 			{
@@ -279,8 +279,8 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 
 void TxtFile::writeUtf8(const std::list<std::string>& content)
 {
-	CFile file;
-    if (file.CreateFile(m_path) == S_OK)
+	NSFile::CFileBinary file;
+    if (file.CreateFileW(m_path) == S_OK)
 	{
 		BYTE Header[3]	= {0xef ,0xbb , 0xbf};
 		BYTE EndLine[2]	= {0x0d ,0x0a};
@@ -289,8 +289,8 @@ void TxtFile::writeUtf8(const std::list<std::string>& content)
 
 		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
 		{
-			file.WriteFile((void*)(*iter).c_str(), (*iter).length());
-			file.WriteFile((void*)EndLine, 2);
+			file.WriteFile((BYTE*)(*iter).c_str(), (*iter).length());
+			file.WriteFile((BYTE*)EndLine, 2);
 
 			m_linesCount++;
 		}
@@ -299,12 +299,14 @@ void TxtFile::writeUtf8(const std::list<std::string>& content)
 
 const bool TxtFile::isUnicode()
 {
-	CFile file;
+	NSFile::CFileBinary file;
 
 	if (file.OpenFile(m_path) != S_OK) return false;
 
+	DWORD dwRead;
 	BYTE data [2];
-	file.ReadFile(data,2);
+	
+	file.ReadFile(data, 2, dwRead);
 	file.CloseFile();
 
 	if ((data [0] == 0xff) && (data [1] == 0xfe))return true;
@@ -314,12 +316,14 @@ const bool TxtFile::isUnicode()
 
 const bool TxtFile::isBigEndian()
 {
-	CFile file;
+	NSFile::CFileBinary file;
 
 	if (file.OpenFile(m_path) != S_OK) return false;
 
+	DWORD dwRead;
 	BYTE data [2];
-	file.ReadFile(data,2);
+	
+	file.ReadFile(data, 2, dwRead);
 	file.CloseFile();
 
 	if ((data [0] == 0xfe) && (data [1] == 0xff))return true;
@@ -329,12 +333,14 @@ const bool TxtFile::isBigEndian()
 
 const bool TxtFile::isUtf8()
 {
-	CFile file;
+	NSFile::CFileBinary file;
 
 	if (file.OpenFile(m_path) != S_OK) return false;
 
+	DWORD dwRead;
 	BYTE data [3];
-	file.ReadFile(data,3);
+	
+	file.ReadFile(data, 3, dwRead);
 	file.CloseFile();
 
 	if ((data [0] == 0xef) && (data [1] == 0xbb) && (data [2] == 0xbf))return true;

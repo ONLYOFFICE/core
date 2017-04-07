@@ -183,10 +183,12 @@ namespace PPTX
 			{
 				BinDocxRW::CDocxSerializer oDocxSerializer;
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
-				NSBinPptxRW::CImageManager2* pOldImageManager = oDrawingConverter.m_pImageManager;
-				NSBinPptxRW::CBinaryFileReader* pOldReader = oDrawingConverter.m_pReader;
-				oDrawingConverter.m_pImageManager = pReader->m_pRels->m_pManager;
-				oDrawingConverter.m_pReader = pReader;
+				
+				NSBinPptxRW::CImageManager2*	pOldImageManager	= oDrawingConverter.m_pImageManager;
+				NSBinPptxRW::CBinaryFileReader* pOldReader			= oDrawingConverter.m_pReader;
+				
+				oDrawingConverter.m_pImageManager	= pReader->m_pRels->m_pManager;
+				oDrawingConverter.m_pReader			= pReader;
 
 				oDocxSerializer.m_pCurFileWriter = new Writers::FileWriter(L"", L"", true, BinDocxRW::g_nFormatVersion, false, &oDrawingConverter, L"");
 				oDocxSerializer.getXmlContentElem(eType, *pReader, sXml);

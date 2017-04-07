@@ -44,16 +44,17 @@ namespace OOX
 		class CAltTextTable : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CAltTextTable)
+			WritingElement_AdditionConstructors(CAltTextTable)
 			CAltTextTable()
 			{
 			}
 			virtual ~CAltTextTable()
 			{
 			}
-
-		public:
-			virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -64,7 +65,7 @@ namespace OOX
 				WritingStringNullableAttrEncodeXmlString(L"altTextSummary", m_oAltTextSummary, m_oAltTextSummary.get());
 				writer.WriteString(L"/>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -74,7 +75,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_AltTextTable;
+				return et_x_AltTextTable;
 			}
 
 		private:
@@ -95,7 +96,7 @@ namespace OOX
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableStyleInfo)
+			WritingElement_AdditionConstructors(CTableStyleInfo)
 			CTableStyleInfo()
 			{
 			}
@@ -103,8 +104,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -131,7 +134,7 @@ namespace OOX
 				WritingStringAttrInt(L"showColumnStripes", nShowColumnStripes);
 				writer.WriteString(L"/>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -141,7 +144,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableStyleInfo;
+				return et_x_TableStyleInfo;
 			}
 
 		private:
@@ -168,16 +171,17 @@ namespace OOX
 		class CTableColumn : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableColumn)
+			WritingElement_AdditionConstructors(CTableColumn)
 			CTableColumn()
 			{
 			}
 			virtual ~CTableColumn()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -211,7 +215,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -232,7 +236,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableColumn;
+				return et_x_TableColumn;
 			}
 
 		private:
@@ -261,7 +265,7 @@ namespace OOX
 		class CTableColumns : public WritingElementWithChilds<CTableColumn>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableColumns)
+			WritingElement_AdditionConstructors(CTableColumns)
 			CTableColumns()
 			{
 			}
@@ -269,7 +273,9 @@ namespace OOX
 			{
 			}
 
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -307,7 +313,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableColumns;
+				return et_x_TableColumns;
 			}
 
 		private:
@@ -326,7 +332,7 @@ namespace OOX
 		class CTable : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTable)
+			WritingElement_AdditionConstructors(CTable)
 			CTable()
 			{
 			}
@@ -334,8 +340,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -375,7 +383,7 @@ namespace OOX
 					writer.WriteString(L"</table>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -402,7 +410,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Table;
+				return et_x_Table;
 			}
 
 		private:
@@ -436,16 +444,17 @@ namespace OOX
 		class CTablePart : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTablePart)
+			WritingElement_AdditionConstructors(CTablePart)
 			CTablePart()
 			{
 			}
 			virtual ~CTablePart()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -458,7 +467,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -468,7 +477,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TablePart;
+				return et_x_TablePart;
 			}
 
 		private:
@@ -487,15 +496,16 @@ namespace OOX
 		class CTableParts : public WritingElementWithChilds<CTablePart>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableParts)
+			WritingElement_AdditionConstructors(CTableParts)
 			CTableParts()
 			{
 			}
 			virtual ~CTableParts()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -533,7 +543,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableParts;
+				return et_x_TableParts;
 			}
 
 		private:
@@ -551,14 +561,16 @@ namespace OOX
 		};
 		//необработанные child:
 		//<extLst>
-		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
+		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
 			CTableFile()
 			{
+				m_bSpreadsheets = true;
 			}
 			CTableFile(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CTableFile()
@@ -620,14 +632,12 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			nullable<CTable>	m_oTable;
 		private:
-			CPath									m_oReadPath;
+			CPath				m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-
-		public:
-			nullable<CTable>         m_oTable;
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -54,17 +54,12 @@ namespace odf_reader {
 
 std::wstring number_style_base::get_style_name() const
 {
-    if (common_data_style_attlist_.style_name_)
-        return common_data_style_attlist_.style_name_->style_name();
-    else
-        return L"";
+    return common_data_style_attlist_.style_name_.get_value_or(L"");
 }
 
 void number_style_base::oox_convert_impl(oox::num_format_context & Context) 
 {
-    std::wstring style_name = L"";
-    if (common_data_style_attlist_.style_name_)
-        style_name = common_data_style_attlist_.style_name_->style_name();
+    std::wstring style_name = common_data_style_attlist_.style_name_.get_value_or(L"");
 
     Context.start_format(style_name);
 
@@ -103,7 +98,7 @@ void number_style_base::oox_convert(oox::num_format_context & Context)
         {
             if (const style_map * styleMap = dynamic_cast<const style_map *>(elm.get()))
             {
-                const std::wstring applyStyleName	= styleMap->style_apply_style_name_.style_name();
+                const std::wstring applyStyleName	= styleMap->style_apply_style_name_;
                 const std::wstring condition		= styleMap->style_condition_;
 
 				if (office_element_ptr num_style = Context.odf_context_.numberStyles().find_by_style_name(applyStyleName))

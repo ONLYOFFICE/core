@@ -253,6 +253,9 @@ namespace OOX
 					m_oTextOutline = oReader;
 				else if (_T("w14:textFill") == sName)
 				{
+					if ( oReader.IsEmptyNode() )
+						continue;
+
 					int nParentDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nParentDepth1 )  )
 					{

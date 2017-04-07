@@ -42,9 +42,9 @@ namespace Writers
 
 	class SettingWriter
 	{
-        std::wstring m_sDir;
-		XmlUtils::CStringWriter	m_oSettingWriter;
-		HeaderFooterWriter& m_oHeaderFooterWriter;
+        std::wstring				m_sDir;
+		XmlUtils::CStringWriter		m_oSettingWriter;
+		HeaderFooterWriter&			m_oHeaderFooterWriter;
 	public:
         SettingWriter(std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir),m_oHeaderFooterWriter(oHeaderFooterWriter)
 		{
@@ -54,8 +54,8 @@ namespace Writers
 			Prepare();
             OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"settings.xml";
 
-			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath.GetPath());
 			oFile.WriteStringUTF8(g_string_set_Start);
 			oFile.WriteStringUTF8(m_oSettingWriter.GetData());
 			oFile.WriteStringUTF8(g_string_set_Default);

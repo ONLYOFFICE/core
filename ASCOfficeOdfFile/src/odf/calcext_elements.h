@@ -86,8 +86,8 @@ class calcext_date_is_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-	_CP_OPT(odf_types::style_ref)		calcext_style_;
-	_CP_OPT(std::wstring)				calcext_date_;
+	_CP_OPT(std::wstring)	calcext_style_;
+	_CP_OPT(std::wstring)	calcext_date_;
 
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////

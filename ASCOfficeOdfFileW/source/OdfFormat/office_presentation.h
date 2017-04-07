@@ -30,3 +30,42 @@
  *
  */
 #pragma once
+
+#include <iosfwd>
+#include <cpdoccore/CPOptional.h>
+#include <cpdoccore/xml/xmlelement.h>
+#include <cpdoccore/xml/nodetype.h>
+#include "office_elements.h"
+#include "office_elements_create.h"
+
+namespace cpdoccore { 
+namespace odf_writer {
+
+//  office:presentation
+class office_presentation : public office_element_impl<office_presentation>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeOfficePresentation;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void add_child_element( const office_element_ptr & child_element);
+
+    virtual void serialize(std::wostream & _Wostream);
+
+public:
+
+    office_element_ptr_array	date_time_decls_;
+    office_element_ptr_array	footer_decls_;
+  
+	office_element_ptr_array	pages_;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(office_presentation);
+
+}
+}

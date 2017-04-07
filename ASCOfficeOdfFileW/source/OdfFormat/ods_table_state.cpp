@@ -174,7 +174,7 @@ void ods_table_state::set_table_hidden(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->table_format_properties_.table_display_ = !Val;
@@ -184,7 +184,7 @@ void ods_table_state::set_table_rtl(bool Val)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->table_format_properties_.common_writing_mode_attlist_.style_writing_mode_ = writing_mode(writing_mode::RlTb);
@@ -203,7 +203,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 {
 	if (!office_table_style_)return;
 
-	style_table_properties *table_properties = office_table_style_->style_content_.get_style_table_properties();
+	style_table_properties *table_properties = office_table_style_->content_.get_style_table_properties();
 	if (table_properties == NULL)return;
 
 	table_properties->table_format_properties_.tableooo_tab_color_ = _color;
@@ -264,7 +264,7 @@ void ods_table_state::add_column(office_element_ptr & elm, short repeated,office
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_ref(style_name);
+	if (style_name.length()>0) column->table_table_column_attlist_.table_style_name_ = style_name;
 	column->table_table_column_attlist_.table_number_columns_repeated_ = repeated;
 	
 }
@@ -275,7 +275,7 @@ void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
 
-	column->table_table_column_attlist_.table_default_cell_style_name_ = style_ref(style_name);
+	column->table_table_column_attlist_.table_default_cell_style_name_ = style_name;
 
 	columns_.back().cell_style_name = style_name;
 }
@@ -298,7 +298,7 @@ void ods_table_state::set_column_width(double width)//pt
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	columns_.back().size = width; //pt
@@ -310,7 +310,7 @@ void ods_table_state::set_column_optimal_width(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
+	style_table_column_properties * column_properties = style->content_.get_style_table_column_properties();
  	if (column_properties == NULL)return; //error ????
 
 	column_properties->style_table_column_properties_attlist_.style_use_optimal_column_width_ = val;
@@ -350,7 +350,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	if (row == NULL)return;
 
-	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_ref(style_name);
+	if (style_name.length()>0) row->table_table_row_attlist_.table_style_name_ = style_name;
 	row->table_table_row_attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";
@@ -368,7 +368,7 @@ void ods_table_state::set_row_optimal_height(bool val)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	row_properties->style_table_row_properties_attlist_.style_use_optimal_row_height_ = val;
@@ -379,7 +379,7 @@ void ods_table_state::set_row_height(double height)
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
-	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
+	style_table_row_properties * row_properties = style->content_.get_style_table_row_properties();
  	if (row_properties == NULL)return; //error ????
 
 	rows_.back().size = height;//pt
@@ -440,7 +440,7 @@ void ods_table_state::set_row_default_cell_style(std::wstring & style_name)
 	//table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
 	//if (row == NULL)return;
 
-	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_ref(style_name);
+	//row->table_table_row_attlist_.table_default_cell_style_name_ = style_name;
 }
 
 office_element_ptr  & ods_table_state::current_row_element()
@@ -908,7 +908,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
 	if (!style_)return;	
 	
-	odf_writer::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
+	odf_writer::style_table_cell_properties	* table_cell_properties = style_->content_.get_style_table_cell_properties();
 
 	//if (table_cell_properties && cash_value == false)
 	//{
@@ -1185,8 +1185,8 @@ void ods_table_state::set_conditional_style_name(std::wstring style_name)
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
-	if (condition)condition->calcext_condition_attr_.calcext_apply_style_name_= style_ref(style_name);
-	if (date_is) date_is->calcext_date_is_attr_.calcext_style_ = style_ref(style_name);
+	if (condition)	condition->calcext_condition_attr_.calcext_apply_style_name_= style_name;
+	if (date_is)	date_is->calcext_date_is_attr_.calcext_style_				= style_name;
 }
 void ods_table_state::set_conditional_operator(int _operator)
 {

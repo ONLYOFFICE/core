@@ -51,7 +51,6 @@
 #include "stylehorizontalrel.h"
 #include "percentorscale.h"
 #include "anchortype.h"
-#include "style_ref.h"
 #include "linewidth.h"
 #include "presentationclass.h"
 #include "xlink.h"
@@ -70,6 +69,10 @@
 #define _CP_APPLY_PROP2(A) \
     if (Other.A) \
         A = Other.A;
+
+#define _CP_APPLY_PROP3(A) \
+    if (Other->A) \
+        A = Other->A;
 
 namespace cpdoccore { 
 namespace odf_types {
@@ -477,9 +480,9 @@ public:
     void apply_from(const common_draw_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref)		draw_style_name_;
+    _CP_OPT(std::wstring)	draw_style_name_;
     _CP_OPT(std::wstring)	draw_class_names_;
-    _CP_OPT(style_ref)		presentation_style_name_;
+    _CP_OPT(std::wstring)	presentation_style_name_;
     _CP_OPT(std::wstring)	presentation_class_names_;
 
 };
@@ -528,24 +531,22 @@ public:
     _CP_OPT(std::wstring) draw_transform_;
 };
 
-/// common-draw-name-attlist
 class common_draw_name_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_name_attlist & Other);
-	void serialize(CP_ATTR_NODE);
+    void add_attributes	(const xml::attributes_wc_ptr & Attributes );
+    void apply_from		(const common_draw_name_attlist & Other);
+	void serialize		(CP_ATTR_NODE);
 
     _CP_OPT(std::wstring) draw_name_;
 };
 
-/// common-text-spreadsheet-shape-attlist
 class common_text_spreadsheet_shape_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_text_spreadsheet_shape_attlist & Other);
-	void serialize(CP_ATTR_NODE);
+    void add_attributes	(const xml::attributes_wc_ptr & Attributes );
+    void apply_from		(const common_text_spreadsheet_shape_attlist & Other);
+	void serialize		(CP_ATTR_NODE);
 
     _CP_OPT(std::wstring)		table_end_cell_address_;
     _CP_OPT(length)				table_end_x_;
@@ -555,14 +556,12 @@ public:
 
 };
 
-
-/// common-draw-shape-with-styles-attlist
 class common_draw_shape_with_styles_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_draw_shape_with_styles_attlist & Other);
-	void serialize(CP_ATTR_NODE);
+    void add_attributes	(const xml::attributes_wc_ptr & Attributes );
+    void apply_from		(const common_draw_shape_with_styles_attlist & Other);
+	void serialize		(CP_ATTR_NODE);
 
     common_draw_z_index_attlist             common_draw_z_index_attlist_;
     common_draw_id_attlist                  common_draw_id_attlist_;
@@ -574,7 +573,6 @@ public:
 
 };
 
-/// common-draw-text-style-name-attlist
 class common_draw_text_style_name_attlist
 {
 public:
@@ -582,10 +580,9 @@ public:
     void apply_from(const common_draw_text_style_name_attlist & Other);
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref) draw_text_style_name_;
+    _CP_OPT(std::wstring) draw_text_style_name_;
 };
 
-/// common-draw-position-attlist
 class common_draw_position_attlist
 {
 public:
@@ -598,7 +595,6 @@ public:
 
 };
 
-/// common-draw-shape-with-text-and-styles-attlist
 class common_draw_shape_with_text_and_styles_attlist
 {
 public:
@@ -610,39 +606,23 @@ public:
     common_draw_text_style_name_attlist		common_draw_text_style_name_attlist_;
 };
 
-/// presentation-shape-attlist
-class presentation_shape_attlist
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const presentation_shape_attlist & Other);
-	void serialize(CP_ATTR_NODE);
-
-    _CP_OPT(std::wstring)	presentation_class_;
-    _CP_OPT(Bool)			presentation_placeholder_;
-    _CP_OPT(Bool)			presentation_user_transformed_;
-    
-};
-
-///  common-data-style-attlist
 class common_data_style_attlist 
 {
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(style_ref)		style_name_;
-    _CP_OPT(std::wstring) number_language_;
-    _CP_OPT(std::wstring) number_country_;
-    _CP_OPT(std::wstring) number_title_;
+    _CP_OPT(std::wstring)	style_name_;
+    _CP_OPT(std::wstring)	number_language_;
+    _CP_OPT(std::wstring)	number_country_;
+    _CP_OPT(std::wstring)	number_title_;
     _CP_OPT(Bool)			number_volatile_;
-    _CP_OPT(std::wstring) number_transliteration_format_;
-    _CP_OPT(std::wstring) number_transliteration_language_;
-    _CP_OPT(std::wstring) number_transliteration_country_;
-    _CP_OPT(std::wstring) number_transliteration_style_;
+    _CP_OPT(std::wstring)	number_transliteration_format_;
+    _CP_OPT(std::wstring)	number_transliteration_language_;
+    _CP_OPT(std::wstring)	number_transliteration_country_;
+    _CP_OPT(std::wstring)	number_transliteration_style_;
 
 };
-
 
 struct union_common_draw_attlists
 {
@@ -653,29 +633,25 @@ struct union_common_draw_attlists
 	void serialize(CP_ATTR_NODE);
 };
 
-
-// common-presentation-attlist
 class common_presentation_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_presentation_attlist & Other);
-	void serialize(CP_ATTR_NODE);
+    void add_attributes	( const xml::attributes_wc_ptr & Attributes );
+    void apply_from		(const common_presentation_attlist & Other);
+	void serialize		(CP_ATTR_NODE);
 
-    _CP_OPT(presentation_class) presentation_class_;
-	_CP_OPT(std::wstring) style_name_;
-	_CP_OPT(Bool) presentation_placeholder_;
-
+    _CP_OPT(presentation_class)	presentation_class_;
+	_CP_OPT(std::wstring)		style_name_;
+	_CP_OPT(Bool)				presentation_placeholder_;
+    _CP_OPT(Bool)				presentation_user_transformed_;
 };
 
-
-// common-anim-smil-attlist
 class common_anim_smil_attlist
 {
 public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    void apply_from(const common_anim_smil_attlist & Other);
-	void serialize(CP_ATTR_NODE){}
+    void add_attributes	( const xml::attributes_wc_ptr & Attributes );
+    void apply_from		(const common_anim_smil_attlist & Other);
+	void serialize		(CP_ATTR_NODE){}
 
 	//_CP_OPT(std::wstring) smil_direction_;
 	//_CP_OPT(std::wstring) smil_subtype_; 

@@ -38,7 +38,6 @@
 
 #include "office_elements_create.h"
 
-#include "style_ref.h"
 #include "bool.h"
 
 namespace cpdoccore { 

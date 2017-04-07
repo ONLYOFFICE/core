@@ -31,23 +31,61 @@
  */
 #pragma once
 
-#include <string>
-#include <vector>
+#include "odp_page_state.h"
 
-class ECMACryptReader
+#include "odf_table_context.h"
+#include "odf_comment_context.h"
+
+namespace cpdoccore {
+
+namespace odf_writer {
+
+class odp_conversion_context;
+
+class office_element;
+typedef shared_ptr<office_element>::Type office_element_ptr;
+
+class odp_slide_context
 {
-public:	
-	bool DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password);
+public:
+    odp_slide_context(odp_conversion_context & Context);
 
-	struct _refComponent
-	{
-		int				type;
-		std::wstring	ref;
-	};
-	struct _mapEntry
-	{
-		std::vector<_refComponent>	refComponents;
-		std::wstring				dataSpaceName;
-	};
-	std::vector<_mapEntry>		mapEntries;
+    void start_page (office_element_ptr & elm);
+    void end_page ();
+
+	void set_styles_context	(odf_style_context*  styles_context);
+
+    odp_page_state & state();
+
+	odf_comment_context				* comment_context(); 
+	odf_table_context				* table_context();
+
+	void start_table				();
+		void start_table_columns	();
+			void add_table_column	(double width = -1);
+		void end_table_columns		();
+		void start_table_header_rows();
+		void end_table_header_rows	();
+		void start_table_row		(bool styled = false);
+			void add_default_cell	();
+			void start_table_cell	(int col, bool covered, bool styled = true);
+			void end_table_cell		();
+		void end_table_row			();
+	void end_table					();
+private:
+
+    odp_conversion_context&		context_;
+	odf_style_context*			styles_context_;
+	
+	odf_table_context			table_context_;
+	odf_comment_context			comment_context_;
+	
+	std::list<odp_page_state>	page_state_list_;
+
+	friend class odp_conversion_context;
+
 };
+
+
+}
+}

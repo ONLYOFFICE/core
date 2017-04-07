@@ -69,10 +69,11 @@ public:
 	void			set_name(std::wstring & name);
 	std::wstring	get_name();
 
-	void add_footer(office_element_ptr & elm);
-	void add_header(office_element_ptr & elm);
+	void add_footer (office_element_ptr & elm);
+	void add_header (office_element_ptr & elm);
 	
-    void set_layout_name(std::wstring name);
+    void set_layout_style_name (std::wstring name);
+	void set_display_name (std::wstring & name);
 
 	office_element_ptr & get_root();
 	office_element_ptr & get_last_element();

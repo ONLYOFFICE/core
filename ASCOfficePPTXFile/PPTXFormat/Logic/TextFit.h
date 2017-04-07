@@ -155,25 +155,6 @@ namespace PPTX
 					Normalize(sFontScale, sLnSpcRed);
 				}
 			}
-			virtual std::wstring toXML() const
-			{
-				if (type == FitNo)
-					return _T("<a:noAutofit/>");
-
-				if (type == FitSpAuto)
-					return _T("<a:spAutoFit/>");
-
-				if (type == FitNormAuto)
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("fontScale"), fontScale);
-					oAttr.Write(_T("lnSpcReduction"), lnSpcReduction);
-
-					return XmlUtils::CreateNode(_T("a:normAutofit"), oAttr);
-				}
-
-				return _T("");
-			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

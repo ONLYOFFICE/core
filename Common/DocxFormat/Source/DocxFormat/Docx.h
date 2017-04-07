@@ -53,8 +53,8 @@
 #include "Media/Image.h"
 #include "Media/OleObject.h"
 #include "HeaderFooter.h"
-#include "Theme/Theme.h"
 
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <sys/stat.h>
@@ -101,8 +101,6 @@ namespace OOX
 			Read( oFilePath );
 		}
 
-	public:
-
         bool Read(const CPath& oFilePath);
         bool Write(const CPath& oFilePath)
 		{
@@ -128,10 +126,6 @@ namespace OOX
 
             return true;
 		}
-
-
-
-	public:
 
 		OOX::CDocument  *GetDocument () const
 		{
@@ -182,12 +176,12 @@ namespace OOX
 			return m_pPeople;
 		}
 
-		OOX::CTheme		*GetTheme () const
+		PPTX::Theme	*GetTheme () const
 		{
 			return m_pTheme;
 		}
 
-		OOX::CHdrFtr    *GetHeaderOrFooter(const OOX::RId& rId) const
+		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const
 		{
 			if ( m_pDocument )
 			{
@@ -203,8 +197,6 @@ namespace OOX
 			return NULL;
 		}
 
-	public:
-
 		OOX::CApp       *m_pApp;
 		OOX::CCore      *m_pCore;
 
@@ -219,7 +211,7 @@ namespace OOX
 		OOX::CCommentsExt *m_pCommentsExt;//		         word/commentsExtended.xml
 		OOX::CPeople	*m_pPeople;		//				     word/people.xml
 		
-		OOX::CTheme		*m_pTheme;
+		PPTX::Theme		*m_pTheme;
 
 	};
 } // OOX

@@ -44,16 +44,17 @@ namespace OOX
 		class CTableStyleElement : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableStyleElement)
+			WritingElement_AdditionConstructors(CTableStyleElement)
 			CTableStyleElement()
 			{
 			}
 			virtual ~CTableStyleElement()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -68,7 +69,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -78,7 +79,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableStyleElement;
+				return et_x_TableStyleElement;
 			}
 
 		private:
@@ -101,16 +102,17 @@ namespace OOX
 		class CTableStyle : public WritingElementWithChilds<CTableStyleElement>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableStyle)
+			WritingElement_AdditionConstructors(CTableStyle)
 			CTableStyle()
 			{
 			}
 			virtual ~CTableStyle()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -134,7 +136,7 @@ namespace OOX
 				}
 
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -153,7 +155,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableStyle;
+				return et_x_TableStyle;
 			}
 
 		private:
@@ -180,16 +182,17 @@ namespace OOX
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CTableStyles)
+			WritingElement_AdditionConstructors(CTableStyles)
 			CTableStyles()
 			{
 			}
 			virtual ~CTableStyles()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -228,7 +231,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_TableStyles;
+				return et_x_TableStyles;
 			}
 
 		private:

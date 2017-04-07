@@ -121,11 +121,10 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
 
-    const std::wstring styleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring styleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
     
     const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_text_style_name_attlist_.
-        draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+										common_draw_text_style_name_attlist_.draw_text_style_name_.get_value_or(L"");
 
 //////////////////////////////////////////////////////////////////////////
 	Context.get_drawing_context().start_drawing( name);

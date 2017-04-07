@@ -34,6 +34,8 @@
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
 
+#include <boost/algorithm/string.hpp>
+
 namespace BinDocxRW {
 
 class SectPr
@@ -1881,7 +1883,12 @@ public:
 class CDrawingProperty
 {
 public:
-    long    DataPos;
+	bool			bObject;
+    std::wstring	sObjectProgram;	
+    long			nObjectId;
+    BYTE			nObjectType;
+	
+	long    DataPos;
     long    DataLength;
     BYTE    Type;
     bool    BehindDoc;
@@ -1914,8 +1921,8 @@ public:
     int     m_nDocPr;
     std::wstring sGraphicFramePr;
     std::wstring sDocPr;
-
-    CDrawingPropertyWrap DrawingPropertyWrap;
+   
+	CDrawingPropertyWrap DrawingPropertyWrap;
 
     bool bDataPos;
 	bool bDataLength;
@@ -1949,6 +1956,10 @@ public:
     CDrawingProperty(int nDocPr)
 	{
         m_nDocPr    = nDocPr;
+
+		bObject		= false;
+		nObjectType	= 0;
+		nObjectId	= 0;
         bDataPos    = false;
 		bDataLength = false;
         bType       = false;
@@ -2062,7 +2073,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 int nSimplePos = 0;
                 if(bBSimplePos && BSimplePos)
                     nSimplePos = 1;
-                int nRelativeHeight = 0;
+                unsigned long nRelativeHeight = 0;
                 if(bRelativeHeight)
                     nRelativeHeight = RelativeHeight;
                 int nBehindDoc = 0;

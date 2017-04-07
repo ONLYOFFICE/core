@@ -75,7 +75,7 @@ namespace PPTX
 	protected:
 		WrapperWritingElement const* parentElement;
 		WrapperFile const* parentFile;
-	protected:
+
 		virtual void FillParentPointersForChilds(){}
 	public:
 		virtual void SetParentPointer(const WrapperWritingElement* pParent)
@@ -99,7 +99,6 @@ namespace PPTX
 			oNode.FromXmlString(strXml);
 			fromXML(oNode);
 		}
-
 		virtual OOX::EElementType getType() const
 		{
 			return OOX::et_Unknown;
@@ -118,7 +117,6 @@ namespace PPTX
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperWritingElement*>(parentElement));
 			return *pResult;
 		}
-
 
 		template<class T> const bool parentFileIs()const
 		{
@@ -143,6 +141,13 @@ namespace PPTX
 		}
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
+		}
+		virtual std::wstring toXML() const
+		{
+			NSBinPptxRW::CXmlWriter oWriter;
+			toXmlWriter(&oWriter);
+
+			return oWriter.GetXmlString();
 		}
 	};
 } // namespace PPTX

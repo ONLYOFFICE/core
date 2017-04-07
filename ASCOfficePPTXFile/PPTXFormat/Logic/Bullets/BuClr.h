@@ -88,17 +88,12 @@ namespace PPTX
 			{
 				Color.GetColorFrom(node);
 			}
-			virtual std::wstring toXML() const
-			{
-				return XmlUtils::CreateNode(_T("a:buClr"), Color.toXML());
-			}
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:buClr"));
+				pWriter->StartNode(L"a:buClr");
 				pWriter->EndAttributes();
 				Color.toXmlWriter(pWriter);
-				pWriter->EndNode(_T("a:buClr"));
+				pWriter->EndNode(L"a:buClr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

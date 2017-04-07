@@ -92,11 +92,6 @@ namespace PPTX
 					y = oNode.GetAttribute(_T("y"));
 				}
 			}
-
-			virtual std::wstring toXML() const
-			{
-                return _T("<a:moveTo><a:pt x=\"") +  x + L"\" y=\"" +  y + _T("\"/></a:moveTo>");
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("a:moveTo"));

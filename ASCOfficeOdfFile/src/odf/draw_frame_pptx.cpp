@@ -93,7 +93,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
     const std::wstring textStyleName	= common_draw_attlists_.shape_with_text_and_styles_.
 														common_draw_text_style_name_attlist_.
-														draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+														draw_text_style_name_.get_value_or(L"");
 
 //////////////////////////////////////////////////////////////////////////
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
@@ -132,8 +132,8 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 //////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
-	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
+	const std::wstring grStyleName		= common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring baseStyleName	= common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
@@ -141,9 +141,9 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	odf_reader::style_instance* baseStyleInst = 
 		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
-	if (baseStyleInst && ((!presentation_shape_attlist_.presentation_user_transformed_) || 
-						 ((presentation_shape_attlist_.presentation_user_transformed_) && 
-						 (presentation_shape_attlist_.presentation_user_transformed_->get()== false))))//векторная фигура презентаций 
+	if (baseStyleInst && ((!common_presentation_attlist_.presentation_user_transformed_) || 
+						 ((common_presentation_attlist_.presentation_user_transformed_) && 
+						 (common_presentation_attlist_.presentation_user_transformed_->get()== false))))//векторная фигура презентаций 
 	{
 		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);

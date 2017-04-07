@@ -93,7 +93,22 @@ namespace PPTX
 				else if (_T("txXfrm")  == strName)
 					txXfrm = oReader;
 				else if (_T("txbx") == strName || _T("textbox") == strName)
-					txBody = oReader;
+				{
+					if ( oReader.IsEmptyNode() )
+						return;
+							
+					int nParentDepth1 = oReader.GetDepth();
+					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+					{
+						std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+						if (strName1 == L"txbxContent")
+						{
+							oTextBoxShape = oReader;
+							break;
+						}
+					}
+				}
 				else if (_T("cNvPr") == strName)
 					nvSpPr.cNvPr = oReader;
 				else if (_T("cNvSpPr") == strName)
@@ -101,7 +116,7 @@ namespace PPTX
 				else if (_T("txSp") == strName)
 					txBody = oReader;
 				else if (_T("bodyPr") == strName)
-					TextBoxBodyPr = oReader;
+					oTextBoxBodyPr = oReader;
 			}
 			FillParentPointersForChilds();
 		}
@@ -133,27 +148,15 @@ namespace PPTX
 					else if (_T("txXfrm")  == strName)
 						txXfrm = oNode;
 					else if (_T("txbx") == strName || _T("textbox") == strName)
-					{
-						XmlUtils::CXmlNode _node = oNode.ReadNode(_T("w:txbxContent"));
-						if (_node.IsValid())
-							TextBoxShape = _node.GetXml();
-					}
+						oTextBoxShape = oNode.ReadNode(_T("w:txbxContent"));
 					else if (_T("cNvPr") == strName)
-					{
 						nvSpPr.cNvPr = oNode;
-					}
 					else if (_T("cNvSpPr") == strName)
-					{
 						nvSpPr.cNvSpPr = oNode;
-					}
 					else if (_T("txSp") == strName)
-					{
 						txBody = oNode.ReadNodeNoNS(_T("txBody"));
-					}
 					else if (_T("bodyPr") == strName)
-					{
-						TextBoxBodyPr = oNode;
-					}
+						oTextBoxBodyPr = oNode;
 				}
 			}
 
@@ -226,16 +229,17 @@ namespace PPTX
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
 			{	
 				bool bIsWritedBodyPr = false;
-				if (TextBoxShape.is_init())
+				if (strTextBoxShape.is_init())
 				{
-					pWriter->WriteString(_T("<wps:txbx>"));
-					pWriter->WriteString(*TextBoxShape);
+					pWriter->WriteString(_T("<wps:txbx>"));					
+					//pWriter->WriteString(oTextBoxShape->toXML());
+					pWriter->WriteString(*strTextBoxShape);
 					pWriter->WriteString(_T("</wps:txbx>"));
 
-					if (TextBoxBodyPr.is_init())
+					if (oTextBoxBodyPr.is_init())
 					{
-						TextBoxBodyPr->m_namespace = _T("wps");
-						TextBoxBodyPr->toXmlWriter(pWriter);
+						oTextBoxBodyPr->m_namespace = _T("wps");
+						oTextBoxBodyPr->toXmlWriter(pWriter);
 						bIsWritedBodyPr = true;
 					}
 				}
@@ -321,7 +325,7 @@ namespace PPTX
 							std::wstring strC = _T("<w:txbxContent>");
 							strC += sXmlContent;
 							strC += _T("</w:txbxContent>");
-							TextBoxShape = strC;
+							strTextBoxShape = strC;
 
 							//pReader->Seek(lPosition + lLenRec);
 							pReader->Init(pData_Reader, lPosition + lLenRec, lSize_Reader - (lPosition + lLenRec));
@@ -334,8 +338,8 @@ namespace PPTX
 					}
 					case 5:
 					{
-						TextBoxBodyPr = new PPTX::Logic::BodyPr();
-						TextBoxBodyPr->fromPPTY(pReader);
+						oTextBoxBodyPr = new PPTX::Logic::BodyPr();
+						oTextBoxBodyPr->fromPPTY(pReader);
 						break;
 					}
 					case 6:
@@ -381,25 +385,28 @@ namespace PPTX
 
 			if (pWriter->m_pMainDocument != NULL)
 			{
-				if (TextBoxShape.is_init())
-				{					
+				if (oTextBoxShape.is_init())
+				{	
                     long lDataSize = 0;
                     ULONG lPos = pWriter->GetPosition();
 					pWriter->SetPosition(lPos);
+					
 					pWriter->StartRecord(4);
-					pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
+					pWriter->m_pMainDocument->getBinaryContentElem(OOX::et_w_sdtContent, oTextBoxShape.GetPointer(), *pWriter, lDataSize);
+					//pWriter->m_pMainDocument->getBinaryContent(TextBoxShape.get(), *pWriter, lDataSize);
 					pWriter->EndRecord();
 					
-					if (TextBoxBodyPr.is_init())
+					if (oTextBoxBodyPr.is_init())
 					{
 						pWriter->StartRecord(5);
-						TextBoxBodyPr->toPPTY(pWriter);
+						oTextBoxBodyPr->toPPTY(pWriter);
 						pWriter->EndRecord();
 					}
 				}
 				else if (txBody.is_init())
 				{
 					std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);
+					//tooooo convert a:p -> w:p
 
                     long lDataSize = 0;
                     ULONG lPos = pWriter->GetPosition();
@@ -436,15 +443,7 @@ namespace PPTX
 				pRect.right		= pRect.left + spPr.xfrm->extX.get_value_or(0);
 				pRect.bottom	= pRect.top + spPr.xfrm->extY.get_value_or(0);
 			}
-			//else
-			//{
-			//	if(bMergeWithLevelUp)
-			//	{
-			//		FillLevelUp();
-			//		if(levelUp != NULL)
-			//			levelUp->GetRect(pRect);
-			//	}
-			//}
+
 			if(parentIs<Logic::SpTree>())
 				parentAs<Logic::SpTree>().NormalizeRect(pRect);
 		}
@@ -587,14 +586,7 @@ namespace PPTX
 		DWORD Shape::GetLine(Ln& line)const
 		{
 			DWORD BGRA = 0;
-			//line.SetParentFilePointer(*parentFile);
 
-			//if(bMergeWithLevelUp)
-			//{
-			//	FillLevelUp();
-			//	if(levelUp != NULL)
-			//		BGRA = levelUp->GetLine(line);
-			//}
 			if(style.IsInit())
 			{
 				if(parentFileIs<PPTX::Slide>())
@@ -681,7 +673,7 @@ namespace PPTX
 			}
 		}
 
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap, bool in_group)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			std::wstring strPath, strTextRect;
 			bool bOle = false;
@@ -710,9 +702,10 @@ namespace PPTX
 			}
 
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
-
-            std::wstring strId		= L"shape " + std::to_wstring(pWriter->m_lObjectIdVML);
-            std::wstring strSpid	= L"_x" + std::to_wstring(0xFFFF & (pWriter->m_lObjectIdVML >> 16)) + L"_s" + std::to_wstring(0xFFFF & pWriter->m_lObjectIdVML);
+            
+			std::wstring strId		= L"shape "		+ std::to_wstring(pWriter->m_lObjectIdVML);
+			std::wstring strSpid	= L"_x0000_s"	+ XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+			
 			pWriter->m_lObjectIdVML++;
 
             std::wstring strFillAttr;
@@ -788,11 +781,11 @@ namespace PPTX
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
 				}
 			}
-			else if (TextBoxBodyPr.is_init())
+			else if (oTextBoxBodyPr.is_init())
 			{
-				if (TextBoxBodyPr->anchor.is_init())
+				if (oTextBoxBodyPr->anchor.is_init())
 				{
-					std::wstring _strAnchor = TextBoxBodyPr->anchor->get();
+					std::wstring _strAnchor = oTextBoxBodyPr->anchor->get();
 					if (_strAnchor == L"t")
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
 					else if (_strAnchor == L"b")
@@ -840,11 +833,11 @@ namespace PPTX
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes.clear();
 
-			if (TextBoxShape.is_init())
+			if (strTextBoxShape.is_init())
 			{
 				pWriter->StartNode(L"v:textbox");
 				pWriter->EndAttributes();
-				pWriter->WriteString(*TextBoxShape);
+				pWriter->WriteString(*strTextBoxShape); //??? todooo -> oTextBoxShape
 				pWriter->EndNode(L"v:textbox");
 			}
 
@@ -852,7 +845,7 @@ namespace PPTX
 
 			pWriter->m_strStyleMain.clear();
 		}
-		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::WrapperFile>& oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& oClrMap)
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap)
 		{
 			std::wstring strFillAttr, strFillNode;
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);

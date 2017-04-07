@@ -131,27 +131,7 @@ namespace PPTX
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			oAttr.Write(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			oAttr.Write(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			oAttr.Write(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			oAttr.Write(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-			oAttr.Write(_T("show"), show);
-			oAttr.Write(_T("showMasterPhAnim"), showMasterPhAnim);
-			oAttr.Write(_T("showMasterSp"), showMasterSp);
-
-			XmlUtils::CNodeValue oValue;
-			oValue.WriteNullable(cSld);
-			oValue.WriteNullable(clrMapOvr);
-			oValue.WriteNullable(transition);
-			oValue.WriteNullable(timing);
-
-			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("p:sld"), oAttr, oValue));
-
-			content.Registration(type().OverrideType(), directory, filename);
-			m_written = true;
-			m_WrittenFileName = filename.GetFilename();
+			WrapperFile::write(filename, directory, content);			
 			FileContainer::write(filename, directory, content);
 		}
 		virtual const OOX::FileType type() const
@@ -397,16 +377,16 @@ namespace PPTX
 		smart_ptr<NotesSlide>		Note;
 		smart_ptr<Theme>			theme;
 		smart_ptr<OOX::CVmlDrawing>	Vml;
-        smart_ptr<TableStyles>		tableStyles_;
+		smart_ptr<TableStyles>		tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
 
 	public:
 		void ApplyRels()
 		{
-			Layout	= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));
-			Note	= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
-			comments = FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
+			Layout		= FileContainer::Get(OOX::Presentation::FileTypes::SlideLayout).smart_dynamic_cast<PPTX::SlideLayout>();//boost::shared_dynamic_cast<PPTX::SlideLayout, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::SlideLayout));
+			Note		= FileContainer::Get(OOX::Presentation::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
+			comments	= FileContainer::Get(OOX::Presentation::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 			
 			if (Layout.IsInit())
 			{
@@ -417,9 +397,9 @@ namespace PPTX
 				{
 					tableStyles_= theme->presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(OOX::Presentation::FileTypes::TableStyles));
 				}
-				if (IsExist(OOX::Presentation::FileTypes::VmlDrawing))
+				if (IsExist(OOX::FileTypes::VmlDrawing))
 				{
-					Vml = FileContainer::Get(OOX::Presentation::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
+					Vml = FileContainer::Get(OOX::FileTypes::VmlDrawing).smart_dynamic_cast<OOX::CVmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(OOX::Presentation::FileTypes::VmlDrawing));
 				}
 			}
 		}

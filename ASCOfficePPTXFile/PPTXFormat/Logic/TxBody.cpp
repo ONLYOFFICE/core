@@ -68,9 +68,6 @@ namespace PPTX
 
 			strXml += _T(">");
 			
-			smart_ptr<PPTX::WrapperFile> pTheme				= pWriter->ThemeDoc->smart_dynamic_cast<PPTX::WrapperFile>();
-			smart_ptr<PPTX::WrapperWritingElement> pClrMap	= pWriter->ClrMapDoc->smart_dynamic_cast<PPTX::WrapperWritingElement>();
-
 			std::wstring sThemeFont = _T("");
 			
 			DWORD dwColor = 0;
@@ -241,13 +238,13 @@ namespace PPTX
 							if (oFill.Color.is_init())
 							{
 								bIsWriteColor = true;
-								dwColor = oFill.Color.GetRGBColor(pTheme, pClrMap, 0);
+								dwColor = oFill.Color.GetRGBColor(*pWriter->m_pTheme, *pWriter->m_pClrMap, 0);
 							}
 						}
 						else if (shape_style.is_init() && shape_style->fontRef.Color.is_init())
 						{
 							bIsWriteColor = true;
-							dwColor = shape_style->fontRef.Color.GetRGBColor(pTheme, pClrMap, 0);
+							dwColor = shape_style->fontRef.Color.GetRGBColor(*pWriter->m_pTheme, *pWriter->m_pClrMap, 0);
 						}
 
 						oWriter.StartNode(_T("w:r"));

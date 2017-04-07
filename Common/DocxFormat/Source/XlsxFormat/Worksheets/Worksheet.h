@@ -76,14 +76,16 @@ namespace OOX
 		//<sortState>
 		//<webPublishItems>
 
-		class CWorksheet : public OOX::File, public OOX::Spreadsheet::IFileContainer
+		class CWorksheet : public OOX::File, public OOX::IFileContainer
 		{
 		public:
 			CWorksheet()
 			{
+				m_bSpreadsheets = true;
 			}
 			CWorksheet(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CWorksheet()

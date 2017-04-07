@@ -98,7 +98,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
     std::vector<style_master_page*> & masterPages = Context.root()->odf_context().pageLayoutContainer().master_pages();
     if (!masterPages.empty())
     {
-        Context.set_master_page_name(masterPages[0]->style_master_page_attlist_.style_name_.get_value_or(style_ref(L"Standard")).style_name() );
+        Context.set_master_page_name(masterPages[0]->style_master_page_attlist_.style_name_.get_value_or(L"Standard"));
     }
 
 	const page_layout_instance * layout = Context.root()->odf_context().pageLayoutContainer().page_layout_first();

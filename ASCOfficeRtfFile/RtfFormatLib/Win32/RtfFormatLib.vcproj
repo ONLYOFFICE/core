@@ -389,10 +389,6 @@
 							>
 						</File>
 						<File
-							RelativePath="..\source\Reader\OOXPictureGraphicReader.h"
-							>
-						</File>
-						<File
 							RelativePath="..\source\Reader\OOXPictureInlineReader.h"
 							>
 						</File>

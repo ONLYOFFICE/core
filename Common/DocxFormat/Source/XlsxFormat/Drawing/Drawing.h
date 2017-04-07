@@ -35,7 +35,6 @@
 
 #include "../CommonInclude.h"
 
-#include "Image.h"
 #include "CellAnchor.h"
 
 namespace OOX
@@ -47,7 +46,7 @@ namespace OOX
 		class CDrawingWorksheet : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDrawingWorksheet)
+			WritingElement_AdditionConstructors(CDrawingWorksheet)
 			CDrawingWorksheet()
 			{
 			}
@@ -55,8 +54,10 @@ namespace OOX
 			{
 			}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -70,7 +71,7 @@ namespace OOX
 				}
 				
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -80,30 +81,30 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_FromTo;
+				return et_x_FromTo;
 			}
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oId )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 		};
-		class CDrawing : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
+
+		class CDrawing : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
 			CDrawing()
 			{
+				m_bSpreadsheets = true;
 			}
 			CDrawing(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CDrawing()
@@ -201,7 +202,7 @@ namespace OOX
 							}
 
 							if ( pItem )
-									m_arrItems.push_back( pItem );
+								m_arrItems.push_back( pItem );
 						}
 					}
 				}		
@@ -236,14 +237,9 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-            const OOX::RId AddImage (std::wstring& sSrc)
-			{
-				smart_ptr<OOX::File> oImage = smart_ptr<OOX::File>( new OOX::Spreadsheet::Image( sSrc ) );
-				const OOX::RId rId = Add( oImage );
-				return rId;
-			}
+
 		private:
-			CPath									m_oReadPath;
+			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
@@ -261,7 +257,7 @@ namespace OOX
 			}
 
 		public:
-			std::vector<CCellAnchor *>         m_arrItems;
+			std::vector<CCellAnchor *>	m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

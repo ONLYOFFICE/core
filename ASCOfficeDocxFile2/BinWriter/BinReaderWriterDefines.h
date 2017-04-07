@@ -997,6 +997,12 @@ extern int g_nCurFormatVersion;
 		Title	= 3,
 		Descr = 4
 	};}
+	namespace c_oSerEmbedded{enum c_oSerEmbedded
+	{
+		Type = 0,
+		Data = 1,
+		Program = 2
+	};}
 }
 
 #endif	// #ifndef DOCX_BIN_READER_WRITER_DEFINES

@@ -115,6 +115,9 @@ public:
 	void start_text();
 	void end_text();
 
+	void start_presentation();
+	void end_presentation();
+
 	void create_object();
 	void end_object();
 

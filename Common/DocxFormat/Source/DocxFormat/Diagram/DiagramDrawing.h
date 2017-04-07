@@ -215,28 +215,7 @@ namespace OOX
         {
 			m_oReadPath = oFilePath;
             IFileContainer::Read( oRootPath, oFilePath );
-    //#ifdef USE_LITE_READER
 
-    //        XmlUtils::CXmlLiteReader oReader;
-
-    //        if ( !oReader.FromFile( oFilePath.GetPath() ) )
-    //            return;
-
-    //        if ( !oReader.ReadNextNode() )
-    //            return;
-
-    //        std::wstring sName = oReader.GetName();
-    //        if ( _T("dsp:drawing") == sName && !oReader.IsEmptyNode() )
-    //        {
-    //            int nNumberingDepth = oReader.GetDepth();
-    //            while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
-    //            {
-    //                sName = oReader.GetName();
-    //                if ( _T("dsp:spTree") == sName )
-    //                    m_arrShapeTree.push_back( new PPTX::Logic::SpTree(oReader) );
-    //            }
-    //        }
-    //#endif
 			XmlUtils::CXmlNode oNodeDW;
             if (oNodeDW.FromXmlFile(oFilePath.GetPath() ))
 			{

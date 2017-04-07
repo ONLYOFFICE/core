@@ -42,16 +42,17 @@ namespace OOX
 		class CPageMargins : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPageMargins)
+			WritingElement_AdditionConstructors(CPageMargins)
 			CPageMargins()
 			{
 			}
 			virtual ~CPageMargins()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -69,7 +70,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -79,7 +80,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_PageMargins;
+				return et_x_PageMargins;
 			}
 
 		private:
@@ -110,15 +111,16 @@ namespace OOX
 		class CPageSetup : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPageSetup)
+			WritingElement_AdditionConstructors(CPageSetup)
 			CPageSetup()
 			{
 			}
 			virtual ~CPageSetup()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring      toXML() const
 			{
 				return _T("");
@@ -149,7 +151,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_PageSetup;
+				return et_x_PageSetup;
 			}
 
 		private:
@@ -172,16 +174,17 @@ namespace OOX
 		class CPrintOptions : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPrintOptions)
+			WritingElement_AdditionConstructors(CPrintOptions)
 			CPrintOptions()
 			{
 			}
 			virtual ~CPrintOptions()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -196,7 +199,7 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -206,7 +209,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_PrintOptions;
+				return et_x_PrintOptions;
 			}
 
 		private:
@@ -235,23 +238,24 @@ namespace OOX
 		class CDimension : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDimension)
+			WritingElement_AdditionConstructors(CDimension)
 			CDimension()
 			{
 			}
 			virtual ~CDimension()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -261,7 +265,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Dimension;
+				return et_x_Dimension;
 			}
 
 		private:
@@ -283,15 +287,16 @@ namespace OOX
 		class CSheetFormatPr : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheetFormatPr)
+			WritingElement_AdditionConstructors(CSheetFormatPr)
 			CSheetFormatPr()
 			{
 			}
 			virtual ~CSheetFormatPr()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring      toXML() const
 			{
 				return _T("");
@@ -320,7 +325,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SheetFormatPr;
+				return et_x_SheetFormatPr;
 			}
 
 		private:
@@ -357,16 +362,17 @@ namespace OOX
 		class CPane : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPane)
+			WritingElement_AdditionConstructors(CPane)
 			CPane()
 			{
 			}
 			virtual ~CPane()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -380,7 +386,7 @@ namespace OOX
 				WritingStringNullableAttrDouble(L"ySplit", m_oYSplit, m_oYSplit->GetValue());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -390,7 +396,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Pane;
+				return et_x_Pane;
 			}
 
 		private:
@@ -419,16 +425,17 @@ namespace OOX
 		class CSelection : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSelection)
+			WritingElement_AdditionConstructors(CSelection)
 			CSelection()
 			{
 			}
 			virtual ~CSelection()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -441,7 +448,7 @@ namespace OOX
 				WritingStringNullableAttrString(L"pane", m_oPane, m_oPane->ToString());
 				writer.WriteString(_T("/>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -451,7 +458,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Selection;
+				return et_x_Selection;
 			}
 
 		private:
@@ -481,16 +488,17 @@ namespace OOX
 		class CSheetView : public WritingElementWithChilds<CSelection>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheetView)
+			WritingElement_AdditionConstructors(CSheetView)
 			CSheetView()
 			{
 			}
 			virtual ~CSheetView()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -528,7 +536,7 @@ namespace OOX
 
 				writer.WriteString(_T("</sheetView>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -551,7 +559,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SheetView;
+				return et_x_SheetView;
 			}
 
 		private:
@@ -611,15 +619,16 @@ namespace OOX
 		class CSheetViews : public WritingElementWithChilds<CSheetView>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheetViews)
+			WritingElement_AdditionConstructors(CSheetViews)
 			CSheetViews()
 			{
 			}
 			virtual ~CSheetViews()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring toXML() const
 			{
 				return _T("");
@@ -655,7 +664,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_SheetViews;
+				return et_x_SheetViews;
 			}
 
 		private:
@@ -670,16 +679,17 @@ namespace OOX
 		class CSheetPr : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CSheetPr)
+			WritingElement_AdditionConstructors(CSheetPr)
 			CSheetPr()
 			{
 			}
 			virtual ~CSheetPr()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -713,7 +723,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_SheetPr;
+				return et_x_SheetPr;
 			}
 
 		private:
@@ -749,16 +759,17 @@ namespace OOX
 		class CHeaderFooterElement : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CHeaderFooterElement)
+			WritingElement_AdditionConstructors(CHeaderFooterElement)
 			CHeaderFooterElement()
 			{
 			}
 			virtual ~CHeaderFooterElement()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -790,7 +801,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_HeaderFooterElementWorksheet;
+				return et_x_HeaderFooterElementWorksheet;
 			}
 
 		private:
@@ -807,16 +818,17 @@ namespace OOX
 		class CHeaderFooter : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CHeaderFooter)
+			WritingElement_AdditionConstructors(CHeaderFooter)
 			CHeaderFooter()
 			{
 			}
 			virtual ~CHeaderFooter()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -882,7 +894,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_HeaderFooterWorksheet;
+				return et_x_HeaderFooterWorksheet;
 			}
 
 		private:
@@ -914,15 +926,16 @@ namespace OOX
 		class CLegacyDrawingHFWorksheet : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CLegacyDrawingHFWorksheet)
+			WritingElement_AdditionConstructors(CLegacyDrawingHFWorksheet)
 			CLegacyDrawingHFWorksheet()
 			{
 			}
 			virtual ~CLegacyDrawingHFWorksheet()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring  toXML() const
 			{
 				return _T("");
@@ -963,7 +976,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_LegacyDrawingHFWorksheet;
+				return et_x_LegacyDrawingHFWorksheet;
 			}
 
 		private:
@@ -1016,15 +1029,16 @@ namespace OOX
 		class CPictureWorksheet : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CPictureWorksheet)
+			WritingElement_AdditionConstructors(CPictureWorksheet)
 			CPictureWorksheet()
 			{
 			}
 			virtual ~CPictureWorksheet()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring  toXML() const
 			{
 				return _T("");
@@ -1049,7 +1063,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_PictureWorksheet;
+				return et_x_PictureWorksheet;
 			}
 
 		private:

@@ -62,13 +62,9 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:buNone/>");
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->WriteString(_T("<a:buNone/>"));				
+				pWriter->WriteString(L"<a:buNone/>");				
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

@@ -1206,41 +1206,14 @@ namespace OOX
 		class CSdtContent : public WritingElementWithChilds<>
 		{
 		public:
+			WritingElement_AdditionConstructors(CSdtContent)
 			CSdtContent()
 			{
 			}
-			CSdtContent(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CSdtContent(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CSdtContent()
-			{
-			}
-
-		public:
-
-			const CSdtContent &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CSdtContent &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-
-		public:
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_sdtContent;

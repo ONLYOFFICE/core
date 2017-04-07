@@ -60,6 +60,10 @@ namespace BinDocxRW
 {
 	class CDocxSerializer;
 }
+namespace OOX
+{
+	class CContentTypes;
+}
 namespace NSBinPptxRW
 {
 	class CBinaryFileWriter;
@@ -72,12 +76,14 @@ namespace PPTX
 	class WrapperFile;
 	class WrapperWritingElement;
 	class CCommonRels;
+	class Theme;
 
 	namespace Logic
 	{
 		class SpTreeElem;
 		class Xfrm;
 		class Shape;
+		class ClrMap;
 	}
 
 	class CStringTrimmer
@@ -196,8 +202,8 @@ namespace NSBinPptxRW
         IRenderer*                                          m_pOOXToVMLRenderer;
         bool                                                m_bIsUseConvertion2007;
 
-		NSCommon::smart_ptr<PPTX::WrapperFile>*				m_pTheme;
-		NSCommon::smart_ptr<PPTX::WrapperWritingElement>*	m_pClrMap;
+		NSCommon::smart_ptr<PPTX::Theme>*					m_pTheme;
+		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*			m_pClrMap;
 
         std::wstring                                        m_strFontDirectory;
 
@@ -213,27 +219,24 @@ namespace NSBinPptxRW
 
         HRESULT AddShapeType        (const std::wstring& sXml);
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
-        HRESULT GetThemeBinary      (BYTE** ppBinary, long& lBinarySize, const std::wstring& sThemeFilePath);
 
-        HRESULT SaveThemeXml        (long lStart, long lLength, const std::wstring& sThemePath);
         HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
-        HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, long lDocType, std::wstring & sXml);
+        HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
 
-        void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, LONG lDocType);
+        void SaveObjectExWriterInit     (NSBinPptxRW::CXmlWriter& oXmlWriter, int lDocType);
         void SaveObjectExWriterRelease  (NSBinPptxRW::CXmlWriter& oXmlWriter);
 
 		PPTX::Logic::SpTreeElem ObjectFromXml(const std::wstring& sXml, std::wstring** pMainProps);
 		std::wstring ObjectToVML		(const std::wstring& sXml);
-		std::wstring ObjectToDrawingML	(const std::wstring& sXml, LONG lDocType);
+		std::wstring ObjectToDrawingML	(const std::wstring& sXml, int nDocType);
 
         std::wstring SaveObjectBackground(LONG lStart, LONG lLength);
 
         HRESULT GetRecordBinary     (long lRecordType, const std::wstring& sXml);
-        HRESULT GetRecordXml        (long lStart, long lLength, long lRecType, long lDocType, std::wstring & sXml);
+        HRESULT GetRecordXml        (long lStart, long lLength, long lRecType, int lDocType, std::wstring & sXml);
 
         HRESULT SetDstContentRels   ();
         HRESULT SaveDstContentRels  (const std::wstring& sRelsPath);
-        HRESULT WriteRels           (const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
         HRESULT LoadClrMap          (const std::wstring& sXml);
 
         HRESULT(SetFontDir)         (const std::wstring& sFontDir);
@@ -243,19 +246,17 @@ namespace NSBinPptxRW
         HRESULT SetAdditionalParam(const std::wstring& ParamName, BYTE *pArray, size_t szCount);
         HRESULT GetAdditionalParam(const std::wstring& ParamName, BYTE **pArray, size_t& szCount);
 
-        void SetFontManager         (CFontManager* pFontManager);
+		void WriteRels				(const std::wstring& sType, const std::wstring& sTarget, const std::wstring& sTargetMode, long* lId);
+		void Registration			(const std::wstring& sType, const std::wstring& oDirectory, const std::wstring& oFilename);
+
+		void SetFontManager         (CFontManager* pFontManager);
 
         void SetDocumentChartsCount (int val);
         int  GetDocumentChartsCount ();
 
-        void SetObjectIdVML         (int val);
-        int  GetObjectIdVML         ();
+        void SetSourceFileDir       (std::wstring path, int nDocType = 1/*XMLWRITER_DOC_TYPE_DOCX*/);
 
-        void SetSourceFileDir       (std::wstring path, int type = 1);
-
-        std::wstring GetContentTypes();
-        std::wstring GetOleXlsx();
-		std::wstring GetOleDrawing();
+        OOX::CContentTypes* GetContentTypes();
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 

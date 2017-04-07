@@ -39,10 +39,9 @@
 
 #include "office_elements_create.h"
 
-#include "length.h"
-#include "anchortype.h"
 #include "stylewrap.h"
 #include "gradientstyle.h"
+#include "common_attlists.h"
 
 namespace OOX {namespace Vml { class CShapeType; }}
 
@@ -59,6 +58,8 @@ class odf_drawing_context
 public:
 	odf_drawing_context		(odf_conversion_context *odf_context);
     ~odf_drawing_context	();
+
+	void set_presentation	(bool bMaster);
 
 	void set_drawings_rect	(_CP_OPT(double) x_pt, _CP_OPT(double) y_pt, _CP_OPT(double) width_pt, _CP_OPT(double) height_pt);
 	void clear				();
@@ -99,6 +100,7 @@ public:
 
 	void start_drawing();
 	void end_drawing();
+	void end_drawing_background(odf_types::common_draw_fill_attlist & common_draw_attlist);
 	
 	void start_group();		
 		void set_group_flip_H	(bool bVal);
@@ -119,11 +121,14 @@ public:
 	void start_shape	(int type);
 	void end_shape		();
 
+	void start_frame	();
+	void end_frame		();
+
 	bool change_text_box_2_wordart();
 
 	void start_image	(std::wstring file_path);
 	void end_image		();
-		
+	
 	void start_text_box					();
 		void set_text_box_min_size		(bool val);
 		void set_text_box_min_size		(double w_pt, double h_pt);
@@ -138,7 +143,7 @@ public:
 
 	office_element_ptr & get_root_element();
 
-	void start_element	(office_element_ptr & elm, office_element_ptr  style_elm = office_element_ptr());
+	void start_element	(office_element_ptr elm, office_element_ptr  style_elm = office_element_ptr());
     void end_element	();
 
 	bool is_exist_content();
@@ -169,7 +174,7 @@ public:
 	void set_flip_H			(bool bVal);
 	void set_flip_V			(bool bVal);
 
-	void set_rotate			(double iVal);
+	void set_rotate			(double dVal);
 
 	void set_no_fill		();
 	void set_type_fill		(int type);//for area - temp for objects
@@ -192,6 +197,8 @@ public:
 	
 	_CP_OPT(unsigned int)	get_fill_color ();
 	void					set_fill_color (unsigned int color);
+
+	_CP_OPT(odf_types::color) get_line_color();
 	//void start_shadow_properties();
 	//void end_shadow_properties();
 // пока одной функией ..
@@ -199,11 +206,14 @@ public:
 
 	void set_text					(odf_text_context* text_context);
 	void set_textarea_vertical_align(int align);
-	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in cm
+	void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in pt
 	void set_textarea_writing_mode	(int mode);
 	void set_textarea_wrap			(bool val);
 	void set_textarea_fontcolor		(std::wstring hexColor);
-	void set_textarea_font			(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea);
+	void set_textarea_font			(std::wstring & latin, std::wstring & cs, std::wstring & ea);
+
+	void set_placeholder_id			(std::wstring val);
+	void set_placeholder_type		(int val);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style	();
 		void set_gradient_type	(odf_types::gradient_style::type style);
@@ -246,9 +256,6 @@ public:
 
 private:
 	
-	void start_frame();
-	void end_frame();
-
     class Impl;
     _CP_PTR(Impl) impl_;
 

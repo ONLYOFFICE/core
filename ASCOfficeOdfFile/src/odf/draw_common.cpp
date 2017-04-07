@@ -554,8 +554,8 @@ void draw_a::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
     CP_APPLY_ATTR(L"office:name"				, office_name_				, std::wstring(L""));
     CP_APPLY_ATTR(L"office:target-frame-name"	, office_target_frame_name_);
-    CP_APPLY_ATTR(L"text:style-name"			, text_style_name_			, style_ref(L""));
-    CP_APPLY_ATTR(L"text:visited-style-name"	, text_visited_style_name_	, style_ref(L""));
+    CP_APPLY_ATTR(L"text:style-name"			, text_style_name_			, std::wstring(L""));
+    CP_APPLY_ATTR(L"text:visited-style-name"	, text_visited_style_name_	, std::wstring(L""));
 
 }
 

@@ -55,7 +55,7 @@ public:
 		{
 			case OOX::et_a_p:
 			{
-				OOX::Drawing::CParagraph * pParagraph = dynamic_cast<OOX::Drawing::CParagraph*>(ooxElement);
+				PPTX::Logic::Paragraph * pParagraph = dynamic_cast<PPTX::Logic::Paragraph*>(ooxElement);
 				
 				OOXParagraphReader	m_oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );

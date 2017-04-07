@@ -74,8 +74,8 @@ namespace PPTX2EditorAdvanced
 				continue;
 			}
 
-			oBinaryWriter.m_pCommon->m_oRels.push_back (CMasterSlideInfo());
-			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
+			oBinaryWriter.m_pCommon->m_oRels.push_back (_masterSlideInfo());
+			_masterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
 
 			// записываем mainMaster
 			LONG lCountSM = (LONG)_slideMasters.size();
@@ -218,7 +218,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteULONG(0);
 		
 		// App
-		smart_ptr<PPTX::App> app = oFolder.Get(OOX::Presentation::FileTypes::App).smart_dynamic_cast<PPTX::App>();
+		smart_ptr<PPTX::App> app = oFolder.Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
 		if (app.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::App);
@@ -226,7 +226,7 @@ namespace PPTX2EditorAdvanced
 		}
 
 		// Core
-		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::Presentation::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
+		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
 		if (core.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSMainTables::Core);
@@ -412,12 +412,12 @@ namespace PPTX2EditorAdvanced
 			oBinaryWriter.StartMainRecord(NSMainTables::ThemeRels);
 			oBinaryWriter.StartRecord(NSMainTables::ThemeRels);
 			
-			std::vector <NSBinPptxRW::CMasterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
+			std::vector <NSBinPptxRW::_masterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
 			oBinaryWriter.WriteULONG((ULONG)th_rels.size());
 
 			for (size_t i = 0; i < th_rels.size(); i++)
 			{
-				NSBinPptxRW::CMasterSlideInfo& oTh = th_rels [i];
+				NSBinPptxRW::_masterSlideInfo& oTh = th_rels [i];
 
 				oBinaryWriter.StartRecord(0);
 

@@ -55,12 +55,9 @@ namespace PPTX
             return L"#" + sstream.str();
 		}
 
-        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
-                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
+        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
-			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
-
 			PPTX::Logic::UniFill fill;
 			DWORD ARGB = 0;
 			if (pShapeStyle.is_init() && oTheme.is_init())
@@ -74,7 +71,7 @@ namespace PPTX
 						fill.as<PPTX::Logic::SolidFill>().Color = pShapeStyle->fillRef.Color;
 					}
 				}
-				ARGB = pShapeStyle->fillRef.Color.GetRGBColor(_oTheme, _oClrMap, ARGB);
+				ARGB = pShapeStyle->fillRef.Color.GetRGBColor(oTheme, oClrMap, ARGB);
 			}
 
 			if (oSpPr.Fill.is_init())
@@ -129,7 +126,7 @@ namespace PPTX
 			}
 			else if (fill.is<SolidFill>())
 			{
-				ARGB = fill.as<SolidFill>().Color.GetRGBColor(_oTheme, _oClrMap, ARGB);
+				ARGB = fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
 				strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");
 
 				BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
@@ -144,7 +141,7 @@ namespace PPTX
 				GradFill& oGrad = fill.as<GradFill>();
 				if (oGrad.GsLst.size() > 0)
 				{
-					ARGB = oGrad.GsLst[0].color.GetRGBColor(_oTheme, _oClrMap, ARGB);
+					ARGB = oGrad.GsLst[0].color.GetRGBColor(oTheme, oClrMap, ARGB);
 					strAttr = _T(" fillcolor=\"") + GetHexColor(ARGB) + _T("\"");
 
 					BYTE A = (BYTE)((ARGB >> 24) & 0xFF);
@@ -180,18 +177,15 @@ namespace PPTX
 			}
 			*/
 		}
-        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme,
-                           NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
+        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
-			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
-			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
-
 			PPTX::Logic::Ln line;
 			DWORD ARGB = 0;
 			if (pShapeStyle.is_init() && oTheme.is_init())
 			{
 				oTheme->GetLineStyle(pShapeStyle->lnRef.idx.get_value_or(0), line);
-				ARGB = pShapeStyle->lnRef.Color.GetRGBColor(_oTheme, _oClrMap, ARGB);
+				ARGB = pShapeStyle->lnRef.Color.GetRGBColor(oTheme, oClrMap, ARGB);
 			}
 
 			if (oSpPr.ln.is_init())
@@ -199,7 +193,7 @@ namespace PPTX
 
 			if (line.Fill.is<SolidFill>())
 			{
-				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(_oTheme, _oClrMap, ARGB);
+				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
 				strAttr = _T(" strokecolor=\"") + GetHexColor(ARGB) + _T("\"");
 			}
 			else if (bOle)
@@ -212,6 +206,7 @@ namespace PPTX
 				strAttr += s;
 			}
 		}
+
 		SpTreeElem::SpTreeElem()
 		{
 		}
@@ -269,7 +264,6 @@ namespace PPTX
 					}
 				}
 			}
-			else m_elem.reset();
 		}
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -385,6 +379,30 @@ namespace PPTX
 			if (m_elem.IsInit())
 				return m_elem->toXML();
 			return _T("");
+		}
+
+		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const
+		{
+			if (m_elem.IsInit() == false) return;
+
+			switch(m_elem->getType())
+			{
+				case OOX::et_a_Shape:
+				{
+					smart_ptr<PPTX::Logic::Shape> oShape = m_elem.smart_dynamic_cast<PPTX::Logic::Shape>();
+					if (oShape.IsInit()) oShape->toXmlWriterVML(pWriter, oTheme, oClrMap);
+				}break;
+				case OOX::et_pic:
+				{
+					smart_ptr<PPTX::Logic::Pic> oPic = m_elem.smart_dynamic_cast<PPTX::Logic::Pic>();
+					if (oPic.IsInit()) oPic->toXmlWriterVML(pWriter, oTheme, oClrMap);
+				}break;
+				case OOX::et_p_ShapeTree:
+				{
+					smart_ptr<PPTX::Logic::SpTree> oSpTree = m_elem.smart_dynamic_cast<PPTX::Logic::SpTree>();
+					if (oSpTree.IsInit()) oSpTree->toXmlWriterVML(pWriter, oTheme, oClrMap);
+				}break;
+			}
 		}
 
 	} // namespace Logic

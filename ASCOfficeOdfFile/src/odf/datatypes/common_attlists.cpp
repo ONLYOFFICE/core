@@ -624,9 +624,6 @@ void common_horizontal_pos_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"svg:x", svg_x_);
 }
 
-//  common_num_format_attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_num_format_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:num-format",		style_num_format_);
@@ -643,9 +640,6 @@ void common_num_format_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"style:num-letter-sync",	style_num_letter_sync_);    
 }
 
-//  common_num_format_prefix_suffix_attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_num_format_prefix_suffix_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"style:num-prefix", style_num_prefix_);
@@ -661,9 +655,6 @@ void common_num_format_prefix_suffix_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"style:num-prefix", style_num_prefix_);
     CP_XML_ATTR_OPT(L"style:num-suffix", style_num_suffix_);
 }
-
-/// common-draw-style-name-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_draw_style_name_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -686,8 +677,6 @@ void common_draw_style_name_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"presentation:style-name", presentation_style_name_);
     CP_XML_ATTR_OPT(L"presentation:class-names", presentation_class_names_);
 }
-/// common-draw-z-index-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_draw_z_index_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -702,9 +691,6 @@ void common_draw_z_index_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:z-index", draw_z_index_);
 }
 
-/// common-draw-id-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_draw_id_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"draw:id", draw_id_);
@@ -717,8 +703,6 @@ void common_draw_id_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:id", draw_id_);
 }
-// common-draw-layer-name-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_draw_layer_name_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -732,8 +716,6 @@ void common_draw_layer_name_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:layer", draw_layer_);
 }
-// common-draw-transform-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_draw_transform_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -748,9 +730,6 @@ void common_draw_transform_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"draw:transform", draw_transform_);
 }
 
-// common-draw-name-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_draw_name_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"draw:name", draw_name_);
@@ -763,8 +742,6 @@ void common_draw_name_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:name", draw_name_);
 }
-/// common-text-spreadsheet-shape-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_text_spreadsheet_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -791,9 +768,6 @@ void common_text_spreadsheet_shape_attlist::serialize(CP_ATTR_NODE)
     common_text_anchor_attlist_.serialize(CP_GET_XML_NODE());
 }
 
-/// common-draw-shape-with-styles-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_draw_shape_with_styles_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_draw_z_index_attlist_.add_attributes(Attributes);
@@ -814,6 +788,7 @@ void common_draw_shape_with_styles_attlist::apply_from(const common_draw_shape_w
     common_draw_name_attlist_.apply_from(               Other.common_draw_name_attlist_);
     common_text_spreadsheet_shape_attlist_.apply_from(  Other.common_text_spreadsheet_shape_attlist_);
 }
+
 void common_draw_shape_with_styles_attlist::serialize(CP_ATTR_NODE)
 {
     common_draw_z_index_attlist_.serialize(CP_GET_XML_NODE());
@@ -824,8 +799,6 @@ void common_draw_shape_with_styles_attlist::serialize(CP_ATTR_NODE)
     common_draw_name_attlist_.serialize(CP_GET_XML_NODE());
     common_text_spreadsheet_shape_attlist_.serialize(CP_GET_XML_NODE());
 }
-/// common-draw-text-style-name-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_draw_text_style_name_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -839,7 +812,6 @@ void common_draw_text_style_name_attlist::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"draw:text-style-name", draw_text_style_name_);
 }
-/// common-draw-shape-with-text-and-styles-attlist
 
 void common_draw_shape_with_text_and_styles_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -857,9 +829,6 @@ void common_draw_shape_with_text_and_styles_attlist::serialize(CP_ATTR_NODE)
     common_draw_text_style_name_attlist_.serialize(CP_GET_XML_NODE());
 }
 
-/// common-draw-position-attlist
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 void common_draw_position_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"svg:x", svg_x_);
@@ -876,72 +845,54 @@ void common_draw_position_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"svg:y", svg_y_);
 }
 
-/// presentation-shape-attlist
-
-void presentation_shape_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-    CP_APPLY_ATTR(L"presentation:class", presentation_class_);
-    CP_APPLY_ATTR(L"presentation:placeholder", presentation_placeholder_);
-    CP_APPLY_ATTR(L"presentation:user-transformed", presentation_user_transformed_);
-}
-void presentation_shape_attlist::apply_from(const presentation_shape_attlist & Other)
-{
-    _CP_APPLY_PROP2(presentation_class_);
-    _CP_APPLY_PROP2(presentation_placeholder_);
-    _CP_APPLY_PROP2(presentation_user_transformed_);
-}
-void presentation_shape_attlist::serialize(CP_ATTR_NODE)
-{
-    CP_XML_ATTR_OPT(L"presentation:class", presentation_class_);
-    CP_XML_ATTR_OPT(L"presentation:placeholder", presentation_placeholder_);
-    CP_XML_ATTR_OPT(L"presentation:user-transformed", presentation_user_transformed_);
-}
-///  common-data-style-attlist
 void common_data_style_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:name", style_name_);
-    CP_APPLY_ATTR(L"number:language", number_language_);
-    CP_APPLY_ATTR(L"number:country", number_country_);
-    CP_APPLY_ATTR(L"number:title", number_title_);
-    CP_APPLY_ATTR(L"number:volatile", number_volatile_);
-    CP_APPLY_ATTR(L"number:transliteration-format", number_transliteration_format_);
-    CP_APPLY_ATTR(L"number:transliteration-language", number_transliteration_language_);
-    CP_APPLY_ATTR(L"number:transliteration-country", number_transliteration_country_);
-    CP_APPLY_ATTR(L"number:transliteration-style", number_transliteration_style_);
+    CP_APPLY_ATTR(L"style:name",						style_name_);
+    CP_APPLY_ATTR(L"number:language",					number_language_);
+    CP_APPLY_ATTR(L"number:country",					number_country_);
+    CP_APPLY_ATTR(L"number:title",						number_title_);
+    CP_APPLY_ATTR(L"number:volatile",					number_volatile_);
+    CP_APPLY_ATTR(L"number:transliteration-format",		number_transliteration_format_);
+    CP_APPLY_ATTR(L"number:transliteration-language",	number_transliteration_language_);
+    CP_APPLY_ATTR(L"number:transliteration-country",	number_transliteration_country_);
+    CP_APPLY_ATTR(L"number:transliteration-style",		number_transliteration_style_);
     
 }
 void common_data_style_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:name", style_name_);
-    CP_XML_ATTR_OPT(L"number:language", number_language_);
-    CP_XML_ATTR_OPT(L"number:country", number_country_);
-    CP_XML_ATTR_OPT(L"number:title", number_title_);
-    CP_XML_ATTR_OPT(L"number:volatile", number_volatile_);
-    CP_XML_ATTR_OPT(L"number:transliteration-format", number_transliteration_format_);
+    CP_XML_ATTR_OPT(L"style:name",						style_name_);
+    CP_XML_ATTR_OPT(L"number:language",					number_language_);
+    CP_XML_ATTR_OPT(L"number:country",					number_country_);
+    CP_XML_ATTR_OPT(L"number:title",					number_title_);
+    CP_XML_ATTR_OPT(L"number:volatile",					number_volatile_);
+    CP_XML_ATTR_OPT(L"number:transliteration-format",	number_transliteration_format_);
     CP_XML_ATTR_OPT(L"number:transliteration-language", number_transliteration_language_);
-    CP_XML_ATTR_OPT(L"number:transliteration-country", number_transliteration_country_);
-    CP_XML_ATTR_OPT(L"number:transliteration-style", number_transliteration_style_);
+    CP_XML_ATTR_OPT(L"number:transliteration-country",	number_transliteration_country_);
+    CP_XML_ATTR_OPT(L"number:transliteration-style",	number_transliteration_style_);
     
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_presentation_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"presentation:class", presentation_class_);
-    CP_APPLY_ATTR(L"presentation:style-name", style_name_);
-	CP_APPLY_ATTR(L"presentation:placeholder", presentation_placeholder_);
+	CP_APPLY_ATTR(L"presentation:class",			presentation_class_);
+    CP_APPLY_ATTR(L"presentation:style-name",		style_name_);
+	CP_APPLY_ATTR(L"presentation:placeholder",		presentation_placeholder_);
+    CP_APPLY_ATTR(L"presentation:user-transformed", presentation_user_transformed_);
 }
 void common_presentation_attlist::apply_from(const common_presentation_attlist & Other)
 {
-    _CP_APPLY_PROP(presentation_class_, Other.presentation_class_);
-    _CP_APPLY_PROP(style_name_, Other.style_name_);
-    _CP_APPLY_PROP(presentation_placeholder_, Other.presentation_placeholder_);
+    _CP_APPLY_PROP(presentation_class_,				Other.presentation_class_);
+    _CP_APPLY_PROP(style_name_,						Other.style_name_);
+    _CP_APPLY_PROP(presentation_placeholder_,		Other.presentation_placeholder_);
+    _CP_APPLY_PROP(presentation_user_transformed_,	Other.presentation_user_transformed_);
 }
 void common_presentation_attlist::serialize(CP_ATTR_NODE)
 {
 	CP_XML_ATTR_OPT(L"presentation:class", presentation_class_);
     CP_XML_ATTR_OPT(L"presentation:style-name", style_name_);
 	CP_XML_ATTR_OPT(L"presentation:placeholder", presentation_placeholder_);
+    CP_XML_ATTR_OPT(L"presentation:user-transformed", presentation_user_transformed_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

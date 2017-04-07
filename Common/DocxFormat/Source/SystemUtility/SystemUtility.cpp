@@ -192,42 +192,6 @@ namespace OOX
 		}
 		return false;
 	}
-
-    /*
-	AVSINLINE std::wstring CPath::GetExtention(bool bIsPoint) const
-    {
-        int nFind = m_strFilename.ReverseFind('.');
-        if (-1 == nFind)
-            return _T("");
-
-        if (!bIsPoint)
-            ++nFind;
-
-        return m_strFilename.substr(nFind);
-    }
-    */
-    /*
-    AVSINLINE std::wstring CPath::GetDirectory(bool bIsSlash) const
-    {
-        int nPos = m_strFilename.ReverseFind('\\');
-        if (-1 == nPos)
-        {
-            return m_strFilename;
-        }
-        else
-        {
-            if (bIsSlash)
-                ++nPos;
-            return m_strFilename.substr(0, nPos);
-        }
-    }
-    */
-    /*
-    AVSINLINE std::wstring CPath::GetPath() const
-    {
-        return m_strFilename;
-    }
-    */
 }
 
 namespace OOX

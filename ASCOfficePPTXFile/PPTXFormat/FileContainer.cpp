@@ -94,55 +94,6 @@ namespace PPTX
 	{
 		//not implement FileContainer.read
 	}
-	smart_ptr<PPTX::LegacyDiagramText> FileContainer::legacyDiagramText(const OOX::RId& rId) const 
-	{
-        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
-        if (pPair == m_mContainer.end ())
-            return smart_ptr<LegacyDiagramText>();
-        return pPair->second.smart_dynamic_cast<LegacyDiagramText>();
-	}
-	void FileContainer::read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event)
-	{
-		OOX::CRels rels(filename);
-		OOX::CPath path = filename.GetDirectory();
-		read(rels, path, map, Event);
-	}
-
-	OOX::CPath FileContainer::CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation )
-	{
-        if (relation->IsExternal()) return relation->Target();
-
-		OOX::CPath filename = path / relation->Target();
-		
-		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;
-		
-		//file_1_ (1).pptx			
-		std::wstring strDefDirectory;
-		for (int i = 0; i < 9; i++)
-		{
-			if (relation->Type() == arDefDirectories[i][0])
-			{
-				strDefDirectory = arDefDirectories[i][1];
-				break;
-			}
-		}
-		
-		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
-		
-		filename = path / new_filename;
-		
-		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
-		{
-			filename = FindFileInDirectory(path.GetPath(), relation->Filename().GetFilename()); // find true path by filename
-
-			if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
-				return filename;
-		}
-
-		*relation = OOX::Rels::CRelationShip( relation->rId(), relation->Type(), filename);
-
-		return filename;
-	}
 	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
 	{
 		bool bIsSlide = false;
@@ -158,7 +109,7 @@ namespace PPTX
 
  			OOX::CPath normPath = CorrectPathRels(path, pRelation);
 
-			std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = map.find(normPath);
+			std::map<std::wstring, smart_ptr<OOX::File>>::iterator pPair = map.find(normPath);
 
             if (bIsSlide && (pRelation->Type() == OOX::FileTypes::HyperLink ||
                              pRelation->Type() == OOX::Presentation::FileTypes::Slide))
@@ -180,7 +131,7 @@ namespace PPTX
 				}
 				else
 				{
-					long percent = Event->GetPercent();
+					long percent = Event ? Event->GetPercent() : 0;
 
 					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map);
 
@@ -191,12 +142,13 @@ namespace PPTX
 					Add(pRelation->rId(), file);
 
 					smart_ptr<FileContainer> pContainer = file.smart_dynamic_cast<FileContainer>();
-                    Event->Progress(0, percent + m_lPercent);
+                    
+					if (Event) Event->Progress(0, percent + m_lPercent);
 
                     if (pContainer.IsInit())
 					{
 						pContainer->m_lPercent = m_lPercent;
-						Event->AddPercent(m_lPercent);
+						if (Event) Event->AddPercent(m_lPercent);
 
 						pContainer->read(normPath, map, Event);
 						m_bCancelled = pContainer->m_bCancelled;
@@ -289,7 +241,70 @@ namespace PPTX
 			}
 		}
 	}
+	smart_ptr<PPTX::LegacyDiagramText> FileContainer::legacyDiagramText(const OOX::RId& rId) const 
+	{
+        std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mContainer.find(rId.get());
+        if (pPair == m_mContainer.end ())
+            return smart_ptr<LegacyDiagramText>();
+        return pPair->second.smart_dynamic_cast<LegacyDiagramText>();
+	}
+	void FileContainer::read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event)
+	{
+		OOX::CRels rels(filename);
+		OOX::CPath path = filename.GetDirectory();
+		read(rels, path, map, Event);
+	}
 
+	OOX::CPath FileContainer::CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation )
+	{
+        if (relation->IsExternal()) return relation->Target();
+
+		OOX::CPath filename = path / relation->Target();
+		
+		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;
+		
+		//file_1_ (1).pptx			
+		std::wstring strDefDirectory;
+		for (int i = 0; i < 9; i++)
+		{
+			if (relation->Type() == arDefDirectories[i][0])
+			{
+				strDefDirectory = arDefDirectories[i][1];
+				break;
+			}
+		}
+		
+		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
+		
+		filename = path / new_filename;
+		
+		if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
+		{
+			filename = FindFileInDirectory(path.GetPath(), relation->Filename().GetFilename()); // find true path by filename
+
+			if (NSFile::CFileBinary::Exists(filename.GetPath()) == false) 
+				return filename;
+		}
+
+		*relation = OOX::Rels::CRelationShip( relation->rId(), relation->Type(), filename);
+
+		return filename;
+	}
+
+//---------------------------------------------------------------------------------------------------------------------------
+	void WrapperFile::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const
+	{
+		m_WrittenFileName = filename.GetFilename();
+
+		NSBinPptxRW::CXmlWriter oXmlWriter;
+		toXmlWriter(&oXmlWriter);
+
+		oXmlWriter.SaveToFile(filename.m_strFilename);
+
+		content.Registration(type().OverrideType(), directory, m_WrittenFileName);
+		m_written = true;
+	}
+//---------------------------------------------------------------------------------------------------------------------------
 	void CCommonRels::_read(const OOX::CRels& rels, const OOX::CPath& path)
 	{
 		size_t nCount = rels.m_arrRelations.size();

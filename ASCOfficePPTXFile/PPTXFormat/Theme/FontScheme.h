@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(FontScheme)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				name = node.GetAttribute(_T("name"));
@@ -135,8 +134,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		public:
-			std::wstring					name;
+			std::wstring			name;
 			Logic::FontCollection	majorFont;
 			Logic::FontCollection	minorFont;
 		protected:

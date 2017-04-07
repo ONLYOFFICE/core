@@ -34,6 +34,7 @@
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace Writers
 {
@@ -48,8 +49,8 @@ namespace Writers
         CFontManager*           m_pFontManager;
 	public:
         std::map<std::wstring, int> m_mapFonts;
-	public:
-        FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
+
+		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir):m_sDir(sDir)
 		{
 			m_pFontManager = NULL;
 			if(!bNoFontDir)
@@ -102,8 +103,8 @@ namespace Writers
 
             OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("fontTable.xml");
 
-			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(filePath.GetPath());
 
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();

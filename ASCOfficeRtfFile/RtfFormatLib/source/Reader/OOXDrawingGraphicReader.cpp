@@ -30,7 +30,6 @@
  *
  */
 
-#include "OOXPictureGraphicReader.h"
 #include "OOXDrawingGraphicReader.h"
 #include "OOXShapeReader.h"
 
@@ -41,114 +40,39 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 {
 	if (m_ooxGraphic == NULL) return 0;
 	
-	bool bTryPicture = false;
-	switch(m_ooxGraphic->m_eGraphicType)
+	if (m_ooxGraphic->element.IsInit())
 	{
-		case OOX::Drawing::graphictypeShape:
+		if (m_ooxGraphic->element->getType() == OOX::et_p_ShapeTree)
 		{
-			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
-			{
-				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
-
-				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_w_Shape)
-				{
-					OOXShapeReader shapeReader(dynamic_cast<OOX::Logic::CShape*>(m_ooxGraphic->m_arrItems[i]));
-					return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
-				}
-			}
-		}break;
-		case OOX::Drawing::graphictypeGroupShape:
+			OOXShapeReader shapeReader(m_ooxGraphic->element->GetElem().operator->());
+			return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
+		}
+		else
 		{
-			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
-			{
-				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
-
-				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_w_GroupShape)
-				{
-					OOXShapeGroupReader groupReader(dynamic_cast<OOX::Logic::CGroupShape*>(m_ooxGraphic->m_arrItems[i]));
-					return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
-				}
-			}
-		}break;
-		case OOX::Drawing::graphictypePicture:
-		case OOX::Drawing::graphictypeLockedCanvas:
-		case OOX::Drawing::graphictypeChart:		
-		case OOX::Drawing::graphictypeDiagram:
-		{//find picture or replacement picture 
-			for (size_t i = 0; i < m_ooxGraphic->m_arrItems.size(); i++)
-			{
-				if (m_ooxGraphic->m_arrItems[i] == NULL) continue;
-
-				if (m_ooxGraphic->m_arrItems[i]->getType() == OOX::et_pic_pic)
-				{
-					pOutput->m_nShapeType = 75;
-				
-					OOX::Drawing::CPicture *picture = dynamic_cast<OOX::Drawing::CPicture *>(m_ooxGraphic->m_arrItems[i]);
-					OOXShapeReader::Parse(oParam, pOutput, &picture->m_oBlipFill); // тут если false приходит - картинка-потеряшка
-					return 1;
-				}
-			}
-		}break;
-	}
-
-	return 2;
-}
-
-//OOX::Logic::CPicture*
-OOX::Logic::CDrawing* OOXDrawingGraphicConverter::Convert( ReaderParameter oParam , RtfShapePtr pOutput)
-{
-	NSBinPptxRW::CDrawingConverter drawingConverter;
-
-	OOX::CTheme *pTheme = oParam.oDocx->GetTheme();
-	if (pTheme)
-	{
-		NSCommon::smart_ptr<PPTX::Theme> theme(new PPTX::Theme());
-		PPTX::FileMap map;
-		theme->read(pTheme->m_oReadPath, map);
-	
-		(*drawingConverter.m_pTheme) = theme.smart_dynamic_cast<PPTX::WrapperFile>(); 
-	}
-
-	drawingConverter.SetRelsPath(oParam.oDocx->m_pDocument->m_oReadPath.GetPath());
-
-	std::wstring sXml;
-	sXml = drawingConverter.ObjectToDrawingML(m_sXml, XMLWRITER_DOC_TYPE_DOCX);
-
-//	sXml = drawingConverter.ObjectToVML(m_sXml);
-
-	if (sXml.empty())return NULL;
-
-	OOX::CPath pathDrawingRels(drawingConverter.m_strCurrentRelsPath);
-	
-	if (m_ooxGraphicRels)
-	{
-		m_ooxGraphicRels->Read(pathDrawingRels, pathDrawingRels);
-	}
-
-	std::wstring sBegin	(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:x=\"urn:schemas-microsoft-com:office:excel\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
-	std::wstring sEnd	(L"</main>");
-	
-	std::wstring strXml = sBegin + sXml + sEnd;
-	
-	XmlUtils::CXmlLiteReader oSubReader;
-	
-	if (oSubReader.FromString(strXml) == false) return NULL;						
-	oSubReader.ReadNextNode();
-
-	int nStylesDepth1 = oSubReader.GetDepth();
-	while ( oSubReader.ReadNextSiblingNode( nStylesDepth1 ) )
-	{
-		std::wstring sName = oSubReader.GetName();
-		//if (sName == L"w:pict")
-		//{
-		//	return new OOX::Logic::CPicture(oSubReader);
-		//}
-		if (sName == L"w:drawing")
-		{
-			return new OOX::Logic::CDrawing(oSubReader);
+			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element->GetElem().operator->()));
+			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}
-
-	return NULL;
-	//return pPict;
+	if (m_ooxGraphic->olePic.IsInit())
+	{
+		pOutput->m_nShapeType = 75;
+	
+		OOXShapeReader::Parse(oParam, pOutput, &m_ooxGraphic->olePic->blipFill); // тут если false приходит - картинка-потеряшка
+		return 1;
+	}
+	if (m_ooxGraphic->smartArt.IsInit())
+	{
+		m_ooxGraphic->smartArt->LoadDrawing();
+		if (m_ooxGraphic->smartArt->m_diag.IsInit())
+		{
+			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->smartArt->m_diag.GetPointer()));
+			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
+		}
+	}
+//nullable_string			spid;
+//nullable<Table>			table;
+//nullable<ChartRec>		chartRec;
+	return 0;
 }
+
+

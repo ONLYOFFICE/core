@@ -47,7 +47,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TxStyles)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNodes oNodes;

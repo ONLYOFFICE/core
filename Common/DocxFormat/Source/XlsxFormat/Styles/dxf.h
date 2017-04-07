@@ -39,6 +39,7 @@
 #include "Fills.h"
 #include "Fonts.h"
 #include "NumFmts.h"
+#include "Xfs.h"
 
 namespace OOX
 {
@@ -47,15 +48,16 @@ namespace OOX
 		class CDxf : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDxf)
+			WritingElement_AdditionConstructors(CDxf)
 			CDxf()
 			{
 			}
 			virtual ~CDxf()
 			{
 			}
-
-		public:
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
             virtual std::wstring      toXML() const
 			{
 				return _T("");
@@ -77,7 +79,7 @@ namespace OOX
 					m_oProtection->toXML(writer);
 				writer.WriteString(L"</dxf>");
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -106,7 +108,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Dxf;
+				return et_x_Dxf;
 			}
 
 		private:
@@ -124,16 +126,17 @@ namespace OOX
 		class CDxfs : public WritingElementWithChilds<CDxf>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CDxfs)
+			WritingElement_AdditionConstructors(CDxfs)
 			CDxfs()
 			{
 			}
 			virtual ~CDxfs()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -146,7 +149,7 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				writer.WriteString(_T("</dxfs>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -165,7 +168,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Dxfs;
+				return et_x_Dxfs;
 			}
 
 		private:
@@ -173,10 +176,8 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;

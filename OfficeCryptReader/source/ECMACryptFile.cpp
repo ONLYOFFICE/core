@@ -30,7 +30,7 @@
  *
  */
 
-#include "ECMACryptReader.h"
+#include "ECMACryptFile.h"
 #include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
@@ -40,6 +40,9 @@
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+#include "simple_xml_writer.h"
+
+CRYPT::_ecmaCryptData cryptDataGlobal;
 
 using namespace CRYPT;
 
@@ -119,7 +122,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
 
 }
 
-void ReadMapEntry(POLE::Stream *pStream, ECMACryptReader::_mapEntry & m)
+void ReadMapEntry(POLE::Stream *pStream, ECMACryptFile::_mapEntry & m)
 {
 	if (!pStream) return;
 
@@ -131,7 +134,7 @@ void ReadMapEntry(POLE::Stream *pStream, ECMACryptReader::_mapEntry & m)
 
 	for (int i = 0 ; i < refCount; i++)
 	{
-		ECMACryptReader::_refComponent r;
+		ECMACryptFile::_refComponent r;
 		pStream->read((unsigned char*)&r.type, 4); 
 
 		r.ref = ReadUnicodeLP(pStream);
@@ -150,6 +153,20 @@ std::string DecodeBase64(const std::string & value)
 	if (pData)
 	{
 		result = std::string((char*)pData, nLength);
+		delete []pData; pData = NULL;
+	}
+	return result;
+}
+std::string EncodeBase64(const std::string & value)
+{
+	int nLength = 0;
+	char *pData = NULL;
+	std::string result;
+
+	NSFile::CBase64Converter::Encode((BYTE*)value.c_str(), value.length(), pData, nLength, NSBase64::B64_BASE64_FLAG_NOCRLF);
+	if (pData)
+	{
+		result = std::string(pData, nLength);
 		delete []pData; pData = NULL;
 	}
 	return result;
@@ -177,7 +194,7 @@ struct _dataIntegrity
 	std::string	encryptedHmacKey;
 	std::string	encryptedHmacValue;
 };
-bool ReadXmlEncryptionInfo(const std::string & xml_string, ECMADecryptor::_cryptData & cryptData)
+bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryptData)
 {
 	XmlUtils::CXmlLiteReader xmlReader;
 
@@ -284,7 +301,107 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, ECMADecryptor::_crypt
 	return true;
 }
 
-bool ReadStandartEncryptionInfo(unsigned char* data, int size, ECMADecryptor::_cryptData & cryptData)
+bool WriteXmlEncryptionInfo(const _ecmaCryptData & cryptData, std::string & xml_string)
+{
+	XmlUtils::CXmlWriter	xmlWriter;
+
+	_dataIntegrity		dataIntegrity;
+	_keyEncryptor		keyData;
+
+	keyData.spinCount	= std::to_string(cryptData.spinCount);
+	keyData.blockSize	= std::to_string(cryptData.blockSize);
+	keyData.hashSize	= std::to_string(cryptData.hashSize);
+	keyData.saltSize	= std::to_string(cryptData.saltSize);
+	keyData.keyBits		= std::to_string(cryptData.keySize * 8);
+	keyData.saltValue	= EncodeBase64(cryptData.dataSaltValue);
+
+	keyData.cipherAlgorithm = "AES";
+
+	if (keyData.cipherAlgorithm == "AES")
+	{
+		if (cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CBC)	keyData.cipherChaining = "ChainingModeCBC";	
+		if (cryptData.cipherAlgorithm == CRYPT_METHOD::AES_CFB)	keyData.cipherChaining = "ChainingModeCFB";
+	}
+
+	switch(cryptData.hashAlgorithm)
+	{
+		case CRYPT_METHOD::SHA1:	keyData.hashAlgorithm = "SHA1";		break;
+		case CRYPT_METHOD::SHA224:	keyData.hashAlgorithm = "SHA224";	break;
+		case CRYPT_METHOD::SHA256:	keyData.hashAlgorithm = "SHA256";	break;
+		case CRYPT_METHOD::SHA384:	keyData.hashAlgorithm = "SHA384";	break;
+		case CRYPT_METHOD::SHA512:	keyData.hashAlgorithm = "SHA512";	break;
+	}
+
+	std::vector<_keyEncryptor>	keyEncryptors;
+	keyEncryptors.push_back(keyData);
+	
+	keyEncryptors[0].saltValue					= EncodeBase64(cryptData.saltValue);
+	keyEncryptors[0].encryptedKeyValue			= EncodeBase64(cryptData.encryptedKeyValue);
+	keyEncryptors[0].encryptedVerifierHashInput	= EncodeBase64(cryptData.encryptedVerifierInput);
+	keyEncryptors[0].encryptedVerifierHashValue	= EncodeBase64(cryptData.encryptedVerifierValue);
+	  
+	dataIntegrity.encryptedHmacKey				= EncodeBase64(cryptData.encryptedHmacKey);
+	dataIntegrity.encryptedHmacValue			= EncodeBase64(cryptData.encryptedHmacValue);
+
+	std::stringstream stream;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE("encryption")
+		{
+			CP_XML_ATTR("xmlns",			"http://schemas.microsoft.com/office/2006/encryption");
+			CP_XML_ATTR("xmlns:p",			"http://schemas.microsoft.com/office/2006/keyEncryptor/password");
+			CP_XML_ATTR("xmlns:c",			"http://schemas.microsoft.com/office/2006/keyEncryptor/certificate");
+
+			CP_XML_NODE("keyData")
+			{
+				CP_XML_ATTR("saltSize",			keyData.saltSize);
+				CP_XML_ATTR("blockSize",		keyData.blockSize);
+				CP_XML_ATTR("keyBits",			keyData.keyBits);
+				CP_XML_ATTR("hashSize",			keyData.hashSize);
+				CP_XML_ATTR("cipherAlgorithm",	keyData.cipherAlgorithm);
+				CP_XML_ATTR("cipherChaining",	keyData.cipherChaining);
+				CP_XML_ATTR("hashAlgorithm",	keyData.hashAlgorithm);
+				CP_XML_ATTR("saltValue",		keyData.saltValue);
+			}
+			CP_XML_NODE("dataIntegrity")
+			{
+				CP_XML_ATTR("encryptedHmacKey",		dataIntegrity.encryptedHmacKey);
+				CP_XML_ATTR("encryptedHmacValue",	dataIntegrity.encryptedHmacValue);
+			}
+			int i = 0;
+			CP_XML_NODE("keyEncryptors")
+			{
+				CP_XML_NODE("keyEncryptor")
+				{	
+					CP_XML_ATTR("uri", "http://schemas.microsoft.com/office/2006/keyEncryptor/password");
+
+					CP_XML_NODE("p:encryptedKey")
+					{
+						CP_XML_ATTR("spinCount",					keyEncryptors[i].spinCount );
+						CP_XML_ATTR("saltSize",						keyEncryptors[i].saltSize );
+						CP_XML_ATTR("blockSize",					keyEncryptors[i].blockSize );
+						CP_XML_ATTR("keyBits",						keyEncryptors[i].keyBits );
+						CP_XML_ATTR("hashSize",						keyEncryptors[i].hashSize );
+						CP_XML_ATTR("cipherAlgorithm",				keyEncryptors[i].cipherAlgorithm );
+						CP_XML_ATTR("cipherChaining",				keyEncryptors[i].cipherChaining );
+						CP_XML_ATTR("hashAlgorithm",				keyEncryptors[i].hashAlgorithm );
+						CP_XML_ATTR("saltValue",					keyEncryptors[i].saltValue );
+						CP_XML_ATTR("encryptedVerifierHashInput",	keyEncryptors[i].encryptedVerifierHashInput );
+						CP_XML_ATTR("encryptedVerifierHashValue",	keyEncryptors[i].encryptedVerifierHashValue );
+						CP_XML_ATTR("encryptedKeyValue",			keyEncryptors[i].encryptedKeyValue );
+					}
+				}
+			}
+		}
+	}
+
+	xml_string = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n" + stream.str();
+
+	return true;
+}
+
+bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & cryptData)
 {
 	if (!data || size < 1) return false;
 	MemoryStream mem_stream(data, size, false);
@@ -360,15 +477,116 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, ECMADecryptor::_c
 	return true;
 }
 
-bool ReadExtensibleEncryptionInfo(unsigned char* data, int size, ECMADecryptor::_cryptData & cryptData)
+bool ReadExtensibleEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & cryptData)
 {
 	return false;
 }
 
 
 //--------------------------------------------------------------
+bool ECMACryptFile::EncryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+{
+	_ecmaCryptData cryptData;
+	
+	cryptData.bAgile		= true;
+	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	cryptData.keySize		= 0x20;
+	cryptData.hashSize		= 0x40;
+	cryptData.blockSize		= 0x10;
+	cryptData.saltSize		= 0x10;
 
-bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
+	ECMAEncryptor cryptor;	
+	
+	cryptor.SetPassword(password);
+
+	cryptor.SetCryptData(cryptDataGlobal);	//for test !!! 
+	//cryptor.SetCryptData(cryptData);		//basic settings
+
+	NSFile::CFileBinary file;
+	if (!file.OpenFile(file_name_inp)) return false;
+
+	_UINT64 lengthFileSize = file.GetFileSize();
+	DWORD lengthData = lengthFileSize, lengthDataRead = 0 ;
+
+	unsigned char* data		= new unsigned char[lengthData];
+	unsigned char* data_out	= NULL;
+	
+	file.ReadFile(data, lengthData, lengthDataRead);
+
+	file.CloseFile();
+	
+	lengthData = cryptor.Encrypt(data, lengthData, data_out);
+
+	cryptor.UpdateDataIntegrity(data_out, lengthData);
+	
+	if (!data_out)
+	{
+		delete []data;
+		return false;
+	}
+//-------------------------------------------------------------------
+	POLE::Storage *pStorage = new POLE::Storage(file_name_out.c_str());
+	
+	if (!pStorage)return false;
+
+	if (!pStorage->open(true, true))
+	{
+		delete pStorage;
+		return false;
+	}
+//-------------------------------------------------------------------
+	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo", true);
+
+	cryptor.GetCryptData(cryptData);
+
+	std::string strXml;
+	WriteXmlEncryptionInfo(cryptData, strXml);
+
+	_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile standart
+	
+	pStream->write((unsigned char*)&VersionInfoMajor, 2);
+	pStream->write((unsigned char*)&VersionInfoMinor, 2);
+
+	_UINT32 nEncryptionInfoFlags = 64;
+	pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
+	
+	pStream->write((unsigned char*)strXml.c_str(), strXml.length()); 
+	
+	pStream->flush();
+	delete pStream;
+//-------------------------------------------------------------------
+	pStream = new POLE::Stream(pStorage, "EncryptedPackage", true, lengthData);
+	
+	pStream->write(data_out, lengthData);
+
+	pStream->flush();
+	delete pStream;
+	
+	pStorage->close();
+	delete pStorage;
+
+
+//test back---------------------------------------------------------------------------------test back
+	ECMADecryptor decryptor;
+	
+	decryptor.SetCryptData(cryptData);
+	
+	if (decryptor.SetPassword(password))
+	{
+		unsigned char* data_out2	= NULL;
+		decryptor.Decrypt(data_out, lengthData, data_out2);
+		NSFile::CFileBinary test;
+
+		test.CreateFileW(file_name_out + L"-back.oox");
+		test.WriteFile(data_out2, lengthFileSize);
+		test.CloseFile();
+	}
+//test back---------------------------------------------------------------------------------test back
+
+	return true;
+}
+
+bool ECMACryptFile::DecryptOfficeFile(std::wstring file_name_inp, std::wstring file_name_out, std::wstring password)
 {
 	POLE::Storage *pStorage = new POLE::Storage(file_name_inp.c_str());
 	
@@ -379,10 +597,47 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 		delete pStorage;
 		return false;
 	}
-	ECMADecryptor::_cryptData cryptData;
+	_ecmaCryptData cryptData;
 	bool result = false;
 
+//------------------------------------------------------------------------
+	//{
+	//	std::wstring f = file_name_out + L"-1.docx";
+	//	POLE::Storage *pStorage1 = new POLE::Storage(f.c_str());
+	//	pStorage1->open(true, true);
+
+	//	POLE::Stream *pStrIn = new POLE::Stream(pStorage, "EncryptionInfo");
+	//	POLE::uint64 sz = pStrIn->size();
+	//	POLE::Stream *pStrOut = new POLE::Stream(pStorage1, "EncryptionInfo", true, sz);
+
+	//	BYTE *d = new BYTE [sz];
+	//	pStrIn->read(d, sz);
+	//	pStrOut->write(d, sz);
+	//	delete d;
+
+	//	pStrOut->flush();
+	//	delete pStrOut;
+	//	delete pStrIn;
+
+	//	pStrIn = new POLE::Stream(pStorage, "EncryptedPackage");
+	//	sz = pStrIn->size();
+	//	pStrOut = new POLE::Stream(pStorage1, "EncryptedPackage", true, sz);
+
+	//	d = new BYTE [sz];
+	//	pStrIn->read(d, sz);
+	//	pStrOut->write(d, sz);
+	//	delete d;
+
+	//	pStrOut->flush();
+	//	delete pStrOut;
+	//	delete pStrIn;
+
+	//	pStorage1->close();
+	//	delete pStorage1;
+	//}
+//----------------------------------------------------------------------------
 	POLE::Stream *pStream = new POLE::Stream(pStorage, "EncryptionInfo");
+
 	if (pStream)
 	{
 		_UINT16 VersionInfoMajor = 0, VersionInfoMinor = 0;
@@ -444,20 +699,23 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 	//pStream = new POLE::Stream(pStorage, "DataSpaces/DataSpaceMap"); 
 	//if (pStream)
 	//{
-	//	_UINT32 size	= 0;
-	//	_UINT32 count	= 0;
-	//	
-	//	pStream->read((unsigned char*)&size, 4); 
-	//	pStream->read((unsigned char*)&count, 4); 
-
-	//	for (int i = 0 ; i < count; i++)
-	//	{
-	//		_mapEntry m;
-	//		ReadMapEntry(pStream, m);
-
-	//		mapEntries.push_back(m);
-	//	}
 	//	delete pStream;
+	//	pStorage->deleteByName("DataSpaces");
+
+	//	//_UINT32 size	= 0;
+	//	//_UINT32 count	= 0;
+	//	//
+	//	//pStream->read((unsigned char*)&size, 4); 
+	//	//pStream->read((unsigned char*)&count, 4); 
+
+	//	//for (int i = 0 ; i < count; i++)
+	//	//{
+	//	//	_mapEntry m;
+	//	//	ReadMapEntry(pStream, m);
+
+	//	//	mapEntries.push_back(m);
+	//	//}
+	//	//delete pStream;
 	//}
 //------------------------------------------------------------------------------------------------------------
 	ECMADecryptor decryptor;
@@ -477,18 +735,20 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 	}
 //------------------------------------------------------------------------------------------------------------
 	pStream = new POLE::Stream(pStorage, "EncryptedPackage");
-	if (pStream->size() > 0)
+	if ((pStream) && (pStream->size() > 0))
 	{
-		_UINT64 lengthData, lengthRead = pStream->size() - 8;
-		pStream->read((unsigned char*)&lengthData, 8); 
+		_UINT64 lengthData, lengthRead = pStream->size();
 
 		unsigned char* data		= new unsigned char[lengthRead];
 		unsigned char* data_out	= NULL;
+		
+		int readTrue = pStream->read(data, lengthRead); 
 
-		pStream->read(data, lengthRead);
+		lengthData = *((_UINT64*)data);
 
-		decryptor.Decrypt(data, lengthRead, data_out);//todoo сделать покусочное чтение декриптование
+		decryptor.Decrypt(data, readTrue, data_out);//todoo сделать покусочное чтение декриптование
 		delete pStream;
+		delete []data;
 
 		if (data_out)
 		{
@@ -497,10 +757,14 @@ bool ECMACryptReader::DecryptOfficeFile(std::wstring file_name_inp, std::wstring
 			f.WriteFile(data_out, lengthData);
 			f.CloseFile();
 
+			delete []data_out;
 			result = true;
 		}
 	}
 //-------------------------------------------------------------------
 	delete pStorage;
+
+	cryptDataGlobal = cryptData;
+
 	return result;
 }

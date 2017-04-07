@@ -40,14 +40,16 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CChartSpace : public OOX::FileGlobalEnumerated, public OOX::Spreadsheet::IFileContainer
+		class CChartSpace : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
 			CChartSpace()
 			{
+				m_bSpreadsheets = true;
 			}
 			CChartSpace(const CPath& oRootPath, const CPath& oPath)
 			{
+				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
 			virtual ~CChartSpace()
@@ -100,7 +102,7 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
-				return OOX::Spreadsheet::FileTypes::Charts;
+				return OOX::FileTypes::Chart;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -115,13 +117,12 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			CT_ChartSpace	m_oChartSpace;
 		private:
-			CPath									m_oReadPath;
+			CPath			m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
-		public:
-			CT_ChartSpace         m_oChartSpace;
 		};
 	} //Spreadsheet
 } // namespace OOX

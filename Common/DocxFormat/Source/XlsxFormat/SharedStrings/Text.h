@@ -44,12 +44,14 @@ namespace OOX
 		class CText : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CText)
+			WritingElement_AdditionConstructors(CText)
 			CText() {}
 			virtual ~CText() {}
 
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -121,7 +123,7 @@ namespace OOX
 			}
 			virtual EElementType getType() const
 			{
-				return et_t;
+				return et_x_t;
 			}
 		private:
 

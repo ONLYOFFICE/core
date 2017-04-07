@@ -42,15 +42,17 @@ namespace OOX
 		class CRgbColor : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRgbColor)
+			WritingElement_AdditionConstructors(CRgbColor)
 			CRgbColor()
 			{
 			}
 			virtual ~CRgbColor()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -59,7 +61,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_RgbColor;
+				return et_x_RgbColor;
 			}
 		private:
             virtual std::wstring      toXML() const
@@ -84,23 +86,24 @@ namespace OOX
 		class CIndexedColors : public WritingElementWithChilds<CRgbColor>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CIndexedColors)
+			WritingElement_AdditionConstructors(CIndexedColors)
 			CIndexedColors()
 			{
 			}
 			virtual ~CIndexedColors()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -119,7 +122,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_IndexedColors;
+				return et_x_IndexedColors;
 			}
 			static bool GetDefaultRGBAByIndex(int index, unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA)
 			{
@@ -356,15 +359,17 @@ namespace OOX
 		class CColor : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CColor)
+			WritingElement_AdditionConstructors(CColor)
 			CColor()
 			{
 			}
 			virtual ~CColor()
 			{
 			}
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -396,7 +401,7 @@ namespace OOX
 
 				writer.WriteString(_T("/>"));
 			}
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -405,7 +410,7 @@ namespace OOX
 			}
 			virtual EElementType getType () const
 			{
-				return et_Color;
+				return et_x_Color;
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -432,23 +437,24 @@ namespace OOX
 		class CMruColors : public WritingElementWithChilds<CColor>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CMruColors)
+			WritingElement_AdditionConstructors(CMruColors)
 			CMruColors()
 			{
 			}
 			virtual ~CMruColors()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -467,7 +473,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_MruColors;
+				return et_x_MruColors;
 			}
 
 		private:
@@ -478,15 +484,17 @@ namespace OOX
 		class CCharset
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CCharset)
+			WritingElement_AdditionConstructors(CCharset)
 			CCharset()
 			{
 			}
 			virtual ~CCharset()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -509,15 +517,17 @@ namespace OOX
 		class CVerticalAlign
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CVerticalAlign)
+			WritingElement_AdditionConstructors(CVerticalAlign)
 			CVerticalAlign()
 			{
 			}
 			virtual ~CVerticalAlign()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -540,15 +550,17 @@ namespace OOX
 		class CFontFamily
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFontFamily)
+			WritingElement_AdditionConstructors(CFontFamily)
 			CFontFamily()
 			{
 			}
 			virtual ~CFontFamily()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -571,15 +583,17 @@ namespace OOX
 		class CFontScheme
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFontScheme)
+			WritingElement_AdditionConstructors(CFontScheme)
 			CFontScheme()
 			{
 			}
 			virtual ~CFontScheme()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -602,15 +616,17 @@ namespace OOX
 		class CUnderline
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CUnderline)
+			WritingElement_AdditionConstructors(CUnderline)
 			CUnderline()
 			{
 			}
 			virtual ~CUnderline()
 			{
 			}
-
-			virtual void    fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -634,16 +650,17 @@ namespace OOX
 		class CRPr : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CRPr)
+			WritingElement_AdditionConstructors(CRPr)
 			CRPr()
 			{
 			}
 			virtual ~CRPr()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -741,7 +758,7 @@ namespace OOX
 				}
 				writer.WriteString(_T("</rPr>"));
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -789,7 +806,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_rPr;
+				return et_x_rPr;
 			}
 
 		private:

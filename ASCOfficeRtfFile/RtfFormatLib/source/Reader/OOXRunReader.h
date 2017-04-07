@@ -44,7 +44,7 @@
 class OOXRunReader
 {
 private:
-	OOX::Drawing::CRun*	m_drawingRun;
+	PPTX::Logic::Run*	m_drawingRun;
 	OOX::Logic::CRun*	m_ooxRun;
 public:
 	RtfCharProperty		m_oCharProperty;
@@ -55,7 +55,7 @@ public:
 		m_ooxRun		= ooxRun;
 		m_oCharProperty.SetDefault();
 	}
-	OOXRunReader(OOX::Drawing::CRun *ooxRun)
+	OOXRunReader(PPTX::Logic::Run *ooxRun)
 	{
 		m_drawingRun	= ooxRun;
 		m_ooxRun		= NULL;

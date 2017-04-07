@@ -51,13 +51,9 @@ namespace PPTX
 		~FileMap()
 		{
 		}
-	public:
-
         std::map<std::wstring, smart_ptr<OOX::File>> m_map;
 
-	public:
-
-        AVSINLINE std::map<std::wstring, smart_ptr<OOX::File>>::const_iterator find(const OOX::CPath& path)
+        AVSINLINE std::map<std::wstring, smart_ptr<OOX::File>>::iterator find(const OOX::CPath& path)
 		{
             return m_map.find(path.m_strFilename);
 		}

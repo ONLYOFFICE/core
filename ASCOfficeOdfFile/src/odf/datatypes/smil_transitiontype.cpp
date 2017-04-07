@@ -37,6 +37,55 @@
 
 namespace cpdoccore { namespace odf_types { 
 
+std::wostream & operator << (std::wostream & _Wostream, const smil_transition_type & _Val)
+{
+	switch(_Val.get_type())
+	{
+	case smil_transition_type::barWipe			:	_Wostream << L"barwipe"			; break;
+	case smil_transition_type::boxWipe			:	_Wostream << L"boxwipe"			; break;
+	case smil_transition_type::fourBoxWipe		:	_Wostream << L"fourboxwipe"		; break;
+	case smil_transition_type::barnDoorWipe		:	_Wostream << L"barndoorwipe"	; break;
+	case smil_transition_type::diagonalWipe		:	_Wostream << L"diagonalwipe"	; break;
+	case smil_transition_type::bowTieWipe		:	_Wostream << L"bowtiewipe"		; break;
+	case smil_transition_type::miscDiagonalWipe	:	_Wostream << L"miscdiagonalwipe"; break;
+	case smil_transition_type::veeWipe			:	_Wostream << L"veewipe"			; break;
+	case smil_transition_type::barnVeeWipe		:	_Wostream << L"barnveewipe"		; break;
+	case smil_transition_type::zigZagWipe		:	_Wostream << L"zigzagwipe"		; break;
+	case smil_transition_type::barnZigZagWipe	:	_Wostream << L"barnzigzagwipe"	; break;
+	case smil_transition_type::irisWipe			:	_Wostream << L"iriswipe"		; break;
+	case smil_transition_type::triangleWipe		:	_Wostream << L"trianglewipe"	; break;
+	case smil_transition_type::arrowHeadWipe	:	_Wostream << L"arrowheadwipe"	; break;
+	case smil_transition_type::pentagonWipe		:	_Wostream << L"pentagonwipe"	; break;
+	case smil_transition_type::hexagonWipe		:	_Wostream << L"hexagonwipe"		; break;
+	case smil_transition_type::ellipseWipe		:	_Wostream << L"ellipsewipe"		; break;
+	case smil_transition_type::eyeWipe			:	_Wostream << L"eyewipe"			; break;
+	case smil_transition_type::roundRectWipe	:	_Wostream << L"roundrectwipe"	; break;
+	case smil_transition_type::starWipe			:	_Wostream << L"starwipe"		; break;
+	case smil_transition_type::miscShapeWipe	:	_Wostream << L"miscshapewipe"	; break;
+	case smil_transition_type::clockWipe		:	_Wostream << L"clockwipe"		; break;
+	case smil_transition_type::pinWheelWipe		:	_Wostream << L"pinwheelwipe"	; break;
+	case smil_transition_type::singleSweepWipe	:	_Wostream << L"singlesweepwipe"	; break;
+	case smil_transition_type::fanWipe			:	_Wostream << L"fanwipe"			; break;
+	case smil_transition_type::doubleFanWipe	:	_Wostream << L"doublefanwipe"	; break;
+	case smil_transition_type::doubleSweepWipe	:	_Wostream << L"doublesweepwipe"	; break;
+	case smil_transition_type::saloonDoorWipe	:	_Wostream << L"saloondoorwipe"	; break;
+	case smil_transition_type::windshieldWipe	:	_Wostream << L"windshieldwipe"	; break;
+	case smil_transition_type::snakeWipe		:	_Wostream << L"snakewipe"		; break;
+	case smil_transition_type::spiralWipe		:	_Wostream << L"spiralwipe"		; break;
+	case smil_transition_type::parallelSnakesWipe:	_Wostream << L"parallelsnakeswipe"; break;
+	case smil_transition_type::boxSnakesWipe	:	_Wostream << L"boxsnakeswipe"	; break;
+	case smil_transition_type::waterfallWipe	:	_Wostream << L"waterfallwipe"	; break;
+	case smil_transition_type::pushWipe			:	_Wostream << L"pushwipe"		; break;
+	case smil_transition_type::slideWipe		:	_Wostream << L"slidewipe"		; break;
+	case smil_transition_type::fade				:	_Wostream << L"fade"			; break;
+	case smil_transition_type::checkerBoardWipe	:	_Wostream << L"checkerboardwipe"; break;
+	case smil_transition_type::blindsWipe		:	_Wostream << L"blindswipe"		; break;
+	case smil_transition_type::dissolve			:	_Wostream << L"dissolve"		; break;
+	case smil_transition_type::randomBarWipe	:	_Wostream << L"randombarwipe"	; break;
+	}
+    return _Wostream;
+}
+
 smil_transition_type smil_transition_type::parse(const std::wstring & Str)
 {
     std::wstring tmp = Str;

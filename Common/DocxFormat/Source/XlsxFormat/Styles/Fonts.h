@@ -44,17 +44,18 @@ namespace OOX
 		class CFont : public WritingElement
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFont)
+			WritingElement_AdditionConstructors(CFont)
 			CFont()
 			{
 			}
 			virtual ~CFont()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
+			}
+            virtual std::wstring toXML() const
+			{ 
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
@@ -200,7 +201,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Font;
+				return et_x_Font;
 			}
 
 		private:
@@ -227,16 +228,17 @@ namespace OOX
 		class CFonts : public WritingElementWithChilds<CFont>
 		{
 		public:
-			WritingElementSpreadsheet_AdditionConstructors(CFonts)
+			WritingElement_AdditionConstructors(CFonts)
 			CFonts()
 			{
 			}
 			virtual ~CFonts()
 			{
 			}
-
-		public:
-            virtual std::wstring      toXML() const
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -268,7 +270,7 @@ namespace OOX
 
 			virtual EElementType getType () const
 			{
-				return et_Fonts;
+				return et_x_Fonts;
 			}
 			void AddFont (CFont* pFont)
 			{

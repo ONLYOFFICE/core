@@ -322,6 +322,14 @@
 			Name="elements"
 			>
 			<File
+				RelativePath="..\OdfFormat\anim_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\anim_elements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\calcext_elements.cpp"
 				>
 			</File>
@@ -343,6 +351,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\draw_frame.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\draw_page.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\draw_page.h"
 				>
 			</File>
 			<File
@@ -383,6 +399,14 @@
 			</File>
 			<File
 				RelativePath="..\OdfFormat\office_chart.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_presentation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_presentation.h"
 				>
 			</File>
 			<File
@@ -582,6 +606,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\OdfFormat\style_presentation.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\style_presentation.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\style_section_properties.cpp"
 				>
 			</File>
@@ -697,6 +729,30 @@
 		<Filter
 			Name="odf presentation"
 			>
+			<File
+				RelativePath="..\OdfFormat\odp_conversion_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odp_conversion_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odp_page_state.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odp_page_state.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odp_slide_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\odp_slide_context.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="odf common"

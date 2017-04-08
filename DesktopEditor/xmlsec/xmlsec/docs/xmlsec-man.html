@@ -1,0 +1,311 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Man page of XMLSEC1</title>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="download.html">Download</a></li>
+<li><a href="news.html">News</a></li>
+<li><a href="documentation.html">Documentation</a></li>
+<ul>
+<li><a href="faq.html">FAQ</a></li>
+<li><a href="api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="api/xmlsec-reference.html">API reference</a></li>
+<li><a href="api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="xmlenc.html">XML Encryption</a></li>
+<li><a href="c14n.html">XML Canonicalization</a></li>
+<li><a href="bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="related.html">Related</a></li>
+<li><a href="authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<h1>XMLSEC1</h1>
+<br><br><a href="#index">Index</a><a href="/cgi-bin/man/man2html">Return to Main Contents</a><hr>
+<a name="lbAB"> </a><h2>NAME</h2>
+<a name="lbAC"> </a><h2>SYNOPSIS</h2>
+<b>xmlsec</b><i>,&lt;command&gt; /</i><i>,&lt;options&gt;/</i><i>,&lt;files&gt;/</i><a name="lbAD"> </a><h2>DESCRIPTION</h2>
+<dl compact> <dt><b>--help</b></dt>
+<dd> display this help information and exit </dd>
+<dt><b>--help-all</b></dt>
+<dd> display help information for all commands/options and exit </dd>
+<dt>
+<b>--help-</b>&lt;cmd&gt;</dt>
+<dd> display help information for command &lt;cmd&gt; and exit </dd>
+<dt><b>--version</b></dt>
+<dd> print version information and exit </dd>
+<dt><b>--keys</b></dt>
+<dd> keys XML file manipulation </dd>
+<dt><b>--sign</b></dt>
+<dd> sign data and output XML document </dd>
+<dt><b>--verify</b></dt>
+<dd> verify signed document </dd>
+<dt><b>--sign-tmpl</b></dt>
+<dd> create and sign dynamicaly generated signature template </dd>
+<dt><b>--encrypt</b></dt>
+<dd> encrypt data and output XML document </dd>
+<dt><b>--decrypt</b></dt>
+<dd> decrypt data from XML document </dd>
+</dl>
+<a name="lbAE"> </a><h2>OPTIONS</h2>
+<dl compact> <dt> <b>--ignore-manifests</b> <dt></dt>
+</dt>
+<dd> <dd>do not process &lt;dsig:Manifest&gt; elements </dd>
+</dd>
+<dt> <b>--store-references</b> <dt></dt>
+</dt>
+<dd> <dd>store and print the result of &lt;dsig:Reference/&gt; element processing just before calculating digest </dd>
+</dd>
+<dt> <b>--store-signatures</b> <dt></dt>
+</dt>
+<dd> <dd>store and print the result of &lt;dsig:Signature&gt; processing just before calculating signature </dd>
+</dd>
+<dt> <b>--enabled-reference-uris</b> &lt;list&gt; <dt></dt>
+</dt>
+<dd> <dd>comma separated list of of the following values: "empty", "same-doc", "local","remote" to restrict possible URI attribute values for the &lt;dsig:Reference&gt; element </dd>
+</dd>
+<dt> <b>--enable-visa3d-hack</b> <dt></dt>
+</dt>
+<dd> <dd>enables Visa3D protocol specific hack for URI attributes processing when we are trying not to use XPath/XPointer engine; this is a hack and I don't know what else might be broken in your application when you use it (also check "--id-attr" option because you might need it) </dd>
+</dd>
+<dt> <b>--binary-data</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>binary &lt;file&gt; to encrypt </dd>
+</dd>
+<dt> <b>--xml-data</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>XML &lt;file&gt; to encrypt </dd>
+</dd>
+<dt> <b>--enabled-cipher-reference-uris</b> &lt;list&gt; <dt></dt>
+</dt>
+<dd> <dd>comma separated list of of the following values: "empty", "same-doc", "local","remote" to restrict possible URI attribute values for the &lt;enc:CipherReference&gt; element </dd>
+</dd>
+<dt> <b>--session-key</b> &lt;keyKlass&gt;-&lt;keySize&gt; <dt></dt>
+</dt>
+<dd> <dd>generate new session &lt;keyKlass&gt; key of &lt;keySize&gt; bits size (for example, "--session des-192" generates a new 192 bits DES key for DES3 encryption) </dd>
+</dd>
+<dt> <b>--output</b> &lt;filename&gt; <dt></dt>
+</dt>
+<dd> <dd>write result document to file &lt;filename&gt; </dd>
+</dd>
+<dt> <b>--print-debug</b> <dt></dt>
+</dt>
+<dd> <dd>print debug information to stdout </dd>
+</dd>
+<dt> <b>--print-xml-debug</b> <dt></dt>
+</dt>
+<dd> <dd>print debug information to stdout in xml format </dd>
+</dd>
+<dt> <b>--dtd-file</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load the specified file as the DTD </dd>
+</dd>
+<dt> <b>--node-id</b> &lt;id&gt; <dt></dt>
+</dt>
+<dd> <dd>set the operation start point to the node with given &lt;id&gt; </dd>
+</dd>
+<dt> <b>--node-name</b> [&lt;namespace-uri&gt;:]&lt;name&gt; <dt></dt>
+</dt>
+<dd> <dd>set the operation start point to the first node with given &lt;name&gt; and &lt;namespace&gt; URI </dd>
+</dd>
+<dt> <b>--node-xpath</b> &lt;expr&gt; <dt></dt>
+</dt>
+<dd> <dd>set the operation start point to the first node selected by the specified XPath expression </dd>
+</dd>
+<dt> <b>--id-attr[</b>:&lt;attr-name&gt;] [&lt;node-namespace-uri&gt;:]&lt;node-name&gt; <dt></dt>
+</dt>
+<dd> <dd>adds attributes &lt;attr-name&gt; (default value "id") from all nodes with&lt;node-name&gt; and namespace &lt;node-namespace-uri&gt; to the list of known ID attributes; this is a hack and if you can use DTD or schema to declare ID attributes instead (see "--dtd-file" option), I don't know what else might be broken in your application when you use this hack </dd>
+</dd>
+<dt> <b>--enabled-key-data</b> &lt;list&gt; <dt></dt>
+</dt>
+<dd> <dd>comma separated list of enabled key data (list of registered key data klasses is available with "--list-key-data" command); by default, all registered key data are enabled </dd>
+</dd>
+<dt> <b>--enabled-retrieval-uris</b> &lt;list&gt; <dt></dt>
+</dt>
+<dd> <dd>comma separated list of of the following values: "empty", "same-doc", "local","remote" to restrict possible URI attribute values for the &lt;dsig:RetrievalMethod&gt; element. </dd>
+</dd>
+<dt> <b>--gen-key[</b>:&lt;name&gt;] &lt;keyKlass&gt;-&lt;keySize&gt; <dt></dt>
+</dt>
+<dd> <dd>generate new &lt;keyKlass&gt; key of &lt;keySize&gt; bits size, set the key name to &lt;name&gt; and add the result to keys manager (for example, "--gen:mykey rsa-1024" generates a new 1024 bits RSA key and sets it's name to "mykey") </dd>
+</dd>
+<dt> <b>--keys-file</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load keys from XML file </dd>
+</dd>
+<dt> <b>--privkey-pem[</b>:&lt;name&gt;] &lt;file&gt;[,&lt;cafile&gt;[,&lt;cafile&gt;[...]]] <dt></dt>
+</dt>
+<dd> <dd>load private key from PEM file and certificates that verify this key </dd>
+</dd>
+<dt> <b>--privkey-der[</b>:&lt;name&gt;] &lt;file&gt;[,&lt;cafile&gt;[,&lt;cafile&gt;[...]]] <dt></dt>
+</dt>
+<dd> <dd>load private key from DER file and certificates that verify this key </dd>
+</dd>
+<dt> <b>--pkcs8-pem[</b>:&lt;name&gt;] &lt;file&gt;[,&lt;cafile&gt;[,&lt;cafile&gt;[...]]] <dt></dt>
+</dt>
+<dd> <dd>load private key from PKCS8 PEM file and PEM certificates that verify this key </dd>
+</dd>
+<dt> <b>--pkcs8-der[</b>:&lt;name&gt;] &lt;file&gt;[,&lt;cafile&gt;[,&lt;cafile&gt;[...]]] <dt></dt>
+</dt>
+<dd> <dd>load private key from PKCS8 DER file and DER certificates that verify this key </dd>
+</dd>
+<dt> <b>--pubkey-pem[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load public key from PEM file </dd>
+</dd>
+<dt> <b>--pubkey-der[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load public key from DER file </dd>
+</dd>
+<dt> <b>--aeskey[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load AES key from binary file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--deskey[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load DES key from binary file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--hmackey[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load HMAC key from binary file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--pwd</b> &lt;password&gt; <dt></dt>
+</dt>
+<dd> <dd>the password to use for reading keys and certs </dd>
+</dd>
+<dt> <b>--pkcs12[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load load private key from pkcs12 file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--pubkey-cert-pem[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load public key from PEM cert file </dd>
+</dd>
+<dt> <b>--pubkey-cert-der[</b>:&lt;name&gt;] &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load public key from DER cert file </dd>
+</dd>
+<dt> <b>--trusted-pem</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load trusted (root) certificate from PEM file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--untrusted-pem</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load untrusted certificate from PEM file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--trusted-der</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load trusted (root) certificate from DER file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--untrusted-der</b> &lt;file&gt; <dt></dt>
+</dt>
+<dd> <dd>load untrusted certificate from DER file &lt;file&gt; </dd>
+</dd>
+<dt> <b>--verification-time</b> &lt;time&gt; <dt></dt>
+</dt>
+<dd> <dd>the local time in "YYYY-MM-DD HH:MM:SS" format used certificates verification </dd>
+</dd>
+<dt> <b>--depth</b> &lt;number&gt; <dt></dt>
+</dt>
+<dd> <dd>maximum certificates chain depth </dd>
+</dd>
+<dt> <b>--X509-skip-strict-checks</b> <dt></dt>
+</dt>
+<dd> <dd>skip strict checking of X509 data </dd>
+</dd>
+<dt> <b>--crypto</b> &lt;name&gt; <dt></dt>
+</dt>
+<dd> <dd>the name of the crypto engine to use from the following list: openssl, mscrypto, nss, gnutls, gcrypt (if no crypto engine is specified then the default one is used) </dd>
+</dd>
+<dt> <b>--crypto-config</b> &lt;path&gt; <dt></dt>
+</dt>
+<dd> <dd>path to crypto engine configuration </dd>
+</dd>
+<dt> <b>--repeat</b> &lt;number&gt; <dt></dt>
+</dt>
+<dd> <dd>repeat the operation &lt;number&gt; times </dd>
+</dd>
+<dt> <b>--disable-error-msgs</b> <dt></dt>
+</dt>
+<dd> <dd>do not print xmlsec error messages </dd>
+</dd>
+<dt> <b>--print-crypto-error-msgs</b> <dt></dt>
+</dt>
+<dd> <dd>print errors stack at the end </dd>
+</dd>
+<dt> <b>--help</b> <dt></dt>
+</dt>
+<dd> <dd>print help information about the command </dd>
+</dd>
+</dl>
+<a name="lbAF"> </a><h2>AUTHOR</h2>
+<a href="mailto:aleksey@aleksey.com">aleksey@aleksey.com</a><a name="lbAG"> </a><h2>REPORTING BUGS</h2>
+<a href="http://www.aleksey.com/xmlsec/bugs.html">http://www.aleksey.com/xmlsec/bugs.html</a><a name="lbAH"> </a><h2>COPYRIGHT</h2>
+<a href="mailto:aleksey@aleksey.com">aleksey@aleksey.com</a><br><p>  </p>
+<hr>
+<a name="index"> </a><h2>Index</h2>
+<dl> <dt><a href="#lbAB">NAME</a></dt>
+<dd> </dd>
+<dt><a href="#lbAC">SYNOPSIS</a></dt>
+<dd> </dd>
+<dt><a href="#lbAD">DESCRIPTION</a></dt>
+<dd> </dd>
+<dt><a href="#lbAE">OPTIONS</a></dt>
+<dd> </dd>
+<dt><a href="#lbAF">AUTHOR</a></dt>
+<dd> </dd>
+<dt><a href="#lbAG">REPORTING BUGS</a></dt>
+<dd> </dd>
+<dt><a href="#lbAH">COPYRIGHT</a></dt>
+<dd> </dd>
+</dl>
+<hr>
+<a href="/cgi-bin/man/man2html">man2html</a><br>
+</td></tr></table></td>
+</tr></table></body>
+</html>

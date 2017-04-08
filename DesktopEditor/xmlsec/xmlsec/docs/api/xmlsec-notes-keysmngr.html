@@ -1,0 +1,163 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Keys manager.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="XML Security Library Tutorial" href="xmlsec-notes.html">
+<link rel="PREVIOUS" title="Keys." href="xmlsec-notes-keys.html">
+<link rel="NEXT" title="Simple keys store." href="xmlsec-notes-simple-keys-store.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-keys.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-notes-simple-keys-store.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="CHAPTER">
+<h1>
+<a name="XMLSEC-NOTES-KEYSMNGR"></a>Keys manager.</h1>
+<div class="TOC"><dl>
+<dt><b>Table of Contents</b></dt>
+<dt><a href="xmlsec-notes-keysmngr.html#XMLSEC-NOTES-KEYSMNGR-OVERVIEW">Overview.</a></dt>
+<dt><a href="xmlsec-notes-simple-keys-store.html">Simple keys store.</a></dt>
+<dt><a href="xmlsec-notes-keys-manager-sign-enc.html">Using keys manager for signatures/encryption.</a></dt>
+<dt><a href="xmlsec-notes-keys-mngr-verify-decrypt.html">Using keys manager for verification/decryption.</a></dt>
+<dt><a href="xmlsec-notes-custom-keys-store.html">Implementing a custom keys store.</a></dt>
+</dl></div>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-NOTES-KEYSMNGR-OVERVIEW">Overview.</a></h1>
+<p>Processing some of the key data objects require additional 
+	information which is global across the application (or in the 
+	particular area of the application). For example, X509 certificates 
+	processing require a common list of trusted certificates to be 
+	available. XML Security Library keeps all the common information 
+	for key data processing in a a collection of key data stores called 
+	"keys manager".
+        </p>
+<div class="FIGURE">
+<a name="AEN353"></a><p><b>Figure 1. The keys manager structure.</b></p>
+<p><img src="images/keysmngr.png" align="CENTER"></p>
+</div>
+<p>Keys manager has a special "keys store" which lists the keys 
+	known to the application. This "keys store" is used by XML Security 
+	Library to lookup keys by name, type and crypto algorithm (for example,
+	during 
+    	<a href="http://www.w3.org/TR/xmldsig-core/#sec-KeyName" target="_top">&lt;dsig:KeyName/&gt;</a>
+	processing). The XML Security Library 
+	provides default simple "flat list" based implementation of a default keys 
+	store. The application can replace it with any other keys store 
+	(for example, based on an SQL database).
+	</p>
+<p>Keys manager is the only object in XML Security Library which 
+	is supposed to be shared by many different operations. Usually keys 
+	manager is initialized once at the application startup and later is 
+	used by XML Security library routines in "read-only" mode. If 
+	application or crypto function need to modify any of the key data 
+	stores inside keys manager then proper synchronization must be 
+	implemented. In the same time, application can create a new keys 
+	manager each time it needs to perform XML signature, verification, 
+	encryption or decryption.
+	</p>
+</div>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-keys.html"><b>&lt;&lt;&lt; Keys.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-notes-simple-keys-store.html"><b>Simple keys store. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

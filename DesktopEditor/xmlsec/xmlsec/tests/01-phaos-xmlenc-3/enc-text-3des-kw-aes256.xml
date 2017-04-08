@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInfo xmlns="http://example.org/paymentv2">
+  <Name>John Smith</Name>
+  <CreditCard Currency="USD" Limit="5,000">
+    <Number><EncryptedData Id="ED" Type="http://www.w3.org/2001/04/xmlenc#Content" xmlns="http://www.w3.org/2001/04/xmlenc#">
+              <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+              <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <EncryptedKey Id="EK" xmlns="http://www.w3.org/2001/04/xmlenc#">
+                  <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#kw-aes256"/>
+                  <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                    <ds:KeyName>my-aes256-key</ds:KeyName>
+                  </ds:KeyInfo>
+                  <CipherData>
+                    <CipherValue>
+                      jOvQe4SxDqEMvAHcmb3Z+/Uedj23pvL6BRQsl2sjJlQ=
+                    </CipherValue>
+                  </CipherData>
+                  <ReferenceList>
+                    <DataReference URI="#ED"/>
+                  </ReferenceList>
+                </EncryptedKey>
+              </ds:KeyInfo>
+              <CipherData>
+                 <CipherValue>
+                    tY3V4h8kopDTZXb80BoqEWH7/nWryHZhU504S1ZRPLw=
+                 </CipherValue>
+              </CipherData>
+            </EncryptedData></Number>
+    <Issuer>Bank of the Internet</Issuer>
+    <Expiration Time="04/02"/>
+  </CreditCard>
+</PaymentInfo>

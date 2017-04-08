@@ -1,0 +1,574 @@
+<!-- ##### SECTION Title ##### -->
+xmltree
+
+<!-- ##### SECTION Short_Description ##### -->
+XML tree operations.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+XML tree operations.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO xmlSecNodeGetName ##### -->
+<para>
+
+</para>
+
+@node: 
+
+
+<!-- ##### FUNCTION xmlSecGetNodeNsHref ##### -->
+<para>
+
+</para>
+
+@cur: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecCheckNodeName ##### -->
+<para>
+
+</para>
+
+@cur: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecGetNextElementNode ##### -->
+<para>
+
+</para>
+
+@cur: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecFindSibling ##### -->
+<para>
+
+</para>
+
+@cur: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecFindChild ##### -->
+<para>
+
+</para>
+
+@parent: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecFindParent ##### -->
+<para>
+
+</para>
+
+@cur: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecFindNode ##### -->
+<para>
+
+</para>
+
+@parent: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecAddChild ##### -->
+<para>
+
+</para>
+
+@parent: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecEnsureEmptyChild ##### -->
+<para>
+
+</para>
+
+@parent: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecAddChildNode ##### -->
+<para>
+
+</para>
+
+@parent: 
+@child: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecAddNextSibling ##### -->
+<para>
+
+</para>
+
+@node: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecAddPrevSibling ##### -->
+<para>
+
+</para>
+
+@node: 
+@name: 
+@ns: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceNode ##### -->
+<para>
+
+</para>
+
+@node: 
+@newNode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceNodeAndReturn ##### -->
+<para>
+
+</para>
+
+@node: 
+@newNode: 
+@replaced: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceContent ##### -->
+<para>
+
+</para>
+
+@node: 
+@newNode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceContentAndReturn ##### -->
+<para>
+
+</para>
+
+@node: 
+@newNode: 
+@replaced: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceNodeBuffer ##### -->
+<para>
+
+</para>
+
+@node: 
+@buffer: 
+@size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecReplaceNodeBufferAndReturn ##### -->
+<para>
+
+</para>
+
+@node: 
+@buffer: 
+@size: 
+@replaced: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecNodeEncodeAndSetContent ##### -->
+<para>
+
+</para>
+
+@node: 
+@buffer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecAddIDs ##### -->
+<para>
+
+</para>
+
+@doc: 
+@cur: 
+@ids: 
+
+
+<!-- ##### FUNCTION xmlSecGenerateAndAddID ##### -->
+<para>
+
+</para>
+
+@node: 
+@attrName: 
+@prefix: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecGenerateID ##### -->
+<para>
+
+</para>
+
+@prefix: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecCreateTree ##### -->
+<para>
+
+</para>
+
+@rootNodeName: 
+@rootNodeNs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecIsEmptyNode ##### -->
+<para>
+
+</para>
+
+@node: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecIsEmptyString ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecGetQName ##### -->
+<para>
+
+</para>
+
+@node: 
+@href: 
+@local: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecPrintXmlString ##### -->
+<para>
+
+</para>
+
+@fd: 
+@str: 
+@Returns: 
+
+
+<!-- ##### MACRO xmlSecIsHex ##### -->
+<para>
+
+</para>
+
+@c: 
+
+
+<!-- ##### MACRO xmlSecGetHex ##### -->
+<para>
+
+</para>
+
+@c: 
+
+
+<!-- ##### STRUCT xmlSecQName2IntegerInfo ##### -->
+<para>
+
+</para>
+
+@qnameHref: 
+@qnameLocalPart: 
+@intValue: 
+
+<!-- ##### TYPEDEF xmlSecQName2IntegerInfoConstPtr ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerGetInfo ##### -->
+<para>
+
+</para>
+
+@info: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerGetInteger ##### -->
+<para>
+
+</para>
+
+@info: 
+@qnameHref: 
+@qnameLocalPart: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerGetIntegerFromString ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@qname: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerGetStringFromInteger ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerNodeRead ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerNodeWrite ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@nodeName: 
+@nodeNs: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerAttributeRead ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@attrName: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerAttributeWrite ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@attrName: 
+@intValue: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerDebugDump ##### -->
+<para>
+
+</para>
+
+@info: 
+@intValue: 
+@name: 
+@output: 
+
+
+<!-- ##### FUNCTION xmlSecQName2IntegerDebugXmlDump ##### -->
+<para>
+
+</para>
+
+@info: 
+@intValue: 
+@name: 
+@output: 
+
+
+<!-- ##### TYPEDEF xmlSecBitMask ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT xmlSecQName2BitMaskInfo ##### -->
+<para>
+
+</para>
+
+@qnameHref: 
+@qnameLocalPart: 
+@mask: 
+
+<!-- ##### TYPEDEF xmlSecQName2BitMaskInfoConstPtr ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskGetInfo ##### -->
+<para>
+
+</para>
+
+@info: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskGetBitMask ##### -->
+<para>
+
+</para>
+
+@info: 
+@qnameLocalPart: 
+@qnameHref: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskNodesRead ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@nodeName: 
+@nodeNs: 
+@stopOnUnknown: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskGetBitMaskFromString ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@qname: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskGetStringFromBitMask ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskNodesWrite ##### -->
+<para>
+
+</para>
+
+@info: 
+@node: 
+@nodeName: 
+@nodeNs: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskDebugDump ##### -->
+<para>
+
+</para>
+
+@info: 
+@mask: 
+@name: 
+@output: 
+
+
+<!-- ##### FUNCTION xmlSecQName2BitMaskDebugXmlDump ##### -->
+<para>
+
+</para>
+
+@info: 
+@mask: 
+@name: 
+@output: 
+
+

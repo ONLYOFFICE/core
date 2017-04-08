@@ -1,0 +1,1920 @@
+2016-10-15 Aleksey Sanin  <aleksey@aleksey.com>
+	* 1.2.23 release
+
+2016-10-14 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed gcrypto RSA/DSA keys params ordering
+
+2016-10-12 Aleksey Sanin  <aleksey@aleksey.com>
+	* Better X509Data templates
+
+2016-10-07 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed memory leak caused by xmlGetProp (patch from Dafan Zhai)
+	* Fixed KW transforms (overlapping buffer error) for OpenSSL 1.1.0
+	* Fixed pkg-config detection
+
+2016-09-27 Aleksey Sanin  <aleksey@aleksey.com>
+	* Added initial support OpenSSL 1.1.0 (patch from Andrzej Siewior)
+
+2016-09-19 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed signing with RSA SHA2 via mscrypto (patch from PepaRokos)
+
+2016-07-08 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed mscrypto undeclared XMLSEC_DEFAULT_CRYPTO (patch from vmiklos)
+
+2016-05-31 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed mismatched conditional for XMLSEC_NO_ECDSA (patch from Eric Sproul)
+
+2016-05-20 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed openssl cert depth verification param usage (patch from R-Tur)
+
+2016-04-22 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed stdin/stdout in xmlsec1 app
+
+2016-04-20 Aleksey Sanin  <aleksey@aleksey.com>
+	* Restored SOAP support for Lasso
+	* 1.2.22 release
+
+2016-04-12 Aleksey Sanin  <aleksey@aleksey.com>
+        * 1.2.21 release
+
+2016-02-17 Aleksey Sanin  <aleksey@aleksey.com>
+        * Added OOXML Relationships Transform Algorithm (patch from Miklos Vajna)
+
+2016-02-06 Aleksey Sanin  <aleksey@aleksey.com>
+        * Deprecated XMLSEC_CRYPTO define in favor of xmlSecGetDefaultCrypto() function
+
+2016-02-05 Aleksey Sanin  <aleksey@aleksey.com>
+        * Revamped manpages/documentation build to completely pass 'make distcheck' tests
+
+2016-01-28 Aleksey Sanin  <aleksey@aleksey.com>
+        * Added OpenSSL 1.1.0 API support (major refactoring for block ciphers and DSA/ECDSA signatures)
+
+2016-01-28 Aleksey Sanin  <aleksey@aleksey.com>
+        * Migrated to GitHub (https://github.com/lsh123/xmlsec)
+
+2015-03-10 Aleksey Sanin  <aleksey@aleksey.com>
+        * Removed support for legacy OpenSSL 0.9.6 (last release: March, 2004) and 0.9.7 (last release: February, 2007) 
+
+2014-10-2014 Aleksey Sanin  <aleksey@aleksey.com>
+        * Added experimental GOST2012 support (patch from Nikolay Shaplov)
+
+2014-06-04 Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed several compaints from Clang and Coverity (based on patches from Simo Sorce) 
+
+2014-02-25 Aleksey Sanin  <aleksey@aleksey.com>
+        * Removed XKMS support -- it was never completed and not worth keeping
+
+2013-05-23 Aleksey Sanin  <aleksey@aleksey.com>
+        * 1.2.20 release
+        
+2014-05-23  Aleksey Sanin  <aleksey@aleksey.com>
+        * fix build on MacOSX (bug #680307)
+        * update certs for examples (bug #674572)
+        * update test certs to be valid till 2114
+        * don't create files on xmlsec-mscrypto when loading the key (bug #633924)
+        * clarify min OpenSSL requirements
+
+2014-05-23  Aleksey Sanin  <aleksey@aleksey.com>
+        * better detect private keys on ext RSA engines (bug #728213)
+        * fixed CRL check
+
+2014-02-17  Aleksey Sanin  <aleksey@aleksey.com>
+        * fixes for RH 6x
+
+2013-07-19  Aleksey Sanin  <aleksey@aleksey.com>
+        * fixed switch - added missed break keywords (bug #704574)
+
+2013-06-03  Aleksey Sanin  <aleksey@aleksey.com>
+        * fix memory leak in converting cert subject
+
+2013-05-09  Aleksey Sanin  <aleksey@aleksey.com>
+        * disable network access during internal xml transform parser
+
+2013-04-12  Aleksey Sanin  <aleksey@aleksey.com>
+        * fix typo (fixed bug 695605)
+
+2013-03-28  Aleksey Sanin  <aleksey@aleksey.com>
+        * disable ECDSA if needed (Daniel)
+
+2013-03-24  Aleksey Sanin  <aleksey@aleksey.com>
+        * docs rebuild
+
+2013-03-24 Aleksey Sanin  <aleksey@aleksey.com>
+        * 1.2.19 release
+
+2013-01-18 Aleksey Sanin  <aleksey@aleksey.com>
+        * Added support for DSA-SHA256, ECDSA-SHA1, ECDSA-SHA224, ECDSA-SHA256, ECDSA-SHA384, ECDSA-SHA512 (Mak Kolybabi)
+
+2011-09-06  Aleksey Sanin  <aleksey@aleksey.com>
+        * GOST support for xmlsec-openssl (patch from Dmitry Belyavsky)
+
+2011-05-11  Aleksey Sanin  <aleksey@aleksey.com>
+        * 1.2.18 release
+
+2011-05-01  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed crasher in 64 bit (reported by Roumen)
+
+2011-03-31  Aleksey Sanin  <aleksey@aleksey.com>
+        * 1.2.17 release
+
+2011-03-30  Aleksey Sanin  <aleksey@aleksey.com>
+        * Preparations for 1.2.17 release
+
+2011-03-29  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed security issue with libxslt (CVE-2011-1425, reported by Nicolas Gregoire)
+
+2011-02-05  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed pkcs12 file loading (based on patch from Andre de Souza Pinto)
+
+2010-11-23  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed comments (based on patch from Wolfgang Woehl)
+
+2010-11-09  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed extra quotes in configure (bug #631258)
+
+2010-07-19  Aleksey Sanin  <aleksey@aleksey.com>
+        * Fixed configure issue with empty --with-libxml/libxsl and config scripts in /bin directory
+
+2010-06-27  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fixed gcrypt init/shutdown (patch from Roumen)
+
+2010-04-25  Aleksey Sanin  <aleksey@aleksey.com>
+	* 1.2.16 release
+
+2010-04-24  Aleksey Sanin  <aleksey@aleksey.com>
+	* Preparation for 1.2.16 release
+
+2010-05-23  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added X509Data support to xmlsec-gnutls
+
+2010-05-12  Aleksey Sanin  <aleksey@aleksey.com>
+	* Several patches from Roumen: support NSS/NSPR from seamonkey
+	package; reorder libxmlsec as dep. lib for mingw; fix gcrypt/src/asn1.h
+	include; fix Unicode build for mingw
+	* Added RSA/SHA1/SHA256/SHA384/SHA512/MD5/RIPEMD160 for xmlsec-gnutls
+	* Added DSA/SHA1 for xmlsec-gnutls
+
+2010-05-10  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added RSA/SHA1/SHA256/SHA384/SHA512/MD5/RIPEMD160 for xmlsec-gcrypt
+	* Added DSA/SHA1 for xmlsec-gcrypt
+
+2010-05-09  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added DES KW support for xmlsec-mscrypto
+	* Added DES KW support for xmlsec-gnutls
+	* Separated xmlsec-gnutls and xmlsec-gcrypt libraries
+
+2010-05-08  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added AES KW support for xmlsec-mscrypto
+	* Added AES KW support for xmlsec-gnutls
+
+2010-04-30  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added RSA/OAEP support for xmlsec-mscrypto
+
+2010-04-29  Aleksey Sanin  <aleksey@aleksey.com>
+	* 1.2.15 release
+
+2010-04-28  Aleksey Sanin  <aleksey@aleksey.com>
+	* Preparation for 1.2.15 release
+
+2010-04-27  Aleksey Sanin  <aleksey@aleksey.com>
+	* Converted xmlsec-mscrypto to unicode and provided a compile time 
+	option to switch between unicode/non-unicode builds
+	* Deleted support for old gnutls, new required version 2.8.0
+	* Added SHA256/384/512 support for xmlsec-gnutls
+
+2010-04-26  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added support for HMAC with MD5, SHA1, SHA256/384/512 in xmlsec-mscrypto
+	* Added support for MD5 RSA/MD5 in xmlsec-mscrypto
+
+2010-04-25  Aleksey Sanin  <aleksey@aleksey.com>
+	* Added support for SHA256/384/512 for digest, HMAC and RSA in xmlsec-nss
+	(requires nss 3.8 + nspr 4.3 or greater)
+	* Added support for MD5 for digest and RSA in xmlsec-nss
+	* Minor fixes to xmlsec-nss (xmlsec bug #118630), bumping nss min 
+	version to 3.9 + nspr 4.4.1 or greater
+	Other minor fixes for xmlsec-nss
+
+2010-04-24  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix PK_CONFIG problem (reported by Roumen)
+	* Enable --crypto for transform checks
+
+2010-04-23  Aleksey Sanin  <aleksey@aleksey.com>
+	* Enable RSA/SHA2 support in xmlsec-mscrypto
+	* Misc. cleanups in xmlsec-mscrypto
+	* Fix PK_CONFIG problem (reported by Roumen)
+	* Fix DSA support in xmlsec-nss (https://bugzilla.mozilla.org/show_bug.cgi?id=561598)
+
+2010-04-23  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix search for certificates with UTF-8 subject on Windows in xmlsec-mscrypto
+	* Remove spaces at the end of lines
+
+2010-04-22  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix search for certificates with Unicode subject on Windows in xmlsec-mscrypto
+	* Copy *.manifest files to installation for Windows builds
+	* Convert tabs to spaces
+
+2010-04-21  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix key name conversion to unicode problem in xmlsec-mscrypto
+
+2010-04-20  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix compile warnings in xmlsec-openssl
+	* Fix linking order issue (based on patch from Roumen)
+
+2010-03-30  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix typo Copyrigth -> Copyright
+	* Add xmlsec-mscrypto to the top level 	copyright file
+	* Refresh the copyright date to 2010
+	* Add references to licenses
+
+2010-03-18  Aleksey Sanin  <aleksey@aleksey.com>
+	* Ensure we have only one copy of key's cert after reading pkcs12
+	from openssl
+
+2010-01-13  Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix valgrind's invalid read with chained XPath transforms (based
+	on patch from Frank Gross).
+
+2009-09-05  Aleksey Sanin  <aleksey@aleksey.com>
+	* preparation for 1.2.14 release
+
+2009-11-05 Aleksey Sanin  <aleksey@aleksey.com>
+	* Use installed ltdl on *nix and native code on Windows
+
+2009-10-25 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix --with-libxslt-src (patch from Roumen)
+
+2009-09-12 Aleksey Sanin  <aleksey@aleksey.com>
+	* Preparation for 1.2.13 release
+
+2009-08-24 Aleksey Sanin  <aleksey@aleksey.com>
+	* Fix XML dump format
+
+2009-08-06 Aleksey Sanin  <aleksey@aleksey.com>
+	* fix build for openssl 1.0 (based on patch from Roumen Petrov)
+	* cleanup test invocation scripts 
+	* cleanup configure.in
+
+2009-07-29 Aleksey Sanin  <aleksey@aleksey.com>
+	* fix a couple minor issues (based on patch from Arfrever 
+	Frehtes Taifersar Arahesis)
+
+2009-07-17  Aleksey Sanin  <aleksey@aleksey.com>
+	* preparation for 1.2.13 release
+
+2009-07-14  Aleksey Sanin  <aleksey@aleksey.com>
+	* increase default min hmac size to 80 bits
+	* added support for --with-libxml-src and --with-libxslt-src 
+	./configure options
+
+2009-06-25  Aleksey Sanin  <aleksey@aleksey.com>
+	* implemented c14n 1.1 transform + tests
+
+2009-06-15  Aleksey Sanin  <aleksey@aleksey.com>
+	* configure.in docs/download.html docs/index.html docs/news.html 
+	include/xmlsec/version.h: preparation for new 1.2.12 release
+
+2009-06-15  Aleksey Sanin  <aleksey@aleksey.com>
+	* added support for the GOST implemented by Russian Crypto Pro CSP 
+	(patch from Dennis Prochko)
+
+2009-06-15  Aleksey Sanin  <aleksey@aleksey.com>
+	* fixed HMAC vuln with small values of HMAC length 
+
+2009-06-13  Aleksey Sanin  <aleksey@aleksey.com>
+        * fixing gnutls detection (bug #585629)
+
+2009-06-09  Aleksey Sanin  <aleksey@aleksey.com>
+        * update SVN to GIT references in docs
+
+2009-06-09  Aleksey Sanin  <aleksey@aleksey.com>
+        * adding configurable Base64 line length
+
+2008-09-10  Aleksey Sanin  <aleksey@aleksey.com>
+	* fixing bug #501315 (patch from Antony Dovgal)
+
+2008-08-26  Aleksey Sanin  <aleksey@aleksey.com>
+	* apps/xmlsec.c: fix integer division (patch from Mikhail)
+
+2008-06-10  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/mscrypto/x509.c src/openssl/x509.c src/nss/x509.c: fix crash
+	in the error reporting (based on patch from Frank Gross)
+
+2008-06-04  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/templates.c src/keyinfo.c src/xmltree.c src/mscrypto/x509.c 
+        src/openssl/x509.c src/nss/x509.c include/xmlsec/xmltree.h:
+	added new function xmlSecNodeEncodeAndSetContent for encoding
+	special chars in the node content (bug reported by Cliff Hones)
+
+2008-06-04  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/xmltree.c, src/xmlenc.c, include/xmlsec/xmltree.h, include/xmlsec/xmlenc.h: 
+	add an option to return the replaced (encrypted) node(s) to the caller
+	(based on the patch from Frank Gross)
+
+2008-05-23  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/mscrypto/app.c: fix MS certificates ref counting
+
+2007-11-06  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* configure.in docs/download.html docs/index.html docs/news.html 
+	include/xmlsec/version.h: preparation for new 1.2.11 release
+
+2007-07-19  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* bug #454397 - mingw build: added missing files
+
+2007-07-19  Aleksey Sanin  <aleksey@aleksey.com>
+
+        * bug #454397 - mingw build: normal way to pass def file to linker
+        (patch from Roumen Petrov)
+
+2007-07-17  Aleksey Sanin  <aleksey@aleksey.com>
+
+        * bug #454397 - mingw build: (cross-compilation) and several 
+        minor cleanups (patch from Roumen Petrov)
+
+2007-06-16  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: configure fixes (patch from Roumen Petrov)
+
+2007-06-06  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/*: better support for non micorsoft CSP's (patch from 
+	Wouter and Ed Shallow)
+
+2007-02-12  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am xmlsec1.m4: automake macro for xmlsec1 (from Heiko Ronsdorf)
+
+2006-09-04  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/openssl/app.h src/openssl/app.c src/openssl/x509vfy.c:
+	added xmlSecOpenSSLAppKeysMngrAddCertsFile() function 
+	(David Norrel)
+
+2006-08-15  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509vfy.c: fixed loading certs from a directory
+	during openssl x509 store init (based on idea from David Norrel)
+
+2006-06-12  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/templates.h, src/templates.c, src/xmltree.c:
+	support for custom namespaces prefixes for xmldisg namespace
+	(based on patch from Barry Ferg)
+
+2006-06-12  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html 
+	include/xmlsec/version.h: preparation for new 1.2.10 release
+
+2006-06-12  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* xmlsec-config.in: lib64/ folder patch from Daniel
+
+2006-06-08  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in xmlsec-nss.pc.in: support different
+	packages for NSPR/NSS 
+
+2006-05-20  Aleksey Sanin  <aleksey@aleksey.com>
+	Added xmlSecOpenSSLX509StoreAdoptCrl() function
+
+2006-03-10  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nss/app.c, src/openssl/x509vfy.c, src/xmldsig.c,
+	src/xmlsec-ltdl.c, src/xmlsec-ltdl.patch: cleanup Coverity
+	complaints
+
+2006-02-26  Aleksey Sanin  <aleksey@aleksey.com>
+	* apps/xmlsec.c tests/testDSig.sh: added an ability to skip
+	tests for transforms not available in given built
+	* tests/: added GOST test from Dmitry Belyavsky
+
+2006-02-16  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/mscrypto/certkeys.c: fixed memleak in msrypto
+
+2006-02-14  Aleksey Sanin  <aleksey@aleksey.com>
+	* include/xmlsec/mscrypto/x509.h src/mscrypto/x509vfy.h:
+	added an option for disabling system trusted certs
+	for mscrypto store (based on patch from Dmitry Belyavsky)
+
+2006-02-10  Aleksey Sanin  <aleksey@aleksey.com>
+	* authors docs/authors.html
+	include/xmlsec/app.h include/xmlsec/private.h 
+	include/xmlsec/strings.h include/xmlsec/mscrypto/crypto.h
+	include/xmlsec/mscrypto/symbols.h src/app.c src/dl.c
+	src/strings.c src/transforms.c src/mscrypto/certkeys.c
+	src/mscrypto/crypto.c src/mscrypto/digests.c
+	src/mscrypto/signatures.c src/skeleton/crypto.c:
+	added support for GOST94 for digests and 
+	GOST 2001 keys/signatures: mscrypto only (patch from 
+	Dmitry Belyavsky)
+
+2005-12-20  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/x509vfy.c: check MSCrypto store for certs
+	(patch from Dmitry Belyavsky); replace tabs with spaces
+
+2005-12-15  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/templates.h src/templates.c: functions
+	for adding X509IssuerName and X509SerialNumber nodes
+	to the template (patch from Dmitry Belyavsky)
+
+2005-11-14  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: fixing shrext vs. shrext_cmds conflict
+
+2005-09-25  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/nss/pkikeys.c: fixing xmlsec-nss crash
+	* configure.in: change crypto libs order to be openssl/nss/gnutls
+
+2005-07-12  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html:
+	preparation for new 1.2.9 release 
+
+2005-07-12  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xmltree.c: fixing a problem with namespaces in the
+	nodes created by "template" functions
+
+2005-07-10  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/evp.c: added hack from Erwann ABALEA: 
+	OpenSSL ENGINE keys are always private since we can't query
+	engine and do real check
+
+2005-07-10  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/* include/* src/* tests/*: added support for 
+	RSA-MD5/RIPEMD160/SHA224/SHA256/SHA384/SHA512 for OpenSSL 0.9.8
+
+2005-07-10  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/ include/ src/ tests/: implemented
+	SHA224/256/384/512, HMAC-SHA224/256/384/512, MD5 for OpenSSL 0.9.8
+
+2005-07-10  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/xmldsig.html docs/xmlenc.html
+	include/xmlsec/app.h include/xmlsec/private.h include/xmlsec/strings.h
+	include/xmlsec/openssl/crypto.h include/xmlsec/openssl/symbols.h
+	src/app.c src/dl.c src/strings.c: preparations for SHA224/256/384/512
+	and friends
+
+2005-07-09  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in tests/aleksey-xmldsig-01/* tests/keys/* 
+	tests/merlin-xmldsig-twenty-three/signature.tmpl 
+	tests/testDSig.sh: updating test certificates for picky
+	OpenSSL 0.9.8
+	
+
+2005-07-08  Aleksey Sanin  <aleksey@aleksey.com>
+	* configure.in src/openssl/x509vfy.c: initial support 
+	for OpenSSL 0.9.8
+
+2005-05-12  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/openssl/app.c: fixed "disable-x509" build option 
+	(patch from Bernd Becker)
+
+2005-05-11  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/openssl/signatures.c: fixed "disable-dsa" build option 
+	(patch from Bernd Becker)
+
+Wed  6 Apr 2005 00:18:21 CEST Igor Zlatkovic <igor@zlatkovic.com>
+
+	* .cvsignore: added Eclipse project files
+
+2005-03-31  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xmltree.c: fixing warning from Solaris (bug #172201)
+
+2005-03-30  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html
+	include/xmlsec/version.h: preparing new release 1.2.8
+
+Tue 22 Mar 2005 20:10:19 CET Igor Zlatkovic <igor@zlatkovic.com>
+
+	* apps/xmlsec.c: changed the type of the --depth parameter to
+	number.
+
+2005-03-06  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/nss/crypto.h src/nss/Makefile.am src/nss/crypto.c 
+	src/nss/keytrans.c src/nss/kt_rsa.c: better rsa pkcs transform
+	using nss wrap/unwrap code (based on the OO.org patch)
+
+2005-03-06  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* include/xmlsec/nss/crypto.h src/nss/app.c 
+	src/nss/crypto.c src/nss/x509.c: fixed nss initialization
+	problem
+
+2005-03-05  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nss/pkikeys.c: check that input public and private 
+	keys have the same type (based on the OO.org patch) 
+
+2005-03-05  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nss/digests.c src/nss/hmac.c src/nss/pkikeys.c 
+	  src/nss/signatures.c src/nss/x509.c src/nss/x509vfy.c: 
+	  print more detailed error message (based on the OO.org patch)
+
+2005-03-04  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/x509vfy.c: fixed cert search (based on the OO.org patch)
+
+2005-03-01  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/app.c: added stubs for adding keys to mscrypto
+  	keys manager from ms key handle
+
+2005-02-28  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/certkeys.c: WinNT 4.0 support (based on the OO.org patch)
+
+2005-02-28  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/certkeys.c: preparation for WinNT 4.0 support
+
+2005-02-28  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/x509.c: enable private key search for
+	a given certificate (based on the OO.org patch)
+
+2005-02-27  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto/certkeys.c: use default context when 
+	getting public key from a cert (based on the OO.org patch)
+	* src/mscrypto/x509vfy.c: search both trusted and untrusted 
+	cert stores when cert with given parameters is needed or
+	when certs chain is constructed (based on the OO.org patch)
+
+2005-02-27  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/mscrypto/app.h include/xmlsec/mscrypto/x509.h
+	src/mscrypto/app.c src/mscrypto/x509vfy.c:
+	added function to add custom MS cert stores
+	to the xmlsec-mscrypto default keys manager
+	(based on the OO.org patch).
+
+2005-02-22  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/*: updated docs
+
+2005-02-22  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/index.html docs/news.html include/xmlsec/templates.h
+	src/templates.c: added functions to create <X509Data/> node 
+	children in the signature template
+
+2005-02-22  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/bn.c src/mscrypto/crypto.c src/mscrypto/x509.c 
+        src/mscrypto/x509vfy.c tests/testDSig.sh 
+	tests/aleksey-xmldsig-01/x509data-sn-test.tmpl
+	tests/aleksey-xmldsig-01/x509data-sn-test.xml
+	tests/keys/README tests/keys/*: support for 
+	negative serial numbers, mscrypto cleanup
+
+2005-02-21  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/* docs/api/*  man/*: updated docs
+
+2005-02-21  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in, docs/download.html, docs/index.html, docs/news.html,
+	include/xmlsec/version.h: preparing new release 1.2.7
+
+2005-01-26  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/bn.c: fixed xmlSecBnFromString function (patch from Michael Mi)
+
+2004-11-08  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keysmngr.h src/keysmngr.c: added 
+	xmlSecSimpleKeysStoreGetKeys() function
+
+2004-11-07  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/xmltree.c: fixed xmlSecGenerateID
+
+2004-10-27  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/dl.c: set dl memory functions before initialization (from 
+	Daniel Vogelheim patch)
+
+2004-10-14  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509vfy.c: fixed bug #155329 (parsing quoted values
+    	in the certificate subject)
+
+2004-09-18  Aleksey Sanin  <aleksey@aleksey.com>
+	* config.h.in configure.in inlude/xmlsec/private.h src/xmltree.c:
+	use xmlParseInNodeContext function to parse encrypted text in 
+	xmlSecReplaceNodeBuffer, this bumps libxml2 requirements to 2.6.12 
+	(bug #142358)
+
+2004-08-25  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html 
+	docs/news.html include/xmlsec/version.h: preparing
+	new release
+
+2004-06-21 Aleksey Sanin <aleksey@aleksey.com>
+
+	* include/xmlsec/app.h include/xmlsec/gnutls/app.h 
+        src/app.c src/gnutls/app.c src/skeleton/app.c: added functions
+	to load keys and certificates from memory (Bernd Becker)
+
+2004-06-21 Aleksey Sanin <aleksey@aleksey.com>
+	
+	* src/bn.c: keep a '0' character when we remove '0' from the beggining		
+
+2004-06-17  Aleksey Sanin <aleksey@aleksey.com>
+
+	* src/xmlenc.c: added NULL check
+	* src/xmltree.c: fixed memory leak
+
+2004-06-16 Aleksey Sanin <aleksey@aleksey.com>
+
+	* Fixed xmlSecTmplNodeWriteNsList() function
+
+2004-06-09 Igor Zlatkovic <igor@zlatkovic.com>
+
+	* win32/configure.js win32/Makefile.* minor changes for the new
+	  layout of the Windows binary package
+
+2004-05-13  Aleksey Sanin <aleksey@aleksey.com>
+
+	* examples/xmldsigverify.c: disable extended debug output
+	(fixed a hole found by Pawel)
+
+2004-04-19  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nodeset.c: fixing C14N bug with processing namespaces from attributes
+
+2004-04-13  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html:
+	1.2.5 release preparation
+
+2004-03-16  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/strings.h src/mscrypto/certkeys.c
+	src/nss/pkikeys.c src/openssl/evp.c src/strings.c: added J node
+	for DSAKeyValue
+	* tests/phaos-xmldsig-three/* tests/testDSig.sh: added new
+	phaos-xmldsig-three XMLDSig tests vectors
+
+Mon Feb 23 17:44:29 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* examples/xkms-server.c: finished xkms-server example
+
+Thu Feb 19 16:01:38 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* examples/.cvsignore examples/Makefile examples/Makefile.w32 
+	examples/xkms-server.c: started work on xkms server example
+
+Thu Feb 19 12:32:55 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/xkms.h include/xmlsec/xmltree.h src/xkms.c 
+	src/xmlsec.c src/xmltree.c: added ID attribute generation for xkms
+	* tests/aleksey-xkms-01/* tests/testXKMS.sh: modified xkms tests
+	to ignore Id attribute in comparison
+
+Fri Feb 13 00:05:02 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/private.h: fixed libxslt configuration
+	problem
+
+Mon Feb  9 08:40:26 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xmltree.c: fixed bug with encrypting nodes with
+	no content (reported by Tomas Seiger)
+
+Sat Feb  7 22:42:11 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/* src/* tests/*: added XKMS SOAP 1.2 bindings
+
+Thu Feb  5 23:37:24 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c include/* src/* tests/*: added XKMS SOAP 1.1 bindings
+
+Thu Feb  5 16:26:40 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: added new params for xkms
+	* include/xmlsec/Makefile.am include/xmlsec/private/xkms.h:
+        added new private xmlsec headers folder
+	* include/xmlsec/xmltree.h src/xmltree.c: created code for
+        reading/writing qname values 
+	* include/xmlsec/strings.h include/xmlsec/soap.h 
+        src/strings.h src/soap.c src/Makefile.am: created basic soap 
+        messages parsing framework
+	* include/xmlsec/xkms.h src/xkms.c: added xkms request format
+        enum and parameters
+	* tests/aleksey-xkms-01/ tests/testXKMS.sh: added new tests
+
+Wed Feb  4 01:26:51 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: created new --xkms-format parameter 
+	(plain/soap-1.1/soap-1.2)
+	* configure.in xmlsec.spec.in include/xmlsec/Makefile.am 
+	include/xmlsec/private/*: move internal xkms declarations to 
+	a newly created "xmlsec/private" includes folder
+	* include/xmlsec/strings.h include/xmlsec/xkms.h 
+	src/strings.c src/xkms.c tests/testXKMS.sh: preparation for soap
+	request/response suppport
+
+Tue Feb  3 22:44:36 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: combined xkms server commands into one
+	* include/xmlsec/* src/*: added ValidateRequest/ValidateResult
+	StatusRequest/StatusResult and CompoundRequest/CompoundResult
+	* tests/aleksey-xkms-01/* tests/testXKMS.sh: added new negative
+	test cases
+
+Tue Feb  3 18:12:10 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: added xkms server "expected service" param
+	* include/xmlsec/* src/*: created errors fallback when processing
+	xkms requests
+	* tests/aleksey-xkms-01/* tests/testXKMS.sh: added more negative
+	test cases
+
+Tue Feb  3 01:40:29 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: tweaked my debug environment
+	* include/xmlsec/xmltree.h src/xmltree.c: created string2int and string2bitmap
+	helper klasses
+	* include/xmlsec/keys.h src/keyinfo.c src/keys.c: added KeyUseWith list
+	to the KeyReq object
+	* include/xmlsec/strings.h src/strings.c: added some xkms strings
+	* include/xmlsec/xkms.h src/xkms.c: LocateRequest (except signatures) 
+	and most of LocateResult 
+
+Mon Feb  2 16:55:13 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/xkms.h src/strings.c src/xkms.c: read xkms RequestAbstractType
+	and write xkms ResponseQbstractType (no signatures) 
+	* Makefile.am tests/testXKMS.sh: created check-xkms target and script
+	* tests/aleksey-xkms-01: even more keys (der/pkcs12 formats), 
+	"key not found" tests
+
+Mon Feb  2 13:12:07 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c include/xmlsec/xkms.h include/xmlsec/xmlsec.h src/xkms.c:
+	updated xkms schemas from xkms 2.0, renamed a couple functions
+	
+	* tests/aleksey-xkms-01: copied new examples from xkms 2.0 spec
+	and created keys for using with these examples
+
+Mon Jan 26 11:48:42 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html
+	include/xmlsec/version.h: preparation for 1.2.4 release
+	* docs/related.html: added link to PyXmlSec project
+
+Fri Jan 23 16:30:38 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/xmlsec-man.html man/xmlsec1-config.1 man/xmlsec1.1 
+	xmlsec-config.in: make xmlsec1-config man page generic
+
+Fri Jan 23 09:34:10 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: and one more config bug from John
+
+Thu Jan 22 16:24:44 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: and one more gnutls configuration bug from John
+
+Thu 22 Jan 2004 10:56:33 AM PST <aleksey@aleksey.com>
+	
+	* src/buffer.c src/list.c: don' pass NULL to xmlRealloc()
+
+Mon Jan 12 13:05:18 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* examples/encrypt3.c include/xmlsec/crypto.h include/xmlsec/nss: make
+	exmaples compile with nss (again reported by John)
+
+Mon Jan 12 10:30:24 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* xmlsec-config.in: fixed nss configuration bug (reproted by John)
+
+Sat Jan 10 19:03:17 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in src/gnutls/ciphers.c src/gnutls/digests.c src/gnutls/hmac.c:
+	restored support for gnutls < 1.0 by request from John
+
+Mon Jan  5 12:55:44 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html 
+	docs/news.html docs/xmlsec-man.html include/xmlsec/version.h
+	man/xmlsec1-config.1 man/xmlsec1.1: preparing 1.2.3 release
+
+Mon Jan  5 12:42:52 2004  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in src/gnutls/ciphers.c src/gnutls/digests.c 
+	src/gnutls/hmac.c: upgraded gnutls to 1.0.4 (bug #129190)
+
+Thu 13 Nov 2003 08:19:55 AM PST <aleksey@aleksey.com>
+	
+	* src/mscrypto/app.c: fixed non-initialized values (Glenn)
+
+2003-11-11  Aleksey Sanin <aleksey@aleksey.com>
+
+	* docs/download.html docs/index.html docs/news.html 
+	man/xmlsec1.1: preparing 1.2.2 release
+
+Mon Nov 10 21:22:36 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/bn.c: fixed xmlSecBnToDecString problem (reported by Edward)
+
+Thu Nov  6 22:52:57 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: use pkgconfig for configuration if possible
+	(based on Daniel's idea)
+	* include/xmlsec/private.h include/xmlsec/xmltree.h
+	src/errors.c src/openssl/app.c: made xmlSecStrPrintf and
+	xmlSecStrVPrintf declarations private to xmlsec to fix
+	examples build failure
+
+Wed Nov  5 14:19:11 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: fixed "--with-html-doc" option (patch from Daniel)
+
+Wed Nov  5 13:39:47 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: fixed "--with-mozilla-ver" option for ./configure
+	script (patch from Daniel)
+
+Wed Oct 29 07:55:17 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/xmltree.h src/dl.c
+	src/errors.c src/mscrypto/crypto.c src/nss/crypto.c 
+	src/openssl/app.c: fixed snprintf and vsnprintf warnings (bug #125684)
+
+Mon Oct 20 19:34:35 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: created "--with-html-dir" option 
+	to specify docs installation path
+
+Mon Oct 20 08:40:46 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: load correct static openssl library when 
+	more than one one openssl version is available (patch
+	from Roumen, bug #124534)
+
+Mon Oct 13 19:43:52 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html
+	include/xmlsec/version.h: new 1.2.1 release
+
+Mon Oct 13 19:29:55 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/Makefile.am: added support for XMLSEC_DOCDIR
+	environment variable to ./configure script and removed *.sgml 
+	files from docs installation
+
+Sat Oct 11 21:16:54 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/strings.h include/xmlsec/templates.h 
+	src/strings.c src/templates.c: added template functions
+	for creating <enc:KeyReference/> and <enc:DataReference/>
+	nodes (based on patch from Wouter)
+
+Thu 09 Oct 2003 03:59:02 PM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nodeset.c src/transforms.c: don't ignore nodes on the document
+	root element level (bug #124245)
+
+Sun Oct  5 01:05:30 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/transforms.h include/xmlsec/xmldsig.h 
+	src/transforms.c src/xmldsig.c src/xpath.c apps/xmlsec.c 
+	docs/faq.html: implemented Visa 3D hack to process some 
+	URI attributes without XPath/XInclude engines	
+
+Thu Oct  2 10:28:59 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/dl.c src/openssl/app.c src/openssl/x509vfy.c: fixing
+	compilation warnings reported in bug #123692
+
+Wed Oct  1 19:05:13 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/gnutls/README src/mscrypto/README src/nss/README 
+	src/openssl/README: updated README files
+
+Wed 01 Oct 2003 09:11:58 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/dl.h: moved closing bracket for "extern "C"
+	a couple lines up to be in the right place (bug #123640)
+
+Mon 29 Sep 2003 07:27:14 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/download.html docs/index.html docs/news.html: preparation
+	for 1.2.0 release
+
+Mon 29 Sep 2003 07:07:07 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/mscrypto: 2nd code review pass
+
+Sat Sep 27 18:31:20 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/openssl/crypto.h src/openssl/app.c
+	src/openssl/crypto.c src/openssl/x509vfy.c: added "default trusted certs"
+	folder and make it an input parameter to xmlSecOpenSSLAppInit method.
+	* examples/xmldsigverify.c: make use of this change
+
+Sat 27 Sep 2003 05:23:41 PM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* examples/ docs/tests/ docs/ : created new xmldsigverify script
+	and upgraded tests
+
+Fri 26 Sep 2003 05:27:08 PM PDT   Aleksey Sanin  <aleksey@aleksey.com>
+	* src/mscrypto/ include/xmlsec/mscrypto/ : added API documentation
+	from Wouter
+	* docs/ : re-run the docs generation to pickup the new documentation
+
+Thu Sep 25 23:10:19 2003  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs/authors.html: added "authors and contributors" page
+	* docs/ man/: regenerated docs to include xmlsec-mscrypto and link to new
+	authors.html page
+	* include/ src/: api reference documentation updates
+
+Thu Sep 25 20:47:11 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keysdata.h: introduced new cert-pem and cert-der
+	key formats (public key in a certificate)
+	* include/xmlsec/nss/app.h nclude/xmlsec/nss/x509.h
+	include/xmlsec/openssl/app.h include/xmlsec/openssl/x509.h
+	src/nss/app.c src/nss/crypto.c src/nss/x509.c 
+	src/openssl/app.c src/openssl/x509.c
+	src/mscrypto/app.c: implemented support for new formats 
+	in OpenSSL, NSS and MSCrypto
+	* apps/xmlsec.c: added "--pubkey-cert-pem" and "--pubkey-cert-der" options 
+	* tests/testDSig.sh tests/merlin-xmldsig-twenty-three/certs/lugh-cert.der: 
+	use certificate for public keys 	
+
+Thu 25 Sep 2003 05:51:37 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* include/ src/ win32/ docs/ Makefile.am configure.in: merging
+	from XMLSEC_MSCRYPTO_083103 branch - new xmlsec-mscrypto library
+	implemented by Wouter, general functions for reading keys and certs
+	from memory (openssl/nss/mscrypto), default error callback for nss,
+	moving private keys in 01-phaos-enc tests to pkcs12 file.
+
+Thu Sep 25 11:39:22 2003 Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: added root nodes namespaces registration
+	for "--node-xpath" command line option processing (by request
+	from Jan-Olof)
+
+Sat 20 Sep 2003 11:19:14 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* HACKING: added more info about hacking with xmlsec
+
+Tue Sep 16 11:28:03 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/download.html docs/index.html docs/news.html: preparation
+	for 1.1.2 release
+
+Tue Sep 16 02:28:41 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/Makefile.am: link xmlsec lib with dl librarias
+
+Sun 14 Sep 2003 02:13:51 AM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* tests/testEnc.sh: added "--session-key <key>" paramater
+	to all tests with <EncryptedKey/> (problem reported by Wouter)
+
+Fri 12 Sep 2003 09:43:21 PM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/buffer.h src/buffer.c: added functions to convert 
+	binary buffer to hex string and vice versa (based on patch from Remy)
+
+Thu Sep 11 17:08:15 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/Makefile.am src/dl.c src/xmlsec-ltdl.h src/xmlsec-ltdl.patch 
+	win32/Makefile.msvc: use ltdl on Windows too
+
+Thu Sep 11 16:39:18 2003 Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/ltdl.* src/Makefile.am: upgraded to ltdl from libtool 1.4
+	
+Wed Sep 10 18:12:52 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* xmlsec.spec.in: separated xmlsec and xmlsec-devel RPM
+	pacakges into xmlsec, xmlsec-openssl, xmlsec-devel and xmlsec-openssl-devel
+
+Wed Sep 10 13:19:10 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/version.h include/xmlsec/version.h.in 
+	include/xmlsec/xmlsec.h src/xmlsec.c
+	src/gnutls/crypto.c src/nss/crypto.c 
+	src/openssl/crypto.c src/skeleton/crypto.c:
+	apps/xmlsec.c examples/*.c 
+	docs/api/chapters/init-and-shutdown.sgml: implemented new
+	function and macroses to check loaded xmlsec library
+	version from xmlsec-crypto libraries and apps
+
+Wed Sep 10 12:36:17 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/dl.c win32/Makefile.msvc win32/mycfg.bat: implemented
+	dynamic xmlsec-crypto libraries loading for Windows
+
+Wed Sep 10 00:02:55 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am configure.in xmlsec-config.in xmlsec.pc.in: added
+	support for xmlsec-crypto DL mode in xmlsec.pc and xmlsec-config files
+
+	* examples/*: added support for xmlsec-crypto DL mode to examples
+
+	* include/xmlsec/app.h include/xmlsec/private.h 
+	include/xmlsec/version.h include/xmlsec/x509.h
+	src/app.c src/x509.c src/xkms.c: new API reference documentation
+
+	* docs/* man/* : included info about xmlsec-crypto DL mode in 
+	tutorial and re-build docs to include new api reference docs
+
+	* tests/testDSig.sh tests/testEnc.sh tests/testKeys.sh: added
+	additional information printout
+	
+	* win32/Makefile.msvc: excluded XKMS from windows builds
+
+Tue Sep  9 16:14:01 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* win32/Makefile.msvc win32/configure.js win32/mycfg.bat win32/mycfg_nss.bat:
+	windows build cleanup (bug #121579)
+
+Tue Sep  9 12:52:00 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am apps/* configure.in include/* src/* tests/*: implemented
+	loading xmlsec-crypto libraries as plugins (bug #121579)
+	* win32/: change build to allow building of more than one
+	xmlsec-crypto library (bug #121579)
+
+Sun 24 Aug 2003 05:20:14 PM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs/faq.html: upgraded licenses FAQ section to include
+	information about xmlsec-nss and xmlsec-gnutls
+
+Fri Aug 22 11:06:28 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* win32/Makefile.msvc: fixed linkinig problem on Windows (bug #120498)
+
+Fri Aug 22 09:54:04 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/errors.h: determine if __FUNCTION__ or 
+	__func__ are defined from ./configure script. This should fix bug #120469
+	and prevent this problem from happening in the future.
+	* src/c14n.c src/openssl/kt_rsa.c src/transforms.c: fixed minor
+	warnings because of using strcmp, strchr, etc. functions with xmlChar* 
+	variables by switching to xmlStrcmp, xmlStrchr, etc. (also bug #120469)
+
+Wed Aug 20 21:26:00 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/api/sgml/version.sgml docs/api/xmlsec-version.html
+	docs/index.html docs/news.html docs/xmlsec-man.html
+	include/xmlsec/version.h man/xmlsec1-config.1 man/xmlsec1.1: new 1.1.1
+	release preparation
+	* docs/*: re-run docs generation/formatting
+
+Fri Aug  8 22:18:45 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xpath.c: register namespaces before processing XPointer
+	expression in the URI attribute (bug #119462, reported by Steve)
+
+Fri Aug  8 09:06:53 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keys.h src/keys.c: added xmlsec-core functions to 
+	read keys from memory  (patch from Joachim)
+
+Thu Aug  7 11:38:43 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/openssl/app.h src/openssl/app.c:  added functions 
+	to read keys and certs in xmlsec-openssl from memory and BIOs 
+	(bug #119350, patch based on the code from Joachim)
+
+Wed Aug  6 08:57:20 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am configure.in xmlsec-gnutls.pc.in xmlsec-nss.pc.in 
+	xmlsec-openssl.pc.in xmlsecConf.sh.in:
+	config bug fixing and improvements from Roumen
+
+Mon Aug  4 19:39:52 2003  Aleksey Sanin  <aleksey@aleksey.com>i
+
+	* include/xmlsec/Makefile.am include/xmlsec/x509.h src/Makefile.am 
+	src/x509.c src/openssl/x509.c win32/Makefile.msvc: moved code for 
+	reading X509Data node content from xmlsec-openssl to xmlsec-core
+	to allow sharing with xmlsec-nss
+	* src/nss/README src/nss/x509.c: added X509Data templates support
+	for xmslec-nss (bug #118636, based on patch from Tej)
+
+Mon 04 Aug 2003 04:06:02 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs: rebuilding docs to get nss api reference
+
+Mon Aug  4 14:47:02 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am xmlsec.spec.in: added HACKING file to the distribution
+	* docs/download.html docs/index.html docs/news.html: updated docs 
+	for new 1.1.0 release
+
+Wed Jul 30 18:35:15 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* xmlsec-gnutls.pc.in xmlsec-nss.pc.in xmlsec-openssl.pc.in: and
+	one more change for the same bug #118685 - don't put "crypto" 
+	in version, use xmlsec1-crypto name instead of xmlsec-crypto,
+	don't include nss flags and libs for xmlsec1-nss.pc
+
+Wed Jul 30 15:23:17 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am configure.in xmlsec-gnutls.pc.in xmlsec-nss.pc.in 
+	xmlsec-openssl.pc.in xmlsec.pc.in: more *.pc files fixes
+	for the same bug #118685
+
+Wed Jul 30 11:49:20 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am configure.in xmlsec-gnutls.pc.in xmlsec-nss.pc.in 
+	xmlsec-openssl.pc.in: created separate *.pc files for xmlsec-crypto 
+	libraries (bug #118685 reported by John)
+
+Tue Jul 29 20:20:33 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/nss/README: created xmlsec bugs for remian xmlsec-nss problems
+
+Tue 29 Jul 2003 07:41:18 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/ include/ docs/ man/ configure.in: merged xmlsec-nss 
+	from the branch (Tej)
+
+Tue Jul 29 08:44:24 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509.c: minor patches for errors (Roumen)
+	* src/xmltree.c: fixed xmlIsEmptyNode() to return false
+	if there is an element child
+
+Mon Jul 28 12:02:40 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keyinfo.h: added XMLSEC_KEYINFO_FLAGS_STOP_ON_EMPTY_NODE flag
+	* include/xmlsec/xmltree.h src/xmltree.c: added xmlSecIsEmptyNode and 
+	xmlSecIsEmptyString functions
+	* src/openssl/x509.c: added an ability to write complex X509Data node
+	content (based on patch from Roumen)
+	* tests/testDSig.sh tests/aleksey-xmldsig-01/x509data-test.*: new test for
+	complex X509Data node writing
+	* tests/keys/ca2key.p12 tests/keys/dsakey.p12 tests/keys/rsakey.p12: new 
+	pkcs12 keys for tests
+
+Sun 20 Jul 2003 08:10:53 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* apps/ include/ src/ docs/api/ Copyright: updated copyrights
+	everywhere
+
+Fri 18 Jul 2003 10:30:33 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    	
+	* HACKING: added a coding and commiting rules
+
+Wed 16 Jul 2003 10:11:23 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* examples/README, examples/binary.dat: added examples of using
+	command line tool
+
+Wed 16 Jul 2003 12:50:00 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    
+	* examples/myw32make.bat win32/mycfg-nss.bat: rename these
+	files to clear exec bit (John)
+
+	* man/Makefile.am: use "--no-info" option in help2man
+
+Mon Jul 14 11:06:16 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/api/sgml/version.sgml docs/download.html
+	docs/api/xmlsec-version.html docs/index.html docs/news.html 
+	docs/xmlsec-man.html include/xmlsec/version.h man/xmlsec1-config.1 
+	man/xmlsec1.1: preparation for 1.0.4 release
+	* docs/api/xmlsec-notes-encrypt.html docs/api/xmlsec-notes-sign.html:
+	fixed a mistype
+	* docs/extra/xmlsec_oscon_2003.ppt: minor update
+
+Fri Jul 11 13:33:28 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am: fixed builddir != sourcedir one more time (use abs_top_*
+	instead of top_*)
+	* configure.in: upgraded mozilla search path to 1.4
+
+Mon 07 Jul 2003 08:05:18 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* src/openssl/apps.c src/openssl/x509.c src/openssl/x509vfy.c: fixed
+	sk_push() return value check problem (reported by Roumen)
+
+Mon 07 Jul 2003 07:02:46 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    
+	* Makefile.am: fixed test suite problem when builddir != srcdir
+	(reported by Roumen)
+
+Thu Jul  3 07:57:25 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509vfy.c: added a const word to suppress
+	warnings (Roumen)
+
+Wed Jul  2 08:53:50 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509vfy.c: fixed certificates subject 
+	comparison function to handle multiple occurence
+	of entries with the same value (bug report from 
+	Roumen)
+
+Tue Jun 17 19:22:17 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/download.html: fixing links to tarballs for local 
+	files (requested by John)
+	
+	* examples/myw32make.bat win32/mycfg-nss.bat: clearing exec bit
+
+Mon Jun 16 10:43:34 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html 
+	docs/xmlsec-man.html include/xmlsec/version.h man/xmlsec1-config.1
+	man/xmlsec1.1: new 1.0.3 version preparation
+
+	* docs/Makefile.am docs/api-0.0.x/*: fixed second level links 
+	processing 
+
+	* docs/api/sgml/* docs/api/tmpl/* docs/api/*: added new API calls
+
+Mon Jun 16 09:20:53 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: fixed NSS config bug #115297
+
+Sun Jun  8 20:08:42 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: fix for 'make distclean'
+
+Sat Jun  7 20:35:25 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am apps/* include/xmlsec/keysdata.h src/openssl/app.c tests/*: 
+	added PKCS#8 support (based on Tej's patch)
+
+Fri Jun  6 14:53:25 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509.c: skip ASN1 time check for OpenSSL 0.9.6
+
+Thu Jun  5 19:32:12 2003  Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs/*: fixing online verifier link
+
+Wed Jun  4 19:12:21 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: added _ALL_SOURCE define for aix
+
+Wed Jun  4 08:25:46 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/x509.c: fix my_gmtime function
+
+Mon 02 Jun 2003 09:38:13 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    
+	* removed debian folder
+
+Sun Jun  1 20:30:08 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html
+	docs/xmlsec-man.html include/xmlsec/version.h man/xmlsec1-config.1
+	man/xmlsec1.1: preparing 1.0.2 release.
+	* docs/xmldsig-verifier.html: point online verifier to web site
+
+Thu May 29 17:15:04 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/gnutls/Makefile.am src/nss/Makefile.am 
+	src/openssl/Makefile.am src/skeleton/Makefile.am: don't use GCC
+	options in Makefiles
+
+Tue May 27 20:12:41 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in xmlsec-config.in xmlsecConf.sh.in
+	src/gnutls/Makefile.am src/nss/Makefile.am src/openssl/Makefile.am:
+	change xmlsec-config script to let user specify crypto engine
+	(requested by John Belmonte)
+
+Sun May 25 22:01:45 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c docs/xmlsec-man.html man/xmlsec1-config.1 man/xmlsec1.1: 
+	fixed help typo (reported by John Belmonte)
+	* examples/README: removed obsolete autoconf information (reported by John Belmonte)
+	* configure.in: added /usr/include/mozilla to NSS include path search list (reported by John Belmonte)
+
+Thu May 15 03:08:18 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/crypto.c apps/crypto.h apps/xmlsec.c: added command line 
+	options to support DER keys and certs format (Tej)
+	* Makefile.am: use DER format for all tests
+	* tests/testDSig.sh tests/testEnc.sh tests/testKeys.sh: added a new
+	command line option "key-format" with possible values "der" or "pem"
+	* tests/*/*.der tests/merlin-xmldsig-twenty-three/certs/*.crt: 
+	converted PEM keys and certs to DER format, removed *.crt files that 
+	used to have DER certificates (Tej)
+	* tests/merlin-xmlenc-five/*.p8: re-added *.p8 files with '-kb' option
+
+Mon 12 May 2003 01:38:11 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    
+	* configure.in: use '-rpath-link' instead '-rpath' for NSS (Wan-Teh)
+
+Mon May 12 10:01:30 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: link with NSS using -rpath (Tej)
+
+Mon May  5 08:00:31 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in: new configuration options for NSS (Tej)
+	* src/nss/app.c src/nss/ciphers.c src/nss/crypto.c 
+	src/nss/digests.c src/nss/hmac.c: use NSS style includes (Tej)
+
+Fri 02 May 2003 12:00:47 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/app.c: adopt instead of copy the key cert 
+	from pkcs12 fil
+
+Thu May  1 08:17:06 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/xmltree.h src/xmltree.c src/keysmngr.c:
+	created a new function to quickly create a doc with one root node
+	* src/list.c: fixed bug in xmlPtrListEmpty() function
+	* src/xkms.c: created framework for Locate request/result processing
+
+Wed Apr 30 16:31:10 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/strings.h src/strings.c: added strings
+	for XKMS (XKISS) Locate request/result
+
+Wed Apr 30 01:01:06 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in: added check for timegm function
+	* include/xmlsec/keys.h 
+	* include/xmlsec/xkms.h src/xkms.c apps/xmlsec.c: framework
+	for xmlSecXkmsLocate/Validate functions
+	* src/keys.c src/openssl/x509.c: added notValidBefore and
+	notValidAfter time frame to xmlSecKey
+	* src/xmldsig.c src/xmlenc.c: added "output" asserts to 
+	the *DebugDump() and *DebugXmlDump() functions
+	* tests/aleksey-xkms-01/locate-compound.xml 
+	  tests/aleksey-xkms-01/locate-key-from-usewith.xml
+	  tests/aleksey-xkms-01/locate-keyvalue-from-x509.xml
+	  tests/aleksey-xkms-01/readme.txt: XKMS test cases
+
+Tue Apr 29 16:37:18 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/Makefile.am include/xmlsec/strings.h
+	include/xmlsec/xkms.h include/xmlsec/xmlsec.h
+	src/Makefile.am src/strings.c src/xkms.c apps/xmlsec.c: first 
+	XKMS framework (disabled by default)
+
+Mon Apr 28 21:13:03 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/download.html docs/index.html docs/news.html: preparing
+	1.0.1 release.
+
+Sun Apr 27 18:05:23 2003  Igor Zlatkovic  <igor@zlatkovic.com>
+
+	* win32/Makefile.msvc: defined _REENTRANT to enable compilation
+	  with threaded libxml2
+
+Thu Apr 24 08:15:32 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in include/xmlsec/xmlsec.h: use
+	'#define' instead of 'typedef' for the new xmlSecSize and
+	xmlSecByte types in order to keep ABI
+
+Tue Apr 22 13:51:33 2003  Igor Zlatkovic  <igor@zlatkovic.com>
+
+	* win32/configure.js: updated the email address in the generated
+	  readme.txt file.
+
+Sun 20 Apr 2003 03:12:02 PM PDT Aleksey Sanin <aleksey@aleksey.com>
+	
+	* docs/*: updated docs with new xmlSecByte and xmlSecSize types
+	* configure.in include/xmlsec/version.h: upgraded version to 1.0.1
+
+Sun 20 Apr 2003 02:57:06 PM PDT Aleksey Sanin <aleksey@aleksey.com>
+
+	* src/* include/* apps/*: replaced 'unsigned char' with xmlSecByte
+	typedefed to 'unsigned char' to make happy OpenBSD on sparc64 
+	* examples/*: replaced configure.in with simple Makefile to 
+	prevent problems on different platforms
+
+Sun 20 Apr 2003 02:37:41 PM PDT Aleksey Sanin <aleksey@aleksey.com>
+	
+	* src/* include/* apps/*: replaced size_t with xmlSecSize
+	typedefed to 'unsigned int' to make happy OpenBSD on sparc64 
+
+Sat Apr 19 01:08:30 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/openssl/kw_des.c src/openssl/signatures.c: 
+	included openssl/sha.h to help OpenBSD port
+
+Wed 26 Mar 2003 01:43:24 AM PST Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs: 0.1.1 release
+
+Wed Mar 19 22:56:49 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/version.h 
+	docs/download.html docs/index.html docs/news.html
+	xmlsec.pc xmlsec.spec: 0.0.14 release
+
+Wed Mar 19 10:59:41 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: force Signature or EncryptedData node
+	selection when specifing start node from xmlsec tool 
+	command line
+
+Mon Mar 10 07:59:55 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/transforms.c: fixed Reference URI evaluation for
+	the "xmlns()xpointer()" construction
+
+Wed Mar  5 19:43:43 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/index.html docs/news.html: new 0.1.0 release
+
+Mon Feb 24 10:04:36 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xmltree.c src/xslt.c: fixed bug in xmlSecTransformXsltAdd
+
+Fri Feb 21 13:06:44 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in include/xmlsec/version.h 
+	docs/download.html docs/index.html docs/news.html	
+	xmlsec.pc xmlsec.spec: 0.0.13 release
+
+Fri Feb 21 12:59:48 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/transforms.c: fixed incorrect processing of more than
+	3 binary transforms in a row
+
+Mon Feb 17 09:34:12 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/api/* include/xmlsec/xmldsig.h
+	src/keysmngr.c src/xmldsig.c: minor documentation bug fixes
+	based on Jesse Pelton's email
+
+Fri Feb 14 12:44:48 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/x509.c: set "verified" cert when loading pkcs12 file.
+
+Wed Feb  5 09:49:30 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c include/xmlsec/keysmngr.h
+	src/keysmngr.c src/x509.c: provide an ability
+	to specify max cert verification depth
+	(based on patch from Jean-Etienne SCHWARTZ)
+
+Sun Jan 26 22:04:45 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in include/xmlsec/version.h
+	docs/news.html docs/download.html docs/index.html
+	xmlsec.pc xmlsec.spec: preparation for 0.0.12 release
+
+Sun Jan 26 21:39:56 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/digests.h src/hmac.c: fixed 91 bits HMAC
+	bug reported by Rich Salz and Jonathan Wenocur
+	* tests/aleksey-xmldsig-01/dtd-hmac-91.dtd
+	tests/aleksey-xmldsig-01/dtd-hmac-91.tmpl
+	tests/aleksey-xmldsig-01/dtd-hmac-91.xml
+	* tests/testDSig.sh: the test case for 91 bits HMAC bug
+	from Rich Salz and Jonathan Wenocur
+	* apps/xmlsec.c: fixing minor compile warnings for 
+	the external DTD patch
+	
+Sun Jan 26 18:19:49 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/aes.c src/ciphers.c src/des.c: fixed bug with 
+	EVP ciphers for OpenSSL 0.9.7 when last block was not 
+	processed for padding
+	* tests/aleksey-xmlenc-01/enc-des3cbc-keyname2.data 
+	tests/aleksey-xmlenc-01/enc-des3cbc-keyname2.tmpl
+	tests/aleksey-xmlenc-01/enc-des3cbc-keyname2.xml
+	tests/testEnc.sh: new test case for the bug fixed above
+
+Wed Jan 22 11:37:36 2003  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c man/xmlsec.xml: applied patch from Rich Salz
+	to allo external DTD specification for the xmlsec application
+
+Mon 30 Dec 2002 09:52:58 AM PST Aleksey Sanin <aleksey@aleksey.com
+	* configure.in docs/examples/dsig1/Makefile docs/examples/dsig2/Makefile
+	docs/examples/dsig3/Makefile docs/examples/dsig4/Makefile 
+	docs/examples/dsig5/Makefile docs/examples/enc1/Makefile
+	docs/examples/enc2/Makefile src/Makefile.am: fixed bug #102196 -- 
+	Sun CC does ot have -WAll and -ansi options
+	* include/xmlsec/errors.h: fixed bug #102194 -- Sun CC does not have
+	__FUNCTION__ macro
+
+Sat Dec 21 22:47:33 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: added "--node-xpath" option for specifing
+	the operation "start node" (code based on patch from 
+	Ferrell Moultrie (ISSAtlanta)
+	* src/transforms.c: fixed minor compilation warnings
+	* src/x509.c: certs and crls are base64 encoded with 60 characters 
+	lines size (bug #101523)
+
+Mon Dec  2 23:38:34 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in include/xmlsec/version.h
+	docs/news.html docs/download.html docs/index.html
+	xmlsec.pc xmlsec.spec: new 0.0.11 release updates
+	* scripts/build_release.sh scripts/push_release.sh
+	scripts/test_release.sh: checking in build scripts I am using
+
+Thu Nov 28 11:57:17 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: print detailed help report only when
+	user requests it; don't fail if key is not generated
+	when algorithm is disabled
+	
+
+Thu Nov 28 10:44:06 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/transforms.c: fixed a bug in numeric references evaluation 
+	reported by Ingo Fischer
+
+Wed Oct 30 17:14:03 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* config.h.in configure.in: do not add -I/usr/include
+	or -L/usr/lib if OpenSSL happens to be there
+	(patch proposed by Scott Cantor)
+
+Mon Oct 21 11:28:01 CEST 2002 Igor Zlatkovic <igor@stud.fh-frankfurt.de>
+
+	* include/xmlsec/errors.h: fixed the __FUNCTION__ macro logic
+
+2002-10-20  Aleksey Sanin <aleksey@aleksey.com>
+
+	* config.h.in configure.in include/xmlsec/version.h 
+	xmlsec.pc xmlsec.spec docs/download.html 
+	docs/index.html docs/news.html: preparing 0.0.10 release
+
+Sun 13 Oct 2002 09:37:38 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* configure.in apps/Makefile.am: added dynamic linking option
+	by request from John Belmonte
+
+Fri Oct 11 09:13:27 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* tests/testDSig.sh configure.in apps/xmlsec.c: applied patch from 
+	Ferrell Moultrie and removed strptime() function usage completelly
+	* include/xmlsec/errors.h src/errors.c src/x509.c: added more
+	error to the cert verification
+
+Thu Oct 10 00:44:36 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c tests/aleksey-xmldsig-01/enveloping-expired-cert.tmpl
+	tests/aleksey-xmldsig-01/enveloping-expired-cert.xml 
+	tests/keys/expired.crt tests/keys/expired.csr tests/keys/expired.key
+	tests/testDSig.sh: added test case to verify the new "expired cert" feature
+
+Wed Oct  9 23:09:46 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c include/xmlsec/x509.h src/keysmngr.c
+	src/x509.c: added support for certificate verification parameter
+	when OpenSSL 0.9.6 is used
+
+Wed Oct  9 20:58:58 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keyinfo.h include/xmlsec/keys.h 
+	include/xmlsec/keysmngr.h include/xmlsec/x509.h 
+	include/xmlsec/xmldsig.h include/xmlsec/xmlenc.h 
+	src/keyinfo.c src/keys.c src/keysmngr.c
+	src/x509.c src/xmldsig.c src/xmlenc.c: added certificates
+	verification time parameter as it was suggested in the
+	xmlsec mailing list
+	* apps/xmlsec.c: added "--verification-time" parameter
+	* config.h.in configure.in: added necessary check for 
+	strptime() function	
+
+Mon Oct  7 19:22:11 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: added "--output" option to spefcify output file
+	* docs/xmlsec-man.html man/create.sh man/xmlsec.1  man/xmlsec.xml:
+	changed the docs to reflect new "--output" option
+	* tests/testDSig.sh tests/testEnc.sh: changed tests to use new
+	"--output" option
+	* configure.in xmlsec.pc xmlsec.spec: minor config changes
+
+Sun Sep 29 20:12:17 CEST 2002 Igor Zlatkovic <igor@stud.fh-frankfurt.de>
+
+	* win32/Makefile.msvc: resolved further static link issues.
+
+Sat Sep 28 19:14:40 CEST 2002 Igor Zlatkovic <igor@stud.fh-frankfurt.de>
+
+	* include/xmlsec/errors.h: added MSVC to the list of compilers with
+	  the predefined __FUNCTION__ macro. 
+	* include/xmlsec/xmlsec.h: resolved XMLSEC_EXPORT mess.
+	* win32/Makefile.msvc: introduced a double-run compilation, resolved
+	  the static link problems.
+	* win32/configure.js: added the iconv=yes|no option, important when
+	  linking statically to libxml.
+
+Wed 25 Sep 2002 21:28:21 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/x509.h src/x509.c: opened xmlSecX509Data 
+	structure by request from Moultrie, Ferrell 
+
+Wed 04 Sep 2002 06:54:23 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+    
+	* src/errors.c: aplied a patch from Ferrell Moultrie (additional
+	errors strings for OpenSSL errors functions)		
+
+Tue 03 Sep 2002 06:24:57 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* xmlsec-config.in: fixed a bug when xslt is not available
+
+Mon 02 Sep 2002 12:20:03 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs/*: added LibXML2, LibXSLT and OpenSSL logos
+	
+Sat Aug 31 17:12:56 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/keys.h include/xmlsec/x509.h
+	include/xmlsec/xmldsig.h include/xmlsec/xmlenc.h 
+	src/keys.c src/x509.c src/xmldsig.c src/xmlenc.c: 
+	added new function *DebugXmlDump() to print debug info
+	in XML format
+	* apps/xmlsec.c man/xmlsec.1 man/xmlsec.xml: added new 
+	options '--print-xml' and '-print-to-file'	
+
+Sat 31 Aug 2002 03:43:20 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/examples: added a new dsig example from Devin Heitmueller	
+	
+Thu 29 Aug 2002 01:48:35 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/examples/dsig3 docs/examples/dsig4: fixed minor problems
+
+Thu 29 Aug 2002 08:52:02 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: fixed minor copy/paste typo (thanks to Devin Heitmueller)
+
+Wed 28 Aug 2002 04:22:10 PM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs: new 0.0.9 release to fix release packaging problems
+	
+Fri Aug 23 10:54:39 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* configure.in docs/download.html docs/index.html docs/news.html:
+	New 0.0.8 release.
+
+Thu Aug 15 21:08:41 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/api/* include/xmlsec/Makefile.am  include/xmlsec/xpath.h
+	src/xpath.c: removed xpath "here()" function declaration 
+	from global view and xpath.h file, rebuilt docs.
+
+Thu 15 Aug 2002 08:45:26 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* docs/api/* src/* include/xmlsec/*: finished writing
+	documentation for 370+ internal and external symbols
+
+Thu 15 Aug 2002 08:14:50 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+	
+	* tests/keys/README: applied patch from <xafilac@gmx.de>
+	(bug #90824)
+	
+Wed Aug 14 19:38:56 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* NEWS README: minor updates
+	* docs/documentation.html docs/xmlsec-man.html man/Makefile.am:
+	published xmlsec utility man page
+
+Wed Aug 14 19:27:09 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/api/* include/xmlsec/base64.h include/xmlsec/bn.h 
+	include/xmlsec/transforms.h src/aes.c src/base64.c
+	src/bn.c src/buffered.c src/c14n.c src/ciphers.c
+	src/des.c src/digests.c src/dsa.c src/enveloped.c
+	src/xmltree.c: and more and more documentation
+
+Wed Aug 14 17:32:23 2002  Aleksey Sanin  <aleksey@aleksey.com>  
+
+	* docs/api/* include/xmlsec/transforms.h 
+	include/xmlsec/transformsInternal.h include/xmlsec/version.h
+	include/xmlsec/version.h.in src/errors.c src/xpath.c:
+	and more documentation...
+
+Wed Aug 14 16:30:44 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/api/* include/xmlsec/keyinfo.h include/xmlsec/keys.h
+	include/xmlsec/keysmngr.h include/xmlsec/xmldsig.h 
+	include/xmlsec/xmlenc.h src/debug.c src/keyinfo.c
+	src/keys.c src/keysmngr.c src/xmldsig.c src/xmlenc.c
+	tests/keys.xml: more documentation...
+
+Wed Aug 14 13:08:32 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* docs/api/* include/xmlsec/errors.h include/xmlsec/xmldsig.h 
+	include/xmlsec/xmlenc.h src/errors.c src/xmldsig.c 
+	src/xmlenc.c src/xmlsec.c: added comments and rebuild documentation
+	* docs/faq.html: update FAQ
+
+Wed 14 Aug 2002 09:44:31 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c: fixed random numbers initialization
+
+Tue 13 Aug 2002 09:11:45 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* win32/* src/errors.c apps/xmlsec.c: made required changes
+	to support new stuff in win32 port
+
+Tue Aug 13 13:59:32 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* apps/xmlsec.c configure.in src/ciphers.c src/des.c src/dsa.c 
+	src/hmac.c src/rsa.c: replaced XMLSEC_OPENSSL097 define with 
+	XMLSEC_OPENSSL096 define
+	* docs/api/*: updated docs with new errors reporting functions
+
+Tue 13 Aug 2002 01:36:16 PM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/errors.h src/*.c configure.in: changed
+	error reporting system and updated all files accordingly
+
+Thu 08 Aug 2002 10:56:56 AM PDT Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/xpath.c: removed XPointer support from  XPath 2 filter
+
+Wed Aug  7 14:32:44 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* include/xmlsec/transforms.h include/xmlsec/xmlsec.h
+	src/transforms.c src/xmlsec.c src/xpath.c: added XPointer 
+	transform (Additional XML Security URIs)
+	* tests/aleksey-xmldsig-01/xpointer-hmac.tmpl
+	tests/aleksey-xmldsig-01/xpointer-hmac.xml 
+	tests/merlin-xpath-filter2-three/sign-xfdl.tmpl
+	tests/testDSig.sh: test cases for XPointer transform
+
+
+Wed Aug  7 01:08:13 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* src/transforms.c src/xmldsig.c src/xmlenc.c: full
+	xpointers support in Reference URIs is added
+	* include/xmlsec/xmltree.h src/xmltree.c src/xmlsec.c 
+	apps/xmlsec.c : removed the IDs hack
+	* docs/xmldsig-interop.html: added full XPointers support
+	* tests/*: added ID attribute declaration when necessary
+
+Tue Aug  6 09:51:54 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* docs/api: updated docs with new stuff
+	* man/xmlsec-config.1: fixed minor problems in help file
+	* include/xmlsec/nodeset.h src/enveloped.c src/nodeset.c
+	src/transforms.c src/xmldsig.c src/xpath.c: changed new
+	functions names
+	
+Mon Aug  5 22:55:05 2002  Aleksey Sanin <aleksey@aleksey.com>
+
+	* Makefile.am tests/testDSig.sh tests/testEnc.sh: added
+	'perfcheck' flag to the Makefile for performance testing
+	    
+Mon Aug  5 21:11:41 2002  Aleksey Sanin <aleksey@aleksey.com>
+
+	* include/xmlsec/nodeset.h include/xmlsec/transforms.h
+	src/enveloped.c src/nodeset.c src/xpath.c: new node set
+	code improved performaance (8-10 times!!!) 
+
+Mon Aug  5 17:58:31 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* Makefile.am configure.in  src/xpathalt.c:
+	Removed alt xpath trasnform implementation as outdated
+	* include/xmlsec/nodeset.h  src/nodeset.c
+	src/Makefile.am include/xmlsec/Makefile.am 
+	include/xmlsec/transforms.h include/xmlsec/transformsInternal.h 
+	src/transforms.c include/xmlsec/xmltree.h src/xmltree.c
+	src/c14n.c src/enveloped.c src/xmldsig.c 
+	src/xpath.c: create xmlsec specific nodes set object
+	and start using it everythere
+	* src/x509.c: updated the code to use new openssl 0.9.7 builds 
+
+Wed Jul 31 23:38:18 2002  Aleksey Sanin  <aleksey@aleksey.com>
+
+	* Makefile.am configure.in: added "enable-profiling" config option
+	* docs/download.html docs/index.html src/c14n.c: 
+	starting XPath and enveloped transforms performance improvements
+	* tests/Makefile.am tests/merlin-c14n-three/* tests/testDSig.sh:
+	added one more Merlin's test suite for exc-c14n
+
+Wed Jul 31 15:56:17 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* apps/xmlsec.c src/xpath.c tests/testDSig.sh: improved
+	XPath2 performance
+
+Wed Jul 31 11:45:09 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* include/xmlsec/xmlsec.h src/keyinfo.c src/xmlsec.c src/xpath.c
+	tests/Makefile.am tests/testDSig.sh tests/merlin-xpath-filter2-three:
+	updated XPath2 transform implementation according to the
+	latest spec and added Merlin's tests for it
+
+Thu 18 Jul 2002 08:51:16 AM PDT  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/x509.c: fixed problems with using self-signed certs
+	for signatures
+
+Thu Jul 11 19:30:31 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* Makefile.am configure.in xmlsec.spec.in xmlsec.pc xmlsec.pc.in:
+	Add pkgconfig script
+	
+	* tests/Makefile.am tests/testDSig.sh tests/testEnc.sh tests/testKeys.sh:
+	more fixes for dist
+
+Thu Jul 11 17:17:22 2002 Aleksey Sanin  <aleksey@aleksey.com> 
+	* configure.in src/Makefile.am tests/Makefile.am: fixed
+	minor dist bugs
+
+Thu Jul 11 11:47:14 2002  Aleksey Sanin  <aleksey@aleksey.com> 
+	* Makefile.am docs/* docs/api/*: added faq and documentation
+	pages
+
+Thu Jul 11 9:19:45 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* Makefile.am configure.in docs/api/*: added API docs
+	generation
+
+Wed Jul 10 21:39:59 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* AUTHORS Makefile.am debian/* : added Debian packaging scripts from 
+	John Belmonte  <jvb@prairienet.org>
+
+Wed Jul 10 21:24:43 2002  Aleksey Sanin  <aleksey@aleksey.com> 
+	* include/xmlsec/*.h src/*.c: some comments added
+
+Wed Jul 10 18:06:12 2002  Aleksey Sanin  <aleksey@aleksey.com> 
+	* Makefile.am config.h.in configure.in man/* xmlsec.spec.in:
+        man pages for xmlsec and xmlsec-config were added
+	* apps/xmlsec.c: "--version" and "--help" options added
+	
+Wed Jul 10 21:41:21 2002  Igor Zlatkovic <igor@stud.fh-frankfurt.de>
+	* win32/Makefile.msvc: Fixed minor typos, static link flags 
+	and bindist target
+	* apps/xmlsec.c: Added snprintf -> _snprintf mapping for MS
+	C-runtime
+	
+Wed Jul 10 8:45:23 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* configure.in docs/* : 0.0.7 release
+	
+Fri Jun 21 00:48:52 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* Makefile.am configure.in: added win32 folder to the
+	distribution
+
+2002-06-20  Aleksey Sanin  <aleksey@aleksey.com>
+	* apps/xmlsec.c: added password protected pem files
+        support 
+
+2002-06-19  Aleksey Sanin  <aleksey@aleksey.com>
+	* include/xmlsec/xmltree.h src/xmlsec.c src/xmltree.c: 
+	fixed ID attribute bug found by Sascha Breite
+
+Mon Jun  3 21:18:54 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/enveloped.c: improved performance
+
+Thu May 30 21:29:21 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* src/xmltree.c: propagating XPath fix from LibXML2
+
+Wed May 29 21:28:13 2002  Aleksey Sanin  <aleksey@aleksey.com>
+	* apps/xmlsec.c include/xmlsec/keysmngr.h include/xmlsec/x509.h
+	src/keysmngr.c src/x509.c tests/keys.xml: pkcs12 support added
+
+Wed 29 May 2002 12:07:35 AM PDT Aleksey Sanin <aleksey@aleksey.com>
+	*: merged 0.0.6 release from local CVS
+        *: win32 port
+	*: xpath filter2
+        *: custom network handlers
+    
+Mon 29 Apr 2002 12:07:35 AM PDT Aleksey Sanin <aleksey@aleksey.com>
+	*: Significant API re-factoring (make it more simple and consistent)
+        *: added symmetric Key Wrappers support (AES, DES)
+	*: added RIPEMD-160 support
+    
+Sat 30 Mar 2002 12:55:30 AM PST Aleksey Sanin <aleksey@aleksey.com>
+	*: Finished x509 supprot
+        *: Added functions to create signature "on-the-fly"
+	*: Updated examples and docs
+        *: Fixed header files installation bug
+    
+Wed 27 Mar 2002 11:20:42 PM PST Aleksey Sanin <aleksey@aleksey.com> 
+	*: Added x509 verification support and a skeleton for x509 
+          x509 based signatures
+    
+Tue 26 Mar 2002 06:30:10 PM PST Aleksey Sanin <aleksey@aleksey.com>
+	*: The result of operation (sign/verify) is returned in the
+          list of xmlDSigSignature objects. Application can examine
+	  the key and signature method, content just before digesting or
+          signing, etc. and decide what to do with it.
+	*: The Transform and KeyInfo code was significantly re-written and 
+          separated from the XMLDSig code with a goal to reuse in in 
+          XML Signature or whatever.
+        *: Added support for RetrievalMethod and Manifests (pretty simple
+	  adter the first change because both are based on Transforms)
+        *: Added XSLT support (based on libxslt from Daniel Veillard)
+    

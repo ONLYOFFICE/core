@@ -1,0 +1,176 @@
+     Rules for commits on the xmlsec module
+     =========================================
+
+0) DO NOT COMMIT DIRECTLY !
+If you have a patch send a mail to xmlsec@aleksey.com mailing 
+list (you must be subscribed to the list, go to 
+http://www.aleksey.com/mailman/listinfo/xmlsec to subscribe).
+
+If there is a problem in xmlsec module that prevents you
+from building other major components then feel free to patch
+first and then send a mail. This is an EXCEPTIONAL case and
+you should be VERY carefull when you are doing this.
+
+Igor Zlatkovic get an exception for the send before commit rule.
+
+1) Coding style.
+    - Formatting. Just for clarification, the formating is:
+
+	tab size=8;indentation=4;insert spaces=yes 
+
+    - Use explicit "!= NULL", "!= 0", etc. This makes code
+    easier to read and remove warnings on some platform. 
+    Example:
+	BAD:
+	    if(a) 
+	GOOD:
+	    if(a != NULL)
+	or 
+	    if(a != 0)
+   
+   - Put figure brackets '{}' even if you have only one operator
+   in "if", "for", etc. This also makes code easier to read and 
+   saves a lot of time when you need to quickly change something. 
+   Example:
+	BAD:
+             if(a != NULL) 
+		xmlFree(a);
+	GOOD:
+             if(a != NULL) {
+		xmlFree(a);
+	    }
+    
+    - Use round brackets '()' in conditions to show the precedence order.
+    I don't remember what goes first '<<' or '*', do you?
+    Example:
+	BAD:
+            if(privkey == NULL || pubkey == NULL)
+	GOOD:
+	    if((privkey == NULL) || (pubkey == NULL))
+   
+   - Use round brackets '()' for "return". 
+   Example:
+	BAD:
+	    return 0;
+	GOOD:
+	    return(0);
+    
+    - Check for warnings! Use "--enable-pedantic" option
+    for "configure.in" script to enable as much warnings as possible.
+    Your patch should produce no new warnings and if you'll
+    see something that you can fix, then do it.
+    
+    - Check for memory leaks. There is a built in support for 
+    valgrind (http://devel-home.kde.org/~sewardj/). In order to use it,
+    use "enable_static_linking" option for "configure.in" script to 
+    force static linking of xmlsec command line utility and run 
+    "make memcheck" from the top xmlsec source folder. The results are printed
+    at the end. More detailed logs could be found in /tmp/test*.log files.
+
+2) Coding practice
+    - You should trust nobody! Anyone can fool you: user or another application
+    might provide you incorrect data; call to xmlsec or system function might 
+    fail with an error code; worse, the same call might fail but the return 
+    code is "success" and so on. The patch fixes a lot of places where the 
+    original code failed to check input data or function return values. 
+    One of my favorite examples is the code that *silently* assumed that 
+    base64 decoded value of a RSA public exponent obtained from XML fits 
+    in a DWORD. And after that the code did memcpy to copy from xmlSecBuffer 
+    to a DWORD variable *without* checking how much data are actualy copied! 
+    The trivial DoS attack (at least DoS!!!) is to put very long base64 string
+    in XML file and enjoy the server crash.
+    One of the strongest sides of xmlsec library is that there are very few 
+    known ways to crash it (and all of them are related to running the 
+    application in an environment with a very limited memory to force a malloc 
+    failure). To be a little paranoid is good in this context :)
+    
+    - malloc/free vs. xmlMalloc/xmlFree
+    xmlsec library use libxml2 memory management functions. This provides an 
+    easy way to replace default memory management functions with custom ones. 
+    And this might be very usefull in some cases.
+    Note that crypto library might use a different memory management
+    functions! Be very carefully to do not mix them (i.e. get memory
+    allocated by crypto library function and free it with xmFree).
+
+    - Errors reporting (XMLSEC_ERRORS_R_XMLSEC_FAILED vs. XMLSEC_ERRORS_R_CRYPTO_FAILED)
+    The correct usage rule is:
+	if the failed function starts with "xmlSec" then use
+    	    XMLSEC_ERRORS_R_XMLSEC_FAILED
+	else if it is xmlMalloc/xmlFree/xmlStrdup/etc then use
+            XMLSEC_ERRORS_R_MALLOC_FAILED
+	else if the function starts with "xml" or "xslt" (i.e. it comes 
+	from libxml or libxslt) then use
+	    XMLSEC_ERRORS_R_XML_FAILED
+	else if it is related to IO (fopen, fread, fwrite, etc.) then use
+	    XMLSEC_ERRORS_R_IO_FAILED
+	else if the function could be used only from xmlsec-crypto (i.e. 
+	it is crypto engine related) then use
+	    XMLSEC_ERRORS_R_CRYPTO_FAILED
+	else if there is another reason (invalid data, invalid size, etc.)
+	    corresponding error reason should be used
+	else
+	    it is something new and should be discussed
+	fi						    
+    Correct error reason is very important. For example,  some applications 
+    ignore all the XMLSEC_ERRORS_R_XMLSEC_FAILED errors to get to the bottom of
+    the errors stack and report the actual problem.
+							    
+    - Errors reporting: "size=%d;error=%d" instead of "size %d, error: %d":
+    It would be great if xmlsec-crypto libraries can follow the error message 
+    standard adopted in the other files of xmlsec library: 
+	"<name1>=<value1>;<name2>=<value2>;..."
+    This greatly helps when one needs to write a logs parser. For example, to 
+    find the reason of memory allocation failures.				    
+
+3) Preparing and submitting a patch.
+If you want to submit a patch please create a pull request on GitHub and then
+   send your pull request along with a short description of the problem or feature
+    you are fixing/implementing to the xmlsec@aleksey.com mailing list 
+    (you must be subscribed to the list, go to http://www.aleksey.com/mailman/listinfo/xmlsec to subscribe).
+    If you are fixing a bug, it might be a good idea to create a GitHub ticket first
+    (http://www.aleksey.com/xmlsec/bugs.html) for the record.
+    
+4) Building a release
+- Cleanup, make sure no other changes are pending
+  - make distclean
+  - git status 
+- Update Changelog
+- Write about release changes in the release
+  - docs/index.html and docs/news.html
+- Update release number in 
+  - configure.in (2 places at the top)
+  - docs/download.html
+- Create build
+  - ./autogen.sh
+  - make
+- Build docs (watch for errors!)
+  - make docs
+- Commit the "prepare for X.Y.Z" release
+  - git commit -m"prepare for X.Y.Z release" -a
+- Run tests, make sure everything is OK
+  - make check
+- Build release
+  - sudo ./scripts/build_release.sh
+- Extract tar file, make sure it works
+  - cd /tmp
+  - tar xvfz /usr/src/redhat/SOURCE/xmlsec1-X.Y.z.tar.gz 
+  - cd xmlsec1-X.Y.z
+  - ./configure
+  - make
+  - make check
+- Copy tar file to FTP/Web Download
+- Copy docs/ folder to Web folder
+- Write an announcement email to xmlsec@aleksey.com
+- Update freshmeat.net
+- Relax
+
+
+
+
+
+
+
+
+    
+    
+

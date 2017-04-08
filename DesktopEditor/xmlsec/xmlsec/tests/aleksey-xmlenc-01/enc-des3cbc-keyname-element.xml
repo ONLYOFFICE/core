@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE test [
+<!ATTLIST Test Id ID #IMPLIED>
+]>
+<Envelope>
+    <EncryptedData xmlns="http://www.w3.org/2001/04/xmlenc#" MimeType="text/plain" Type="http://www.w3.org/2001/04/xmlenc#Element">
+  <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+  <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <KeyName>test-des</KeyName>
+  </KeyInfo>   
+  <CipherData>
+     <CipherValue>
+       R7/6DcpvRzHeYQ09rSjgm6COYB3srMqwpxeBWRmzT2P+lwa/bZGgZEOSQyayMEIt
+     </CipherValue>
+  </CipherData>
+</EncryptedData>
+</Envelope>

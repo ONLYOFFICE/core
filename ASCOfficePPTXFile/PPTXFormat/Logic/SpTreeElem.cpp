@@ -247,19 +247,28 @@ namespace PPTX
 				m_elem.reset(new Logic::GraphicFrame(oReader));
 			else if (name == _T("AlternateContent"))
 			{
-				bool isEmpty = true;
+				if ( oReader.IsEmptyNode() )
+					return;
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring strName = oReader.GetName();
+					
+					if ( oReader.IsEmptyNode() )
+						continue;
+					
 					if (strName == L"mc:Choice")
 					{
+						oReader.ReadNextSiblingNode(nCurDepth + 1);
 						//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 						fromXML(oReader);
-						break;
+						
+						if (m_elem.is_init())
+							break;
 					}
 					else if (strName == L"mc:Fallback")
 					{
+						oReader.ReadNextSiblingNode(nCurDepth + 1);
 						fromXML(oReader);
 					}
 				}

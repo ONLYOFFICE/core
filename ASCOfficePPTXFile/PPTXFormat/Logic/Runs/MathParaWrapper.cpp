@@ -50,16 +50,24 @@ namespace PPTX
 		}
 		void MathParaWrapper::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			std::wstring name = oReader.GetName();
+			if ( oReader.IsEmptyNode() )
+				return;
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 			
-			if(L"oMathPara" == name)
-			{
-				m_oMathPara = oReader;
+				if(L"oMathPara" == strName)
+				{
+					m_oMathPara = oReader;
+				}
+				else if(L"oMath" == strName)
+				{
+					m_oMath = oReader;
+				}
 			}
-			else if(L"oMath" == name)
-			{
-				m_oMath = oReader;
-			}
+			
+			FillParentPointersForChilds();
 		}
 		void MathParaWrapper::fromXML(XmlUtils::CXmlNode& node)
 		{
@@ -151,8 +159,7 @@ namespace PPTX
 					oDrawingConverter.m_pBinaryWriter = pWriter;
 
 					DocWrapper::FontProcessor fp;
-					BinDocxRW::ParamsWriter oParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
-					oDocxSerializer.m_pParamsWriter = &oParamsWriter;
+					oDocxSerializer.m_pParamsWriter = new BinDocxRW::ParamsWriter(pWriter, &fp, &oDrawingConverter, NULL);
 					oDocxSerializer.getBinaryContentElem(eElemType, pElem, *pWriter, lDataSize);
 					//*oDrawingConverter.m_pBinaryWriter->m_pCommonRels = pOldRels;
 					oDrawingConverter.m_pBinaryWriter = pOldWriter;

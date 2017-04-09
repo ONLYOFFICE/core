@@ -69,7 +69,7 @@ namespace PPTX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if (sName == L"a:pos")
+					if (sName == L"a:pt")
 					{
 						ReadAttributes2(oReader);
 					}

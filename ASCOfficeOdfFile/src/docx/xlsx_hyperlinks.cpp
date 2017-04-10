@@ -91,7 +91,7 @@ public:
 			int pos =target.find(L".");
 			if (pos < 0)
 			{
-				target = target + std::wstring(L".A1");
+				target = L"\"" + target + std::wstring(L"\".A1");
 			}
             r.location = converter_.convert_ref(std::wstring(target.begin() + 1, target.end()));
 			r.type = L"Internal" ;

@@ -43,7 +43,8 @@ namespace PPTX
 	{
 		Shape::Shape(std::wstring name_)
 		{
-			m_name = name_;
+			m_name	= name_;
+			levelUp = NULL;
 		}
 
 		Shape::~Shape()
@@ -52,16 +53,18 @@ namespace PPTX
 
 		Shape::Shape(XmlUtils::CXmlNode& node)
 		{
+			levelUp = NULL;
 			fromXML(node);
 		}
+		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
+		{
+			levelUp = NULL;
+			fromXML(oReader);
+		}		
 		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
-		}
-		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML(oReader);
 		}
 		const Shape& Shape::operator =(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -617,7 +620,14 @@ namespace PPTX
 			if (!bIsSlidePlaceholder)
 			{
 				if(txBody.IsInit())
+				{
+					if(!shape.txBody.is_init())
+						shape.txBody = new TxBody();
+					
 					txBody->Merge(shape.txBody);
+
+					shape.txBody->Paragrs = txBody->Paragrs;
+				}
 			}
 			else
 			{

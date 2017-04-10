@@ -2779,6 +2779,9 @@ namespace BinXlsxRW
         void WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, std::wstring& sDrawingRelsPath, OOX::CVmlDrawing *pVmlDrawing = NULL, OOX::Spreadsheet::COleObject* pOleObject = NULL)
 		{
 			if (!pCellAnchor) return;
+
+			if (pCellAnchor->m_oElement.IsInit() == false && 
+				pCellAnchor->m_sSpId.IsInit() == false) return;
 	//Type
 			int nCurPos;
 			nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Type);
@@ -2819,13 +2822,12 @@ namespace BinXlsxRW
 				if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
 				{
 					pFind->second.bUsed = true;
-					std::wstring sVmlXml;
+					
+					std::wstring sVmlXml = L"<v:object>";
+					sVmlXml += pFind->second.sXml; //add vml shape xml
 					
 					if (pCellAnchor->m_bShapeOle && NULL != pOleObject)
 					{
-						sVmlXml += L"<v:object>";
-						sVmlXml += pFind->second.sXml; //add vml shape xml
-
 						//ищем физический файл, потому что rId относительно sheet.xml, а SetRelsPath(pVmlDrawing
 						smart_ptr<OOX::File> pFile = oWorksheet.Find(OOX::RId(pOleObject->m_oRid->GetValue()));
 						pOleObject->m_OleObjectFile = pFile.smart_dynamic_cast<OOX::OleObject>();
@@ -2834,10 +2836,8 @@ namespace BinXlsxRW
 						pOleObject->toXMLPptx(writer, L"");
 							
 						sVmlXml += writer.GetData();
-						sVmlXml += L"</v:object>";
 					}
-					else
-						sVmlXml = pFind->second.sXml; //add vml shape xml
+					sVmlXml += L"</v:object>";
 
                     std::wstring keepRels = m_pOfficeDrawingConverter->GetRelsPath();
 					m_pOfficeDrawingConverter->SetRelsPath(pVmlDrawing->GetReadPath().GetPath());

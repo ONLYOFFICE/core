@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+  <ToBeSigned>
+    Some very secret data
+  </ToBeSigned>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2002/06/xmldsig-filter2">
+            <XPath xmlns="http://www.w3.org/2002/06/xmldsig-filter2" Filter="intersect"> //ToBeSigned </XPath>
+          </Transform>
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <DigestValue>3om1gINPzaogcdLuDdjIQlls4NE=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>W/X7k6Q6T9RFW56VkRV9HGW5wkyUxvvlUcEyUkggVE04gsOK0Rx0rqq2woUxzkk1
+jvXfCtm2xknb2/cOmqfO/g==</SignatureValue>
+    <KeyInfo>
+      <X509Data>
+        
+      <X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Root CA,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757420</X509SerialNumber>
+</X509IssuerSerial>
+<X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Root CA,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757421</X509SerialNumber>
+</X509IssuerSerial>
+<X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757423</X509SerialNumber>
+</X509IssuerSerial>
+</X509Data>
+    </KeyInfo>
+  </Signature>
+</Document>

@@ -1,0 +1,39 @@
+WHAT VERSION OF WINDOWS?
+------------------------------------------------------------------------
+
+The xmlsec-mscrypto lib is developed on a windows XP machine with MS Visual
+Studio (6 and .NET). The MS Crypto API has been evolving a lot with the
+new releases of windows and internet explorer. MS CryptoAPI libraries
+are distributed with ie and with the windows OS. Full functionality will
+only be achieved on windows XP. AES is for example not supported on pre
+XP versions of Windows (workarounds for this are possible, I believe).
+Direct RSA de/encryption, used by xmlsec-mscrypto, is only possible from
+Win 2000 (possibly also with a newer version of ie, with strong encryption
+patch installed). It's very likely more of these issues are lying around, a
+nd until it is tested on older windows systems it is uncertain what will work.
+
+KEYS MANAGER with MS Certificate store support.
+------------------------------------------------------------------------
+
+The default xmlsec-mscrypto keys manager is based upon the simple keys
+store, found in the xmlsec core library. If keys are not found in the
+simple keys store, than MS Certificate store is used to lookup keys.
+The certificate store is only used on a READONLY base, so it is not possible
+to store keys via the keys store into the MS certificate store. There are enough
+other tools that can do that for you.
+
+When the xmlsec application is started, with the config parameter the name of
+the (system) keystore can be given. That keystore will be used for certificates
+and keys lookup. With the keyname now two types of values can be given:
+    - simple name (called friendly name with MS);
+    - full subject name (recommended) of the key's certificate.
+
+KNOWN ISSUES.
+------------------------------------------------------------------------
+1) Default keys manager don't use trusted certs in MS Crypto Store
+(http://bugzilla.gnome.org/show_bug.cgi?id=123668).
+
+2) The only supported file formats are PKCS#12 and DER certificates
+(http://bugzilla.gnome.org/show_bug.cgi?id=123675).
+
+

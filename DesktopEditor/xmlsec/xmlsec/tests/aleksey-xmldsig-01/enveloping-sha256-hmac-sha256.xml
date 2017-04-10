@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+  <SignedInfo>
+    <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+    <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha256"/>
+    <Reference URI="#object">
+      <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+      <DigestValue>iDhYt78o294fA6pzQ7k44+eejrQMi+WX3l3UrUdtL1Q=</DigestValue>
+    </Reference>
+  </SignedInfo>
+  <SignatureValue>6E34uTISXH5HLnt9wyOB8dxwz/Z31S+qxWF+rULRnhU=</SignatureValue>
+  <Object Id="object">some text</Object>
+</Signature>

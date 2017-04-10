@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInfo xmlns="http://example.org/paymentv2">
+  <Name>John Smith</Name>
+  <EncryptedData Id="ED" Type="http://www.w3.org/2001/04/xmlenc#Element" xmlns="http://www.w3.org/2001/04/xmlenc#">
+    <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <EncryptedKey Id="EK" xmlns="http://www.w3.org/2001/04/xmlenc#">
+        <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#kw-tripledes"/>
+        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+          <ds:KeyName>my-tripledes-key</ds:KeyName>
+        </ds:KeyInfo>
+        <CipherData>
+          <CipherValue>HgVuHoXxBQWD9fvi0gt9TanywZ5lJokM/12fcMG6gRoMjsCPulH+4A==</CipherValue>
+        </CipherData>
+        <ReferenceList>
+          <DataReference URI="#ED"/>
+        </ReferenceList>
+      </EncryptedKey>
+    </ds:KeyInfo>
+    <CipherData>
+      <CipherValue>
+        yUMIHkj5EETckjZ59fpda4+m4YLCrkJsnuRz+Q3e5sP+VvHKRH1kdeGkXw3kYURV
+	JM3nQjGl2egW80oUxSykQD2F9iDoIjNhLSgIbyuse64oo/5/v9IiaUpSvrAocwLP
+	AzFIUmOrxmIagAkRGDOeMR8tdHLD6g84dQj4O/aGfwhL/2wUo/l+7onrbmsd6pVI
+	fjNyvXm+eITuyUnkDTHrCR+dfb2sHaQ3g3McgyfP6ZjI/L50SPJZ/w==
+      </CipherValue>
+    </CipherData>
+  </EncryptedData>
+</PaymentInfo>

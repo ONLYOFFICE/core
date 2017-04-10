@@ -1,0 +1,1 @@
+<!ATTLIST SOAP:Body id ID #IMPLIED>

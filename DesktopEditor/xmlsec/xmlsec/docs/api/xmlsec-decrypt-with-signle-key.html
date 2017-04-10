@@ -1,0 +1,349 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Decrypting data with a single key.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="Examples." href="xmlsec-examples.html">
+<link rel="PREVIOUS" title="Encrypting data with a session key." href="xmlsec-encrypt-with-session-key.html">
+<link rel="NEXT" title="Decrypting data with keys manager." href="xmlsec-decrypt-with-keys-mngr.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-encrypt-with-session-key.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-examples.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-decrypt-with-keys-mngr.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-DECRYPT-WITH-SIGNLE-KEY">Decrypting data with a single key.</a></h1>
+<br clear="all"><div class="SECT2">
+<h2 class="SECT2"><a name="XMLSEC-EXAMPLE-DECRYPT1">decrypt1.c</a></h2>
+<p></p>
+<div class="INFORMALEXAMPLE">
+<p></p>
+<a name="AEN818"></a><pre class="PROGRAMLISTING">/** 
+ * XML Security Library example: Decrypting an encrypted file using a single key.
+ * 
+ * Decrypts encrypted XML file using a single DES key from a binary file
+ * 
+ * Usage: 
+ *      ./decrypt1 &lt;xml-enc&gt; &lt;des-key-file&gt; 
+ *
+ * Example:
+ *      ./decrypt1 encrypt1-res.xml deskey.bin
+ *      ./decrypt1 encrypt2-res.xml deskey.bin
+ *
+ * This is free software; see Copyright file in the source
+ * distribution for preciese wording.
+ * 
+ * Copyright (C) 2002-2016 Aleksey Sanin &lt;aleksey@aleksey.com&gt;. All Rights Reserved.
+ */
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;assert.h&gt;
+
+#include &lt;libxml/tree.h&gt;
+#include &lt;libxml/xmlmemory.h&gt;
+#include &lt;libxml/parser.h&gt;
+
+#ifndef XMLSEC_NO_XSLT
+#include &lt;libxslt/xslt.h&gt;
+#include &lt;libxslt/security.h&gt;
+#endif /* XMLSEC_NO_XSLT */
+
+#include &lt;xmlsec/xmlsec.h&gt;
+#include &lt;xmlsec/xmltree.h&gt;
+#include &lt;xmlsec/xmlenc.h&gt;
+#include &lt;xmlsec/crypto.h&gt;
+
+int decrypt_file(const char* enc_file, const char* key_file);
+
+int 
+main(int argc, char **argv) {
+#ifndef XMLSEC_NO_XSLT
+    xsltSecurityPrefsPtr xsltSecPrefs = NULL;
+#endif /* XMLSEC_NO_XSLT */
+
+    assert(argv);
+
+    if(argc != 3) {
+        fprintf(stderr, "Error: wrong number of arguments.\n");
+        fprintf(stderr, "Usage: %s &lt;enc-file&gt; &lt;key-file&gt;\n", argv[0]);
+        return(1);
+    }
+
+    /* Init libxml and libxslt libraries */
+    xmlInitParser();
+    LIBXML_TEST_VERSION
+    xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
+    xmlSubstituteEntitiesDefault(1);
+#ifndef XMLSEC_NO_XSLT
+    xmlIndentTreeOutput = 1; 
+#endif /* XMLSEC_NO_XSLT */
+
+    /* Init libxslt */
+#ifndef XMLSEC_NO_XSLT
+    /* disable everything */
+    xsltSecPrefs = xsltNewSecurityPrefs(); 
+    xsltSetSecurityPrefs(xsltSecPrefs,  XSLT_SECPREF_READ_FILE,        xsltSecurityForbid);
+    xsltSetSecurityPrefs(xsltSecPrefs,  XSLT_SECPREF_WRITE_FILE,       xsltSecurityForbid);
+    xsltSetSecurityPrefs(xsltSecPrefs,  XSLT_SECPREF_CREATE_DIRECTORY, xsltSecurityForbid);
+    xsltSetSecurityPrefs(xsltSecPrefs,  XSLT_SECPREF_READ_NETWORK,     xsltSecurityForbid);
+    xsltSetSecurityPrefs(xsltSecPrefs,  XSLT_SECPREF_WRITE_NETWORK,    xsltSecurityForbid);
+    xsltSetDefaultSecurityPrefs(xsltSecPrefs); 
+#endif /* XMLSEC_NO_XSLT */                
+
+                
+    /* Init xmlsec library */
+    if(xmlSecInit() &lt; 0) {
+        fprintf(stderr, "Error: xmlsec initialization failed.\n");
+        return(-1);
+    }
+
+    /* Check loaded library version */
+    if(xmlSecCheckVersion() != 1) {
+        fprintf(stderr, "Error: loaded xmlsec library version is not compatible.\n");
+        return(-1);
+    }
+
+    /* Load default crypto engine if we are supporting dynamic
+     * loading for xmlsec-crypto libraries. Use the crypto library
+     * name ("openssl", "nss", etc.) to load corresponding 
+     * xmlsec-crypto library.
+     */
+#ifdef XMLSEC_CRYPTO_DYNAMIC_LOADING
+    if(xmlSecCryptoDLLoadLibrary(NULL) &lt; 0) {
+        fprintf(stderr, "Error: unable to load default xmlsec-crypto library. Make sure\n"
+                        "that you have it installed and check shared libraries path\n"
+                        "(LD_LIBRARY_PATH) envornment variable.\n");
+        return(-1);     
+    }
+#endif /* XMLSEC_CRYPTO_DYNAMIC_LOADING */
+
+    /* Init crypto library */
+    if(xmlSecCryptoAppInit(NULL) &lt; 0) {
+        fprintf(stderr, "Error: crypto initialization failed.\n");
+        return(-1);
+    }
+
+    /* Init xmlsec-crypto library */
+    if(xmlSecCryptoInit() &lt; 0) {
+        fprintf(stderr, "Error: xmlsec-crypto initialization failed.\n");
+        return(-1);
+    }
+
+    if(decrypt_file(argv[1], argv[2]) &lt; 0) {
+        return(-1);
+    }    
+    
+    /* Shutdown xmlsec-crypto library */
+    xmlSecCryptoShutdown();
+    
+    /* Shutdown crypto library */
+    xmlSecCryptoAppShutdown();
+    
+    /* Shutdown xmlsec library */
+    xmlSecShutdown();
+
+    /* Shutdown libxslt/libxml */
+#ifndef XMLSEC_NO_XSLT
+    xsltCleanupGlobals();            
+#endif /* XMLSEC_NO_XSLT */
+    xmlCleanupParser();
+    
+    return(0);
+}
+
+/**
+ * decrypt_file:
+ * @enc_file:           the encrypted XML  file name.
+ * @key_file:           the Triple DES key file.
+ *
+ * Decrypts the XML file #enc_file using DES key from #key_file and 
+ * prints results to stdout.
+ *
+ * Returns 0 on success or a negative value if an error occurs.
+ */
+int 
+decrypt_file(const char* enc_file, const char* key_file) {
+    xmlDocPtr doc = NULL;
+    xmlNodePtr node = NULL;
+    xmlSecEncCtxPtr encCtx = NULL;
+    int res = -1;
+    
+    assert(enc_file);
+    assert(key_file);
+
+    /* load template */
+    doc = xmlParseFile(enc_file);
+    if ((doc == NULL) || (xmlDocGetRootElement(doc) == NULL)){
+        fprintf(stderr, "Error: unable to parse file \"%s\"\n", enc_file);
+        goto done;      
+    }
+    
+    /* find start node */
+    node = xmlSecFindNode(xmlDocGetRootElement(doc), xmlSecNodeEncryptedData, xmlSecEncNs);
+    if(node == NULL) {
+        fprintf(stderr, "Error: start node not found in \"%s\"\n", enc_file);
+        goto done;      
+    }
+
+    /* create encryption context, we don't need keys manager in this example */
+    encCtx = xmlSecEncCtxCreate(NULL);
+    if(encCtx == NULL) {
+        fprintf(stderr,"Error: failed to create encryption context\n");
+        goto done;
+    }
+
+    /* load DES key */
+    encCtx-&gt;encKey = xmlSecKeyReadBinaryFile(xmlSecKeyDataDesId, key_file);
+    if(encCtx-&gt;encKey == NULL) {
+        fprintf(stderr,"Error: failed to load des key from binary file \"%s\"\n", key_file);
+        goto done;
+    }
+    
+    /* set key name to the file name, this is just an example! */
+    if(xmlSecKeySetName(encCtx-&gt;encKey, key_file) &lt; 0) {
+        fprintf(stderr,"Error: failed to set key name for key from \"%s\"\n", key_file);
+        goto done;
+    }
+
+    /* decrypt the data */
+    if((xmlSecEncCtxDecrypt(encCtx, node) &lt; 0) || (encCtx-&gt;result == NULL)) {
+        fprintf(stderr,"Error: decryption failed\n");
+        goto done;
+    }
+        
+    /* print decrypted data to stdout */
+    if(encCtx-&gt;resultReplaced != 0) {
+        fprintf(stdout, "Decrypted XML data:\n");
+        xmlDocDump(stdout, doc);
+    } else {
+        fprintf(stdout, "Decrypted binary data (%d bytes):\n", xmlSecBufferGetSize(encCtx-&gt;result));
+        if(xmlSecBufferGetData(encCtx-&gt;result) != NULL) {
+            fwrite(xmlSecBufferGetData(encCtx-&gt;result), 
+                  1, 
+                  xmlSecBufferGetSize(encCtx-&gt;result),
+                  stdout);
+        }
+    }
+    fprintf(stdout, "\n");
+        
+    /* success */
+    res = 0;
+
+done:    
+    /* cleanup */
+    if(encCtx != NULL) {
+        xmlSecEncCtxDestroy(encCtx);
+    }
+    
+    if(doc != NULL) {
+        xmlFreeDoc(doc); 
+    }
+    return(res);
+}</pre>
+<p></p>
+</div>
+</div>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-encrypt-with-session-key.html"><b>&lt;&lt;&lt; Encrypting data with a session key.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-decrypt-with-keys-mngr.html"><b>Decrypting data with keys manager. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

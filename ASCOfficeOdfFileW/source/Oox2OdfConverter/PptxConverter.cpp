@@ -234,7 +234,7 @@ void PptxConverter::convert_styles()
 		if (slide->theme->themeElements.fontScheme.majorFont.ea.typeface.empty() == false)
 			text_properties->content_.style_font_family_asian_ = slide->theme->themeElements.fontScheme.majorFont.ea.typeface;
 	}
-	convert(presentation->defaultTextStyle.GetPointer()); //стили дефалтовых списков
+	//convert(presentation->defaultTextStyle.GetPointer()); //стили дефалтовых списков
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -298,9 +298,11 @@ void PptxConverter::convert_slides()
 					master_style_name += std::to_wstring(m_mapMasters.size());
 				
 				odp_context->start_master_slide(master_style_name);
-					current_slide = slide->Master.operator->();
-					convert_slide(&slide->Master->cSld, false);//slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true);		
-					
+					//if (slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true)
+					{
+						current_slide = slide->Master.operator->();
+						convert_slide(&slide->Master->cSld, false);
+					}			
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
@@ -876,12 +878,24 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholde
 		
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
+			pShape->FillLevelUp();
 			if (bPlaceholders)
-				convert(pElem.operator->());
+			{
+				PPTX::Logic::Shape update_shape;
+				
+				pShape->levelUp->Merge(update_shape, true);
+				pShape->Merge(update_shape);
+
+				OoxConverter::convert(&update_shape);
+			}
+			else
+			{
+				OoxConverter::convert(pShape.operator->());
+			}
 		}
 		else 
 		{
-			convert(pElem.operator->());
+			OoxConverter::convert(pElem.operator->());
 		}
 		//convert(oox_slide->spTree.SpTreeElems[i].GetElem().operator->());
 	}

@@ -1,0 +1,3986 @@
+<XFDL version="4.0.1">
+	<vfd_title>SF71</vfd_title>
+	<vfd_author>Thomas Mohr</vfd_author>
+	<vfd_revision>4/6/98</vfd_revision>
+	<vfd_date>4/6/98</vfd_date>
+	<saveformat>application/x-xfdl</saveformat>
+	<transmitformat>application/x-xfdl</transmitformat>
+	<formid content="array">
+		<version>1.0.0</version>
+	</formid>
+	<page sid="PAGE1">
+		<vfd_pagesize>letter</vfd_pagesize>
+		<vfd_pagedpi>120</vfd_pagedpi>
+		<vfd_printsize>8.0;10.5</vfd_printsize>
+		<label>PAGE1</label>
+		<bgcolor content="array">
+			<ae>235</ae>
+			<ae>235</ae>
+			<ae>235</ae>
+		</bgcolor>
+		<fontinfo content="array">
+			<ae>Courier</ae>
+			<ae>9</ae>
+			<ae>plain</ae>
+		</fontinfo>
+		<label sid="LABEL1">
+			<value>REQUEST FOR LEAVE OR APPROVED ABSENCE</value>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>14</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<justify>center</justify>
+			<size content="array">
+				<ae>61</ae>
+				<ae>1</ae>
+			</size>
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>3</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>874</ae>
+					<ae>34</ae>
+				</ae>
+			</itemlocation>
+		</label>
+		<label sid="LABEL2">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>20</ae>
+					<ae>35</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>79</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>1.  NAME</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL3">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>100</ae>
+					<ae>35</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>218</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>(Last, First, Middle Initial)</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+				<ae>italic</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL4">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>35</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>385</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>2.  EMPLOYEE OR SOCIAL SECURITY NUMBER</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL5">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>20</ae>
+					<ae>85</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>170</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>3.  ORGANIZATION</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL6">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>20</ae>
+					<ae>135</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>248</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>4.  TYPE OF LEAVE/ABSENCE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL7">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>32</ae>
+					<ae>155</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>236</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>(Check appropriate box(es) below.)</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>plain</ae>
+				<ae>italic</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL8">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>270</ae>
+					<ae>158</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>48</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>From:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL9">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>135</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>163</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Date</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<justify>center</justify>
+		</label>
+		<label sid="LABEL10">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>352</ae>
+					<ae>158</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>48</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>To:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL11">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>432</ae>
+					<ae>158</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>48</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>From:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL12">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>430</ae>
+					<ae>135</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>163</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Time</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<justify>center</justify>
+		</label>
+		<label sid="LABEL13">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>513</ae>
+					<ae>158</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>48</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>To:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL14">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>592</ae>
+					<ae>134</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>46</ae>
+				</ae>
+			</itemlocation>
+			<value>Total
+Hours</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<justify>center</justify>
+		</label>
+		<label sid="LABEL15">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>186</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>205</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Accrued Annual Leave</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL16">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>232</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>205</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Restored Annual Leave</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL17">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>278</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>205</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Advance Annual Leave</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL18">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>323</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>205</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Accured Sick Leave</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL19">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>368</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>205</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Advance Sick Leave</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL20">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>409</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Purpose:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL21">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>142</ae>
+					<ae>410</ae>
+				</ae>
+			</itemlocation>
+			<value>Medical/dental/optical Examination of requesting employee</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<size content="array">
+				<ae>45</ae>
+				<ae>1</ae>
+			</size>
+		</label>
+		<label sid="LABEL22">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>535</ae>
+					<ae>410</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>46</ae>
+					<ae>24</ae>
+				</ae>
+			</itemlocation>
+			<value>Other</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL23">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>142</ae>
+					<ae>435</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>439</ae>
+					<ae>42</ae>
+				</ae>
+			</itemlocation>
+			<value>Care of family member/bereavement, including medical/dental/optical examination of family member</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL24">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>204</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Compensatory Time Off</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL25">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>535</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>180</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Other Paid Absence</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL26">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>556</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>158</ae>
+					<ae>24</ae>
+				</ae>
+			</itemlocation>
+			<value>(Specify in Remarks)</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>9</ae>
+				<ae>plain</ae>
+				<ae>italic</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL27">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>64</ae>
+					<ae>593</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>192</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>Leave Without Pay</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL28">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>676</ae>
+					<ae>135</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>215</ae>
+					<ae>46</ae>
+				</ae>
+			</itemlocation>
+			<value>5. FAMILY AND
+	MEDICAL LEAVE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL29">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>677</ae>
+					<ae>183</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>214</ae>
+					<ae>126</ae>
+				</ae>
+			</itemlocation>
+			<value>If annual leave, sick leave, or leave without pay will be used under the Family and Medical Leave Act of 1993, please provide the following information:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL30">
+			<value>I hereby invoke my</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>700</ae>
+					<ae>322</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>191</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+		</label>
+		<label sid="LABEL31">
+			<value>entitlement Family and</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>675</ae>
+					<ae>342</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>216</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+		</label>
+		<label sid="LABEL32">
+			<value>Medical Leave for:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>675</ae>
+					<ae>364</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>215</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+		</label>
+		<label sid="LABEL33">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>708</ae>
+					<ae>403</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>181</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>Birth/Adoption/Foster Care</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL34">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>708</ae>
+					<ae>426</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>182</ae>
+					<ae>38</ae>
+				</ae>
+			</itemlocation>
+			<value>Serious Heath Condition of spouse, Son, Daughter, or Parent</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL35">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>708</ae>
+					<ae>483</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>184</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+			<value>Serious Health Condition of Self</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL36">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>675</ae>
+					<ae>537</ae>
+				</ae>
+			</itemlocation>
+			<value>Contact your supervisor and/or our personnel office to obtain additional information about your entitlements and responsibilities under the Family and Medical Leave Act of 1993.</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<size content="array">
+				<ae>26</ae>
+				<ae>5</ae>
+			</size>
+		</label>
+		<label sid="LABEL37">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>630</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>192</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>6.  REMARKS:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL38">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>747</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>170</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>7.  CERTIFICATION:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL39">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>178</ae>
+					<ae>747</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>715</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>I hereby request leave/approved absence from duty as indicated above and certify that such leave/absence</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL40">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>767</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>873</ae>
+					<ae>66</ae>
+				</ae>
+			</itemlocation>
+			<value>is reuested from the purpose(s) indicated. I understand that I must comply with my employing agency's procedures for requesting leave/approved absence (and provide additional documention, including medical certification, if required) and that falsification of information on this form may be grounds for disciplinary action, including removal.</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL41">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>841</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>230</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<value>EMPLOYEE SIGNATURE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>11</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL42">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>597</ae>
+					<ae>841</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>58</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<value>DATE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>11</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL43">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>877</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>335</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>8.  OFFICAL ACTION ON REQUEST:</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL44">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>41</ae>
+					<ae>897</ae>
+				</ae>
+			</itemlocation>
+			<value>(If disapproved, give reason. If annual leave, initiate action to reschedule.)</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<size content="array">
+				<ae>53</ae>
+				<ae>1</ae>
+			</size>
+		</label>
+		<label sid="LABEL45">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>388</ae>
+					<ae>875</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>192</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>APPROVED</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL46">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>638</ae>
+					<ae>875</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>192</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>DISAPPROVED</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL47">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>941</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>112</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<value>SIGNATURE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>11</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL48">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>597</ae>
+					<ae>940</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>58</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<value>DATE</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>11</ae>
+				<ae>bold</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL49">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>970</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>26</ae>
+				</ae>
+			</itemlocation>
+			<value>PRIVACY ACT STATEMENT</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>10</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<justify>center</justify>
+		</label>
+		<label sid="LABEL50">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>996</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>873</ae>
+					<ae>134</ae>
+				</ae>
+			</itemlocation>
+			<value>Section 6311 of title 5, United States Code, authorizes collection of this information. The primary use of this information is by management and your payroll office to approve and record your use of leave. Additional disclosures of the information mat be: To the Department of labor when processing a claim for compensation regarding a job connected injury or illness; to a State unemployment compensation office regarding a claim; the Federal Life Insurance or Health Benefits carries regarding a claim; to a Federal State, or local law enforcement agency when your agency becomes aware of a violation or possible violation of civil or criminal law; to a Federal agency when conducting an investigation for employment or Services Administration in connection with its responsibilities for records management.
+
+Where  the Employee identification number is your Social Security Number, collection of this information is authorized by Executive Order 9397. Furnishing the information on this form, including your Social Security Number, is voluntary, but to do so may result in disapproval request.</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL51">
+			<value>If your agency uses the information furnished on this form for purposes other than those indicated above, it may provide you with an additional statement reflecting those purposes.</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>7</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>18</ae>
+					<ae>1140</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>875</ae>
+					<ae>22</ae>
+				</ae>
+			</itemlocation>
+		</label>
+		<label sid="LABEL52">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>18</ae>
+					<ae>1168</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>422</ae>
+					<ae>38</ae>
+				</ae>
+			</itemlocation>
+			<value>NSN 7540-000-753-5067
+PREVIOUS EDITION MAY BE USED</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+		</label>
+		<label sid="LABEL53">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>438</ae>
+					<ae>1168</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>454</ae>
+					<ae>38</ae>
+				</ae>
+			</itemlocation>
+			<value>STANDARD FORM 71 (Rev. 12-97)
+PRESCRIBED BY OFFICE OF PERSONNEL MANAGEMENT, 5 CFR PART 630</value>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<justify>right</justify>
+		</label>
+		<line sid="LINE1">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>32</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE2">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>82</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE3">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>133</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE4">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>179</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE5">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>218</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>406</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE6">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>263</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>406</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE7">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>311</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>657</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE8">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>354</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>406</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE9">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>398</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>406</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE10">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>657</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE11">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>530</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>657</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE12">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>578</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>657</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE13">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>626</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE14">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>743</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE15">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>867</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE16">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>967</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE17">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>1164</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>876</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE18">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>17</ae>
+					<ae>32</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>1133</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE19">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>510</ae>
+					<ae>32</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>51</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE20">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>892</ae>
+					<ae>32</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>1133</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE21">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>133</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>266</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE22">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>349</ae>
+					<ae>179</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>220</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE23">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>430</ae>
+					<ae>133</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>266</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE24">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>510</ae>
+					<ae>179</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>220</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE25">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>592</ae>
+					<ae>133</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>265</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE26">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>673</ae>
+					<ae>133</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>494</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE27">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>268</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>143</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE28">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>349</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>143</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE29">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>143</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE30">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>510</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>143</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<line sid="LINE31">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>591</ae>
+					<ae>484</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>143</ae>
+				</ae>
+			</itemlocation>
+		</line>
+		<field sid="FIELD1">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>20</ae>
+					<ae>58</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>489</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<format content="array">
+				<ae>string</ae>
+				<ae>mandatory</ae>
+			</format>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<borderwidth>0</borderwidth>
+			<value>John Q. Public</value>
+		</field>
+		<field sid="FIELD2">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>537</ae>
+					<ae>58</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>123</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<format content="array">
+				<ae>string</ae>
+				<ae>mandatory</ae>
+			</format>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<borderwidth>0</borderwidth>
+			<value>123456789</value>
+		</field>
+		<field sid="FIELD3">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>19</ae>
+					<ae>109</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>872</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<format content="array">
+				<ae>string</ae>
+				<ae>mandatory</ae>
+			</format>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<borderwidth>0</borderwidth>
+			<value>PureEdge Solutions Inc.</value>
+		</field>
+		<check sid="CHECK1">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>191</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD4">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>188</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK1.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK1.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK1.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD5">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>188</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK1.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK1.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK1.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD6">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>188</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK1.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK1.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK1.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD7">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>188</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK1.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK1.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK1.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD8">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>593</ae>
+					<ae>188</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK1.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK1.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK1.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK2">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD9">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK2.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK2.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK2.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD10">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK2.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK2.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK2.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD11">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK2.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK2.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK2.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD12">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK2.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK2.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK2.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD13">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>593</ae>
+					<ae>231</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK2.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK2.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK2.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK3">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>277</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD14">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>276</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK3.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK3.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK3.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD15">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>276</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK3.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK3.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK3.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD16">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>276</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK3.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK3.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK3.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD17">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>276</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK3.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK3.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK3.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD18">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>593</ae>
+					<ae>276</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK3.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK3.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK3.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK4">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>322</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD19">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>321</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK4.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK4.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK4.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD20">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>321</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK4.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK4.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK4.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD21">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>321</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>79</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK4.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK4.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK4.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD22">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>321</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK4.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK4.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK4.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD23">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>593</ae>
+					<ae>321</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK4.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK4.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK4.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK5">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>367</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD24">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>366</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK5.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK5.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK5.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD25">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>366</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK5.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK5.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK5.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD26">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>431</ae>
+					<ae>366</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK5.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK5.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK5.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD27">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>366</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK5.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK5.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK5.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD28">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>593</ae>
+					<ae>366</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK5.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK5.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK5.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK6">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>121</ae>
+					<ae>412</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value>off</value>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK5.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK8.value == "on") || (CHECK7.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+		</check>
+		<check sid="CHECK7">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>121</ae>
+					<ae>438</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value>off</value>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK5.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK8.value == "on") || (CHECK6.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+		</check>
+		<check sid="CHECK8">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>519</ae>
+					<ae>412</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value>off</value>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK5.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK6.value == "on") || (CHECK7.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+		</check>
+		<check sid="CHECK9">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>495</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD29">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK9.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK9.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK9.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD30">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK9.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK9.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK9.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD31">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>432</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>78</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK9.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK9.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK9.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD32">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK9.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK9.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK9.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD33">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>592</ae>
+					<ae>498</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK9.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK9.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK9.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK10">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD34">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK10.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK10.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK10.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD35">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK10.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK10.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK10.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD36">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>432</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>78</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK10.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK10.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK10.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD37">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK10.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK10.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK10.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD38">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>592</ae>
+					<ae>543</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK10.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK10.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK10.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK11">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>28</ae>
+					<ae>591</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>22</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>18</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<field sid="FIELD39">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>269</ae>
+					<ae>590</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK11.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK11.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK11.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD40">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>350</ae>
+					<ae>590</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK11.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK11.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>date</ae>
+				<ae>case_insensitive</ae>
+				<ae>optional</ae>
+				<template content="array">
+					<ae>##-##-##</ae>
+				</template>
+				<presentation>MM-DD-YY</presentation>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK11.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<fontinfo content="array">
+				<ae>Courier</ae>
+				<ae>8</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</field>
+		<field sid="FIELD41">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>432</ae>
+					<ae>590</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>78</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK11.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK11.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK11.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD42">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>511</ae>
+					<ae>590</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>80</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<justify>center</justify>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK11.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK11.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>time</ae>
+				<ae>short</ae>
+				<ae>optional</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK11.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<field sid="FIELD43">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>592</ae>
+					<ae>590</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>81</ae>
+					<ae>23</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK11.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<check_off content="compute">
+				<cval></cval>
+				<compute>
+					(CHECK11.value == "off") ? set("value", "") : ""
+				</compute>
+			</check_off>
+			<format content="array">
+				<ae>float</ae>
+				<ae>optional</ae>
+				<range content="array">
+					<ae>0</ae>
+					<ae>9999.9999</ae>
+				</range>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						((CHECK11.value == "on") ? "mandatory" : "optional")
+					</compute>
+				</ae>
+			</format>
+			<borderwidth>0</borderwidth>
+			<value></value>
+		</field>
+		<check sid="CHECK12">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>680</ae>
+					<ae>326</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<value></value>
+		</check>
+		<check sid="CHECK13">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>689</ae>
+					<ae>404</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK12.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK14.value == "on") || (CHECK15.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+			<value></value>
+		</check>
+		<check sid="CHECK14">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>689</ae>
+					<ae>428</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK12.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK15.value == "on") || (CHECK13.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+			<value></value>
+		</check>
+		<check sid="CHECK15">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>689</ae>
+					<ae>485</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>15</ae>
+					<ae>14</ae>
+				</ae>
+			</itemlocation>
+			<fontinfo content="array">
+				<ae>Helvetica</ae>
+				<ae>10</ae>
+				<ae>plain</ae>
+			</fontinfo>
+			<active content="compute">
+				<cval>off</cval>
+				<compute>
+					(CHECK12.value == "on") ? "on" : "off"
+				</compute>
+			</active>
+			<editstate content="compute">
+				<cval>readwrite</cval>
+				<compute>
+					(value == "on") ? "readonly" : "readwrite"
+				</compute>
+			</editstate>
+			<radio_check content="compute">
+				<cval></cval>
+				<compute>
+					((CHECK14.value == "on") || (CHECK13.value == "on")) ? set("value", "off") : ""
+				</compute>
+			</radio_check>
+			<value></value>
+		</check>
+		<field sid="FIELD44">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>42</ae>
+					<ae>657</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>846</ae>
+					<ae>57</ae>
+				</ae>
+			</itemlocation>
+			<scrollhoriz>wordwrap</scrollhoriz>
+			<scrollvert>fixed</scrollvert>
+			<borderwidth>0</borderwidth>
+			<format content="array">
+				<ae>string</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						(CHECK10.value == "on") ? "mandatory" : "optional"
+					</compute>
+				</ae>
+			</format>
+			<value></value>
+		</field>
+		<field sid="FIELD45">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>42</ae>
+					<ae>712</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>846</ae>
+					<ae>31</ae>
+				</ae>
+			</itemlocation>
+			<borderwidth>0</borderwidth>
+			<format content="array">
+				<ae>string</ae>
+				<ae content="compute">
+					<cval>optional</cval>
+					<compute>
+						(CHECK8.value == "on") ? "mandatory" : "optional"
+					</compute>
+				</ae>
+			</format>
+			<editstate content="compute">
+				<cval>readonly</cval>
+				<compute>
+					(CHECK8.value == "on") ? "readwrite" : "readonly"
+				</compute>
+			</editstate>
+			<value></value>
+		</field>
+		<button sid="BUTTON1">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>250</ae>
+					<ae>839</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>346</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<type>signature</type>
+			<signature>SIGNATURE1</signature>
+			<signer>(cs) John M. Boyer, jboyer@pureedge.com</signer>
+			<signoptions content="array">
+				<ae>omit</ae>
+				<ae>triggeritem</ae>
+			</signoptions>
+			<fontinfo content="array">
+				<ae>Times</ae>
+				<ae>8</ae>
+				<ae>bold</ae>
+			</fontinfo>
+			<borderwidth>0</borderwidth>
+			<signitemrefs content="array">
+				<ae>omit</ae>
+				<ae>PAGE1.CHECK16</ae>
+				<ae>PAGE1.CHECK17</ae>
+				<ae>PAGE1.FIELD47</ae>
+				<ae>PAGE1.BUTTON2</ae>
+				<ae>SIGNATURE2</ae>
+				<ae>PAGE1.FIELD48</ae>
+			</signitemrefs>
+			<format content="array">
+				<ae>string</ae>
+				<ae>mandatory</ae>
+			</format>
+			<value content="compute">
+				<cval>(cs) John M. Boyer, jboyer@pureedge.com</cval>
+				<compute>
+					signer
+				</compute>
+			</value>
+		</button>
+                
+		<field sid="FIELD46">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>655</ae>
+					<ae>840</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>155</ae>
+					<ae>27</ae>
+				</ae>
+			</itemlocation>
+			<borderwidth>0</borderwidth>
+			<editstate>readonly</editstate>
+			<value content="compute">
+				<cval>05-08-02</cval>
+				<compute>
+					(BUTTON1.value != "") ? "*" : ""
+				</compute>
+			</value>
+			<format content="array">
+				<ae>date</ae>
+				<ae>optional</ae>
+				<presentation>MM-DD-YY</presentation>
+			</format>
+		</field>
+		
+		
+		
+		
+		
+		<spacer sid="vfd_spacer">
+			<itemlocation content="array">
+				<ae content="array">
+					<ae>absolute</ae>
+					<ae>960</ae>
+					<ae>1260</ae>
+				</ae>
+				<ae content="array">
+					<ae>extent</ae>
+					<ae>1</ae>
+					<ae>1</ae>
+				</ae>
+			</itemlocation>
+		</spacer>
+	</page>
+</XFDL>

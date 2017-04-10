@@ -1,0 +1,6 @@
+The xmlsec-gnutls uses both libgcrypt and libgnutls because GnuTLS
+does not provide direct access to low-level crypto operations (digests,
+hmac, aes, des, etc.).
+
+
+

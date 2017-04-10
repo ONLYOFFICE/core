@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document>
+  <ToBeSigned>
+    Some very secret data
+  </ToBeSigned>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2002/06/xmldsig-filter2">
+            <XPath xmlns="http://www.w3.org/2002/06/xmldsig-filter2" Filter="intersect"> //ToBeSigned </XPath>
+          </Transform>
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <DigestValue>3om1gINPzaogcdLuDdjIQlls4NE=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>W/X7k6Q6T9RFW56VkRV9HGW5wkyUxvvlUcEyUkggVE04gsOK0Rx0rqq2woUxzkk1
+jvXfCtm2xknb2/cOmqfO/g==</SignatureValue>
+    <KeyInfo>
+      <X509Data>
+        
+        
+        
+        
+        
+      <X509Certificate>MIID9zCCA2CgAwIBAgIJAK+ii7kzrdqsMA0GCSqGSIb3DQEBBQUAMIGuMQswCQYD
+VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1MIFNlY3Vy
+aXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2VjKTEQMA4G
+A1UECxMHUm9vdCBDQTEWMBQGA1UEAxMNQWxla3NleSBTYW5pbjEhMB8GCSqGSIb3
+DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tMCAXDTE0MDUyMzE3NTA1OVoYDzIxMTQw
+NDI5MTc1MDU5WjCBrjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWEx
+PTA7BgNVBAoTNFhNTCBTZWN1cml0eSBMaWJyYXJ5IChodHRwOi8vd3d3LmFsZWtz
+ZXkuY29tL3htbHNlYykxEDAOBgNVBAsTB1Jvb3QgQ0ExFjAUBgNVBAMTDUFsZWtz
+ZXkgU2FuaW4xITAfBgkqhkiG9w0BCQEWEnhtbHNlY0BhbGVrc2V5LmNvbTCBnzAN
+BgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAtY4MCNj/qrOzVuex1BD/PuCYTDDOLLVj
+tpKXQteQPqy0kgMwuQgRwdNnICIHQbnFKL40XoyACJVWKM7b0LkvWJNeyVzXPqEE
+9ZPmNxWGUjVcr7powT7v8V7S2QflUnr8ZvR4XWwkZJ9EYKNhenijgJ5yYDrXCWdv
+C+fnjBjv2LcCAwEAAaOCARcwggETMB0GA1UdDgQWBBQGtaSsp6p1ROoVnE/fBYNP
+ah7+CzCB4wYDVR0jBIHbMIHYgBQGtaSsp6p1ROoVnE/fBYNPah7+C6GBtKSBsTCB
+rjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExPTA7BgNVBAoTNFhN
+TCBTZWN1cml0eSBMaWJyYXJ5IChodHRwOi8vd3d3LmFsZWtzZXkuY29tL3htbHNl
+YykxEDAOBgNVBAsTB1Jvb3QgQ0ExFjAUBgNVBAMTDUFsZWtzZXkgU2FuaW4xITAf
+BgkqhkiG9w0BCQEWEnhtbHNlY0BhbGVrc2V5LmNvbYIJAK+ii7kzrdqsMAwGA1Ud
+EwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEARpb86RP/ck55X+NunXeIX81i763b
+j7Z1VJwFbA/QfupzxnqJ2IP/lxC8YxJ3Bp2IJMI7rC9r0poa41ZxI5rGHip97Dpg
+sxPF9lkRUmKBBQjkICOq1w/4d2DRInBoqXttD+0WsqDfNDVK+7kSE07ytn3RzHCj
+j0gv0PdxmuCsR/E=</X509Certificate>
+<X509SubjectName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Root CA,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509SubjectName>
+<X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Root CA,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757420</X509SerialNumber>
+</X509IssuerSerial>
+<X509SKI>BrWkrKeqdUTqFZxP3wWDT2oe/gs=</X509SKI>
+<X509Certificate>MIIDzzCCAzigAwIBAgIJAK+ii7kzrdqtMA0GCSqGSIb3DQEBBQUAMIGuMQswCQYD
+VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1MIFNlY3Vy
+aXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2VjKTEQMA4G
+A1UECxMHUm9vdCBDQTEWMBQGA1UEAxMNQWxla3NleSBTYW5pbjEhMB8GCSqGSIb3
+DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tMCAXDTE0MDUyMzE3NTIzOFoYDzIxMTQw
+NDI5MTc1MjM4WjCBnDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWEx
+PTA7BgNVBAoTNFhNTCBTZWN1cml0eSBMaWJyYXJ5IChodHRwOi8vd3d3LmFsZWtz
+ZXkuY29tL3htbHNlYykxFjAUBgNVBAMTDUFsZWtzZXkgU2FuaW4xITAfBgkqhkiG
+9w0BCQEWEnhtbHNlY0BhbGVrc2V5LmNvbTBcMA0GCSqGSIb3DQEBAQUAA0sAMEgC
+QQCyuvKJ2CuUPD33ghPt4Q8MilesHxVbbpyKfmabrYVpDGVDmOKKp337qJUZZ95K
+fwlXbR2j0zyKWJmvRxUx+PsTAgMBAAGjggFFMIIBQTAMBgNVHRMEBTADAQH/MCwG
+CWCGSAGG+EIBDQQfFh1PcGVuU1NMIEdlbmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNV
+HQ4EFgQU/uTsUyTwlZXHELXhRLVdOWVa434wgeMGA1UdIwSB2zCB2IAUBrWkrKeq
+dUTqFZxP3wWDT2oe/guhgbSkgbEwga4xCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+YWxpZm9ybmlhMT0wOwYDVQQKEzRYTUwgU2VjdXJpdHkgTGlicmFyeSAoaHR0cDov
+L3d3dy5hbGVrc2V5LmNvbS94bWxzZWMpMRAwDgYDVQQLEwdSb290IENBMRYwFAYD
+VQQDEw1BbGVrc2V5IFNhbmluMSEwHwYJKoZIhvcNAQkBFhJ4bWxzZWNAYWxla3Nl
+eS5jb22CCQCvoou5M63arDANBgkqhkiG9w0BAQUFAAOBgQBuTAW63AgWqqUDPGi8
+BiXbdKHhFP4J8qgkdv5WMa6SpSWVgNgOYXkK/BSg1aSmQtGv8/8UvBRPoJnO4y0N
+jWUFf1ubOgUNmedYNLq7YbTp8yTGWeogCyM2xdWELMP8BMgQL0sP+MDAFMKO3itY
+mEWnCEsP15HKSTms54RNj7oJ+A==</X509Certificate>
+<X509SubjectName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509SubjectName>
+<X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Root CA,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757421</X509SerialNumber>
+</X509IssuerSerial>
+<X509SKI>/uTsUyTwlZXHELXhRLVdOWVa434=</X509SKI>
+<X509Certificate>MIIDpzCCA1GgAwIBAgIJAK+ii7kzrdqvMA0GCSqGSIb3DQEBBQUAMIGcMQswCQYD
+VQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1MIFNlY3Vy
+aXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2VjKTEWMBQG
+A1UEAxMNQWxla3NleSBTYW5pbjEhMB8GCSqGSIb3DQEJARYSeG1sc2VjQGFsZWtz
+ZXkuY29tMCAXDTE0MDUyMzE3NTUzNFoYDzIxMTQwNDI5MTc1NTM0WjCBxzELMAkG
+A1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExPTA7BgNVBAoTNFhNTCBTZWN1
+cml0eSBMaWJyYXJ5IChodHRwOi8vd3d3LmFsZWtzZXkuY29tL3htbHNlYykxKTAn
+BgNVBAsTIFRlc3QgVGhpcmQgTGV2ZWwgUlNBIENlcnRpZmljYXRlMRYwFAYDVQQD
+Ew1BbGVrc2V5IFNhbmluMSEwHwYJKoZIhvcNAQkBFhJ4bWxzZWNAYWxla3NleS5j
+b20wXDANBgkqhkiG9w0BAQEFAANLADBIAkEA09BtD3aeVt6DVDkk0dI7Vh7Ljqdn
+sYmW0tbDVxxK+nume+Z9Sb4znbUKkWl+vgQATdRUEyhT2P+Gqrd0UBzYfQIDAQAB
+o4IBRTCCAUEwDAYDVR0TBAUwAwEB/zAsBglghkgBhvhCAQ0EHxYdT3BlblNTTCBH
+ZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFNf0xkZ3zjcEI60pVPuwDqTM
+QygZMIHjBgNVHSMEgdswgdiAFP7k7FMk8JWVxxC14US1XTllWuN+oYG0pIGxMIGu
+MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTE9MDsGA1UEChM0WE1M
+IFNlY3VyaXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20veG1sc2Vj
+KTEQMA4GA1UECxMHUm9vdCBDQTEWMBQGA1UEAxMNQWxla3NleSBTYW5pbjEhMB8G
+CSqGSIb3DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tggkAr6KLuTOt2q0wDQYJKoZI
+hvcNAQEFBQADQQAOXBj0yICp1RmHXqnUlsppryLCW3pKBD1dkb4HWarO7RjA1yJJ
+fBjXssrERn05kpBcrRfzou4r3DCgQFPhjxga</X509Certificate>
+<X509SubjectName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,OU=Test Third Level RSA Certificate,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509SubjectName>
+<X509IssuerSerial>
+<X509IssuerName>emailAddress=xmlsec@aleksey.com,CN=Aleksey Sanin,O=XML Security Library (http://www.aleksey.com/xmlsec),ST=California,C=US</X509IssuerName>
+<X509SerialNumber>12655831530416757423</X509SerialNumber>
+</X509IssuerSerial>
+<X509SKI>1/TGRnfONwQjrSlU+7AOpMxDKBk=</X509SKI>
+</X509Data>
+    </KeyInfo>
+  </Signature>
+</Document>

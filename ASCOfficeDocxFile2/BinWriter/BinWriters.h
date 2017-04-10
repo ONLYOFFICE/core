@@ -5506,18 +5506,18 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.StartRecord(0);
 					m_oBcw.m_oStream.StartRecord(1);
 						
-					if (pGraphic->olePic.IsInit())
+					if (pGraphic->olePic.is_init())
 					{
 						pGraphic->olePic->toPPTY(&m_oBcw.m_oStream);
 					}
-					else if (pGraphic->smartArt.IsInit())
+					else if (pGraphic->smartArt.is_init())
 					{
 						pGraphic->smartArt->LoadDrawing(&m_oBcw.m_oStream);
 						pGraphic->smartArt->toPPTY(&m_oBcw.m_oStream);
 					}
-					else if (pGraphic->element.IsInit())
+					else if (pGraphic->element.is_init())
 					{				
-						pGraphic->element->toPPTY(&m_oBcw.m_oStream);
+						pGraphic->element.toPPTY(&m_oBcw.m_oStream);
 					}
 					m_oBcw.m_oStream.EndRecord();
 					m_oBcw.m_oStream.EndRecord();

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EncryptedData Id="ED" Type="http://www.w3.org/2001/04/xmlenc#Content" xmlns="http://www.w3.org/2001/04/xmlenc#">
+      <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:RetrievalMethod Type="http://www.w3.org/2001/04/xmlenc#EncryptedKey" URI="#EK"/>
+        <EncryptedKey Id="EK" xmlns="http://www.w3.org/2001/04/xmlenc#">
+          <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+          <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:KeyName>my-rsa-key</ds:KeyName>
+	  </ds:KeyInfo>
+          <CipherData>
+            <CipherValue>
+            </CipherValue>
+          </CipherData>
+          <ReferenceList>
+            <DataReference URI="#ED"/>
+          </ReferenceList>
+        </EncryptedKey>
+      </ds:KeyInfo>
+      <CipherData>
+        <CipherValue>
+        </CipherValue>
+      </CipherData>
+    </EncryptedData>

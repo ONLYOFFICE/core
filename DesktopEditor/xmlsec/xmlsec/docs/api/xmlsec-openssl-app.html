@@ -1,0 +1,1213 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>app</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="XML Security Library for OpenSLL API Reference." href="xmlsec-openssl-ref.html">
+<link rel="PREVIOUS" title="XML Security Library for OpenSLL API Reference." href="xmlsec-openssl-ref.html">
+<link rel="NEXT" title="bn" href="xmlsec-openssl-bn.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-openssl-ref.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-openssl-ref.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-openssl-bn.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<h1>
+<a name="XMLSEC-OPENSSL-APP"></a>app</h1>
+<div class="REFNAMEDIV">
+<a name="AEN28928"></a><h2>Name</h2>app -- Application functions implementation for OpenSSL.</div>
+<div class="REFSECT1">
+<a name="XMLSEC-OPENSSL-APP.FUNCTIONS"></a><h2>Functions</h2>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN28933"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<tbody>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPINIT">xmlSecOpenSSLAppInit</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPSHUTDOWN">xmlSecOpenSSLAppShutdown</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRINIT">xmlSecOpenSSLAppDefaultKeysMngrInit</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRADOPTKEY">xmlSecOpenSSLAppDefaultKeysMngrAdoptKey</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRLOAD">xmlSecOpenSSLAppDefaultKeysMngrLoad</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRSAVE">xmlSecOpenSSLAppDefaultKeysMngrSave</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYSMNGRCERTLOAD">xmlSecOpenSSLAppKeysMngrCertLoad</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYSMNGRCERTLOADMEMORY">xmlSecOpenSSLAppKeysMngrCertLoadMemory</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYSMNGRCERTLOADBIO">xmlSecOpenSSLAppKeysMngrCertLoadBIO</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYSMNGRADDCERTSPATH">xmlSecOpenSSLAppKeysMngrAddCertsPath</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYSMNGRADDCERTSFILE">xmlSecOpenSSLAppKeysMngrAddCertsFile</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYLOAD">xmlSecOpenSSLAppKeyLoad</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYLOADMEMORY">xmlSecOpenSSLAppKeyLoadMemory</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYLOADBIO">xmlSecOpenSSLAppKeyLoadBIO</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPPKCS12LOAD">xmlSecOpenSSLAppPkcs12Load</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPPKCS12LOADMEMORY">xmlSecOpenSSLAppPkcs12LoadMemory</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPPKCS12LOADBIO">xmlSecOpenSSLAppPkcs12LoadBIO</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYCERTLOAD">xmlSecOpenSSLAppKeyCertLoad</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYCERTLOADMEMORY">xmlSecOpenSSLAppKeyCertLoadMemory</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><font><span class="RETURNVALUE">int</span></font></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYCERTLOADBIO">xmlSecOpenSSLAppKeyCertLoadBIO</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a></td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPKEYFROMCERTLOADBIO">xmlSecOpenSSLAppKeyFromCertLoadBIO</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+<tr>
+<td>
+<font><span class="RETURNVALUE">void</span></font> *</td>
+<td>
+<a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPGETDEFAULTPWDCALLBACK">xmlSecOpenSSLAppGetDefaultPwdCallback</a> <span class="c_punctuation"><span class="PHRASE">()</span></span>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-OPENSSL-APP.DESCRIPTION"></a><h2>Description</h2>
+<p>Application functions implementation for OpenSSL.</p>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-OPENSSL-APP.FUNCTIONS_DETAILS"></a><h2>Functions</h2>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPINIT"></a><h3>xmlSecOpenSSLAppInit ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppInit (<code class="PARAMETER">const <font><span class="TYPE">char</span></font> *config</code>);</pre>
+<p>General crypto engine initialization. This function is used
+by XMLSec command line utility and called before
+<code class="PARAMETER">xmlSecInit</code>
+ function.</p>
+<div class="REFSECT3">
+<a name="AEN29107"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29109"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody><tr>
+<td><p>config</p></td>
+<td><p>the path to certs.</p></td>
+<td> </td>
+</tr></tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29118"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPSHUTDOWN"></a><h3>xmlSecOpenSSLAppShutdown ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppShutdown (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>General crypto engine shutdown. This function is used
+by XMLSec command line utility and called after
+<code class="PARAMETER">xmlSecShutdown</code>
+ function.</p>
+<div class="REFSECT3">
+<a name="AEN29132"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPDEFAULTKEYSMNGRINIT"></a><h3>xmlSecOpenSSLAppDefaultKeysMngrInit ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppDefaultKeysMngrInit (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>);</pre>
+<p>Initializes <code class="PARAMETER">mngr</code>
+ with simple keys store <a href="xmlsec-keysmngr.html#XMLSECSIMPLEKEYSSTOREID"><span class="TYPE">xmlSecSimpleKeysStoreId</span></a>
+and a default OpenSSL crypto key data stores.</p>
+<div class="REFSECT3">
+<a name="AEN29149"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29151"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody><tr>
+<td><p>mngr</p></td>
+<td><p>the pointer to keys manager.</p></td>
+<td> </td>
+</tr></tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29160"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPDEFAULTKEYSMNGRADOPTKEY"></a><h3>xmlSecOpenSSLAppDefaultKeysMngrAdoptKey ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppDefaultKeysMngrAdoptKey
+                               (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                <code class="PARAMETER"><a href="xmlsec-keys.html#XMLSECKEY"><span class="TYPE">xmlSecKeyPtr</span></a> key</code>);</pre>
+<p>Adds <code class="PARAMETER">key</code>
+ to the keys manager <code class="PARAMETER">mngr</code>
+ created with <a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRINIT"><span class="TYPE">xmlSecOpenSSLAppDefaultKeysMngrInit</span></a>
+function.</p>
+<div class="REFSECT3">
+<a name="AEN29181"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29183"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the pointer to keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>key</p></td>
+<td><p>the pointer to key.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29198"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPDEFAULTKEYSMNGRLOAD"></a><h3>xmlSecOpenSSLAppDefaultKeysMngrLoad ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppDefaultKeysMngrLoad (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                     <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *uri</code>);</pre>
+<p>Loads XML keys file from <code class="PARAMETER">uri</code>
+ to the keys manager <code class="PARAMETER">mngr</code>
+ created
+with <a href="xmlsec-openssl-app.html#XMLSECOPENSSLAPPDEFAULTKEYSMNGRINIT"><span class="TYPE">xmlSecOpenSSLAppDefaultKeysMngrInit</span></a> function.</p>
+<div class="REFSECT3">
+<a name="AEN29219"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29221"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the pointer to keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>uri</p></td>
+<td><p>the uri.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29236"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPDEFAULTKEYSMNGRSAVE"></a><h3>xmlSecOpenSSLAppDefaultKeysMngrSave ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppDefaultKeysMngrSave (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                     <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *filename</code>,
+                                     <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATATYPE"><span class="TYPE">xmlSecKeyDataType</span></a> type</code>);</pre>
+<p>Saves keys from <code class="PARAMETER">mngr</code>
+ to  XML keys file.</p>
+<div class="REFSECT3">
+<a name="AEN29257"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29259"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the pointer to keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>filename</p></td>
+<td><p>the destination filename.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>type</p></td>
+<td><p>the type of keys to save (public/private/symmetric).</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29280"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYSMNGRCERTLOAD"></a><h3>xmlSecOpenSSLAppKeysMngrCertLoad ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeysMngrCertLoad (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                  <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *filename</code>,
+                                  <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                                  <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATATYPE"><span class="TYPE">xmlSecKeyDataType</span></a> type</code>);</pre>
+<p>Reads cert from <code class="PARAMETER">filename</code>
+ and adds to the list of trusted or known
+untrusted certs in <code class="PARAMETER">store</code>
+.</p>
+<div class="REFSECT3">
+<a name="AEN29305"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29307"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>filename</p></td>
+<td><p>the certificate file.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>type</p></td>
+<td><p>the flag that indicates is the certificate in <code class="PARAMETER">filename</code>
+trusted or not.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29335"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYSMNGRCERTLOADMEMORY"></a><h3>xmlSecOpenSSLAppKeysMngrCertLoadMemory ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeysMngrCertLoadMemory
+                               (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                <code class="PARAMETER">const <a href="xmlsec-xmlsec.html#XMLSECBYTE"><span class="TYPE">xmlSecByte</span></a> *data</code>,
+                                <code class="PARAMETER"><a href="xmlsec-xmlsec.html#XMLSECSIZE"><span class="TYPE">xmlSecSize</span></a> dataSize</code>,
+                                <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                                <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATATYPE"><span class="TYPE">xmlSecKeyDataType</span></a> type</code>);</pre>
+<p>Reads cert from binary buffer <code class="PARAMETER">data</code>
+ and adds to the list of trusted or known
+untrusted certs in <code class="PARAMETER">store</code>
+.</p>
+<div class="REFSECT3">
+<a name="AEN29363"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29365"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>data</p></td>
+<td><p>the certificate binary data.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>dataSize</p></td>
+<td><p>the certificate binary data size.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>type</p></td>
+<td><p>the flag that indicates is the certificate trusted or not.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29398"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYSMNGRCERTLOADBIO"></a><h3>xmlSecOpenSSLAppKeysMngrCertLoadBIO ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeysMngrCertLoadBIO (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                     <code class="PARAMETER"><font><span class="TYPE">BIO</span></font> *bio</code>,
+                                     <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                                     <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATATYPE"><span class="TYPE">xmlSecKeyDataType</span></a> type</code>);</pre>
+<p>Reads cert from an OpenSSL BIO object and adds to the list of trusted or known
+untrusted certs in <code class="PARAMETER">store</code>
+.</p>
+<div class="REFSECT3">
+<a name="AEN29422"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29424"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>bio</p></td>
+<td><p>the certificate BIO.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>type</p></td>
+<td><p>the flag that indicates is the certificate trusted or not.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29451"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYSMNGRADDCERTSPATH"></a><h3>xmlSecOpenSSLAppKeysMngrAddCertsPath ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeysMngrAddCertsPath (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                      <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *path</code>);</pre>
+<p>Reads cert from <code class="PARAMETER">path</code>
+ and adds to the list of trusted certificates.</p>
+<div class="REFSECT3">
+<a name="AEN29469"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29471"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>path</p></td>
+<td><p>the path to trusted certificates.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29486"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYSMNGRADDCERTSFILE"></a><h3>xmlSecOpenSSLAppKeysMngrAddCertsFile ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeysMngrAddCertsFile (<code class="PARAMETER"><a href="xmlsec-keysmngr.html#XMLSECKEYSMNGR"><span class="TYPE">xmlSecKeysMngrPtr</span></a> mngr</code>,
+                                      <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *file</code>);</pre>
+<p>Reads certs from <code class="PARAMETER">file</code>
+ and adds to the list of trusted certificates.
+It is possible for <code class="PARAMETER">file</code>
+ to contain multiple certs.</p>
+<div class="REFSECT3">
+<a name="AEN29505"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29507"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>mngr</p></td>
+<td><p>the keys manager.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>file</p></td>
+<td><p>the file containing trusted certificates.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29522"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYLOAD"></a><h3>xmlSecOpenSSLAppKeyLoad ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppKeyLoad (<code class="PARAMETER">const <font><span class="TYPE">char</span></font> *filename</code>,
+                         <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                         <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                         <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                         <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key from the a file.</p>
+<div class="REFSECT3">
+<a name="AEN29548"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29550"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>filename</p></td>
+<td><p>the key filename.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the key file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the key file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the key password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29583"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYLOADMEMORY"></a><h3>xmlSecOpenSSLAppKeyLoadMemory ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppKeyLoadMemory (<code class="PARAMETER">const <a href="xmlsec-xmlsec.html#XMLSECBYTE"><span class="TYPE">xmlSecByte</span></a> *data</code>,
+                               <code class="PARAMETER"><a href="xmlsec-xmlsec.html#XMLSECSIZE"><span class="TYPE">xmlSecSize</span></a> dataSize</code>,
+                               <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                               <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                               <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                               <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key from the memory buffer.</p>
+<div class="REFSECT3">
+<a name="AEN29612"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29614"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>data</p></td>
+<td><p>the binary key data.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>dataSize</p></td>
+<td><p>the size of binary key.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the key file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the key file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the key password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29653"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYLOADBIO"></a><h3>xmlSecOpenSSLAppKeyLoadBIO ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppKeyLoadBIO (<code class="PARAMETER"><font><span class="TYPE">BIO</span></font> *bio</code>,
+                            <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>,
+                            <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                            <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                            <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key from the an OpenSSL BIO object.</p>
+<div class="REFSECT3">
+<a name="AEN29679"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29681"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>bio</p></td>
+<td><p>the key BIO.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the key file format.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the key file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the key password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29714"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPPKCS12LOAD"></a><h3>xmlSecOpenSSLAppPkcs12Load ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppPkcs12Load (<code class="PARAMETER">const <font><span class="TYPE">char</span></font> *filename</code>,
+                            <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                            <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                            <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key and all associated certificates from the PKCS12 file.
+For uniformity, call xmlSecOpenSSLAppKeyLoad instead of this function. Pass
+in format=xmlSecKeyDataFormatPkcs12.</p>
+<div class="REFSECT3">
+<a name="AEN29737"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29739"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>filename</p></td>
+<td><p>the PKCS12 key filename.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the PKCS12 file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29766"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPPKCS12LOADMEMORY"></a><h3>xmlSecOpenSSLAppPkcs12LoadMemory ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppPkcs12LoadMemory (<code class="PARAMETER">const <a href="xmlsec-xmlsec.html#XMLSECBYTE"><span class="TYPE">xmlSecByte</span></a> *data</code>,
+                                  <code class="PARAMETER"><a href="xmlsec-xmlsec.html#XMLSECSIZE"><span class="TYPE">xmlSecSize</span></a> dataSize</code>,
+                                  <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                                  <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                                  <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key and all associated certificates from the PKCS12 data in memory buffer.
+For uniformity, call xmlSecOpenSSLAppKeyLoad instead of this function. Pass
+in format=xmlSecKeyDataFormatPkcs12.</p>
+<div class="REFSECT3">
+<a name="AEN29792"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29794"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>data</p></td>
+<td><p>the PKCS12 binary data.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>dataSize</p></td>
+<td><p>the PKCS12 binary data size.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the PKCS12 file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29827"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPPKCS12LOADBIO"></a><h3>xmlSecOpenSSLAppPkcs12LoadBIO ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppPkcs12LoadBIO (<code class="PARAMETER"><font><span class="TYPE">BIO</span></font> *bio</code>,
+                               <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *pwd</code>,
+                               <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallback</code>,
+                               <code class="PARAMETER"><font><span class="TYPE">void</span></font> *pwdCallbackCtx</code>);</pre>
+<p>Reads key and all associated certificates from the PKCS12 data in an OpenSSL BIO object.
+For uniformity, call xmlSecOpenSSLAppKeyLoad instead of this function. Pass
+in format=xmlSecKeyDataFormatPkcs12.</p>
+<div class="REFSECT3">
+<a name="AEN29850"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29852"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>bio</p></td>
+<td><p>the PKCS12 key bio.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwd</p></td>
+<td><p>the PKCS12 file password.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallback</p></td>
+<td><p>the password callback.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>pwdCallbackCtx</p></td>
+<td><p>the user context for password callback.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29879"></a><h4>Returns</h4>
+<p> pointer to the key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYCERTLOAD"></a><h3>xmlSecOpenSSLAppKeyCertLoad ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeyCertLoad (<code class="PARAMETER"><a href="xmlsec-keys.html#XMLSECKEY"><span class="TYPE">xmlSecKeyPtr</span></a> key</code>,
+                             <code class="PARAMETER">const <font><span class="TYPE">char</span></font> *filename</code>,
+                             <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>);</pre>
+<p>Reads the certificate from $<code class="PARAMETER">filename</code>
+ and adds it to key.</p>
+<div class="REFSECT3">
+<a name="AEN29900"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29902"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>key</p></td>
+<td><p>the pointer to key.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>filename</p></td>
+<td><p>the certificate filename.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29923"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYCERTLOADMEMORY"></a><h3>xmlSecOpenSSLAppKeyCertLoadMemory ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeyCertLoadMemory (<code class="PARAMETER"><a href="xmlsec-keys.html#XMLSECKEY"><span class="TYPE">xmlSecKeyPtr</span></a> key</code>,
+                                   <code class="PARAMETER">const <a href="xmlsec-xmlsec.html#XMLSECBYTE"><span class="TYPE">xmlSecByte</span></a> *data</code>,
+                                   <code class="PARAMETER"><a href="xmlsec-xmlsec.html#XMLSECSIZE"><span class="TYPE">xmlSecSize</span></a> dataSize</code>,
+                                   <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>);</pre>
+<p>Reads the certificate from memory buffer and adds it to key.</p>
+<div class="REFSECT3">
+<a name="AEN29946"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29948"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>key</p></td>
+<td><p>the pointer to key.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>data</p></td>
+<td><p>the certificate binary data.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>dataSize</p></td>
+<td><p>the certificate binary data size.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN29975"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYCERTLOADBIO"></a><h3>xmlSecOpenSSLAppKeyCertLoadBIO ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">int</span></font>
+xmlSecOpenSSLAppKeyCertLoadBIO (<code class="PARAMETER"><a href="xmlsec-keys.html#XMLSECKEY"><span class="TYPE">xmlSecKeyPtr</span></a> key</code>,
+                                <code class="PARAMETER"><font><span class="TYPE">BIO</span></font> *bio</code>,
+                                <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>);</pre>
+<p>Reads the certificate from memory buffer and adds it to key.</p>
+<div class="REFSECT3">
+<a name="AEN29995"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN29997"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>key</p></td>
+<td><p>the pointer to key.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>bio</p></td>
+<td><p>the certificate bio.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the certificate file format.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN30018"></a><h4>Returns</h4>
+<p> 0 on success or a negative value otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPKEYFROMCERTLOADBIO"></a><h3>xmlSecOpenSSLAppKeyFromCertLoadBIO ()</h3>
+<pre class="PROGRAMLISTING"><a href="xmlsec-keys.html#XMLSECKEY"><span class="RETURNVALUE">xmlSecKeyPtr</span></a>
+xmlSecOpenSSLAppKeyFromCertLoadBIO (<code class="PARAMETER"><font><span class="TYPE">BIO</span></font> *bio</code>,
+                                    <code class="PARAMETER"><a href="xmlsec-keysdata.html#XMLSECKEYDATAFORMAT"><span class="TYPE">xmlSecKeyDataFormat</span></a> format</code>);</pre>
+<p>Loads public key from cert.</p>
+<div class="REFSECT3">
+<a name="AEN30035"></a><h4>Parameters</h4>
+<div class="INFORMALTABLE">
+<p></p>
+<a name="AEN30037"></a><table border="0" frame="void" width="100%" class="CALSTABLE">
+<col>
+<col>
+<col>
+<tbody>
+<tr>
+<td><p>bio</p></td>
+<td><p>the BIO.</p></td>
+<td> </td>
+</tr>
+<tr>
+<td><p>format</p></td>
+<td><p>the cert format.</p></td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p></p>
+</div>
+</div>
+<div class="REFSECT3">
+<a name="AEN30052"></a><h4>Returns</h4>
+<p> pointer to key or NULL if an error occurs.</p>
+</div>
+</div>
+<hr>
+<div class="REFSECT2">
+<a name="XMLSECOPENSSLAPPGETDEFAULTPWDCALLBACK"></a><h3>xmlSecOpenSSLAppGetDefaultPwdCallback ()</h3>
+<pre class="PROGRAMLISTING"><font><span class="RETURNVALUE">void</span></font> *
+xmlSecOpenSSLAppGetDefaultPwdCallback (<code class="PARAMETER"><span class="TYPE">void</span></code>);</pre>
+<p>Gets default password callback.</p>
+<div class="REFSECT3">
+<a name="AEN30065"></a><h4>Returns</h4>
+<p> default password callback.</p>
+</div>
+</div>
+</div>
+<div class="REFSECT1">
+<a name="XMLSEC-OPENSSL-APP.OTHER_DETAILS"></a><h2>Types and Values</h2>
+<p></p>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-openssl-ref.html"><b>&lt;&lt;&lt; XML Security Library for OpenSLL API Reference.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-openssl-bn.html"><b>bn &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

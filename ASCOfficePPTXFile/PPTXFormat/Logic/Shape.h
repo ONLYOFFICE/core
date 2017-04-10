@@ -310,9 +310,8 @@ namespace PPTX
 
 			void FillShapeProperties(ShapeProperties& props);
 			void FillShapeTextProperties(CShapeTextProperties& props);
-
-		private:
 			void FillLevelUp()const;
+
 			mutable Shape const * levelUp;
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false)const;
 		public:

@@ -1,0 +1,8 @@
+V	21140429175059Z		AFA28BB933ADDAAC	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Root CA/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21140429175238Z		AFA28BB933ADDAAD	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21140429175426Z		AFA28BB933ADDAAE	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Third Level DSA Certificate/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21140429175534Z		AFA28BB933ADDAAF	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Third Level RSA Certificate/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21140429175706Z		AFA28BB933ADDAB0	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Large RSA Key/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	140524175816Z		AFA28BB933ADDAB1	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Expired RSA Certificate/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21150209225409Z		AFA28BB933ADDAB2	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Third Level DSA 2048 Certificate/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com
+V	21150209225453Z		AFA28BB933ADDAB3	unknown	/C=US/ST=California/O=XML Security Library (http://www.aleksey.com/xmlsec)/OU=Test Third Level DSA 3072 Certificate/CN=Aleksey Sanin/emailAddress=xmlsec@aleksey.com

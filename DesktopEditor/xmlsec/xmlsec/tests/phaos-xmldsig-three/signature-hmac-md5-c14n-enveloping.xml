@@ -1,0 +1,6 @@
+<dsig:Signature xmlns="http://www.w3.org/2000/09/xmldsig#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"><dsig:SignedInfo><dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><dsig:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-md5"/><dsig:Reference Type="http://www.w3.org/2000/09/xmldsig#Object" URI="#object-paOGfpowMpVEz7RkFL6iWA22"><dsig:DigestMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#md5"/><dsig:DigestValue>tQ7wVagV/v8GTSZnYYYw3g==</dsig:DigestValue></dsig:Reference></dsig:SignedInfo><dsig:SignatureValue>BsR9wW+N76Dg+QYMpwN5kA==</dsig:SignatureValue><dsig:Object Id="object-paOGfpowMpVEz7RkFL6iWA22" MimeType="text/xml"><player bats="left" id="10012" throws="right">
+	<!-- Here's a comment -->
+	<name>Alfonso Soriano</name>
+	<position>2B</position>
+	<team>New York Yankees</team>
+</player></dsig:Object></dsig:Signature>

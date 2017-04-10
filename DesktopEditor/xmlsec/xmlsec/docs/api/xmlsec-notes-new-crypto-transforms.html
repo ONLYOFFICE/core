@@ -1,0 +1,193 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Cryptographic transforms.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="Adding support for new cryptographic library." href="xmlsec-notes-new-crypto.html">
+<link rel="PREVIOUS" title="Klasses and objects." href="xmlsec-notes-new-crypto-klasses.html">
+<link rel="NEXT" title="Keys data and keys data stores." href="xmlsec-notes-new-crypto-keys.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-new-crypto-klasses.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes-new-crypto.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-notes-new-crypto-keys.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<br clear="all"><div class="SECT1">
+<h1 class="SECT1"><a name="XMLSEC-NOTES-NEW-CRYPTO-TRANSFORMS">Cryptographic transforms.</a></h1>
+<p>The cryptographic transforms (digests, signatures and encryption)
+	implementation is the main goal of "xmlsec-&lt;crypto&gt;" library.
+	Most of the cryptographic <a href="xmlsec-notes-transforms.html">transforms</a> 
+	use default <code class="STRUCTFIELD">pushBin</code> and <code class="STRUCTFIELD">popBin</code> 
+	methods and provide custom <a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a> method. 
+	The binary transform <a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a> method 
+	processes data from the input buffer
+	<code class="STRUCTFIELD">inBuf</code> and pushes results to
+	<code class="STRUCTFIELD">outBuf</code>. The transform should try to
+	consume and remove data from <code class="STRUCTFIELD">inBuf</code> buffer
+	as soon as the data became available. However, it might happen
+	that current data size in the input buffer is not enough (for example,
+	RSA-PKCS1 algorithm requires that all the data are available in 
+	one buffer). In this case, transform might keep the data in the 
+	input buffer till the next call to 
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a>
+	method. The "last" parameter of the 
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a>
+	indicates that transform MUST process all the data in the input buffer
+	and return as much as possible in the output buffer. The 
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a> method 
+	might be called multiple times with non-zero "last" parameter until 
+	the transforms returns nothing
+	in the output buffer. In addition, the transform implementation is 
+	responsible for managing the transform <code class="STRUCTFIELD">status</code> 
+	variable.
+	</p>
+<div class="TABLE">
+<a name="AEN590"></a><p><b>Table 2. Typical transform status managing.</b></p>
+<table border="1" class="CALSTABLE">
+<col>
+<col>
+<tbody>
+<tr>
+<td>xmlSecTransformStatusNone</td>
+<td>Transform initializes itself (for example, cipher transform 
+	generates or reads IV) and sets <code class="STRUCTFIELD">status</code> 
+	variable to xmlSecTransformStatusWorking.</td>
+</tr>
+<tr>
+<td>xmlSecTransformStatusWorking</td>
+<td>Transform process the next (if "last" parameter is zero) or
+	last block of data (if "last" parameter is non-zero).
+	When transform returns all the data, it sets the 
+	<code class="STRUCTFIELD">status</code> variable to 
+	xmlSecTransformStatusFinished.</td>
+</tr>
+<tr>
+<td>xmlSecTransformStatusFinished</td>
+<td>Transform returns no data to indicate that it finished
+	processing.</td>
+</tr>
+</tbody>
+</table>
+</div>	
+	<p>In adition to <a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a>
+	methods, signature, hmac or digest transforms 
+	MUST implement <a href="xmlsec-transforms.html#XMLSECTRANSFORMVERIFYMETHOD">verify</a> method. 
+	The <a href="xmlsec-transforms.html#XMLSECTRANSFORMVERIFYMETHOD">verify</a> method is called
+	after transform execution is finished. The 
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMVERIFYMETHOD">verify</a> method implementation 
+	must set the "status" member to <a href="xmlsec-transforms.html#XMLSECTRANSFORMSTATUSOK">xmlSecTransformStatusOk</a>
+	if signature, hmac or digest is successfuly verified or to
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMSTATUSFAIL">xmlSecTransformStatusFail</a>
+	otherwise.
+	</p>
+<p>The transforms that require a key (signature or encryption 
+	transforms, for example) MUST imlpement 
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMSETKEYREQUIREMENTSMETHOD">setKeyReq</a> 
+	(prepares the <a href="xmlsec-keys.html#XMLSECKEYREQ">key requirements</a>
+	for key search) and
+	<a href="xmlsec-transforms.html#XMLSECTRANSFORMSETKEYMETHOD">setKey</a> 
+	(sets the key in the transform) methods. 
+	</p>
+</div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-new-crypto-klasses.html"><b>&lt;&lt;&lt; Klasses and objects.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-notes-new-crypto-keys.html"><b>Keys data and keys data stores. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

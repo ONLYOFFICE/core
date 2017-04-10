@@ -244,22 +244,38 @@ namespace PPTX
 			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
 				m_elem.reset(new Logic::SpTree(oReader));
 			else if (name == _T("graphicFrame"))
-				m_elem.reset(new Logic::GraphicFrame(oReader));
+			{
+				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame(oReader);
+
+				if (pGraphic && pGraphic->IsEmpty() == false)
+					m_elem.reset(pGraphic);
+				else
+					RELEASEOBJECT(pGraphic);
+			}
 			else if (name == _T("AlternateContent"))
 			{
-				bool isEmpty = true;
+				if ( oReader.IsEmptyNode() )
+					return;
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring strName = oReader.GetName();
+					
+					if ( oReader.IsEmptyNode() )
+						continue;
+					
 					if (strName == L"mc:Choice")
 					{
+						oReader.ReadNextSiblingNode(nCurDepth + 1);
 						//GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
 						fromXML(oReader);
-						break;
+						
+						if (m_elem.is_init())
+							break;
 					}
 					else if (strName == L"mc:Fallback")
 					{
+						oReader.ReadNextSiblingNode(nCurDepth + 1);
 						fromXML(oReader);
 					}
 				}

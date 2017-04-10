@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+XML Security Library example: A simple bad SAML response (verify4 example). 
+
+This file could be verified with verify3 example (signature is valid)
+but verify4 example fails because of XPath transform which is not allowed
+in a simple SAML response.
+
+This file was created from a template with the following command (replace __ with double dashes):
+ ../apps/xmlsec sign __privkey rsakey.pem,rsacert.pem __output verify4-bad-res.xml verify4-bad-tmpl.xml
+-->
+<Response xmlns="urn:oasis:names:tc:SAML:1.0:protocol" xmlns:samlp="urn:oasis:names:tc:SAML:1.0:protocol" IssueInstant="2002-04-18T16:56:54Z" MajorVersion="1" MinorVersion="0" Recipient="https://shire.target.com" ResponseID="7ddc31-ed4a03d703-FB24AD27D96135B68C99FB9AACFE2FFC">
+  <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+    <dsig:SignedInfo>
+      <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <dsig:Reference URI="">
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xpath-19991116">
+            <dsig:XPath xmlns:samlp_xpath="urn:oasis:names:tc:SAML:1.0:protocol">
+              count(ancestor-or-self::samlp_xpath:Response |
+              here()/ancestor::samlp_xpath:Response[1]) =
+              count(ancestor-or-self::samlp_xpath:Response)
+            </dsig:XPath>
+          </dsig:Transform>
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <dsig:DigestValue>t1nvDq1bZXEhBIXc/DHcqIrjRyI=</dsig:DigestValue>
+      </dsig:Reference>
+    </dsig:SignedInfo>
+    <dsig:SignatureValue>PipZFFmmYcSnSU9p5AcOmFbRYoeatERYPy4IRk+jU26xk9sAM6yfhXtbK8csl/0w
+rjODj1jGcydBGP9I8kFAfHyZ+Ls+A+53oMNl+tGWfe8iICMowIU1HCxJtPrgbTKk
+1gc+VnYJ3IXhoVneeQKqzilXwA5X7FW7hgIecb5KwLShYV3iO8+z8pzt3NEGKAGQ
+p/lQmO3EQR4Zu0bCSOk6zXdlOhe5dPVFXJQLlE8Zz3WjGQNo0l4op0ZXKf1B+syH
+blHx0tnPQDtSBzQdKohJV39UgkGnL3rd5ggBzyXemjMTX8eFxNZ7bh4UgZ+Wo74W
+Zb4ompTc2ImxJfbpszWp8w==</dsig:SignatureValue>
+    <dsig:KeyInfo>
+      <dsig:X509Data>
+<X509Certificate xmlns="http://www.w3.org/2000/09/xmldsig#">MIIE3zCCBEigAwIBAgIBBTANBgkqhkiG9w0BAQQFADCByzELMAkGA1UEBhMCVVMx
+EzARBgNVBAgTCkNhbGlmb3JuaWExEjAQBgNVBAcTCVN1bm55dmFsZTE9MDsGA1UE
+ChM0WE1MIFNlY3VyaXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20v
+eG1sc2VjKTEZMBcGA1UECxMQUm9vdCBDZXJ0aWZpY2F0ZTEWMBQGA1UEAxMNQWxl
+a3NleSBTYW5pbjEhMB8GCSqGSIb3DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tMB4X
+DTAzMDMzMTA0MDIyMloXDTEzMDMyODA0MDIyMlowgb8xCzAJBgNVBAYTAlVTMRMw
+EQYDVQQIEwpDYWxpZm9ybmlhMT0wOwYDVQQKEzRYTUwgU2VjdXJpdHkgTGlicmFy
+eSAoaHR0cDovL3d3dy5hbGVrc2V5LmNvbS94bWxzZWMpMSEwHwYDVQQLExhFeGFt
+cGxlcyBSU0EgQ2VydGlmaWNhdGUxFjAUBgNVBAMTDUFsZWtzZXkgU2FuaW4xITAf
+BgkqhkiG9w0BCQEWEnhtbHNlY0BhbGVrc2V5LmNvbTCCASIwDQYJKoZIhvcNAQEB
+BQADggEPADCCAQoCggEBAJe4/rQ/gzV4FokE7CthjL/EXwCBSkXm2c3p4jyXO0Wt
+quaNC3dxBwFPfPl94hmq3ZFZ9PHPPbp4RpYRnLZbRjlzVSOq954AXOXpSew7nD+E
+mTqQrd9+ZIbGJnLOMQh5fhMVuOW/1lYCjWAhTCcYZPv7VXD2M70vVXDVXn6ZrqTg
+qkVHE6gw1aCKncwg7OSOUclUxX8+Zi10v6N6+PPslFc5tKwAdWJhVLTQ4FKG+F53
+7FBDnNK6p4xiWryy/vPMYn4jYGvHUUk3eH4lFTCr+rSuJY8i/KNIf/IKim7g/o3w
+Ae3GM8xrof2mgO8GjK/2QDqOQhQgYRIf4/wFsQXVZcMCAwEAAaOCAVcwggFTMAkG
+A1UdEwQCMAAwLAYJYIZIAYb4QgENBB8WHU9wZW5TU0wgR2VuZXJhdGVkIENlcnRp
+ZmljYXRlMB0GA1UdDgQWBBQkhCzy1FkgYosuXIaQo6owuicanDCB+AYDVR0jBIHw
+MIHtgBS0ue+a5pcOaGUemM76VQ2JBttMfKGB0aSBzjCByzELMAkGA1UEBhMCVVMx
+EzARBgNVBAgTCkNhbGlmb3JuaWExEjAQBgNVBAcTCVN1bm55dmFsZTE9MDsGA1UE
+ChM0WE1MIFNlY3VyaXR5IExpYnJhcnkgKGh0dHA6Ly93d3cuYWxla3NleS5jb20v
+eG1sc2VjKTEZMBcGA1UECxMQUm9vdCBDZXJ0aWZpY2F0ZTEWMBQGA1UEAxMNQWxl
+a3NleSBTYW5pbjEhMB8GCSqGSIb3DQEJARYSeG1sc2VjQGFsZWtzZXkuY29tggEA
+MA0GCSqGSIb3DQEBBAUAA4GBALU/mzIxSv8vhDuomxFcplzwdlLZbvSQrfoNkMGY
+1UoS3YJrN+jZLWKSyWE3mIaPpElqXiXQGGkwD5iPQ1iJMbI7BeLvx6ZxX/f+c8Wn
+ss0uc1NxfahMaBoyG15IL4+beqO182fosaKJTrJNG3mc//ANGU9OsQM9mfBEt4oL
+NJ2D</X509Certificate>
+</dsig:X509Data>
+    </dsig:KeyInfo>
+  </dsig:Signature>
+  <Status>
+    <StatusCode Value="samlp:Success"/>
+  </Status>
+  <Assertion xmlns="urn:oasis:names:tc:SAML:1.0:assertion" AssertionID="7ddc31-ed4a03d735-FB24AD27D96135B68C99FB9AACFE2FFC" IssueInstant="2002-04-18T16:56:54Z" Issuer="hs.osu.edu" MajorVersion="1" MinorVersion="0">
+    <Conditions NotBefore="2002-04-18T16:56:54Z" NotOnOrAfter="2002-04-18T17:01:54Z">
+      <AudienceRestrictionCondition>
+        <Audience>http://middleware.internet2.edu/shibboleth/clubs/clubshib/1.0/</Audience>
+      </AudienceRestrictionCondition>
+    </Conditions>
+    <AuthenticationStatement AuthenticationInstant="2002-04-18T16:56:53Z" AuthenticationMethod="urn:mace:shibboleth:authmethod">
+      <Subject>
+        <NameIdentifier Format="urn:mace:shibboleth:1.0:handle" NameQualifier="osu.edu">foo</NameIdentifier>
+        <SubjectConfirmation>
+          <ConfirmationMethod>urn:oasis:names:tc:SAML:1.0:cm:Bearer</ConfirmationMethod>
+        </SubjectConfirmation>
+      </Subject>
+      <SubjectLocality IPAddress="127.0.0.1"/>
+      <AuthorityBinding AuthorityKind="samlp:AttributeQuery" Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://aa.osu.edu/"/>
+    </AuthenticationStatement>
+  </Assertion>
+</Response>

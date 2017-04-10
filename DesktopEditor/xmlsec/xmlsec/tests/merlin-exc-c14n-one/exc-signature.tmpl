@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Foo xmlns:bar="urn:bar" xmlns="urn:foo" xml:space="preserve">
+  <dsig:Signature xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+    <dsig:SignedInfo>
+      <dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+      <dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1" />
+      <dsig:Reference URI="#xpointer(id('to-be-signed'))">
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue></dsig:DigestValue>
+      </dsig:Reference>
+      <dsig:Reference URI="#xpointer(id('to-be-signed'))">
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+            <InclusiveNamespaces xmlns="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="bar #default" />
+          </dsig:Transform>
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue></dsig:DigestValue>
+      </dsig:Reference>
+      <dsig:Reference URI="#xpointer(id('to-be-signed'))">
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#WithComments" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue></dsig:DigestValue>
+      </dsig:Reference>
+      <dsig:Reference URI="#xpointer(id('to-be-signed'))">
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#WithComments">
+            <InclusiveNamespaces xmlns="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="bar #default" />
+          </dsig:Transform>
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue></dsig:DigestValue>
+      </dsig:Reference>
+    </dsig:SignedInfo>
+    <dsig:SignatureValue>
+    </dsig:SignatureValue>
+    <dsig:KeyInfo>
+      <dsig:KeyValue>
+      </dsig:KeyValue>
+    </dsig:KeyInfo>
+    <dsig:Object Id="to-be-signed">
+      <bar:Baz>
+        <!--  comment -->
+      </bar:Baz>
+    </dsig:Object>
+  </dsig:Signature>
+</Foo>

@@ -40,16 +40,16 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 {
 	if (m_ooxGraphic == NULL) return 0;
 	
-	if (m_ooxGraphic->element.IsInit())
+	if (m_ooxGraphic->element.is_init())
 	{
-		if (m_ooxGraphic->element->getType() == OOX::et_p_ShapeTree)
+		if (m_ooxGraphic->element.getType() == OOX::et_p_ShapeTree)
 		{
-			OOXShapeReader shapeReader(m_ooxGraphic->element->GetElem().operator->());
+			OOXShapeReader shapeReader(m_ooxGraphic->element.GetElem().operator->());
 			return (shapeReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 		else
 		{
-			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element->GetElem().operator->()));
+			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->element.GetElem().operator->()));
 			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}

@@ -219,8 +219,8 @@ namespace PPTX
 				}
 				else
 				{
-					element = oReader;
-					if (element.IsInit())
+					element.fromXML( oReader );
+					if (element.is_init())
 						result = true;
 				}
 			}
@@ -359,15 +359,21 @@ namespace PPTX
 			pWriter->EndNode(namespace_ + L":graphicFrame");
 		}
 
+		bool GraphicFrame::IsEmpty() const
+		{
+			return !olePic.is_init() && !smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !oleSpid.is_init() && !element.is_init();
+		}
+
 		void GraphicFrame::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
+			if (IsEmpty()) 
+				return;
+
 			if (olePic.is_init())
 			{
 				olePic->toPPTY(pWriter);
 				return;
 			}
-			if (!smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !oleSpid.is_init() ) 
-				return;
 
 			std::wstring xml_object_vml;
 			std::wstring xml_object_rels;
@@ -465,14 +471,22 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, nvGraphicFramePr);
 			pWriter->WriteRecord2(1, xfrm);
-            pWriter->WriteRecord2(2, table);
 
-			if (chartRec.is_init())
+			if (table.is_init())
+			{
+				pWriter->WriteRecord2(2, table);
+			}
+			else if (chartRec.is_init())
 			{
 				pWriter->WriteRecord2(3, chartRec);
 			}
-            else if (xml_object_vml.empty() == false)
+			else if (element.is_init())
 			{
+ 				pWriter->WriteRecord1(4, element);
+			}
+			else
+			{
+				//????
 			}
 
 			pWriter->EndRecord();

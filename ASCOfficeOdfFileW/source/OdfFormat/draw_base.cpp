@@ -78,7 +78,6 @@ void draw_base::serialize(std::wostream & _Wostream)
 void draw_base::serialize_attlist(CP_ATTR_NODE)
 {
 	common_draw_attlists_.serialize(CP_GET_XML_NODE());
-	common_presentation_attlist_.serialize(CP_GET_XML_NODE()); 	
 }
 
 }

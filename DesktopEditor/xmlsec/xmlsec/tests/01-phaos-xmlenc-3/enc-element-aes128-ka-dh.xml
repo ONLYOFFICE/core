@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInfo xmlns="http://example.org/paymentv2">
+  <Name>John Smith</Name>
+  <EncryptedData Id="ED" Type="http://www.w3.org/2001/04/xmlenc#Element" xmlns="http://www.w3.org/2001/04/xmlenc#">
+    <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+      <AgreementMethod Algorithm="http://www.w3.org/2001/04/xmlenc#dh">
+        <KA-Nonce>YWJjZGU=</KA-Nonce>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <OriginatorKeyInfo>
+          <ds:X509Data>
+            <ds:X509Certificate>
+                MIIEjDCCA/WgAwIBAgIBATANBgkqhkiG9w0BAQQFADCBljELMAkGA1UEBhMCVVMx
+                CzAJBgNVBAgTAk5ZMRIwEAYDVQQHEwlNYW5oYXR0YW4xFTATBgNVBAoTDExhdmEg
+                U3VwcmVtZTEUMBIGA1UECxMLSGVhZCBPZmZpY2UxFDASBgNVBAMTC1JTQSBUZXN0
+                IENBMSMwIQYJKoZIhvcNAQkBFhR0ZWNoQGxhdmFzdXByZW1lLm9yZzAeFw0wMjAx
+                MzAyMjUwNDBaFw0xMDAxMDEwNTAwMDBaMIGMMQswCQYDVQQGEwJVUzELMAkGA1UE
+                CBMCTlkxEjAQBgNVBAcTCU1hbmhhdHRhbjEOMAwGA1UEChMFUGhhb3MxFDASBgNV
+                BAsTC0hlYWQgT2ZmaWNlMRcwFQYDVQQDEw5ESCBUZXN0IENsaWVudDEdMBsGCSqG
+                SIb3DQEJARYOdGVjaEBwaGFvcy5vcmcwggJDMIIBuAYHKoZIzj4CATCCAasCgYEA
+                uavat7i6NOpnRObdx7Gz38h8xkgmv20XUaj1JjfvMAQfQFMHeshGhY2Q0mwvJ1Of
+                X/kZ4cMbSYUywh3WAY6zQs8W2uxg8GeduCLebNQGTaHVFVmrJMQawlV1bIMQ+kDi
+                IQNR/FPqSNHKD2Q9/uoGD5d2l4KP3qH8dv5HOT8fCwUCgYBxunqmUuKZFTNKJhH9
+                G6UINlI/Xr9jPesj5/I8fpWgxZxsgkzksqisDCslZ09uZTATrGFTF3fk6kNhx25s
+                UCtYHHK1HzQmsLMu2BWNBQrkLC+Mkd3d39UdNduPW4kCMpcdoHAh+zTqAH2QkKJm
+                yxc/x0LevkSUk8rX8DFa3y152QIVAL+Eo4gPL339dk7inq87PnR1PWuHAm0A+C9E
+                GPDSphFaPWO5LQTNflJ0l9IGjcNFGrJX0imWrjM2q6bGYz0ZK4cJhcX12YZOjR52
+                TZh3cy6yAJG470i65nlz5/3ESWFHsMO0COrDi/Ca5RfMrYGcc8hrydzFlT1zqMFa
+                1yuqQKVsGwXcMBwDFgCZ/hqLAtBi6dyv6Ky+OfXfXgJBPhQCAgNPA4GEAAKBgFWw
+                LyYO4IPxJsbaQQsJ4K1xTjPSjTMmvG4fpKA+S1BGz8FI1SPACb2/YYCrmjoWNvkQ
+                V6NTQ+eji6TGA7ET85c4AcRZtxOi3gSP5Kq2A3E9dUouikhrKSHFb+Nx420CXmtp
+                jxBu+qUTb7AMrRCus8maHwU9PdKQbZxoDFOLArJHo00wSzAPBgNVHQ8BAf8EBQMD
+                BwgAMBkGA1UdEQQSMBCBDnRlY2hAcGhhb3Mub3JnMB0GA1UdDgQWBBTfky/d+/wI
+   		6zicN4uDl0PSAyRNnTANBgkqhkiG9w0BAQQFAAOBgQA+2cWsAZ9a44ttBX1Z3eMI
+ 		e0GgduXErBt9xsv2Sy6fS/6CyyJm3tpthuT2WMZmu6E+ceBLkFU+TnxnEf/NrSj8
+		wtQt/wVHacaSZMcwUDv/uTUxrtIZUJ7A7VxcAvbnLE5fQqKhF6QT5irtbE2Ryvd7
+		oMfGG8PmU+sbN9sNXtIzOA==
+            </ds:X509Certificate>
+          </ds:X509Data>
+        </OriginatorKeyInfo>
+        <RecipientKeyInfo>
+          <ds:X509Data>
+            <ds:X509Certificate>
+                MIIEjTCCA/agAwIBAgIBAjANBgkqhkiG9w0BAQQFADCBljELMAkGA1UEBhMCVVMx
+		CzAJBgNVBAgTAk5ZMRIwEAYDVQQHEwlNYW5oYXR0YW4xFTATBgNVBAoTDExhdmEg
+		U3VwcmVtZTEUMBIGA1UECxMLSGVhZCBPZmZpY2UxFDASBgNVBAMTC1JTQSBUZXN0
+		IENBMSMwIQYJKoZIhvcNAQkBFhR0ZWNoQGxhdmFzdXByZW1lLm9yZzAeFw0wMjAx
+		MzAyMjUyNTNaFw0xMDAxMDEwNTAwMDBaMIGMMQswCQYDVQQGEwJVUzELMAkGA1UE
+		CBMCTlkxEjAQBgNVBAcTCU1hbmhhdHRhbjEOMAwGA1UEChMFUGhhb3MxFDASBgNV
+		BAsTC0hlYWQgT2ZmaWNlMRcwFQYDVQQDEw5ESCBUZXN0IENsaWVudDEdMBsGCSqG
+		SIb3DQEJARYOdGVjaEBwaGFvcy5vcmcwggJEMIIBuAYHKoZIzj4CATCCAasCgYEA
+		uavat7i6NOpnRObdx7Gz38h8xkgmv20XUaj1JjfvMAQfQFMHeshGhY2Q0mwvJ1Of
+		X/kZ4cMbSYUywh3WAY6zQs8W2uxg8GeduCLebNQGTaHVFVmrJMQawlV1bIMQ+kDi
+		IQNR/FPqSNHKD2Q9/uoGD5d2l4KP3qH8dv5HOT8fCwUCgYBxunqmUuKZFTNKJhH9
+		G6UINlI/Xr9jPesj5/I8fpWgxZxsgkzksqisDCslZ09uZTATrGFTF3fk6kNhx25s
+		UCtYHHK1HzQmsLMu2BWNBQrkLC+Mkd3d39UdNduPW4kCMpcdoHAh+zTqAH2QkKJm
+		yxc/x0LevkSUk8rX8DFa3y152QIVAL+Eo4gPL339dk7inq87PnR1PWuHAm0A+C9E
+		GPDSphFaPWO5LQTNflJ0l9IGjcNFGrJX0imWrjM2q6bGYz0ZK4cJhcX12YZOjR52
+		TZh3cy6yAJG470i65nlz5/3ESWFHsMO0COrDi/Ca5RfMrYGcc8hrydzFlT1zqMFa
+		1yuqQKVsGwXcMBwDFgCZ/hqLAtBi6dyv6Ky+OfXfXgJBPhQCAgNPA4GFAAKBgQCM
+		KtnMyjT9G1LKTZoN7rHwIO08D5j1YYIscsQDc+q4ny5WEFo+wEmOqxGcE9JrRdeb
+		it6cT8F7TWWzeDJUyaXFEi4E1panCBCL1crqS/HbY8VH/zzhT+5L232LchsoYa1p
+		dqxxLHW8RrOax4RLVrcIOPcW4x3Ggk0ANYQhR6kNmqNNMEswDwYDVR0PAQH/BAUD
+		AwcIADAZBgNVHREEEjAQgQ50ZWNoQHBoYW9zLm9yZzAdBgNVHQ4EFgQUHddBJmfV
+		6MD3FTbVmHcLFN6QFAcwDQYJKoZIhvcNAQEEBQADgYEAKZl9P/ZmIrwHp3BTfBHl
+		eFBk9CbhK14FObMGWSkfjqipb5snXBPE3uPBrvP1StisPRsK/y1OZfcjjkA6ht0j
+		YWp9lohNDTlc/NOKGOQSCpntqr+wQhc6l16jezqR7sKv2eHBFGs0V7HCrEe2mTP4
+		rDa/YKrmL5K6S9GSF27rx40=
+	    </ds:X509Certificate>
+	  </ds:X509Data>
+        </RecipientKeyInfo>
+      </AgreementMethod>
+    </ds:KeyInfo>
+    <CipherData>
+      <CipherValue>
+        2+4oM3TFfOQ5JMIvRbTk3SbeWqbSVAhMb9zT+3BatcUJuhxzzXtLKEzkfPT09iTP
+        NmwEoUysB5uETmQ49Fd/0l21QjUmctAaCBIbWSrP4f3K2SUGxjKNZE4Pes+8DwiT
+        H1cak+3qT0zbqFa6rXcdLxS/ucxJOPMJV9ZCE4SkvFt2ZME8uRevFEYIqp/HInFZ
+        OjY9Lf8+hHOXVOVqrMObx7/CFzm0AS2aL4WmyfGM3zyUN1BF3nS4zzVOHNfIFopX
+      </CipherValue>
+    </CipherData>
+  </EncryptedData>
+</PaymentInfo>

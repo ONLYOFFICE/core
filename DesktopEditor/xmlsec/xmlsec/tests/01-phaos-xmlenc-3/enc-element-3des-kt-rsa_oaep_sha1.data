@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PaymentInfo xmlns="http://example.org/paymentv2">
+  <Name>John Smith</Name>
+  <CreditCard Currency="USD" Limit="5,000">
+    <Number>4019 2445 0277 5567</Number>
+    <Issuer>Bank of the Internet</Issuer>
+    <Expiration Time="04/02"/>
+  </CreditCard>
+</PaymentInfo>

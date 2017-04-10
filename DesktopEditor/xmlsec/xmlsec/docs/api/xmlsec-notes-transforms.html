@@ -1,0 +1,177 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Transforms and transforms chain.</title>
+<meta name="GENERATOR" content="Modular DocBook HTML Stylesheet Version 1.79">
+<link rel="HOME" title="XML Security Library Reference Manual" href="index.html">
+<link rel="UP" title="XML Security Library Tutorial" href="xmlsec-notes.html">
+<link rel="PREVIOUS" title="Verifing document signed with X509 certificates." href="xmlsec-notes-verify-x509.html">
+<link rel="NEXT" title="Using context objects." href="xmlsec-notes-contexts.html">
+<style type="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</style>
+<style type="text/css">
+table.CALSTABLE > tbody > tr:nth-child(1) > td:nth-child(1) {
+    width: 20em;
+}
+.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+}
+.programlisting {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation {
+    background: #eeeeee;
+    border: solid 1px #000000;
+}
+.navigation a {
+    color: initial;
+}
+.navigation a:visited {
+    color: initial;
+}
+</style>
+</head>
+<body><table width="100%" valign="top"><tr valign="top">
+<td valign="top" align="left" width="210">
+<img src="../images/logo.gif" alt="XML Security Library" border="0"><p></p>
+<ul>
+<li><a href="../index.html">Home</a></li>
+<li><a href="../download.html">Download</a></li>
+<li><a href="../news.html">News</a></li>
+<li><a href="../documentation.html">Documentation</a></li>
+<ul>
+<li><a href="../faq.html">FAQ</a></li>
+<li><a href="../api/xmlsec-notes.html">Tutorial</a></li>
+<li><a href="../api/xmlsec-reference.html">API reference</a></li>
+<li><a href="../api/xmlsec-examples.html">Examples</a></li>
+</ul>
+<li><a href="../xmldsig.html">XML Digital Signature</a></li>
+<ul><li><a href="http://www.aleksey.com/xmlsec/xmldsig-verifier.html">Online Verifier</a></li></ul>
+<li><a href="../xmlenc.html">XML Encryption</a></li>
+<li><a href="../c14n.html">XML Canonicalization</a></li>
+<li><a href="../bugs.html">Reporting Bugs</a></li>
+<li><a href="http://www.aleksey.com/pipermail/xmlsec">Mailing list</a></li>
+<li><a href="../related.html">Related</a></li>
+<li><a href="../authors.html">Authors</a></li>
+</ul>
+<table width="100%">
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/"><img src="../images/libxml2-logo.png" alt="LibXML2" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://xmlsoft.org/XSLT"><img src="../images/libxslt-logo.png" alt="LibXSLT" border="0"></a></td>
+</tr>
+<tr>
+<td width="15"></td>
+<td><a href="http://www.openssl.org/"><img src="../images/openssl-logo.png" alt="OpenSSL" border="0"></a></td>
+</tr>
+<!--Links - start--><!--Links - end-->
+</table>
+</td>
+<td valign="top"><table width="100%" valign="top"><tr><td valign="top" align="left" id="xmlsecContent">
+<table width="100%" class="navigation" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="xmlsec-notes-verify-x509.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="xmlsec-notes.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<th width="100%" align="center">XML Security Library Reference Manual</th>
+<td><a accesskey="n" href="xmlsec-notes-contexts.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="CHAPTER">
+<h1>
+<a name="XMLSEC-NOTES-TRANSFORMS"></a>Transforms and transforms chain.</h1>
+<p>XML Digital Signature and XML Encryption standards are 
+	very flexible and provide an XML developer many different ways to 
+	sign or encrypt any part (or even parts) of an XML document. 
+	The key for such great flexibility is the "transforms" model.
+	Transform is defined as a method of pre-processing binary or XML data 
+	before calculating digest or signature. XML Security Library extends 
+	this definition and names "transform" any operation performed on 
+	the data: reading data from an URI, xml parsing, xml transformation, 
+	calculation digest, encrypting or decrypting. Each XML Security Library
+	transform provides at least one of the following callbacks: 
+	    </p>
+<p></p>
+<ul>
+<li><p>		    <a href="xmlsec-transforms.html#XMLSECTRANSFORMPUSHBINMETHOD">push binary data</a>;
+		</p></li>
+<li><p>		    <a href="xmlsec-transforms.html#XMLSECTRANSFORMPUSHXMLMETHOD">push xml data</a>;
+		</p></li>
+<li><p>		    <a href="xmlsec-transforms.html#XMLSECTRANSFORMPOPBINMETHOD">pop binary data</a>;
+		</p></li>
+<li><p>		    <a href="xmlsec-transforms.html#XMLSECTRANSFORMPOPXMLMETHOD">pop xml data</a>.
+    		</p></li>
+</ul>
+    <p>One additional <a href="xmlsec-transforms.html#XMLSECTRANSFORMEXECUTEMETHOD">execute</a>
+	callback was added to simplify the development and reduce code size. 
+	This callback is used by default
+	implementations of the four external callbacks from the list above.
+	For example, most of the crypto transforms could be implemented by 
+	just implementing one "execute" callback and using default push/pop 
+	binary data callbacks. However, in some cases using push/pop callbacks 
+	directly is more efficient.
+    </p>
+<div class="FIGURE">
+<a name="AEN470"></a><p><b>Figure 1. The XML Security Library transform.</b></p>
+<p><img src="images/transform.png" align="CENTER"></p>
+</div>
+<p>XML Security Library constructs transforms chain according to the 
+	signature/encryption template or signed/encrypted document. 
+	If necessary, XML Security Library inserts XML parser or defaul
+	canonicalization to ensure that the output data type (binary or XML) 
+	of previous transform matches the input of the next transform.
+    </p>
+<p>The data are processed by pushing through or poping from the chain
+	depending on the transforms in the chain.  For example, then binary 
+	data chunk is pushed through a binary-to-binary transform, it 
+	processes this chunk and pushes the result to the next transform 
+	in the chain. 
+    </p>
+<div class="FIGURE">
+<a name="AEN475"></a><p><b>Figure 2. Transforms chain created for &lt;dsig:Reference/&gt; element processing.</b></p>
+<p><img src="images/transforms-chain.png" align="CENTER"></p>
+</div>
+<p>	</p>
+<div class="EXAMPLE">
+<a name="AEN479"></a><p><b>Example 1. Walking through transforms chain.</b></p>
+<pre class="PROGRAMLISTING">TODO
+	    </pre>
+</div>
+    </div>
+<table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td align="left"><a accesskey="p" href="xmlsec-notes-verify-x509.html"><b>&lt;&lt;&lt; Verifing document signed with X509 certificates.</b></a></td>
+<td align="right"><a accesskey="n" href="xmlsec-notes-contexts.html"><b>Using context objects. &gt;&gt;&gt;</b></a></td>
+</tr></table>
+</td></tr></table></td>
+</tr></table></body>
+</html>

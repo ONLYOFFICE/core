@@ -920,7 +920,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 		{//взять из графических ствойст цвет текста .. 
 
 			const std::wstring styleName = shape->common_draw_attlists_.shape_with_text_and_styles_.
-				common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(L"");
+				common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
 
 			std::vector<const odf_reader::style_instance *> instances;
 			odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);

@@ -1,0 +1,39 @@
+<dsig:Signature xmlns="http://www.w3.org/2000/09/xmldsig#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"><dsig:SignedInfo><dsig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><dsig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><dsig:Reference Id="reference-manifest" Type="http://www.w3.org/2000/09/xmldsig#Manifest" URI="#manifest"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>afPdOzRB6PgYpVX2GECgTBf8P30=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo><dsig:SignatureValue>ffXjlLiu+EuGKfMLhvhZb6m3ULwd1zJ7BBe48oHrGxGsEdQWLt18AyOYMFHlhRi0i2DPurR6jPJGKWhwD6uRM1c6Rb/eDlZ7FNeqI0Bzv8xA0QEZ1nLAVJBC4LAKZp3Ha+7hs+l9rKuCk9ZiSO1UDMppEd8zoTucqCiAKTOWMd8=</dsig:SignatureValue><dsig:KeyInfo><dsig:KeyValue><dsig:RSAKeyValue><dsig:Modulus>gIb6nAB9oS/AI5jIj6WymvQhRxiMlE07G4abmMliYi5zWzvaFE2tnU+RZIBgtoXcgDEIU/vsLQut7nzCn9mHxC8JEaV4D4U91j64AyZakShqJw7qjJfqUxxPL0yJv2oFiouPDjGuJ9JPi0NrsZq+yfWfM54s4b9SNkcOIVMybZU=</dsig:Modulus><dsig:Exponent>AQAB</dsig:Exponent></dsig:RSAKeyValue></dsig:KeyValue></dsig:KeyInfo><dsig:Object><dsig:Manifest Id="manifest"><dsig:Reference Id="reference-0" URI="document-stylesheet.xml"><dsig:Transforms><dsig:Transform Algorithm="http://www.w3.org/TR/1999/REC-xslt-19991116"><xsl:stylesheet version="1.0" xmlns="http://www.w3.org/TR/xhtml1/strict" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:strip-space elements="player name position team"/>
+<xsl:output encoding="iso-8859-1" indent="no" method="xml"/>
+
+<xsl:template match="player">
+ <html>
+   <head>
+     <title>
+       <xsl:value-of select="name"/>
+     </title>
+   </head>
+   <body>
+     <xsl:apply-templates/>
+   </body>
+ </html>
+</xsl:template>
+
+<xsl:template match="player/name">
+  <h1>
+    <xsl:apply-templates/>
+  </h1>
+</xsl:template>
+
+<xsl:template match="player/position">
+  <h2>
+    <xsl:apply-templates/>
+  </h2>
+</xsl:template>
+
+<xsl:template match="player/team">
+  <h3>
+    <xsl:apply-templates/>
+  </h3>
+</xsl:template>
+
+
+
+</xsl:stylesheet></dsig:Transform><dsig:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></dsig:Transforms><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>2HiTcKdfZ9O83wthUFP8ISRdRXQ=</dsig:DigestValue></dsig:Reference></dsig:Manifest></dsig:Object></dsig:Signature>

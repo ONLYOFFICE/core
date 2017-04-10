@@ -85,27 +85,27 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 	convert(&oox_graphic_frame->nvGraphicFramePr);		
 	convert(oox_graphic_frame->xfrm.GetPointer());		
 	
-	if ( oox_graphic_frame->chartRec.IsInit())
+	if ( oox_graphic_frame->chartRec.is_init())
 	{
 		convert(oox_graphic_frame->chartRec.GetPointer());
 	}
-	else if ( oox_graphic_frame->smartArt.IsInit())
+	else if ( oox_graphic_frame->smartArt.is_init())
 	{
 		OoxConverter::convert(oox_graphic_frame->smartArt.GetPointer());
 	}
-	else if ( oox_graphic_frame->olePic.IsInit())
+	else if ( oox_graphic_frame->olePic.is_init())
 	{
 		OoxConverter::convert(oox_graphic_frame->olePic.GetPointer());
 	}
-	else if ( oox_graphic_frame->table.IsInit())
+	else if ( oox_graphic_frame->table.is_init())
 	{
 		PptxConverter *pptx_converter = dynamic_cast<PptxConverter *>(this);
 		if (pptx_converter)
 			pptx_converter->convert(oox_graphic_frame->table.GetPointer());
 	}
-	else if ( oox_graphic_frame->element.IsInit())
+	else if ( oox_graphic_frame->element.is_init())
 	{
-		OoxConverter::convert(oox_graphic_frame->element->GetElem().operator->());
+		OoxConverter::convert(oox_graphic_frame->element.GetElem().operator->());
 	}
 	odf_context()->drawing_context()->end_drawing();
 }

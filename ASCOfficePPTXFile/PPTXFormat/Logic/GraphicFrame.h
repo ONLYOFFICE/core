@@ -82,6 +82,8 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
+			bool IsEmpty()const;
+
 			std::wstring			m_namespace;
 
 			NvGraphicFramePr		nvGraphicFramePr;
@@ -94,7 +96,8 @@ namespace PPTX
             nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
-			nullable<SpTreeElem>	element;
+
+			SpTreeElem				element;
 
 			std::wstring GetVmlXmlBySpid(std::wstring & rels)	const;
 		protected:

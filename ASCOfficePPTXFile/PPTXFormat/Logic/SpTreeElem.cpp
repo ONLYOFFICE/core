@@ -244,7 +244,14 @@ namespace PPTX
 			else if (name == _T("grpSp") || name == _T("wgp") || name == _T("spTree") || name == _T("lockedCanvas"))
 				m_elem.reset(new Logic::SpTree(oReader));
 			else if (name == _T("graphicFrame"))
-				m_elem.reset(new Logic::GraphicFrame(oReader));
+			{
+				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame(oReader);
+
+				if (pGraphic && pGraphic->IsEmpty() == false)
+					m_elem.reset(pGraphic);
+				else
+					RELEASEOBJECT(pGraphic);
+			}
 			else if (name == _T("AlternateContent"))
 			{
 				if ( oReader.IsEmptyNode() )

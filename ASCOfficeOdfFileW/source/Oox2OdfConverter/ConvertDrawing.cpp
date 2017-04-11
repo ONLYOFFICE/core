@@ -1059,9 +1059,9 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 
 	int			 list_level		= 0;
 
-	if (oox_paragraph->pPr.IsInit())
+	if (oox_paragraph->pPr.IsInit() || oox_list_style)
 	{
-		if (oox_paragraph->pPr->lvl.IsInit() || oox_paragraph->pPr->ParagraphBullet.is_init())
+		if (oox_paragraph->pPr.IsInit() && (oox_paragraph->pPr->lvl.IsInit() || oox_paragraph->pPr->ParagraphBullet.is_init()))
 		{
 			list_present = true;
 		
@@ -1135,10 +1135,10 @@ void OoxConverter::convert(PPTX::Logic::TextListStyle *oox_list_style, int level
 	if (!oox_list_style)		return;
 	if (!paragraph_properties)	return;
 
+	convert(oox_list_style->levels[9].GetPointer(), paragraph_properties);
 	if (level < 0 || level > 9) return;
 
 	convert(oox_list_style->levels[level].GetPointer(), paragraph_properties);
-	
 }
 void OoxConverter::convert(PPTX::Logic::TextParagraphPr *oox_paragraph_pr, odf_writer::style_paragraph_properties * paragraph_properties)
 {

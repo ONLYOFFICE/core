@@ -2218,7 +2218,7 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.size() < 1 ) return;
 	
-	if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
+	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{

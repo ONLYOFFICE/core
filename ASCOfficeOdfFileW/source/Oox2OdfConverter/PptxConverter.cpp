@@ -327,7 +327,7 @@ void PptxConverter::convert_slides()
 					if (slide->Layout->clrMapOvr.IsInit() && slide->Layout->clrMapOvr->overrideClrMapping.IsInit())
 						current_clrMap	= slide->Layout->clrMapOvr->overrideClrMapping.GetPointer();
 					current_slide = slide->Layout.operator->();
-					convert_slide(&slide->Layout->cSld, false);		
+					convert_slide(&slide->Layout->cSld, true);		
 				odp_context->end_master_slide();
 				
 				m_mapMasters.insert(std::make_pair(slide->Master->m_sOutputFilename + slide->Layout->m_sOutputFilename, master_style_name));
@@ -899,20 +899,21 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, bool bPlaceholde
 		
 		if (pShape.IsInit() && pShape->nvSpPr.nvPr.ph.is_init())
 		{
-			pShape->FillLevelUp();
 			if (bPlaceholders)
 			{
+				pShape->FillLevelUp();
 				PPTX::Logic::Shape update_shape;
 				
-				pShape->levelUp->Merge(update_shape, true);
+				if (pShape->levelUp)
+					pShape->levelUp->Merge(update_shape, true);
 				pShape->Merge(update_shape);
 
 				OoxConverter::convert(&update_shape);
 			}
-			else
-			{
-				OoxConverter::convert(pShape.operator->());
-			}
+			//else
+			//{
+			//	OoxConverter::convert(pShape.operator->());
+			//}
 		}
 		else 
 		{

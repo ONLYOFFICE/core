@@ -241,7 +241,10 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
 
-		convert(oox_smart_art->m_diag.GetPointer());
+		for (size_t i = 0; i < oox_smart_art->m_diag->SpTreeElems.size(); i++)
+		{
+			convert(&oox_smart_art->m_diag->SpTreeElems[i]);
+		}
 
 		odf_context()->drawing_context()->end_group();
 		oox_current_child_document = NULL;
@@ -278,14 +281,90 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 		}
 	}
 }
+void OoxConverter::convert(PPTX::Logic::CNvGrpSpPr *oox_cnvGrpSpPr)
+{
+	if (!oox_cnvGrpSpPr) return;
+}
+void OoxConverter::convert(PPTX::Logic::NvGrpSpPr *oox_nvGrpSpPr)
+{
+	if (!oox_nvGrpSpPr) return;
+
+	odf_context()->drawing_context()->set_group_name(oox_nvGrpSpPr->cNvPr.name);
+	odf_context()->drawing_context()->set_group_z_order(oox_nvGrpSpPr->cNvPr.id);
+
+	if (oox_nvGrpSpPr->cNvPr.descr.IsInit())
+		odf_context()->drawing_context()->set_description(oox_nvGrpSpPr->cNvPr.descr.get());
+
+	convert(&oox_nvGrpSpPr->cNvGrpSpPr);
+	convert(&oox_nvGrpSpPr->nvPr);
+}
+void OoxConverter::convert(PPTX::Logic::GrpSpPr *oox_grpSpPr)
+{
+	if (!oox_grpSpPr) return;
+
+	if (oox_grpSpPr->xfrm.IsInit())
+	{
+		if (oox_grpSpPr->xfrm->flipH.IsInit())
+			odf_context()->drawing_context()->set_group_flip_H(oox_grpSpPr->xfrm->flipH.get());
+		
+		if (oox_grpSpPr->xfrm->flipV.IsInit())
+			odf_context()->drawing_context()->set_group_flip_V(oox_grpSpPr->xfrm->flipV.get());
+
+		_CP_OPT(double) cx, cy, ch_cx, ch_cy;
+		
+		if (oox_grpSpPr->xfrm->extX.IsInit())
+			cx = oox_grpSpPr->xfrm->extX.get() / 12700.;
+		if (oox_grpSpPr->xfrm->extY.IsInit())
+			cy = oox_grpSpPr->xfrm->extY.get() / 12700.;
+		
+		if (oox_grpSpPr->xfrm->chExtX.IsInit())
+			ch_cx = oox_grpSpPr->xfrm->chExtX.get() / 12700.;
+		if (oox_grpSpPr->xfrm->chExtY.IsInit())
+			ch_cy = oox_grpSpPr->xfrm->chExtY.get() / 12700.;
+
+		odf_context()->drawing_context()->set_group_size( cx, cy, ch_cx, ch_cy );
+
+		_CP_OPT(double) x, y, ch_x, ch_y;
+			
+		if (oox_grpSpPr->xfrm->offX.IsInit())
+			x =	oox_grpSpPr->xfrm->offX.get() / 12700.;
+		if (oox_grpSpPr->xfrm->offY.IsInit())
+			y = oox_grpSpPr->xfrm->offY.get() / 12700.;
+
+		if (oox_grpSpPr->xfrm->chOffX.IsInit())
+			ch_x = oox_grpSpPr->xfrm->chOffX.get() / 12700.;
+		if (oox_grpSpPr->xfrm->chOffY.IsInit())
+			ch_y = oox_grpSpPr->xfrm->chOffY.get() / 12700.;
+
+		odf_context()->drawing_context()->set_group_position( x, y, ch_x, ch_y );
+
+		if (oox_grpSpPr->xfrm->rot.IsInit())
+			odf_context()->drawing_context()->set_group_rotate(oox_grpSpPr->xfrm->rot.get() / 60000.);
+	}
+	//UniFill					Fill;
+	//EffectProperties			EffectList;
+	//nullable<Scene3d>			scene3d;
+}
+
 void OoxConverter::convert(PPTX::Logic::SpTree *oox_shape_tree)
 {
 	if (oox_shape_tree == NULL) return;
 	
+	odf_context()->drawing_context()->start_group();
+
+	convert(&oox_shape_tree->nvGrpSpPr);
+	convert(&oox_shape_tree->grpSpPr);
+
+	//odf_context()->drawing_context()->set_group_size (width, height, width, height);
+	//odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
+
 	for (size_t i = 0; i < oox_shape_tree->SpTreeElems.size(); i++)
 	{
 		convert(oox_shape_tree->SpTreeElems[i].GetElem().operator->());
 	}
+
+	odf_context()->drawing_context()->end_group();	
+
 }
 void OoxConverter::convert(PPTX::Logic::CxnSp *oox_connect)
 {

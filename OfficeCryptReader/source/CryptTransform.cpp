@@ -356,42 +356,10 @@ bool DecryptCipher(_buf & key, _buf & iv, _buf & data_inp, _buf & data_out,  CRY
 	}
 	else if (algorithm == CRYPT_METHOD::RC4)
 	{
-		//CryptoPP::ARC4 rc4(key.ptr, key.size);
-		//data_out.ptr = new unsigned char[data_inp.size];
-		//data_out.size = data_inp.size;
-		//rc4.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
-
-		//CryptoPP::RC2::Decryption rc2Decryption(key.ptr, key.size);
-		//modeDecryption = new CryptoPP::ECB_Mode_ExternalCipher::Decryption(rc2Decryption, iv.ptr ); 
-
-		//CryptoPP::RC5::Decryption rc5Decryption(key.ptr, key.size);
-		//modeDecryption = new CryptoPPp::ECB_Mode_ExternalCipher::Decryption(rc5Decryption, iv.ptr ); 
-		
-		//rsa aes
-		//CryptoPP::HexDecoder buffer;
-		//buffer.Put(key.ptr, key.size);	
-		//
-		////CryptoPP::StringSource buffer(key.ptr, key.size, true);
-
-		//CryptoPP::RSA::PrivateKey priv;
-		//priv.Load(buffer);
-
-		//CryptoPP::AutoSeededRandomPool rng;
-		//if(!priv.Validate(rng, 3))
-		//	throw std::runtime_error("Rsa private key validation failed");
-		//if(!priv.Validate(rng, 3))
-		//	throw std::runtime_error("Dsa private key validation failed");
-
-		//CryptoPP::RSAES_PKCS1v15_Decryptor rsaDecryption(priv);
-
-		//std::string data((char*)data_inp.ptr, data_inp.size);
-		//std::string decrypted;
-		//	CryptoPP::StringSource ss(data, true,
-		//		new CryptoPP::PK_DecryptorFilter(rng, rsaDecryption,
-		//			new CryptoPP::StringSink(decrypted)) );
-  //  	data_out = decrypted;
-		//return true;
-		return false;
+		CryptoPP::ARC4 rc4(key.ptr, key.size);
+		data_out.ptr = new unsigned char[data_inp.size];
+		data_out.size = data_inp.size;
+		rc4.ProcessData(data_out.ptr, data_inp.ptr, data_inp.size);
 	}
 	else //AES
 	{

@@ -261,6 +261,26 @@ void PptxConverter::convert_styles()
 
 void PptxConverter::convert_settings()
 {
+
+}
+
+void PptxConverter::convert_common()
+{
+	if (presentation->sldSz.IsInit())
+	{
+		_CP_OPT(odf_types::length) width	= odf_types::length(presentation->sldSz->cx / 12700., odf_types::length::pt);
+		_CP_OPT(odf_types::length) height	= odf_types::length(presentation->sldSz->cy / 12700., odf_types::length::pt);
+		odf_context()->page_layout_context()->set_page_size(width, height);
+		if (presentation->sldSz->type.IsInit())
+		{
+			switch(presentation->sldSz->type->GetBYTECode())
+			{
+			default:
+				break;
+			}
+			//odf_context()->page_layout_context()->set_page_orientation
+		}
+	}
 }
 
 void PptxConverter::convert_slides()
@@ -298,6 +318,7 @@ void PptxConverter::convert_slides()
 					master_style_name += std::to_wstring(m_mapMasters.size());
 				
 				odp_context->start_master_slide(master_style_name);
+					convert_common();
 					//if (slide->Layout->showMasterSp.IsInit() ? *slide->Layout->showMasterSp : true)
 					{
 						current_slide = slide->Master.operator->();

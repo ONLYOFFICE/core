@@ -1554,7 +1554,7 @@ void odf_drawing_context::set_group_z_order(int Val)
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_z_index_ = Val;
 
 }
-void odf_drawing_context::set_group_name(std::wstring name)
+void odf_drawing_context::set_group_name(const std::wstring & name)
 {
 	if ( impl_->group_list_.empty() )return;
 
@@ -1563,7 +1563,6 @@ void odf_drawing_context::set_group_name(std::wstring name)
 	if ( !name.empty() )
 		group->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_name_ = name;
 }
-
 void odf_drawing_context::set_group_flip_H(bool bVal)
 {
 	if ( impl_->group_list_.empty() )return;

@@ -80,7 +80,9 @@ namespace NSBinPptxRW
 			ImageMap		= 42,
 			FontMap			= 43,
 
-			FontsEmbedded	= 44
+			FontsEmbedded	= 44,
+			SlideNotesRels	= 45,
+			NotesRels		= 46
 		};
 	}
 }

@@ -194,7 +194,7 @@ namespace PPTX2EditorAdvanced
 
 			// проверяем note
 			size_t pPointerN = (size_t)(slide->Note.operator ->()); 
-
+			LONG nNoteIndex = -1;
 			if (NULL != pPointerN)
 			{
 				std::map<size_t, LONG>::const_iterator pSearchN = pCommon->notes.find(pPointerN);
@@ -203,8 +203,27 @@ namespace PPTX2EditorAdvanced
 					LONG lCountN = (LONG)_notes.size();
 					pCommon->notes [pPointerN] = lCountN;
 					_notes.push_back(slide->Note);
+					nNoteIndex = lCountN;
 				}
 			}
+			oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.push_back(nNoteIndex);
+		}
+
+		for (size_t i = 0; i < _notes.size(); ++i)
+		{
+			smart_ptr<PPTX::NotesSlide> note = _notes[i];
+			LONG nMasterIndex = -1;
+			smart_ptr<PPTX::NotesMaster> noteMaster = note->Get(OOX::Presentation::FileTypes::NotesMaster).smart_dynamic_cast<PPTX::NotesMaster>();
+			if(noteMaster.is_init())
+			{
+				size_t pPointerL = (size_t)(noteMaster.operator ->());
+				std::map<size_t, LONG>::const_iterator pSearchL = pCommon->notesMasters.find(pPointerL);
+				if (pSearchL != pCommon->notesMasters.end())
+				{
+					nMasterIndex = pSearchL->second;
+				}
+			}
+			oBinaryWriter.m_pCommon->m_oNote_Rels.push_back(nMasterIndex);
 		}
 
 		// нужно записать все в maintables. А кроме главных таблиц ничего и нету. Все остальное лежит в них
@@ -328,27 +347,22 @@ namespace PPTX2EditorAdvanced
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
 
-        if (false)
-		{
-			// ПОКА нету NOTES
-
 		// notes
-			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
-			ULONG nCountN = (ULONG)_notes.size();
-			oBinaryWriter.WriteULONG(nCountN);
-			for (ULONG i = 0; i < nCountN; ++i)
-			{
-				_notes[i]->toPPTY(&oBinaryWriter);
-			}
+		oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
+		ULONG nCountN = (ULONG)_notes.size();
+		oBinaryWriter.WriteULONG(nCountN);
+		for (ULONG i = 0; i < nCountN; ++i)
+		{
+			_notes[i]->toPPTY(&oBinaryWriter);
+		}
 
 		// notesmasters
-			oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
-			ULONG nCountNM = (ULONG)_notesMasters.size();
-			oBinaryWriter.WriteULONG(nCountNM);
-			for (ULONG i = 0; i < nCountNM; ++i)
-			{
-				_notesMasters[i]->toPPTY(&oBinaryWriter);
-			}
+		oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
+		ULONG nCountNM = (ULONG)_notesMasters.size();
+		oBinaryWriter.WriteULONG(nCountNM);
+		for (ULONG i = 0; i < nCountNM; ++i)
+		{
+			_notesMasters[i]->toPPTY(&oBinaryWriter);
 		}
 
 		// ImageMap ---------------------------------------
@@ -405,7 +419,21 @@ namespace PPTX2EditorAdvanced
 			
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
 
+			// SlideNotesRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::SlideNotesRels);
+			oBinaryWriter.StartRecord(NSMainTables::SlideNotesRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
 			// ------------------------------------------------
 
 			// ThemeRels --------------------------------------
@@ -445,7 +473,24 @@ namespace PPTX2EditorAdvanced
 
 				oBinaryWriter.EndRecord();
 			}		
-			
+			// ------------------------------------------------
+
+			// NoteRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::NotesRels);
+			oBinaryWriter.StartRecord(NSMainTables::NotesRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oNote_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNote_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
+
+
 			oBinaryWriter.EndRecord();
 		}
 

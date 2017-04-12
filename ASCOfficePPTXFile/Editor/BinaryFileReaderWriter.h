@@ -152,6 +152,8 @@ namespace NSBinPptxRW
 
         std::vector<_masterSlideInfo>	m_oRels;
         std::vector<LONG>				m_oSlide_Layout_Rels;
+		std::vector<LONG>				m_oSlide_Notes_Rels;
+		std::vector<LONG>				m_oNote_Rels;
 
 		NSShapeImageGen::CImageManager*	m_pImageManager;
 		

@@ -273,6 +273,7 @@ namespace PPTX
 		class SmartArt;
 		class ChartRec;
 		class SpPr;
+		class GrpSpPr;
 		class Xfrm;
 		class ShapeStyle;
 		class PrstTxWarp;
@@ -296,7 +297,9 @@ namespace PPTX
 		class CNvPr;
 		class CNvSpPr;
 		class CNvCxnSpPr;
+		class CNvGrpSpPr;
 		class NvCxnSpPr;
+		class NvGrpSpPr;
 		class NvPr;
 		class Paragraph;
 		class TxBody;
@@ -368,6 +371,7 @@ public:
 		void convert(PPTX::Logic::Shape							*oox_shape);
 		void convert(PPTX::Logic::CxnSp							*oox_connect);
 		void convert(PPTX::Logic::Pic							*oox_pic);
+		void convert(PPTX::Logic::GrpSpPr						*oox_grpSpPr);
 		void convert(PPTX::Logic::SpPr							*oox_spPr, PPTX::Logic::ShapeStyle* oox_sp_style = NULL);
 		void convert(PPTX::Logic::TextSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 		void convert(PPTX::Logic::Xfrm							*oox_xfrm);
@@ -391,7 +395,9 @@ public:
 		void convert(PPTX::Logic::CNvPr							*oox_cnvPr);
 		void convert(PPTX::Logic::CNvCxnSpPr					*oox_cnvPr);
 		void convert(PPTX::Logic::CNvSpPr						*oox_cnvSpPr);
+		void convert(PPTX::Logic::CNvGrpSpPr					*oox_cnvGrpSpPr);
 		void convert(PPTX::Logic::NvCxnSpPr						*oox_nvSpPr);
+		void convert(PPTX::Logic::NvGrpSpPr						*oox_nvSpPr);
 		void convert(PPTX::Logic::NvPr							*oox_nvPr);
 		void convert(PPTX::Logic::Paragraph						*oox_para, PPTX::Logic::TextListStyle *oox_list_style = NULL);
 		void convert(PPTX::Logic::TextListStyle					*oox_list_style, int level, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);

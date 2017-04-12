@@ -661,7 +661,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							}
 						}
 						//todooo проверить что тут за путь ..
-						std::wstring sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
+						std::wstring sOlePath = sRelativePath;
 
                         POLE::Storage *storage = new POLE::Storage(sOlePath.c_str());
 						if (storage)
@@ -693,8 +693,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						}
 					}
 				}
-				if( NULL != aPictShape && NULL != oCurOle )
+				if( NULL != aPictShape)
 				{
+					aPictShape->m_nShapeType = 75;//NSOfficeDrawing::sptPictureFrame;
 					//надо пересчитать размеры картинки так чтобы scalex == 100 и scaley = 100
 					//если scalex != 100, то после редактирование ole киртинка сжимается(растягивается)
 					if( NULL != aPictShape->m_oPicture )
@@ -714,7 +715,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 							}
 						}
 					}
-
+				}
+				if( NULL != aPictShape && NULL != oCurOle )
+				{
 					TextItemContainerPtr oNewTextItemContainer ( new TextItemContainer() );
 					RtfParagraphPtr pNewPar ( new RtfParagraph() );
 
@@ -724,6 +727,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 					oCurOle->m_oResultPic = aPictShape;
 					oOutputParagraph.AddItem( oCurOle );
+				}
+				else if (NULL != aPictShape)
+				{
+					oOutputParagraph.AddItem( aPictShape );
 				}
 			}
 		}break;

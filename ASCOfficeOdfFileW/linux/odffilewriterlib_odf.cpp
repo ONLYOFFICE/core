@@ -86,7 +86,6 @@
 #include "../source/OdfFormat/mediaitems_utils.cpp"
 #include "../source/OdfFormat/anim_elements.cpp"
 #include "../source/OdfFormat/draw_page.cpp"
-#include "../source/OdfFormat/logging.cpp"
 #include "../source/OdfFormat/odp_conversion_context.cpp"
 #include "../source/OdfFormat/odp_page_state.cpp"
 #include "../source/OdfFormat/odp_slide_context.cpp"

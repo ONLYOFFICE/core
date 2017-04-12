@@ -198,7 +198,7 @@ const std::list<std::string> TxtFile::readUtf8()
 void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref также
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path) == S_OK)
+    if (file.CreateFileW(m_path))
 	{
 		BYTE endLine[2] = {0x0d, 0x0a};
 		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
@@ -214,7 +214,7 @@ void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === 
 void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path) == S_OK)
+    if (file.CreateFileW(m_path))
 	{
 		BYTE Header[2]	= {0xff, 0xfe};
 		BYTE EndLine[4] = {0x0d, 0x00, 0x0a, 0x00};
@@ -238,13 +238,14 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 			file.WriteFile(EndLine, 4);
 			m_linesCount++;
 		}
+		file.CloseFile();
 	}	
 }
 
 void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path) == S_OK)
+    if (file.CreateFileW(m_path))
 	{
 		BYTE Header[2]	= {0xfe,	0xff};
 		BYTE EndLine[4] = {0x00, 0x0d, 0x00, 0x0a};
@@ -274,13 +275,14 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 			file.WriteFile(EndLine, 4);
 			m_linesCount++;
 		}
+		file.CloseFile();
 	}	
 }
 
 void TxtFile::writeUtf8(const std::list<std::string>& content)
 {
 	NSFile::CFileBinary file;
-    if (file.CreateFileW(m_path) == S_OK)
+    if (file.CreateFileW(m_path))
 	{
 		BYTE Header[3]	= {0xef ,0xbb , 0xbf};
 		BYTE EndLine[2]	= {0x0d ,0x0a};
@@ -294,6 +296,7 @@ void TxtFile::writeUtf8(const std::list<std::string>& content)
 
 			m_linesCount++;
 		}
+		file.CloseFile();
 	}
 }
 
@@ -301,7 +304,7 @@ const bool TxtFile::isUnicode()
 {
 	NSFile::CFileBinary file;
 
-	if (file.OpenFile(m_path) != S_OK) return false;
+	if (file.OpenFile(m_path) == false) return false;
 
 	DWORD dwRead;
 	BYTE data [2];
@@ -318,7 +321,7 @@ const bool TxtFile::isBigEndian()
 {
 	NSFile::CFileBinary file;
 
-	if (file.OpenFile(m_path) != S_OK) return false;
+	if (file.OpenFile(m_path) == false) return false;
 
 	DWORD dwRead;
 	BYTE data [2];
@@ -335,7 +338,7 @@ const bool TxtFile::isUtf8()
 {
 	NSFile::CFileBinary file;
 
-	if (file.OpenFile(m_path) != S_OK) return false;
+	if (file.OpenFile(m_path) == false) return false;
 
 	DWORD dwRead;
 	BYTE data [3];

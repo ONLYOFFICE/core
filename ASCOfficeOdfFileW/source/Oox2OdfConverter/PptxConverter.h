@@ -136,10 +136,11 @@ private:
 		std::map<std::wstring, std::wstring>			m_mapMasters;
 		std::map<std::wstring, std::wstring>			m_mapLayouts;
 		
-		void convert_slides			();
-		void convert_styles			();
-		void convert_settings		();
-		void convert_layouts		();
+		void convert_slides		();
+		void convert_styles		();
+		void convert_settings	();
+		void convert_layouts	();
+		void convert_common		();
 
 		
 //--------------------------------------------------------------------------------

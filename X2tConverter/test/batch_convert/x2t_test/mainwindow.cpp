@@ -597,7 +597,12 @@ public:
 
         std::wstring sTime = QDateTime::currentDateTime().toString().toStdWString();
         NSCommon::string_replace(sTime, L":", L".");
-        NSFile::CFileBinary::SaveToFile(NSFile::GetProcessDirectory() + L"/report/" + sTime + L".html", oBuilder.GetData(), true);
+
+        std::wstring sDirectory = NSFile::GetProcessDirectory() + L"/report";
+        if (!NSDirectory::Exists(sDirectory))
+            NSDirectory::CreateDirectory(sDirectory);
+
+        NSFile::CFileBinary::SaveToFile(sDirectory + L"/" + sTime + L".html", oBuilder.GetData(), true);
     }
 };
 

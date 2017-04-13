@@ -6615,8 +6615,10 @@ public:
 				std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 				long rIdXlsx;
                 std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-                m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
-
+                
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rIdXlsx);
+				m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
+				
 				pChartSpace->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 				pChartSpace->m_oChartSpace.m_externalData->m_id = new std::wstring();
 				pChartSpace->m_oChartSpace.m_externalData->m_id->append(L"rId");

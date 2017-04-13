@@ -147,13 +147,18 @@ namespace PPTX2EditorAdvanced
 
 			// проверяем theme
             size_t pPointerTh = (size_t)(noteMaster->theme_.operator ->());
+			LONG nNotesMastersRelsIndex = -1;
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find(pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
 				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
                 _themes.push_back(noteMaster->theme_);
+				nNotesMastersRelsIndex = lCountTh;
+			} else {
+				nNotesMastersRelsIndex = pSearchTh->second;
 			}
+			oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.push_back(nNotesMastersRelsIndex);
 		}
 
 		// записываем все слайды
@@ -484,6 +489,21 @@ namespace PPTX2EditorAdvanced
 			for (size_t i = 0; i < _s_rels; ++i)
 			{
 				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNote_Rels[i]);
+			}
+
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			oBinaryWriter.EndRecord();
+			// ------------------------------------------------
+
+			// NoteRels --------------------------------------
+			oBinaryWriter.StartMainRecord(NSMainTables::NotesMastersRels);
+			oBinaryWriter.StartRecord(NSMainTables::NotesMastersRels);
+			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			_s_rels = oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.size();
+			for (size_t i = 0; i < _s_rels; ++i)
+			{
+				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNotesMasters_Rels[i]);
 			}
 
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);

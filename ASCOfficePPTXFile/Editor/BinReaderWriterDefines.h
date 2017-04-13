@@ -82,7 +82,8 @@ namespace NSBinPptxRW
 
 			FontsEmbedded	= 44,
 			SlideNotesRels	= 45,
-			NotesRels		= 46
+			NotesRels		= 46,
+			NotesMastersRels= 47
 		};
 	}
 }
